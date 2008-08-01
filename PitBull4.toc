@@ -1,0 +1,11 @@
+## Interface: 30000
+## Title: PitBull4 Unit Frames
+## Notes: Dog-themed unit frames. Woof. Arf. Yip.
+## Author: ckknight
+## X-eMail: ckknight AT gmail DOT com
+## X-Website: http://wow.curseforge.com/projects/pitbull4/
+## SavedVariables: PitBull4DB
+
+Utils.lua
+PitBull4.lua
+UnitFrame.lua
