@@ -1,0 +1,24 @@
+## Interface: 50300
+## Title: PitBull4 |r[|cffeda55fCombat fader|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Combat fader")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Combat fader")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Combat fader")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Combat fader")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Combat fader")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Combat fader")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Combat fader")@|r]
+## Notes: Make the unit frame fade if out of combat.
+## Notes-deDE: @localization(locale="deDE", key="Make the unit frame fade if out of combat.")@
+## Notes-esES: @localization(locale="esES", key="Make the unit frame fade if out of combat.")@
+## Notes-frFR: @localization(locale="frFR", key="Make the unit frame fade if out of combat.")@
+## Notes-koKR: @localization(locale="koKR", key="Make the unit frame fade if out of combat.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Make the unit frame fade if out of combat.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Make the unit frame fade if out of combat.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Make the unit frame fade if out of combat.")@
+## Author: ckknight
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## Version: @project-version@
+
+load.xml

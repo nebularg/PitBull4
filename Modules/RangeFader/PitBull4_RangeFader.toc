@@ -1,0 +1,24 @@
+## Interface: 50300
+## Title: PitBull4 |r[|cffeda55fRange fader|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Range fader")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Range fader")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Range fader")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Range fader")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Range fader")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Range fader")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Range fader")@|r]
+## Notes: Make the unit frame fade if out of range.
+## Notes-deDE: @localization(locale="deDE", key="Make the unit frame fade if out of range.")@
+## Notes-esES: @localization(locale="esES", key="Make the unit frame fade if out of range.")@
+## Notes-frFR: @localization(locale="frFR", key="Make the unit frame fade if out of range.")@
+## Notes-koKR: @localization(locale="koKR", key="Make the unit frame fade if out of range.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Make the unit frame fade if out of range.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Make the unit frame fade if out of range.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Make the unit frame fade if out of range.")@
+## Author: ckknight
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## Version: @project-version@
+
+load.xml

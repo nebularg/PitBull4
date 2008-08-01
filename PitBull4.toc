@@ -1,0 +1,27 @@
+## Interface: 50300
+## Title: PitBull Unit Frames 4.0
+## Title-deDE: @localization(locale="deDE", key="PitBull Unit Frames 4.0")@
+## Title-esES: @localization(locale="esES", key="PitBull Unit Frames 4.0")@
+## Title-frFR: @localization(locale="frFR", key="PitBull Unit Frames 4.0")@
+## Title-koKR: @localization(locale="koKR", key="PitBull Unit Frames 4.0")@
+## Title-ruRU: @localization(locale="ruRU", key="PitBull Unit Frames 4.0")@
+## Title-zhCN: @localization(locale="zhCN", key="PitBull Unit Frames 4.0")@
+## Title-zhTW: @localization(locale="zhTW", key="PitBull Unit Frames 4.0")@
+## Notes: Dog-themed unit frames. Woof. Arf. Yip.
+## Notes-deDE: @localization(locale="deDE", key="Dog-themed unit frames. Woof. Arf. Yip.")@
+## Notes-esES: @localization(locale="esES", key="Dog-themed unit frames. Woof. Arf. Yip.")@
+## Notes-frFR: @localization(locale="frFR", key="Dog-themed unit frames. Woof. Arf. Yip.")@
+## Notes-koKR: @localization(locale="koKR", key="Dog-themed unit frames. Woof. Arf. Yip.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Dog-themed unit frames. Woof. Arf. Yip.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Dog-themed unit frames. Woof. Arf. Yip.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Dog-themed unit frames. Woof. Arf. Yip.")@
+## Author: ckknight
+## X-eMail: ckknight AT gmail DOT com
+## X-Website: http://wow.curseforge.com/projects/pitbull4/
+## SavedVariables: PitBull4DB
+## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDataBroker-1.1, LibDBIcon-1.0, LibBossIDs-1.0, LibDualSpec-1.0, Clique
+## Version: @project-version@
+
+libs.xml
+load.xml
+modules.xml

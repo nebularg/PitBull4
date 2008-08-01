@@ -1,0 +1,24 @@
+## Interface: 50300
+## Title: PitBull4 |r[|cffeda55fBlank space|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Blank space")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Blank space")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Blank space")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Blank space")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Blank space")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Blank space")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Blank space")@|r]
+## Notes: Provide empty bars for spacing.
+## Notes-deDE: @localization(locale="deDE", key="Provide empty bars for spacing.")@
+## Notes-esES: @localization(locale="esES", key="Provide empty bars for spacing.")@
+## Notes-frFR: @localization(locale="frFR", key="Provide empty bars for spacing.")@
+## Notes-koKR: @localization(locale="koKR", key="Provide empty bars for spacing.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Provide empty bars for spacing.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Provide empty bars for spacing.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Provide empty bars for spacing.")@
+## Author: ckknight
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## Version: @project-version@
+
+load.xml

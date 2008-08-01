@@ -1,0 +1,24 @@
+## Interface: 50300
+## Title: PitBull4 |r[|cffeda55fRaid target icon|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Raid target icon")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Raid target icon")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Raid target icon")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Raid target icon")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Raid target icon")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Raid target icon")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Raid target icon")@|r]
+## Notes: Show an icon on the unit frame based on which Raid Target it is.
+## Notes-deDE: @localization(locale="deDE", key="Show an icon on the unit frame based on which Raid Target it is.")@
+## Notes-esES: @localization(locale="esES", key="Show an icon on the unit frame based on which Raid Target it is.")@
+## Notes-frFR: @localization(locale="frFR", key="Show an icon on the unit frame based on which Raid Target it is.")@
+## Notes-koKR: @localization(locale="koKR", key="Show an icon on the unit frame based on which Raid Target it is.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Show an icon on the unit frame based on which Raid Target it is.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Show an icon on the unit frame based on which Raid Target it is.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Show an icon on the unit frame based on which Raid Target it is.")@
+## Author: ckknight
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## Version: @project-version@
+
+load.xml

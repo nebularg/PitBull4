@@ -1,0 +1,104 @@
+package-as: PitBull4
+
+externals:
+    libs/LibStub:
+        url: svn://svn.wowace.com/wow/libstub/mainline/trunk
+        tag: latest
+    libs/CallbackHandler-1.0:
+        url: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
+        tag: latest
+    libs/AceAddon-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceAddon-3.0
+    libs/AceConfig-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
+    libs/AceDB-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDB-3.0
+    libs/AceDBOptions-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDBOptions-3.0
+    libs/AceEvent-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceEvent-3.0
+    libs/AceGUI-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
+    libs/AceHook-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceHook-3.0
+    libs/AceLocale-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceLocale-3.0
+    libs/AceTimer-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceTimer-3.0
+    Modules/DogTagTexts/libs/LibDogTag-3.0:
+        url: svn://svn.wowace.com/wow/libdogtag-3-0/mainline/trunk
+        tag: latest
+    Modules/DogTagTexts/libs/LibDogTag-Unit-3.0:
+        url: svn://svn.wowace.com/wow/libdogtag-unit-3-0/mainline/trunk
+        tag: latest
+    libs/LibSharedMedia-3.0:
+        url: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/trunk
+        tag: latest
+    libs/AceGUI-3.0-SharedMediaWidgets:
+        url: svn://svn.wowace.com/wow/ace-gui-3-0-shared-media-widgets/mainline/trunk/AceGUI-3.0-SharedMediaWidgets
+        tag: latest
+    libs/LibDataBroker-1.1:
+        url: git://github.com/tekkub/libdatabroker-1-1.git
+        tag: v1.1.4
+    libs/LibDBIcon-1.0:
+        url: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/trunk/LibDBIcon-1.0
+        tag: latest
+    libs/LibDualSpec-1.0:
+        url: git://git.wowace.com/wow/libdualspec-1-0/mainline.git
+        tag: latest
+    Modules/Aggro/libs/LibBanzai-2.0:
+        url: svn://svn.wowace.com/wow/libbanzai-2-0/mainline/trunk 
+
+move-folders:
+    PitBull4/Modules/Aggro: PitBull4_Aggro
+    PitBull4/Modules/AltPowerBar: PitBull4_AltPowerBar
+    PitBull4/Modules/Aura: PitBull4_Aura
+    PitBull4/Modules/Background: PitBull4_Background
+    PitBull4/Modules/BattlePet: PitBull4_BattlePet
+    PitBull4/Modules/BlankSpace: PitBull4_BlankSpace
+    PitBull4/Modules/Border: PitBull4_Border
+    PitBull4/Modules/BurningEmbers: PitBull4_BurningEmbers
+    PitBull4/Modules/CastBar: PitBull4_CastBar
+    PitBull4/Modules/CastBarLatency: PitBull4_CastBarLatency
+    PitBull4/Modules/Chi: PitBull4_Chi
+    PitBull4/Modules/CombatFader: PitBull4_CombatFader
+    PitBull4/Modules/CombatIcon: PitBull4_CombatIcon
+    PitBull4/Modules/CombatText: PitBull4_CombatText
+    PitBull4/Modules/ComboPoints: PitBull4_ComboPoints
+    PitBull4/Modules/DemonicFury: PitBull4_DemonicFury
+    PitBull4/Modules/DogTagTexts: PitBull4_DogTagTexts
+    PitBull4/Modules/DruidManaBar: PitBull4_DruidManaBar
+    PitBull4/Modules/Eclipse: PitBull4_Eclipse
+    PitBull4/Modules/ExperienceBar: PitBull4_ExperienceBar
+    PitBull4/Modules/HealthBar: PitBull4_HealthBar
+    PitBull4/Modules/HideBlizzard: PitBull4_HideBlizzard
+    PitBull4/Modules/Highlight: PitBull4_Highlight
+    PitBull4/Modules/HolyPower: PitBull4_HolyPower
+    PitBull4/Modules/HostilityFader: PitBull4_HostilityFader
+    PitBull4/Modules/LeaderIcon: PitBull4_LeaderIcon
+    PitBull4/Modules/LuaTexts: PitBull4_LuaTexts
+    PitBull4/Modules/MasterLooterIcon: PitBull4_MasterLooterIcon
+    PitBull4/Modules/PhaseIcon: PitBull4_PhaseIcon
+    PitBull4/Modules/Portrait: PitBull4_Portrait
+    PitBull4/Modules/PowerBar: PitBull4_PowerBar
+    PitBull4/Modules/PvPIcon: PitBull4_PvPIcon
+    PitBull4/Modules/RaidTargetIcon: PitBull4_RaidTargetIcon
+    PitBull4/Modules/QuestIcon: PitBull4_QuestIcon
+    PitBull4/Modules/RangeFader: PitBull4_RangeFader
+    PitBull4/Modules/ReadyCheckIcon: PitBull4_ReadyCheckIcon
+    PitBull4/Modules/ReputationBar: PitBull4_ReputationBar
+    PitBull4/Modules/RestIcon: PitBull4_RestIcon
+    PitBull4/Modules/RoleIcon: PitBull4_RoleIcon
+    PitBull4/Modules/Runes: PitBull4_Runes
+    PitBull4/Modules/ShadowOrbs: PitBull4_ShadowOrbs
+    PitBull4/Modules/SoulShards: PitBull4_SoulShards
+    PitBull4/Modules/Sounds: PitBull4_Sounds
+    PitBull4/Modules/ThreatBar: PitBull4_ThreatBar
+    PitBull4/Modules/Totems: PitBull4_Totems
+    PitBull4/Modules/VisualHeal: PitBull4_VisualHeal
+    PitBull4/Modules/VoiceIcon: PitBull4_VoiceIcon
+
+ignore:
+    - docs
+    - tests
+    - spec.txt

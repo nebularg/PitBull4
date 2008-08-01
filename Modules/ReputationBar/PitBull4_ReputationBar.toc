@@ -1,0 +1,24 @@
+## Interface: 50300
+## Title: PitBull4 |r[|cffeda55fReputation bar|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Reputation bar")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Reputation bar")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Reputation bar")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Reputation bar")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Reputation bar")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Reputation bar")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Reputation bar")@|r]
+## Notes: Show a reputation bar.
+## Notes-deDE: @localization(locale="deDE", key="Show a reputation bar.")@
+## Notes-esES: @localization(locale="esES", key="Show a reputation bar.")@
+## Notes-frFR: @localization(locale="frFR", key="Show a reputation bar.")@
+## Notes-koKR: @localization(locale="koKR", key="Show a reputation bar.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Show a reputation bar.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Show a reputation bar.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Show a reputation bar.")@
+## Author: ckknight
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## Version: @project-version@
+
+load.xml

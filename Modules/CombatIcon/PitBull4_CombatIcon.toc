@@ -1,0 +1,24 @@
+## Interface: 50300
+## Title: PitBull4 |r[|cffeda55fCombat icon|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Combat icon")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Combat icon")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Combat icon")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Combat icon")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Combat icon")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Combat icon")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Combat icon")@|r]
+## Notes: Show an icon based on whether or not the unit is in combat.
+## Notes-deDE: @localization(locale="deDE", key="Show an icon based on whether or not the unit is in combat.")@
+## Notes-esES: @localization(locale="esES", key="Show an icon based on whether or not the unit is in combat.")@
+## Notes-frFR: @localization(locale="frFR", key="Show an icon based on whether or not the unit is in combat.")@
+## Notes-koKR: @localization(locale="koKR", key="Show an icon based on whether or not the unit is in combat.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Show an icon based on whether or not the unit is in combat.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Show an icon based on whether or not the unit is in combat.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Show an icon based on whether or not the unit is in combat.")@
+## Author: ckknight
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## Version: @project-version@
+
+load.xml

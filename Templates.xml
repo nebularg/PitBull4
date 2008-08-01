@@ -1,0 +1,11 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+  <!-- Template to support Clique for Unit Frames in Group Headers -->
+  <Button name="PitBull4_UnitTemplate_Clique" virtual="true" inherits="SecureActionButtonTemplate,SecureHandlerEnterLeaveTemplate">
+    <Attributes>
+      <Attribute name="_onenter" type="string" value="local snippet = self:GetAttribute('clickcast_onenter'); if snippet then self:Run(snippet) end"/>
+      <Attribute name="_onleave" type="string" value="local snippet = self:GetAttribute('clickcast_onleave'); if snippet then self:Run(snippet) end"/>
+    </Attributes>
+  </Button>
+</Ui>

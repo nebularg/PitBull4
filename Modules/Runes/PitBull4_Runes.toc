@@ -1,0 +1,25 @@
+## Interface: 50300
+## Title: PitBull4 |r[|cffeda55fRunes|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Runes")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Runes")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Runes")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Runes")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Runes")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Runes")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Runes")@|r]
+## Notes: Show Death Knight rune icons.
+## Notes-deDE: @localization(locale="deDE", key="Show Death Knight rune icons.")@
+## Notes-esES: @localization(locale="esES", key="Show Death Knight rune icons.")@
+## Notes-frFR: @localization(locale="frFR", key="Show Death Knight rune icons.")@
+## Notes-koKR: @localization(locale="koKR", key="Show Death Knight rune icons.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Show Death Knight rune icons.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Show Death Knight rune icons.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Show Death Knight rune icons.")@
+## Author: ckknight
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## Version: @project-version@
+## X-PitBull4-Condition: return select(2, UnitClass("player")) == "DEATHKNIGHT"
+
+load.xml
