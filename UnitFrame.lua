@@ -14,14 +14,14 @@ local UnitFrame__scripts = {}
 -- @param frame a Button which inherits from SecureUnitButton
 -- @usage PitBull4.ConvertIntoUnitFrame(frame)
 function PitBull4.ConvertIntoUnitFrame(frame)
-	--@debug@
+	--@alpha@
 	if type(frame) ~= "table" or type(frame[0]) ~= "userdata" or type(frame.IsObjectType) ~= "function" then
 		error(("Bad argument #1 to `ConvertIntoUnitFrame'. Expected %q, got %q."):format("frame", type(frame)))
 	end
 	if not frame:IsObjectType("Button") then
 		error(("Bad argument #1 to `ConvertIntoUnitFrame'. Expected %q, got %q."):format("Button", frame:GetObjectType()))
 	end
-	--@end-debug@
+	--@end-alpha@
 	
 	for k, v in pairs(UnitFrame__scripts) do
 		frame:SetScript(k, v)
