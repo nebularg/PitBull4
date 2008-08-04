@@ -5,6 +5,7 @@
 ## X-eMail: ckknight AT gmail DOT com
 ## X-Website: http://wow.curseforge.com/projects/pitbull4/
 ## SavedVariables: PitBull4DB
+## Version: @project-version@
 
 Utils.lua
 PitBull4.lua
