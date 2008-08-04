@@ -47,7 +47,8 @@ end
 -- @usage frame:UpdateGUID(UnitGUID(frame.unitID))
 -- @usage frame:UpdateGUID(UnitGUID(frame.unitID), true)
 function UnitFrame:UpdateGUID(guid)
-	if self.guid == guid and (not guid or not self.is_wacky) then
+	-- if the guids are the same, cut out, but don't if it's a wacky unit that has a guid.
+	if self.guid == guid and not (guid and self.is_wacky) then
 		return
 	end
 	local previousGUID = self.guid

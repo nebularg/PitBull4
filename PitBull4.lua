@@ -3,6 +3,7 @@ local PitBull4 = _G.PitBull4
 local PitBull4_Utils = PitBull4.Utils
 
 local db
+local defaults = {}
 
 local do_nothing = function() end
 
@@ -198,19 +199,52 @@ PitBull4.Utils.AddTimer(function(elapsed, currentTime)
 	end
 end)
 
+local add_defaults
+do
+	-- add a default table structure to a database table
+	local function add_default_table(database, key, value)
+		if type(database[key]) ~= "table" then
+			-- make sure that the database table structure matches
+			database[key] = {}
+		end
+		add_defaults(database[key], value) -- handle sub-tables
+	end
+	
+	-- add a specific value (or table structure) to a database table
+	local function add_default_value(database, key, value)
+		if type(value) == "table" then -- make sure the table structure is consistent
+			add_default_table(database, key, value)
+			return
+		end
+		
+		if database[key] == nil then -- if it's nil, then go for what the defaults say
+			database[key] = value
+		end
+	end
+
+	-- add default values to a database table
+	function add_defaults(database, defaults)
+		for k, v in pairs(defaults) do -- loop through each default value and add it to the database
+			add_default_value(database, k, v)
+		end
+	end
+end
+
 -- set the db table and populate it with the defaults
-local function handleDB()
-	handleDB = nil
+local function handle_db()
+	handle_db = nil
 	
 	db = _G.PitBull4DB
 	if type(db) ~= "table" then
 		db = { version = 0 }
 		_G.PitBull4DB = db
 	end
-	PitBull4.db = db
-	
 	local version = db.version
 	db.version = nil
+	
+	add_defaults(db, defaults)
+	
+	PitBull4.db = db
 	
 	if not db.classifications then
 		db.classifications = {}
@@ -224,10 +258,51 @@ local function ADDON_LOADED(event, name)
 	PitBull4.Utils.RemoveEventListener("ADDON_LOADED", ADDON_LOADED)
 	ADDON_LOADED = nil
 	
-	handleDB()
+	handle_db()
 end
 PitBull4.Utils.AddEventListener("ADDON_LOADED", ADDON_LOADED)
 
 PitBull4.Utils.AddEventListener("PLAYER_LOGOUT", function()
+	local remove_defaults
+	
+	local function remove_default_table(database, key, value)
+		remove_defaults(database[key], value)
+		
+		if next(database[key]) == nil then
+			-- if the table's empty, nil out the table
+			database[key] = nil
+		end
+	end
+	
+	local function remove_default_value(database, key, value)
+		if type(database[k]) ~= type(v) then
+			-- vastly different, cut out early
+			return
+		end
+		
+		if type(v) == "table" then
+			-- handle the table case
+			remove_default_table(database, key, value)
+			return
+		end
+		
+		if database[key] == value then
+			-- simple equality, nil out
+			database[key] = nil
+		end
+	end
+	
+	-- remove any unnecessary values from the database
+	-- this is useful in case the defaults change (so that unchanged values are updated)
+	-- it is also useful because the stored SV looks a lot smaller cause it has only
+	-- the useful information
+	function remove_defaults(database, defaults)
+		for k, v in pairs(defaults) do
+			-- loop through each default and remove from the database
+			remove_default_value(database, k, v)
+		end
+	end
+	remove_defaults(db, defaults)
+	
 	db.version = 0
 end)
