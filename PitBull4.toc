@@ -1,5 +1,5 @@
 ## Interface: 30000
-## Title: PitBull4 Unit Frames
+## Title: PitBull Unit Frames 4.0
 ## Notes: Dog-themed unit frames. Woof. Arf. Yip.
 ## Author: ckknight
 ## X-eMail: ckknight AT gmail DOT com
