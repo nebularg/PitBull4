@@ -4,7 +4,11 @@ local PitBull4_Utils = PitBull4.Utils
 
 local db
 local defaults = {
-	classifications = {},
+	classifications = {
+		['*'] = {
+			
+		}
+	},
 }
 
 local do_nothing = function() end
@@ -315,13 +319,17 @@ PitBull4.Utils.AddEventListener("PLAYER_LOGOUT", function()
 		end
 	end
 	
-	local function remove_default_value(database, key, value)
-		if type(database[k]) ~= type(v) then
+	local function remove_default_value(database, key, value, star_default)
+		if value == nil then
+			value = star_default
+		end
+		
+		if type(database[key]) ~= type(value) then
 			-- vastly different, cut out early
 			return
 		end
 		
-		if type(v) == "table" then
+		if type(value) == "table" then
 			-- handle the table case
 			remove_default_table(database, key, value)
 			return
@@ -338,9 +346,9 @@ PitBull4.Utils.AddEventListener("PLAYER_LOGOUT", function()
 	-- it is also useful because the stored SV looks a lot smaller cause it has only
 	-- the useful information
 	function remove_defaults(database, defaults)
-		for k, v in pairs(defaults) do
+		for k, v in pairs(database) do
 			-- loop through each default and remove from the database
-			remove_default_value(database, k, v)
+			remove_default_value(database, k, defaults[k], defaults['*'])
 		end
 	end
 	remove_defaults(db, defaults)
