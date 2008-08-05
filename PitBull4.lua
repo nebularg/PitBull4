@@ -11,6 +11,11 @@ local defaults = {
 	},
 }
 
+if not _G.ClickCastFrames then
+	-- for click-to-cast addons
+	_G.ClickCastFrames = {}
+end
+
 local do_nothing = function() end
 
 -- A set of all unit frames
@@ -150,6 +155,7 @@ function PitBull4.MakeSingletonFrame(unitID)
 	local frame = CreateFrame("Button", "PitBull4_Frames_" .. unitID, UIParent, "SecureUnitButtonTemplate")
 	
 	all_frames[frame] = true
+	_G.ClickCastFrames[frame] = true
 	
 	frame.is_singleton = true
 	
@@ -175,6 +181,10 @@ end
 
 -- check the guid of a unit and send that info to all frames, in case of an update
 local function check_frames_for_guid_update(unitID)
+	if not PitBull4.Utils.GetBestUnitID(unitID) then
+		-- for ids such as npctarget
+		return
+	end
 	local guid = UnitGUID(unitID)
 	for frame in PitBull4.IterateFramesForUnitID(unitID) do
 		frame:UpdateGUID(guid)
@@ -296,6 +306,15 @@ local function handle_db()
 	PitBull4.db = db
 end
 
+local function create_frames()
+	create_frames = nil
+	
+	local db_classifications = db.classifications
+	if not db_classifications.player.hidden then
+		PitBull4.MakeSingletonFrame("player")
+	end
+end
+
 local function ADDON_LOADED(event, name)
 	if name ~= "PitBull4" then
 		return
@@ -304,6 +323,8 @@ local function ADDON_LOADED(event, name)
 	ADDON_LOADED = nil
 	
 	handle_db()
+	
+	create_frames()
 end
 PitBull4.Utils.AddEventListener("ADDON_LOADED", ADDON_LOADED)
 
@@ -321,6 +342,7 @@ PitBull4.Utils.AddEventListener("PLAYER_LOGOUT", function()
 	
 	local function remove_default_value(database, key, value, star_default)
 		if value == nil then
+			-- no default value, use the star default instead
 			value = star_default
 		end
 		

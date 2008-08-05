@@ -220,7 +220,7 @@ do
 	local inCombat = false
 	local actionsToPerform = {}
 	local pool = {}
-	PitBull4.Utils.AddEventHandler("PLAYER_REGEN_ENABLED", function()
+	PitBull4.Utils.AddEventListener("PLAYER_REGEN_ENABLED", function()
 		inCombat = false
 		for i, t in ipairs(actionsToPerform) do
 			t[1](unpack(t, 2, t.n+1))
@@ -231,7 +231,7 @@ do
 			pool[t] = true
 		end
 	end)
-	PitBull4.Utils.AddEventHandler("PLAYER_REGEN_DISABLED", function()
+	PitBull4.Utils.AddEventListener("PLAYER_REGEN_DISABLED", function()
 		inCombat = true
 	end)
 	--- Call a function if out of combat or schedule to run once combat ends
