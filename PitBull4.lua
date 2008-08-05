@@ -3,7 +3,9 @@ local PitBull4 = _G.PitBull4
 local PitBull4_Utils = PitBull4.Utils
 
 local db
-local defaults = {}
+local defaults = {
+	classifications = {},
+}
 
 local do_nothing = function() end
 
@@ -201,8 +203,46 @@ end)
 
 local add_defaults
 do
+	-- metatable cache
+	local cache = {}
+	
+	-- make the metatable which creates a new table on access
+	local function make_default_table_mt(value)
+		if cache[value] then
+			return cache[value]
+		end
+		local mt = {}
+		cache[value] = mt
+		function mt:__index(key)
+			local t = {}
+			self[key] = t
+			add_defaults(t, value)
+			return t
+		end
+		return mt
+	end
+	
+	-- make the metatable which returns a simple value on access
+	local function make_default_value_mt(value)
+		if cache[value] then
+			return cache[value]
+		end
+		local mt = {}
+		cache[value] = mt
+		function mt:__index(key)
+			self[key] = value
+			return value
+		end
+		return mt
+	end
+	
 	-- add a default table structure to a database table
 	local function add_default_table(database, key, value)
+		if key == '*' then
+			setmetatable(database, make_default_table_mt(value))
+			return
+		end
+		
 		if type(database[key]) ~= "table" then
 			-- make sure that the database table structure matches
 			database[key] = {}
@@ -214,6 +254,11 @@ do
 	local function add_default_value(database, key, value)
 		if type(value) == "table" then -- make sure the table structure is consistent
 			add_default_table(database, key, value)
+			return
+		end
+		
+		if key == '*' then -- all keys
+			setmetatable(database, make_default_value_mt(value))
 			return
 		end
 		
@@ -245,10 +290,6 @@ local function handle_db()
 	add_defaults(db, defaults)
 	
 	PitBull4.db = db
-	
-	if not db.classifications then
-		db.classifications = {}
-	end
 end
 
 local function ADDON_LOADED(event, name)
