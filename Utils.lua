@@ -4,6 +4,69 @@ _G.PitBull4 = PitBull4
 
 PitBull4.Utils = {}
 
+--@alpha@
+do
+	local function ptostring(value)
+		if type(value) == "string" then
+			return ("%q"):format(value)
+		else
+			return tostring(value)
+		end
+	end
+
+	local conditions = {}
+	local function checkTypes(alpha, ...)
+		local bravo = (...)
+		if bravo == "frame" then
+			if type(alpha) == "table" and type(rawget(alpha, 0)) == "userdata" and type(alpha.IsObjectType) == "function" then
+				return true
+			end
+		else
+			if type(alpha) == bravo then
+				return true
+			end
+		end
+		if select('#', ...) == 1 then
+			return false
+		end
+		return checkTypes(alpha, select(2, ...))
+	end
+	conditions['typeof'] = function(alpha, bravo)
+		return checkTypes(alpha, (";"):split(bravo))
+	end
+	conditions['frametype'] = function(alpha, bravo)
+		if type(bravo) ~= "string" then
+			error(("Bad argument #3 to `expect'. Expected %q, got %q"):format("string", type(bravo)), 3)
+		end
+		return type(alpha) == "table" and type(rawget(alpha, 0)) == "userdata" and type(alpha.IsObjectType) == "function" and alpha:IsObjectType(bravo)
+	end
+	conditions['match'] = function(alpha, bravo)
+		if type(alpha) ~= "string" then
+			error(("Bad argument #1 to `expect'. Expected %q, got %q"):format("string", type(alpha)), 3)
+		end
+		if type(bravo) ~= "string" then
+			error(("Bad argument #3 to `expect'. Expected %q, got %q"):format("string", type(bravo)), 3)
+		end
+		return alpha:match(bravo)
+	end
+	conditions['=='] = function(alpha, bravo)
+		return alpha == bravo
+	end
+	conditions['~='] = function(alpha, bravo)
+		return alpha ~= bravo
+	end
+
+	function _G.expect(alpha, condition, bravo)
+		if not conditions[condition] then
+			error(("Unknown condition %s"):format(ptostring(condition)), 2)
+		end
+		if not conditions[condition](alpha, bravo) then
+			error(("Expectation failed: %s %s %s"):format(ptostring(alpha), condition, ptostring(bravo)), 2)
+		end
+	end
+end
+--@end-alpha@
+
 do
 	local frame = CreateFrame("Frame", nil, UIParent)
 	
@@ -14,6 +77,11 @@ do
 	--     -- do something here
 	-- end)
 	function PitBull4.Utils.AddTimer(func)
+		--@alpha@
+		if type(func) ~= "function" then
+			error(("Bad argument #1 to `AddTimer'. Expected %q, got %q."):format("function", type(func)), 2)
+		end
+		--@end-alpha@
 		timers[func] = true
 	end
 	
@@ -27,6 +95,11 @@ do
 	-- end
 	-- PitBull4.Utils.AddTimer(func)
 	function PitBull4.Utils.RemoveTimer(func)
+		--@alpha@
+		if type(func) ~= "function" then
+			error(("Bad argument #1 to `RemoveTimer'. Expected %q, got %q."):format("function", type(func)), 2)
+		end
+		--@end-alpha@
 		timers[func] = nil
 	end
 	
@@ -53,6 +126,15 @@ do
 	--     -- do something here
 	-- end)
 	function PitBull4.Utils.AddEventListener(event, func)
+		--@alpha@
+		if type(event) ~= "string" then
+			error(("Bad argument #1 to `AddEventListener'. Expected %q, got %q."):format("string", type(event)), 2)
+		elseif not event:match("^[A-Z_]+$") then
+			error(("Bad argument #1 to `AddEventListener'. Expected match against /^[A-Z_]$/, got %q."):format(event), 2)
+		elseif type(func) ~= "function" then
+			error(("Bad argument #2 to `AddEventListener'. Expected %q, got %q."):format("function", type(func)), 2)
+		end
+		--@end-alpha@
 		if not events[event] then
 			frame:RegisterEvent(event)
 			events[event] = {}

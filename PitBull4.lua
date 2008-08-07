@@ -3,13 +3,6 @@ local PitBull4 = _G.PitBull4
 local PitBull4_Utils = PitBull4.Utils
 
 local db
-local defaults = {
-	classifications = {
-		['*'] = {
-			
-		}
-	},
-}
 
 if not _G.ClickCastFrames then
 	-- for click-to-cast addons
@@ -17,6 +10,104 @@ if not _G.ClickCastFrames then
 end
 
 local do_nothing = function() end
+
+local modules = {}
+
+local module_script_hooks = {}
+
+local moduleMeta = {}
+moduleMeta.__index = {}
+
+--- Add a script hook for the unit frames
+-- outside of the standard script hooks, there is also OnPopulate and OnClear.
+-- @name Module:AddFrameScriptHook
+-- @param script name of the script
+-- @param func function to call
+-- @usage MyModule:AddFrameScriptHook("OnEnter", function(frame)
+--     -- do stuff here
+-- end)
+function moduleMeta.__index:AddFrameScriptHook(script, func)
+	--@alpha@
+	expect(script, 'typeof', 'string')
+	expect(script, 'match', '^On[A-Z][A-Za-z]+$')
+	expect(func, 'typeof', 'function')
+	--@end-alpha@
+	
+	if not module_script_hooks[script] then
+		module_script_hooks[script] = {}
+	end
+	module_script_hooks[script][func] = self
+end
+
+--- Iterate through all script hooks for a given script
+-- @param script name of the script
+-- @usage for func, module in PitBull4.IterateFrameScriptHooks("OnEnter") do
+--     -- do stuff here
+-- end
+-- @return iterator that returns function and module
+function PitBull4.IterateFrameScriptHooks(script)
+	--@alpha@
+	expect(script, 'typeof', 'string')
+	expect(script, 'match', '^On[A-Z][A-Za-z]+$')
+	--@end-alpha@
+	
+	if not module_script_hooks[script] then
+		return do_nothing
+	end
+	return next, module_script_hooks[script]
+end
+
+--- Run all scriprt hooks for a given script
+-- @param script name of the script
+-- @param frame current Unit Frame
+-- @param ... any arguments to pass in
+-- @usage PitBull4.RunFrameScriptHooks(script, ...)
+function PitBull4.RunFrameScriptHooks(script, frame, ...)
+	--@alpha@
+	expect(script, 'typeof', 'string')
+	expect(frame, 'typeof', 'frame')
+	--@end-alpha@
+
+	for func, module in PitBull4.IterateFrameScriptHooks(script) do
+		func(frame, ...)
+	end
+end
+
+--- Create a new module
+-- @param id an identifier for your module, likely its English name
+-- @param name the name of your module, localized
+-- @param description the description of your module, localized
+-- @param globalDefaults a defaults table for global settings
+-- @param layoutDefaults a defaults table for layout-specific settings
+-- @usage local PitBull4_Monkey = PitBull4.NewModule("Monkey", L["Monkey"], L["Does monkey-related things"], {
+--     bananas = 5
+-- }, {
+--     color = { 1, 0.82, 0 }
+-- })
+-- @return a table which represents your new module
+function PitBull4.NewModule(id, name, description, globalDefaults, layoutDefaults)
+	--@alpha@
+	expect(id, 'typeof', 'string')
+	expect(id, 'match', '^[A-Za-z]+$')
+	expect(name, 'typeof', 'string')
+	expect(description, 'typeof', 'string')
+	expect(globalDefaults, 'typeof', 'table')
+	expect(layoutDefaults, 'typeof', 'table')
+	--@end-alpha@
+	
+	local module = setmetatable({ id = id, name = name, description = description }, moduleMeta)
+	modules[id] = module
+	PitBull4[id] = module
+	_G["PitBull4_" .. id] = module
+	
+	PitBull4.AddModuleDefaults(id, globalDefaults, layoutDefaults)
+	
+	function module.IsEnabled()
+		return not db[id].disabled
+	end
+	
+	return module
+end
 
 -- A set of all unit frames
 local all_frames = {}
@@ -111,6 +202,10 @@ end
 -- end
 -- @return iterator which returns frames
 function PitBull4.IterateFramesForUnitID(unitID, onlyShown)
+	--@alpha@
+	expect(unitID, 'typeof', 'string')
+	--@end-alpha@
+	
 	local id = PitBull4.Utils.GetBestUnitID(unitID)
 	if not id then
 		error(("Bad argument #1 to `IterateFramesForUnitID'. %q is not a valid unitID"):format(tostring(unitID)), 2)
@@ -130,6 +225,10 @@ end
 -- end
 -- @return iterator which returns frames
 function PitBull4.IterateFramesForClassification(classification, onlyShown)
+	--@alpha@
+	expect(classification, 'typeof', 'string')
+	--@end-alpha@
+
 	local unitID_to_frames__classification = rawget(unitID_to_frames, classification)
 	if not unitID_to_frames__classification then
 		return donothing
@@ -143,10 +242,11 @@ end
 -- @usage local frame = PitBull4.MakeSingletonFrame("player")
 -- @return the frame in question
 function PitBull4.MakeSingletonFrame(unitID)
+	--@alpha@
+	expect(unitID, 'typeof', 'string')
+	--@end-alpha@
+	
 	local id = PitBull4.Utils.GetBestUnitID(unitID)
-	if not id then
-		error(("Bad argument #1 to `MakeSingletonFrame'. %q is not a valid unitID"):format(tostring(unitID)), 2)
-	end
 	if not PitBull4.Utils.IsSingletonUnitID(id) then
 		error(("Bad argument #1 to `MakeSingletonFrame'. %q is not a singleton unitID"):format(tostring(unitID)), 2)
 	end
@@ -162,8 +262,12 @@ function PitBull4.MakeSingletonFrame(unitID)
 	-- for singletons, its classification is its unitID
 	local classification = unitID
 	frame.classification = classification
-	frame.classificationDB = db.classifications[frame.classification]
+	frame.classificationDB = db.classifications[classification]
 	classification_to_frames[classification][frame] = true
+	
+	local layout = frame.classificationDB.layout
+	frame.layout = layout
+	frame.layoutDB = db.layouts[layout]
 	
 	local is_wacky = PitBull4.Utils.IsWackyClassification(classification)
 	frame.is_wacky = is_wacky;
@@ -172,7 +276,18 @@ function PitBull4.MakeSingletonFrame(unitID)
 	frame.unitID = unitID
 	unitID_to_frames[unitID][frame] = true
 	
+	frame:SetAttribute("unit", unitID)
+	RegisterUnitWatch(frame)
+	
 	PitBull4.ConvertIntoUnitFrame(frame)
+	
+	frame:SetWidth(frame.layoutDB.size_x)
+	frame:SetHeight(frame.layoutDB.size_y)
+	frame:SetPoint("CENTER",
+		UIParent,
+		"CENTER", 
+		frame.classificationDB.position_x,
+		frame.classificationDB.position_y)
 	
 	frame:UpdateGUID(UnitGUID(unitID))
 	
@@ -215,97 +330,6 @@ PitBull4.Utils.AddTimer(function(elapsed, currentTime)
 	end
 end)
 
-local add_defaults
-do
-	-- metatable cache
-	local cache = {}
-	
-	-- make the metatable which creates a new table on access
-	local function make_default_table_mt(value)
-		if cache[value] then
-			return cache[value]
-		end
-		local mt = {}
-		cache[value] = mt
-		function mt:__index(key)
-			local t = {}
-			self[key] = t
-			add_defaults(t, value)
-			return t
-		end
-		return mt
-	end
-	
-	-- make the metatable which returns a simple value on access
-	local function make_default_value_mt(value)
-		if cache[value] then
-			return cache[value]
-		end
-		local mt = {}
-		cache[value] = mt
-		function mt:__index(key)
-			self[key] = value
-			return value
-		end
-		return mt
-	end
-	
-	-- add a default table structure to a database table
-	local function add_default_table(database, key, value)
-		if key == '*' then
-			setmetatable(database, make_default_table_mt(value))
-			return
-		end
-		
-		if type(database[key]) ~= "table" then
-			-- make sure that the database table structure matches
-			database[key] = {}
-		end
-		add_defaults(database[key], value) -- handle sub-tables
-	end
-	
-	-- add a specific value (or table structure) to a database table
-	local function add_default_value(database, key, value)
-		if type(value) == "table" then -- make sure the table structure is consistent
-			add_default_table(database, key, value)
-			return
-		end
-		
-		if key == '*' then -- all keys
-			setmetatable(database, make_default_value_mt(value))
-			return
-		end
-		
-		if database[key] == nil then -- if it's nil, then go for what the defaults say
-			database[key] = value
-		end
-	end
-
-	-- add default values to a database table
-	function add_defaults(database, defaults)
-		for k, v in pairs(defaults) do -- loop through each default value and add it to the database
-			add_default_value(database, k, v)
-		end
-	end
-end
-
--- set the db table and populate it with the defaults
-local function handle_db()
-	handle_db = nil
-	
-	db = _G.PitBull4DB
-	if type(db) ~= "table" then
-		db = { version = 0 }
-		_G.PitBull4DB = db
-	end
-	local version = db.version
-	db.version = nil
-	
-	add_defaults(db, defaults)
-	
-	PitBull4.db = db
-end
-
 local function create_frames()
 	create_frames = nil
 	
@@ -313,67 +337,17 @@ local function create_frames()
 	if not db_classifications.player.hidden then
 		PitBull4.MakeSingletonFrame("player")
 	end
+	if not db_classifications.target.hidden then
+		PitBull4.MakeSingletonFrame("target")
+	end
 end
 
-local function ADDON_LOADED(event, name)
-	if name ~= "PitBull4" then
-		return
-	end
-	PitBull4.Utils.RemoveEventListener("ADDON_LOADED", ADDON_LOADED)
-	ADDON_LOADED = nil
+local function PLAYER_LOGIN(event)
+	PitBull4.Utils.RemoveEventListener("PLAYER_LOGIN", PLAYER_LOGIN)
+	PLAYER_LOGIN = nil
 	
-	handle_db()
+	db = PitBull4.db
 	
 	create_frames()
 end
-PitBull4.Utils.AddEventListener("ADDON_LOADED", ADDON_LOADED)
-
-PitBull4.Utils.AddEventListener("PLAYER_LOGOUT", function()
-	local remove_defaults
-	
-	local function remove_default_table(database, key, value)
-		remove_defaults(database[key], value)
-		
-		if next(database[key]) == nil then
-			-- if the table's empty, nil out the table
-			database[key] = nil
-		end
-	end
-	
-	local function remove_default_value(database, key, value, star_default)
-		if value == nil then
-			-- no default value, use the star default instead
-			value = star_default
-		end
-		
-		if type(database[key]) ~= type(value) then
-			-- vastly different, cut out early
-			return
-		end
-		
-		if type(value) == "table" then
-			-- handle the table case
-			remove_default_table(database, key, value)
-			return
-		end
-		
-		if database[key] == value then
-			-- simple equality, nil out
-			database[key] = nil
-		end
-	end
-	
-	-- remove any unnecessary values from the database
-	-- this is useful in case the defaults change (so that unchanged values are updated)
-	-- it is also useful because the stored SV looks a lot smaller cause it has only
-	-- the useful information
-	function remove_defaults(database, defaults)
-		for k, v in pairs(database) do
-			-- loop through each default and remove from the database
-			remove_default_value(database, k, defaults[k], defaults['*'])
-		end
-	end
-	remove_defaults(db, defaults)
-	
-	db.version = 0
-end)
+PitBull4.Utils.AddEventListener("PLAYER_LOGIN", PLAYER_LOGIN)

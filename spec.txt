@@ -47,4 +47,6 @@ Featureset:
         - 10-man raid
         - 25-man raid
         - 40-man raid
+
+Modules:
     

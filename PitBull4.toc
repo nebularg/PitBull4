@@ -8,5 +8,9 @@
 ## Version: @project-version@
 
 Utils.lua
+DB.lua
 PitBull4.lua
 UnitFrame.lua
+Controls.lua
+
+modules.xml
