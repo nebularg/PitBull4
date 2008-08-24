@@ -11,35 +11,46 @@
 local UnitFrame = {}
 
 local PitBull4_UnitFrame_DropDown = CreateFrame("Frame", "PitBull4_UnitFrame_DropDown", UIParent, "UIDropDownMenuTemplate")
+
+-- from a unit, figure out the proper menu and, if appropriate, the corresponding ID
+local function figure_unit_menu(unit)
+	if UnitIsUnit(unit, "player") then
+		return "SELF"
+	end
+	
+	if UnitIsUnit(unit, "vehicle") then
+		-- NOTE: vehicle check must come before pet check for accuracy's sake because
+		-- a vehicle may also be considered your pet
+		return "VEHICLE"
+	end
+	
+	if UnitIsUnit(unit, "pet") then
+		return "PET"
+	end
+	
+	if not UnitIsPlayer(unit) then
+		return "RAID_TARGET_ICON"
+	end
+	
+	local id = UnitInRaid(unit)
+	if id then
+		return "RAID_PLAYER", id
+	end
+	
+	if UnitInParty(unit) then
+		return "PARTY"
+	end
+	
+	return "PLAYER"
+end
+
 local function f()
 	local unit = PitBull4_UnitFrame_DropDown.unit
 	if not unit then
 		return
 	end
 	
-	local menu
-	local name
-	local id = nil
-	if UnitIsUnit(unit, "player") then
-		menu = "SELF"
-	elseif UnitIsUnit(unit, "vehicle") then
-		-- NOTE: vehicle check must come before pet check for accuracy's sake because
-		-- a vehicle may also be considered your pet
-		menu = "VEHICLE";
-	elseif UnitIsUnit(unit, "pet") then
-		menu = "PET"
-	elseif not UnitIsPlayer(unit) then
-		menu = "RAID_TARGET_ICON"
-	else
-		id = UnitInRaid(unit)
-		if id then
-			menu = "RAID_PLAYER"
-		elseif UnitInParty(unit) then
-			menu = "PARTY"
-		else
-			menu = "PLAYER"
-		end
-	end
+	local menu, id = figure_unit_menu(unit)
 	if menu then
 		UnitPopup_ShowMenu(PitBull4_UnitFrame_DropDown, menu, unit, nil, id)
 	end
@@ -113,8 +124,6 @@ end
 -- @usage frame:Update(true)
 function UnitFrame:Update(sameGUID)
 	-- TODO
-	DEFAULT_CHAT_FRAME:AddMessage(("%s: Update(%s)"):format(self.unitID, tostring(sameGUID)))
-	
 	if not self.guid then
 		PitBull4.RunFrameScriptHooks("OnClear", self)
 		self.populated = nil
@@ -126,9 +135,16 @@ function UnitFrame:Update(sameGUID)
 	end
 	
 	PitBull4.RunFrameScriptHooks("OnUpdate", self)
+	local changed = false
+	for id, module in PitBull4.IterateModulesOfType("statusbar", true) do
+		changed = module:Update(self, true) or changed
+	end
+	if changed then
+		self:UpdateLayout()
+	end
 end
 
---- Check the guid of the UnitFrame, if it is changed, then update the frame.
+--- Check the guid of the Unit Frame, if it is changed, then update the frame.
 -- @param guid result from UnitGUID(unitID)
 -- @param forceUpdate force an update even if the guid isn't changed, but is non-nil
 -- @usage frame:UpdateGUID(UnitGUID(frame.unitID))
@@ -145,4 +161,23 @@ function UnitFrame:UpdateGUID(guid)
 	local previousGUID = self.guid
 	self.guid = guid
 	self:Update(previousGUID == guid)
+end
+
+--- Reposition all controls on the Unit Frame
+-- @usage frame:UpdateLayout()
+function UnitFrame:UpdateLayout()
+	local bars = {}
+	if self.HealthBar then
+		bars[#bars+1] = self.HealthBar
+	end
+	if self.PowerBar then
+		bars[#bars+1] = self.PowerBar
+	end
+	local height = self:GetHeight()
+	local bar_height = height/#bars
+	for i, bar in ipairs(bars) do
+		bar:ClearAllPoints()
+		bar:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -bar_height * (i - 1))
+		bar:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, -bar_height * i)
+	end
 end

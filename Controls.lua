@@ -5,37 +5,57 @@ PitBull4.Controls = PitBull4_Controls
 
 local cache = {}
 
-local function frame_Delete(self)
-	local kind = self:GetObjectType()
+local control__index = {}
+
+local delete_funcs = {}
+function delete_funcs:FontString()
+	self:SetText("")
+	self:SetJustifyH("CENTER")
+	self:SetJustifyV("MIDDLE")
+	self:SetNonSpaceWrap(true)
+	self:SetTextColor(1, 1, 1, 1)
+	self:SetFontObject(nil)
+end
+function delete_funcs:Texture()
+	self:SetTexture([[Interface\Buttons\WHITE8X8]])
+	self:SetVertexColor(0, 0, 0, 0)
+	self:SetBlendMode("BLEND")
+	self:SetDesaturated(false)
+	self:SetTexCoord(0, 1, 0, 1)
+	self:SetTexCoordModifiesRect(false)
+end
+function delete_funcs:StatusBar()
+	self:SetStatusBarColor(1, 1, 1, 1)
+	self:SetStatusBarTexture(nil)
+	self:SetValue(1)
+	self:SetOrientation("HORIZONTAL")
+end
+function delete_funcs:Cooldown()
+	self:SetReverse(false)
+end
+
+--- Delete a frame, putting it back in the pool to be recycled
+-- @name control:Delete
+-- @usage control = control:Delete()
+-- @return nil
+function control__index:Delete()
+	local kind = self.kind
 	
-	if kind == "FontString" then
-		self:SetText("")
-		self:SetJustifyH("CENTER")
-		self:SetJustifyV("MIDDLE")
-		self:SetNonSpaceWrap(true)
-		self:SetTextColor(1, 1, 1, 1)
-		self:SetFontObject(nil)
-	elseif kind == "Texture" then
-		self:SetTexture([[Interface\Buttons\WHITE8X8]])
-		self:SetVertexColor(0, 0, 0, 0)
-		self:SetBlendMode("BLEND")
-		self:SetDesaturated(false)
-		self:SetTexCoord(0, 1, 0, 1)
-		self:SetTexCoordModifiesRect(false)
-	elseif kind == "StatusBar" then
-		self:SetStatusBarColor(1, 1, 1, 1)
-		self:SetStatusBarTexture(nil)
-		self:SetValue(1)
-		self:SetOrientation("HORIZONTAL")
-	elseif kind == "Cooldown" then
-		self:SetReverse(false)
+	if self.onDelete then
+		self.onDelete(self)
+		self.onDelete = nil
+	end
+	
+	if delete_funcs[kind] then
+		delete_funcs[kind](self)
 	end
 	
 	--[[
 	if kind ~= "Texture" and kind ~= "FontString" and not _G.OmniCC and customKind == kind and _G.UnitClassBase then
 		if self:GetNumRegions() > 0 then
 			error(("Deleting a frame of type %q that still has %d regions"):format(kind, self:GetNumRegions()), 2)
-		elseif self:GetNumChildren() > 0 then
+		end
+		if self:GetNumChildren() > 0 then
 			error(("Deleting a frame of type %q that still has %d children"):format(kind, frame:GetNumChildren()), 2)
 		end
 	end
@@ -59,7 +79,46 @@ local function frame_Delete(self)
 	return nil
 end
 
-local function newFrame(kind, parent, ...)
+-- create a very basic control, properly handling Textures and FontStrings.
+local function create_control(kind, name, inheritTemplate)
+	if kind == "Texture" then
+		return UIParent:CreateTexture(name, "BACKGROUND")
+	end
+	if kind == "FontString" then
+		return UIParent:CreateFontString(name, "BACKGROUND")
+	end
+	return CreateFrame(kind, name, UIParent, inheritTemplate)
+end
+
+-- return a control from the cache if possible, otherwise create a new one and return that
+local function get_or_create_control(cache_kind, kind, realKind, inheritTemplate, onCreate)
+	local control = next(cache_kind)
+	
+	if control then
+		cache_kind[control] = nil
+		return control
+	end
+	
+	local name
+	local i = 0
+	repeat
+		i = i + 1
+		name = "PitBull4_" .. kind .. "_" .. i
+	until not _G[name]
+	
+	local control = create_control(realKind, name, inheritTemplate)
+	if onCreate then
+		onCreate(control)
+	end
+	for k, v in pairs(control__index) do
+		control[k] = v
+	end
+	control.kind = kind
+	return control
+end
+
+-- fetch a control of the given type and apply the standard settings to it
+local function fetch_control(kind, parent, isCustom, ...)
 	--@alpha@
 	expect(kind, 'typeof', 'string')
 	expect(parent, 'typeof', 'frame')
@@ -71,37 +130,90 @@ local function newFrame(kind, parent, ...)
 		cache[kind] = cache_kind
 	end
 	
-	local frame = next(cache_kind)
-	if frame then
-		cache_kind[frame] = nil
-	else
-		if kind == "Texture" then
-			frame = UIParent:CreateTexture(nil, "BACKGROUND")
-		elseif kind == "FontString" then
-			frame = UIParent:CreateFontString(nil, "BACKGROUND")
-		else
-			frame = CreateFrame(kind, nil, UIParent)
-		end
-		frame.Delete = frame_Delete
-	end	
-	frame:SetParent(parent)
-	frame:ClearAllPoints()
-	frame:SetAlpha(1)
+	local realKind, onCreate, onRetrieve, onDelete, inheritTemplate
+	realKind = kind
+	if isCustom then
+		realKind, onCreate, onRetrieve, onDelete, inheritTemplate = ...
+	end
+	
+	local control = get_or_create_control(cache_kind, kind, realKind, inheritTemplate, onCreate)
+	control:SetParent(parent)
+	control:ClearAllPoints()
+	control:SetAlpha(1)
 	if kind == "Texture" then
-		frame:SetTexture(nil)
-		frame:SetVertexColor(1, 1, 1, 1)
+		control:SetTexture(nil)
+		control:SetVertexColor(1, 1, 1, 1)
 	end
 	if kind == "Texture" or kind == "FontString" then
-		frame:SetDrawLayer((...))
+		control:SetDrawLayer((...))
 	end
-	frame:Show()
-	return frame
+	control:Show()
+	if onRetrieve then
+		onRetrieve(control, select(6, ...)) -- onRetrieve
+	end
+	control.onDelete = onDelete
+	return control
 end
 
-function PitBull4_Controls.MakeFrame(parent)
-	return newFrame("Frame", parent)
+--- Make a frame
+-- @param parent frame the frame is parented to
+-- @usage local frame = PitBull4.Controls.MakeFrame(someFrame)
+-- @return a Frame object
+function PitBull4.Controls.MakeFrame(parent)
+	--@alpha@
+	expect(parent, 'typeof', 'frame')
+	--@end-alpha@
+	
+	return fetch_control("Frame", parent)
 end
 
-function PitBull4_Controls.MakeTexture(parent, layer)
-	return newFrame("Texture", parent, layer)
+--- Make a texture
+-- @param parent frame the texture is parented to
+-- @param layer the art layer of the texture
+-- @usage local texture = PitBull4.Controls.MakeTexture(someFrame, "BACKGROUND")
+-- @return a Texture object
+function PitBull4.Controls.MakeTexture(parent, layer)
+	--@alpha@
+	expect(parent, 'typeof', 'frame')
+	expect(layer, 'typeof', 'string;nil')
+	--@end-alpha@
+
+	return fetch_control("Texture", parent, false, layer)
+end
+
+--- Make a font string
+-- @param parent frame the font string is parented to
+-- @param layer the art layer of the font string
+-- @usage local fs = PitBull4.Controls.MakeFontString(someFrame, "BACKGROUND")
+-- @return a FontString object
+function PitBull4.Controls.MakeFontString(parent, layer)
+	--@alpha@
+	expect(parent, 'typeof', 'frame')
+	expect(layer, 'typeof', 'string;nil')
+	--@end-alpha@
+
+	return fetch_control("FontString", parent, false, layer)
+end
+
+--- Make a new control type
+-- @param name name of your control type
+-- @param frameType the real frame type to base upon
+-- @param onCreate function to call when initially creating the control
+-- @param onRetrieve function to call every time the control is requested
+-- @param onDelete function to call when the frame is deleted
+-- @usage PitBull4.Controls.MakeNewControlType("BetterStatusBar", "StatusBar", function(control) end, function(control) end, function(control) end)
+function PitBull4.Controls.MakeNewControlType(name, frameType, onCreate, onRetrieve, onDelete, inheritTemplate)
+	--@alpha@
+	expect(name, 'typeof', 'string')
+	expect(PitBull4_Controls["Make" .. name], 'typeof', 'nil')
+	expect(frameType, 'typeof', 'string')
+	expect(onCreate, 'typeof', 'function')
+	expect(onRetrieve, 'typeof', 'function')
+	expect(onDelete, 'typeof', 'function')
+	expect(inheritTemplate, 'typeof', 'nil;string')
+	--@end-alpha@
+	
+	PitBull4_Controls["Make" .. name] = function(parent, ...)
+		return fetch_control(name, parent, true, frameType, onCreate, onRetrieve, onDelete, inheritTemplate, ...)
+	end
 end

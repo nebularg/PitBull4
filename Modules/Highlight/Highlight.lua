@@ -5,19 +5,25 @@ if not PitBull4 then
 	error("PitBull4_Highlight requires PitBull4")
 end
 
-local PitBull4_Highlight = PitBull4.NewModule("Highlight", "Highlight", "Show a highlight when hovering or targeting", {}, {})
+local PitBull4_Highlight = PitBull4.NewModule("Highlight", "Highlight", "Show a highlight when hovering or targeting", {}, {}, "custom")
 
 PitBull4_Highlight:AddFrameScriptHook("OnPopulate", function(frame)
-	local highlight = PitBull4.Controls.MakeTexture(frame, "OVERLAY")
+	local highlight = PitBull4.Controls.MakeFrame(frame)
 	frame.highlight = highlight
-	highlight:SetTexture([=[Interface\QuestFrame\UI-QuestTitleHighlight]=])
-	highlight:SetBlendMode("ADD")
-	highlight:SetAlpha(0.5)
-	highlight:Hide()
 	highlight:SetAllPoints(frame)
+	highlight:SetFrameLevel(highlight:GetFrameLevel() + 5)
+	highlight:Hide()
+	
+	local texture = PitBull4.Controls.MakeTexture(highlight, "OVERLAY")
+	highlight.texture = texture
+	texture:SetTexture([=[Interface\QuestFrame\UI-QuestTitleHighlight]=])
+	texture:SetBlendMode("ADD")
+	texture:SetAlpha(0.5)
+	texture:SetAllPoints(highlight)
 end)
 
 PitBull4_Highlight:AddFrameScriptHook("OnClear", function(frame)
+	frame.highlight.texture = frame.highlight.texture:Delete()
 	frame.highlight = frame.highlight:Delete()
 end)
 

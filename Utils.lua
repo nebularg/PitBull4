@@ -9,30 +9,31 @@ do
 	local function ptostring(value)
 		if type(value) == "string" then
 			return ("%q"):format(value)
-		else
-			return tostring(value)
 		end
+		return tostring(value)
 	end
 
 	local conditions = {}
-	local function checkTypes(alpha, ...)
-		local bravo = (...)
-		if bravo == "frame" then
-			if type(alpha) == "table" and type(rawget(alpha, 0)) == "userdata" and type(alpha.IsObjectType) == "function" then
-				return true
-			end
-		else
-			if type(alpha) == bravo then
+	local function helper(alpha, ...)
+		for i = 1, select('#', ...) do
+			if alpha == select(i, ...) then
 				return true
 			end
 		end
-		if select('#', ...) == 1 then
-			return false
+		return false
+	end
+	conditions['inset'] = function(alpha, bravo)
+		if type(bravo) == "table" then
+			return bravo[alpha] ~= nil
 		end
-		return checkTypes(alpha, select(2, ...))
+		return helper(alpha, (";"):split(bravo))
 	end
 	conditions['typeof'] = function(alpha, bravo)
-		return checkTypes(alpha, (";"):split(bravo))
+		local type_alpha = type(alpha)
+		if type_alpha == "table" and type(rawget(alpha, 0)) == "userdata" and type(alpha.IsObjectType) == "function" then
+			type_alpha = 'frame'
+		end
+		return conditions['inset'](type_alpha, bravo)
 	end
 	conditions['frametype'] = function(alpha, bravo)
 		if type(bravo) ~= "string" then
@@ -54,6 +55,18 @@ do
 	end
 	conditions['~='] = function(alpha, bravo)
 		return alpha ~= bravo
+	end
+	conditions['>'] = function(alpha, bravo)
+		return type(alpha) == type(bravo) and alpha > bravo
+	end
+	conditions['>='] = function(alpha, bravo)
+		return type(alpha) == type(bravo) and alpha >= bravo
+	end
+	conditions['<'] = function(alpha, bravo)
+		return type(alpha) == type(bravo) and alpha < bravo
+	end
+	conditions['<='] = function(alpha, bravo)
+		return type(alpha) == type(bravo) and alpha <= bravo
 	end
 
 	function _G.expect(alpha, condition, bravo)
@@ -127,13 +140,9 @@ do
 	-- end)
 	function PitBull4.Utils.AddEventListener(event, func)
 		--@alpha@
-		if type(event) ~= "string" then
-			error(("Bad argument #1 to `AddEventListener'. Expected %q, got %q."):format("string", type(event)), 2)
-		elseif not event:match("^[A-Z_]+$") then
-			error(("Bad argument #1 to `AddEventListener'. Expected match against /^[A-Z_]$/, got %q."):format(event), 2)
-		elseif type(func) ~= "function" then
-			error(("Bad argument #2 to `AddEventListener'. Expected %q, got %q."):format("function", type(func)), 2)
-		end
+		expect(event, 'typeof', 'string')
+		expect(event, 'match', '^[A-Z_]+$')
+		expect(func, 'typeof', 'function')
 		--@end-alpha@
 		if not events[event] then
 			frame:RegisterEvent(event)
@@ -233,6 +242,7 @@ do
 	local better_unitIDs = {
 		player = "player",
 		pet = "pet",
+		vehicle = "pet",
 		playerpet = "pet",
 		mouseover = "mouseover",
 		focus = "focus",

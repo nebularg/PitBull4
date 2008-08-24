@@ -7,7 +7,7 @@ end
 
 local PitBull4_Background = PitBull4.NewModule("Background", "Background", "Show a flat background for your unit frames", {}, {
 	color = { 0, 0, 0, 0.5 }
-})
+}, "custom")
 
 PitBull4_Background:AddFrameScriptHook("OnPopulate", function(frame)
 	local background = PitBull4.Controls.MakeTexture(frame, "BACKGROUND")
