@@ -99,7 +99,49 @@ function moduleTypes.statusbar.__index:SetColorFunction(func)
 	module_color_funcs[self] = convert_method_to_function(self, func)
 end
 
---- Update the status bar for current module for the given frame
+-- handle the case where there is no value returned, i.e. the module returned nil
+local function handle_statusbar_nonvalue(module, frame)
+	local id = module.id
+	local control = frame[id]
+	if control then
+		frame[id] = control:Delete()
+		return true
+	end
+	return false
+end
+
+--- Update the status bar for the current module
+-- @name StatusBarModule:UpdateStatusBar
+-- @param frame the Unit Frame to update
+-- @usage local updateLayout = MyModule:UpdateStatusBar(frame)
+-- @return whether the update required UpdateLayout to be called
+function moduleTypes.statusbar.__index:UpdateStatusBar(frame)
+	local value = frame.guid and PitBull4.CallValueFunction(self, frame)
+	if not value then
+		return handle_statusbar_nonvalue(self, frame)
+	end
+	
+	local id = self.id
+	local control = frame[id]
+	local made_control = not control
+	if made_control then
+		control = PitBull4.Controls.MakeBetterStatusBar(frame)
+		frame[id] = control
+		control:SetTexture([[Interface\TargetingFrame\UI-StatusBar]])
+	end
+	
+	if value ~= value then -- 0/0
+		value = 0
+	end
+	
+	control:SetValue(value)
+	local r, g, b = PitBull4.CallColorFunction(self, frame)
+	control:SetColor(r, g, b)
+	
+	return made_control
+end
+
+--- Update the status bar for current module for the given frame and handle any layout changes
 -- @name StatusBarModule:Update
 -- @param frame the Unit Frame to update
 -- @param returnChanged whether to return if the update should change the layout. If this is false, it will call :UpdateLayout() automatically.
@@ -110,30 +152,8 @@ function moduleTypes.statusbar.__index:Update(frame, returnChanged)
 	expect(frame, 'typeof', 'frame')
 	--@end-alpha@
 	
-	local id = self.id
-	local value = frame.guid and PitBull4.CallValueFunction(self, frame)
-	local control = frame[id]
-	local changed = false
-	if value then
-		if not control then
-			control = PitBull4.Controls.MakeBetterStatusBar(frame)
-			frame[id] = control
-			changed = true
-			control:SetTexture([[Interface\TargetingFrame\UI-StatusBar]])
-		end
-		if value ~= value then -- 0/0
-			value = 0
-		end
-		control:SetValue(value)
-		local r, g, b = PitBull4.CallColorFunction(self, frame)
-		control:SetColor(r, g, b)
-	else
-		if control then
-			control = control:Delete()
-			frame[id] = nil
-			changed = true
-		end
-	end
+	local changed = statusbar_update(self, frame)
+	
 	if returnChanged then
 		return changed
 	end
