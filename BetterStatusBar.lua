@@ -17,9 +17,59 @@ local BetterStatusBar = {
 -- every script in here will be added to the control through :SetScript
 local BetterStatusBar_scripts = {}
 
+local EPSILON = 1e-5 -- small positive number close to 0.
+
 local function OnUpdate(self)
 	self:SetScript("OnUpdate", nil)
 	self:SetValue(self.value)
+end
+
+local function clamp(value, min, max)
+	if value < min then
+		return min
+	end
+	if value > max then
+		return max
+	end
+	return value
+end
+
+local SetValue_orientation = {}
+local function set_vertical_coord(bar, reverse, alpha, bravo)
+	if reverse then
+		alpha, bravo = bravo, alpha
+	end
+	
+	bar:SetTexCoord(bravo, 0, alpha, 0, bravo, 1, alpha, 1)
+end
+function SetValue_orientation:VERTICAL(value, extraValue)
+	if self:GetHeight() == 0 then
+		self:SetScript("OnUpdate", OnUpdate)
+	end
+	self.fg:SetHeight(self:GetHeight() * value)
+	self.extra:SetHeight(self:GetHeight() * extraValue)
+	
+	set_vertical_coord(self.fg, self.reverse, 0, value)
+	set_vertical_coord(self.extra, self.reverse, value, value+extraValue)
+	set_vertical_coord(self.bg, self.reverse, value+extraValue, 1)
+end
+local function set_horizontal_coord(bar, reverse, alpha, bravo)
+	if reverse then
+		alpha, bravo = bravo, alpha
+	end
+	
+	bravo:SetTexCoord(alpha, 0, alpha, 1, bravo, 0, bravo, 1)
+end
+function SetValue_orientation:HORIZONTAL(value, extraValue)
+	if self:GetWidth() == 0 then
+		self:SetScript("OnUpdate", OnUpdate)
+	end
+	self.fg:SetWidth(self:GetWidth() * value)
+	self.extra:SetWidth(self:GetWidth() * extraValue)
+	
+	set_horizontal_coord(self.fg, self.reverse, 0, value)
+	set_horizontal_coord(self.extra, self.reverse, value, value+extraValue)
+	set_horizontal_coord(self.bg, self.reverse, value+extraValue, 1)
 end
 
 --- Set the current value
@@ -36,48 +86,9 @@ function BetterStatusBar:SetValue(value)
 	if self.deficit then
 		value = 1 - value
 	end
-	if value <= 0 then
-		value = 1e-5
-	elseif value >= 1 then
-		value = 1
-	end
-	local extraValue = self.extraValue
-	if extraValue <= 0 then
-		extraValue = 1e-5
-	elseif extraValue+value >= 1 then
-		extraValue = 1 - value
-	end
-	if self.orientation == "VERTICAL" then
-		if self:GetHeight() == 0 then
-			self:SetScript("OnUpdate", OnUpdate)
-		end
-		self.fg:SetHeight(self:GetHeight() * value)
-		self.extra:SetHeight(self:GetHeight() * extraValue)
-		if not self.reverse then
-			self.fg:SetTexCoord(value, 0, 0, 0, value, 1, 0, 1)
-			self.extra:SetTexCoord(value+extraValue, 0, value, 0, value+extraValue, 1, value, 1)
-			self.bg:SetTexCoord(1, 0, value+extraValue, 0, 1, 1, value+extraValue, 1)
-		else
-			self.fg:SetTexCoord(0, 0, value, 0, 0, 1, value, 1)
-			self.extra:SetTexCoord(value, 0, value+extraValue, 0, value, 1, value+extraValue, 1)
-			self.bg:SetTexCoord(value+extraValue, 0, 1, 0, value+extraValue, 1, 1, 1)
-		end
-	else
-		if self:GetWidth() == 0 then
-			self:SetScript("OnUpdate", OnUpdate)
-		end
-		self.fg:SetWidth(self:GetWidth() * value)
-		self.extra:SetWidth(self:GetWidth() * extraValue)
-		if not self.reverse then
-			self.fg:SetTexCoord(0, 0, 0, 1, value, 0, value, 1)
-			self.extra:SetTexCoord(value, 0, value, 1, value+extraValue, 0, value+extraValue, 1)
-			self.bg:SetTexCoord(value+extraValue, 0, value+extraValue, 1, 1, 0, 1, 1)
-		else
-			self.fg:SetTexCoord(value, 0, value, 1, 0, 0, 0, 1)
-			self.extra:SetTexCoord(value+extraValue, 0, value+extraValue, 1, value, 0, value, 1)
-			self.bg:SetTexCoord(1, 0, 1, 1, value+extraValue, 0, value+extraValue, 1)
-		end
-	end
+	value = clamp(value, EPSILON, 1)
+	local extraValue = clamp(self.extraValue, EPSILON, 1 - value)
+	SetValue_orientation[self.orientation](self, value, extraValue)
 end
 --- Return the current value
 -- @return the value between [0, 1]
@@ -107,77 +118,53 @@ function BetterStatusBar:GetExtraValue()
 	return self.extraValue
 end
 
--- readjust where all the texture are positioned, in case any settings have changed
-local function fix_orientation(self)
-	local orientation, reverse = self.orientation, self.reverse
-	local fg, extra, bg = self.fg, self.extra, self.bg
-	fg:ClearAllPoints()
-	extra:ClearAllPoints()
-	bg:ClearAllPoints()
-	fg:SetWidth(0)
-	fg:SetHeight(0)
-	extra:SetWidth(0)
-	extra:SetHeight(0)
-	if orientation == "VERTICAL" then
-		fg:SetHeight(1e-5)
-		if not reverse then
-			fg:SetPoint("BOTTOM")
-			fg:SetPoint("LEFT")
-			fg:SetPoint("RIGHT")
-		
-			extra:SetPoint("BOTTOM", fg, "TOP")
-			extra:SetPoint("LEFT")
-			extra:SetPoint("RIGHT")
-		
-			bg:SetPoint("BOTTOM", extra, "TOP")
-			bg:SetPoint("LEFT")
-			bg:SetPoint("RIGHT")
-			bg:SetPoint("TOP")
-		else
-			fg:SetPoint("TOP")
-			fg:SetPoint("LEFT")
-			fg:SetPoint("RIGHT")
-	
-			extra:SetPoint("TOP", fg, "BOTTOM")
-			extra:SetPoint("LEFT")
-			extra:SetPoint("RIGHT")
-	
-			bg:SetPoint("TOP", extra, "BOTTOM")
-			bg:SetPoint("LEFT")
-			bg:SetPoint("RIGHT")
-			bg:SetPoint("BOTTOM")
-		end
-	else
-		fg:SetWidth(1e-5)
-		if not reverse then
-			fg:SetPoint("LEFT")
-			fg:SetPoint("TOP")
-			fg:SetPoint("BOTTOM")
-		
-			extra:SetPoint("LEFT", fg, "RIGHT")
-			extra:SetPoint("TOP")
-			extra:SetPoint("BOTTOM")
-		
-			bg:SetPoint("LEFT", extra, "RIGHT")
-			bg:SetPoint("RIGHT")
-			bg:SetPoint("TOP")
-			bg:SetPoint("BOTTOM")
-		else
-			fg:SetPoint("RIGHT")
-			fg:SetPoint("TOP")
-			fg:SetPoint("BOTTOM")
-	
-			extra:SetPoint("RIGHT", fg, "LEFT")
-			extra:SetPoint("TOP")
-			extra:SetPoint("BOTTOM")
-	
-			bg:SetPoint("RIGHT", extra, "LEFT")
-			bg:SetPoint("LEFT")
-			bg:SetPoint("TOP")
-			bg:SetPoint("BOTTOM")
-		end
+-- set the position of the bar
+-- all the sides are fixed, e.g. vertical bar has its left and right sides unmoving.
+-- the moving points are the ones pointing along the path of motion, e.g. vertical is top and bottom
+local function set_bar_points(self, side_point_a, side_point_b, moving_point_a, moving_point_b)
+	if self.reverse then
+		moving_point_a, moving_point_b = moving_point_b, moving_point_a
 	end
 	
+	-- fg is fixed to the edge
+	self.fg:SetPoint(side_point_a)
+	self.fg:SetPoint(side_point_b)
+	self.fg:SetPoint(moving_point_a)
+	
+	-- extra moves with and is attached to the fg.
+	self.extra:SetPoint(side_point_a)
+	self.extra:SetPoint(side_point_b)
+	self.extra:SetPoint(moving_point_a, self.fg, moving_point_b)
+	
+	-- bg merely fills up the rest of the space
+	self.bg:SetPoint(side_point_a)
+	self.bg:SetPoint(side_point_b)
+	self.bg:SetPoint(moving_point_a, self.extra, moving_point_b)
+	self.bg:SetPoint(moving_point_b)
+end
+
+local fix_orientation_helper = {}
+function fix_orientation_helper:VERTICAL()
+	self.fg:SetHeight(EPSILON)
+	
+	set_bar_points(self, "LEFT", "RIGHT", "BOTTOM", "TOP")
+end
+function fix_orientation_helper:HORIZONTAL()
+	self.fg:SetWidth(EPSILON)
+	
+	set_bar_points(self, "BOTTOM", "TOP", "LEFT", "RIGHT")
+end
+
+-- readjust where all the texture are positioned, in case any settings have changed
+local function fix_orientation(self)
+	self.fg:ClearAllPoints()
+	self.extra:ClearAllPoints()
+	self.bg:ClearAllPoints()
+	self.fg:SetWidth(0)
+	self.fg:SetHeight(0)
+	self.extra:SetWidth(0)
+	self.extra:SetHeight(0)
+	fix_orientation_helper[self.orientation](self)
 	self:SetValue(self.value)
 end
 
@@ -271,6 +258,36 @@ function BetterStatusBar:GetTexture()
 end
 BetterStatusBar.GetStatusBarTexture = BetterStatusBar.GetTexture
 
+-- if extra color is not set, it'll take on this variance of the normal color
+local function normal_to_extra_color(r, g, b)
+	return (r + 0.25)/1.5, (g + 0.25)/1.5, (b + 0.25)/1.5
+end
+
+-- if bg color is not set, it'll take on this variance of the normal color
+local function normal_to_bg_color(r, g, b)
+	return (r + 0.2)/3, (g + 0.2)/3, (b + 0.2)/3
+end
+
+-- get what the extra color should be
+local function get_extra_color(self)
+	if self.extraR then
+		return self.extraR, self.extraG, self.extraB
+	end
+	
+	local r, g, b = self.fg:GetVertexColor()
+	return normal_to_extra_color(r, g, b)
+end
+
+-- get what the bg color should be
+local function get_bg_color(self)
+	if self.bgR then
+		return self.bgR, self.bgG, self.bgB
+	end
+	
+	local r, g, b = self.fg:GetVertexColor()
+	return normal_to_bg_color(r, g, b)
+end
+
 --- Set the color of the bar
 -- If the background color or the extra color is not set,
 -- they will take on a similar color to what is specified here
@@ -292,16 +309,8 @@ function BetterStatusBar:SetColor(r, g, b)
 	--@end-alpha@
 	
 	self.fg:SetVertexColor(r, g, b)
-	if self.extraR then
-		self.extra:SetVertexColor(self.extraR, self.extraG, self.extraB)
-	else
-		self.extra:SetVertexColor((r + 0.25)/1.5, (g + 0.25)/1.5, (b + 0.25)/1.5)
-	end
-	if self.bgR then
-		self.bg:SetVertexColor(self.bgR, self.bgG, self.bgB)
-	else
-		self.bg:SetVertexColor((r + 0.2)/3, (g + 0.2)/3, (b + 0.2)/3)
-	end
+	self.extra:SetVertexColor(get_extra_color(self))
+	self.bg:SetVertexColor(get_bg_color(self))
 end
 
 --- Get the color of the bar
@@ -369,12 +378,7 @@ function BetterStatusBar:SetBackgroundColor(br, bg, bb)
 	--@end-alpha@
 	
 	self.bgR, self.bgG, self.bgB = br or false, bg or false, bb or false
-	if not br then
-		local r, g, b = self.fg:GetVertexColor()
-		self.bg:SetVertexColor((r + 0.2)/3, (g + 0.2)/3, (b + 0.2)/3)
-	else
-		self.bg:SetVertexColor(br, bg, bb)
-	end
+	self.bg:SetVertexColor(get_bg_color(self))
 end
 
 --- Get the background color of the bar
@@ -443,12 +447,7 @@ function BetterStatusBar:SetExtraColor(er, eg, eb)
 	--@end-alpha@
 
 	self.extraR, self.extraG, self.extraB = er or false, eg or false, eb or false
-	if not er then
-		local r, g, b = self.fg:GetVertexColor()
-		self.extra:SetVertexColor((r + 0.25)/1.5, (g + 0.25)/1.5, (b + 0.25)/1.5)
-	else
-		self.extra:SetVertexColor(er, eg, eb)
-	end
+	self.extra:SetVertexColor(get_extra_color(self))
 end
 
 --- Get the extra color of the bar
