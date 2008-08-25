@@ -24,6 +24,7 @@ local function OnUpdate(self)
 	self:SetValue(self.value)
 end
 
+-- clamp value between [min, max]
 local function clamp(value, min, max)
 	if value < min then
 		return min
@@ -35,6 +36,7 @@ local function clamp(value, min, max)
 end
 
 local SetValue_orientation = {}
+-- helper function for setting texcoords on the vertical orientation
 local function set_vertical_coord(bar, reverse, alpha, bravo)
 	if reverse then
 		alpha, bravo = bravo, alpha
@@ -42,6 +44,7 @@ local function set_vertical_coord(bar, reverse, alpha, bravo)
 	
 	bar:SetTexCoord(bravo, 0, alpha, 0, bravo, 1, alpha, 1)
 end
+-- set the proper heights for the vertical orientation based on the values provided
 function SetValue_orientation:VERTICAL(value, extraValue)
 	if self:GetHeight() == 0 then
 		self:SetScript("OnUpdate", OnUpdate)
@@ -53,6 +56,7 @@ function SetValue_orientation:VERTICAL(value, extraValue)
 	set_vertical_coord(self.extra, self.reverse, value, value+extraValue)
 	set_vertical_coord(self.bg, self.reverse, value+extraValue, 1)
 end
+-- helper function for setting texcoords on the horizontal orientation
 local function set_horizontal_coord(bar, reverse, alpha, bravo)
 	if reverse then
 		alpha, bravo = bravo, alpha
@@ -60,6 +64,7 @@ local function set_horizontal_coord(bar, reverse, alpha, bravo)
 	
 	bar:SetTexCoord(alpha, 0, alpha, 1, bravo, 0, bravo, 1)
 end
+-- set the proper heights for the horizontal orientation based on the values provided
 function SetValue_orientation:HORIZONTAL(value, extraValue)
 	if self:GetWidth() == 0 then
 		self:SetScript("OnUpdate", OnUpdate)
@@ -144,13 +149,17 @@ local function set_bar_points(self, side_point_a, side_point_b, moving_point_a, 
 end
 
 local fix_orientation_helper = {}
+-- reset the points of the bar to their original state for vertical orientation
 function fix_orientation_helper:VERTICAL()
 	self.fg:SetHeight(EPSILON)
+	self.extra:SetHeight(EPSILON)
 	
 	set_bar_points(self, "LEFT", "RIGHT", "BOTTOM", "TOP")
 end
+-- reset the points of the bar to their original state for horizontal orientation
 function fix_orientation_helper:HORIZONTAL()
 	self.fg:SetWidth(EPSILON)
+	self.extra:SetWidth(EPSILON)
 	
 	set_bar_points(self, "BOTTOM", "TOP", "LEFT", "RIGHT")
 end

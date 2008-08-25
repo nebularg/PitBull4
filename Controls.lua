@@ -7,6 +7,7 @@ local cache = {}
 
 local control__index = {}
 
+-- functions to call when deleting specific types of controls
 local delete_funcs = {}
 function delete_funcs:FontString()
 	self:SetText("")
