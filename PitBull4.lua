@@ -114,8 +114,12 @@ end
 -- @name StatusBarModule:UpdateStatusBar
 -- @param frame the Unit Frame to update
 -- @usage local updateLayout = MyModule:UpdateStatusBar(frame)
--- @return whether the update required UpdateLayout to be called
+-- @return whether the update requires UpdateLayout to be called
 function moduleTypes.statusbar.__index:UpdateStatusBar(frame)
+	--@alpha@
+	expect(frame, 'typeof', 'frame')
+	--@end-alpha@
+	
 	local value = frame.guid and PitBull4.CallValueFunction(self, frame)
 	if not value then
 		return handle_statusbar_nonvalue(self, frame)
@@ -142,10 +146,11 @@ end
 -- @param frame the Unit Frame to update
 -- @param returnChanged whether to return if the update should change the layout. If this is false, it will call :UpdateLayout() automatically.
 -- @usage MyModule:Update(frame)
--- @return whether the update required UpdateLayout to be called
+-- @return whether the update requires UpdateLayout to be called if returnChanged is specified
 function moduleTypes.statusbar.__index:Update(frame, returnChanged)
 	--@alpha@
 	expect(frame, 'typeof', 'frame')
+	expect(returnChanged, 'typeof', 'nil;boolean')
 	--@end-alpha@
 	
 	local changed = statusbar_update(self, frame)

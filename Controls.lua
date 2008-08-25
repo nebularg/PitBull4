@@ -34,7 +34,9 @@ function delete_funcs:Cooldown()
 	self:SetReverse(false)
 end
 
---- Delete a frame, putting it back in the pool to be recycled
+--- Delete a frame, putting it back in the pool to be recycled.
+-- Don't hold onto a frame after you've deleted it, there could be double-free
+-- issues later
 -- @name control:Delete
 -- @usage control = control:Delete()
 -- @return nil
@@ -201,6 +203,7 @@ end
 -- @param onCreate function to call when initially creating the control
 -- @param onRetrieve function to call every time the control is requested
 -- @param onDelete function to call when the frame is deleted
+-- @param inheritTemplate the Blizzard template(s) to inherit from
 -- @usage PitBull4.Controls.MakeNewControlType("BetterStatusBar", "StatusBar", function(control) end, function(control) end, function(control) end)
 function PitBull4.Controls.MakeNewControlType(name, frameType, onCreate, onRetrieve, onDelete, inheritTemplate)
 	--@alpha@
