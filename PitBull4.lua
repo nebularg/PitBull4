@@ -153,7 +153,7 @@ function moduleTypes.statusbar.__index:Update(frame, returnChanged)
 	expect(returnChanged, 'typeof', 'nil;boolean')
 	--@end-alpha@
 	
-	local changed = statusbar_update(self, frame)
+	local changed = self:UpdateStatusBar(frame)
 	
 	if returnChanged then
 		return changed

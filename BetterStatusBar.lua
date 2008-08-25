@@ -58,7 +58,7 @@ local function set_horizontal_coord(bar, reverse, alpha, bravo)
 		alpha, bravo = bravo, alpha
 	end
 	
-	bravo:SetTexCoord(alpha, 0, alpha, 1, bravo, 0, bravo, 1)
+	bar:SetTexCoord(alpha, 0, alpha, 1, bravo, 0, bravo, 1)
 end
 function SetValue_orientation:HORIZONTAL(value, extraValue)
 	if self:GetWidth() == 0 then
