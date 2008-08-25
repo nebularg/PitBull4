@@ -130,10 +130,6 @@ function moduleTypes.statusbar.__index:UpdateStatusBar(frame)
 		control:SetTexture([[Interface\TargetingFrame\UI-StatusBar]])
 	end
 	
-	if value ~= value then -- 0/0
-		value = 0
-	end
-	
 	control:SetValue(value)
 	local r, g, b = PitBull4.CallColorFunction(self, frame)
 	control:SetColor(r, g, b)
@@ -215,7 +211,7 @@ function PitBull4.CallValueFunction(module, frame)
 	if not value then
 		return nil
 	end
-	if value < 0 then
+	if value < 0 or value ~= value then -- NaN
 		return 0
 	end
 	if value > 1 then
