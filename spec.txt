@@ -54,3 +54,12 @@ Modules:
 Module types:
     statusbar: provides functions to provide details on a status bar.
     custom: different from above
+
+statusbar layout options:
+	size: how tall/wide a bar is
+	reverse: whether it's reversed
+	deficit: whether it's showing its deficit
+	alpha: alpha value of the whole bar
+	bgAlpha: alpha value of the bg
+	position: numeric position relative to other bars on the same side
+	side: left, center, or right

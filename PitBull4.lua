@@ -19,8 +19,19 @@ local module_color_funcs = {}
 
 local moduleMeta = { __index={} }
 local moduleTypes = {}
+local moduleTypes_layoutDefaults = {}
 moduleTypes.custom = { __index=setmetatable({}, moduleMeta) }
+moduleTypes_layoutDefaults.custom = {}
 moduleTypes.statusbar = { __index=setmetatable({}, moduleMeta) }
+moduleTypes_layoutDefaults.statusbar = {
+	size = 2,
+	reverse = false,
+	deficit = false,
+	alpha = 1,
+	bgAlpha = 1,
+	position = 1,
+	side = 'center',
+}
 for k, v in pairs(moduleTypes) do
 	v.__index.moduleType = k
 end
@@ -233,6 +244,17 @@ function PitBull4.CallColorFunction(module, frame)
 	return r, g, b
 end
 
+local function merge(alpha, bravo)
+	local x = {}
+	for k, v in pairs(alpha) do
+		x[k] = v
+	end
+	for k, v in pairs(bravo) do
+		x[k] = v
+	end
+	return x
+end
+
 --- Create a new module
 -- @param id an identifier for your module, likely its English name
 -- @param name the name of your module, localized
@@ -263,7 +285,8 @@ function PitBull4.NewModule(id, name, description, globalDefaults, layoutDefault
 	PitBull4[id] = module
 	_G["PitBull4_" .. id] = module
 	
-	PitBull4.AddModuleDefaults(id, globalDefaults, layoutDefaults)
+	local betterLayoutDefaults = merge(moduleTypes_layoutDefaults[moduleType], layoutDefaults)
+	PitBull4.AddModuleDefaults(id, globalDefaults, betterLayoutDefaults)
 	
 	function module.IsEnabled()
 		return not db[id].disabled

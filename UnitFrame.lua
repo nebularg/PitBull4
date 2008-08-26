@@ -12,6 +12,8 @@ local UnitFrame = {}
 
 local PitBull4_UnitFrame_DropDown = CreateFrame("Frame", "PitBull4_UnitFrame_DropDown", UIParent, "UIDropDownMenuTemplate")
 
+local new, del = PitBull4.Utils.new, PitBull4.Utils.del
+
 -- from a unit, figure out the proper menu and, if appropriate, the corresponding ID
 local function figure_unit_menu(unit)
 	if UnitIsUnit(unit, "player") then
@@ -163,21 +165,139 @@ function UnitFrame:UpdateGUID(guid)
 	self:Update(previousGUID == guid)
 end
 
+-- sort the bars in the order specified by the layout
+local sort_bars
+do
+	local layoutDB
+	local function helper(alpha, bravo)
+		return layoutDB[alpha].position < layoutDB[bravo].position
+	end
+
+	function sort_bars(bars, frame)
+		layoutDB = frame.layoutDB
+		table.sort(bars, helper)
+		layoutDB = nil
+	end
+end
+
+local function filter_bars_for_side(layoutDB, bars, side)
+	local side_bars = new()
+	for _, id in ipairs(bars) do
+		if layoutDB[id].side == side then
+			side_bars[#side_bars+1] = id
+		end
+	end
+	return side_bars
+end
+
+-- return a list of existing status bars on frame of the given side in the correct order
+local function get_all_bars(frame)
+	local bars = new()
+	
+	for id, module in PitBull4.IterateModulesOfType('statusbar', true) do
+		if frame[id] then
+			bars[#bars+1] = id
+		end
+	end
+	
+	sort_bars(bars, frame)
+	
+	return bars,
+		filter_bars_for_side(frame.layoutDB, bars, 'center'),
+		filter_bars_for_side(frame.layoutDB, bars, 'left'),
+		filter_bars_for_side(frame.layoutDB, bars, 'right')
+end
+
+-- figure out the total width and height points for a frame based on its bars
+local function calculate_width_height_points(layoutDB, center_bars, left_bars, right_bars)
+	local bar_height_points = 0
+	local bar_width_points = 0
+	
+	for _, id in ipairs(center_bars) do
+		bar_height_points = bar_height_points + layoutDB[id].size
+	end
+	
+	if #center_bars > 0 then
+		-- the center takes up 10 width points if it exists
+		bar_width_points = 10
+	end
+	
+	for _, id in ipairs(left_bars) do
+		bar_width_points = bar_width_points + layoutDB[id].size
+	end
+	for _, id in ipairs(right_bars) do
+		bar_width_points = bar_width_points + layoutDB[id].size
+	end
+	
+	return bar_width_points, bar_height_points
+end
+
 --- Reposition all controls on the Unit Frame
 -- @usage frame:UpdateLayout()
 function UnitFrame:UpdateLayout()
-	local bars = {}
-	if self.HealthBar then
-		bars[#bars+1] = self.HealthBar
-	end
-	if self.PowerBar then
-		bars[#bars+1] = self.PowerBar
-	end
-	local height = self:GetHeight()
-	local bar_height = height/#bars
-	for i, bar in ipairs(bars) do
+	local bars, center_bars, left_bars, right_bars = get_all_bars(self)
+	
+	local width, height = self:GetWidth(), self:GetHeight()
+	
+	local layoutDB = self.layoutDB
+	
+	local bar_width_points, bar_height_points = calculate_width_height_points(layoutDB, center_bars, left_bars, right_bars)
+	
+	local bar_height_per_point = height/bar_height_points
+	local bar_width_per_point = width/bar_width_points
+	
+	local last_x = 0
+	for _, id in ipairs(left_bars) do
+		local bar = self[id]
 		bar:ClearAllPoints()
-		bar:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -bar_height * (i - 1))
-		bar:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, -bar_height * i)
+		
+		bar:SetPoint("TOPLEFT", self, "TOPLEFT", last_x, 0)
+		local bar_width = layoutDB[id].size * bar_width_per_point
+		last_x = last_x + bar_width
+		bar:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", last_x, 0)
+		
+		bar:SetOrientation("VERTICAL")
 	end
+	local left = last_x
+	
+	last_x = 0
+	for _, id in ipairs(right_bars) do
+		local bar = self[id]
+		bar:ClearAllPoints()
+		
+		bar:SetPoint("TOPRIGHT", self, "TOPRIGHT", last_x, 0)
+		local bar_width = layoutDB[id].size * bar_width_per_point
+		last_x = last_x - bar_width
+		bar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", last_x, 0)
+		
+		bar:SetOrientation("VERTICAL")
+	end
+	local right = last_x
+	
+	local last_y = 0
+	for i, id in ipairs(center_bars) do
+		local bar = self[id]
+		bar:ClearAllPoints()
+		
+		bar:SetPoint("TOPLEFT", self, "TOPLEFT", left, last_y)
+		local bar_height = layoutDB[id].size * bar_height_per_point
+		last_y = last_y - bar_height
+		bar:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", right, last_y)
+		
+		bar:SetOrientation("HORIZONTAL")
+	end
+	
+	for _, id in ipairs(bars) do
+		local bar = self[id]
+		local bar_layoutDB = layoutDB[id]
+		bar:SetReverse(bar_layoutDB.reverse)
+		bar:SetDeficit(bar_layoutDB.deficit)
+		bar:SetNormalAlpha(bar_layoutDB.alpha)
+		bar:SetBackgroundAlpha(bar_layoutDB.bgAlpha)
+	end
+	
+	bars = del(bars)
+	center_bars = del(center_bars)
+	left_bars = del(left_bars)
+	right_bars = del(right_bars)
 end

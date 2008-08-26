@@ -5,7 +5,9 @@ if not PitBull4 then
 	error("PitBull4_HealthBar requires PitBull4")
 end
 
-local PitBull4_HealthBar = PitBull4.NewModule("HealthBar", "Health Bar", "Show a health bar", {}, {}, "statusbar")
+local PitBull4_HealthBar = PitBull4.NewModule("HealthBar", "Health Bar", "Show a health bar", {}, {
+	position = 1,
+}, "statusbar")
 
 function PitBull4_HealthBar.GetValue(frame)
 	return UnitHealth(frame.unitID) / UnitHealthMax(frame.unitID)

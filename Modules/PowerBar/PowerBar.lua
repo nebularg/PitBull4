@@ -5,7 +5,9 @@ if not PitBull4 then
 	error("PitBull4_PowerBar requires PitBull4")
 end
 
-local PitBull4_PowerBar = PitBull4.NewModule("PowerBar", "Power Bar", "Show a mana, rage, energy, or runic mana bar", {}, {}, "statusbar")
+local PitBull4_PowerBar = PitBull4.NewModule("PowerBar", "Power Bar", "Show a mana, rage, energy, or runic mana bar", {}, {
+	position = 2,
+}, "statusbar")
 
 function PitBull4_PowerBar.GetValue(frame)
 	return UnitMana(frame.unitID) / UnitManaMax(frame.unitID)

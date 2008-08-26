@@ -353,3 +353,34 @@ do
 		end
 	end
 end
+
+do
+	-- unused tables go in this set
+	-- if the garbage collector comes around, they'll be collected properly
+	local cache = setmetatable({}, {__mode='k'})
+	
+	--- Return a table
+	-- @usage local t = PitBull4.Utils.new()
+	-- @return a blank table
+	function PitBull4.Utils.new()
+		local t = next(cache)
+		if t then
+			cache[t] = nil
+			return t
+		end
+		
+		return {}
+	end
+	
+	local wipe = _G.wipe
+	
+	--- Delete a table, clearing it and putting it back into the queue
+	-- @usage local t = PitBull4.Utils.new()
+	-- t = del(t)
+	-- @return nil
+	function PitBull4.Utils.del(t)
+		wipe(t)
+		cache[t] = true
+		return nil
+	end
+end
