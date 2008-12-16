@@ -120,7 +120,6 @@ LibSimpleOptions.AddSuboptionsPanel("PitBull Unit Frames 4.0", "Layouts", functi
 		'default', 'root',
 		'getFunc', function()
 			--select_control('root')
-			Rock("LibRockConsole-1.0"):Print("getFunc", SELECTED_CONTROL)
 			return SELECTED_CONTROL
 		end,
 		'setFunc', select_control
@@ -134,103 +133,108 @@ LibSimpleOptions.AddSuboptionsPanel("PitBull Unit Frames 4.0", "Layouts", functi
 	
 	PitBull4.ConvertIntoUnitFrame(example_unit_frame, true)
 	
-	example_unit_frame:Update()
-	for id, control, module in example_unit_frame:IterateControlsOfType('statusbar') do
-		values[#values+1] = id
-		values[#values+1] = module.name
-		control:SetMovable(true)
-		control:EnableMouse(true)
-		control:RegisterForClicks("LeftButtonUp")
-		control:RegisterForDrag("LeftButton")
+	function self:refreshFunc()
+		example_unit_frame:Update()
+		wipe(values)
+		values[#values+1] = 'root'
+		values[#values+1] = 'Unit Frame'
+		for id, control, module in example_unit_frame:IterateControlsOfType('statusbar') do
+			values[#values+1] = id
+			values[#values+1] = module.name
+			control:SetMovable(true)
+			control:EnableMouse(true)
+			control:RegisterForClicks("LeftButtonUp")
+			control:RegisterForDrag("LeftButton")
 		
-		control:SetScript("OnDragStart", function(self)
-			self.start_x, self.start_y = control:GetCenter()
-			self:StartMoving()
-			self:SetFrameLevel(self:GetFrameLevel() + 5)
-		end)
-		
-		control:SetScript("OnDragStop", function(self)
-			self:StopMovingOrSizing()
-			self:SetFrameLevel(self:GetFrameLevel() - 5)
-			local control_x, control_y = control:GetCenter()
-			local control_width, control_height = control:GetWidth(), control:GetHeight()
-			
-			local start_x, start_y = self.start_x, self.start_y
-			self.start_x, self.start_y = nil, nil
-			
-			local side = example_unit_frame.layoutDB[id].side
-			
-			local above, below = 0, 1/0
-			local above_coord, below_coord
-			
-			local control_position = example_unit_frame.layoutDB[id].position
-			
-			local bars = {}
-			
-			for other_id, other_control, other_module in example_unit_frame:IterateControlsOfType('statusbar') do
-				if other_control ~= self and example_unit_frame.layoutDB[other_id].side == side then
-					bars[#bars+1] = other_id
-				end
-			end
-			
-			table.sort(bars, function(alpha, bravo)
-				return example_unit_frame.layoutDB[alpha].position < example_unit_frame.layoutDB[bravo].position
+			control:SetScript("OnDragStart", function(self)
+				self.start_x, self.start_y = control:GetCenter()
+				self:StartMoving()
+				self:SetFrameLevel(self:GetFrameLevel() + 5)
 			end)
+		
+			control:SetScript("OnDragStop", function(self)
+				self:StopMovingOrSizing()
+				self:SetFrameLevel(self:GetFrameLevel() - 5)
+				local control_x, control_y = control:GetCenter()
+				local control_width, control_height = control:GetWidth(), control:GetHeight()
 			
-			local above, below = nil, nil
-			local above_coord, below_coord = nil, nil
+				local start_x, start_y = self.start_x, self.start_y
+				self.start_x, self.start_y = nil, nil
 			
-			for i, bar_id in ipairs(bars) do
-				local bar = example_unit_frame[bar_id]
-				
-				local bar_x, bar_y = bar:GetCenter()
-				
-				if side == "center" then
-					if bar_y < start_y then
-						bar_y = bar_y + control_height / 2
-					else
-						bar_y = bar_y - control_height / 2
+				local side = example_unit_frame.layoutDB[id].side
+			
+				local above, below = 0, 1/0
+				local above_coord, below_coord
+			
+				local control_position = example_unit_frame.layoutDB[id].position
+			
+				local bars = {}
+			
+				for other_id, other_control, other_module in example_unit_frame:IterateControlsOfType('statusbar') do
+					if other_control ~= self and example_unit_frame.layoutDB[other_id].side == side then
+						bars[#bars+1] = other_id
 					end
-					
-					if control_y < bar_y then
-		 				if not above_coord or above_coord > other_y then
-							above = i
-							above_coord = other_y
+				end
+			
+				table.sort(bars, function(alpha, bravo)
+					return example_unit_frame.layoutDB[alpha].position < example_unit_frame.layoutDB[bravo].position
+				end)
+			
+				local above, below = nil, nil
+				local above_coord, below_coord = nil, nil
+				
+				for i, bar_id in ipairs(bars) do
+					local bar = example_unit_frame[bar_id]
+				
+					local bar_x, bar_y = bar:GetCenter()
+				
+					if side == "center" then
+						if bar_y < start_y then
+							bar_y = bar_y + control_height / 2
+						else
+							bar_y = bar_y - control_height / 2
 						end
-					else
-		 				if not below_coord or below_coord > other_y then
-							below = i
-							below_coord = other_y
+					
+						if control_y > bar_y then
+			 				if not above_coord or above_coord < bar_y then
+								above = i
+								above_coord = bar_y
+							end
+						else
+			 				if not below_coord or below_coord > bar_y then
+								below = i
+								below_coord = bar_y
+							end
 						end
 					end
 				end
-			end
+				
+				if not above then
+					table.insert(bars, id)
+				else
+					table.insert(bars, above, id)
+				end
 			
-			if not below then
-				table.insert(bars, id)
-			else
-				table.insert(bars, below, id)
-			end
+				for i, bar_id in ipairs(bars) do
+					example_unit_frame.layoutDB[bar_id].position = i
+				end
 			
-			for i, bar_id in ipairs(bars) do
-				example_unit_frame.layoutDB[bar_id].position = i
-			end
-			
-			example_unit_frame:UpdateLayout()
-			PitBull4.UpdateLayoutForLayout(example_unit_frame.layout)
-		end)
+				example_unit_frame:UpdateLayout()
+				PitBull4.UpdateLayoutForLayout(example_unit_frame.layout)
+			end)
 		
-		control:SetScript("OnClick", function(self)
-			select_control(self.id)
-		end)
+			control:SetScript("OnClick", function(self)
+				select_control(self.id)
+			end)
 		
-		function control:extraDelete()
-			control:SetMovable(false)
-			control:EnableMouse(false)
-			control:RegisterForDrag()
-			control:SetScript("OnDragStart", nil)
-			control:SetScript("OnDragStop", nil)
-			control:SetScript("OnClick", nil)
+			function control:extraDelete()
+				control:SetMovable(false)
+				control:EnableMouse(false)
+				control:RegisterForDrag()
+				control:SetScript("OnDragStart", nil)
+				control:SetScript("OnDragStop", nil)
+				control:SetScript("OnClick", nil)
+			end
 		end
 	end
 	self:Refresh()
