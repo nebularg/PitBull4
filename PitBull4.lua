@@ -152,8 +152,9 @@ function moduleTypes.statusbar.__index:UpdateStatusBar(frame)
 	end
 	
 	control:SetValue(value)
-	local r, g, b = PitBull4.CallColorFunction(self, frame)
+	local r, g, b, a = PitBull4.CallColorFunction(self, frame)
 	control:SetColor(r, g, b)
+	control:SetAlpha(a)
 	
 	return made_control
 end
@@ -189,8 +190,23 @@ function moduleTypes.statusbar.__index:UpdateForUnitID(unitID)
 	expect(unitID, 'typeof', 'string')
 	--@end-alpha@
 	
+	local id = self.id
 	for frame in PitBull4.IterateFramesForUnitID(unitID) do
-		self:Update(frame)
+		if frame[id] then
+			self:Update(frame)
+		end
+	end
+end
+
+--- Update the status bar for the current module for all frames that have the status bar.
+-- @name StatusBarModule:UpdateAll
+-- @usage MyModule:UpdateAll()
+function moduleTypes.statusbar.__index:UpdateAll()
+	local id = self.id
+	for frame in PitBull4.IterateFrames(true) do
+		if frame[id] then
+			self:Update(frame)
+		end
 	end
 end
 
@@ -243,11 +259,11 @@ function PitBull4.CallValueFunction(module, frame)
 end
 
 function PitBull4.CallColorFunction(module, frame)
-	local r, g, b = module_color_funcs[module](frame)
+	local r, g, b, a = module_color_funcs[module](frame)
 	if not r or not g or not b then
-		return 0.7, 0.7, 0.7
+		return 0.7, 0.7, 0.7, a or 1
 	end
-	return r, g, b
+	return r, g, b, a or 1
 end
 
 local function merge(alpha, bravo)
