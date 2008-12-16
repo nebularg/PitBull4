@@ -518,8 +518,10 @@ end
 -- @param parent frame the status bar is parented to
 -- @usage local bar = PitBull4.Controls.MakeBetterStatusBar(someFrame)
 -- @return a BetterStatusBar object
-PitBull4.Controls.MakeNewControlType("BetterStatusBar", "Frame", function(control)
+PitBull4.Controls.MakeNewControlType("BetterStatusBar", "Button", function(control)
 	-- onCreate
+	control:EnableMouse(false)
+	
 	local control_fg = PitBull4.Controls.MakeTexture(control, "BACKGROUND")
 	control.fg = control_fg
 	control_fg:SetPoint("LEFT")

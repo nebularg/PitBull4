@@ -45,8 +45,13 @@ function control__index:Delete()
 	local kind = self.kind
 	
 	if self.onDelete then
-		self.onDelete(self)
+		self:onDelete()
 		self.onDelete = nil
+	end
+	
+	if self.extraDelete then
+		self:extraDelete()
+		self.extraDelete = nil
 	end
 	
 	if delete_funcs[kind] then

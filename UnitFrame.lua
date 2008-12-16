@@ -98,11 +98,13 @@ end
 
 --- Add the proper functions and scripts to a SecureUnitButton
 -- @param frame a Button which inherits from SecureUnitButton
+-- @param isExampleFrame whether the button is an example frame, thus not a real unit frame
 -- @usage PitBull4.ConvertIntoUnitFrame(frame)
-function PitBull4.ConvertIntoUnitFrame(frame)
+function PitBull4.ConvertIntoUnitFrame(frame, isExampleFrame)
 	--@alpha@
 	expect(frame, 'typeof', 'frame')
 	expect(frame, 'frametype', 'Button')
+	expect(isExampleFrame, 'typeof', 'nil;boolean')
 	--@end-alpha@
 	
 	for k, v in pairs(UnitFrame__scripts) do
@@ -113,11 +115,13 @@ function PitBull4.ConvertIntoUnitFrame(frame)
 		frame[k] = v
 	end
 	
-	frame:SetMovable(true)
-	frame:RegisterForDrag("LeftButton")
-	frame:RegisterForClicks("LeftButtonUp","RightButtonUp","MiddleButtonUp","Button4Up","Button5Up")
-	frame:SetAttribute("*type1", "target")
-	frame:SetAttribute("*type2", "menu")
+	if not isExampleFrame then
+		frame:SetMovable(true)
+		frame:RegisterForDrag("LeftButton")
+		frame:RegisterForClicks("LeftButtonUp","RightButtonUp","MiddleButtonUp","Button4Up","Button5Up")
+		frame:SetAttribute("*type1", "target")
+		frame:SetAttribute("*type2", "menu")
+	end
 end
 
 --- Update all details about the UnitFrame, possibly after a GUID change
@@ -300,4 +304,51 @@ function UnitFrame:UpdateLayout()
 	center_bars = del(center_bars)
 	left_bars = del(left_bars)
 	right_bars = del(right_bars)
+end
+
+local function iter(frame, id)
+	local func, t = PitBull4.IterateModules(true)
+	local id, module = func(t, id)
+	if id == nil then
+		return nil
+	end
+	if not frame[id] then
+		return iter(frame, id)
+	end
+	return id, frame[id], module
+end
+
+--- Iterate over all controls on this frame
+-- @usage for id, control, module in PitBull4.IterateControls() do
+--     doSomethingWith(control)
+-- end
+-- @return iterator which returns the id, control, and module
+function UnitFrame:IterateControls()
+	return iter, self, nil
+end
+
+local iters = setmetatable({}, {__index=function(iters, moduleType)
+	local function iter(frame, id)
+		local func, t = PitBull4.IterateModulesOfType(moduleType, true)
+		local id, module = func(t, id)
+		if id == nil then
+			return nil
+		end
+		if not frame[id] then
+			return iter(frame, id)
+		end
+		return id, frame[id], module
+	end
+	iters[moduleType] = iter
+	return iter
+end})
+
+--- Iterate over all controls on this frame of the given type
+-- @param moduleType one of "statusbar", "custom"
+-- @usage for id, control, module in PitBull4.IterateControlsOfType("statusbar") do
+--     doSomethingWith(control)
+-- end
+-- @return iterator which returns the id, control, and module
+function UnitFrame:IterateControlsOfType(moduleType)
+	return iters[moduleType], self, nil
 end

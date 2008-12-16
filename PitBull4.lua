@@ -115,6 +115,7 @@ local function handle_statusbar_nonvalue(module, frame)
 	local id = module.id
 	local control = frame[id]
 	if control then
+		frame.id = nil
 		frame[id] = control:Delete()
 		return true
 	end
@@ -131,17 +132,22 @@ function moduleTypes.statusbar.__index:UpdateStatusBar(frame)
 	expect(frame, 'typeof', 'frame')
 	--@end-alpha@
 	
+	local id = self.id
+	if frame.layoutDB[id].hidden then
+		return handle_statusbar_nonvalue(self, frame)
+	end
+	
 	local value = frame.guid and PitBull4.CallValueFunction(self, frame)
 	if not value then
 		return handle_statusbar_nonvalue(self, frame)
 	end
 	
-	local id = self.id
 	local control = frame[id]
 	local made_control = not control
 	if made_control then
 		control = PitBull4.Controls.MakeBetterStatusBar(frame)
 		frame[id] = control
+		control.id = id
 		control:SetTexture([[Interface\TargetingFrame\UI-StatusBar]])
 	end
 	
@@ -437,6 +443,56 @@ function PitBull4.IterateFramesForClassification(classification, onlyShown)
 	return onlyShown and iterate_shown_frames or half_next, unitID_to_frames__classification
 end
 
+local function layout_iter(layout, frame)
+	frame = next(all_frames, frame)
+	if not frame then
+		return nil
+	end
+	if frame.layout == layout then
+		return frame
+	end
+	return layout_iter(layout, frame)
+end
+
+local function layout_shown_iter(layout, frame)
+	frame = next(all_frames, frame)
+	if not frame then
+		return nil
+	end
+	if frame.layout == layout and frame:IsShown() then
+		return frame
+	end
+	return layout_iter(layout, frame)
+end
+
+--- Iterate over all frames with the given layout
+-- @param layout the layout to check
+-- @param onlyShown only return frames that are shown
+-- @usage for frame in PitBull4.IterateFramesForLayout("Normal") do
+--     frame:UpdateLayout()
+-- end
+-- @usage for frame in PitBull4.IterateFramesForLayout("Normal", true) do
+--     frame:UpdateLayout()
+-- end
+-- @return iterator which returns frames
+function PitBull4.IterateFramesForLayout(layout, onlyShown)
+	--@alpha@
+	expect(layout, 'typeof', 'string')
+	expect(onlyShown, 'typeof', 'boolean;nil')
+	--@end-alpha@
+	
+	return onlyShown and layout_shown_iter or layout_iter, layout
+end
+
+--- call :UpdateLayout() on all frames with the given layout
+-- @param layout the layout to check
+-- @usage PitBull4.UpdateLayoutForLayout("Normal")
+function PitBull4.UpdateLayoutForLayout(layout)
+	for frame in PitBull4.IterateFramesForLayout("Normal", true) do
+		frame:UpdateLayout()
+	end
+end
+
 local function guid_iter(guid, frame)
 	frame = next(all_frames, frame)
 	if not frame then
@@ -474,6 +530,18 @@ local function enabled_iter(modules, id)
 		return enabled_iter(modules, id)
 	end
 	return id, module
+end
+
+--- Return a module given its id
+-- @param id the id of the module
+-- @usage local module = PitBull4.GetModule("MyModule")
+-- @return the module or nil if not found
+function PitBull4.GetModule(id)
+	--@alpha@
+	expect(id, 'typeof', 'string')
+	--@end-alpha@
+	
+	return modules[id]
 end
 
 --- Iterate over all modules
