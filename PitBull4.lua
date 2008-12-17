@@ -724,6 +724,9 @@ local function create_frames()
 	if not db_classifications.target.hidden then
 		PitBull4.MakeSingletonFrame("target")
 	end
+	if not db_classifications.targettarget.hidden then
+		PitBull4.MakeSingletonFrame("targettarget")
+	end
 end
 
 local function PLAYER_LOGIN(event)

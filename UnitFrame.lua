@@ -96,6 +96,12 @@ function UnitFrame__scripts:OnLeave()
 	PitBull4.RunFrameScriptHooks("OnLeave", self)
 end
 
+function UnitFrame__scripts:OnShow()
+	if self.is_wacky then
+		self:UpdateGUID(UnitGUID(self.unitID))
+	end
+end
+
 --- Add the proper functions and scripts to a SecureUnitButton
 -- @param frame a Button which inherits from SecureUnitButton
 -- @param isExampleFrame whether the button is an example frame, thus not a real unit frame
@@ -130,7 +136,7 @@ end
 -- @usage frame:Update(true)
 function UnitFrame:Update(sameGUID)
 	-- TODO
-	if not self.guid then
+	if not self.guid and self.populated then
 		PitBull4.RunFrameScriptHooks("OnClear", self)
 		self.populated = nil
 	end

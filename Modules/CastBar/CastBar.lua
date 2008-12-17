@@ -13,9 +13,27 @@ local PitBull4_CastBar = PitBull4.NewModule("CastBar", "Cast Bar", "Show a cast 
 local castData = {}
 PitBull4_CastBar.castData = castData
 
+local new, del
+do
+	local pool = setmetatable({}, {__mode='k'})
+	function new()
+		local t = next(pool)
+		if t then
+			pool[t] = nil
+			return t
+		end
+		
+		return {}
+	end
+	function del(t)
+		wipe(t)
+		pool[t] = true
+	end
+end
+
 function PitBull4_CastBar.GetValue(frame)
-	local unit = frame.unitID
-	local data = castData[unit]
+	local guid = frame.guid
+	local data = castData[guid]
 	if not data then
 		return 0
 	end
@@ -33,8 +51,8 @@ function PitBull4_CastBar.GetValue(frame)
 end
 
 function PitBull4_CastBar.GetColor(frame)
-	local unit = frame.unitID
-	local data = castData[unit]
+	local guid = frame.guid
+	local data = castData[guid]
 	if not data then
 		return 0, 0, 0, 0
 	end
@@ -55,13 +73,13 @@ function PitBull4_CastBar.GetColor(frame)
 			alpha = 1
 		end
 		if alpha <= 0 then
-			wipe(data)
+			castData[guid] = del(data)
 			return 0, 0, 0, 0
 		else
 			return 0, 1, 0, alpha
 		end
 	else
-		wipe(data)
+		castData[guid] = del(data)
 	end
 	return 0, 0, 0, 0
 end
@@ -70,8 +88,9 @@ PitBull4_CastBar:SetValueFunction('GetValue')
 PitBull4_CastBar:SetColorFunction('GetColor')
 
 function PitBull4_CastBar.UNIT_SPELLCAST_SENT(event, unit, spell, rank, target)
+	local guid = UnitGUID(unit)
 	local found = false
-	for frame in PitBull4.IterateFramesForUnitID(unit, true) do
+	for frame in PitBull4.IterateFramesForGUID(guid) do
 		if frame.CastBar then
 			found = true
 			break
@@ -80,11 +99,11 @@ function PitBull4_CastBar.UNIT_SPELLCAST_SENT(event, unit, spell, rank, target)
 	if not found then
 		return
 	end
-
-	local data = castData[unit]
+	
+	local data = castData[guid]
 	if not data then
-		data = {}
-		castData[unit] = data
+		data = new()
+		castData[guid] = data
 	end
 
 	if target == "" then
@@ -94,8 +113,9 @@ function PitBull4_CastBar.UNIT_SPELLCAST_SENT(event, unit, spell, rank, target)
 end
 
 function PitBull4_CastBar.UNIT_SPELLCAST_START(event, unit)
+	local guid = UnitGUID(unit)
 	local found = false
-	for frame in PitBull4.IterateFramesForUnitID(unit, true) do
+	for frame in PitBull4.IterateFramesForGUID(guid) do
 		if frame.CastBar then
 			found = true
 			break
@@ -105,10 +125,10 @@ function PitBull4_CastBar.UNIT_SPELLCAST_START(event, unit)
 		return
 	end
 
-	local data = castData[unit]
+	local data = castData[guid]
 	if not data then
-		data = {}
-		castData[unit] = data
+		data = new()
+		castData[guid] = data
 	end	
 
 	local spell, rank, displayName, icon, startTime, endTime = UnitCastingInfo(unit)
@@ -125,7 +145,8 @@ function PitBull4_CastBar.UNIT_SPELLCAST_START(event, unit)
 end
 
 function PitBull4_CastBar.UNIT_SPELLCAST_STOP(event, unit)
-	local data = castData[unit]
+	local guid = UnitGUID(unit)
+	local data = castData[guid]
 	if not data or not data.casting then
 		return
 	end
@@ -135,7 +156,8 @@ function PitBull4_CastBar.UNIT_SPELLCAST_STOP(event, unit)
 end
 
 function PitBull4_CastBar.UNIT_SPELLCAST_FAILED(event, unit)
-	local data = castData[unit]
+	local guid = UnitGUID(unit)
+	local data = castData[guid]
 	if not data or data.fadeOut then
 		return
 	end
@@ -146,7 +168,8 @@ function PitBull4_CastBar.UNIT_SPELLCAST_FAILED(event, unit)
 end
 
 function PitBull4_CastBar.UNIT_SPELLCAST_INTERRUPTED(event, unit)
-	local data = castData[unit]
+	local guid = UnitGUID(unit)
+	local data = castData[guid]
 	if not data then
 		return
 	end
@@ -157,7 +180,8 @@ function PitBull4_CastBar.UNIT_SPELLCAST_INTERRUPTED(event, unit)
 end
 
 function PitBull4_CastBar.UNIT_SPELLCAST_DELAYED(event, unit)
-	local data = castData[unit]
+	local guid = UnitGUID(unit)
+	local data = castData[guid]
 	if not data or not data.casting then
 		return
 	end
@@ -175,7 +199,8 @@ function PitBull4_CastBar.UNIT_SPELLCAST_DELAYED(event, unit)
 end
 
 function PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_UPDATE(event, unit)
-	local data = castData[unit]
+	local guid = UnitGUID(unit)
+	local data = castData[guid]
 	if not data then
 		return
 	end
@@ -183,7 +208,7 @@ function PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_UPDATE(event, unit)
 	local spell, rank, displayName, icon, startTime, endTime = UnitChannelInfo(unit)
 
 	if not spell then
-		wipe(data)
+		castData[guid] = del(data)
 		return
 	end
 
@@ -193,7 +218,8 @@ function PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_UPDATE(event, unit)
 end
 
 function PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_STOP(event, unit)
-	local data = castData[unit]
+	local guid = UnitGUID(unit)
+	local data = castData[guid]
 	if not data then
 		return
 	end
@@ -204,17 +230,18 @@ function PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_STOP(event, unit)
 	data.stopTime = GetTime()
 end
 
+local playerGUID = UnitGUID("player")
 function PitBull4_CastBar.FixCastData()
 	local frame
 	local currentTime = GetTime()
-	for unit, data in pairs(castData) do
+	for guid, data in pairs(castData) do
 		local found = false
-		for frame in PitBull4.IterateFramesForUnitID(unit, true) do
+		for frame in PitBull4.IterateFramesForGUID(guid) do
 			local castBar = frame.CastBar
 			if castBar then
 				found = true
 				if data.casting then
-					if currentTime > data.endTime and not UnitIsUnit("player", unit) then
+					if currentTime > data.endTime and playerGUID ~= guid then
 						data.casting = nil
 						data.fadeOut = 1
 						data.stopTime = currentTime
@@ -226,15 +253,61 @@ function PitBull4_CastBar.FixCastData()
 						data.stopTime = currentTime
 					end
 				elseif data.fadeOut then
+					local alpha = 0
+					local stopTime = data.stopTime
+					if stopTime then
+						alpha = stopTime - currentTime + 1
+					end
+					
+					if alpha <= 0 then
+						castData[guid] = del(data)
+					end
 				else
-					wipe(data)
+					castData[guid] = del(data)
 				end
 			end	
 			break
 		end
 		if not found then
-			wipe(data)
+			castData[guid] = del(data)
 		end
+	end
+end
+
+function PitBull4_CastBar.OnUpdate(frame)
+	if not frame.CastBar then
+		return
+	end
+	
+	local unit = frame.unitID
+	if not frame.is_wacky and unit ~= "target" and unit ~= "focus" then
+		return
+	end
+	
+	if select(3, UnitCastingInfo(unit)) then
+		PitBull4_CastBar.UNIT_SPELLCAST_START("UNIT_SPELLCAST_START", unit)
+		return
+	end
+	
+	if select(3, UnitChannelInfo(unit)) then
+		PitBull4_CastBar.UNIT_SPELLCAST_START("UNIT_SPELLCAST_CHANNEL_START", unit)
+		return
+	end
+	
+	local guid = UnitGUID(unit)
+	local data = castData[guid]
+	if not data then
+		return
+	end
+
+	if data.channeling then
+		PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_STOP("UNIT_SPELLCAST_CHANNEL_STOP", unit)
+		return
+	end
+	
+	if data.casting then
+		PitBull4_CastBar.UNIT_SPELLCAST_STOP("UNIT_SPELLCAST_STOP", unit)
+		return
 	end
 end
 
@@ -242,6 +315,7 @@ PitBull4.Utils.AddTimer(function()
 	PitBull4_CastBar.FixCastData()
 	PitBull4_CastBar:UpdateAll()
 end)
+PitBull4_CastBar:AddFrameScriptHook("OnUpdate", PitBull4_CastBar.OnUpdate)
 PitBull4.Utils.AddEventListener("UNIT_SPELLCAST_SENT", PitBull4_CastBar.UNIT_SPELLCAST_SENT)
 PitBull4.Utils.AddEventListener("UNIT_SPELLCAST_START", PitBull4_CastBar.UNIT_SPELLCAST_START)
 PitBull4.Utils.AddEventListener("UNIT_SPELLCAST_CHANNEL_START", PitBull4_CastBar.UNIT_SPELLCAST_START)
