@@ -133,108 +133,117 @@ LibSimpleOptions.AddSuboptionsPanel("PitBull Unit Frames 4.0", "Layouts", functi
 	
 	PitBull4.ConvertIntoUnitFrame(example_unit_frame, true)
 	
+	local function bar_sort(alpha, bravo)
+		return example_unit_frame.layoutDB[alpha].position < example_unit_frame.layoutDB[bravo].position
+	end
+	
+	local bar_scripts = {}
+	function bar_scripts:OnDragStart()
+		self.start_x, self.start_y = self:GetCenter()
+		self:StartMoving()
+		self:SetFrameLevel(self:GetFrameLevel() + 5)
+	end
+	
+	function bar_scripts:OnDragStop()
+		self:StopMovingOrSizing()
+		self:SetFrameLevel(self:GetFrameLevel() - 5)
+		local x, y = self:GetCenter()
+		local width, height = self:GetWidth(), self:GetHeight()
+	
+		local start_x, start_y = self.start_x, self.start_y
+		self.start_x, self.start_y = nil, nil
+	
+		local side = example_unit_frame.layoutDB[self.id].side
+	
+		local above, below = 0, 1/0
+		local above_coord, below_coord
+	
+		local control_position = example_unit_frame.layoutDB[self.id].position
+	
+		local bars = {}
+	
+		for other_id, other_control, other_module in example_unit_frame:IterateControlsOfType('statusbar') do
+			if other_control ~= self and example_unit_frame.layoutDB[other_id].side == side then
+				bars[#bars+1] = other_id
+			end
+		end
+	
+		table.sort(bars, bar_sort)
+	
+		local above, below = nil, nil
+		local above_coord, below_coord = nil, nil
+		
+		for i, bar_id in ipairs(bars) do
+			local bar = example_unit_frame[bar_id]
+		
+			local bar_x, bar_y = bar:GetCenter()
+		
+			if side == "center" then
+				if bar_y < start_y then
+					bar_y = bar_y + height / 2
+				else
+					bar_y = bar_y - height / 2
+				end
+			
+				if y > bar_y then
+	 				if not above_coord or above_coord < bar_y then
+						above = i
+						above_coord = bar_y
+					end
+				else
+	 				if not below_coord or below_coord > bar_y then
+						below = i
+						below_coord = bar_y
+					end
+				end
+			end
+		end
+		
+		if not above then
+			table.insert(bars, self.id)
+		else
+			table.insert(bars, above, self.id)
+		end
+	
+		for i, bar_id in ipairs(bars) do
+			example_unit_frame.layoutDB[bar_id].position = i
+		end
+	
+		example_unit_frame:UpdateLayout()
+		PitBull4.UpdateLayoutForLayout(example_unit_frame.layout)
+	end
+	
+	function bar_scripts:OnClick()
+		select_control(self.id)
+	end
+	
+	local function bar_extraDelete(self)
+		self:SetMovable(false)
+		self:EnableMouse(false)
+		self:RegisterForDrag()
+		for k in pairs(control_scripts) do
+			self:SetScript(k, nil)
+		end
+	end
+	
 	function self:refreshFunc()
 		example_unit_frame:Update()
 		wipe(values)
 		values[#values+1] = 'root'
 		values[#values+1] = 'Unit Frame'
-		for id, control, module in example_unit_frame:IterateControlsOfType('statusbar') do
+		for id, bar, module in example_unit_frame:IterateControlsOfType('statusbar') do
 			values[#values+1] = id
 			values[#values+1] = module.name
-			control:SetMovable(true)
-			control:EnableMouse(true)
-			control:RegisterForClicks("LeftButtonUp")
-			control:RegisterForDrag("LeftButton")
-		
-			control:SetScript("OnDragStart", function(self)
-				self.start_x, self.start_y = control:GetCenter()
-				self:StartMoving()
-				self:SetFrameLevel(self:GetFrameLevel() + 5)
-			end)
-		
-			control:SetScript("OnDragStop", function(self)
-				self:StopMovingOrSizing()
-				self:SetFrameLevel(self:GetFrameLevel() - 5)
-				local control_x, control_y = control:GetCenter()
-				local control_width, control_height = control:GetWidth(), control:GetHeight()
+			bar:SetMovable(true)
+			bar:EnableMouse(true)
+			bar:RegisterForClicks("LeftButtonUp")
+			bar:RegisterForDrag("LeftButton")
 			
-				local start_x, start_y = self.start_x, self.start_y
-				self.start_x, self.start_y = nil, nil
-			
-				local side = example_unit_frame.layoutDB[id].side
-			
-				local above, below = 0, 1/0
-				local above_coord, below_coord
-			
-				local control_position = example_unit_frame.layoutDB[id].position
-			
-				local bars = {}
-			
-				for other_id, other_control, other_module in example_unit_frame:IterateControlsOfType('statusbar') do
-					if other_control ~= self and example_unit_frame.layoutDB[other_id].side == side then
-						bars[#bars+1] = other_id
-					end
-				end
-			
-				table.sort(bars, function(alpha, bravo)
-					return example_unit_frame.layoutDB[alpha].position < example_unit_frame.layoutDB[bravo].position
-				end)
-			
-				local above, below = nil, nil
-				local above_coord, below_coord = nil, nil
-				
-				for i, bar_id in ipairs(bars) do
-					local bar = example_unit_frame[bar_id]
-				
-					local bar_x, bar_y = bar:GetCenter()
-				
-					if side == "center" then
-						if bar_y < start_y then
-							bar_y = bar_y + control_height / 2
-						else
-							bar_y = bar_y - control_height / 2
-						end
-					
-						if control_y > bar_y then
-			 				if not above_coord or above_coord < bar_y then
-								above = i
-								above_coord = bar_y
-							end
-						else
-			 				if not below_coord or below_coord > bar_y then
-								below = i
-								below_coord = bar_y
-							end
-						end
-					end
-				end
-				
-				if not above then
-					table.insert(bars, id)
-				else
-					table.insert(bars, above, id)
-				end
-			
-				for i, bar_id in ipairs(bars) do
-					example_unit_frame.layoutDB[bar_id].position = i
-				end
-			
-				example_unit_frame:UpdateLayout()
-				PitBull4.UpdateLayoutForLayout(example_unit_frame.layout)
-			end)
-		
-			control:SetScript("OnClick", function(self)
-				select_control(self.id)
-			end)
-		
-			function control:extraDelete()
-				control:SetMovable(false)
-				control:EnableMouse(false)
-				control:RegisterForDrag()
-				control:SetScript("OnDragStart", nil)
-				control:SetScript("OnDragStop", nil)
-				control:SetScript("OnClick", nil)
+			for k, v in pairs(bar_scripts) do
+				bar:SetScript(k, v)
 			end
+			
+			bar.extraDelete = bar_extraDelete
 		end
 	end
 	self:Refresh()

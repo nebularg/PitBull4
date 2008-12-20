@@ -151,6 +151,9 @@ function UnitFrame:Update(sameGUID)
 	for id, module in PitBull4.IterateModulesOfType("statusbar", true) do
 		changed = module:Update(self, true) or changed
 	end
+	for id, module in PitBull4.IterateModulesOfType("icon", true) do
+		changed = module:Update(self, true) or changed
+	end
 	if changed then
 		self:UpdateLayout()
 	end
@@ -350,7 +353,7 @@ local iters = setmetatable({}, {__index=function(iters, moduleType)
 end})
 
 --- Iterate over all controls on this frame of the given type
--- @param moduleType one of "statusbar", "custom"
+-- @param moduleType one of "statusbar", "icon", "custom"
 -- @usage for id, control, module in PitBull4.IterateControlsOfType("statusbar") do
 --     doSomethingWith(control)
 -- end

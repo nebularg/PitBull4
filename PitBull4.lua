@@ -14,14 +14,17 @@ local do_nothing = function() end
 local modules = {}
 
 local module_script_hooks = {}
-local module_value_funcs = {}
-local module_color_funcs = {}
+local statusbar_module_value_funcs = {}
+local statusbar_module_color_funcs = {}
+local icon_module_texture_funcs = {}
 
 local moduleMeta = { __index={} }
 local moduleTypes = {}
 local moduleTypes_layoutDefaults = {}
+
 moduleTypes.custom = { __index=setmetatable({}, moduleMeta) }
 moduleTypes_layoutDefaults.custom = {}
+
 moduleTypes.statusbar = { __index=setmetatable({}, moduleMeta) }
 moduleTypes_layoutDefaults.statusbar = {
 	size = 2,
@@ -32,6 +35,12 @@ moduleTypes_layoutDefaults.statusbar = {
 	position = 1,
 	side = 'center',
 }
+
+moduleTypes.icon = { __index=setmetatable({}, moduleMeta) }
+moduleTypes_layoutDefaults.icon = {
+	size = 1,
+}
+
 for k, v in pairs(moduleTypes) do
 	v.__index.moduleType = k
 end
@@ -84,10 +93,10 @@ function moduleTypes.statusbar.__index:SetValueFunction(func)
 	if type(func) == "string" then
 		expect(self[func], 'typeof', 'function')
 	end
-	expect(module_value_funcs[self], 'typeof', 'nil')
+	expect(statusbar_module_value_funcs[self], 'typeof', 'nil')
 	--@end-alpha@
 	
-	module_value_funcs[self] = convert_method_to_function(self, func)
+	statusbar_module_value_funcs[self] = convert_method_to_function(self, func)
 end
 
 --- Add the function to specify the current color of the status bar
@@ -104,10 +113,10 @@ function moduleTypes.statusbar.__index:SetColorFunction(func)
 	if type(func) == "string" then
 		expect(self[func], 'typeof', 'function')
 	end
-	expect(module_color_funcs[self], 'typeof', 'nil')
+	expect(statusbar_module_color_funcs[self], 'typeof', 'nil')
 	--@end-alpha@
 	
-	module_color_funcs[self] = convert_method_to_function(self, func)
+	statusbar_module_color_funcs[self] = convert_method_to_function(self, func)
 end
 
 -- handle the case where there is no value returned, i.e. the module returned nil
@@ -210,6 +219,121 @@ function moduleTypes.statusbar.__index:UpdateAll()
 	end
 end
 
+--- Add the function to specify the current percentage of the status bar
+-- @name IconModule:AddPercentFunction
+-- @param func function that returns a number within [0, 1]
+-- @usage MyModule:SetValueFunction(function(frame)
+--     return UnitHealth(frame.unitID) / UnitHealthMax(frame.unitID)
+-- end)
+function moduleTypes.icon.__index:SetTextureFunction(func)
+	--@alpha@
+	expect(func, 'typeof', 'function;string')
+	if type(func) == "string" then
+		expect(self[func], 'typeof', 'function')
+	end
+	expect(icon_module_texture_funcs[self], 'typeof', 'nil')
+	--@end-alpha@
+	
+	icon_module_texture_funcs[self] = convert_method_to_function(self, func)
+end
+
+-- handle the case where there is no value returned, i.e. the module returned nil
+local function handle_icon_nonvalue(module, frame)
+	local id = module.id
+	local control = frame[id]
+	if control then
+		frame.id = nil
+		frame[id] = control:Delete()
+		return true
+	end
+	return false
+end
+
+--- Update the icon for the current module
+-- @name IconModule:UpdateIcon
+-- @param frame the Unit Frame to update
+-- @usage local updateLayout = MyModule:UpdateIcon(frame)
+-- @return whether the update requires UpdateLayout to be called
+function moduleTypes.icon.__index:UpdateIcon(frame)
+	--@alpha@
+	expect(frame, 'typeof', 'frame')
+	--@end-alpha@
+	
+	local id = self.id
+	if frame.layoutDB[id].hidden or not frame.guid then
+		return handle_icon_nonvalue(self, frame)
+	end
+	
+	local tex, c1, c2, c3, c4 = PitBull4.CallTextureFunction(self, frame)
+	if not tex then
+		return handle_icon_nonvalue(self, frame)
+	end
+	
+	local control = frame[id]
+	local made_control = not control
+	if made_control then
+		control = PitBull4.Controls.MakeIcon(frame)
+		frame[id] = control
+		control.id = id
+	end
+	
+	control:SetTexture(tex)
+	control:SetTexCoord(c1, c2, c3, c4)
+	
+	return made_control
+end
+
+--- Update the icon for current module for the given frame and handle any layout changes
+-- @name IconModule:Update
+-- @param frame the Unit Frame to update
+-- @param returnChanged whether to return if the update should change the layout. If this is false, it will call :UpdateLayout() automatically.
+-- @usage MyModule:Update(frame)
+-- @return whether the update requires UpdateLayout to be called if returnChanged is specified
+function moduleTypes.icon.__index:Update(frame, returnChanged)
+	--@alpha@
+	expect(frame, 'typeof', 'frame')
+	expect(returnChanged, 'typeof', 'nil;boolean')
+	--@end-alpha@
+	
+	local changed = self:UpdateIcon(frame)
+	
+	if returnChanged then
+		return changed
+	end
+	if changed then
+		frame:UpdateLayout()
+	end
+end
+
+--- Update the icon for current module for all units of the given unitID
+-- @name IconModule:UpdateForUnitID
+-- @param unitID the unitID in question to update
+-- @usage MyModule:UpdateForUnitID(frame)
+function moduleTypes.icon.__index:UpdateForUnitID(unitID)
+	--@alpha@
+	expect(unitID, 'typeof', 'string')
+	--@end-alpha@
+	
+	local id = self.id
+	for frame in PitBull4.IterateFramesForUnitID(unitID) do
+		if frame[id] then
+			self:Update(frame)
+		end
+	end
+end
+
+--- Update the icon for the current module for all frames that have the icon.
+-- @name IconModule:UpdateAll
+-- @usage MyModule:UpdateAll()
+function moduleTypes.icon.__index:UpdateAll()
+	local id = self.id
+	for frame in PitBull4.IterateFrames(true) do
+		if frame[id] then
+			self:Update(frame)
+		end
+	end
+end
+
 --- Iterate through all script hooks for a given script
 -- @param script name of the script
 -- @usage for module, func in PitBull4.IterateFrameScriptHooks("OnEnter") do
@@ -245,7 +369,7 @@ function PitBull4.RunFrameScriptHooks(script, frame, ...)
 end
 
 function PitBull4.CallValueFunction(module, frame)
-	local value = module_value_funcs[module](frame)
+	local value = statusbar_module_value_funcs[module](frame)
 	if not value then
 		return nil
 	end
@@ -259,11 +383,24 @@ function PitBull4.CallValueFunction(module, frame)
 end
 
 function PitBull4.CallColorFunction(module, frame)
-	local r, g, b, a = module_color_funcs[module](frame)
+	local r, g, b, a = statusbar_module_color_funcs[module](frame)
 	if not r or not g or not b then
 		return 0.7, 0.7, 0.7, a or 1
 	end
 	return r, g, b, a or 1
+end
+
+function PitBull4.CallTextureFunction(module, frame)
+	local tex, c1, c2, c3, c4 = icon_module_texture_funcs[module](frame)
+	if not tex then
+		return nil
+	end
+	
+	if not c1 then
+		c1, c2, c3, c4 = 0, 1, 0, 1
+	end
+	
+	return tex, c1, c2, c3, c4
 end
 
 local function merge(alpha, bravo)
@@ -283,7 +420,7 @@ end
 -- @param description the description of your module, localized
 -- @param globalDefaults a defaults table for global settings
 -- @param layoutDefaults a defaults table for layout-specific settings
--- @param moduleType one of "statusbar", "custom"
+-- @param moduleType one of "statusbar", "icon", "custom"
 -- @usage local PitBull4_Monkey = PitBull4.NewModule("Monkey", L["Monkey"], L["Does monkey-related things"], {
 --     bananas = 5
 -- }, {
@@ -605,7 +742,7 @@ local function moduleType_enabled_iter(moduleType, id)
 end
 
 --- Iterate over all modules of a given type
--- @param moduleType one of "statusbar", "custom"
+-- @param moduleType one of "statusbar", "icon", "custom"
 -- @param enabledOnly whether to iterate over only enabled modules
 -- @usage for id, module in PitBull4.IterateModulesOfType("statusbar") do
 --     doSomethingWith(module)

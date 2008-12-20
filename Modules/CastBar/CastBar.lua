@@ -89,6 +89,9 @@ PitBull4_CastBar:SetColorFunction('GetColor')
 
 local function updateInfo(_, unit)
 	local guid = UnitGUID(unit)
+	if not guid then
+		return
+	end
 	local data = castData[guid]
 	if not data then
 		data = new()

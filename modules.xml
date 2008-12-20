@@ -3,6 +3,7 @@
 
 <Include file="Modules\Background\load.xml"/>
 <Include file="Modules\CastBar\load.xml"/>
+<Include file="Modules\CombatIcon\load.xml"/>
 <Include file="Modules\HealthBar\load.xml"/>
 <Include file="Modules\Highlight\load.xml"/>
 <Include file="Modules\PowerBar\load.xml"/>
