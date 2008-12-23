@@ -146,7 +146,7 @@ function moduleTypes.statusbar.__index:UpdateStatusBar(frame)
 		return handle_statusbar_nonvalue(self, frame)
 	end
 	
-	local value = frame.guid and PitBull4.CallValueFunction(self, frame)
+	local value = frame.guid and self:CallValueFunction(frame)
 	if not value then
 		return handle_statusbar_nonvalue(self, frame)
 	end
@@ -161,7 +161,7 @@ function moduleTypes.statusbar.__index:UpdateStatusBar(frame)
 	end
 	
 	control:SetValue(value)
-	local r, g, b, a = PitBull4.CallColorFunction(self, frame)
+	local r, g, b, a = self:CallColorFunction(frame)
 	control:SetColor(r, g, b)
 	control:SetAlpha(a)
 	
@@ -264,7 +264,7 @@ function moduleTypes.icon.__index:UpdateIcon(frame)
 		return handle_icon_nonvalue(self, frame)
 	end
 	
-	local tex, c1, c2, c3, c4 = PitBull4.CallTextureFunction(self, frame)
+	local tex, c1, c2, c3, c4 = self:CallTextureFunction(frame)
 	if not tex then
 		return handle_icon_nonvalue(self, frame)
 	end
@@ -368,8 +368,13 @@ function PitBull4.RunFrameScriptHooks(script, frame, ...)
 	end
 end
 
-function PitBull4.CallValueFunction(module, frame)
-	local value = statusbar_module_value_funcs[module](frame)
+--- Call the value function which the current status bar module has registered regarding the given frame.
+-- @name StatusBarModule:CallValueFunction
+-- @param frame the frame to get the value of
+-- @usage local value = MyModule:CallValueFunction(someFrame)
+-- @return a number within [0, 1]
+function moduleTypes.statusbar.__index:CallValueFunction(frame)
+	local value = statusbar_module_value_funcs[self](frame)
 	if not value then
 		return nil
 	end
@@ -382,16 +387,33 @@ function PitBull4.CallValueFunction(module, frame)
 	return value
 end
 
-function PitBull4.CallColorFunction(module, frame)
-	local r, g, b, a = statusbar_module_color_funcs[module](frame)
+--- Call the color function which the current status bar module has registered regarding the given frame.
+-- @name StatusBarModule:CallColorFunction
+-- @param frame the frame to get the color of
+-- @usage local r, g, b, a = MyModule:CallColorFunction(someFrame)
+-- @return red value within [0, 1]
+-- @return green value within [0, 1]
+-- @return blue value within [0, 1]
+-- @return alpha value within [0, 1]
+function moduleTypes.statusbar.__index:CallColorFunction(frame)
+	local r, g, b, a = statusbar_module_color_funcs[self](frame)
 	if not r or not g or not b then
 		return 0.7, 0.7, 0.7, a or 1
 	end
 	return r, g, b, a or 1
 end
 
-function PitBull4.CallTextureFunction(module, frame)
-	local tex, c1, c2, c3, c4 = icon_module_texture_funcs[module](frame)
+--- Call the texture function which the given icon module has registered regarding the given frame.
+-- @name IconModule:CallTextureFunction
+-- @param frame the frame to get the texture of
+-- @usage local tex, c1, c2, c3, c4 = MyModule:CallTextureFunction(someFrame)
+-- @return texture the path to the texture to show
+-- @return left TexCoord for left within [0, 1]
+-- @return right TexCoord for right within [0, 1]
+-- @return top TexCoord for top within [0, 1]
+-- @return bottom TexCoord for bottom within [0, 1]
+function moduleTypes.icon.__index:CallTextureFunction(frame)
+	local tex, c1, c2, c3, c4 = icon_module_texture_funcs[self](frame)
 	if not tex then
 		return nil
 	end
