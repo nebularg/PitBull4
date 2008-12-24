@@ -307,10 +307,26 @@ local function calculate_width_height_points(layoutDB, center_bars, left_bars, r
 	return bar_width_points, bar_height_points
 end
 
+local reverse_ipairs
+do
+	local function iter(t, current)
+		current = current - 1
+		if current == 0 then
+			return
+		end
+		
+		return current, t[current]
+	end
+	function reverse_ipairs(t)
+		return iter, t, #t+1
+	end
+end
+
 local function update_bar_layout(self)
 	local bars, center_bars, left_bars, right_bars = get_all_bars(self)
 	
 	local horizontal_mirror = self.classificationDB.horizontalMirror
+	local vertical_mirror = self.classificationDB.verticalMirror
 	
 	if horizontal_mirror then
 		left_bars, right_bars = right_bars, left_bars
@@ -352,9 +368,9 @@ local function update_bar_layout(self)
 		bar:SetOrientation("VERTICAL")
 	end
 	local right = last_x
-
+	
 	local last_y = 0
-	for i, id in ipairs(center_bars) do
+	for i, id in (not vertical_mirror and ipairs or reverse_ipairs)(center_bars) do
 		local bar = self[id]
 		bar:ClearAllPoints()
 	
@@ -372,6 +388,10 @@ local function update_bar_layout(self)
 		local reverse = bar_layoutDB.reverse
 		if bar_layoutDB.side == "center" then
 			if horizontal_mirror then
+				reverse = not reverse
+			end
+		else
+			if vertical_mirror then
 				reverse = not reverse
 			end
 		end
@@ -617,6 +637,7 @@ local function update_icon_layout(self)
 	local layoutDB = self.layoutDB
 	
 	local horizontal_mirror = self.classificationDB.horizontalMirror
+	local vertical_mirror = self.classificationDB.verticalMirror
 	
 	for _, id in ipairs(icons) do
 		local icon = self[id]
@@ -639,6 +660,10 @@ local function update_icon_layout(self)
 			if old_location == location then
 				flip_positions = true
 			end
+		end
+		
+		if vertical_mirror then
+			location = vertical_mirrored_location[location]
 		end
 		
 		if attach_frame then

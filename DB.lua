@@ -10,6 +10,8 @@ local defaults = {
 			position_x = 0,
 			position_y = 0,
 			layout = "Normal",
+			horizontalMirror = false,
+			verticalMirror = false,
 		},
 	},
 	layouts = {

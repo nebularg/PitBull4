@@ -655,7 +655,25 @@ function OpenConfig()
 							frame:Update(true, true)
 						end
 					end
-				}
+				},
+				verticalMirror = {
+					name = "Mirror vertically",
+					desc = "Whether all options will be mirrored, e.g. what would be on the bottom is now on the top and vice-versa.",
+					order = 3,
+					type = 'toggle',
+					get = function(info)
+						local db = PitBull4.db.classifications[classification]
+						return db.verticalMirror
+					end,
+					set = function(info, value)
+						local db = PitBull4.db.classifications[classification]
+						db.verticalMirror = value
+						
+						for frame in PitBull4.IterateFramesForClassification(classification, false) do
+							frame:Update(true, true)
+						end
+					end
+				},
 			}
 		}
 	end
