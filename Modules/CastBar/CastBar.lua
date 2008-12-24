@@ -177,7 +177,7 @@ function PitBull4_CastBar.OnUpdate(frame)
 		return
 	end
 	
-	local unit = frame.unitID
+	local unit = frame.unit
 	if not frame.is_wacky and unit ~= "target" and unit ~= "focus" then
 		return
 	end

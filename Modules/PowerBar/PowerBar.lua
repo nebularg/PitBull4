@@ -10,11 +10,11 @@ local PitBull4_PowerBar = PitBull4.NewModule("PowerBar", "Power Bar", "Show a ma
 }, "statusbar")
 
 function PitBull4_PowerBar.GetValue(frame)
-	return UnitMana(frame.unitID) / UnitManaMax(frame.unitID)
+	return UnitMana(frame.unit) / UnitManaMax(frame.unit)
 end
 
 function PitBull4_PowerBar.GetColor(frame)
-	local powerType = UnitPowerType(frame.unitID)
+	local powerType = UnitPowerType(frame.unit)
 	local color = PowerBarColor[powerType]
 	if color then
 		return color.r, color.g, color.b
@@ -24,8 +24,8 @@ end
 PitBull4_PowerBar:SetValueFunction('GetValue')
 PitBull4_PowerBar:SetColorFunction('GetColor')
 
-function PitBull4_PowerBar.UNIT_MANA(event, unitID)
-	PitBull4_PowerBar:UpdateForUnitID(unitID)
+function PitBull4_PowerBar.UNIT_MANA(event, unit)
+	PitBull4_PowerBar:UpdateForUnitID(unit)
 end
 
 PitBull4.Utils.AddEventListener("UNIT_MANA", PitBull4_PowerBar.UNIT_MANA)

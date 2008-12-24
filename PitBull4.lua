@@ -85,7 +85,7 @@ end
 -- @name StatusBarModule:AddPercentFunction
 -- @param func function that returns a number within [0, 1]
 -- @usage MyModule:SetValueFunction(function(frame)
---     return UnitHealth(frame.unitID) / UnitHealthMax(frame.unitID)
+--     return UnitHealth(frame.unit) / UnitHealthMax(frame.unit)
 -- end)
 function moduleTypes.statusbar.__index:SetValueFunction(func)
 	--@alpha@
@@ -223,7 +223,7 @@ end
 -- @name IconModule:AddPercentFunction
 -- @param func function that returns a number within [0, 1]
 -- @usage MyModule:SetValueFunction(function(frame)
---     return UnitHealth(frame.unitID) / UnitHealthMax(frame.unitID)
+--     return UnitHealth(frame.unit) / UnitHealthMax(frame.unit)
 -- end)
 function moduleTypes.icon.__index:SetTextureFunction(func)
 	--@alpha@
@@ -816,7 +816,7 @@ function PitBull4.MakeSingletonFrame(unitID)
 	frame.is_wacky = is_wacky;
 	(is_wacky and wacky_frames or non_wacky_frames)[frame] = true
 	
-	frame.unitID = unitID
+	frame.unit = unitID
 	unitID_to_frames[unitID][frame] = true
 	
 	frame:SetAttribute("unit", unitID)
@@ -869,7 +869,7 @@ PitBull4.Utils.AddTimer(function(elapsed, currentTime)
 	nextTime = currentTime + 0.15
 	
 	for frame in PitBull4.IterateWackyFrames() do
-		frame:UpdateGUID(UnitGUID(frame.unitID))
+		frame:UpdateGUID(UnitGUID(frame.unit))
 	end
 end)
 

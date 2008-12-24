@@ -11,7 +11,7 @@ local PitBull4_ReputationBar = PitBull4.NewModule("ReputationBar", "Reputation B
 }, "statusbar")
 
 function PitBull4_ReputationBar.GetValue(frame)
-	if frame.unitID ~= "player" then
+	if frame.unit ~= "player" then
 		return nil
 	end
 	

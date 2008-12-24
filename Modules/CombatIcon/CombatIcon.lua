@@ -9,7 +9,7 @@ local PitBull4_CombatIcon = PitBull4.NewModule("CombatIcon", "Combat Icon", "Sho
 }, "icon")
 
 function PitBull4_CombatIcon.GetTexture(frame)
-	-- if UnitAffectingCombat(frame.unitID) then
+	-- if UnitAffectingCombat(frame.unit) then
 		return [[Interface\CharacterFrame\UI-StateIcon]], 0.57, 0.90, 0.08, 0.41
 	-- else
 	-- 	return nil

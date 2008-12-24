@@ -10,7 +10,7 @@ local PitBull4_HealthBar = PitBull4.NewModule("HealthBar", "Health Bar", "Show a
 }, "statusbar")
 
 function PitBull4_HealthBar.GetValue(frame)
-	return UnitHealth(frame.unitID) / UnitHealthMax(frame.unitID)
+	return UnitHealth(frame.unit) / UnitHealthMax(frame.unit)
 end
 
 function PitBull4_HealthBar.GetColor(frame)
@@ -31,8 +31,8 @@ end
 PitBull4_HealthBar:SetValueFunction('GetValue')
 PitBull4_HealthBar:SetColorFunction('GetColor')
 
-function PitBull4_HealthBar.UNIT_HEALTH(event, unitID)
-	PitBull4_HealthBar:UpdateForUnitID(unitID)
+function PitBull4_HealthBar.UNIT_HEALTH(event, unit)
+	PitBull4_HealthBar:UpdateForUnitID(unit)
 end
 
 PitBull4.Utils.AddEventListener("UNIT_HEALTH", PitBull4_HealthBar.UNIT_HEALTH)

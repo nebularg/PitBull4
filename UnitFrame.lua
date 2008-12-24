@@ -6,7 +6,7 @@
 -- @field classificationDB the database table for the Unit Frame's classification
 -- @field layout the layout of the Unit Frame's classification
 -- @field layoutDB the database table for the layout of the UnitFrame's classification
--- @field unitID the unitID of the Unit Frame. Can be nil.
+-- @field unit the unitID of the Unit Frame. Can be nil.
 -- @field guid the current GUID of the Unit Frame. Can be nil.
 local UnitFrame = {}
 
@@ -83,8 +83,8 @@ end
 
 function UnitFrame__scripts:OnEnter()
 	GameTooltip_SetDefaultAnchor(GameTooltip, self)
-	GameTooltip:SetUnit(self.unitID)
-	local r, g, b = GameTooltip_UnitColor(self.unitID)
+	GameTooltip:SetUnit(self.unit)
+	local r, g, b = GameTooltip_UnitColor(self.unit)
 	GameTooltipTextLeft1:SetTextColor(r, g, b)
 	
 	PitBull4.RunFrameScriptHooks("OnEnter", self)
@@ -98,7 +98,7 @@ end
 
 function UnitFrame__scripts:OnShow()
 	if self.is_wacky then
-		self:UpdateGUID(UnitGUID(self.unitID))
+		self:UpdateGUID(UnitGUID(self.unit))
 	end
 end
 
@@ -164,8 +164,8 @@ end
 --- Check the guid of the Unit Frame, if it is changed, then update the frame.
 -- @param guid result from UnitGUID(unitID)
 -- @param forceUpdate force an update even if the guid isn't changed, but is non-nil
--- @usage frame:UpdateGUID(UnitGUID(frame.unitID))
--- @usage frame:UpdateGUID(UnitGUID(frame.unitID), true)
+-- @usage frame:UpdateGUID(UnitGUID(frame.unit))
+-- @usage frame:UpdateGUID(UnitGUID(frame.unit), true)
 function UnitFrame:UpdateGUID(guid)
 	--@alpha@
 	expect(guid, 'typeof', 'string;nil')
