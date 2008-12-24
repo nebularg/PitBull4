@@ -6,14 +6,21 @@ if not PitBull4 then
 end
 
 local PitBull4_CombatIcon = PitBull4.NewModule("CombatIcon", "Combat Icon", "Show an icon based on whether or not the unit is in combat.", {}, {
+	attachTo = "root",
+	location = "edge_bottom_left",
+	position = 1,
 }, "icon")
 
 function PitBull4_CombatIcon.GetTexture(frame)
-	-- if UnitAffectingCombat(frame.unit) then
+	if UnitAffectingCombat(frame.unit) then
 		return [[Interface\CharacterFrame\UI-StateIcon]], 0.57, 0.90, 0.08, 0.41
-	-- else
-	-- 	return nil
-	-- end
+	else
+		return nil
+	end
 end
 
 PitBull4_CombatIcon:SetTextureFunction('GetTexture')
+
+PitBull4.Utils.AddTimer(function()
+	PitBull4_CombatIcon:UpdateAll()
+end)

@@ -1,3 +1,37 @@
+-- CONSTANTS ----------------------------------------------------------------
+
+-- size in pixels of icons at 100% scaled
+local ICON_SIZE = 15
+
+-- how many width points the center bars take up if at least one exists
+local CENTER_WIDTH_POINTS = 10
+
+-- how far in pixels that icons are spaced away from the frame if set to Outside, something
+local ICON_OUT_ROOT_MARGIN = 5
+
+-- how far into the frame from the sides for something like Outside, Left-Above
+local ICON_OUT_ROOT_BORDER = 2
+
+-- how far in pixels that icons are vertically spaced away from the edge of the frame if set to Inside, something
+local ICON_IN_ROOT_VERTICAL_MARGIN = 5
+
+-- how far in pixels that icons are horizontally spaced away from the edge of the frame if set to Inside, something
+local ICON_IN_ROOT_HORIZONTAL_MARGIN = 2
+
+-- how far in pixels that icons are horizontally placed inside bars if they are not set to Outside, Left or Right
+local ICON_BAR_INSIDE_HORIZONTAL_SPACING = 3
+
+-- how far in pixels that icons are vertically placed inside bars if they are not set to Outside, Left or Right
+local ICON_BAR_INSIDE_VERTICAL_SPACING = 3
+
+-- how far in pixels that icons are placed outside bars if they are set to Outside, Left or Right
+local ICON_BAR_OUTSIDE_SPACING = 3
+
+-- how many pixels between adjacent icons
+local ICON_SPACING_BETWEEN = 3
+
+-----------------------------------------------------------------------------
+
 --- A Unit Frame created by PitBull4
 -- @class table
 -- @name UnitFrame
@@ -181,14 +215,14 @@ function UnitFrame:UpdateGUID(guid)
 end
 
 -- sort the bars in the order specified by the layout
-local sort_bars
+local sort_positions
 do
 	local layoutDB
 	local function helper(alpha, bravo)
 		return layoutDB[alpha].position < layoutDB[bravo].position
 	end
 
-	function sort_bars(bars, frame)
+	function sort_positions(bars, frame)
 		layoutDB = frame.layoutDB
 		table.sort(bars, helper)
 		layoutDB = nil
@@ -215,12 +249,26 @@ local function get_all_bars(frame)
 		end
 	end
 	
-	sort_bars(bars, frame)
+	sort_positions(bars, frame)
 	
 	return bars,
 		filter_bars_for_side(frame.layoutDB, bars, 'center'),
 		filter_bars_for_side(frame.layoutDB, bars, 'left'),
 		filter_bars_for_side(frame.layoutDB, bars, 'right')
+end
+
+local function get_all_icons(frame)
+	local icons = new()
+	
+	for id, module in PitBull4.IterateModulesOfType('icon', true) do
+		if frame[id] then
+			icons[#icons+1] = id
+		end
+	end
+	
+	sort_positions(icons, frame)
+	
+	return icons
 end
 
 -- figure out the total width and height points for a frame based on its bars
@@ -233,8 +281,8 @@ local function calculate_width_height_points(layoutDB, center_bars, left_bars, r
 	end
 	
 	if #center_bars > 0 then
-		-- the center takes up 10 width points if it exists
-		bar_width_points = 10
+		-- the center takes up CENTER_WIDTH_POINTS width points if it exists
+		bar_width_points = CENTER_WIDTH_POINTS
 	end
 	
 	for _, id in ipairs(left_bars) do
@@ -247,61 +295,59 @@ local function calculate_width_height_points(layoutDB, center_bars, left_bars, r
 	return bar_width_points, bar_height_points
 end
 
---- Reposition all controls on the Unit Frame
--- @usage frame:UpdateLayout()
-function UnitFrame:UpdateLayout()
+local function update_bar_layout(self)
 	local bars, center_bars, left_bars, right_bars = get_all_bars(self)
-	
+
 	local width, height = self:GetWidth(), self:GetHeight()
-	
+
 	local layoutDB = self.layoutDB
-	
+
 	local bar_width_points, bar_height_points = calculate_width_height_points(layoutDB, center_bars, left_bars, right_bars)
-	
+
 	local bar_height_per_point = height/bar_height_points
 	local bar_width_per_point = width/bar_width_points
-	
+
 	local last_x = 0
 	for _, id in ipairs(left_bars) do
 		local bar = self[id]
 		bar:ClearAllPoints()
-		
+	
 		bar:SetPoint("TOPLEFT", self, "TOPLEFT", last_x, 0)
 		local bar_width = layoutDB[id].size * bar_width_per_point
 		last_x = last_x + bar_width
 		bar:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", last_x, 0)
-		
+	
 		bar:SetOrientation("VERTICAL")
 	end
 	local left = last_x
-	
+
 	last_x = 0
 	for _, id in ipairs(right_bars) do
 		local bar = self[id]
 		bar:ClearAllPoints()
-		
+	
 		bar:SetPoint("TOPRIGHT", self, "TOPRIGHT", last_x, 0)
 		local bar_width = layoutDB[id].size * bar_width_per_point
 		last_x = last_x - bar_width
 		bar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", last_x, 0)
-		
+	
 		bar:SetOrientation("VERTICAL")
 	end
 	local right = last_x
-	
+
 	local last_y = 0
 	for i, id in ipairs(center_bars) do
 		local bar = self[id]
 		bar:ClearAllPoints()
-		
+	
 		bar:SetPoint("TOPLEFT", self, "TOPLEFT", left, last_y)
 		local bar_height = layoutDB[id].size * bar_height_per_point
 		last_y = last_y - bar_height
 		bar:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", right, last_y)
-		
+	
 		bar:SetOrientation("HORIZONTAL")
 	end
-	
+
 	for _, id in ipairs(bars) do
 		local bar = self[id]
 		local bar_layoutDB = layoutDB[id]
@@ -310,11 +356,286 @@ function UnitFrame:UpdateLayout()
 		bar:SetNormalAlpha(bar_layoutDB.alpha)
 		bar:SetBackgroundAlpha(bar_layoutDB.bgAlpha)
 	end
-	
+
 	bars = del(bars)
 	center_bars = del(center_bars)
 	left_bars = del(left_bars)
 	right_bars = del(right_bars)
+end
+
+local function get_half_width(frame, icons)
+	local num = 0
+	
+	local layoutDB = frame.layoutDB
+	
+	for _, icon in ipairs(icons) do
+		num = layoutDB[icon.id].size * ICON_SIZE
+	end
+	
+	num = num + (#icons - 1) * ICON_SPACING_BETWEEN
+	
+	return num / 2
+end
+
+local position_icon_on_root = {}
+function position_icon_on_root:out_top_left(icon)
+	icon:SetPoint("BOTTOMLEFT", self, "TOPLEFT", ICON_OUT_ROOT_BORDER, ICON_OUT_ROOT_MARGIN)
+end
+function position_icon_on_root:out_top_right(icon)
+	icon:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -ICON_OUT_ROOT_BORDER, ICON_OUT_ROOT_MARGIN)
+end
+function position_icon_on_root:out_top(icon, _, _, icons)
+	icon:SetPoint("BOTTOMLEFT", self, "TOP", -get_half_width(self, icons), ICON_OUT_ROOT_MARGIN)
+end
+function position_icon_on_root:out_bottom_left(icon)
+	icon:SetPoint("TOPLEFT", self, "BOTTOMLEFT", ICON_OUT_ROOT_BORDER, -ICON_OUT_ROOT_MARGIN)
+end
+function position_icon_on_root:out_bottom_right(icon)
+	icon:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", -ICON_OUT_ROOT_BORDER, -ICON_OUT_ROOT_MARGIN)
+end
+function position_icon_on_root:out_bottom(icon, _, _, icons)
+	icon:SetPoint("TOPLEFT", self, "BOTTOM", -get_half_width(self, icons), ICON_OUT_ROOT_MARGIN)
+end
+function position_icon_on_root:out_left_top(icon)
+	icon:SetPoint("TOPRIGHT", self, "TOPLEFT", -ICON_OUT_ROOT_MARGIN, -ICON_OUT_ROOT_BORDER)
+end
+function position_icon_on_root:out_left(icon)
+	icon:SetPoint("RIGHT", self, "LEFT", -ICON_OUT_ROOT_MARGIN, 0)
+end
+function position_icon_on_root:out_left_bottom(icon)
+	icon:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", -ICON_OUT_ROOT_MARGIN, ICON_OUT_ROOT_BORDER)
+end
+function position_icon_on_root:out_right_top(icon)
+	icon:SetPoint("TOPLEFT", self, "TOPRIGHT", ICON_OUT_ROOT_MARGIN, -ICON_OUT_ROOT_BORDER)
+end
+function position_icon_on_root:out_right(icon)
+	icon:SetPoint("LEFT", self, "RIGHT", ICON_OUT_ROOT_MARGIN, 0)
+end
+function position_icon_on_root:out_right_bottom(icon)
+	icon:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", ICON_OUT_ROOT_MARGIN, ICON_OUT_ROOT_BORDER)
+end
+function position_icon_on_root:in_center(icon, _, _, icons)
+	icon:SetPoint("LEFT", self, "CENTER", -get_half_width(self, icons), 0)
+end
+function position_icon_on_root:in_top_left(icon)
+	icon:SetPoint("TOPLEFT", self, "TOPLEFT", ICON_IN_ROOT_HORIZONTAL_MARGIN, -ICON_IN_ROOT_VERTICAL_MARGIN)
+end
+function position_icon_on_root:in_top(icon, _, _, icons)
+	icon:SetPoint("TOPLEFT", self, "TOP", -get_half_width(self, icons), -ICON_IN_ROOT_VERTICAL_MARGIN)
+end
+function position_icon_on_root:in_top_left(icon)
+	icon:SetPoint("TOPRIGHT", self, "TOPRIGHT", -ICON_IN_ROOT_HORIZONTAL_MARGIN, -ICON_IN_ROOT_VERTICAL_MARGIN)
+end
+function position_icon_on_root:in_bottom_left(icon)
+	icon:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", ICON_IN_ROOT_HORIZONTAL_MARGIN, -ICON_IN_ROOT_VERTICAL_MARGIN)
+end
+function position_icon_on_root:in_bottom(icon, _, _, icons)
+	icon:SetPoint("BOTTOMLEFT", self, "BOTTOM", -get_half_width(self, icons), -ICON_IN_ROOT_VERTICAL_MARGIN)
+end
+function position_icon_on_root:in_bottom_left(icon)
+	icon:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -ICON_IN_ROOT_HORIZONTAL_MARGIN, -ICON_IN_ROOT_VERTICAL_MARGIN)
+end
+function position_icon_on_root:in_left(icon)
+	icon:SetPoint("LEFT", self, "LEFT", ICON_IN_ROOT_HORIZONTAL_MARGIN, 0)
+end
+function position_icon_on_root:in_right(icon)
+	icon:SetPoint("RIGHT", self, "RIGHT", -ICON_IN_ROOT_HORIZONTAL_MARGIN, 0)
+end
+function position_icon_on_root:edge_top_left(icon)
+	icon:SetPoint("CENTER", self, "TOPLEFT", 0, 0)
+end
+function position_icon_on_root:edge_top(icon, _, _, icons)
+	icon:SetPoint("LEFT", self, "TOP", -get_half_width(self, icons), 0)
+end
+function position_icon_on_root:edge_top_right(icon)
+	icon:SetPoint("CENTER", self, "TOPRIGHT", 0, 0)
+end
+function position_icon_on_root:edge_left(icon)
+	icon:SetPoint("CENTER", self, "LEFT", 0, 0)
+end
+function position_icon_on_root:edge_right(icon)
+	icon:SetPoint("CENTER", self, "RIGHT", 0, 0)
+end
+function position_icon_on_root:edge_bottom_left(icon)
+	icon:SetPoint("CENTER", self, "BOTTOMLEFT", 0, 0)
+end
+function position_icon_on_root:edge_bottom(icon, _, _, icons)
+	icon:SetPoint("LEFT", self, "BOTTOM", -get_half_width(self, icons), 0)
+end
+function position_icon_on_root:edge_bottom_right(icon)
+	icon:SetPoint("CENTER", self, "BOTTOMRIGHT", 0, 0)
+end
+
+local position_icon_on_bar = {}
+function position_icon_on_bar:left(icon, bar)
+	icon:SetPoint("LEFT", bar, "LEFT", ICON_BAR_INSIDE_HORIZONTAL_SPACING, 0)
+end
+function position_icon_on_bar:center(icon, bar, _, icons)
+	icon:SetPoint("LEFT", bar, "CENTER", -get_half_width(self, icons), 0)
+end
+function position_icon_on_bar:right(icon, bar)
+	icon:SetPoint("RIGHT", bar, "RIGHT", -ICON_BAR_INSIDE_HORIZONTAL_SPACING, 0)
+end
+function position_icon_on_bar:top(icon, bar)
+	icon:SetPoint("TOPLEFT", bar, "TOP", -get_half_width(self, "top"), -ICON_BAR_INSIDE_VERTICAL_SPACING)
+end
+function position_icon_on_bar:bottom(icon, bar, _, icons)
+	icon:SetPoint("BOTTOMLEFT", bar, "BOTTOM", -get_half_width(self, icons), ICON_BAR_INSIDE_VERTICAL_SPACING)
+end
+function position_icon_on_bar:top_left(icon, bar)
+	icon:SetPoint("TOPLEFT", bar, "TOPLEFT", ICON_BAR_INSIDE_HORIZONTAL_SPACING, -ICON_BAR_INSIDE_VERTICAL_SPACING)
+end
+function position_icon_on_bar:top_right(icon, bar)
+	icon:SetPoint("TOPRIGHT", bar, "TOPRIGHT", -ICON_BAR_INSIDE_HORIZONTAL_SPACING, -ICON_BAR_INSIDE_VERTICAL_SPACING)
+end
+function position_icon_on_bar:bottom_left(icon, bar)
+	icon:SetPoint("BOTTOMLEFT", bar, "BOTTOMLEFT", ICON_BAR_INSIDE_HORIZONTAL_SPACING, ICON_BAR_INSIDE_VERTICAL_SPACING)
+end
+function position_icon_on_bar:bottom_right(icon, bar)
+	icon:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", -ICON_BAR_INSIDE_HORIZONTAL_SPACING, ICON_BAR_INSIDE_VERTICAL_SPACING)
+end
+function position_icon_on_bar:out_right(icon, bar)
+	icon:SetPoint("LEFT", bar, "RIGHT", ICON_BAR_OUTSIDE_SPACING, 0)
+end
+function position_icon_on_bar:out_left(icon, bar)
+	icon:SetPoint("RIGHT", bar, "LEFT", -ICON_BAR_OUTSIDE_SPACING, 0)
+end
+
+local position_next_icon_on_root = {}
+function position_next_icon_on_root:out_top_left(icon, _, last_icon)
+	icon:SetPoint("LEFT", last_icon, "RIGHT", ICON_SPACING_BETWEEN, 0)
+end
+position_next_icon_on_root.out_top = position_next_icon_on_root.out_top_left
+position_next_icon_on_root.out_bottom_left = position_next_icon_on_root.out_top_left
+position_next_icon_on_root.out_bottom = position_next_icon_on_root.out_top_left
+position_next_icon_on_root.out_right_top = position_next_icon_on_root.out_top_left
+position_next_icon_on_root.out_right = position_next_icon_on_root.out_top_left
+position_next_icon_on_root.out_right_bottom = position_next_icon_on_root.out_top_left
+position_next_icon_on_root.in_center = position_next_icon_on_root.out_top_left
+position_next_icon_on_root.in_top_left = position_next_icon_on_root.out_top_left
+position_next_icon_on_root.in_top = position_next_icon_on_root.out_top_left
+position_next_icon_on_root.in_bottom_left = position_next_icon_on_root.out_top_left
+position_next_icon_on_root.in_bottom = position_next_icon_on_root.out_top_left
+position_next_icon_on_root.in_left = position_next_icon_on_root.out_top_left
+position_next_icon_on_root.edge_top_left = position_next_icon_on_root.out_top_left
+position_next_icon_on_root.edge_top = position_next_icon_on_root.out_top_left
+position_next_icon_on_root.edge_left = position_next_icon_on_root.out_top_left
+position_next_icon_on_root.edge_bottom_left = position_next_icon_on_root.out_top_left
+position_next_icon_on_root.edge_bottom = position_next_icon_on_root.out_top_left
+function position_next_icon_on_root:out_top_right(icon, _, last_icon)
+	icon:SetPoint("RIGHT", last_icon, "LEFT", -ICON_SPACING_BETWEEN, 0)
+end
+position_next_icon_on_root.out_bottom_right = position_next_icon_on_root.out_top_right
+position_next_icon_on_root.out_left_top = position_next_icon_on_root.out_top_right
+position_next_icon_on_root.out_left = position_next_icon_on_root.out_top_right
+position_next_icon_on_root.out_left_bottom = position_next_icon_on_root.out_top_right
+position_next_icon_on_root.in_top_right = position_next_icon_on_root.out_top_right
+position_next_icon_on_root.in_bottom_right = position_next_icon_on_root.out_top_right
+position_next_icon_on_root.in_right = position_next_icon_on_root.out_top_right
+position_next_icon_on_root.edge_top_right = position_next_icon_on_root.out_top_right
+position_next_icon_on_root.edge_right = position_next_icon_on_root.out_top_right
+position_next_icon_on_root.edge_bottom_right = position_next_icon_on_root.out_top_right
+
+local position_next_icon_on_bar = {}
+function position_next_icon_on_bar:left(icon, bar, last_icon)
+	icon:SetPoint("LEFT", last_icon, "RIGHT", ICON_SPACING_BETWEEN, 0)
+end
+position_next_icon_on_bar.center = position_next_icon_on_bar.left
+position_next_icon_on_bar.out_right = position_next_icon_on_bar.left
+position_next_icon_on_bar.top_left = position_next_icon_on_bar.left
+position_next_icon_on_bar.top = position_next_icon_on_bar.left
+position_next_icon_on_bar.bottom_left = position_next_icon_on_bar.left
+position_next_icon_on_bar.bottom = position_next_icon_on_bar.left
+function position_next_icon_on_bar:right(icon, bar, last_icon)
+	icon:SetPoint("RIGHT", last_icon, "LEFT", -ICON_SPACING_BETWEEN, 0)
+end
+position_next_icon_on_bar.out_left = position_next_icon_on_bar.right
+position_next_icon_on_bar.top_right = position_next_icon_on_bar.right
+position_next_icon_on_bar.bottom_right = position_next_icon_on_bar.right
+
+local function position_icon(root, icon, attach_frame, last_icon, location, location_icons)
+	local func
+	if root == last_icon then
+		if root == attach_frame then
+			func = position_icon_on_root[location]
+		else
+			func = position_icon_on_bar[location]
+		end
+	else
+		if root == attach_frame then
+			func = position_next_icon_on_root[location]
+		else
+			func = position_next_icon_on_bar[location]
+		end
+	end
+	if func then
+		func(root, icon, attach_frame, last_icon, location_icons)
+	end
+end
+
+local function update_icon_layout(self)
+	local icons = get_all_icons(self)
+
+	local attachments = new()
+	
+	local layoutDB = self.layoutDB
+	
+	for _, id in ipairs(icons) do
+		local icon = self[id]
+		local icon_layoutDB = layoutDB[id]
+	
+		local attachTo = icon_layoutDB.attachTo
+		local attach_frame
+		if attachTo == "root" then
+			attach_frame = self
+		else
+			attach_frame = self[attachTo]
+		end
+		
+		local location = icon_layoutDB.location
+		
+		if attach_frame then
+			local size = ICON_SIZE * icon_layoutDB.size
+			icon:SetWidth(size)
+			icon:SetHeight(size)
+			icon:ClearAllPoints()
+			
+			local attachments_attach_frame = attachments[attach_frame]
+			if not attachments_attach_frame then
+				attachments_attach_frame = new()
+				attachments[attach_frame] = attachments_attach_frame
+			end
+			
+			local attachments_attach_frame_location = attachments_attach_frame[location]
+			if not attachments_attach_frame_location then
+				attachments_attach_frame_location = new()
+				attachments_attach_frame[location] = attachments_attach_frame_location
+			end
+			
+			attachments_attach_frame_location[#attachments_attach_frame_location+1] = icon
+		end
+	end
+
+	for attach_frame, attachments_attach_frame in pairs(attachments) do
+		for location, loc_icons in pairs(attachments_attach_frame) do
+			local last = self
+			for _, icon in ipairs(loc_icons) do
+				position_icon(self, icon, attach_frame, last, location, loc_icons)
+				last = icon
+			end
+			attachments_attach_frame[location] = del(icons)
+		end
+		attachments[attach_frame] = del(attachments_attach_frame)
+	end
+	attachments = del(attachments)
+	icons = del(icons)
+end
+
+--- Reposition all controls on the Unit Frame
+-- @usage frame:UpdateLayout()
+function UnitFrame:UpdateLayout()
+	update_bar_layout(self)
+	update_icon_layout(self)
 end
 
 local function iter(frame, id)

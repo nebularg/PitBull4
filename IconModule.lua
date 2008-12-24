@@ -3,6 +3,9 @@ local PitBull4 = _G.PitBull4
 
 local IconModule = PitBull4:NewModuleType("icon", {
 	size = 1,
+	attachTo = "root",
+	location = "edge_top_left",
+	position = 1,
 })
 
 local texture_funcs = {}
@@ -106,14 +109,12 @@ function IconModule:UpdateForUnitID(unitID)
 	end
 end
 
---- Update the icon for the current module for all frames that have the icon.
+--- Update the icon for the current module for all frames.
 -- @usage MyModule:UpdateAll()
 function IconModule:UpdateAll()
 	local id = self.id
 	for frame in PitBull4.IterateFrames(true) do
-		if frame[id] then
-			self:Update(frame)
-		end
+		self:Update(frame)
 	end
 end
 

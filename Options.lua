@@ -137,6 +137,7 @@ function OpenConfig()
 	layout_options.args.icons = {
 		name = "Icons",
 		type = 'group',
+		childGroups = "tab",
 		args = {}
 	}
 
@@ -344,9 +345,211 @@ function OpenConfig()
 		end
 		if layout_functions[module] then
 			merge_onto(args, layout_functions[module]())
+			layout_functions[module] = false
 		end
 		
 		layout_options.args.bars.args[id] = {
+			name = module.name,
+			desc = module.description,
+			type = 'group',
+			args = args,
+		}
+	end
+	
+	local root_locations = {
+		out_top_left = "Outside, Above-left",
+		out_top = "Outside, Above-middle",
+		out_top_right = "Outside, Above-right",
+		out_bottom_left = "Outside, Below-left",
+		out_bottom = "Outside, Below",
+		out_bottom_right = "Outside, Below-right",
+		out_left_top = "Outside, Left-top",
+		out_left = "Outside, Left",
+		out_left_bottom = "Outside, Left-bottom",
+		out_right_top = "Outside, Right-top",
+		out_right = "Outside, Right",
+		out_right_bottom = "Outside, Right-bottom",
+		
+		in_center = "Inside, Middle",
+		in_top_left = "Inside, Top-left",
+		in_top = "Inside, Top",
+		in_top_right = "Inside, Top-right",
+		in_bottom_left = "Inside, Bottom-left",
+		in_bottom = "Inside, Bottom",
+		in_bottom_right = "Inside, Bottom-right",
+		in_left = "Inside, Left",
+		in_right = "Inside, Right",
+		
+		edge_top_left = "Edge, Top-left",
+		edge_top = "Edge, Top",
+		edge_top_right = "Edge, Top-right",
+		edge_left = "Edge, Left",
+		edge_right = "Edge, Right",
+		edge_bottom_left = "Edge, Bottom-left",
+		edge_bottom = "Edge, Bottom",
+		edge_bottom_right = "Edge, Bottom-right",
+	}
+	
+	local bar_locations = {
+		out_left = "Outside, left",
+		left = "Left",
+		center = "Middle",
+		right = "Right",
+		out_right = "Outside, right",
+	}
+	
+	local icon_args = {
+		enable = {
+			type = 'toggle',
+			name = "Enable",
+			order = 1,
+			get = function(info)
+				return not GetLayoutDB()[info[3]].hidden
+			end,
+			set = function(info, value)
+				local db = GetLayoutDB()[info[3]]
+				db.hidden = not value
+				
+				UpdateFrames()
+			end
+		},
+		attachTo = {
+			type = 'select',
+			name = "Attach to",
+			order = 2,
+			get = function(info)
+				return GetLayoutDB()[info[3]].attachTo
+			end,
+			set = function(info, value)
+				local db = GetLayoutDB()[info[3]]
+				db.attachTo = value
+				
+				UpdateFrames()
+			end,
+			values = function(info)
+				local t = {}
+				
+				t["root"] = "Unit frame"
+				
+				for id, module in PitBull4.IterateModulesOfType("statusbar", true) do
+					t[id] = module.name
+				end
+				
+				return t
+			end,
+		},
+		location = {
+			type = 'select',
+			name = "Location",
+			order = 3,
+			get = function(info)
+				return GetLayoutDB()[info[3]].location
+			end,
+			set = function(info, value)
+				GetLayoutDB()[info[3]].location = value
+				
+				UpdateFrames()
+			end,
+			values = function(info)
+				local attachTo = GetLayoutDB()[info[3]].attachTo
+				if attachTo == "root" then
+					return root_locations
+				else
+					return bar_locations
+				end
+			end,
+		},
+		position = {
+			type = 'select',
+			name = "Position",
+			order = 4,
+			values = function(info)
+				local db = GetLayoutDB()
+				local attachTo = db[info[3]].attachTo
+				local location = db[info[3]].location
+				local t = {}
+				for other_id, other_module in PitBull4.IterateModulesOfType("icon", true) do
+					if attachTo == db[other_id].attachTo and location == db[other_id].location then
+						local position = db[other_id].position
+						while t[position] do
+							position = position + 1e-5
+							db[other_id].position = position
+						end
+						t[position] = other_module.name
+					end
+				end
+				return t
+			end,
+			get = function(info)
+				local id = info[3]
+				return GetLayoutDB()[id].position
+			end,
+			set = function(info, new_position)
+				local db = GetLayoutDB()
+				local id = info[3]
+				
+				local id_to_position = {}
+				local icons = {}
+				
+				local old_position = db[id].position
+				
+				for other_id, other_module in PitBull4.IterateModulesOfType("icon", false) do
+					local other_position = db[other_id].position
+					if other_id == id then
+						other_position = new_position
+					elseif other_position >= old_position and other_position <= new_position then
+						other_position = other_position - 1
+					elseif other_position <= old_position and other_position >= new_position then
+						other_position = other_position + 1
+					end
+					
+					id_to_position[other_id] = other_position
+					icons[#icons+1] = other_id
+				end
+				
+				table.sort(icons, function(alpha, bravo)
+					return id_to_position[alpha] < id_to_position[bravo]
+				end)
+				
+				for position, icon_id in ipairs(icons) do
+					db[icon_id].position = position
+				end
+				
+				UpdateFrames()
+			end
+		},
+		size = {
+			type = 'range',
+			name = "Size",
+			order = 5,
+			get = function(info)
+				return GetLayoutDB()[info[3]].size
+			end,
+			set = function(info, value)
+				local db = GetLayoutDB()[info[3]]
+				db.size = value
+				
+				UpdateFrames()
+			end,
+			min = 0.5,
+			max = 4,
+			step = 0.01,
+			bigStep = 0.05,
+			isPercent = true,
+		}
+	}
+	
+	for id, module in PitBull4.IterateModulesOfType("icon") do
+		local args = {}
+		for k, v in pairs(icon_args) do
+			args[k] = v
+		end
+		if layout_functions[module] then
+			merge_onto(args, layout_functions[module]())
+			layout_functions[module] = false
+		end
+		
+		layout_options.args.icons.args[id] = {
 			name = module.name,
 			desc = module.description,
 			type = 'group',
@@ -358,5 +561,3 @@ function OpenConfig()
 	
 	return OpenConfig()
 end
-
-function print(...) Rock("LibRockConsole-1.0"):PrintLiteral(...) end
