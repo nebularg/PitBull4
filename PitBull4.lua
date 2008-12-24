@@ -1,6 +1,22 @@
+-- CONSTANTS ----------------------------------------------------------------
+local SINGLETON_CLASSIFICATIONS = {
+	"player",
+	"pet",
+	"pettarget",
+	"target",
+	"targettarget",
+	"targettargettarget",
+	"focus",
+	"focustarget",
+	"focustargettarget",
+}
+-----------------------------------------------------------------------------
+
 local _G = _G
 local PitBull4 = _G.PitBull4
 local PitBull4_Utils = PitBull4.Utils
+
+PitBull4.SINGLETON_CLASSIFICATIONS = SINGLETON_CLASSIFICATIONS
 
 local db
 
@@ -471,10 +487,6 @@ function PitBull4.MakeSingletonFrame(unitID)
 	frame.classificationDB = db.classifications[classification]
 	classification_to_frames[classification][frame] = true
 	
-	local layout = frame.classificationDB.layout
-	frame.layout = layout
-	frame.layoutDB = db.layouts[layout]
-	
 	local is_wacky = PitBull4.Utils.IsWackyClassification(classification)
 	frame.is_wacky = is_wacky;
 	(is_wacky and wacky_frames or non_wacky_frames)[frame] = true
@@ -487,13 +499,13 @@ function PitBull4.MakeSingletonFrame(unitID)
 	
 	PitBull4.ConvertIntoUnitFrame(frame)
 	
-	frame:SetWidth(frame.layoutDB.size_x)
-	frame:SetHeight(frame.layoutDB.size_y)
 	frame:SetPoint("CENTER",
 		UIParent,
 		"CENTER", 
 		frame.classificationDB.position_x,
 		frame.classificationDB.position_y)
+	
+	frame:RefreshLayout()
 	
 	frame:UpdateGUID(UnitGUID(unitID))
 	
@@ -540,14 +552,10 @@ local function create_frames()
 	create_frames = nil
 	
 	local db_classifications = db.classifications
-	if not db_classifications.player.hidden then
-		PitBull4.MakeSingletonFrame("player")
-	end
-	if not db_classifications.target.hidden then
-		PitBull4.MakeSingletonFrame("target")
-	end
-	if not db_classifications.targettarget.hidden then
-		PitBull4.MakeSingletonFrame("targettarget")
+	for _, classification in ipairs(SINGLETON_CLASSIFICATIONS) do
+		if not db_classifications[classification].hidden then
+			PitBull4.MakeSingletonFrame(classification)
+		end
 	end
 end
 

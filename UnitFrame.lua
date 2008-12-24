@@ -164,6 +164,18 @@ function PitBull4.ConvertIntoUnitFrame(frame, isExampleFrame)
 	end
 end
 
+function UnitFrame:RefreshLayout()
+	local old_layout = self.layout
+	local layout = self.classificationDB.layout
+	self.layout = layout
+	self.layoutDB = PitBull4.db.layouts[layout]
+	self:SetWidth(self.layoutDB.size_x)
+	self:SetHeight(self.layoutDB.size_y)
+	if old_layout then
+		self:Update(true, true)
+	end
+end
+
 --- Update all details about the UnitFrame, possibly after a GUID change
 -- @param sameGUID whether the previous GUID is the same as the current, at which point is less crucial to update
 -- @param updateLayout whether to update the layout no matter what

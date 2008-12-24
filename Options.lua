@@ -85,6 +85,18 @@ local function merge_onto(dict, ...)
 	end
 end
 
+local function deep_copy(data)
+	local t = {}
+	for k, v in pairs(data) do
+		if type(v) == "table" then
+			t[k] = deep_copy(v)
+		else
+			t[k] = v
+		end
+	end
+	return t
+end
+
 function OpenConfig()
 	-- redefine it so that we just open up the pane next time
 	function OpenConfig()
@@ -109,14 +121,23 @@ function OpenConfig()
 		childGroups = "tab",
 	}
 	options.args.layout_options = layout_options
-
+	
+	local unit_options = {
+		type = 'group',
+		name = "Units",
+		args = {},
+	}
+	options.args.unit_options = unit_options
+	
 	layout_options.args.current_layout = {
 		name = "Current layout",
 		type = 'select',
 		order = 1,
 		values = function(info)
 			local t = {}
-			t["Normal"] = "Normal"
+			for name in pairs(PitBull4.db.layouts) do
+				t[name] = name
+			end
 			return t
 		end,
 		get = function(info)
@@ -125,6 +146,25 @@ function OpenConfig()
 		set = function(info, value)
 			CURRENT_LAYOUT = value
 		end
+	}
+	
+	layout_options.args.new_layout = {
+		name = "New layout",
+		desc = "This will copy the data of the currently-selected layout.",
+		type = 'input',
+		get = function(info) return "" end,
+		set = function(info, value)
+			local old_db = PitBull4.Options.GetLayoutDB()
+			
+			PitBull4.db.layouts[value] = deep_copy(old_db)
+			
+			CURRENT_LAYOUT = value
+		end,
+		validate = function(info, value)
+			if value:len() < 3 then
+				return "Must be at least 3 characters long."
+			end
+		end,
 	}
 
 	layout_options.args.bars = {
@@ -554,6 +594,51 @@ function OpenConfig()
 			desc = module.description,
 			type = 'group',
 			args = args,
+		}
+	end
+	
+	for i, classification in ipairs(PitBull4.SINGLETON_CLASSIFICATIONS) do
+		unit_options.args[classification] = {
+			type = 'group',
+			inline = true,
+			name = PitBull4.Utils.GetLocalizedClassification(classification),
+			order = i,
+			args = {
+				layout = {
+					name = "Layout",
+					type = 'select',
+					order = 1,
+					values = function(info)
+						local t = {}
+						-- t[""] = ("Disable %s"):format(PitBull4.Utils.GetLocalizedClassification(classification))
+						for name in pairs(PitBull4.db.layouts) do
+							t[name] = name
+						end
+						return t
+					end,
+					get = function(info)
+						local db = PitBull4.db.classifications[classification]
+						if db.hidden then
+							return ""
+						else
+							return db.layout
+						end
+					end,
+					set = function(info, value)
+						if value == "" then
+							-- TODO: handle this properly
+							PitBull4.db.classifications[classification].hidden = true
+						else
+							PitBull4.db.classifications[classification].hidden = false
+							PitBull4.db.classifications[classification].layout = value
+						end
+					
+						for frame in PitBull4.IterateFramesForClassification(classification, false) do
+							frame:RefreshLayout()
+						end
+					end
+				}
+			}
 		}
 	end
 	

@@ -309,6 +309,43 @@ do
 end
 
 do
+	local classifications = {player = "Player", target = "Target", pet = "Player's pet", party = "Party", party_sing = "Party", partypet = "Party pets", partypet_sing = "Party pet", raid = "Raid", raid_sing = "Raid", raidpet = "Raid pets", raidpet_sing = "Raid pet", mouseover = "Mouse-over", focus = "Focus", maintank = "Main tanks", maintank_sing = "Main tank", mainassist = "Main assists", mainassist_sing = "Main assist"}
+	setmetatable(classifications, {__index=function(self, group)
+		local nonTarget
+		local singular = false
+		if group:find("target$") then
+			nonTarget = group:sub(1, -7)
+		elseif group:find("target_sing$") then
+			singular = true
+			nonTarget = group:sub(1, -12)
+		else
+			self[group] = group
+			return group
+		end
+		local good
+		if group:find("^player") or group:find("^pet") or group:find("^mouseover") or group:find("^target") or group:find("^focus") then
+			good = ("%s's target"):format(self[nonTarget])
+		elseif singular then
+			good = ("%s target"):format(self[nonTarget .. "_sing"])
+		else
+			good = ("%s targets"):format(self[nonTarget .. "_sing"])
+		end
+		self[group] = good
+		return good
+	end})
+	
+	--- Return a localized form of the unit classification.
+	-- @param classification a unit classification, e.g. "player", "party", "partypet"
+	-- @usage PitBull4.Utils.GetLocalizedClassification("player") == "Player"
+	-- @usage PitBull4.Utils.GetLocalizedClassification("target") == "Player's target"
+	-- @usage PitBull4.Utils.GetLocalizedClassification("partypettarget") == "Party pet targets"
+	-- @return a localized string of the unit classification
+	function PitBull4.Utils.GetLocalizedClassification(classification)
+		return classifications[classification]
+	end
+end
+
+do
 	local inCombat = false
 	local actionsToPerform = {}
 	local pool = {}
