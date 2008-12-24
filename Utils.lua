@@ -384,3 +384,23 @@ do
 		return nil
 	end
 end
+
+--- Leave a function as-is or if a string is passed in, convert it to a namespace-method function call.
+-- @param namespace a table with the method func_name on it
+-- @param func_name a function (which would then just return) or a string, which is the name of the method.
+-- @usage PitBull4.Utils.ConvertMethodToFunction({}, function(value) return value end)("blah") == "blah"
+-- @usage PitBull4.Utils.ConvertMethodToFunction({ method = function(value) return value end }, "method")("blah") == "blah"
+-- @return a function
+function PitBull4.Utils.ConvertMethodToFunction(namespace, func_name)
+	if type(func_name) == "function" then
+		return func_name
+	end
+	
+	--@alpha@
+	expect(namespace[func_name], 'typeof', 'function')
+	--@end-alpha@
+	
+	return function(...)
+		return namespace[func_name](...)
+	end
+end
