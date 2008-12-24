@@ -659,12 +659,12 @@ function PitBull4.IterateFramesForLayout(layout, onlyShown)
 	return onlyShown and layout_shown_iter or layout_iter, layout
 end
 
---- call :UpdateLayout() on all frames with the given layout
+--- call :Update() on all frames with the given layout
 -- @param layout the layout to check
--- @usage PitBull4.UpdateLayoutForLayout("Normal")
-function PitBull4.UpdateLayoutForLayout(layout)
-	for frame in PitBull4.IterateFramesForLayout("Normal", true) do
-		frame:UpdateLayout()
+-- @usage PitBull4.UpdateForLayout("Normal")
+function PitBull4.UpdateForLayout(layout)
+	for frame in PitBull4.IterateFramesForLayout(layout, true) do
+		frame:Update(true, true)
 	end
 end
 

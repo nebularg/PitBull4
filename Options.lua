@@ -1,252 +1,317 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
-local LibSimpleOptions = LibStub and LibStub("LibSimpleOptions-1.0", true)
-if not LibSimpleOptions then
-	LoadAddOn("LibSimpleOptions-1.0")
-	LibSimpleOptions = LibStub and LibStub("LibSimpleOptions-1.0", true)
+local AceConfig = LibStub and LibStub("AceConfig-3.0", true)
+if not AceConfig then
+	LoadAddOn("Ace3")
+	AceConfig = LibStub and LibStub("AceConfig-3.0", true)
 	if not LibSimpleOptions then
-		message(("PitBull4 requires the library %q and will not work without it."):format("LibSimpleOptions-1.0"))
-		error(("PitBull4 requires the library %q and will not work without it."):format("LibSimpleOptions-1.0"))
+		message(("PitBull4 requires the library %q and will not work without it."):format("AceConfig-3.0"))
+		error(("PitBull4 requires the library %q and will not work without it."):format("AceConfig-3.0"))
+	end
+end
+local AceConfigDialog = LibStub("AceConfigDialog-3.0")
+
+local OpenConfig
+
+AceConfig:RegisterOptionsTable("PitBull4_Bliz", {
+	name = "PitBull Unit Frames 4.0",
+	handler = PitBull4,
+	type = 'group',
+	args = {
+		config = {
+			name = "Standalone config",
+			desc = "Open a standlone config window, allowing you to actually configure PitBull Unit Frames 4.0.",
+			type = 'execute',
+			func = function()
+				OpenConfig()
+			end
+		}
+	},
+})
+AceConfigDialog:AddToBlizOptions("PitBull4_Bliz", "PitBull Unit Frames 4.0")
+
+do
+	for i, cmd in ipairs { "/PitBull4", "/PitBull", "/PB4", "/PB", "/PBUF", "/Pit" } do
+		_G["SLASH_PITBULLFOUR" .. (i*2 - 1)] = cmd
+		_G["SLASH_PITBULLFOUR" .. (i*2)] = cmd:lower()
+	end
+
+	_G.hash_SlashCmdList["PITBULLFOUR"] = nil
+	_G.SlashCmdList["PITBULLFOUR"] = function()
+		return OpenConfig()
 	end
 end
 
-LibSimpleOptions.AddOptionsPanel("PitBull Unit Frames 4.0", function(self)
-	local title, subText = self:MakeTitleTextAndSubText("PitBull Unit Frames 4.0", "These options allow you to configure PitBull Unit Frames 4.0")
-end)
-
-LibSimpleOptions.AddSuboptionsPanel("PitBull Unit Frames 4.0", "Layouts", function(self)
-	local title, subText = self:MakeTitleTextAndSubText("Layouts", "These options allow you to manipulate the way a specific layout looks")
-	
-	local SELECTED_LAYOUT = "Normal"
-	local SELECTED_CONTROL = 'root'
-	
-	local example_unit_frame = CreateFrame("Button", nil, self)
-	example_unit_frame.is_singleton = true
-	example_unit_frame.classification = 'irrelevant'
-	example_unit_frame.classificationDB = {}
-	example_unit_frame.layout = SELECTED_LAYOUT
-	example_unit_frame.layoutDB = PitBull4.db.layouts[SELECTED_LAYOUT]
-	example_unit_frame.unitID = "player"
-	example_unit_frame.guid = UnitGUID("player")
-	example_unit_frame:SetAttribute("unit", "player")
-	
-	local function make_example_statusbar(id)
-		local bar = PitBull4.Controls.MakeBetterStatusBar(example_unit_frame)
-		return bar
+function OpenConfig()
+	-- redefine it so that we just open up the pane next time
+	function OpenConfig()
+		AceConfigDialog:Open("PitBull4")
 	end
 	
-	example_unit_frame:SetPoint("TOPLEFT", subText, "BOTTOMLEFT", 0, -16)
-	example_unit_frame:SetWidth(200)
-	example_unit_frame:SetHeight(70)
-	
-	local top = example_unit_frame:CreateTexture(nil, "BACKGROUND")
-	top:SetPoint("TOPLEFT", example_unit_frame, "TOPLEFT")
-	top:SetPoint("TOPRIGHT", example_unit_frame, "TOPRIGHT")
-	top:SetHeight(1)
-	top:SetTexture(1, 1, 1)
-	
-	local bottom = example_unit_frame:CreateTexture(nil, "BACKGROUND")
-	bottom:SetPoint("BOTTOMLEFT", example_unit_frame, "BOTTOMLEFT")
-	bottom:SetPoint("BOTTOMRIGHT", example_unit_frame, "BOTTOMRIGHT")
-	bottom:SetHeight(1)
-	bottom:SetTexture(1, 1, 1)
-	
-	local left = example_unit_frame:CreateTexture(nil, "BACKGROUND")
-	left:SetPoint("TOPLEFT", example_unit_frame, "TOPLEFT")
-	left:SetPoint("BOTTOMLEFT", example_unit_frame, "BOTTOMLEFT")
-	left:SetWidth(1)
-	left:SetTexture(1, 1, 1)
-	
-	local right = example_unit_frame:CreateTexture(nil, "BACKGROUND")
-	right:SetPoint("TOPRIGHT", example_unit_frame, "TOPRIGHT")
-	right:SetPoint("BOTTOMRIGHT", example_unit_frame, "BOTTOMRIGHT")
-	right:SetWidth(1)
-	right:SetTexture(1, 1, 1)
-	
-	local make_bar_drop_down
-	local function reset()
-		make_bar_drop_down.value = nil
-		UIDropDownMenu_SetSelectedValue(make_bar_drop_down, nil)
-		UIDropDownMenu_SetText(make_bar_drop_down, "Make a bar")
-	end
-	local function values_iter(_, id)
-		local func, t = PitBull4.IterateModulesOfType('statusbar', true)
-		local id, module = func(t, id)
-		if not id then
-			return nil
-		end
-		if not PitBull4.db.layouts[SELECTED_LAYOUT][id].hidden then
-			return values_iter(nil, id)
-		end
-		return id, module.name
-	end
-	make_bar_drop_down = self:MakeDropDown(
-		'name', '', -- don't want a label
-		'description', "Make a bar of the type you specify",
-		'values', values_iter,
-		'default', '',
-		'getFunc', function() return end,
-		'setFunc', function(id)
-			if not id then
-				return
-			end
-			reset()
-			-- do something with id
-		end
-	)
-	reset()
-	make_bar_drop_down:SetPoint("TOPLEFT", example_unit_frame, "TOPRIGHT", 8, 0)
-	
-	local current_selected_control_drop_down
-	local function select_control(id)
-		SELECTED_CONTROL = id
-		if not current_selected_control_drop_down then
-			return
-		end
-		current_selected_control_drop_down.value = id
-		UIDropDownMenu_SetSelectedValue(current_selected_control_drop_down, id)
-		
-		UIDropDownMenu_SetText(current_selected_control_drop_down, id == 'root' and "Unit Frame" or PitBull4.GetModule(id).name)
-	end
-	
-	local values = {
-		'root', 'Unit Frame',
+	local options = {
+		name = "PitBull",
+		handler = PitBull4,
+		type = 'group',
+		args = {
+		},
 	}
-	current_selected_control_drop_down = self:MakeDropDown(
-		'name', '', -- don't want a label
-		'description', "The current selected control",
-		'values', values,
-		'default', 'root',
-		'getFunc', function()
-			--select_control('root')
-			return SELECTED_CONTROL
-		end,
-		'setFunc', select_control
-	)
-	
-	current_selected_control_drop_down:SetPoint("TOPLEFT", example_unit_frame, "BOTTOMLEFT", -16, -16)
-	
-	local control_options_panel = self:MakeScrollFrame()
-	control_options_panel:SetPoint("TOPLEFT", current_selected_control_drop_down, "BOTTOMLEFT", 16, 0)
-	control_options_panel:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -32, 16)
-	
-	PitBull4.ConvertIntoUnitFrame(example_unit_frame, true)
-	
-	local function bar_sort(alpha, bravo)
-		return example_unit_frame.layoutDB[alpha].position < example_unit_frame.layoutDB[bravo].position
-	end
-	
-	local bar_scripts = {}
-	function bar_scripts:OnDragStart()
-		self.start_x, self.start_y = self:GetCenter()
-		self:StartMoving()
-		self:SetFrameLevel(self:GetFrameLevel() + 5)
-	end
-	
-	function bar_scripts:OnDragStop()
-		self:StopMovingOrSizing()
-		self:SetFrameLevel(self:GetFrameLevel() - 5)
-		local x, y = self:GetCenter()
-		local width, height = self:GetWidth(), self:GetHeight()
-	
-		local start_x, start_y = self.start_x, self.start_y
-		self.start_x, self.start_y = nil, nil
-	
-		local side = example_unit_frame.layoutDB[self.id].side
-	
-		local above, below = 0, 1/0
-		local above_coord, below_coord
-	
-		local control_position = example_unit_frame.layoutDB[self.id].position
-	
-		local bars = {}
-	
-		for other_id, other_control, other_module in example_unit_frame:IterateControlsOfType('statusbar') do
-			if other_control ~= self and example_unit_frame.layoutDB[other_id].side == side then
-				bars[#bars+1] = other_id
-			end
-		end
-	
-		table.sort(bars, bar_sort)
-	
-		local above, below = nil, nil
-		local above_coord, below_coord = nil, nil
-		
-		for i, bar_id in ipairs(bars) do
-			local bar = example_unit_frame[bar_id]
-		
-			local bar_x, bar_y = bar:GetCenter()
-		
-			if side == "center" then
-				if bar_y < start_y then
-					bar_y = bar_y + height / 2
-				else
-					bar_y = bar_y - height / 2
-				end
-			
-				if y > bar_y then
-	 				if not above_coord or above_coord < bar_y then
-						above = i
-						above_coord = bar_y
-					end
-				else
-	 				if not below_coord or below_coord > bar_y then
-						below = i
-						below_coord = bar_y
-					end
-				end
-			end
-		end
-		
-		if not above then
-			table.insert(bars, self.id)
-		else
-			table.insert(bars, above, self.id)
-		end
-	
-		for i, bar_id in ipairs(bars) do
-			example_unit_frame.layoutDB[bar_id].position = i
-		end
-	
-		example_unit_frame:UpdateLayout()
-		PitBull4.UpdateLayoutForLayout(example_unit_frame.layout)
-	end
-	
-	function bar_scripts:OnClick()
-		select_control(self.id)
-	end
-	
-	local function bar_extraDelete(self)
-		self:SetMovable(false)
-		self:EnableMouse(false)
-		self:RegisterForDrag()
-		for k in pairs(control_scripts) do
-			self:SetScript(k, nil)
-		end
-	end
-	
-	function self:refreshFunc()
-		example_unit_frame:Update()
-		wipe(values)
-		values[#values+1] = 'root'
-		values[#values+1] = 'Unit Frame'
-		for id, bar, module in example_unit_frame:IterateControlsOfType('statusbar') do
-			values[#values+1] = id
-			values[#values+1] = module.name
-			bar:SetMovable(true)
-			bar:EnableMouse(true)
-			bar:RegisterForClicks("LeftButtonUp")
-			bar:RegisterForDrag("LeftButton")
-			
-			for k, v in pairs(bar_scripts) do
-				bar:SetScript(k, v)
-			end
-			
-			bar.extraDelete = bar_extraDelete
-		end
-	end
-	self:Refresh()
-end)
 
-LibSimpleOptions.AddSlashCommand("PitBull Unit Frames 4.0", "/PitBull4", "/PitBull", "/PB4", "/PB", "/PBUF", "/Pit")
+	local CURRENT_LAYOUT = "Normal"
+	
+	local function getLayoutDB()
+		return PitBull4.db.layouts[CURRENT_LAYOUT]
+	end
+	
+	local function updateFrames()
+		PitBull4.UpdateForLayout(CURRENT_LAYOUT)
+	end
+
+	local layout_options = {
+		type = 'group',
+		name = "Layout editor",
+		args = {},
+		childGroups = "tab",
+	}
+	options.args.layout_options = layout_options
+
+	layout_options.args.current_layout = {
+		name = "Current layout",
+		type = 'select',
+		order = 1,
+		values = function(info)
+			local t = {}
+			t["Normal"] = "Normal"
+			return t
+		end,
+		get = function(info)
+			return CURRENT_LAYOUT
+		end,
+		set = function(info, value)
+			CURRENT_LAYOUT = value
+		end
+	}
+
+	layout_options.args.bars = {
+		name = "Bars",
+		type = 'group',
+		childGroups = "tab",
+		args = {}
+	}
+
+	layout_options.args.icons = {
+		name = "Icons",
+		type = 'group',
+		args = {}
+	}
+
+	layout_options.args.texts = {
+		name = "Texts",
+		type = 'group',
+		args = {}
+	}
+
+	layout_options.args.other = {
+		name = "Other",
+		type = 'group',
+		args = {}
+	}
+	
+	for id, module in PitBull4.IterateModulesOfType("statusbar") do
+		layout_options.args.bars.args[id] = {
+			name = module.name,
+			desc = module.description,
+			type = 'group',
+			args = {
+				enable = {
+					type = 'toggle',
+					name = "Enable",
+					order = 1,
+					get = function(info)
+						return not getLayoutDB()[info[3]].hidden
+					end,
+					set = function(info, value)
+						local db = getLayoutDB()[info[3]]
+						db.hidden = not value
+						
+						updateFrames()
+					end
+				},
+				side = {
+					type = 'select',
+					name = "Side",
+					order = 2,
+					get = function(info)
+						return getLayoutDB()[info[3]].side
+					end,
+					set = function(info, value)
+						local db = getLayoutDB()[info[3]]
+						db.side = value
+
+						updateFrames()
+					end,
+					values = {
+						center = "Center",
+						left = "Left",
+						right = "Right",
+					}
+				},
+				position = {
+					type = 'select',
+					name = "Position",
+					order = 3,
+					values = function(info)
+						local db = getLayoutDB()
+						local side = db[info[3]].side
+						local t = {}
+						for other_id, other_module in PitBull4.IterateModulesOfType("statusbar", true) do
+							if side == db[other_id].side then
+								local position = db[other_id].position
+								while t[position] do
+									position = position + 1e-5
+									db[other_id].position = position
+								end
+								t[position] = other_module.name
+							end
+						end
+						return t
+					end,
+					get = function(info)
+						local id = info[3]
+						return getLayoutDB()[id].position
+					end,
+					set = function(info, new_position)
+						local db = getLayoutDB()
+						local id = info[3]
+						
+						local id_to_position = {}
+						local bars = {}
+						
+						local old_position = db[id].position
+						
+						for other_id, other_module in PitBull4.IterateModulesOfType("statusbar", false) do
+							local other_position = db[other_id].position
+							if other_id == id then
+								other_position = new_position
+							elseif other_position >= old_position and other_position <= new_position then
+								other_position = other_position - 1
+							elseif other_position <= old_position and other_position >= new_position then
+								other_position = other_position + 1
+							end
+							
+							id_to_position[other_id] = other_position
+							bars[#bars+1] = other_id
+						end
+						
+						table.sort(bars, function(alpha, bravo)
+							return id_to_position[alpha] < id_to_position[bravo]
+						end)
+						
+						for position, bar_id in ipairs(bars) do
+							db[bar_id].position = position
+						end
+						
+						updateFrames()
+					end
+				},
+				size = {
+					type = 'range',
+					name = function(info)
+						if getLayoutDB()[info[3]].side == "center" then
+							return "Height"
+						else
+							return "Width"
+						end
+					end,
+					order = 4,
+					get = function(info)
+						return getLayoutDB()[info[3]].size
+					end,
+					set = function(info, value)
+						local db = getLayoutDB()[info[3]]
+						db.size = value
+
+						updateFrames()
+					end,
+					min = 1,
+					max = 12,
+					step = 1,
+				},
+				deficit = {
+					type = 'toggle',
+					name = "Deficit",
+					desc = "Drain the bar instead of filling it.",
+					order = 5,
+					get = function(info)
+						return getLayoutDB()[info[3]].deficit
+					end,
+					set = function(info, value)
+						local db = getLayoutDB()[info[3]]
+						db.deficit = value
+
+						updateFrames()
+					end,
+				},
+				reverse = {
+					type = 'toggle',
+					name = "Reverse",
+					desc = "Reverse the direction of the bar, filling from right-to-left instead of left-to-right",
+					order = 6,
+					get = function(info)
+						return getLayoutDB()[info[3]].reverse
+					end,
+					set = function(info, value)
+						local db = getLayoutDB()[info[3]]
+						db.reverse = value
+
+						updateFrames()
+					end,
+				},
+				alpha = {
+					type = 'range',
+					name = "Full opacity",
+					order = 7,
+					get = function(info)
+						return getLayoutDB()[info[3]].alpha
+					end,
+					set = function(info, value)
+						local db = getLayoutDB()[info[3]]
+						db.alpha = value
+
+						updateFrames()
+					end,
+					min = 0,
+					max = 1,
+					step = 0.01,
+					bigStep = 0.05,
+					isPercent = true,
+				},
+				bgAlpha = {
+					type = 'range',
+					name = "Empty opacity",
+					order = 8,
+					get = function(info)
+						return getLayoutDB()[info[3]].bgAlpha
+					end,
+					set = function(info, value)
+						local db = getLayoutDB()[info[3]]
+						db.bgAlpha = value
+
+						updateFrames()
+					end,
+					min = 0,
+					max = 1,
+					step = 0.01,
+					bigStep = 0.05,
+					isPercent = true,
+				},
+			}
+		}
+	end
+	
+	AceConfig:RegisterOptionsTable("PitBull4", options)
+	
+	return OpenConfig()
+end
+
+function print(...) Rock("LibRockConsole-1.0"):PrintLiteral(...) end

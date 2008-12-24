@@ -132,9 +132,11 @@ end
 
 --- Update all details about the UnitFrame, possibly after a GUID change
 -- @param sameGUID whether the previous GUID is the same as the current, at which point is less crucial to update
+-- @param updateLayout whether to update the layout no matter what
 -- @usage frame:Update()
 -- @usage frame:Update(true)
-function UnitFrame:Update(sameGUID)
+-- @usage frame:Update(false, true)
+function UnitFrame:Update(sameGUID, updateLayout)
 	-- TODO
 	if not self.guid and self.populated then
 		PitBull4.RunFrameScriptHooks("OnClear", self)
@@ -147,7 +149,7 @@ function UnitFrame:Update(sameGUID)
 	end
 	
 	PitBull4.RunFrameScriptHooks("OnUpdate", self)
-	local changed = false
+	local changed = updateLayout
 	for id, module in PitBull4.IterateModulesOfType("statusbar", true) do
 		changed = module:Update(self, true) or changed
 	end
