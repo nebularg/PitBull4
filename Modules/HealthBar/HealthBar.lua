@@ -7,6 +7,7 @@ end
 
 local PitBull4_HealthBar = PitBull4.NewModule("HealthBar", "Health Bar", "Show a health bar", {}, {
 	position = 1,
+	colorByClass = true,
 }, "statusbar")
 
 function PitBull4_HealthBar.GetValue(frame)
@@ -14,6 +15,13 @@ function PitBull4_HealthBar.GetValue(frame)
 end
 
 function PitBull4_HealthBar.GetColor(frame)
+	if frame.layoutDB.HealthBar.colorByClass then
+		local _, class = UnitClass(frame.unit)
+		local t = RAID_CLASS_COLORS[class]
+		if t then
+			return t.r, t.g, t.b
+		end
+	end
 	local percent = PitBull4_HealthBar.GetValue(frame)
 	if percent < 0.5 then
 		return
@@ -37,3 +45,20 @@ end
 
 PitBull4.Utils.AddEventListener("UNIT_HEALTH", PitBull4_HealthBar.UNIT_HEALTH)
 PitBull4.Utils.AddEventListener("UNIT_MAXHEALTH", PitBull4_HealthBar.UNIT_HEALTH)
+
+PitBull4_HealthBar:SetLayoutOptionsFunction(function()
+	return 'colorByClass', {
+		name = "Color by class",
+		desc = "Color the health bar by unit class",
+		type = 'toggle',
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB().HealthBar.colorByClass
+		end,
+		set = function(info, value)
+			local db = PitBull4.Options.GetLayoutDB().HealthBar
+			db.colorByClass = value
+			
+			PitBull4.Options.UpdateFrames()
+		end
+	}
+end)

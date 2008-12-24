@@ -16,6 +16,7 @@ local modules = {}
 local module_script_hooks = {}
 
 local moduleMeta = { __index={} }
+PitBull4.moduleMeta = moduleMeta
 local moduleTypes = {}
 local moduleTypes_layoutDefaults = {}
 
