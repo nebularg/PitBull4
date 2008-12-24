@@ -126,6 +126,7 @@ function OpenConfig()
 		type = 'group',
 		name = "Units",
 		args = {},
+		childGroups = "tab",
 	}
 	options.args.unit_options = unit_options
 	
@@ -600,7 +601,6 @@ function OpenConfig()
 	for i, classification in ipairs(PitBull4.SINGLETON_CLASSIFICATIONS) do
 		unit_options.args[classification] = {
 			type = 'group',
-			inline = true,
 			name = PitBull4.Utils.GetLocalizedClassification(classification),
 			order = i,
 			args = {
@@ -632,9 +632,27 @@ function OpenConfig()
 							PitBull4.db.classifications[classification].hidden = false
 							PitBull4.db.classifications[classification].layout = value
 						end
-					
+						
 						for frame in PitBull4.IterateFramesForClassification(classification, false) do
 							frame:RefreshLayout()
+						end
+					end
+				},
+				horizontalMirror = {
+					name = "Mirror horizontally",
+					desc = "Whether all options will be mirrored, e.g. what would be on the left is now on the right and vice-versa.",
+					order = 2,
+					type = 'toggle',
+					get = function(info)
+						local db = PitBull4.db.classifications[classification]
+						return db.horizontalMirror
+					end,
+					set = function(info, value)
+						local db = PitBull4.db.classifications[classification]
+						db.horizontalMirror = value
+						
+						for frame in PitBull4.IterateFramesForClassification(classification, false) do
+							frame:Update(true, true)
 						end
 					end
 				}

@@ -309,6 +309,12 @@ end
 
 local function update_bar_layout(self)
 	local bars, center_bars, left_bars, right_bars = get_all_bars(self)
+	
+	local horizontal_mirror = self.classificationDB.horizontalMirror
+	
+	if horizontal_mirror then
+		left_bars, right_bars = right_bars, left_bars
+	end
 
 	local width, height = self:GetWidth(), self:GetHeight()
 
@@ -363,7 +369,13 @@ local function update_bar_layout(self)
 	for _, id in ipairs(bars) do
 		local bar = self[id]
 		local bar_layoutDB = layoutDB[id]
-		bar:SetReverse(bar_layoutDB.reverse)
+		local reverse = bar_layoutDB.reverse
+		if bar_layoutDB.side == "center" then
+			if horizontal_mirror then
+				reverse = not reverse
+			end
+		end
+		bar:SetReverse(reverse)
 		bar:SetDeficit(bar_layoutDB.deficit)
 		bar:SetNormalAlpha(bar_layoutDB.alpha)
 		bar:SetBackgroundAlpha(bar_layoutDB.bgAlpha)
@@ -585,12 +597,26 @@ local function position_icon(root, icon, attach_frame, last_icon, location, loca
 	end
 end
 
+local horizontal_mirrored_location = setmetatable({}, {__index = function(self, key)
+	local value = key:gsub("left", "temp"):gsub("right", "left"):gsub("temp", "right")
+	self[key] = value
+	return value
+end})
+
+local vertical_mirrored_location = setmetatable({}, {__index = function(self, key)
+	local value = key:gsub("bottom", "temp"):gsub("top", "bottom"):gsub("temp", "top")
+	self[key] = value
+	return value
+end})
+
 local function update_icon_layout(self)
 	local icons = get_all_icons(self)
 
 	local attachments = new()
 	
 	local layoutDB = self.layoutDB
+	
+	local horizontal_mirror = self.classificationDB.horizontalMirror
 	
 	for _, id in ipairs(icons) do
 		local icon = self[id]
@@ -605,6 +631,15 @@ local function update_icon_layout(self)
 		end
 		
 		local location = icon_layoutDB.location
+		
+		local flip_positions = false
+		if horizontal_mirror then
+			local old_location = location
+			location = horizontal_mirrored_location[location]
+			if old_location == location then
+				flip_positions = true
+			end
+		end
 		
 		if attach_frame then
 			local size = ICON_SIZE * icon_layoutDB.size
@@ -624,10 +659,14 @@ local function update_icon_layout(self)
 				attachments_attach_frame[location] = attachments_attach_frame_location
 			end
 			
-			attachments_attach_frame_location[#attachments_attach_frame_location+1] = icon
+			if flip_positions then
+				table.insert(attachments_attach_frame_location, 1, icon)
+			else
+				attachments_attach_frame_location[#attachments_attach_frame_location+1] = icon
+			end
 		end
 	end
-
+	
 	for attach_frame, attachments_attach_frame in pairs(attachments) do
 		for location, loc_icons in pairs(attachments_attach_frame) do
 			local last = self
