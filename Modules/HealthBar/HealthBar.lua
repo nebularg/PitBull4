@@ -49,7 +49,7 @@ function PitBull4_HealthBar:GetColor(frame)
 			return t.r, t.g, t.b
 		end
 	end
-	local percent = PitBull4_HealthBar.GetValue(frame)
+	local percent = self:GetValue(frame)
 	if percent < 0.5 then
 		return
 			1,
@@ -70,17 +70,16 @@ function PitBull4_HealthBar:UNIT_HEALTH(event, unit)
 	PitBull4_HealthBar:UpdateForUnitID(unit)
 end
 
-PitBull4_HealthBar:SetLayoutOptionsFunction(function()
+PitBull4_HealthBar:SetLayoutOptionsFunction(function(self)
 	return 'colorByClass', {
 		name = "Color by class",
 		desc = "Color the health bar by unit class",
 		type = 'toggle',
 		get = function(info)
-			return PitBull4.Options.GetLayoutDB().HealthBar.colorByClass
+			return PitBull4.Options.GetLayoutDB(self).colorByClass
 		end,
 		set = function(info, value)
-			local db = PitBull4.Options.GetLayoutDB().HealthBar
-			db.colorByClass = value
+			PitBull4.Options.GetLayoutDB(self).colorByClass = value
 			
 			PitBull4.Options.UpdateFrames()
 		end

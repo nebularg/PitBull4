@@ -49,10 +49,17 @@ local CURRENT_LAYOUT = "Normal"
 
 --- Return the DB dictionary for the current layout selected in the options frame.
 -- Modules should be calling this and manipulating data within it.
--- @usage local db = PitBull.Options.GetLayoutDB(); db.MyModule.someOption = "something"
+-- @usage local db = PitBull.Options.GetLayoutDB(MyModule); db.someOption = "something"
 -- @return the DB dictionary for the current layout
-function PitBull4.Options.GetLayoutDB()
-	return PitBull4.db.layouts[CURRENT_LAYOUT]
+function PitBull4.Options.GetLayoutDB(module)
+	if not module then
+		return PitBull4.db.profile.layouts[CURRENT_LAYOUT]
+	else
+		if type(module) == "string" then
+			module = PitBull4:GetModule(module)
+		end
+		return module:GetLayoutDB(CURRENT_LAYOUT)
+	end
 end
 
 --- Update frames for the currently selected layout.
@@ -67,7 +74,7 @@ local layout_functions = {}
 --- Set the function to be called that will return a tuple of key-value pairs that will be merged onto the options table for the layout editor.
 -- @name Module:SetLayoutOptionsFunction
 -- @param func function to call
--- @usage MyModule:SetLayoutOptionsFunction(function()
+-- @usage MyModule:SetLayoutOptionsFunction(function(self)
 --     return 'someOption', { name = "Some option", } -- etc
 -- end)
 function PitBull4.defaultModulePrototype:SetLayoutOptionsFunction(func)
@@ -136,7 +143,7 @@ function OpenConfig()
 		order = 1,
 		values = function(info)
 			local t = {}
-			for name in pairs(PitBull4.db.layouts) do
+			for name in pairs(PitBull4.db.profile.layouts) do
 				t[name] = name
 			end
 			return t
@@ -157,7 +164,12 @@ function OpenConfig()
 		set = function(info, value)
 			local old_db = PitBull4.Options.GetLayoutDB()
 			
-			PitBull4.db.layouts[value] = deep_copy(old_db)
+			PitBull4.db.profile.layouts[value] = deep_copy(PitBull4.db.profile.layouts[CURRENT_LAYOUT])
+			for id, module in PitBull4:IterateModules() do
+				if module.db and module.db.profile and module.db.profile.layouts and module.db.profile.layouts[CURRENT_LAYOUT] then
+					module.db.profile.layouts[value] = deep_copy(module.db.profile.layouts[CURRENT_LAYOUT])
+				end
+			end
 			
 			CURRENT_LAYOUT = value
 		end,
@@ -200,11 +212,10 @@ function OpenConfig()
 			name = "Enable",
 			order = 1,
 			get = function(info)
-				return not GetLayoutDB()[info[3]].hidden
+				return not GetLayoutDB(info[3]).hidden
 			end,
 			set = function(info, value)
-				local db = GetLayoutDB()[info[3]]
-				db.hidden = not value
+				GetLayoutDB(info[3]).hidden = not value
 				
 				UpdateFrames()
 			end
@@ -214,10 +225,10 @@ function OpenConfig()
 			name = "Side",
 			order = 2,
 			get = function(info)
-				return GetLayoutDB()[info[3]].side
+				return GetLayoutDB(info[3]).side
 			end,
 			set = function(info, value)
-				local db = GetLayoutDB()[info[3]]
+				local db = GetLayoutDB(info[3])
 				db.side = value
 
 				UpdateFrames()
@@ -233,15 +244,16 @@ function OpenConfig()
 			name = "Position",
 			order = 3,
 			values = function(info)
-				local db = GetLayoutDB()
-				local side = db[info[3]].side
+				local db = GetLayoutDB(info[3])
+				local side = db.side
 				local t = {}
 				for other_id, other_module in PitBull4:IterateModulesOfType("statusbar", true) do
-					if side == db[other_id].side then
-						local position = db[other_id].position
+					local other_db = GetLayoutDB(other_id)
+					if side == other_db.side then
+						local position = other_db.position
 						while t[position] do
 							position = position + 1e-5
-							db[other_id].position = position
+							other_db.position = position
 						end
 						t[position] = other_module.name
 					end
@@ -249,20 +261,19 @@ function OpenConfig()
 				return t
 			end,
 			get = function(info)
-				local id = info[3]
-				return GetLayoutDB()[id].position
+				return GetLayoutDB(info[3]).position
 			end,
 			set = function(info, new_position)
-				local db = GetLayoutDB()
 				local id = info[3]
+				local db = GetLayoutDB(id)
 				
 				local id_to_position = {}
 				local bars = {}
 				
-				local old_position = db[id].position
+				local old_position = db.position
 				
 				for other_id, other_module in PitBull4:IterateModulesOfType("statusbar", false) do
-					local other_position = db[other_id].position
+					local other_position = GetLayoutDB(other_id).position
 					if other_id == id then
 						other_position = new_position
 					elseif other_position >= old_position and other_position <= new_position then
@@ -280,7 +291,7 @@ function OpenConfig()
 				end)
 				
 				for position, bar_id in ipairs(bars) do
-					db[bar_id].position = position
+					GetLayoutDB(bar_id).position = position
 				end
 				
 				UpdateFrames()
@@ -289,7 +300,7 @@ function OpenConfig()
 		size = {
 			type = 'range',
 			name = function(info)
-				if GetLayoutDB()[info[3]].side == "center" then
+				if GetLayoutDB(info[3]).side == "center" then
 					return "Height"
 				else
 					return "Width"
@@ -297,11 +308,10 @@ function OpenConfig()
 			end,
 			order = 4,
 			get = function(info)
-				return GetLayoutDB()[info[3]].size
+				return GetLayoutDB(info[3]).size
 			end,
 			set = function(info, value)
-				local db = GetLayoutDB()[info[3]]
-				db.size = value
+				GetLayoutDB(info[3]).size = value
 
 				UpdateFrames()
 			end,
@@ -315,11 +325,10 @@ function OpenConfig()
 			desc = "Drain the bar instead of filling it.",
 			order = 5,
 			get = function(info)
-				return GetLayoutDB()[info[3]].deficit
+				return GetLayoutDB(info[3]).deficit
 			end,
 			set = function(info, value)
-				local db = GetLayoutDB()[info[3]]
-				db.deficit = value
+				GetLayoutDB(info[3]).deficit = value
 
 				UpdateFrames()
 			end,
@@ -330,11 +339,10 @@ function OpenConfig()
 			desc = "Reverse the direction of the bar, filling from right-to-left instead of left-to-right",
 			order = 6,
 			get = function(info)
-				return GetLayoutDB()[info[3]].reverse
+				return GetLayoutDB(info[3]).reverse
 			end,
 			set = function(info, value)
-				local db = GetLayoutDB()[info[3]]
-				db.reverse = value
+				GetLayoutDB(info[3]).reverse = value
 
 				UpdateFrames()
 			end,
@@ -344,11 +352,10 @@ function OpenConfig()
 			name = "Full opacity",
 			order = 7,
 			get = function(info)
-				return GetLayoutDB()[info[3]].alpha
+				return GetLayoutDB(info[3]).alpha
 			end,
 			set = function(info, value)
-				local db = GetLayoutDB()[info[3]]
-				db.alpha = value
+				GetLayoutDB(info[3]).alpha = value
 
 				UpdateFrames()
 			end,
@@ -363,11 +370,10 @@ function OpenConfig()
 			name = "Empty opacity",
 			order = 8,
 			get = function(info)
-				return GetLayoutDB()[info[3]].bgAlpha
+				return GetLayoutDB(info[3]).bgAlpha
 			end,
 			set = function(info, value)
-				local db = GetLayoutDB()[info[3]]
-				db.bgAlpha = value
+				GetLayoutDB(info[3]).bgAlpha = value
 
 				UpdateFrames()
 			end,
@@ -385,7 +391,7 @@ function OpenConfig()
 			args[k] = v
 		end
 		if layout_functions[module] then
-			merge_onto(args, layout_functions[module]())
+			merge_onto(args, layout_functions[module](module))
 			layout_functions[module] = false
 		end
 		
@@ -445,11 +451,10 @@ function OpenConfig()
 			name = "Enable",
 			order = 1,
 			get = function(info)
-				return not GetLayoutDB()[info[3]].hidden
+				return not GetLayoutDB(info[3]).hidden
 			end,
 			set = function(info, value)
-				local db = GetLayoutDB()[info[3]]
-				db.hidden = not value
+				GetLayoutDB(info[3]).hidden = not value
 				
 				UpdateFrames()
 			end
@@ -459,11 +464,10 @@ function OpenConfig()
 			name = "Attach to",
 			order = 2,
 			get = function(info)
-				return GetLayoutDB()[info[3]].attachTo
+				return GetLayoutDB(info[3]).attachTo
 			end,
 			set = function(info, value)
-				local db = GetLayoutDB()[info[3]]
-				db.attachTo = value
+				GetLayoutDB(info[3]).attachTo = value
 				
 				UpdateFrames()
 			end,
@@ -484,15 +488,15 @@ function OpenConfig()
 			name = "Location",
 			order = 3,
 			get = function(info)
-				return GetLayoutDB()[info[3]].location
+				return GetLayoutDB(info[3]).location
 			end,
 			set = function(info, value)
-				GetLayoutDB()[info[3]].location = value
+				GetLayoutDB(info[3]).location = value
 				
 				UpdateFrames()
 			end,
 			values = function(info)
-				local attachTo = GetLayoutDB()[info[3]].attachTo
+				local attachTo = GetLayoutDB(info[3]).attachTo
 				if attachTo == "root" then
 					return root_locations
 				else
@@ -505,13 +509,14 @@ function OpenConfig()
 			name = "Position",
 			order = 4,
 			values = function(info)
-				local db = GetLayoutDB()
-				local attachTo = db[info[3]].attachTo
-				local location = db[info[3]].location
+				local db = GetLayoutDB(info[3])
+				local attachTo = db.attachTo
+				local location = db.location
 				local t = {}
 				for other_id, other_module in PitBull4:IterateModulesOfType("icon", true) do
-					if attachTo == db[other_id].attachTo and location == db[other_id].location then
-						local position = db[other_id].position
+					local other_db = GetLayoutDB(other_id)
+					if attachTo == other_db.attachTo and location == other_db.location then
+						local position = other_db.position
 						while t[position] do
 							position = position + 1e-5
 							db[other_id].position = position
@@ -522,20 +527,20 @@ function OpenConfig()
 				return t
 			end,
 			get = function(info)
-				local id = info[3]
-				return GetLayoutDB()[id].position
+				return GetLayoutDB(info[3]).position
 			end,
 			set = function(info, new_position)
-				local db = GetLayoutDB()
 				local id = info[3]
+				local db = GetLayoutDB(id)
 				
 				local id_to_position = {}
 				local icons = {}
 				
-				local old_position = db[id].position
+				local old_position = db.position
 				
 				for other_id, other_module in PitBull4:IterateModulesOfType("icon", false) do
-					local other_position = db[other_id].position
+					local other_db = GetLayoutDB(other_id)
+					local other_position = other_db.position
 					if other_id == id then
 						other_position = new_position
 					elseif other_position >= old_position and other_position <= new_position then
@@ -553,7 +558,7 @@ function OpenConfig()
 				end)
 				
 				for position, icon_id in ipairs(icons) do
-					db[icon_id].position = position
+					GetLayoutDB(icon_id).position = position
 				end
 				
 				UpdateFrames()
@@ -564,11 +569,10 @@ function OpenConfig()
 			name = "Size",
 			order = 5,
 			get = function(info)
-				return GetLayoutDB()[info[3]].size
+				return GetLayoutDB(info[3]).size
 			end,
 			set = function(info, value)
-				local db = GetLayoutDB()[info[3]]
-				db.size = value
+				GetLayoutDB(info[3]).size = value
 				
 				UpdateFrames()
 			end,
@@ -611,13 +615,13 @@ function OpenConfig()
 					values = function(info)
 						local t = {}
 						-- t[""] = ("Disable %s"):format(PitBull4.Utils.GetLocalizedClassification(classification))
-						for name in pairs(PitBull4.db.layouts) do
+						for name in pairs(PitBull4.db.profile.layouts) do
 							t[name] = name
 						end
 						return t
 					end,
 					get = function(info)
-						local db = PitBull4.db.classifications[classification]
+						local db = PitBull4.db.profile.classifications[classification]
 						if db.hidden then
 							return ""
 						else
@@ -627,10 +631,10 @@ function OpenConfig()
 					set = function(info, value)
 						if value == "" then
 							-- TODO: handle this properly
-							PitBull4.db.classifications[classification].hidden = true
+							PitBull4.db.profile.classifications[classification].hidden = true
 						else
-							PitBull4.db.classifications[classification].hidden = false
-							PitBull4.db.classifications[classification].layout = value
+							PitBull4.db.profile.classifications[classification].hidden = false
+							PitBull4.db.profile.classifications[classification].layout = value
 						end
 						
 						for frame in PitBull4:IterateFramesForClassification(classification, false) do
@@ -644,11 +648,11 @@ function OpenConfig()
 					order = 2,
 					type = 'toggle',
 					get = function(info)
-						local db = PitBull4.db.classifications[classification]
+						local db = PitBull4.db.profile.classifications[classification]
 						return db.horizontalMirror
 					end,
 					set = function(info, value)
-						local db = PitBull4.db.classifications[classification]
+						local db = PitBull4.db.profile.classifications[classification]
 						db.horizontalMirror = value
 						
 						for frame in PitBull4:IterateFramesForClassification(classification, false) do
@@ -662,11 +666,11 @@ function OpenConfig()
 					order = 3,
 					type = 'toggle',
 					get = function(info)
-						local db = PitBull4.db.classifications[classification]
+						local db = PitBull4.db.profile.classifications[classification]
 						return db.verticalMirror
 					end,
 					set = function(info, value)
-						local db = PitBull4.db.classifications[classification]
+						local db = PitBull4.db.profile.classifications[classification]
 						db.verticalMirror = value
 						
 						for frame in PitBull4:IterateFramesForClassification(classification, false) do
