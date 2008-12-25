@@ -474,34 +474,40 @@ function PitBull4.MakeSingletonFrame(unitID)
 	end
 	unitID = id
 	
-	local frame = CreateFrame("Button", "PitBull4_Frames_" .. unitID, UIParent, "SecureUnitButtonTemplate")
+	local frame_name = "PitBull4_Frames_" .. unitID
+	local frame = _G["PitBull4_Frames_" .. unitID]
 	
-	all_frames[frame] = true
-	_G.ClickCastFrames[frame] = true
+	if not frame then
+		frame = CreateFrame("Button", "PitBull4_Frames_" .. unitID, UIParent, "SecureUnitButtonTemplate")
+		
+		all_frames[frame] = true
+		_G.ClickCastFrames[frame] = true
+		
+		frame.is_singleton = true
+		
+		-- for singletons, its classification is its unitID
+		local classification = unitID
+		frame.classification = classification
+		frame.classificationDB = db.classifications[classification]
+		classification_to_frames[classification][frame] = true
+		
+		local is_wacky = PitBull4.Utils.IsWackyClassification(classification)
+		frame.is_wacky = is_wacky;
+		(is_wacky and wacky_frames or non_wacky_frames)[frame] = true
+		
+		frame.unit = unitID
+		unitID_to_frames[unitID][frame] = true
+		
+		frame:SetAttribute("unit", unitID)
+	end
 	
-	frame.is_singleton = true
-	
-	-- for singletons, its classification is its unitID
-	local classification = unitID
-	frame.classification = classification
-	frame.classificationDB = db.classifications[classification]
-	classification_to_frames[classification][frame] = true
-	
-	local is_wacky = PitBull4.Utils.IsWackyClassification(classification)
-	frame.is_wacky = is_wacky;
-	(is_wacky and wacky_frames or non_wacky_frames)[frame] = true
-	
-	frame.unit = unitID
-	unitID_to_frames[unitID][frame] = true
-	
-	frame:SetAttribute("unit", unitID)
 	RegisterUnitWatch(frame)
 	
 	PitBull4.ConvertIntoUnitFrame(frame)
 	
 	frame:SetPoint("CENTER",
 		UIParent,
-		"CENTER", 
+		"CENTER",
 		frame.classificationDB.position_x,
 		frame.classificationDB.position_y)
 	
