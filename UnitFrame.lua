@@ -39,14 +39,13 @@ local ICON_SPACING_BETWEEN = 3
 -- @field classification the classification of the Unit Frame
 -- @field classificationDB the database table for the Unit Frame's classification
 -- @field layout the layout of the Unit Frame's classification
--- @field layoutDB the database table for the layout of the UnitFrame's classification
 -- @field unit the unitID of the Unit Frame. Can be nil.
 -- @field guid the current GUID of the Unit Frame. Can be nil.
 local UnitFrame = {}
 
 local PitBull4_UnitFrame_DropDown = CreateFrame("Frame", "PitBull4_UnitFrame_DropDown", UIParent, "UIDropDownMenuTemplate")
 
-local new, del = PitBull4.Utils.new, PitBull4.Utils.del
+local new, del = PitBull4.new, PitBull4.del
 
 -- from a unit, figure out the proper menu and, if appropriate, the corresponding ID
 local function figure_unit_menu(unit)
@@ -121,13 +120,13 @@ function UnitFrame__scripts:OnEnter()
 	local r, g, b = GameTooltip_UnitColor(self.unit)
 	GameTooltipTextLeft1:SetTextColor(r, g, b)
 	
-	PitBull4.RunFrameScriptHooks("OnEnter", self)
+	PitBull4:RunFrameScriptHooks("OnEnter", self)
 end
 
 function UnitFrame__scripts:OnLeave()
 	GameTooltip:Hide()
 	
-	PitBull4.RunFrameScriptHooks("OnLeave", self)
+	PitBull4:RunFrameScriptHooks("OnLeave", self)
 end
 
 function UnitFrame__scripts:OnShow()
@@ -139,8 +138,8 @@ end
 --- Add the proper functions and scripts to a SecureUnitButton
 -- @param frame a Button which inherits from SecureUnitButton
 -- @param isExampleFrame whether the button is an example frame, thus not a real unit frame
--- @usage PitBull4.ConvertIntoUnitFrame(frame)
-function PitBull4.ConvertIntoUnitFrame(frame, isExampleFrame)
+-- @usage PitBull4:ConvertIntoUnitFrame(frame)
+function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 	--@alpha@
 	expect(frame, 'typeof', 'frame')
 	expect(frame, 'frametype', 'Button')
@@ -168,9 +167,9 @@ function UnitFrame:RefreshLayout()
 	local old_layout = self.layout
 	local layout = self.classificationDB.layout
 	self.layout = layout
-	self.layoutDB = PitBull4.db.layouts[layout]
-	self:SetWidth(self.layoutDB.size_x)
-	self:SetHeight(self.layoutDB.size_y)
+	local layoutDB = PitBull4.db.profile.layouts[layout]
+	self:SetWidth(layoutDB.size_x)
+	self:SetHeight(layoutDB.size_y)
 	if old_layout then
 		self:Update(true, true)
 	end
@@ -185,21 +184,21 @@ end
 function UnitFrame:Update(sameGUID, updateLayout)
 	-- TODO
 	if not self.guid and self.populated then
-		PitBull4.RunFrameScriptHooks("OnClear", self)
+		PitBull4:RunFrameScriptHooks("OnClear", self)
 		self.populated = nil
 	end
 	
 	if not self.populated then
-		PitBull4.RunFrameScriptHooks("OnPopulate", self)
+		PitBull4:RunFrameScriptHooks("OnPopulate", self)
 		self.populated = true
 	end
 	
-	PitBull4.RunFrameScriptHooks("OnUpdate", self)
+	PitBull4:RunFrameScriptHooks("OnUpdate", self)
 	local changed = updateLayout
-	for id, module in PitBull4.IterateModulesOfType("statusbar", true) do
+	for id, module in PitBull4:IterateModulesOfType("statusbar", true) do
 		changed = module:Update(self, true) or changed
 	end
-	for id, module in PitBull4.IterateModulesOfType("icon", true) do
+	for id, module in PitBull4:IterateModulesOfType("icon", true) do
 		changed = module:Update(self, true) or changed
 	end
 	if changed then
@@ -229,22 +228,22 @@ end
 -- sort the bars in the order specified by the layout
 local sort_positions
 do
-	local layoutDB
+	local sort_positions__layout
 	local function helper(alpha, bravo)
-		return layoutDB[alpha].position < layoutDB[bravo].position
+		return PitBull4.modules[alpha]:GetLayoutDB(sort_positions__layout).position < PitBull4.modules[bravo]:GetLayoutDB(sort_positions__layout).position
 	end
 
-	function sort_positions(bars, frame)
-		layoutDB = frame.layoutDB
-		table.sort(bars, helper)
-		layoutDB = nil
+	function sort_positions(positions, frame)
+		sort_positions__layout = frame.layout
+		table.sort(positions, helper)
+		sort_positions__layout = nil
 	end
 end
 
-local function filter_bars_for_side(layoutDB, bars, side)
+local function filter_bars_for_side(layout, bars, side)
 	local side_bars = new()
 	for _, id in ipairs(bars) do
-		if layoutDB[id].side == side then
+		if PitBull4.modules[id]:GetLayoutDB(layout).side == side then
 			side_bars[#side_bars+1] = id
 		end
 	end
@@ -255,7 +254,7 @@ end
 local function get_all_bars(frame)
 	local bars = new()
 	
-	for id, module in PitBull4.IterateModulesOfType('statusbar', true) do
+	for id, module in PitBull4:IterateModulesOfType('statusbar', true) do
 		if frame[id] then
 			bars[#bars+1] = id
 		end
@@ -264,15 +263,15 @@ local function get_all_bars(frame)
 	sort_positions(bars, frame)
 	
 	return bars,
-		filter_bars_for_side(frame.layoutDB, bars, 'center'),
-		filter_bars_for_side(frame.layoutDB, bars, 'left'),
-		filter_bars_for_side(frame.layoutDB, bars, 'right')
+		filter_bars_for_side(frame.layout, bars, 'center'),
+		filter_bars_for_side(frame.layout, bars, 'left'),
+		filter_bars_for_side(frame.layout, bars, 'right')
 end
 
 local function get_all_icons(frame)
 	local icons = new()
 	
-	for id, module in PitBull4.IterateModulesOfType('icon', true) do
+	for id, module in PitBull4:IterateModulesOfType('icon', true) do
 		if frame[id] then
 			icons[#icons+1] = id
 		end
@@ -284,12 +283,12 @@ local function get_all_icons(frame)
 end
 
 -- figure out the total width and height points for a frame based on its bars
-local function calculate_width_height_points(layoutDB, center_bars, left_bars, right_bars)
+local function calculate_width_height_points(layout, center_bars, left_bars, right_bars)
 	local bar_height_points = 0
 	local bar_width_points = 0
 	
 	for _, id in ipairs(center_bars) do
-		bar_height_points = bar_height_points + layoutDB[id].size
+		bar_height_points = bar_height_points + PitBull4.modules[id]:GetLayoutDB(layout).size
 	end
 	
 	if #center_bars > 0 then
@@ -298,10 +297,10 @@ local function calculate_width_height_points(layoutDB, center_bars, left_bars, r
 	end
 	
 	for _, id in ipairs(left_bars) do
-		bar_width_points = bar_width_points + layoutDB[id].size
+		bar_width_points = bar_width_points + PitBull4.modules[id]:GetLayoutDB(layout).size
 	end
 	for _, id in ipairs(right_bars) do
-		bar_width_points = bar_width_points + layoutDB[id].size
+		bar_width_points = bar_width_points + PitBull4.modules[id]:GetLayoutDB(layout).size
 	end
 	
 	return bar_width_points, bar_height_points
@@ -333,10 +332,10 @@ local function update_bar_layout(self)
 	end
 
 	local width, height = self:GetWidth(), self:GetHeight()
-
-	local layoutDB = self.layoutDB
-
-	local bar_width_points, bar_height_points = calculate_width_height_points(layoutDB, center_bars, left_bars, right_bars)
+	
+	local layout = self.layout
+	
+	local bar_width_points, bar_height_points = calculate_width_height_points(layout, center_bars, left_bars, right_bars)
 
 	local bar_height_per_point = height/bar_height_points
 	local bar_width_per_point = width/bar_width_points
@@ -347,7 +346,7 @@ local function update_bar_layout(self)
 		bar:ClearAllPoints()
 	
 		bar:SetPoint("TOPLEFT", self, "TOPLEFT", last_x, 0)
-		local bar_width = layoutDB[id].size * bar_width_per_point
+		local bar_width = PitBull4.modules[id]:GetLayoutDB(layout).size * bar_width_per_point
 		last_x = last_x + bar_width
 		bar:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", last_x, 0)
 	
@@ -361,7 +360,7 @@ local function update_bar_layout(self)
 		bar:ClearAllPoints()
 	
 		bar:SetPoint("TOPRIGHT", self, "TOPRIGHT", last_x, 0)
-		local bar_width = layoutDB[id].size * bar_width_per_point
+		local bar_width = PitBull4.modules[id]:GetLayoutDB(layout).size * bar_width_per_point
 		last_x = last_x - bar_width
 		bar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", last_x, 0)
 	
@@ -375,7 +374,7 @@ local function update_bar_layout(self)
 		bar:ClearAllPoints()
 	
 		bar:SetPoint("TOPLEFT", self, "TOPLEFT", left, last_y)
-		local bar_height = layoutDB[id].size * bar_height_per_point
+		local bar_height = PitBull4.modules[id]:GetLayoutDB(layout).size * bar_height_per_point
 		last_y = last_y - bar_height
 		bar:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", right, last_y)
 	
@@ -384,7 +383,7 @@ local function update_bar_layout(self)
 
 	for _, id in ipairs(bars) do
 		local bar = self[id]
-		local bar_layoutDB = layoutDB[id]
+		local bar_layoutDB = PitBull4.modules[id]:GetLayoutDB(layout)
 		local reverse = bar_layoutDB.reverse
 		if bar_layoutDB.side == "center" then
 			if horizontal_mirror then
@@ -410,10 +409,10 @@ end
 local function get_half_width(frame, icons)
 	local num = 0
 	
-	local layoutDB = frame.layoutDB
+	local layout = frame.layout
 	
 	for _, icon in ipairs(icons) do
-		num = layoutDB[icon.id].size * ICON_SIZE
+		num = PitBull4.modules[icon.id]:GetLayoutDB(layout).size * ICON_SIZE
 	end
 	
 	num = num + (#icons - 1) * ICON_SPACING_BETWEEN
@@ -634,14 +633,14 @@ local function update_icon_layout(self)
 
 	local attachments = new()
 	
-	local layoutDB = self.layoutDB
+	local layout = self.layout
 	
 	local horizontal_mirror = self.classificationDB.horizontalMirror
 	local vertical_mirror = self.classificationDB.verticalMirror
 	
 	for _, id in ipairs(icons) do
 		local icon = self[id]
-		local icon_layoutDB = layoutDB[id]
+		local icon_layoutDB = PitBull4.modules[id]:GetLayoutDB(layout)
 	
 		local attachTo = icon_layoutDB.attachTo
 		local attach_frame
@@ -737,7 +736,7 @@ end
 
 local iters = setmetatable({}, {__index=function(iters, moduleType)
 	local function iter(frame, id)
-		local func, t = PitBull4.IterateModulesOfType(moduleType, true)
+		local func, t = PitBull4:IterateModulesOfType(moduleType, true)
 		local id, module = func(t, id)
 		if id == nil then
 			return nil

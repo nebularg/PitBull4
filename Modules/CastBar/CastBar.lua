@@ -5,13 +5,46 @@ if not PitBull4 then
 	error("PitBull4_CastBar requires PitBull4")
 end
 
-local PitBull4_CastBar = PitBull4.NewModule("CastBar", "Cast Bar", "Show a cast bar", {}, {
+local PitBull4_CastBar = PitBull4:NewModule("CastBar", "AceEvent-3.0")
+
+PitBull4_CastBar:SetModuleType("statusbar")
+PitBull4_CastBar:SetName("Cast Bar")
+PitBull4_CastBar:SetDescription("Show a cast bar.")
+PitBull4_CastBar:SetDefaults({
 	size = 1,
 	position = 10,
-}, "statusbar")
+})
 
 local castData = {}
 PitBull4_CastBar.castData = castData
+
+local timerFrame = CreateFrame("Frame")
+timerFrame:Hide()
+timerFrame:SetScript("OnUpdate", function() PitBull4_CastBar:FixCastDataAndUpdateAll() end)
+
+function PitBull4_CastBar:OnEnable()
+	timerFrame:Show()
+	
+	self:RegisterEvent("UNIT_SPELLCAST_START")
+	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
+	self:RegisterEvent("UNIT_SPELLCAST_STOP")
+	self:RegisterEvent("UNIT_SPELLCAST_FAILED")
+	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
+	self:RegisterEvent("UNIT_SPELLCAST_DELAYED")
+	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
+	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
+	
+	self:AddFrameScriptHook("OnUpdate")
+end
+
+function PitBull4_CastBar:OnDisable()
+	timerFrame:Hide()
+end
+
+function PitBull4_CastBar:FixCastDataAndUpdateAll()
+	self:FixCastData()
+	self:UpdateAll()
+end
 
 local new, del
 do
@@ -31,7 +64,7 @@ do
 	end
 end
 
-function PitBull4_CastBar.GetValue(frame)
+function PitBull4_CastBar:GetValue(frame)
 	local guid = frame.guid
 	local data = castData[guid]
 	if not data then
@@ -45,12 +78,12 @@ function PitBull4_CastBar.GetValue(frame)
 		local endTime = data.endTime
 		return (endTime - GetTime()) / (endTime - data.startTime)
 	elseif data.fadeOut then
-		return frame.CastBar:GetValue()
+		return frame.CastBar and frame.CastBar:GetValue() or 0
 	end
 	return 0
 end
 
-function PitBull4_CastBar.GetColor(frame)
+function PitBull4_CastBar:GetColor(frame)
 	local guid = frame.guid
 	local data = castData[guid]
 	if not data then
@@ -87,7 +120,7 @@ end
 PitBull4_CastBar:SetValueFunction('GetValue')
 PitBull4_CastBar:SetColorFunction('GetColor')
 
-local function updateInfo(_, unit)
+local function updateInfo(_, _, unit)
 	local guid = UnitGUID(unit)
 	if not guid then
 		return
@@ -129,12 +162,12 @@ local function updateInfo(_, unit)
 end
 
 local playerGUID = UnitGUID("player")
-function PitBull4_CastBar.FixCastData()
+function PitBull4_CastBar:FixCastData()
 	local frame
 	local currentTime = GetTime()
 	for guid, data in pairs(castData) do
 		local found = false
-		for frame in PitBull4.IterateFramesForGUID(guid) do
+		for frame in PitBull4:IterateFramesForGUID(guid) do
 			local castBar = frame.CastBar
 			if castBar then
 				found = true
@@ -172,7 +205,7 @@ function PitBull4_CastBar.FixCastData()
 	end
 end
 
-function PitBull4_CastBar.OnUpdate(frame)
+function PitBull4_CastBar:OnUpdate(frame)
 	if not frame.CastBar then
 		return
 	end
@@ -182,19 +215,14 @@ function PitBull4_CastBar.OnUpdate(frame)
 		return
 	end
 	
-	updateInfo(nil, unit)
+	updateInfo(self, nil, unit)
 end
 
-PitBull4.Utils.AddTimer(function()
-	PitBull4_CastBar.FixCastData()
-	PitBull4_CastBar:UpdateAll()
-end)
-PitBull4_CastBar:AddFrameScriptHook("OnUpdate", PitBull4_CastBar.OnUpdate)
-PitBull4.Utils.AddEventListener("UNIT_SPELLCAST_START", updateInfo)
-PitBull4.Utils.AddEventListener("UNIT_SPELLCAST_CHANNEL_START", updateInfo)
-PitBull4.Utils.AddEventListener("UNIT_SPELLCAST_STOP", updateInfo)
-PitBull4.Utils.AddEventListener("UNIT_SPELLCAST_FAILED", updateInfo)
-PitBull4.Utils.AddEventListener("UNIT_SPELLCAST_INTERRUPTED", updateInfo)
-PitBull4.Utils.AddEventListener("UNIT_SPELLCAST_DELAYED", updateInfo)
-PitBull4.Utils.AddEventListener("UNIT_SPELLCAST_CHANNEL_UPDATE", updateInfo)
-PitBull4.Utils.AddEventListener("UNIT_SPELLCAST_CHANNEL_STOP", updateInfo)
+PitBull4_CastBar.UNIT_SPELLCAST_START = updateInfo
+PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_START = updateInfo
+PitBull4_CastBar.UNIT_SPELLCAST_STOP = updateInfo
+PitBull4_CastBar.UNIT_SPELLCAST_FAILED = updateInfo
+PitBull4_CastBar.UNIT_SPELLCAST_INTERRUPTED = updateInfo
+PitBull4_CastBar.UNIT_SPELLCAST_DELAYED = updateInfo
+PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_UPDATE = updateInfo
+PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_STOP = updateInfo

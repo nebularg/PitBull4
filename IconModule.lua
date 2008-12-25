@@ -49,7 +49,7 @@ function IconModule:UpdateIcon(frame)
 	--@end-alpha@
 	
 	local id = self.id
-	if frame.layoutDB[id].hidden or not frame.guid then
+	if self:GetLayoutDB(frame).hidden or not frame.guid then
 		return handle_icon_nonvalue(self, frame)
 	end
 	
@@ -102,7 +102,7 @@ function IconModule:UpdateForUnitID(unitID)
 	--@end-alpha@
 	
 	local id = self.id
-	for frame in PitBull4.IterateFramesForUnitID(unitID) do
+	for frame in PitBull4:IterateFramesForUnitID(unitID) do
 		if frame[id] then
 			self:Update(frame)
 		end
@@ -113,7 +113,7 @@ end
 -- @usage MyModule:UpdateAll()
 function IconModule:UpdateAll()
 	local id = self.id
-	for frame in PitBull4.IterateFrames(true) do
+	for frame in PitBull4:IterateFrames(true) do
 		self:Update(frame)
 	end
 end

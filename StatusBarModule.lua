@@ -72,7 +72,7 @@ function StatusBarModule:UpdateStatusBar(frame)
 	--@end-alpha@
 	
 	local id = self.id
-	if frame.layoutDB[id].hidden then
+	if self:GetLayoutDB(frame).hidden then
 		return handle_statusbar_nonvalue(self, frame)
 	end
 	
@@ -128,7 +128,7 @@ function StatusBarModule:UpdateForUnitID(unitID)
 	--@end-alpha@
 	
 	local id = self.id
-	for frame in PitBull4.IterateFramesForUnitID(unitID) do
+	for frame in PitBull4:IterateFramesForUnitID(unitID) do
 		if frame[id] then
 			self:Update(frame)
 		end
@@ -139,7 +139,7 @@ end
 -- @usage MyModule:UpdateAll()
 function StatusBarModule:UpdateAll()
 	local id = self.id
-	for frame in PitBull4.IterateFrames(true) do
+	for frame in PitBull4:IterateFrames(true) do
 		if frame[id] then
 			self:Update(frame)
 		end

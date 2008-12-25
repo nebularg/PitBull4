@@ -59,7 +59,7 @@ end
 -- This should be called by modules after changing an option in the DB.
 -- @usage PitBull.Options.UpdateFrames()
 function PitBull4.Options.UpdateFrames()
-	PitBull4.UpdateForLayout(CURRENT_LAYOUT)
+	PitBull4:UpdateForLayout(CURRENT_LAYOUT)
 end
 
 local layout_functions = {}
@@ -70,7 +70,7 @@ local layout_functions = {}
 -- @usage MyModule:SetLayoutOptionsFunction(function()
 --     return 'someOption', { name = "Some option", } -- etc
 -- end)
-function PitBull4.moduleMeta.__index:SetLayoutOptionsFunction(func)
+function PitBull4.defaultModulePrototype:SetLayoutOptionsFunction(func)
 	--@alpha@
 	expect(func, 'typeof', 'function')
 	expect(layout_functions[self], '==', nil)
@@ -236,7 +236,7 @@ function OpenConfig()
 				local db = GetLayoutDB()
 				local side = db[info[3]].side
 				local t = {}
-				for other_id, other_module in PitBull4.IterateModulesOfType("statusbar", true) do
+				for other_id, other_module in PitBull4:IterateModulesOfType("statusbar", true) do
 					if side == db[other_id].side then
 						local position = db[other_id].position
 						while t[position] do
@@ -261,7 +261,7 @@ function OpenConfig()
 				
 				local old_position = db[id].position
 				
-				for other_id, other_module in PitBull4.IterateModulesOfType("statusbar", false) do
+				for other_id, other_module in PitBull4:IterateModulesOfType("statusbar", false) do
 					local other_position = db[other_id].position
 					if other_id == id then
 						other_position = new_position
@@ -379,7 +379,7 @@ function OpenConfig()
 		},
 	}
 	
-	for id, module in PitBull4.IterateModulesOfType("statusbar") do
+	for id, module in PitBull4:IterateModulesOfType("statusbar") do
 		local args = {}
 		for k, v in pairs(statusbar_args) do
 			args[k] = v
@@ -472,7 +472,7 @@ function OpenConfig()
 				
 				t["root"] = "Unit frame"
 				
-				for id, module in PitBull4.IterateModulesOfType("statusbar", true) do
+				for id, module in PitBull4:IterateModulesOfType("statusbar", true) do
 					t[id] = module.name
 				end
 				
@@ -509,7 +509,7 @@ function OpenConfig()
 				local attachTo = db[info[3]].attachTo
 				local location = db[info[3]].location
 				local t = {}
-				for other_id, other_module in PitBull4.IterateModulesOfType("icon", true) do
+				for other_id, other_module in PitBull4:IterateModulesOfType("icon", true) do
 					if attachTo == db[other_id].attachTo and location == db[other_id].location then
 						local position = db[other_id].position
 						while t[position] do
@@ -534,7 +534,7 @@ function OpenConfig()
 				
 				local old_position = db[id].position
 				
-				for other_id, other_module in PitBull4.IterateModulesOfType("icon", false) do
+				for other_id, other_module in PitBull4:IterateModulesOfType("icon", false) do
 					local other_position = db[other_id].position
 					if other_id == id then
 						other_position = new_position
@@ -580,7 +580,7 @@ function OpenConfig()
 		}
 	}
 	
-	for id, module in PitBull4.IterateModulesOfType("icon") do
+	for id, module in PitBull4:IterateModulesOfType("icon") do
 		local args = {}
 		for k, v in pairs(icon_args) do
 			args[k] = v
@@ -633,7 +633,7 @@ function OpenConfig()
 							PitBull4.db.classifications[classification].layout = value
 						end
 						
-						for frame in PitBull4.IterateFramesForClassification(classification, false) do
+						for frame in PitBull4:IterateFramesForClassification(classification, false) do
 							frame:RefreshLayout()
 						end
 					end
@@ -651,7 +651,7 @@ function OpenConfig()
 						local db = PitBull4.db.classifications[classification]
 						db.horizontalMirror = value
 						
-						for frame in PitBull4.IterateFramesForClassification(classification, false) do
+						for frame in PitBull4:IterateFramesForClassification(classification, false) do
 							frame:Update(true, true)
 						end
 					end
@@ -669,7 +669,7 @@ function OpenConfig()
 						local db = PitBull4.db.classifications[classification]
 						db.verticalMirror = value
 						
-						for frame in PitBull4.IterateFramesForClassification(classification, false) do
+						for frame in PitBull4:IterateFramesForClassification(classification, false) do
 							frame:Update(true, true)
 						end
 					end

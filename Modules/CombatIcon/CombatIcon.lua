@@ -5,13 +5,22 @@ if not PitBull4 then
 	error("PitBull4_CombatIcon requires PitBull4")
 end
 
-local PitBull4_CombatIcon = PitBull4.NewModule("CombatIcon", "Combat Icon", "Show an icon based on whether or not the unit is in combat.", {}, {
+local PitBull4_CombatIcon = PitBull4:NewModule("CombatIcon", "AceTimer-3.0")
+
+PitBull4_CombatIcon:SetModuleType("icon")
+PitBull4_CombatIcon:SetName("Combat Icon")
+PitBull4_CombatIcon:SetDescription("Show an icon based on whether or not the unit is in combat.")
+PitBull4_CombatIcon:SetDefaults({
 	attachTo = "root",
 	location = "edge_bottom_left",
 	position = 1,
-}, "icon")
+})
 
-function PitBull4_CombatIcon.GetTexture(frame)
+function PitBull4_CombatIcon:OnEnable()
+	self:ScheduleRepeatingTimer("UpdateAll", 0.1)
+end
+
+function PitBull4_CombatIcon:GetTexture(frame)
 	if UnitAffectingCombat(frame.unit) then
 		return [[Interface\CharacterFrame\UI-StateIcon]], 0.57, 0.90, 0.08, 0.41
 	else
@@ -20,7 +29,3 @@ function PitBull4_CombatIcon.GetTexture(frame)
 end
 
 PitBull4_CombatIcon:SetTextureFunction('GetTexture')
-
-PitBull4.Utils.AddTimer(function()
-	PitBull4_CombatIcon:UpdateAll()
-end)
