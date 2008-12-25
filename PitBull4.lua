@@ -138,7 +138,7 @@ function PitBull4:RunFrameScriptHooks(script, frame, ...)
 	expect(frame, 'typeof', 'frame')
 	--@end-alpha@
 
-	for module, func in PitBull4:IterateFrameScriptHooks(script) do
+	for module, func in self:IterateFrameScriptHooks(script) do
 		func(frame, ...)
 	end
 end
@@ -475,7 +475,7 @@ end
 -- @param layout the layout to check
 -- @usage PitBull4:UpdateForLayout("Normal")
 function PitBull4:UpdateForLayout(layout)
-	for frame in PitBull4:IterateFramesForLayout(layout, true) do
+	for frame in self:IterateFramesForLayout(layout, true) do
 		frame:Update(true, true)
 	end
 end
@@ -619,7 +619,7 @@ function PitBull4:MakeSingletonFrame(unitID)
 	
 	RegisterUnitWatch(frame)
 	
-	PitBull4:ConvertIntoUnitFrame(frame)
+	self:ConvertIntoUnitFrame(frame)
 	
 	frame:SetPoint("CENTER",
 		UIParent,
@@ -683,7 +683,7 @@ function PitBull4:OnEnable()
 	local db_classifications = db.profile.classifications
 	for _, classification in ipairs(SINGLETON_CLASSIFICATIONS) do
 		if not db_classifications[classification].hidden then
-			PitBull4:MakeSingletonFrame(classification)
+			self:MakeSingletonFrame(classification)
 		end
 	end
 end
