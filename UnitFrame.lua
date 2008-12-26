@@ -262,10 +262,12 @@ local function get_all_bars(frame)
 	
 	sort_positions(bars, frame)
 	
+	local layout = frame.layout
+	
 	return bars,
-		filter_bars_for_side(frame.layout, bars, 'center'),
-		filter_bars_for_side(frame.layout, bars, 'left'),
-		filter_bars_for_side(frame.layout, bars, 'right')
+		filter_bars_for_side(layout, bars, 'center'),
+		filter_bars_for_side(layout, bars, 'left'),
+		filter_bars_for_side(layout, bars, 'right')
 end
 
 local function get_all_icons(frame)
