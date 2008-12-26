@@ -397,7 +397,7 @@ local function update_bar_layout(self)
 		bar:SetReverse(reverse)
 		bar:SetDeficit(bar_layout_db.deficit)
 		bar:SetNormalAlpha(bar_layout_db.alpha)
-		bar:SetBackgroundAlpha(bar_layout_db.bgAlpha)
+		bar:SetBackgroundAlpha(bar_layout_db.background_alpha)
 	end
 
 	bars = del(bars)

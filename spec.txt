@@ -60,6 +60,6 @@ statusbar layout options:
 	reverse: whether it's reversed
 	deficit: whether it's showing its deficit
 	alpha: alpha value of the whole bar
-	bgAlpha: alpha value of the bg
+	background_alpha: alpha value of the bg
 	position: numeric position relative to other bars on the same side
 	side: left, center, or right

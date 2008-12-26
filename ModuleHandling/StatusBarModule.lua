@@ -6,7 +6,7 @@ local StatusBarModule = PitBull4:NewModuleType("statusbar", {
 	reverse = false,
 	deficit = false,
 	alpha = 1,
-	bgAlpha = 1,
+	background_alpha = 1,
 	position = 1,
 	side = 'center',
 })

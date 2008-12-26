@@ -299,15 +299,15 @@ function PitBull4.Options.get_layout_options()
 			bigStep = 0.05,
 			isPercent = true,
 		},
-		bgAlpha = {
+		background_alpha = {
 			type = 'range',
 			name = "Empty opacity",
 			order = 8,
 			get = function(info)
-				return GetLayoutDB(info[3]).bgAlpha
+				return GetLayoutDB(info[3]).background_alpha
 			end,
 			set = function(info, value)
-				GetLayoutDB(info[3]).bgAlpha = value
+				GetLayoutDB(info[3]).background_alpha = value
 
 				UpdateFrames()
 			end,
