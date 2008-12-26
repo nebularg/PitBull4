@@ -36,7 +36,7 @@ end
 
 function PitBull4_Highlight:OnPopulate(frame)
 	local highlight = PitBull4.Controls.MakeFrame(frame)
-	frame.highlight = highlight
+	frame.Highlight = highlight
 	highlight:SetAllPoints(frame)
 	highlight:SetFrameLevel(highlight:GetFrameLevel() + 5)
 	highlight:Hide()
@@ -50,20 +50,20 @@ function PitBull4_Highlight:OnPopulate(frame)
 end
 
 function PitBull4_Highlight:OnClear(frame)
-	frame.highlight.texture = frame.highlight.texture:Delete()
-	frame.highlight = frame.highlight:Delete()
+	frame.Highlight.texture = frame.Highlight.texture:Delete()
+	frame.Highlight = frame.Highlight:Delete()
 end
 
 function PitBull4_Highlight:OnEnter(frame)
-	if not frame.highlight then
+	if not frame.Highlight then
 		return
 	end
-	frame.highlight:Show()
+	frame.Highlight:Show()
 end
 
 function PitBull4_Highlight:OnLeave(frame)
-	if not frame.highlight then
+	if not frame.Highlight then
 		return
 	end
-	frame.highlight:Hide()
+	frame.Highlight:Hide()
 end

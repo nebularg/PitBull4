@@ -30,11 +30,11 @@ end
 
 function PitBull4_Background:OnPopulate(frame)
 	local background = PitBull4.Controls.MakeTexture(frame, "BACKGROUND")
-	frame.background = background
+	frame.Background = background
 	background:SetTexture(unpack(PitBull4_Background:GetLayoutDB(frame).color))
 	background:SetAllPoints(frame)
 end
 
 function PitBull4_Background:OnClear(frame)
-	frame.background = frame.background:Delete()
+	frame.Background = frame.Background:Delete()
 end
