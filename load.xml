@@ -15,9 +15,7 @@
 
 <Script file="UnitFrame.lua"/>
 
-<Script file="Controls.lua"/>
-<Script file="BetterStatusBar.lua"/>
-<Script file="IconControl.lua"/>
+<Include file="Controls\load.xml"/>
 
 <Script file="Options.lua"/>
 
