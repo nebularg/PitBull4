@@ -1,50 +1,6 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
-local AceConfig = LibStub and LibStub("AceConfig-3.0", true)
-if not AceConfig then
-	LoadAddOn("Ace3")
-	AceConfig = LibStub and LibStub("AceConfig-3.0", true)
-	if not LibSimpleOptions then
-		message(("PitBull4 requires the library %q and will not work without it."):format("AceConfig-3.0"))
-		error(("PitBull4 requires the library %q and will not work without it."):format("AceConfig-3.0"))
-	end
-end
-local AceConfigDialog = LibStub("AceConfigDialog-3.0")
-
-local OpenConfig
-
-AceConfig:RegisterOptionsTable("PitBull4_Bliz", {
-	name = "PitBull Unit Frames 4.0",
-	handler = PitBull4,
-	type = 'group',
-	args = {
-		config = {
-			name = "Standalone config",
-			desc = "Open a standlone config window, allowing you to actually configure PitBull Unit Frames 4.0.",
-			type = 'execute',
-			func = function()
-				OpenConfig()
-			end
-		}
-	},
-})
-AceConfigDialog:AddToBlizOptions("PitBull4_Bliz", "PitBull Unit Frames 4.0")
-
-do
-	for i, cmd in ipairs { "/PitBull4", "/PitBull", "/PB4", "/PB", "/PBUF", "/Pit" } do
-		_G["SLASH_PITBULLFOUR" .. (i*2 - 1)] = cmd
-		_G["SLASH_PITBULLFOUR" .. (i*2)] = cmd:lower()
-	end
-
-	_G.hash_SlashCmdList["PITBULLFOUR"] = nil
-	_G.SlashCmdList["PITBULLFOUR"] = function()
-		return OpenConfig()
-	end
-end
-
-PitBull4.Options = {}
-
 local CURRENT_LAYOUT = "Normal"
 
 --- Return the DB dictionary for the current layout selected in the options frame.
@@ -86,56 +42,34 @@ function PitBull4.defaultModulePrototype:SetLayoutOptionsFunction(func)
 	layout_functions[self] = func
 end
 
-local function merge_onto(dict, ...)
-	for i = 1, select('#', ...), 2 do
-		dict[(select(i, ...))] = (select(i+1, ...))
-	end
-end
-
-local function deep_copy(data)
-	local t = {}
-	for k, v in pairs(data) do
-		if type(v) == "table" then
-			t[k] = deep_copy(v)
-		else
-			t[k] = v
+function PitBull4.Options.get_layout_options()
+	local function merge_onto(dict, ...)
+		for i = 1, select('#', ...), 2 do
+			dict[(select(i, ...))] = (select(i+1, ...))
 		end
 	end
-	return t
-end
 
-function OpenConfig()
-	-- redefine it so that we just open up the pane next time
-	function OpenConfig()
-		AceConfigDialog:Open("PitBull4")
+	local function deep_copy(data)
+		local t = {}
+		for k, v in pairs(data) do
+			if type(v) == "table" then
+				t[k] = deep_copy(v)
+			else
+				t[k] = v
+			end
+		end
+		return t
 	end
-	
-	local options = {
-		name = "PitBull",
-		handler = PitBull4,
-		type = 'group',
-		args = {
-		},
-	}
 	
 	local GetLayoutDB = PitBull4.Options.GetLayoutDB
 	local UpdateFrames = PitBull4.Options.UpdateFrames
-
+	
 	local layout_options = {
 		type = 'group',
 		name = "Layout editor",
 		args = {},
 		childGroups = "tab",
 	}
-	options.args.layout_options = layout_options
-	
-	local unit_options = {
-		type = 'group',
-		name = "Units",
-		args = {},
-		childGroups = "tab",
-	}
-	options.args.unit_options = unit_options
 	
 	layout_options.args.current_layout = {
 		name = "Current layout",
@@ -602,87 +536,5 @@ function OpenConfig()
 		}
 	end
 	
-	for i, classification in ipairs(PitBull4.SINGLETON_CLASSIFICATIONS) do
-		unit_options.args[classification] = {
-			type = 'group',
-			name = PitBull4.Utils.GetLocalizedClassification(classification),
-			order = i,
-			args = {
-				layout = {
-					name = "Layout",
-					type = 'select',
-					order = 1,
-					values = function(info)
-						local t = {}
-						-- t[""] = ("Disable %s"):format(PitBull4.Utils.GetLocalizedClassification(classification))
-						for name in pairs(PitBull4.db.profile.layouts) do
-							t[name] = name
-						end
-						return t
-					end,
-					get = function(info)
-						local db = PitBull4.db.profile.classifications[classification]
-						if db.hidden then
-							return ""
-						else
-							return db.layout
-						end
-					end,
-					set = function(info, value)
-						if value == "" then
-							-- TODO: handle this properly
-							PitBull4.db.profile.classifications[classification].hidden = true
-						else
-							PitBull4.db.profile.classifications[classification].hidden = false
-							PitBull4.db.profile.classifications[classification].layout = value
-						end
-						
-						for frame in PitBull4:IterateFramesForClassification(classification, false) do
-							frame:RefreshLayout()
-						end
-					end
-				},
-				horizontalMirror = {
-					name = "Mirror horizontally",
-					desc = "Whether all options will be mirrored, e.g. what would be on the left is now on the right and vice-versa.",
-					order = 2,
-					type = 'toggle',
-					get = function(info)
-						local db = PitBull4.db.profile.classifications[classification]
-						return db.horizontalMirror
-					end,
-					set = function(info, value)
-						local db = PitBull4.db.profile.classifications[classification]
-						db.horizontalMirror = value
-						
-						for frame in PitBull4:IterateFramesForClassification(classification, false) do
-							frame:Update(true, true)
-						end
-					end
-				},
-				verticalMirror = {
-					name = "Mirror vertically",
-					desc = "Whether all options will be mirrored, e.g. what would be on the bottom is now on the top and vice-versa.",
-					order = 3,
-					type = 'toggle',
-					get = function(info)
-						local db = PitBull4.db.profile.classifications[classification]
-						return db.verticalMirror
-					end,
-					set = function(info, value)
-						local db = PitBull4.db.profile.classifications[classification]
-						db.verticalMirror = value
-						
-						for frame in PitBull4:IterateFramesForClassification(classification, false) do
-							frame:Update(true, true)
-						end
-					end
-				},
-			}
-		}
-	end
-	
-	AceConfig:RegisterOptionsTable("PitBull4", options)
-	
-	return OpenConfig()
+	return layout_options
 end

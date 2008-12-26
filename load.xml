@@ -17,6 +17,6 @@
 
 <Include file="Controls\load.xml"/>
 
-<Script file="Options.lua"/>
+<Include file="Options\load.xml"/>
 
 </Ui>
