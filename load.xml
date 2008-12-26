@@ -1,0 +1,24 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+<!--@alpha@--> 
+<Script file="Debug.lua"/>
+<!--@end-alpha@-->
+
+<Script file="Main.lua"/>
+
+<Script file="Utils.lua"/>
+
+<Script file="Module.lua"/>
+<Script file="StatusBarModule.lua"/>
+<Script file="IconModule.lua"/>
+
+<Script file="UnitFrame.lua"/>
+
+<Script file="Controls.lua"/>
+<Script file="BetterStatusBar.lua"/>
+<Script file="IconControl.lua"/>
+
+<Script file="Options.lua"/>
+
+</Ui>

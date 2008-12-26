@@ -285,6 +285,7 @@ function PitBull4:IterateModulesOfType(module_type, enabled_only)
 end
 
 do
+	-- we need to hook OnInitialize so that we can handle the database stuff for modules
 	local old_PitBull4_OnInitialize = PitBull4.OnInitialize
 	PitBull4.OnInitialize = function(self)
 		if old_PitBull4_OnInitialize then
