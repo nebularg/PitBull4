@@ -9,9 +9,7 @@
 
 <Script file="Utils.lua"/>
 
-<Script file="Module.lua"/>
-<Script file="StatusBarModule.lua"/>
-<Script file="IconModule.lua"/>
+<Include file="ModuleHandling\load.xml"/>
 
 <Script file="UnitFrame.lua"/>
 
