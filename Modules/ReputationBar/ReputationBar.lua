@@ -32,9 +32,6 @@ function PitBull4_ReputationBar:GetColor(frame)
 	return 0, 1, 0
 end
 
-PitBull4_ReputationBar:SetValueFunction('GetValue')
-PitBull4_ReputationBar:SetColorFunction('GetColor')
-
 hooksecurefunc("ReputationWatchBar_Update", function()
 	if not PitBull4_ReputationBar:IsEnabled() then
 		return

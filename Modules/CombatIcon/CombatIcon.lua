@@ -28,4 +28,3 @@ function PitBull4_CombatIcon:GetTexture(frame)
 	end
 end
 
-PitBull4_CombatIcon:SetTextureFunction('GetTexture')

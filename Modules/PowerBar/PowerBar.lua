@@ -55,9 +55,6 @@ function PitBull4_PowerBar:GetColor(frame)
 	end
 end
 
-PitBull4_PowerBar:SetValueFunction('GetValue')
-PitBull4_PowerBar:SetColorFunction('GetColor')
-
 function PitBull4_PowerBar:UNIT_MANA(event, unit)
 	PitBull4_PowerBar:UpdateForUnitID(unit)
 end

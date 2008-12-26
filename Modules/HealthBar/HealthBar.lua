@@ -63,9 +63,6 @@ function PitBull4_HealthBar:GetColor(frame)
 	end
 end
 
-PitBull4_HealthBar:SetValueFunction('GetValue')
-PitBull4_HealthBar:SetColorFunction('GetColor')
-
 function PitBull4_HealthBar:UNIT_HEALTH(event, unit)
 	PitBull4_HealthBar:UpdateForUnitID(unit)
 end

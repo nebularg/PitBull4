@@ -14,42 +14,6 @@ local StatusBarModule = PitBull4:NewModuleType("statusbar", {
 local value_funcs = {}
 local color_funcs = {}
 
---- Add the function to specify the current percentage of the status bar
--- @param func function that returns a number within [0, 1]
--- @usage MyModule:SetValueFunction(function(frame)
---     return UnitHealth(frame.unit) / UnitHealthMax(frame.unit)
--- end)
-function StatusBarModule:SetValueFunction(func)
-	--@alpha@
-	expect(func, 'typeof', 'function;string')
-	if type(func) == "string" then
-		expect(self[func], 'typeof', 'function')
-	end
-	expect(value_funcs[self], 'typeof', 'nil')
-	--@end-alpha@
-	
-	value_funcs[self] = PitBull4.Utils.ConvertMethodToFunction(self, func)
-end
-
---- Add the function to specify the current color of the status bar
--- This should return three numbers, representing red, green, and blue.
--- each number should be within [0, 1]
--- @param func function that returns the three colors
--- @usage MyModule:AddColorFunction(function(frame)
---     return 1, 0, 1 -- magenta
--- end)
-function StatusBarModule:SetColorFunction(func)
-	--@alpha@
-	expect(func, 'typeof', 'function;string')
-	if type(func) == "string" then
-		expect(self[func], 'typeof', 'function')
-	end
-	expect(color_funcs[self], 'typeof', 'nil')
-	--@end-alpha@
-	
-	color_funcs[self] = PitBull4.Utils.ConvertMethodToFunction(self, func)
-end
-
 -- handle the case where there is no value returned, i.e. the module returned nil
 local function handle_statusbar_nonvalue(module, frame)
 	local id = module.id
@@ -151,7 +115,10 @@ end
 -- @usage local value = MyModule:CallValueFunction(someFrame)
 -- @return a number within [0, 1]
 function StatusBarModule:CallValueFunction(frame)
-	local value = value_funcs[self](frame)
+	if not self.GetValue then
+		return nil
+	end
+	local value = self:GetValue(frame)
 	if not value then
 		return nil
 	end
@@ -172,7 +139,10 @@ end
 -- @return blue value within [0, 1]
 -- @return alpha value within [0, 1]
 function StatusBarModule:CallColorFunction(frame)
-	local r, g, b, a = color_funcs[self](frame)
+	if not self.GetColor then
+		return 0.7, 0.7, 0.7
+	end
+	local r, g, b, a = self:GetColor(frame)
 	if not r or not g or not b then
 		return 0.7, 0.7, 0.7, a or 1
 	end

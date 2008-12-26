@@ -117,9 +117,6 @@ function PitBull4_CastBar:GetColor(frame)
 	return 0, 0, 0, 0
 end
 
-PitBull4_CastBar:SetValueFunction('GetValue')
-PitBull4_CastBar:SetColorFunction('GetColor')
-
 local function updateInfo(_, _, unit)
 	local guid = UnitGUID(unit)
 	if not guid then

@@ -8,25 +8,6 @@ local IconModule = PitBull4:NewModuleType("icon", {
 	position = 1,
 })
 
-local texture_funcs = {}
-
---- Add the function to specify the current percentage of the status bar
--- @param func function that returns a number within [0, 1]
--- @usage MyModule:SetValueFunction(function(frame)
---     return UnitHealth(frame.unit) / UnitHealthMax(frame.unit)
--- end)
-function IconModule:SetTextureFunction(func)
-	--@alpha@
-	expect(func, 'typeof', 'function;string')
-	if type(func) == "string" then
-		expect(self[func], 'typeof', 'function')
-	end
-	expect(texture_funcs[self], 'typeof', 'nil')
-	--@end-alpha@
-	
-	texture_funcs[self] = PitBull4.Utils.ConvertMethodToFunction(self, func)
-end
-
 -- handle the case where there is no value returned, i.e. the module returned nil
 local function handle_icon_nonvalue(module, frame)
 	local id = module.id
@@ -127,7 +108,11 @@ end
 -- @return top TexCoord for top within [0, 1]
 -- @return bottom TexCoord for bottom within [0, 1]
 function IconModule:CallTextureFunction(frame)
-	local tex, c1, c2, c3, c4 = texture_funcs[self](frame)
+	if not self.GetTexture then
+		-- no function, let's just return
+		return nil
+	end
+	local tex, c1, c2, c3, c4 = self:GetTexture(frame)
 	if not tex then
 		return nil
 	end
