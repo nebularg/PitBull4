@@ -118,6 +118,7 @@ function PitBull4.Options.get_layout_options()
 		name = "Bars",
 		type = 'group',
 		childGroups = "tab",
+		order = 1,
 		args = {}
 	}
 
@@ -125,18 +126,21 @@ function PitBull4.Options.get_layout_options()
 		name = "Icons",
 		type = 'group',
 		childGroups = "tab",
+		order = 2,
 		args = {}
 	}
 
 	layout_options.args.texts = {
 		name = "Texts",
 		type = 'group',
+		order = 3,
 		args = {}
 	}
 
 	layout_options.args.other = {
 		name = "Other",
 		type = 'group',
+		order = 4,
 		args = {}
 	}
 	
