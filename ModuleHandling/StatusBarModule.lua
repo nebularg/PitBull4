@@ -55,7 +55,7 @@ function StatusBarModule:UpdateStatusBar(frame)
 	end
 	
 	control:SetValue(value)
-	local r, g, b, a = self:CallColorFunction(frame)
+	local r, g, b, a = self:CallColorFunction(frame, value)
 	control:SetColor(r, g, b)
 	control:SetAlpha(a)
 	
@@ -110,7 +110,7 @@ function StatusBarModule:UpdateAll()
 	end
 end
 
---- Call the value function which the current status bar module has registered regarding the given frame.
+--- Call the :GetValue function on the status bar module regarding the given frame.
 -- @param frame the frame to get the value of
 -- @usage local value = MyModule:CallValueFunction(someFrame)
 -- @return a number within [0, 1]
@@ -131,18 +131,20 @@ function StatusBarModule:CallValueFunction(frame)
 	return value
 end
 
+--- Call the :GetColor function on the status bar module regarding the given frame.
 --- Call the color function which the current status bar module has registered regarding the given frame.
 -- @param frame the frame to get the color of
+-- @param value the value as returned by :CallValueFunction
 -- @usage local r, g, b, a = MyModule:CallColorFunction(someFrame)
 -- @return red value within [0, 1]
 -- @return green value within [0, 1]
 -- @return blue value within [0, 1]
 -- @return alpha value within [0, 1]
-function StatusBarModule:CallColorFunction(frame)
+function StatusBarModule:CallColorFunction(frame, value)
 	if not self.GetColor then
 		return 0.7, 0.7, 0.7
 	end
-	local r, g, b, a = self:GetColor(frame)
+	local r, g, b, a = self:GetColor(frame, value)
 	if not r or not g or not b then
 		return 0.7, 0.7, 0.7, a or 1
 	end

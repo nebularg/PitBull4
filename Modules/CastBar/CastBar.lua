@@ -83,7 +83,7 @@ function PitBull4_CastBar:GetValue(frame)
 	return 0
 end
 
-function PitBull4_CastBar:GetColor(frame)
+function PitBull4_CastBar:GetColor(frame, value)
 	local guid = frame.guid
 	local data = castData[guid]
 	if not data then

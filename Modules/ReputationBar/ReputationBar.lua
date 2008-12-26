@@ -28,7 +28,7 @@ function PitBull4_ReputationBar:GetValue(frame)
 	return (repvalue - repmin) / (repmax - repmin)
 end
 
-function PitBull4_ReputationBar:GetColor(frame)
+function PitBull4_ReputationBar:GetColor(frame, value)
 	return 0, 1, 0
 end
 

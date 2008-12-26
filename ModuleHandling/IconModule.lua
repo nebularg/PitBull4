@@ -34,7 +34,7 @@ function IconModule:UpdateIcon(frame)
 		return handle_icon_nonvalue(self, frame)
 	end
 	
-	local tex, c1, c2, c3, c4 = self:CallTextureFunction(frame)
+	local tex = self:CallTextureFunction(frame)
 	if not tex then
 		return handle_icon_nonvalue(self, frame)
 	end
@@ -48,7 +48,8 @@ function IconModule:UpdateIcon(frame)
 	end
 	
 	control:SetTexture(tex)
-	control:SetTexCoord(c1, c2, c3, c4)
+	
+	control:SetTexCoord(self:CallTexCoordFunction(frame, tex))
 	
 	return made_control
 end
@@ -99,27 +100,40 @@ function IconModule:UpdateAll()
 	end
 end
 
---- Call the texture function which the given icon module has registered regarding the given frame.
+--- Call the :GetTexture function on the icon module regarding the given frame.
 -- @param frame the frame to get the texture of
 -- @usage local tex, c1, c2, c3, c4 = MyModule:CallTextureFunction(someFrame)
 -- @return texture the path to the texture to show
--- @return left TexCoord for left within [0, 1]
--- @return right TexCoord for right within [0, 1]
--- @return top TexCoord for top within [0, 1]
--- @return bottom TexCoord for bottom within [0, 1]
 function IconModule:CallTextureFunction(frame)
 	if not self.GetTexture then
 		-- no function, let's just return
 		return nil
 	end
-	local tex, c1, c2, c3, c4 = self:GetTexture(frame)
+	local tex = self:GetTexture(frame)
 	if not tex then
 		return nil
 	end
 	
-	if not c1 then
-		c1, c2, c3, c4 = 0, 1, 0, 1
+	return tex
+end
+
+--- Call the :GetTexCoord function on the icon module regarding the given frame.
+-- @param frame the frame to get the TexCoord of
+-- @param texture the texture as returned by :CallTextureFunction
+-- @usage local c1, c2, c3, c4 = MyModule:CallTexCoordFunction(someFrame, "SomeTexture")
+-- @return left TexCoord for left within [0, 1]
+-- @return right TexCoord for right within [0, 1]
+-- @return top TexCoord for top within [0, 1]
+-- @return bottom TexCoord for bottom within [0, 1]
+function IconModule:CallTexCoordFunction(frame, texture)
+	if not self.GetTexCoord then
+		-- no function, let's just return the defaults
+		return 0, 1, 0, 1
+	end
+	local c1, c2, c3, c4 = self:GetTexCoord(frame, texture)
+	if not c4 then
+		return 0, 1, 0, 1
 	end
 	
-	return tex, c1, c2, c3, c4
+	return c1, c2, c3, c4
 end

@@ -22,9 +22,12 @@ end
 
 function PitBull4_CombatIcon:GetTexture(frame)
 	if UnitAffectingCombat(frame.unit) then
-		return [[Interface\CharacterFrame\UI-StateIcon]], 0.57, 0.90, 0.08, 0.41
+		return [[Interface\CharacterFrame\UI-StateIcon]]
 	else
 		return nil
 	end
 end
 
+function PitBull4_CombatIcon:GetTexCoord(frame, texture)
+	return 0.57, 0.90, 0.08, 0.41
+end

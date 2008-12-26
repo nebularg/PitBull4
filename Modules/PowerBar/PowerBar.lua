@@ -47,7 +47,7 @@ function PitBull4_PowerBar:GetValue(frame)
 	return UnitMana(frame.unit) / UnitManaMax(frame.unit)
 end
 
-function PitBull4_PowerBar:GetColor(frame)
+function PitBull4_PowerBar:GetColor(frame, value)
 	local powerType = UnitPowerType(frame.unit)
 	local color = PowerBarColor[powerType]
 	if color then

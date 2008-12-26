@@ -41,7 +41,7 @@ function PitBull4_HealthBar:GetValue(frame)
 	return UnitHealth(frame.unit) / UnitHealthMax(frame.unit)
 end
 
-function PitBull4_HealthBar:GetColor(frame)
+function PitBull4_HealthBar:GetColor(frame, value)
 	if self:GetLayoutDB(frame).colorByClass then
 		local _, class = UnitClass(frame.unit)
 		local t = RAID_CLASS_COLORS[class]
@@ -49,15 +49,14 @@ function PitBull4_HealthBar:GetColor(frame)
 			return t.r, t.g, t.b
 		end
 	end
-	local percent = self:GetValue(frame)
-	if percent < 0.5 then
+	if value < 0.5 then
 		return
 			1,
-			percent * 2,
+			value * 2,
 			0
 	else
 		return
-			(1 - percent) * 2,
+			(1 - value) * 2,
 			1,
 			0
 	end
