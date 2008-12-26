@@ -700,7 +700,7 @@ local function update_icon_layout(self)
 				position_icon(self, icon, attach_frame, last, location, loc_icons)
 				last = icon
 			end
-			attachments_attach_frame[location] = del(icons)
+			attachments_attach_frame[location] = del(loc_icons)
 		end
 		attachments[attach_frame] = del(attachments_attach_frame)
 	end
