@@ -3,82 +3,6 @@ local PitBull4 = _G.PitBull4
 
 PitBull4.Utils = {}
 
---@alpha@
-do
-	local function ptostring(value)
-		if type(value) == "string" then
-			return ("%q"):format(value)
-		end
-		return tostring(value)
-	end
-
-	local conditions = {}
-	local function helper(alpha, ...)
-		for i = 1, select('#', ...) do
-			if alpha == select(i, ...) then
-				return true
-			end
-		end
-		return false
-	end
-	conditions['inset'] = function(alpha, bravo)
-		if type(bravo) == "table" then
-			return bravo[alpha] ~= nil
-		end
-		return helper(alpha, (";"):split(bravo))
-	end
-	conditions['typeof'] = function(alpha, bravo)
-		local type_alpha = type(alpha)
-		if type_alpha == "table" and type(rawget(alpha, 0)) == "userdata" and type(alpha.IsObjectType) == "function" then
-			type_alpha = 'frame'
-		end
-		return conditions['inset'](type_alpha, bravo)
-	end
-	conditions['frametype'] = function(alpha, bravo)
-		if type(bravo) ~= "string" then
-			error(("Bad argument #3 to `expect'. Expected %q, got %q"):format("string", type(bravo)), 3)
-		end
-		return type(alpha) == "table" and type(rawget(alpha, 0)) == "userdata" and type(alpha.IsObjectType) == "function" and alpha:IsObjectType(bravo)
-	end
-	conditions['match'] = function(alpha, bravo)
-		if type(alpha) ~= "string" then
-			error(("Bad argument #1 to `expect'. Expected %q, got %q"):format("string", type(alpha)), 3)
-		end
-		if type(bravo) ~= "string" then
-			error(("Bad argument #3 to `expect'. Expected %q, got %q"):format("string", type(bravo)), 3)
-		end
-		return alpha:match(bravo)
-	end
-	conditions['=='] = function(alpha, bravo)
-		return alpha == bravo
-	end
-	conditions['~='] = function(alpha, bravo)
-		return alpha ~= bravo
-	end
-	conditions['>'] = function(alpha, bravo)
-		return type(alpha) == type(bravo) and alpha > bravo
-	end
-	conditions['>='] = function(alpha, bravo)
-		return type(alpha) == type(bravo) and alpha >= bravo
-	end
-	conditions['<'] = function(alpha, bravo)
-		return type(alpha) == type(bravo) and alpha < bravo
-	end
-	conditions['<='] = function(alpha, bravo)
-		return type(alpha) == type(bravo) and alpha <= bravo
-	end
-
-	function _G.expect(alpha, condition, bravo)
-		if not conditions[condition] then
-			error(("Unknown condition %s"):format(ptostring(condition)), 2)
-		end
-		if not conditions[condition](alpha, bravo) then
-			error(("Expectation failed: %s %s %s"):format(ptostring(alpha), condition, ptostring(bravo)), 2)
-		end
-	end
-end
---@end-alpha@
-
 do
 	local target_same_mt = { __index=function(self, key)
 		if type(key) ~= "string" then
@@ -111,7 +35,7 @@ do
 		return false
 	end }
 	
-	local better_unitIDs = {
+	local better_unit_ids = {
 		player = "player",
 		pet = "pet",
 		vehicle = "pet",
@@ -122,44 +46,44 @@ do
 		playertarget = "target",
 	}
 	for i = 1, 4 do
-		better_unitIDs["party" .. i] = "party" .. i
-		better_unitIDs["partypet" .. i] = "partypet" .. i
-		better_unitIDs["party" .. i .. "pet"] = "partypet" .. i
+		better_unit_ids["party" .. i] = "party" .. i
+		better_unit_ids["partypet" .. i] = "partypet" .. i
+		better_unit_ids["party" .. i .. "pet"] = "partypet" .. i
 	end
 	for i = 1, 40 do
-		better_unitIDs["raid" .. i] = "raid" .. i
-		better_unitIDs["raidpet" .. i] = "raidpet" .. i
-		better_unitIDs["raid" .. i .. "pet"] = "raidpet" .. i
+		better_unit_ids["raid" .. i] = "raid" .. i
+		better_unit_ids["raidpet" .. i] = "raidpet" .. i
+		better_unit_ids["raid" .. i .. "pet"] = "raidpet" .. i
 	end
-	setmetatable(better_unitIDs, target_same_with_target_mt)
+	setmetatable(better_unit_ids, target_same_with_target_mt)
 	
-	--- Return the best unitID for the unitID provided
-	-- @param unitID the known unitID
-	-- @usage assert(PitBull4.Utils.GetBestUnitID("playerpet") == "pet")
-	-- @return the best unitID. If the ID is invalid, it will return false
-	function PitBull4.Utils.GetBestUnitID(unitID)
-		return better_unitIDs[unitID]
+	--- Return the best UnitID for the UnitID provided
+	-- @param unit the known UnitID
+	-- @usage PitBull4.Utils.GetBestUnitID("playerpet") == "pet"
+	-- @return the best UnitID. If the ID is invalid, it will return false
+	function PitBull4.Utils.GetBestUnitID(unit)
+		return better_unit_ids[unit]
 	end
 	
-	local valid_singleton_unitIDs = {
+	local valid_singleton_unit_ids = {
 		player = true,
 		pet = true,
 		mouseover = true,
 		focus = true,
 		target = true,
 	}
-	setmetatable(valid_singleton_unitIDs, target_same_mt)
+	setmetatable(valid_singleton_unit_ids, target_same_mt)
 	
-	--- Return whether the unitID provided is a singleton
-	-- @param unitID the unitID to check
-	-- @usage assert(PitBull4.Utils.IsSingletonUnitID("player"))
-	-- @usage assert(not PitBull4.Utils.IsSingletonUnitID("party1"))
+	--- Return whether the UnitID provided is a singleton
+	-- @param unit the UnitID to check
+	-- @usage PitBull4.Utils.IsSingletonUnitID("player") == true
+	-- @usage PitBull4.Utils.IsSingletonUnitID("party1") == false
 	-- @return whether it is a singleton
-	function PitBull4.Utils.IsSingletonUnitID(unitID)
-		return valid_singleton_unitIDs[unitID]
+	function PitBull4.Utils.IsSingletonUnitID(unit)
+		return valid_singleton_unit_ids[unit]
 	end
 	
-	local non_wacky_unitIDs = {
+	local non_wacky_unit_ids = {
 		player = true,
 		pet = true,
 		mouseover = true,
@@ -176,7 +100,7 @@ do
 	-- @usage assert(PitBull4.Utils.IsWackyClassification("targettarget"))
 	-- @return whether it is wacky
 	function PitBull4.Utils.IsWackyClassification(classification)
-		return not non_wacky_unitIDs[classification]
+		return not non_wacky_unit_ids[classification]
 	end
 end
 

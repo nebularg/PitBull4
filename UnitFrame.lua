@@ -37,9 +37,9 @@ local ICON_SPACING_BETWEEN = 3
 -- @name UnitFrame
 -- @field is_singleton whether the Unit Frame is a singleton or member
 -- @field classification the classification of the Unit Frame
--- @field classificationDB the database table for the Unit Frame's classification
+-- @field classification_db the database table for the Unit Frame's classification
 -- @field layout the layout of the Unit Frame's classification
--- @field unit the unitID of the Unit Frame. Can be nil.
+-- @field unit the UnitID of the Unit Frame. Can be nil.
 -- @field guid the current GUID of the Unit Frame. Can be nil.
 local UnitFrame = {}
 
@@ -108,8 +108,8 @@ function UnitFrame__scripts:OnDragStop()
 	x = x - GetScreenWidth()/2
 	y = y - GetScreenHeight()/2
 	
-	self.classificationDB.position_x = x
-	self.classificationDB.position_y = y
+	self.classification_db.position_x = x
+	self.classification_db.position_y = y
 	self:ClearAllPoints()
 	self:SetPoint("CENTER", UIParent, "CENTER", x, y)
 end
@@ -165,11 +165,11 @@ end
 
 function UnitFrame:RefreshLayout()
 	local old_layout = self.layout
-	local layout = self.classificationDB.layout
+	local layout = self.classification_db.layout
 	self.layout = layout
-	local layoutDB = PitBull4.db.profile.layouts[layout]
-	self:SetWidth(layoutDB.size_x)
-	self:SetHeight(layoutDB.size_y)
+	local layout_db = PitBull4.db.profile.layouts[layout]
+	self:SetWidth(layout_db.size_x)
+	self:SetHeight(layout_db.size_y)
 	if old_layout then
 		self:Update(true, true)
 	end
@@ -207,7 +207,7 @@ function UnitFrame:Update(sameGUID, updateLayout)
 end
 
 --- Check the guid of the Unit Frame, if it is changed, then update the frame.
--- @param guid result from UnitGUID(unitID)
+-- @param guid result from UnitGUID(unit)
 -- @param forceUpdate force an update even if the guid isn't changed, but is non-nil
 -- @usage frame:UpdateGUID(UnitGUID(frame.unit))
 -- @usage frame:UpdateGUID(UnitGUID(frame.unit), true)
@@ -324,8 +324,8 @@ end
 local function update_bar_layout(self)
 	local bars, center_bars, left_bars, right_bars = get_all_bars(self)
 	
-	local horizontal_mirror = self.classificationDB.horizontalMirror
-	local vertical_mirror = self.classificationDB.verticalMirror
+	local horizontal_mirror = self.classification_db.horizontalMirror
+	local vertical_mirror = self.classification_db.verticalMirror
 	
 	if horizontal_mirror then
 		left_bars, right_bars = right_bars, left_bars
@@ -383,9 +383,9 @@ local function update_bar_layout(self)
 
 	for _, id in ipairs(bars) do
 		local bar = self[id]
-		local bar_layoutDB = PitBull4.modules[id]:GetLayoutDB(layout)
-		local reverse = bar_layoutDB.reverse
-		if bar_layoutDB.side == "center" then
+		local bar_layout_db = PitBull4.modules[id]:GetLayoutDB(layout)
+		local reverse = bar_layout_db.reverse
+		if bar_layout_db.side == "center" then
 			if horizontal_mirror then
 				reverse = not reverse
 			end
@@ -395,9 +395,9 @@ local function update_bar_layout(self)
 			end
 		end
 		bar:SetReverse(reverse)
-		bar:SetDeficit(bar_layoutDB.deficit)
-		bar:SetNormalAlpha(bar_layoutDB.alpha)
-		bar:SetBackgroundAlpha(bar_layoutDB.bgAlpha)
+		bar:SetDeficit(bar_layout_db.deficit)
+		bar:SetNormalAlpha(bar_layout_db.alpha)
+		bar:SetBackgroundAlpha(bar_layout_db.bgAlpha)
 	end
 
 	bars = del(bars)
@@ -635,14 +635,14 @@ local function update_icon_layout(self)
 	
 	local layout = self.layout
 	
-	local horizontal_mirror = self.classificationDB.horizontalMirror
-	local vertical_mirror = self.classificationDB.verticalMirror
+	local horizontal_mirror = self.classification_db.horizontalMirror
+	local vertical_mirror = self.classification_db.verticalMirror
 	
 	for _, id in ipairs(icons) do
 		local icon = self[id]
-		local icon_layoutDB = PitBull4.modules[id]:GetLayoutDB(layout)
+		local icon_layout_db = PitBull4.modules[id]:GetLayoutDB(layout)
 	
-		local attachTo = icon_layoutDB.attachTo
+		local attachTo = icon_layout_db.attachTo
 		local attach_frame
 		if attachTo == "root" then
 			attach_frame = self
@@ -650,7 +650,7 @@ local function update_icon_layout(self)
 			attach_frame = self[attachTo]
 		end
 		
-		local location = icon_layoutDB.location
+		local location = icon_layout_db.location
 		
 		local flip_positions = false
 		if horizontal_mirror then
@@ -666,7 +666,7 @@ local function update_icon_layout(self)
 		end
 		
 		if attach_frame then
-			local size = ICON_SIZE * icon_layoutDB.size
+			local size = ICON_SIZE * icon_layout_db.size
 			icon:SetWidth(size)
 			icon:SetHeight(size)
 			icon:ClearAllPoints()
@@ -734,9 +734,9 @@ function UnitFrame:IterateControls()
 	return iter, self, nil
 end
 
-local iters = setmetatable({}, {__index=function(iters, moduleType)
+local iters = setmetatable({}, {__index=function(iters, module_type)
 	local function iter(frame, id)
-		local func, t = PitBull4:IterateModulesOfType(moduleType, true)
+		local func, t = PitBull4:IterateModulesOfType(module_type, true)
 		local id, module = func(t, id)
 		if id == nil then
 			return nil
@@ -746,16 +746,16 @@ local iters = setmetatable({}, {__index=function(iters, moduleType)
 		end
 		return id, frame[id], module
 	end
-	iters[moduleType] = iter
+	iters[module_type] = iter
 	return iter
 end})
 
 --- Iterate over all controls on this frame of the given type
--- @param moduleType one of "statusbar", "icon", "custom"
+-- @param module_type one of "statusbar", "icon", "custom"
 -- @usage for id, control, module in PitBull4.IterateControlsOfType("statusbar") do
 --     doSomethingWith(control)
 -- end
 -- @return iterator which returns the id, control, and module
-function UnitFrame:IterateControlsOfType(moduleType)
-	return iters[moduleType], self, nil
+function UnitFrame:IterateControlsOfType(module_type)
+	return iters[module_type], self, nil
 end

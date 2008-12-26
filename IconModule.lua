@@ -93,16 +93,16 @@ function IconModule:Update(frame, returnChanged)
 	end
 end
 
---- Update the icon for current module for all units of the given unitID
--- @param unitID the unitID in question to update
+--- Update the icon for current module for all units of the given UnitID
+-- @param unit the UnitID in question to update
 -- @usage MyModule:UpdateForUnitID(frame)
-function IconModule:UpdateForUnitID(unitID)
+function IconModule:UpdateForUnitID(unit)
 	--@alpha@
-	expect(unitID, 'typeof', 'string')
+	expect(unit, 'typeof', 'string')
 	--@end-alpha@
 	
 	local id = self.id
-	for frame in PitBull4:IterateFramesForUnitID(unitID) do
+	for frame in PitBull4:IterateFramesForUnitID(unit) do
 		if frame[id] then
 			self:Update(frame)
 		end

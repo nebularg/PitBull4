@@ -1,4 +1,4 @@
-Each unitID can have 0..* frames, not just 0..1
+Each UnitID can have 0..* frames, not just 0..1
 
 Definitions:
     classification: what kind of frame something is, also what settings it adheres to. e.g. player, party, raid, target, partypet
