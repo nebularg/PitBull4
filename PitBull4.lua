@@ -143,6 +143,17 @@ function PitBull4:RunFrameScriptHooks(script, frame, ...)
 	end
 end
 
+--- Wrap the given function so that any call to it will be piped through PitBull4:RunOnLeaveCombat.
+-- @param func function to call
+-- @usage myFunc = PitBull4:OutOfCombatWrapper(func)
+-- @usage MyNamespace.MyMethod = PitBull4:OutOfCombatWrapper(MyNamespace.MyMethod)
+-- @return the wrapped function
+function PitBull4:OutOfCombatWrapper(func)
+	return function(...)
+		return PitBull4:RunOnLeaveCombat(func, ...)
+	end
+end
+
 local function merge(alpha, bravo)
 	local x = {}
 	for k, v in pairs(alpha) do
@@ -578,7 +589,6 @@ end
 --- Make a singleton unit frame.
 -- @param unitID the UnitID of the frame in question
 -- @usage local frame = PitBull4:MakeSingletonFrame("player")
--- @return the frame in question
 function PitBull4:MakeSingletonFrame(unitID)
 	--@alpha@
 	expect(unitID, 'typeof', 'string')
@@ -615,11 +625,11 @@ function PitBull4:MakeSingletonFrame(unitID)
 		unitID_to_frames[unitID][frame] = true
 		
 		frame:SetAttribute("unit", unitID)
+		
+		self:ConvertIntoUnitFrame(frame)
 	end
 	
 	RegisterUnitWatch(frame)
-	
-	self:ConvertIntoUnitFrame(frame)
 	
 	frame:SetPoint("CENTER",
 		UIParent,
@@ -630,25 +640,10 @@ function PitBull4:MakeSingletonFrame(unitID)
 	frame:RefreshLayout()
 	
 	frame:UpdateGUID(UnitGUID(unitID))
-	
-	return frame
 end
+PitBull4.MakeSingletonFrame = PitBull4:OutOfCombatWrapper(PitBull4.MakeSingletonFrame)
 
-function PitBull4:OnEnable()
-	self:ScheduleRepeatingTimer("CheckWackyFramesForGUIDUpdate", 0.15)
-	
-	-- register unit change events
-	self:RegisterEvent("PLAYER_TARGET_CHANGED")
-	self:RegisterEvent("PLAYER_FOCUS_CHANGED")
-	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
-	self:RegisterEvent("PLAYER_PET_CHANGED")
-	self:RegisterEvent("UNIT_TARGET")
-	self:RegisterEvent("UNIT_PET")
-	
-	-- enter/leave combat for :RunOnLeaveCombat
-	self:RegisterEvent("PLAYER_REGEN_ENABLED")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED")
-	
+function PitBull4:OnInitialize()
 	db = LibStub("AceDB-3.0"):New("PitBull4DB", {
 		profile = {
 			classifications = {
@@ -678,6 +673,22 @@ function PitBull4:OnEnable()
 	-- no longer need these
 	module_layoutDefaults = nil
 	module_globalDefaults = nil
+end
+
+function PitBull4:OnEnable()
+	self:ScheduleRepeatingTimer("CheckWackyFramesForGUIDUpdate", 0.15)
+	
+	-- register unit change events
+	self:RegisterEvent("PLAYER_TARGET_CHANGED")
+	self:RegisterEvent("PLAYER_FOCUS_CHANGED")
+	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
+	self:RegisterEvent("PLAYER_PET_CHANGED")
+	self:RegisterEvent("UNIT_TARGET")
+	self:RegisterEvent("UNIT_PET")
+	
+	-- enter/leave combat for :RunOnLeaveCombat
+	self:RegisterEvent("PLAYER_REGEN_ENABLED")
+	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	
 	-- show initial frames
 	local db_classifications = db.profile.classifications
@@ -761,5 +772,4 @@ do
 			t[i+1] = select(i, ...)
 		end
 	end
-end
-
+end	
