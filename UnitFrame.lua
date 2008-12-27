@@ -259,13 +259,13 @@ function UnitFrame:Update(same_guid, update_layout)
 	end
 	
 	local changed = update_layout
-	for id, module in PitBull4:IterateModulesOfType("status_bar", true) do
+	for id, module in PitBull4:IterateModulesOfType("status_bar") do
 		changed = module:Update(self, true) or changed
 	end
-	for id, module in PitBull4:IterateModulesOfType("icon", true) do
+	for id, module in PitBull4:IterateModulesOfType("icon") do
 		changed = module:Update(self, true) or changed
 	end
-	for id, module in PitBull4:IterateModulesOfType("text_provider", true) do
+	for id, module in PitBull4:IterateModulesOfType("text_provider") do
 		changed = module:Update(self, true) or changed
 	end
 	if changed then
@@ -321,7 +321,7 @@ end
 local function get_all_bars(frame)
 	local bars = new()
 	
-	for id, module in PitBull4:IterateModulesOfType('status_bar', true) do
+	for id, module in PitBull4:IterateModulesOfType('status_bar') do
 		if frame[id] then
 			bars[#bars+1] = id
 		end
@@ -464,7 +464,7 @@ end
 local function get_all_icons(frame)
 	local icons = new()
 	
-	for id, module in PitBull4:IterateModulesOfType('icon', true) do
+	for id, module in PitBull4:IterateModulesOfType('icon') do
 		if frame[id] then
 			icons[#icons+1] = id
 		end
@@ -478,7 +478,7 @@ end
 function get_all_texts(frame)
 	local texts = new()
 	
-	for id, module in PitBull4:IterateModulesOfType('text_provider', true) do
+	for id, module in PitBull4:IterateModulesOfType('text_provider') do
 		if frame[id] then
 			for _, text in pairs(frame[id]) do
 				texts[#texts+1] = text
@@ -869,7 +869,7 @@ end
 
 local iters = setmetatable({}, {__index=function(iters, module_type)
 	local function iter(frame, id)
-		local func, t = PitBull4:IterateModulesOfType(module_type, true)
+		local func, t = PitBull4:IterateModulesOfType(module_type)
 		local id, module = func(t, id)
 		if id == nil then
 			return nil

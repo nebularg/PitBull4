@@ -233,7 +233,7 @@ function PitBull4.Options.get_layout_options()
 				local db = GetLayoutDB(info[3])
 				local side = db.side
 				local t = {}
-				for other_id, other_module in PitBull4:IterateModulesOfType("status_bar", true) do
+				for other_id, other_module in PitBull4:IterateModulesOfType("status_bar") do
 					local other_db = GetLayoutDB(other_id)
 					if side == other_db.side then
 						local position = other_db.position
@@ -258,7 +258,7 @@ function PitBull4.Options.get_layout_options()
 				
 				local old_position = db.position
 				
-				for other_id, other_module in PitBull4:IterateModulesOfType("status_bar", false) do
+				for other_id, other_module in PitBull4:IterateModulesOfType("status_bar", true) do
 					local other_position = GetLayoutDB(other_id).position
 					if other_id == id then
 						other_position = new_position
@@ -404,7 +404,7 @@ function PitBull4.Options.get_layout_options()
 		},
 	}
 	
-	for id, module in PitBull4:IterateModulesOfType("status_bar") do
+	for id, module in PitBull4:IterateModulesOfType("status_bar", true) do
 		local args = {}
 		for k, v in pairs(status_bar_args) do
 			args[k] = v
@@ -495,7 +495,7 @@ function PitBull4.Options.get_layout_options()
 				
 				t["root"] = "Unit frame"
 				
-				for id, module in PitBull4:IterateModulesOfType("status_bar", true) do
+				for id, module in PitBull4:IterateModulesOfType("status_bar") do
 					t[id] = module.name
 				end
 				
@@ -532,7 +532,7 @@ function PitBull4.Options.get_layout_options()
 				local attach_to = db.attach_to
 				local location = db.location
 				local t = {}
-				for other_id, other_module in PitBull4:IterateModulesOfType("icon", true) do
+				for other_id, other_module in PitBull4:IterateModulesOfType("icon") do
 					local other_db = GetLayoutDB(other_id)
 					if attach_to == other_db.attach_to and location == other_db.location then
 						local position = other_db.position
@@ -557,7 +557,7 @@ function PitBull4.Options.get_layout_options()
 				
 				local old_position = db.position
 				
-				for other_id, other_module in PitBull4:IterateModulesOfType("icon", false) do
+				for other_id, other_module in PitBull4:IterateModulesOfType("icon", true) do
 					local other_db = GetLayoutDB(other_id)
 					local other_position = other_db.position
 					if other_id == id then
@@ -603,7 +603,7 @@ function PitBull4.Options.get_layout_options()
 		}
 	}
 	
-	for id, module in PitBull4:IterateModulesOfType("icon") do
+	for id, module in PitBull4:IterateModulesOfType("icon", true) do
 		local args = {}
 		for k, v in pairs(icon_args) do
 			args[k] = v
@@ -632,7 +632,7 @@ function PitBull4.Options.get_layout_options()
 		values = function(info)
 			local t = {}
 			local first, first_module, first_id
-			for id, module in PitBull4:IterateModulesOfType("text_provider", true) do
+			for id, module in PitBull4:IterateModulesOfType("text_provider") do
 				local texts_db = module:GetLayoutDB(CURRENT_LAYOUT).texts
 				for i = 1, texts_db.n do
 					local v = texts_db[i]
@@ -661,7 +661,7 @@ function PitBull4.Options.get_layout_options()
 		end,
 		set = function(info, value)
 			local module_name, id = (";"):split(value)
-			for m_id, m in PitBull4:IterateModulesOfType("text_provider", true) do
+			for m_id, m in PitBull4:IterateModulesOfType("text_provider") do
 				if module_name == m_id then
 					CURRENT_TEXT_MODULE = m
 					CURRENT_TEXT_ID = id+0
@@ -676,7 +676,7 @@ function PitBull4.Options.get_layout_options()
 			return "Must be at least 3 characters long."
 		end
 		
-		for id, module in PitBull4:IterateModulesOfType("text_provider", true) do
+		for id, module in PitBull4:IterateModulesOfType("text_provider") do
 			local texts_db = module:GetLayoutDB(CURRENT_LAYOUT).texts
 			
 			for i = 1, texts_db.n do
@@ -686,7 +686,7 @@ function PitBull4.Options.get_layout_options()
 			end
 		end
 		
-		for id, module in PitBull4:IterateModulesOfType("text_provider", true) do
+		for id, module in PitBull4:IterateModulesOfType("text_provider") do
 			return true -- found a module
 		end
 		return "You have no enabled text providers."
@@ -702,7 +702,7 @@ function PitBull4.Options.get_layout_options()
 			local module = CURRENT_TEXT_MODULE
 			
 			if not module then
-				for id, m in PitBull4:IterateModulesOfType("text_provider", true) do
+				for id, m in PitBull4:IterateModulesOfType("text_provider") do
 					module = m
 					break
 				end
@@ -774,7 +774,7 @@ function PitBull4.Options.get_layout_options()
 			else
 				CURRENT_TEXT_MODULE = nil
 				CURRENT_TEXT_ID = nil
-				for id, m in PitBull4:IterateModulesOfType("text_provider", true) do
+				for id, m in PitBull4:IterateModulesOfType("text_provider") do
 					local texts_db = m:GetLayoutDB(CURRENT_LAYOUT).texts
 					
 					if texts_db.n > 0 then
@@ -846,7 +846,7 @@ function PitBull4.Options.get_layout_options()
 		end,
 		values = function(info)
 			local t = {}
-			for id, m in PitBull4:IterateModulesOfType("text_provider", true) do
+			for id, m in PitBull4:IterateModulesOfType("text_provider") do
 				t[id] = m.name
 			end
 			return t
@@ -874,7 +874,7 @@ function PitBull4.Options.get_layout_options()
 			
 			t["root"] = "Unit frame"
 			
-			for id, module in PitBull4:IterateModulesOfType("status_bar", true) do
+			for id, module in PitBull4:IterateModulesOfType("status_bar") do
 				t[id] = module.name
 			end
 			
@@ -969,7 +969,7 @@ function PitBull4.Options.get_layout_options()
 		disabled = disabled,
 	}
 	
-	for id, module in PitBull4:IterateModulesOfType("text_provider") do
+	for id, module in PitBull4:IterateModulesOfType("text_provider", true) do
 		local args = {}
 		for k, v in pairs(status_bar_args) do
 			args[k] = v

@@ -267,21 +267,25 @@ local function module_type_enabled_iter(module_type, id)
 	return id, module
 end
 
---- Iterate over all modules of a given type
+--- Iterate over all modules of a given type.
+-- Only enabled modules will be returned unless also_disabled is provided.
 -- @param module_type one of "status_bar", "icon", "custom"
--- @param enabled_only whether to iterate over only enabled modules
+-- @param also_disabled whether to iterate over disabled modules also
 -- @usage for id, module in PitBull4:IterateModulesOfType("status_bar") do
 --     doSomethingWith(module)
 -- end
+-- @usage for id, module in PitBull4:IterateModulesOfType("status_bar", true) do
+--     doSomethingWith(module)
+-- end
 -- @return iterator which returns the id and module
-function PitBull4:IterateModulesOfType(module_type, enabled_only)
+function PitBull4:IterateModulesOfType(module_type, also_disabled)
 	--@alpha@
 	expect(module_type, 'typeof', 'string')
 	expect(module_type, 'inset', module_types)
-	expect(enabled_only, 'typeof', 'boolean;nil')
+	expect(also_disabled, 'typeof', 'boolean;nil')
 	--@end-alpha@
 	
-	return enabled_only and module_type_enabled_iter or module_type_iter, module_type, nil
+	return not also_disabled and module_type_enabled_iter or module_type_iter, module_type, nil
 end
 
 do
