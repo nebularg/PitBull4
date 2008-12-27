@@ -194,6 +194,7 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 		frame:SetAttribute("*type2", "menu")
 	end
 end
+UnitFrame.ConvertIntoUnitFrame = PitBull4:OutOfCombatWrapper(UnitFrame.ConvertIntoUnitFrame)
 
 function UnitFrame:RefreshLayout()
 	local old_layout = self.layout
@@ -206,6 +207,17 @@ function UnitFrame:RefreshLayout()
 		self:Update(true, true)
 	end
 end
+
+function UnitFrame:Activate()
+	RegisterUnitWatch(self)
+end
+UnitFrame.Activate = PitBull4:OutOfCombatWrapper(UnitFrame.Activate)
+
+function UnitFrame:Deactivate()
+	UnregisterUnitWatch(self)
+	self:Hide()
+end
+UnitFrame.Deactivate = PitBull4:OutOfCombatWrapper(UnitFrame.Deactivate)
 
 --- Update all details about the UnitFrame, possibly after a GUID change
 -- @param same_guid whether the previous GUID is the same as the current, at which point is less crucial to update

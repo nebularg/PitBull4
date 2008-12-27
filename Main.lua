@@ -369,7 +369,7 @@ function PitBull4:MakeSingletonFrame(unit)
 		self:ConvertIntoUnitFrame(frame)
 	end
 	
-	RegisterUnitWatch(frame)
+	frame:Activate()
 	
 	frame:SetPoint("CENTER",
 		UIParent,

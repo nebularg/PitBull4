@@ -21,7 +21,7 @@ function PitBull4.Options.get_unit_options()
 					order = 1,
 					values = function(info)
 						local t = {}
-						-- t[""] = ("Disable %s"):format(PitBull4.Utils.GetLocalizedClassification(classification))
+						t[""] = ("Disable %s"):format(PitBull4.Utils.GetLocalizedClassification(classification))
 						for name in pairs(PitBull4.db.profile.layouts) do
 							t[name] = name
 						end
@@ -36,16 +36,25 @@ function PitBull4.Options.get_unit_options()
 						end
 					end,
 					set = function(info, value)
+						local db = PitBull4.db.profile.classifications[classification]
 						if value == "" then
 							-- TODO: handle this properly
-							PitBull4.db.profile.classifications[classification].hidden = true
+							db.hidden = true
+							for frame in PitBull4:IterateFramesForClassification(classification, false) do
+								frame:Deactivate()
+							end
 						else
-							PitBull4.db.profile.classifications[classification].hidden = false
-							PitBull4.db.profile.classifications[classification].layout = value
-						end
-						
-						for frame in PitBull4:IterateFramesForClassification(classification, false) do
-							frame:RefreshLayout()
+							local was_hidden = db.hidden
+							db.hidden = false
+							db.layout = value
+							
+							if was_hidden then
+								PitBull4:MakeSingletonFrame(classification)
+							else
+								for frame in PitBull4:IterateFramesForClassification(classification, false) do
+									frame:RefreshLayout()
+								end
+							end
 						end
 					end
 				},
