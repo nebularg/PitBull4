@@ -137,8 +137,8 @@ function UnitFrame__scripts:OnDragStop()
 	
 	self.classification_db.position_x = x
 	self.classification_db.position_y = y
-	self:ClearAllPoints()
-	self:SetPoint("CENTER", UIParent, "CENTER", x / scale, y / scale)
+	
+	self:RefreshLayout()
 end
 
 function UnitFrame__scripts:OnEnter()
