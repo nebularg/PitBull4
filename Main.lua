@@ -188,8 +188,9 @@ function PitBull4:IterateFrames(also_hidden)
 	return not also_hidden and iterate_shown_frames or half_next, all_frames
 end
 
---- Iterate over all wacky frames
--- @param only_shown only return frames that are shown
+--- Iterate over all wacky frames.
+-- This iterates over only shown frames unless also_hidden is passed in.
+-- @param also_hidden also return frames that are hidden
 -- @usage for frame in PitBull4:IterateWackyFrames() do
 --     doSomethingWith(frame)
 -- end
@@ -197,16 +198,17 @@ end
 --     doSomethingWith(frame)
 -- end
 -- @return iterator which returns frames
-function PitBull4:IterateWackyFrames(only_shown)
+function PitBull4:IterateWackyFrames(also_hidden)
 	--@alpha@
-	expect(only_shown, 'typeof', 'boolean;nil')
+	expect(also_hidden, 'typeof', 'boolean;nil')
 	--@end-alpha@
 	
-	return only_shown and iterate_shown_frames or half_next, wacky_frames
+	return not also_hidden and iterate_shown_frames or half_next, wacky_frames
 end
 
---- Iterate over all non-wacky frames
--- @param only_shown only return frames that are shown
+--- Iterate over all non-wacky frames.
+-- This iterates over only shown frames unless also_hidden is passed in.
+-- @param also_hidden also return frames that are hidden
 -- @usage for frame in PitBull4:IterateNonWackyFrames() do
 --     doSomethingWith(frame)
 -- end
@@ -214,12 +216,12 @@ end
 --     doSomethingWith(frame)
 -- end
 -- @return iterator which returns frames
-function PitBull4:IterateNonWackyFrames(only_shown)
+function PitBull4:IterateNonWackyFrames(also_hidden)
 	--@alpha@
-	expect(only_shown, 'typeof', 'boolean;nil')
+	expect(also_hidden, 'typeof', 'boolean;nil')
 	--@end-alpha@
 	
-	return only_shown and iterate_shown_frames or half_next, non_wacky_frames
+	return not also_hidden and iterate_shown_frames or half_next, non_wacky_frames
 end
 
 --- Iterate over all frames with the given unit ID
@@ -452,7 +454,7 @@ end
 --- Iterate over all wacky frames, and call their respective :UpdateGUID methods.
 -- @usage PitBull4:CheckWackyFramesForGUIDUpdate()
 function PitBull4:CheckWackyFramesForGUIDUpdate()
-	for frame in self:IterateWackyFrames() do
+	for frame in self:IterateWackyFrames(true) do
 		frame:UpdateGUID(UnitGUID(frame.unit))
 	end
 end
