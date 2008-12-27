@@ -7,7 +7,7 @@ end
 
 local PitBull4_HealthBar = PitBull4:NewModule("HealthBar", "AceEvent-3.0")
 
-PitBull4_HealthBar:SetModuleType("statusbar")
+PitBull4_HealthBar:SetModuleType("status_bar")
 PitBull4_HealthBar:SetName("Health Bar")
 PitBull4_HealthBar:SetDescription("Show a health bar.")
 PitBull4_HealthBar:SetDefaults({

@@ -1,7 +1,7 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
-local StatusBarModule = PitBull4:NewModuleType("statusbar", {
+local StatusBarModule = PitBull4:NewModuleType("status_bar", {
 	size = 2,
 	reverse = false,
 	deficit = false,
@@ -19,7 +19,7 @@ if not LibSharedMedia then
 end
 
 -- handle the case where there is no value returned, i.e. the module returned nil
-local function handle_statusbar_nonvalue(module, frame)
+local function handle_status_bar_nonvalue(module, frame)
 	local id = module.id
 	local control = frame[id]
 	if control then
@@ -42,12 +42,12 @@ function StatusBarModule:UpdateStatusBar(frame)
 	local id = self.id
 	local layout_db = self:GetLayoutDB(frame)
 	if not frame.guid or layout_db.hidden then
-		return handle_statusbar_nonvalue(self, frame)
+		return handle_status_bar_nonvalue(self, frame)
 	end
 	
 	local value = self:CallValueFunction(frame)
 	if not value then
-		return handle_statusbar_nonvalue(self, frame)
+		return handle_status_bar_nonvalue(self, frame)
 	end
 	
 	local control = frame[id]

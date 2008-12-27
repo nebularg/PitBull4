@@ -7,7 +7,7 @@ end
 
 local PitBull4_CastBar = PitBull4:NewModule("CastBar", "AceEvent-3.0")
 
-PitBull4_CastBar:SetModuleType("statusbar")
+PitBull4_CastBar:SetModuleType("status_bar")
 PitBull4_CastBar:SetName("Cast Bar")
 PitBull4_CastBar:SetDescription("Show a cast bar.")
 PitBull4_CastBar:SetDefaults({

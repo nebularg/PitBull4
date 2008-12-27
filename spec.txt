@@ -52,10 +52,10 @@ Modules:
     each module has a type
 
 Module types:
-    statusbar: provides functions to provide details on a status bar.
+    status_bar: provides functions to provide details on a status bar.
     custom: different from above
 
-statusbar layout options:
+status_bar layout options:
 	size: how tall/wide a bar is
 	reverse: whether it's reversed
 	deficit: whether it's showing its deficit

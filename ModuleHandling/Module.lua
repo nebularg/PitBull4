@@ -132,8 +132,8 @@ end
 
 --- Set the module type of the module.
 -- This should be called right after creating the module.
--- @param type one of "custom", "statusbar", or "icon"
--- @usage MyModule:SetModuleType("statusbar")
+-- @param type one of "custom", "status_bar", or "icon"
+-- @usage MyModule:SetModuleType("status_bar")
 function Module:SetModuleType(type)
 	--@alpha@
 	expect(type, 'typeof', 'string')
@@ -268,9 +268,9 @@ local function module_type_enabled_iter(module_type, id)
 end
 
 --- Iterate over all modules of a given type
--- @param module_type one of "statusbar", "icon", "custom"
+-- @param module_type one of "status_bar", "icon", "custom"
 -- @param enabled_only whether to iterate over only enabled modules
--- @usage for id, module in PitBull4:IterateModulesOfType("statusbar") do
+-- @usage for id, module in PitBull4:IterateModulesOfType("status_bar") do
 --     doSomethingWith(module)
 -- end
 -- @return iterator which returns the id and module

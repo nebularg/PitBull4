@@ -1,7 +1,7 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
-local TextProviderModule = PitBull4:NewModuleType("textprovider", {
+local TextProviderModule = PitBull4:NewModuleType("text_provider", {
 	texts = {
 		['**'] = {
 			size = 1,

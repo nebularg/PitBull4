@@ -7,7 +7,7 @@ end
 
 local PitBull4_ReputationBar = PitBull4:NewModule("ReputationBar")
 
-PitBull4_ReputationBar:SetModuleType("statusbar")
+PitBull4_ReputationBar:SetModuleType("status_bar")
 PitBull4_ReputationBar:SetName("Reputation Bar")
 PitBull4_ReputationBar:SetDescription("Show a reputation bar.")
 PitBull4_ReputationBar:SetDefaults({

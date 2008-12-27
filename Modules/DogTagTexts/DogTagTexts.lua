@@ -9,7 +9,7 @@ local PitBull4_DogTagTexts = PitBull4:NewModule("DogTagTexts")
 
 local LibDogTag
 
-PitBull4_DogTagTexts:SetModuleType("textprovider")
+PitBull4_DogTagTexts:SetModuleType("text_provider")
 PitBull4_DogTagTexts:SetName("DogTag-3.0 Texts")
 PitBull4_DogTagTexts:SetDescription("Show an icon based on whether or not the unit is in combat.")
 PitBull4_DogTagTexts:SetDefaults({

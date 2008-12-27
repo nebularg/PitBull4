@@ -7,7 +7,7 @@ end
 
 local PitBull4_PowerBar = PitBull4:NewModule("PowerBar", "AceEvent-3.0")
 
-PitBull4_PowerBar:SetModuleType("statusbar")
+PitBull4_PowerBar:SetModuleType("status_bar")
 PitBull4_PowerBar:SetName("Power Bar")
 PitBull4_PowerBar:SetDescription("Show a mana, rage, energy, or runic mana bar.")
 PitBull4_PowerBar:SetDefaults({

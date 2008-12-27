@@ -259,13 +259,13 @@ function UnitFrame:Update(same_guid, update_layout)
 	end
 	
 	local changed = update_layout
-	for id, module in PitBull4:IterateModulesOfType("statusbar", true) do
+	for id, module in PitBull4:IterateModulesOfType("status_bar", true) do
 		changed = module:Update(self, true) or changed
 	end
 	for id, module in PitBull4:IterateModulesOfType("icon", true) do
 		changed = module:Update(self, true) or changed
 	end
-	for id, module in PitBull4:IterateModulesOfType("textprovider", true) do
+	for id, module in PitBull4:IterateModulesOfType("text_provider", true) do
 		changed = module:Update(self, true) or changed
 	end
 	if changed then
@@ -321,7 +321,7 @@ end
 local function get_all_bars(frame)
 	local bars = new()
 	
-	for id, module in PitBull4:IterateModulesOfType('statusbar', true) do
+	for id, module in PitBull4:IterateModulesOfType('status_bar', true) do
 		if frame[id] then
 			bars[#bars+1] = id
 		end
@@ -478,7 +478,7 @@ end
 function get_all_texts(frame)
 	local texts = new()
 	
-	for id, module in PitBull4:IterateModulesOfType('textprovider', true) do
+	for id, module in PitBull4:IterateModulesOfType('text_provider', true) do
 		if frame[id] then
 			for _, text in pairs(frame[id]) do
 				texts[#texts+1] = text
@@ -884,8 +884,8 @@ local iters = setmetatable({}, {__index=function(iters, module_type)
 end})
 
 --- Iterate over all controls on this frame of the given type
--- @param module_type one of "statusbar", "icon", "custom"
--- @usage for id, control, module in PitBull4.IterateControlsOfType("statusbar") do
+-- @param module_type one of "status_bar", "icon", "custom"
+-- @usage for id, control, module in PitBull4.IterateControlsOfType("status_bar") do
 --     doSomethingWith(control)
 -- end
 -- @return iterator which returns the id, control, and module
