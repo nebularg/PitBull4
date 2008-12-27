@@ -162,7 +162,7 @@ end
 -- @usage MyModule:UpdateAll()
 function TextProviderModule:UpdateAll()
 	local id = self.id
-	for frame in PitBull4:IterateFrames(true) do
+	for frame in PitBull4:IterateFrames() do
 		self:Update(frame)
 	end
 end

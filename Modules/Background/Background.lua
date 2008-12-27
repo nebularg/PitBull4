@@ -17,13 +17,13 @@ PitBull4_Background:SetDefaults({
 function PitBull4_Background:OnEnable()
 	self:AddFrameScriptHook("OnPopulate")
 	self:AddFrameScriptHook("OnClear")
-	for frame in PitBull4:IterateFrames(true) do
+	for frame in PitBull4:IterateFrames() do
 		self:OnPopulate(frame)
 	end
 end
 
 function PitBull4_Background:OnDisable()
-	for frame in PitBull4:IterateFrames(true) do
+	for frame in PitBull4:IterateFrames() do
 		self:OnClear(frame)
 	end
 end

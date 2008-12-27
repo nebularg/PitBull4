@@ -170,8 +170,9 @@ local function half_next_with_del(set, key)
 	return key
 end
 
---- Iterate over all frames
--- @param only_shown only return frames that are shown
+--- Iterate over all frames.
+-- This iterates over only shown frames unless also_hidden is passed in.
+-- @param also_hidden also return frames that are hidden
 -- @usage for frame in PitBull4:IterateFrames() do
 --     doSomethingWith(frame)
 -- end
@@ -179,12 +180,12 @@ end
 --     doSomethingWith(frame)
 -- end
 -- @return iterator which returns frames
-function PitBull4:IterateFrames(only_shown)
+function PitBull4:IterateFrames(also_hidden)
 	--@alpha@
-	expect(only_shown, 'typeof', 'boolean;nil')
+	expect(also_hidden, 'typeof', 'boolean;nil')
 	--@end-alpha@
 	
-	return only_shown and iterate_shown_frames or half_next, all_frames
+	return not also_hidden and iterate_shown_frames or half_next, all_frames
 end
 
 --- Iterate over all wacky frames

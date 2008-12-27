@@ -19,7 +19,7 @@ function PitBull4_Highlight:OnEnable()
 	self:AddFrameScriptHook("OnLeave")
 	
 	local mouseFocus = GetMouseFocus()
-	for frame in PitBull4:IterateFrames(true) do
+	for frame in PitBull4:IterateFrames() do
 		self:OnPopulate(frame)
 		
 		if mouseFocus == frame then
@@ -29,7 +29,7 @@ function PitBull4_Highlight:OnEnable()
 end
 
 function PitBull4_Highlight:OnDisable()
-	for frame in PitBull4:IterateFrames(true) do
+	for frame in PitBull4:IterateFrames() do
 		self:OnClear(frame)
 	end
 end

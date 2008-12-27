@@ -112,7 +112,7 @@ end
 -- @usage MyModule:UpdateAll()
 function StatusBarModule:UpdateAll()
 	local id = self.id
-	for frame in PitBull4:IterateFrames(true) do
+	for frame in PitBull4:IterateFrames() do
 		if frame[id] then
 			self:Update(frame)
 		end
