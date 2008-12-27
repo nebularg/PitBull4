@@ -130,7 +130,7 @@ local function half_next_with_del(set, key)
 end
 
 --- Iterate over all frames
--- @param onlyShown only return frames that are shown
+-- @param only_shown only return frames that are shown
 -- @usage for frame in PitBull4:IterateFrames() do
 --     doSomethingWith(frame)
 -- end
@@ -138,16 +138,16 @@ end
 --     doSomethingWith(frame)
 -- end
 -- @return iterator which returns frames
-function PitBull4:IterateFrames(onlyShown)
+function PitBull4:IterateFrames(only_shown)
 	--@alpha@
-	expect(onlyShown, 'typeof', 'boolean;nil')
+	expect(only_shown, 'typeof', 'boolean;nil')
 	--@end-alpha@
 	
-	return onlyShown and iterate_shown_frames or half_next, all_frames
+	return only_shown and iterate_shown_frames or half_next, all_frames
 end
 
 --- Iterate over all wacky frames
--- @param onlyShown only return frames that are shown
+-- @param only_shown only return frames that are shown
 -- @usage for frame in PitBull4:IterateWackyFrames() do
 --     doSomethingWith(frame)
 -- end
@@ -155,16 +155,16 @@ end
 --     doSomethingWith(frame)
 -- end
 -- @return iterator which returns frames
-function PitBull4:IterateWackyFrames(onlyShown)
+function PitBull4:IterateWackyFrames(only_shown)
 	--@alpha@
-	expect(onlyShown, 'typeof', 'boolean;nil')
+	expect(only_shown, 'typeof', 'boolean;nil')
 	--@end-alpha@
 	
-	return onlyShown and iterate_shown_frames or half_next, wacky_frames
+	return only_shown and iterate_shown_frames or half_next, wacky_frames
 end
 
 --- Iterate over all non-wacky frames
--- @param onlyShown only return frames that are shown
+-- @param only_shown only return frames that are shown
 -- @usage for frame in PitBull4:IterateNonWackyFrames() do
 --     doSomethingWith(frame)
 -- end
@@ -172,17 +172,17 @@ end
 --     doSomethingWith(frame)
 -- end
 -- @return iterator which returns frames
-function PitBull4:IterateNonWackyFrames(onlyShown)
+function PitBull4:IterateNonWackyFrames(only_shown)
 	--@alpha@
-	expect(onlyShown, 'typeof', 'boolean;nil')
+	expect(only_shown, 'typeof', 'boolean;nil')
 	--@end-alpha@
 	
-	return onlyShown and iterate_shown_frames or half_next, non_wacky_frames
+	return only_shown and iterate_shown_frames or half_next, non_wacky_frames
 end
 
 --- Iterate over all frames with the given unit ID
 -- @param unit the UnitID of the unit in question
--- @param onlyShown only return frames that are shown
+-- @param only_shown only return frames that are shown
 -- @usage for frame in PitBull4:IterateFramesForUnitID("player") do
 --     doSomethingWith(frame)
 -- end
@@ -190,10 +190,10 @@ end
 --     doSomethingWith(frame)
 -- end
 -- @return iterator which returns frames
-function PitBull4:IterateFramesForUnitID(unit, onlyShown)
+function PitBull4:IterateFramesForUnitID(unit, only_shown)
 	--@alpha@
 	expect(unit, 'typeof', 'string')
-	expect(onlyShown, 'typeof', 'boolean;nil')
+	expect(only_shown, 'typeof', 'boolean;nil')
 	--@end-alpha@
 	
 	local id = PitBull4.Utils.GetBestUnitID(unit)
@@ -201,7 +201,7 @@ function PitBull4:IterateFramesForUnitID(unit, onlyShown)
 		error(("Bad argument #1 to `IterateFramesForUnitID'. %q is not a valid UnitID"):format(tostring(unit)), 2)
 	end
 	
-	return onlyShown and iterate_shown_frames or half_next, unit_id_to_frames[id]
+	return only_shown and iterate_shown_frames or half_next, unit_id_to_frames[id]
 end
 
 --- Iterate over all shown frames with the given UnitIDs
@@ -228,7 +228,7 @@ end
 
 --- Iterate over all frames with the given classification
 -- @param classification the classification to check
--- @param onlyShown only return frames that are shown
+-- @param only_shown only return frames that are shown
 -- @usage for frame in PitBull4:IterateFramesForClassification("player") do
 --     doSomethingWith(frame)
 -- end
@@ -236,10 +236,10 @@ end
 --     doSomethingWith(frame)
 -- end
 -- @return iterator which returns frames
-function PitBull4:IterateFramesForClassification(classification, onlyShown)
+function PitBull4:IterateFramesForClassification(classification, only_shown)
 	--@alpha@
 	expect(classification, 'typeof', 'string')
-	expect(onlyShown, 'typeof', 'boolean;nil')
+	expect(only_shown, 'typeof', 'boolean;nil')
 	--@end-alpha@
 
 	local unit_id_to_frames__classification = rawget(unit_id_to_frames, classification)
@@ -247,7 +247,7 @@ function PitBull4:IterateFramesForClassification(classification, onlyShown)
 		return donothing
 	end
 	
-	return onlyShown and iterate_shown_frames or half_next, unit_id_to_frames__classification
+	return only_shown and iterate_shown_frames or half_next, unit_id_to_frames__classification
 end
 
 local function layout_iter(layout, frame)
@@ -274,7 +274,7 @@ end
 
 --- Iterate over all frames with the given layout
 -- @param layout the layout to check
--- @param onlyShown only return frames that are shown
+-- @param only_shown only return frames that are shown
 -- @usage for frame in PitBull4:IterateFramesForLayout("Normal") do
 --     frame:UpdateLayout()
 -- end
@@ -282,13 +282,13 @@ end
 --     frame:UpdateLayout()
 -- end
 -- @return iterator which returns frames
-function PitBull4:IterateFramesForLayout(layout, onlyShown)
+function PitBull4:IterateFramesForLayout(layout, only_shown)
 	--@alpha@
 	expect(layout, 'typeof', 'string')
-	expect(onlyShown, 'typeof', 'boolean;nil')
+	expect(only_shown, 'typeof', 'boolean;nil')
 	--@end-alpha@
 	
-	return onlyShown and layout_shown_iter or layout_iter, layout
+	return only_shown and layout_shown_iter or layout_iter, layout
 end
 
 --- call :Update() on all frames with the given layout
