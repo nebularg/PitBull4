@@ -79,7 +79,6 @@ function PitBull4:OnModuleCreated(module)
 end
 
 --- Add a script hook for the unit frames.
--- outside of the standard script hooks, there is also OnPopulate and OnClear.
 -- @name Module:AddFrameScriptHook
 -- @param script name of the script
 -- @param func function to call or method on the module to call
@@ -213,6 +212,71 @@ function Module:GetLayoutDB(layout)
 	end
 	
 	return self.db.profile.layouts[layout]
+end
+
+--- Update the frame for the current module for the given frame and handle any layout changes.
+-- @param frame the Unit Frame to update
+-- @param return_changed whether to return if the update should change the layout. If this is false, it will call :UpdateLayout() automatically.
+-- @usage MyModule:Update(frame)
+-- @return whether the update requires UpdateLayout to be called if return_changed is specified
+function Module:Update(frame, return_changed)
+	--@alpha@
+	expect(frame, 'typeof', 'frame')
+	expect(return_changed, 'typeof', 'nil;boolean')
+	--@end-alpha@
+	
+	local changed = self:UpdateFrame(frame)
+	
+	if return_changed then
+		return changed
+	end
+	if changed then
+		frame:UpdateLayout()
+	end
+end
+
+--- Clear the frame for the current module for the given frame and handle any layout changes.
+-- @param frame the Unit Frame to clear
+-- @param return_changed whether to return if the clear should change the layout. If this is false, it will call :UpdateLayout() automatically.
+-- @usage MyModule:Clear(frame)
+-- @return whether the clear requires UpdateLayout to be called if return_changed is specified
+function Module:Clear(frame, return_changed)
+	--@alpha@
+	expect(frame, 'typeof', 'frame')
+	expect(return_changed, 'typeof', 'nil;boolean')
+	--@end-alpha@
+
+	local changed = self:ClearFrame(frame)
+
+	if return_changed then
+		return changed
+	end
+	if changed then
+		frame:UpdateLayout()
+	end
+end
+
+--- Run :Update(frame) on all shown frames with the given UnitID.
+-- @param unit the UnitID in question to update
+-- @usage MyModule:UpdateForUnitID("player")
+function Module:UpdateForUnitID(unit)
+	--@alpha@
+	expect(unit, 'typeof', 'string')
+	--@end-alpha@
+	
+	local id = self.id
+	for frame in PitBull4:IterateFramesForUnitID(unit) do
+		self:Update(frame)
+	end
+end
+
+--- Run :Update(frame) on all shown frames.
+-- @usage MyModule:UpdateAll()
+function Module:UpdateAll()
+	local id = self.id
+	for frame in PitBull4:IterateFrames() do
+		self:Update(frame)
+	end
 end
 
 local function enabled_iter(modules, id)

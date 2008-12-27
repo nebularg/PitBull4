@@ -24,36 +24,43 @@ local DEFAULT_FONT, DEFAULT_FONT_SIZE = ChatFontNormal:GetFont()
 
 local new, del = PitBull4.new, PitBull4.del
 
--- clear all texts from the frame
-local function clear_texts(module, frame)
-	local id = module.id
+--- Clear the texts for the current module if it exists.
+-- @param frame the Unit Frame to clear
+-- @usage local update_layout = MyModule:ClearFrame(frame)
+-- @return whether the update requires :UpdateLayout to be called
+function TextProviderModule:ClearFrame(frame)
+	--@alpha@
+	expect(frame, 'typeof', 'frame')
+	--@end-alpha@
+
+	local id = self.id
 	local texts = frame[id]
-	if texts then
-		local found = next(texts) ~= nil
-		for _, text in pairs(texts) do
-			module:RemoveFontString(text)
-			text.db = nil
-			text:Delete()
-		end
-		frame[id] = del(texts)
-		
-		return found
+	if not texts then
+		return false
 	end
-	return false
+	
+	for _, text in pairs(texts) do
+		self:RemoveFontString(text)
+		text.db = nil
+		text:Delete()
+	end
+	frame[id] = del(texts)
+	
+	return true
 end
 
 --- Update the texts for the current module
 -- @param frame the Unit Frame to update
 -- @usage local update_layout = MyModule:UpdateIcon(frame)
 -- @return whether the update requires :UpdateLayout to be called
-function TextProviderModule:UpdateTexts(frame)
+function TextProviderModule:UpdateFrame(frame)
 	--@alpha@
 	expect(frame, 'typeof', 'frame')
 	--@end-alpha@
 	
 	local db = self:GetLayoutDB(frame)
 	if not frame.guid or db.hidden or db.texts.n == 0 then
-		return clear_texts(self, frame)
+		return self:ClearFrame(frame)
 	end
 	
 	local texts = frame[self.id]
@@ -119,48 +126,4 @@ function TextProviderModule:UpdateTexts(frame)
 	end
 	
 	return changed
-end
-
---- Update the texts for current module for the given frame and handle any layout changes
--- @param frame the Unit Frame to update
--- @param return_changed whether to return if the update should change the layout. If this is false, it will call :UpdateLayout() automatically.
--- @usage MyModule:Update(frame)
--- @return whether the update requires UpdateLayout to be called if return_changed is specified
-function TextProviderModule:Update(frame, return_changed)
-	--@alpha@
-	expect(frame, 'typeof', 'frame')
-	expect(return_changed, 'typeof', 'nil;boolean')
-	--@end-alpha@
-	
-	local changed = self:UpdateTexts(frame)
-	
-	if return_changed then
-		return changed
-	end
-	if changed then
-		frame:UpdateLayout()
-	end
-end
-
---- Update the texts for current module for all units of the given UnitID
--- @param unit the UnitID in question to update
--- @usage MyModule:UpdateForUnitID(frame)
-function TextProviderModule:UpdateForUnitID(unit)
-	--@alpha@
-	expect(unit, 'typeof', 'string')
-	--@end-alpha@
-	
-	local id = self.id
-	for frame in PitBull4:IterateFramesForUnitID(unit) do
-		self:Update(frame)
-	end
-end
-
---- Update the texts for the current module for all frames.
--- @usage MyModule:UpdateAll()
-function TextProviderModule:UpdateAll()
-	local id = self.id
-	for frame in PitBull4:IterateFrames() do
-		self:Update(frame)
-	end
 end

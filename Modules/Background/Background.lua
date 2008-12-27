@@ -14,27 +14,23 @@ PitBull4_Background:SetDefaults({
 	color = { 0, 0, 0, 0.5 }
 })
 
-function PitBull4_Background:OnEnable()
-	self:AddFrameScriptHook("OnPopulate")
-	self:AddFrameScriptHook("OnClear")
-	for frame in PitBull4:IterateFrames() do
-		self:OnPopulate(frame)
+function PitBull4_Background:Update(frame)
+	if frame.Background then
+		return false
 	end
-end
-
-function PitBull4_Background:OnDisable()
-	for frame in PitBull4:IterateFrames() do
-		self:OnClear(frame)
-	end
-end
-
-function PitBull4_Background:OnPopulate(frame)
+	
 	local background = PitBull4.Controls.MakeTexture(frame, "BACKGROUND")
 	frame.Background = background
 	background:SetTexture(unpack(PitBull4_Background:GetLayoutDB(frame).color))
 	background:SetAllPoints(frame)
+	return true
 end
 
-function PitBull4_Background:OnClear(frame)
+function PitBull4_Background:Clear(frame)
+	if not frame.Background then
+		return false
+	end
+	
 	frame.Background = frame.Background:Delete()
+	return true
 end

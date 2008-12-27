@@ -33,6 +33,13 @@ local ICON_SPACING_BETWEEN = 3
 -- how many pixels wide to assume a text is
 local ASSUMED_TEXT_WIDTH = 40
 
+local MODULE_UPDATE_ORDER = {
+	"custom",
+	"status_bar",
+	"icon",
+	"text_provider",
+}
+
 -----------------------------------------------------------------------------
 
 --- A Unit Frame created by PitBull4
@@ -244,30 +251,24 @@ function UnitFrame:Update(same_guid, update_layout)
 	-- TODO: something with same_guid
 	if not self.guid then
 	 	if self.populated then
-			PitBull4:RunFrameScriptHooks("OnClear", self)
 			self.populated = nil
+			
+			for _, module in PitBull4:IterateEnabledModules() do
+				module:Clear(self)
+			end
 		end
-	else
-		if not self.populated then
-			PitBull4:RunFrameScriptHooks("OnPopulate", self)
-			self.populated = true
-		end
+		return
 	end
-	
-	if self.populated then
-		PitBull4:RunFrameScriptHooks("OnUpdate", self)
-	end
+	self.populated = true
 	
 	local changed = update_layout
-	for id, module in PitBull4:IterateModulesOfType("status_bar") do
-		changed = module:Update(self, true) or changed
+	
+	for _, module_type in ipairs(MODULE_UPDATE_ORDER) do
+		for _, module in PitBull4:IterateModulesOfType(module_type) do
+			changed = module:Update(self, true) or changed
+		end
 	end
-	for id, module in PitBull4:IterateModulesOfType("icon") do
-		changed = module:Update(self, true) or changed
-	end
-	for id, module in PitBull4:IterateModulesOfType("text_provider") do
-		changed = module:Update(self, true) or changed
-	end
+	
 	if changed then
 		self:UpdateLayout()
 	end

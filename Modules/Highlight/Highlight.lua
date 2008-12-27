@@ -13,28 +13,22 @@ PitBull4_Highlight:SetDescription("Show a highlight when hovering or targeting."
 PitBull4_Highlight:SetDefaults({})
 
 function PitBull4_Highlight:OnEnable()
-	self:AddFrameScriptHook("OnPopulate")
-	self:AddFrameScriptHook("OnClear")
 	self:AddFrameScriptHook("OnEnter")
 	self:AddFrameScriptHook("OnLeave")
 	
 	local mouseFocus = GetMouseFocus()
 	for frame in PitBull4:IterateFrames() do
-		self:OnPopulate(frame)
-		
 		if mouseFocus == frame then
 			self:OnEnter(frame)
 		end
 	end
 end
 
-function PitBull4_Highlight:OnDisable()
-	for frame in PitBull4:IterateFrames() do
-		self:OnClear(frame)
+function PitBull4_Highlight:Update(frame)
+	if frame.Highlight then
+		return false
 	end
-end
-
-function PitBull4_Highlight:OnPopulate(frame)
+	
 	local highlight = PitBull4.Controls.MakeFrame(frame)
 	frame.Highlight = highlight
 	highlight:SetAllPoints(frame)
@@ -47,11 +41,19 @@ function PitBull4_Highlight:OnPopulate(frame)
 	texture:SetBlendMode("ADD")
 	texture:SetAlpha(0.5)
 	texture:SetAllPoints(highlight)
+	
+	return true
 end
 
-function PitBull4_Highlight:OnClear(frame)
+function PitBull4_Highlight:Clear(frame)
+	if not frame.Highlight then
+		return false
+	end
+	
 	frame.Highlight.texture = frame.Highlight.texture:Delete()
 	frame.Highlight = frame.Highlight:Delete()
+	
+	return true
 end
 
 function PitBull4_Highlight:OnEnter(frame)

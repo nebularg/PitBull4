@@ -33,8 +33,6 @@ function PitBull4_CastBar:OnEnable()
 	self:RegisterEvent("UNIT_SPELLCAST_DELAYED")
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
-	
-	self:AddFrameScriptHook("OnUpdate")
 end
 
 function PitBull4_CastBar:OnDisable()
@@ -65,6 +63,11 @@ do
 end
 
 function PitBull4_CastBar:GetValue(frame)
+	local unit = frame.unit
+	if frame.is_wacky or unit == "target" and unit == "focus" then
+		self:UpdateInfo(nil, unit)
+	end
+	
 	local guid = frame.guid
 	local data = castData[guid]
 	if not data then
@@ -117,7 +120,7 @@ function PitBull4_CastBar:GetColor(frame, value)
 	return 0, 0, 0, 0
 end
 
-local function updateInfo(_, _, unit)
+function PitBull4_CastBar:UpdateInfo(event, unit)
 	local guid = UnitGUID(unit)
 	if not guid then
 		return
@@ -202,24 +205,11 @@ function PitBull4_CastBar:FixCastData()
 	end
 end
 
-function PitBull4_CastBar:OnUpdate(frame)
-	if not frame.CastBar then
-		return
-	end
-	
-	local unit = frame.unit
-	if not frame.is_wacky and unit ~= "target" and unit ~= "focus" then
-		return
-	end
-	
-	updateInfo(self, nil, unit)
-end
-
-PitBull4_CastBar.UNIT_SPELLCAST_START = updateInfo
-PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_START = updateInfo
-PitBull4_CastBar.UNIT_SPELLCAST_STOP = updateInfo
-PitBull4_CastBar.UNIT_SPELLCAST_FAILED = updateInfo
-PitBull4_CastBar.UNIT_SPELLCAST_INTERRUPTED = updateInfo
-PitBull4_CastBar.UNIT_SPELLCAST_DELAYED = updateInfo
-PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_UPDATE = updateInfo
-PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_STOP = updateInfo
+PitBull4_CastBar.UNIT_SPELLCAST_START = PitBull4_CastBar.UpdateInfo
+PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_START = PitBull4_CastBar.UpdateInfo
+PitBull4_CastBar.UNIT_SPELLCAST_STOP = PitBull4_CastBar.UpdateInfo
+PitBull4_CastBar.UNIT_SPELLCAST_FAILED = PitBull4_CastBar.UpdateInfo
+PitBull4_CastBar.UNIT_SPELLCAST_INTERRUPTED = PitBull4_CastBar.UpdateInfo
+PitBull4_CastBar.UNIT_SPELLCAST_DELAYED = PitBull4_CastBar.UpdateInfo
+PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_UPDATE = PitBull4_CastBar.UpdateInfo
+PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_STOP = PitBull4_CastBar.UpdateInfo

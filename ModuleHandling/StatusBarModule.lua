@@ -18,23 +18,31 @@ if not LibSharedMedia then
 	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 end
 
--- handle the case where there is no value returned, i.e. the module returned nil
-local function handle_status_bar_nonvalue(module, frame)
-	local id = module.id
+--- Clear the status bar for the current module if it exists.
+-- @param frame the Unit Frame to clear
+-- @usage local update_layout = MyModule:ClearFrame(frame)
+-- @return whether the update requires :UpdateLayout to be called
+function StatusBarModule:ClearFrame(frame)
+	--@alpha@
+	expect(frame, 'typeof', 'frame')
+	--@end-alpha@
+	
+	local id = self.id
 	local control = frame[id]
-	if control then
-		frame.id = nil
-		frame[id] = control:Delete()
-		return true
+	if not control then
+		return false
 	end
-	return false
+
+	control.id = nil
+	frame[id] = control:Delete()
+	return true
 end
 
 --- Update the status bar for the current module
 -- @param frame the Unit Frame to update
 -- @usage local update_layout = MyModule:UpdateStatusBar(frame)
 -- @return whether the update requires :UpdateLayout to be called
-function StatusBarModule:UpdateStatusBar(frame)
+function StatusBarModule:UpdateFrame(frame)
 	--@alpha@
 	expect(frame, 'typeof', 'frame')
 	--@end-alpha@
@@ -42,12 +50,12 @@ function StatusBarModule:UpdateStatusBar(frame)
 	local id = self.id
 	local layout_db = self:GetLayoutDB(frame)
 	if not frame.guid or layout_db.hidden then
-		return handle_status_bar_nonvalue(self, frame)
+		return self:ClearFrame(frame)
 	end
 	
 	local value = self:CallValueFunction(frame)
 	if not value then
-		return handle_status_bar_nonvalue(self, frame)
+		return self:ClearFrame(frame)
 	end
 	
 	local control = frame[id]
@@ -69,54 +77,6 @@ function StatusBarModule:UpdateStatusBar(frame)
 	control:SetAlpha(a)
 	
 	return made_control
-end
-
---- Update the status bar for current module for the given frame and handle any layout changes
--- @param frame the Unit Frame to update
--- @param return_changed whether to return if the update should change the layout. If this is false, it will call :UpdateLayout() automatically.
--- @usage MyModule:Update(frame)
--- @return whether the update requires UpdateLayout to be called if return_changed is specified
-function StatusBarModule:Update(frame, return_changed)
-	--@alpha@
-	expect(frame, 'typeof', 'frame')
-	expect(return_changed, 'typeof', 'nil;boolean')
-	--@end-alpha@
-	
-	local changed = self:UpdateStatusBar(frame)
-	
-	if return_changed then
-		return changed
-	end
-	if changed then
-		frame:UpdateLayout()
-	end
-end
-
---- Update the status bar for current module for all units of the given UnitID
--- @param unit the UnitID in question to update
--- @usage MyModule:UpdateForUnitID("player")
-function StatusBarModule:UpdateForUnitID(unit)
-	--@alpha@
-	expect(unit, 'typeof', 'string')
-	--@end-alpha@
-	
-	local id = self.id
-	for frame in PitBull4:IterateFramesForUnitID(unit) do
-		if frame[id] then
-			self:Update(frame)
-		end
-	end
-end
-
---- Update the status bar for the current module for all frames that have the status bar.
--- @usage MyModule:UpdateAll()
-function StatusBarModule:UpdateAll()
-	local id = self.id
-	for frame in PitBull4:IterateFrames() do
-		if frame[id] then
-			self:Update(frame)
-		end
-	end
 end
 
 --- Call the :GetValue function on the status bar module regarding the given frame.
