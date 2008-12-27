@@ -11,7 +11,7 @@ PitBull4_CombatIcon:SetModuleType("icon")
 PitBull4_CombatIcon:SetName("Combat Icon")
 PitBull4_CombatIcon:SetDescription("Show an icon based on whether or not the unit is in combat.")
 PitBull4_CombatIcon:SetDefaults({
-	attachTo = "root",
+	attach_to = "root",
 	location = "edge_bottom_left",
 	position = 1,
 })

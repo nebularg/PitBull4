@@ -1,9 +1,39 @@
 --@alpha@
-local function ptostring(value)
+local function is_list(t)
+	local n = #t
+	
+	for k in pairs(t) do
+		if type(k) ~= "number" or k < 1 or k > n or math.floor(k) ~= k then
+			return false
+		end
+	end
+	return true
+end
+
+local function simple_pretty_tostring(value)
 	if type(value) == "string" then
 		return ("%q"):format(value)
+	else
+		return tostring(value)
 	end
-	return tostring(value)
+end
+
+local function pretty_tostring(value)
+	if type(value) ~= "table" then
+		return simple_pretty_tostring(value)
+	end
+	
+	local t = {}
+	if is_list(value) then
+		for _, v in ipairs(value) do
+			t[#t+1] = simple_pretty_tostring(v)
+		end
+	else
+		for k, v in pairs(value) do
+			t[#t+1] = "[" .. simple_pretty_tostring(k) .. "] = " .. simple_pretty_tostring(v)
+		end
+	end	
+	return "{" .. table.concat(t, ", ") .. "}"
 end
 
 local conditions = {}
@@ -77,10 +107,10 @@ end
 
 function _G.expect(alpha, condition, bravo)
 	if not conditions[condition] then
-		error(("Unknown condition %s"):format(ptostring(condition)), 2)
+		error(("Unknown condition %s"):format(pretty_tostring(condition)), 2)
 	end
 	if not conditions[condition](alpha, bravo) then
-		error(("Expectation failed: %s %s %s"):format(ptostring(alpha), condition, ptostring(bravo)), 2)
+		error(("Expectation failed: %s %s %s"):format(pretty_tostring(alpha), condition, pretty_tostring(bravo)), 2)
 	end
 end
 --@end-alpha@

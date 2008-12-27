@@ -30,6 +30,9 @@ local ICON_BAR_OUTSIDE_SPACING = 3
 -- how many pixels between adjacent icons
 local ICON_SPACING_BETWEEN = 3
 
+-- how many pixels wide to assume a text is
+local ASSUMED_TEXT_WIDTH = 40
+
 -----------------------------------------------------------------------------
 
 --- A Unit Frame created by PitBull4
@@ -41,11 +44,30 @@ local ICON_SPACING_BETWEEN = 3
 -- @field layout the layout of the Unit Frame's classification
 -- @field unit the UnitID of the Unit Frame. Can be nil.
 -- @field guid the current GUID of the Unit Frame. Can be nil.
+-- @field overlay an overlay frame for texts to be placed on.
 local UnitFrame = {}
 
 local PitBull4_UnitFrame_DropDown = CreateFrame("Frame", "PitBull4_UnitFrame_DropDown", UIParent, "UIDropDownMenuTemplate")
 
 local new, del = PitBull4.new, PitBull4.del
+
+local ipairs_with_del
+do
+	local function iter(t, current)
+		current = current + 1
+		
+		local value = t[current]
+		if value == nil then
+			del(t)
+			return nil
+		end
+		
+		return current, value
+	end
+	function ipairs_with_del(t)
+		return iter, t, 0
+	end
+end
 
 -- from a unit, figure out the proper menu and, if appropriate, the corresponding ID
 local function figure_unit_menu(unit)
@@ -135,6 +157,12 @@ function UnitFrame__scripts:OnShow()
 	end
 end
 
+function UnitFrame__scripts:OnHide()
+	if self.is_wacky then
+		self:UpdateGUID(nil)
+	end
+end
+
 --- Add the proper functions and scripts to a SecureUnitButton
 -- @param frame a Button which inherits from SecureUnitButton
 -- @param isExampleFrame whether the button is an example frame, thus not a real unit frame
@@ -145,6 +173,10 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 	expect(frame, 'frametype', 'Button')
 	expect(isExampleFrame, 'typeof', 'nil;boolean')
 	--@end-alpha@
+	
+	local overlay = PitBull4.Controls.MakeFrame(frame)
+	frame.overlay = overlay
+	overlay:SetFrameLevel(frame:GetFrameLevel() + 4)
 	
 	for k, v in pairs(UnitFrame__scripts) do
 		frame:SetScript(k, v)
@@ -176,29 +208,37 @@ function UnitFrame:RefreshLayout()
 end
 
 --- Update all details about the UnitFrame, possibly after a GUID change
--- @param sameGUID whether the previous GUID is the same as the current, at which point is less crucial to update
--- @param updateLayout whether to update the layout no matter what
+-- @param same_guid whether the previous GUID is the same as the current, at which point is less crucial to update
+-- @param update_layout whether to update the layout no matter what
 -- @usage frame:Update()
 -- @usage frame:Update(true)
 -- @usage frame:Update(false, true)
-function UnitFrame:Update(sameGUID, updateLayout)
-	-- TODO
-	if not self.guid and self.populated then
-		PitBull4:RunFrameScriptHooks("OnClear", self)
-		self.populated = nil
+function UnitFrame:Update(same_guid, update_layout)
+	-- TODO: something with same_guid
+	if not self.guid then
+	 	if self.populated then
+			PitBull4:RunFrameScriptHooks("OnClear", self)
+			self.populated = nil
+		end
+	else
+		if not self.populated then
+			PitBull4:RunFrameScriptHooks("OnPopulate", self)
+			self.populated = true
+		end
 	end
 	
-	if not self.populated then
-		PitBull4:RunFrameScriptHooks("OnPopulate", self)
-		self.populated = true
+	if self.populated then
+		PitBull4:RunFrameScriptHooks("OnUpdate", self)
 	end
 	
-	PitBull4:RunFrameScriptHooks("OnUpdate", self)
-	local changed = updateLayout
+	local changed = update_layout
 	for id, module in PitBull4:IterateModulesOfType("statusbar", true) do
 		changed = module:Update(self, true) or changed
 	end
 	for id, module in PitBull4:IterateModulesOfType("icon", true) do
+		changed = module:Update(self, true) or changed
+	end
+	for id, module in PitBull4:IterateModulesOfType("textprovider", true) do
 		changed = module:Update(self, true) or changed
 	end
 	if changed then
@@ -268,20 +308,6 @@ local function get_all_bars(frame)
 		filter_bars_for_side(layout, bars, 'center'),
 		filter_bars_for_side(layout, bars, 'left'),
 		filter_bars_for_side(layout, bars, 'right')
-end
-
-local function get_all_icons(frame)
-	local icons = new()
-	
-	for id, module in PitBull4:IterateModulesOfType('icon', true) do
-		if frame[id] then
-			icons[#icons+1] = id
-		end
-	end
-	
-	sort_positions(icons, frame)
-	
-	return icons
 end
 
 -- figure out the total width and height points for a frame based on its bars
@@ -408,16 +434,49 @@ local function update_bar_layout(self)
 	right_bars = del(right_bars)
 end
 
-local function get_half_width(frame, icons)
+local function get_all_icons(frame)
+	local icons = new()
+	
+	for id, module in PitBull4:IterateModulesOfType('icon', true) do
+		if frame[id] then
+			icons[#icons+1] = id
+		end
+	end
+	
+	sort_positions(icons, frame)
+	
+	return icons
+end
+
+function get_all_texts(frame)
+	local texts = new()
+	
+	for id, module in PitBull4:IterateModulesOfType('textprovider', true) do
+		if frame[id] then
+			for _, text in pairs(frame[id]) do
+				texts[#texts+1] = text
+			end
+		end
+	end
+	
+	return texts
+end
+
+local function get_half_width(frame, icons_and_texts)
 	local num = 0
 	
 	local layout = frame.layout
 	
-	for _, icon in ipairs(icons) do
-		num = PitBull4.modules[icon.id]:GetLayoutDB(layout).size * ICON_SIZE
+	for _, icon_or_text in ipairs(icons_and_texts) do
+		if icon_or_text.db then
+			-- probably a text
+			num = ASSUMED_TEXT_WIDTH * icon_or_text.db.size
+		else
+			num = PitBull4.modules[icon.id]:GetLayoutDB(layout).size * ICON_SIZE
+		end
 	end
 	
-	num = num + (#icons - 1) * ICON_SPACING_BETWEEN
+	num = num + (#icons_and_texts - 1) * ICON_SPACING_BETWEEN
 	
 	return num / 2
 end
@@ -429,8 +488,8 @@ end
 function position_icon_on_root:out_top_right(icon)
 	icon:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -ICON_OUT_ROOT_BORDER, ICON_OUT_ROOT_MARGIN)
 end
-function position_icon_on_root:out_top(icon, _, _, icons)
-	icon:SetPoint("BOTTOMLEFT", self, "TOP", -get_half_width(self, icons), ICON_OUT_ROOT_MARGIN)
+function position_icon_on_root:out_top(icon, _, _, icons_and_texts)
+	icon:SetPoint("BOTTOMLEFT", self, "TOP", -get_half_width(self, icons_and_texts), ICON_OUT_ROOT_MARGIN)
 end
 function position_icon_on_root:out_bottom_left(icon)
 	icon:SetPoint("TOPLEFT", self, "BOTTOMLEFT", ICON_OUT_ROOT_BORDER, -ICON_OUT_ROOT_MARGIN)
@@ -438,8 +497,8 @@ end
 function position_icon_on_root:out_bottom_right(icon)
 	icon:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", -ICON_OUT_ROOT_BORDER, -ICON_OUT_ROOT_MARGIN)
 end
-function position_icon_on_root:out_bottom(icon, _, _, icons)
-	icon:SetPoint("TOPLEFT", self, "BOTTOM", -get_half_width(self, icons), ICON_OUT_ROOT_MARGIN)
+function position_icon_on_root:out_bottom(icon, _, _, icons_and_texts)
+	icon:SetPoint("TOPLEFT", self, "BOTTOM", -get_half_width(self, icons_and_texts), ICON_OUT_ROOT_MARGIN)
 end
 function position_icon_on_root:out_left_top(icon)
 	icon:SetPoint("TOPRIGHT", self, "TOPLEFT", -ICON_OUT_ROOT_MARGIN, -ICON_OUT_ROOT_BORDER)
@@ -459,14 +518,14 @@ end
 function position_icon_on_root:out_right_bottom(icon)
 	icon:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", ICON_OUT_ROOT_MARGIN, ICON_OUT_ROOT_BORDER)
 end
-function position_icon_on_root:in_center(icon, _, _, icons)
-	icon:SetPoint("LEFT", self, "CENTER", -get_half_width(self, icons), 0)
+function position_icon_on_root:in_center(icon, _, _, icons_and_texts)
+	icon:SetPoint("LEFT", self, "CENTER", -get_half_width(self, icons_and_texts), 0)
 end
 function position_icon_on_root:in_top_left(icon)
 	icon:SetPoint("TOPLEFT", self, "TOPLEFT", ICON_IN_ROOT_HORIZONTAL_MARGIN, -ICON_IN_ROOT_VERTICAL_MARGIN)
 end
-function position_icon_on_root:in_top(icon, _, _, icons)
-	icon:SetPoint("TOPLEFT", self, "TOP", -get_half_width(self, icons), -ICON_IN_ROOT_VERTICAL_MARGIN)
+function position_icon_on_root:in_top(icon, _, _, icons_and_texts)
+	icon:SetPoint("TOPLEFT", self, "TOP", -get_half_width(self, icons_and_texts), -ICON_IN_ROOT_VERTICAL_MARGIN)
 end
 function position_icon_on_root:in_top_left(icon)
 	icon:SetPoint("TOPRIGHT", self, "TOPRIGHT", -ICON_IN_ROOT_HORIZONTAL_MARGIN, -ICON_IN_ROOT_VERTICAL_MARGIN)
@@ -474,8 +533,8 @@ end
 function position_icon_on_root:in_bottom_left(icon)
 	icon:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", ICON_IN_ROOT_HORIZONTAL_MARGIN, -ICON_IN_ROOT_VERTICAL_MARGIN)
 end
-function position_icon_on_root:in_bottom(icon, _, _, icons)
-	icon:SetPoint("BOTTOMLEFT", self, "BOTTOM", -get_half_width(self, icons), -ICON_IN_ROOT_VERTICAL_MARGIN)
+function position_icon_on_root:in_bottom(icon, _, _, icons_and_texts)
+	icon:SetPoint("BOTTOMLEFT", self, "BOTTOM", -get_half_width(self, icons_and_texts), -ICON_IN_ROOT_VERTICAL_MARGIN)
 end
 function position_icon_on_root:in_bottom_left(icon)
 	icon:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -ICON_IN_ROOT_HORIZONTAL_MARGIN, -ICON_IN_ROOT_VERTICAL_MARGIN)
@@ -489,8 +548,8 @@ end
 function position_icon_on_root:edge_top_left(icon)
 	icon:SetPoint("CENTER", self, "TOPLEFT", 0, 0)
 end
-function position_icon_on_root:edge_top(icon, _, _, icons)
-	icon:SetPoint("LEFT", self, "TOP", -get_half_width(self, icons), 0)
+function position_icon_on_root:edge_top(icon, _, _, icons_and_texts)
+	icon:SetPoint("LEFT", self, "TOP", -get_half_width(self, icons_and_texts), 0)
 end
 function position_icon_on_root:edge_top_right(icon)
 	icon:SetPoint("CENTER", self, "TOPRIGHT", 0, 0)
@@ -504,8 +563,8 @@ end
 function position_icon_on_root:edge_bottom_left(icon)
 	icon:SetPoint("CENTER", self, "BOTTOMLEFT", 0, 0)
 end
-function position_icon_on_root:edge_bottom(icon, _, _, icons)
-	icon:SetPoint("LEFT", self, "BOTTOM", -get_half_width(self, icons), 0)
+function position_icon_on_root:edge_bottom(icon, _, _, icons_and_texts)
+	icon:SetPoint("LEFT", self, "BOTTOM", -get_half_width(self, icons_and_texts), 0)
 end
 function position_icon_on_root:edge_bottom_right(icon)
 	icon:SetPoint("CENTER", self, "BOTTOMRIGHT", 0, 0)
@@ -515,8 +574,8 @@ local position_icon_on_bar = {}
 function position_icon_on_bar:left(icon, bar)
 	icon:SetPoint("LEFT", bar, "LEFT", ICON_BAR_INSIDE_HORIZONTAL_SPACING, 0)
 end
-function position_icon_on_bar:center(icon, bar, _, icons)
-	icon:SetPoint("LEFT", bar, "CENTER", -get_half_width(self, icons), 0)
+function position_icon_on_bar:center(icon, bar, _, icons_and_texts)
+	icon:SetPoint("LEFT", bar, "CENTER", -get_half_width(self, icons_and_texts), 0)
 end
 function position_icon_on_bar:right(icon, bar)
 	icon:SetPoint("RIGHT", bar, "RIGHT", -ICON_BAR_INSIDE_HORIZONTAL_SPACING, 0)
@@ -524,8 +583,8 @@ end
 function position_icon_on_bar:top(icon, bar)
 	icon:SetPoint("TOPLEFT", bar, "TOP", -get_half_width(self, "top"), -ICON_BAR_INSIDE_VERTICAL_SPACING)
 end
-function position_icon_on_bar:bottom(icon, bar, _, icons)
-	icon:SetPoint("BOTTOMLEFT", bar, "BOTTOM", -get_half_width(self, icons), ICON_BAR_INSIDE_VERTICAL_SPACING)
+function position_icon_on_bar:bottom(icon, bar, _, icons_and_texts)
+	icon:SetPoint("BOTTOMLEFT", bar, "BOTTOM", -get_half_width(self, icons_and_texts), ICON_BAR_INSIDE_VERTICAL_SPACING)
 end
 function position_icon_on_bar:top_left(icon, bar)
 	icon:SetPoint("TOPLEFT", bar, "TOPLEFT", ICON_BAR_INSIDE_HORIZONTAL_SPACING, -ICON_BAR_INSIDE_VERTICAL_SPACING)
@@ -598,7 +657,7 @@ position_next_icon_on_bar.out_left = position_next_icon_on_bar.right
 position_next_icon_on_bar.top_right = position_next_icon_on_bar.right
 position_next_icon_on_bar.bottom_right = position_next_icon_on_bar.right
 
-local function position_icon(root, icon, attach_frame, last_icon, location, location_icons)
+local function position_icon_or_text(root, icon, attach_frame, last_icon, location, location_icons_and_texts)
 	local func
 	if root == last_icon then
 		if root == attach_frame then
@@ -614,7 +673,7 @@ local function position_icon(root, icon, attach_frame, last_icon, location, loca
 		end
 	end
 	if func then
-		func(root, icon, attach_frame, last_icon, location_icons)
+		func(root, icon, attach_frame, last_icon, location_icons_and_texts)
 	end
 end
 
@@ -630,9 +689,7 @@ local vertical_mirrored_location = setmetatable({}, {__index = function(self, ke
 	return value
 end})
 
-local function update_icon_layout(self)
-	local icons = get_all_icons(self)
-
+local function update_icon_and_text_layout(self)
 	local attachments = new()
 	
 	local layout = self.layout
@@ -640,34 +697,34 @@ local function update_icon_layout(self)
 	local horizontal_mirror = self.classification_db.horizontalMirror
 	local vertical_mirror = self.classification_db.verticalMirror
 	
-	for _, id in ipairs(icons) do
+	for _, id in ipairs_with_del(get_all_icons(self)) do
 		local icon = self[id]
 		local icon_layout_db = PitBull4.modules[id]:GetLayoutDB(layout)
 	
-		local attachTo = icon_layout_db.attachTo
+		local attach_to = icon_layout_db.attach_to
 		local attach_frame
-		if attachTo == "root" then
+		if attach_to == "root" then
 			attach_frame = self
 		else
-			attach_frame = self[attachTo]
-		end
-		
-		local location = icon_layout_db.location
-		
-		local flip_positions = false
-		if horizontal_mirror then
-			local old_location = location
-			location = horizontal_mirrored_location[location]
-			if old_location == location then
-				flip_positions = true
-			end
-		end
-		
-		if vertical_mirror then
-			location = vertical_mirrored_location[location]
+			attach_frame = self[attach_to]
 		end
 		
 		if attach_frame then
+			local location = icon_layout_db.location
+		
+			local flip_positions = false
+			if horizontal_mirror then
+				local old_location = location
+				location = horizontal_mirrored_location[location]
+				if old_location == location then
+					flip_positions = true
+				end
+			end
+		
+			if vertical_mirror then
+				location = vertical_mirrored_location[location]
+			end
+			
 			local size = ICON_SIZE * icon_layout_db.size
 			icon:SetWidth(size)
 			icon:SetHeight(size)
@@ -693,26 +750,73 @@ local function update_icon_layout(self)
 		end
 	end
 	
-	for attach_frame, attachments_attach_frame in pairs(attachments) do
-		for location, loc_icons in pairs(attachments_attach_frame) do
-			local last = self
-			for _, icon in ipairs(loc_icons) do
-				position_icon(self, icon, attach_frame, last, location, loc_icons)
-				last = icon
+	for _, text in ipairs_with_del(get_all_texts(self)) do
+		local db = text.db
+		local attach_to = db.attach_to
+		local attach_frame
+		if attach_to == "root" then
+			attach_frame = self
+		else
+			attach_frame = self[attach_to]
+		end
+		
+		if attach_frame then
+			local location = db.location
+		
+			local flip_positions = false
+			if horizontal_mirror then
+				local old_location = location
+				location = horizontal_mirrored_location[location]
+				if old_location == location then
+					flip_positions = true
+				end
 			end
-			attachments_attach_frame[location] = del(loc_icons)
+		
+			if vertical_mirror then
+				location = vertical_mirrored_location[location]
+			end
+			
+			text:ClearAllPoints()
+			
+			local attachments_attach_frame = attachments[attach_frame]
+			if not attachments_attach_frame then
+				attachments_attach_frame = new()
+				attachments[attach_frame] = attachments_attach_frame
+			end
+			
+			local attachments_attach_frame_location = attachments_attach_frame[location]
+			if not attachments_attach_frame_location then
+				attachments_attach_frame_location = new()
+				attachments_attach_frame[location] = attachments_attach_frame_location
+			end
+			
+			if flip_positions then
+				table.insert(attachments_attach_frame_location, 1, text)
+			else
+				attachments_attach_frame_location[#attachments_attach_frame_location+1] = text
+			end
+		end
+	end
+	
+	for attach_frame, attachments_attach_frame in pairs(attachments) do
+		for location, loc_icons_and_texts in pairs(attachments_attach_frame) do
+			local last = self
+			for _, icon_or_text in ipairs(loc_icons_and_texts) do
+				position_icon_or_text(self, icon_or_text, attach_frame, last, location, loc_icons_and_texts)
+				last = icon_or_text
+			end
+			attachments_attach_frame[location] = del(loc_icons_and_texts)
 		end
 		attachments[attach_frame] = del(attachments_attach_frame)
 	end
 	attachments = del(attachments)
-	icons = del(icons)
 end
 
 --- Reposition all controls on the Unit Frame
 -- @usage frame:UpdateLayout()
 function UnitFrame:UpdateLayout()
 	update_bar_layout(self)
-	update_icon_layout(self)
+	update_icon_and_text_layout(self)
 end
 
 local function iter(frame, id)

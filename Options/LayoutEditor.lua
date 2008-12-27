@@ -2,10 +2,13 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 
 local CURRENT_LAYOUT = "Normal"
+local CURRENT_TEXT_MODULE
+local CURRENT_TEXT_ID
 
 --- Return the DB dictionary for the current layout selected in the options frame.
 -- Modules should be calling this and manipulating data within it.
--- @usage local db = PitBull.Options.GetLayoutDB(MyModule); db.someOption = "something"
+-- @param module the module to check
+-- @usage local db = PitBull.Options.GetLayoutDB(MyModule); db.some_option = "something"
 -- @return the DB dictionary for the current layout
 function PitBull4.Options.GetLayoutDB(module)
 	if not module then
@@ -16,6 +19,18 @@ function PitBull4.Options.GetLayoutDB(module)
 		end
 		return module:GetLayoutDB(CURRENT_LAYOUT)
 	end
+end
+
+--- Return the DB dictionary for the current text for the current layout selected in the options frame.
+-- TextProvider modules should be calling this and manipulating data within it.
+-- @usage local db = PitBull.Options.GetTextLayoutDB(); db.some_option = "something"
+-- @return the DB dictionary for the current text
+function PitBull4.Options.GetTextLayoutDB()
+	if not CURRENT_TEXT_MODULE then
+		return
+	end
+	
+	return CURRENT_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).texts[CURRENT_TEXT_ID]
 end
 
 --- Update frames for the currently selected layout.
@@ -64,6 +79,8 @@ function PitBull4.Options.get_layout_options()
 	local GetLayoutDB = PitBull4.Options.GetLayoutDB
 	local UpdateFrames = PitBull4.Options.UpdateFrames
 	
+	local GetTextLayoutDB = PitBull4.Options.GetTextLayoutDB
+	
 	local layout_options = {
 		type = 'group',
 		name = "Layout editor",
@@ -111,6 +128,7 @@ function PitBull4.Options.get_layout_options()
 			if value:len() < 3 then
 				return "Must be at least 3 characters long."
 			end
+			return true
 		end,
 	}
 
@@ -397,15 +415,15 @@ function PitBull4.Options.get_layout_options()
 				UpdateFrames()
 			end
 		},
-		attachTo = {
+		attach_to = {
 			type = 'select',
 			name = "Attach to",
 			order = 2,
 			get = function(info)
-				return GetLayoutDB(info[3]).attachTo
+				return GetLayoutDB(info[3]).attach_to
 			end,
 			set = function(info, value)
-				GetLayoutDB(info[3]).attachTo = value
+				GetLayoutDB(info[3]).attach_to = value
 				
 				UpdateFrames()
 			end,
@@ -434,8 +452,8 @@ function PitBull4.Options.get_layout_options()
 				UpdateFrames()
 			end,
 			values = function(info)
-				local attachTo = GetLayoutDB(info[3]).attachTo
-				if attachTo == "root" then
+				local attach_to = GetLayoutDB(info[3]).attach_to
+				if attach_to == "root" then
 					return root_locations
 				else
 					return bar_locations
@@ -448,12 +466,12 @@ function PitBull4.Options.get_layout_options()
 			order = 4,
 			values = function(info)
 				local db = GetLayoutDB(info[3])
-				local attachTo = db.attachTo
+				local attach_to = db.attach_to
 				local location = db.location
 				local t = {}
 				for other_id, other_module in PitBull4:IterateModulesOfType("icon", true) do
 					local other_db = GetLayoutDB(other_id)
-					if attachTo == other_db.attachTo and location == other_db.location then
+					if attach_to == other_db.attach_to and location == other_db.location then
 						local position = other_db.position
 						while t[position] do
 							position = position + 1e-5
@@ -539,6 +557,322 @@ function PitBull4.Options.get_layout_options()
 			args = args,
 		}
 	end
+	
+	local function disabled()
+		return not CURRENT_TEXT_MODULE
+	end
+	
+	layout_options.args.texts.args.current_text = {
+		name = "Current text",
+		type = 'select',
+		order = 1,
+		values = function(info)
+			local t = {}
+			local first, first_module, first_id
+			for id, module in PitBull4:IterateModulesOfType("textprovider", true) do
+				local texts_db = module:GetLayoutDB(CURRENT_LAYOUT).texts
+				for i = 1, texts_db.n do
+					local v = texts_db[i]
+					local key = ("%s;%03d"):format(id, i)
+					if not first then
+						first = key
+						first_module = module
+						first_id = i
+					end
+					t[key] = v.name or "<Unnamed>"
+				end
+			end
+			if not CURRENT_TEXT_MODULE or not t[("%s;%03d"):format(CURRENT_TEXT_MODULE.id, CURRENT_TEXT_ID)] then
+				CURRENT_TEXT = first
+				CURRENT_TEXT_MODULE = first_module
+				CURRENT_TEXT_ID = first_id
+			end
+			return t
+		end,
+		get = function(info)
+			if CURRENT_TEXT_MODULE then
+				return ("%s;%03d"):format(CURRENT_TEXT_MODULE.id, CURRENT_TEXT_ID)
+			else
+				return nil
+			end
+		end,
+		set = function(info, value)
+			local module_name, id = (";"):split(value)
+			for m_id, m in PitBull4:IterateModulesOfType("textprovider", true) do
+				if module_name == m_id then
+					CURRENT_TEXT_MODULE = m
+					CURRENT_TEXT_ID = id+0
+				end
+			end
+		end,
+		disabled = disabled
+	}
+	
+	local function text_name_validate(info, value)
+		if value:len() < 3 then
+			return "Must be at least 3 characters long."
+		end
+		
+		for id, module in PitBull4:IterateModulesOfType("textprovider", true) do
+			local texts_db = module:GetLayoutDB(CURRENT_LAYOUT).texts
+			
+			for i = 1, texts_db.n do
+				if texts_db[i].name and value:lower() == texts_db[i].name:lower() then
+					return ("'%s' is already a text."):format(value)
+				end
+			end
+		end
+		
+		for id, module in PitBull4:IterateModulesOfType("textprovider", true) do
+			return true -- found a module
+		end
+		return "You have no enabled text providers."
+	end
+	
+	layout_options.args.texts.args.new_text = {
+		name = "New text",
+		desc = "This will make a new text for the layout.",
+		type = 'input',
+		order = 2,
+		get = function(info) return "" end,
+		set = function(info, value)
+			local module = CURRENT_TEXT_MODULE
+			
+			if not module then
+				for id, m in PitBull4:IterateModulesOfType("textprovider", true) do
+					module = m
+					break
+				end
+				
+				assert(module) -- the validate function should verify that at least one module exists
+			end
+			
+			local texts_db = module:GetLayoutDB(CURRENT_LAYOUT).texts
+			
+			texts_db.n = texts_db.n + 1
+			local db = texts_db[texts_db.n]
+			db.name = value
+			
+			CURRENT_TEXT_MODULE = module
+			CURRENT_TEXT_ID = texts_db.n
+			
+			UpdateFrames()
+		end,
+		validate = text_name_validate,
+	}
+	
+	layout_options.args.texts.args.remove = {
+		type = 'execute',
+		name = "Remove",
+		desc = "Remove the text.",
+		order = 3,
+		func = function()
+			local texts_db = CURRENT_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).texts
+			
+			table.remove(texts_db, CURRENT_TEXT_ID)
+			local n = texts_db.n - 1
+			texts_db.n = n
+			if n >= 1 then
+				if CURRENT_TEXT_ID > n then
+					CURRENT_TEXT_ID = n
+				end
+			else
+				CURRENT_TEXT_MODULE = nil
+				CURRENT_TEXT_ID = nil
+				for id, m in PitBull4:IterateModulesOfType("textprovider", true) do
+					local texts_db = m:GetLayoutDB(CURRENT_LAYOUT).texts
+					
+					if texts_db.n > 0 then
+						CURRENT_TEXT_MODULE = m
+						CURRENT_TEXT_ID = 1
+						break
+					end
+				end
+			end
+			
+			UpdateFrames()
+		end,
+		disabled = disabled
+	}
+	
+	layout_options.args.texts.args.name = {
+		type = 'input',
+		name = "Name",
+		order = 4,
+		desc = function()
+			local db = GetTextLayoutDB()
+			return ("Rename the '%s' text."):format(db and db.name or "<Unnamed>")
+		end,
+		get = function(info)
+			local db = GetTextLayoutDB()
+			return db and db.name or "<Unnamed>"
+		end,
+		set = function(info, value)
+			GetTextLayoutDB().name = value
+			
+			UpdateFrames()
+		end,
+		validate = text_name_validate,
+		disabled = disabled,
+	}
+	
+	layout_options.args.texts.args.provider = {
+		type = 'select',
+		name = "Type",
+		desc = "What text provider is used for this text.",
+		order = 5,
+		get = function(info)
+			return CURRENT_TEXT_MODULE and CURRENT_TEXT_MODULE.id
+		end,
+		set = function(info, value)
+			if value == CURRENT_TEXT_MODULE.id then
+				return
+			end
+			
+			local texts_db = CURRENT_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).texts
+			
+			local old_db = table.remove(texts_db, CURRENT_TEXT_ID)
+			local n = texts_db.n - 1
+			texts_db.n = n
+			
+			CURRENT_TEXT_MODULE = Pitbull4:GetModule(value)
+			texts_db = CURRENT_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).texts
+			n = texts_db.n + 1
+			texts_db.n = n
+			
+			local new_db = texts_db[n]
+			new_db.name = old_db.name
+			new_db.size = old_db.size
+			new_db.attach_to = old_db.attach_to
+			new_db.location = old_db.location
+			new_db.position = old_db.position
+			
+			UpdateFrames()
+		end,
+		values = function(info)
+			local t = {}
+			for id, m in PitBull4:IterateModulesOfType("textprovider", true) do
+				t[id] = m.name
+			end
+			return t
+		end,
+		disabled = disabled,
+	}
+	
+	layout_options.args.texts.args.attach_to = {
+		type = 'select',
+		name = "Attach to",
+		order = 6,
+		get = function(info)
+			if not CURRENT_TEXT_MODULE then
+				return
+			end
+			return GetTextLayoutDB().attach_to
+		end,
+		set = function(info, value)
+			GetTextLayoutDB().attach_to = value
+			
+			UpdateFrames()
+		end,
+		values = function(info)
+			local t = {}
+			
+			t["root"] = "Unit frame"
+			
+			for id, module in PitBull4:IterateModulesOfType("statusbar", true) do
+				t[id] = module.name
+			end
+			
+			return t
+		end,
+		disabled = disabled,
+	}
+	
+	layout_options.args.texts.args.location = {
+		type = 'select',
+		name = "Location",
+		order = 7,
+		get = function(info)
+			if not CURRENT_TEXT_MODULE then
+				return nil
+			end
+			return GetTextLayoutDB().location
+		end,
+		set = function(info, value)
+			GetTextLayoutDB().location = value
+			
+			UpdateFrames()
+		end,
+		values = function(info)
+			if not CURRENT_TEXT_MODULE then
+				return root_locations
+			end
+			local attach_to = GetTextLayoutDB().attach_to
+			if attach_to == "root" then
+				return root_locations
+			else
+				return bar_locations
+			end
+		end,
+		disabled = disabled,
+	}
+	
+	layout_options.args.texts.args.size = {
+		type = 'range',
+		name = "Size",
+		order = 8,
+		get = function(info)
+			if not CURRENT_TEXT_MODULE then
+				return 1
+			end
+			return GetTextLayoutDB().size
+		end,
+		set = function(info, value)
+			GetTextLayoutDB().size = value
+			
+			UpdateFrames()
+		end,
+		min = 0.5,
+		max = 3,
+		step = 0.01,
+		bigStep = 0.05,
+		isPercent = true,
+		disabled = disabled,
+	}
+	
+	for id, module in PitBull4:IterateModulesOfType("textprovider") do
+		local args = {}
+		for k, v in pairs(statusbar_args) do
+			args[k] = v
+		end
+		if layout_functions[module] then
+			local t = { layout_functions[module](module) }
+			layout_functions[module] = false
+			
+			local order = 100
+			for i = 1, #t, 2 do
+				local k = t[i]
+				local v = t[i+1]
+				
+				order = order + 1
+				
+				v.order = order
+				
+				local old_disabled = v.disabled
+				v.disabled = function(info)
+					return disabled(info) or (old_disabled and old_disabled(info))
+				end
+				
+				local old_hidden = v.hidden
+				v.hidden = function(info)
+					return module ~= CURRENT_TEXT_MODULE or (old_hidden and old_hidden(info))
+				end
+				
+				layout_options.args.texts.args[k] = v
+			end
+		end
+	end
+	
 	
 	return layout_options
 end

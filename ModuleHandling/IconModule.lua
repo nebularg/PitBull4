@@ -3,9 +3,10 @@ local PitBull4 = _G.PitBull4
 
 local IconModule = PitBull4:NewModuleType("icon", {
 	size = 1,
-	attachTo = "root",
+	attach_to = "root",
 	location = "edge_top_left",
 	position = 1,
+	hidden = false,
 })
 
 -- handle the case where there is no value returned, i.e. the module returned nil
@@ -22,15 +23,15 @@ end
 
 --- Update the icon for the current module
 -- @param frame the Unit Frame to update
--- @usage local updateLayout = MyModule:UpdateIcon(frame)
--- @return whether the update requires UpdateLayout to be called
+-- @usage local update_layout = MyModule:UpdateIcon(frame)
+-- @return whether the update requires :UpdateLayout to be called
 function IconModule:UpdateIcon(frame)
 	--@alpha@
 	expect(frame, 'typeof', 'frame')
 	--@end-alpha@
 	
 	local id = self.id
-	if self:GetLayoutDB(frame).hidden or not frame.guid then
+	if not frame.guid or self:GetLayoutDB(frame).hidden then
 		return handle_icon_nonvalue(self, frame)
 	end
 	
@@ -56,18 +57,18 @@ end
 
 --- Update the icon for current module for the given frame and handle any layout changes
 -- @param frame the Unit Frame to update
--- @param returnChanged whether to return if the update should change the layout. If this is false, it will call :UpdateLayout() automatically.
+-- @param return_changed whether to return if the update should change the layout. If this is false, it will call :UpdateLayout() automatically.
 -- @usage MyModule:Update(frame)
--- @return whether the update requires UpdateLayout to be called if returnChanged is specified
-function IconModule:Update(frame, returnChanged)
+-- @return whether the update requires UpdateLayout to be called if return_changed is specified
+function IconModule:Update(frame, return_changed)
 	--@alpha@
 	expect(frame, 'typeof', 'frame')
-	expect(returnChanged, 'typeof', 'nil;boolean')
+	expect(return_changed, 'typeof', 'nil;boolean')
 	--@end-alpha@
 	
 	local changed = self:UpdateIcon(frame)
 	
-	if returnChanged then
+	if return_changed then
 		return changed
 	end
 	if changed then
@@ -84,7 +85,7 @@ function IconModule:UpdateForUnitID(unit)
 	--@end-alpha@
 	
 	local id = self.id
-	for frame in PitBull4:IterateFramesForUnitID(unit) do
+	for frame in PitBull4:IterateFramesForUnitID(unit, true) do
 		if frame[id] then
 			self:Update(frame)
 		end
