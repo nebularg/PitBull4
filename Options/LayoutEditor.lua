@@ -163,6 +163,32 @@ function PitBull4.Options.get_layout_options()
 		args = {}
 	}
 	
+	local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+	
+	layout_options.args.bars.args.texture = {
+		type = 'select',
+		name = "Default Texture",
+		order = 1,
+		get = function(info)
+			return PitBull4.db.profile.layouts[CURRENT_LAYOUT].status_bar_texture
+		end,
+		set = function(info, value)
+			PitBull4.db.profile.layouts[CURRENT_LAYOUT].status_bar_texture = value
+
+			UpdateFrames()
+		end,
+		values = function(info)
+			local t = {}
+			for k in pairs(LibSharedMedia:HashTable("statusbar")) do
+				t[k] = k
+			end
+			return t
+		end,
+		hidden = function(info)
+			return not LibSharedMedia or #LibSharedMedia:List("statusbar") <= 1
+		end
+	}
+	
 	local statusbar_args = {
 		enable = {
 			type = 'toggle',
@@ -254,6 +280,38 @@ function PitBull4.Options.get_layout_options()
 				UpdateFrames()
 			end
 		},
+		texture = {
+			type = 'select',
+			name = "Texture",
+			order = 4,
+			get = function(info)
+				return GetLayoutDB(info[3]).texture or PitBull4.db.profile.layouts[CURRENT_LAYOUT].status_bar_texture
+			end,
+			set = function(info, value)
+				local default = PitBull4.db.profile.layouts[CURRENT_LAYOUT].status_bar_texture
+				if value == default then
+					value = nil
+				end
+				GetLayoutDB(info[3]).texture = value
+				
+				UpdateFrames()
+			end,
+			values = function(info)
+				local t = {}
+				local default = PitBull4.db.profile.layouts[CURRENT_LAYOUT].status_bar_texture
+				for k in pairs(LibSharedMedia:HashTable("statusbar")) do
+					if k == default then
+						t[k] = ("%s (Default)"):format(k)
+					else
+						t[k] = k
+					end
+				end
+				return t
+			end,
+			hidden = function(info)
+				return not LibSharedMedia or #LibSharedMedia:List("statusbar") <= 1
+			end
+		},
 		size = {
 			type = 'range',
 			name = function(info)
@@ -263,7 +321,7 @@ function PitBull4.Options.get_layout_options()
 					return "Width"
 				end
 			end,
-			order = 4,
+			order = 5,
 			get = function(info)
 				return GetLayoutDB(info[3]).size
 			end,
@@ -280,7 +338,7 @@ function PitBull4.Options.get_layout_options()
 			type = 'toggle',
 			name = "Deficit",
 			desc = "Drain the bar instead of filling it.",
-			order = 5,
+			order = 6,
 			get = function(info)
 				return GetLayoutDB(info[3]).deficit
 			end,
@@ -294,7 +352,7 @@ function PitBull4.Options.get_layout_options()
 			type = 'toggle',
 			name = "Reverse",
 			desc = "Reverse the direction of the bar, filling from right-to-left instead of left-to-right",
-			order = 6,
+			order = 7,
 			get = function(info)
 				return GetLayoutDB(info[3]).reverse
 			end,
@@ -307,7 +365,7 @@ function PitBull4.Options.get_layout_options()
 		alpha = {
 			type = 'range',
 			name = "Full opacity",
-			order = 7,
+			order = 8,
 			get = function(info)
 				return GetLayoutDB(info[3]).alpha
 			end,
@@ -325,7 +383,7 @@ function PitBull4.Options.get_layout_options()
 		background_alpha = {
 			type = 'range',
 			name = "Empty opacity",
-			order = 8,
+			order = 9,
 			get = function(info)
 				return GetLayoutDB(info[3]).background_alpha
 			end,
@@ -662,11 +720,42 @@ function PitBull4.Options.get_layout_options()
 		validate = text_name_validate,
 	}
 	
-	layout_options.args.texts.args.remove = {
+	layout_options.args.texts.args.font = {
+		type = 'select',
+		name = "Default Font",
+		order = 3,
+		get = function(info)
+			return PitBull4.db.profile.layouts[CURRENT_LAYOUT].font
+		end,
+		set = function(info, value)
+			PitBull4.db.profile.layouts[CURRENT_LAYOUT].font = value
+
+			UpdateFrames()
+		end,
+		values = function(info)
+			local t = {}
+			for k in pairs(LibSharedMedia:HashTable("font")) do
+				t[k] = k
+			end
+			return t
+		end,
+		hidden = function(info)
+			return not LibSharedMedia or #LibSharedMedia:List("font") <= 1
+		end
+	}
+	
+	layout_options.args.texts.args.edit = {
+		type = 'group',
+		name = "Edit text",
+		inline = true,
+		args = {},
+	}
+	
+	layout_options.args.texts.args.edit.args.remove = {
 		type = 'execute',
 		name = "Remove",
 		desc = "Remove the text.",
-		order = 3,
+		order = 1,
 		func = function()
 			local texts_db = CURRENT_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).texts
 			
@@ -696,10 +785,10 @@ function PitBull4.Options.get_layout_options()
 		disabled = disabled
 	}
 	
-	layout_options.args.texts.args.name = {
+	layout_options.args.texts.args.edit.args.name = {
 		type = 'input',
 		name = "Name",
-		order = 4,
+		order = 2,
 		desc = function()
 			local db = GetTextLayoutDB()
 			return ("Rename the '%s' text."):format(db and db.name or "<Unnamed>")
@@ -717,11 +806,11 @@ function PitBull4.Options.get_layout_options()
 		disabled = disabled,
 	}
 	
-	layout_options.args.texts.args.provider = {
+	layout_options.args.texts.args.edit.args.provider = {
 		type = 'select',
 		name = "Type",
 		desc = "What text provider is used for this text.",
-		order = 5,
+		order = 3,
 		get = function(info)
 			return CURRENT_TEXT_MODULE and CURRENT_TEXT_MODULE.id
 		end,
@@ -760,10 +849,10 @@ function PitBull4.Options.get_layout_options()
 		disabled = disabled,
 	}
 	
-	layout_options.args.texts.args.attach_to = {
+	layout_options.args.texts.args.edit.args.attach_to = {
 		type = 'select',
 		name = "Attach to",
-		order = 6,
+		order = 4,
 		get = function(info)
 			if not CURRENT_TEXT_MODULE then
 				return
@@ -789,10 +878,10 @@ function PitBull4.Options.get_layout_options()
 		disabled = disabled,
 	}
 	
-	layout_options.args.texts.args.location = {
+	layout_options.args.texts.args.edit.args.location = {
 		type = 'select',
 		name = "Location",
-		order = 7,
+		order = 5,
 		get = function(info)
 			if not CURRENT_TEXT_MODULE then
 				return nil
@@ -818,10 +907,43 @@ function PitBull4.Options.get_layout_options()
 		disabled = disabled,
 	}
 	
-	layout_options.args.texts.args.size = {
+	layout_options.args.texts.args.edit.args.font = {
+		type = 'select',
+		name = "Font",
+		order = 4,
+		get = function(info)
+			return GetTextLayoutDB().font or PitBull4.db.profile.layouts[CURRENT_LAYOUT].font
+		end,
+		set = function(info, value)
+			local default = PitBull4.db.profile.layouts[CURRENT_LAYOUT].font
+			if value == default then
+				value = nil
+			end
+			GetTextLayoutDB().font = value
+			
+			UpdateFrames()
+		end,
+		values = function(info)
+			local t = {}
+			local default = PitBull4.db.profile.layouts[CURRENT_LAYOUT].font
+			for k in pairs(LibSharedMedia:HashTable("font")) do
+				if k == default then
+					t[k] = ("%s (Default)"):format(k)
+				else
+					t[k] = k
+				end
+			end
+			return t
+		end,
+		hidden = function(info)
+			return not LibSharedMedia or #LibSharedMedia:List("font") <= 1
+		end
+	}
+	
+	layout_options.args.texts.args.edit.args.size = {
 		type = 'range',
 		name = "Size",
-		order = 8,
+		order = 7,
 		get = function(info)
 			if not CURRENT_TEXT_MODULE then
 				return 1
@@ -869,7 +991,7 @@ function PitBull4.Options.get_layout_options()
 					return module ~= CURRENT_TEXT_MODULE or (old_hidden and old_hidden(info))
 				end
 				
-				layout_options.args.texts.args[k] = v
+				layout_options.args.texts.args.edit.args[k] = v
 			end
 		end
 	end

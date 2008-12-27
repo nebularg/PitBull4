@@ -12,8 +12,11 @@ local StatusBarModule = PitBull4:NewModuleType("statusbar", {
 	hidden = false,
 })
 
-local value_funcs = {}
-local color_funcs = {}
+local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+if not LibSharedMedia then
+	LoadAddOn("LibSharedMedia-3.0")
+	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+end
 
 -- handle the case where there is no value returned, i.e. the module returned nil
 local function handle_statusbar_nonvalue(module, frame)
@@ -37,7 +40,8 @@ function StatusBarModule:UpdateStatusBar(frame)
 	--@end-alpha@
 	
 	local id = self.id
-	if not frame.guid or self:GetLayoutDB(frame).hidden then
+	local layout_db = self:GetLayoutDB(frame)
+	if not frame.guid or layout_db.hidden then
 		return handle_statusbar_nonvalue(self, frame)
 	end
 	
@@ -52,8 +56,12 @@ function StatusBarModule:UpdateStatusBar(frame)
 		control = PitBull4.Controls.MakeBetterStatusBar(frame)
 		frame[id] = control
 		control.id = id
-		control:SetTexture([[Interface\TargetingFrame\UI-StatusBar]])
 	end
+	local texture
+	if LibSharedMedia then
+		texture = LibSharedMedia:Fetch("statusbar", layout_db.texture or PitBull4.db.profile.layouts[frame.layout].status_bar_texture or "Blizzard")
+	end
+	control:SetTexture(texture or [[Interface\TargetingFrame\UI-StatusBar]])
 	
 	control:SetValue(value)
 	local r, g, b, a = self:CallColorFunction(frame, value)

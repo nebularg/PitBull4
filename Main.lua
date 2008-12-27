@@ -396,6 +396,8 @@ function PitBull4:OnInitialize()
 					size_x = 300,
 					size_y = 100,
 					scale = 1,
+					font = "Arial Narrow",
+					status_bar_texture = "Blizzard",
 				},
 				Normal = {}
 			},

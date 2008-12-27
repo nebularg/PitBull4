@@ -14,6 +14,12 @@ local TextProviderModule = PitBull4:NewModuleType("textprovider", {
 	hidden = false,
 })
 
+local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+if not LibSharedMedia then
+	LoadAddOn("LibSharedMedia-3.0")
+	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+end
+
 local new, del = PitBull4.new, PitBull4.del
 
 -- clear all texts from the frame
@@ -81,7 +87,12 @@ function TextProviderModule:UpdateTexts(frame)
 				font_string = PitBull4.Controls.MakeFontString(frame.overlay, "OVERLAY")
 				texts[i] = font_string
 			end
-			font_string:SetFont([=[Fonts\ARIALN.ttf]=], 14 * text_db.size)
+			
+			local font
+			if LibSharedMedia then
+				font = LibSharedMedia:Fetch("font", text_db.font or PitBull4.db.profile.layouts[frame.layout].font or "Arial Narrow")
+			end
+			font_string:SetFont(font or [[Fonts\ARIALN.TTF]], 14 * text_db.size)
 			font_string.db = text_db
 			if not self:HandleFontString(frame, font_string, text_db) then
 				self:RemoveFontString(font_string)
