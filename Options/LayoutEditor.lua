@@ -11,14 +11,16 @@ local CURRENT_TEXT_ID
 -- @usage local db = PitBull.Options.GetLayoutDB(MyModule); db.some_option = "something"
 -- @return the DB dictionary for the current layout
 function PitBull4.Options.GetLayoutDB(module)
-	if not module then
-		return PitBull4.db.profile.layouts[CURRENT_LAYOUT]
-	else
-		if type(module) == "string" then
-			module = PitBull4:GetModule(module)
-		end
-		return module:GetLayoutDB(CURRENT_LAYOUT)
+	--@alpha@
+	expect(module, 'typeof', 'string;table')
+	if type(module) == "table" then
+		expect(module.id, 'inset', PitBull4.modules)
 	end
+	--@end-alpha@
+	if type(module) == "string" then
+		module = PitBull4:GetModule(module)
+	end
+	return module:GetLayoutDB(CURRENT_LAYOUT)
 end
 
 --- Return the DB dictionary for the current text for the current layout selected in the options frame.
@@ -113,8 +115,6 @@ function PitBull4.Options.get_layout_options()
 		type = 'input',
 		get = function(info) return "" end,
 		set = function(info, value)
-			local old_db = PitBull4.Options.GetLayoutDB()
-			
 			PitBull4.db.profile.layouts[value] = deep_copy(PitBull4.db.profile.layouts[CURRENT_LAYOUT])
 			for id, module in PitBull4:IterateModules() do
 				if module.db and module.db.profile and module.db.profile.layouts and module.db.profile.layouts[CURRENT_LAYOUT] then
@@ -158,6 +158,7 @@ function PitBull4.Options.get_layout_options()
 	layout_options.args.other = {
 		name = "Other",
 		type = 'group',
+		childGroups = "tab",
 		order = 4,
 		args = {}
 	}
@@ -873,6 +874,70 @@ function PitBull4.Options.get_layout_options()
 		end
 	end
 	
+	layout_options.args.other.args.size = {
+		type = 'group',
+		name = "Size",
+		args = {
+			width = {
+				type = 'range',
+				name = "Width",
+				min = 20,
+				max = 400,
+				step = 1,
+				bigStep = 5,
+				order = 1,
+				get = function(info)
+					return PitBull4.db.profile.layouts[CURRENT_LAYOUT].size_x
+				end,
+				set = function(info, value)
+					PitBull4.db.profile.layouts[CURRENT_LAYOUT].size_x = value
+					
+					for frame in PitBull4:IterateFramesForLayout(CURRENT_LAYOUT, false) do
+						frame:RefreshLayout()
+					end
+				end
+			},
+			height = {
+				type = 'range',
+				name = "Height",
+				min = 5,
+				max = 400,
+				step = 1,
+				bigStep = 5,
+				order = 2,
+				get = function(info)
+					return PitBull4.db.profile.layouts[CURRENT_LAYOUT].size_y
+				end,
+				set = function(info, value)
+					PitBull4.db.profile.layouts[CURRENT_LAYOUT].size_y = value
+					
+					for frame in PitBull4:IterateFramesForLayout(CURRENT_LAYOUT, false) do
+						frame:RefreshLayout()
+					end
+				end
+			},
+			scale = {
+				type = 'range',
+				name = "Scale",
+				min = 0.5,
+				max = 2,
+				step = 0.01,
+				bigStep = 0.05,
+				order = 3,
+				isPercent = true,
+				get = function(info)
+					return PitBull4.db.profile.layouts[CURRENT_LAYOUT].scale
+				end,
+				set = function(info, value)
+					PitBull4.db.profile.layouts[CURRENT_LAYOUT].scale = value
+					
+					for frame in PitBull4:IterateFramesForLayout(CURRENT_LAYOUT, false) do
+						frame:RefreshLayout()
+					end
+				end
+			},
+		}
+	}
 	
 	return layout_options
 end

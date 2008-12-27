@@ -203,10 +203,12 @@ function UnitFrame:RefreshLayout()
 	local layout_db = PitBull4.db.profile.layouts[layout]
 	self:SetWidth(layout_db.size_x)
 	self:SetHeight(layout_db.size_y)
+	self:SetScale(layout_db.scale)
 	if old_layout then
 		self:Update(true, true)
 	end
 end
+UnitFrame.RefreshLayout = PitBull4:OutOfCombatWrapper(UnitFrame.RefreshLayout)
 
 function UnitFrame:Activate()
 	RegisterUnitWatch(self)

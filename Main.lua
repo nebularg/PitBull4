@@ -400,6 +400,7 @@ function PitBull4:OnInitialize()
 				['**'] = {
 					size_x = 300,
 					size_y = 100,
+					scale = 1,
 				},
 				Normal = {}
 			},
