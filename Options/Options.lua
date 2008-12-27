@@ -66,6 +66,7 @@ function OpenConfig()
 	PitBull4.Options.get_unit_options = nil
 	
 	AceConfig:RegisterOptionsTable("PitBull4", options)
+	AceConfigDialog:SetDefaultSize("PitBull4", 825, 550)
 	
 	return OpenConfig()
 end
