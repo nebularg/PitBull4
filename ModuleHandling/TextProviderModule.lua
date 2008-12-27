@@ -23,6 +23,7 @@ local function clear_texts(module, frame)
 	if texts then
 		local found = next(texts) ~= nil
 		for _, text in pairs(texts) do
+			module:RemoveFontString(text)
 			text.db = nil
 			text:Delete()
 		end
@@ -60,6 +61,7 @@ function TextProviderModule:UpdateTexts(frame)
 	for k, font_string in pairs(texts) do
 		if k > n then
 			font_string.db = nil
+			self:RemoveFontString(font_string)
 			texts[k] = font_string:Delete()
 			changed = true
 		end
@@ -82,6 +84,8 @@ function TextProviderModule:UpdateTexts(frame)
 			font_string:SetFont([=[Fonts\ARIALN.ttf]=], 14 * text_db.size)
 			font_string.db = text_db
 			if not self:HandleFontString(frame, font_string, text_db) then
+				self:RemoveFontString(font_string)
+				font_string.db = nil
 				texts[i] = font_string:Delete()
 			else
 				changed = true
@@ -89,6 +93,7 @@ function TextProviderModule:UpdateTexts(frame)
 		else
 			-- TODO: see if this is a good idea
 			if font_string then
+				self:RemoveFontString(font_string)
 				font_string.db = nil
 				texts[i] = font_string:Delete()
 				changed = true

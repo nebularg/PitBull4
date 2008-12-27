@@ -147,25 +147,32 @@ local function run_first()
 	end
 end
 
+local unit_kwargs = setmetatable({}, {__mode='kv', __index=function(self, unit)
+	self[unit] = { unit = unit }
+	return self[unit]
+end})
+
+function PitBull4_DogTagTexts:RealHandleFontString(frame, font_string, data)
+	LibDogTag:AddFontString(
+		font_string,
+		frame,
+		data.code,
+		"Unit",
+		unit_kwargs[frame.unit])
+	return true
+end
+
 function PitBull4_DogTagTexts:HandleFontString(...)
-	local unit_kwargs = setmetatable({}, {__mode='kv', __index=function(self, unit)
-		self[unit] = { unit = unit }
-		return self[unit]
-	end})
-	
-	function PitBull4_DogTagTexts:HandleFontString(frame, font_string, data)
-		LibDogTag:AddFontString(
-			font_string,
-			frame,
-			data.code,
-			"Unit",
-			unit_kwargs[frame.unit])
-		return true
-	end
-	
 	run_first()
 	
+	self.HandleFontString = self.RealHandleFontString
+	self.RealHandleFontString = nil
+	
 	return PitBull4_DogTagTexts:HandleFontString(...)
+end
+
+function PitBull4_DogTagTexts:RemoveFontString(font_string)
+	LibDogTag:RemoveFontString(frame)
 end
 
 PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
