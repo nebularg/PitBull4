@@ -274,7 +274,7 @@ end
 --- Iterate over all frames with the given classification.
 -- This iterates over only shown frames unless also_hidden is passed in.
 -- @param classification the classification to check
--- @param also_hidden only return frames that are shown
+-- @param also_hidden also return frames that are hidden
 -- @usage for frame in PitBull4:IterateFramesForClassification("player") do
 --     doSomethingWith(frame)
 -- end
@@ -318,9 +318,10 @@ local function layout_shown_iter(layout, frame)
 	return layout_iter(layout, frame)
 end
 
---- Iterate over all frames with the given layout
+--- Iterate over all frames with the given layout.
+-- This iterates over only shown frames unless also_hidden is passed in.
 -- @param layout the layout to check
--- @param only_shown only return frames that are shown
+-- @param also_hidden also return frames that are hidden
 -- @usage for frame in PitBull4:IterateFramesForLayout("Normal") do
 --     frame:UpdateLayout()
 -- end
@@ -328,20 +329,20 @@ end
 --     frame:UpdateLayout()
 -- end
 -- @return iterator which returns frames
-function PitBull4:IterateFramesForLayout(layout, only_shown)
+function PitBull4:IterateFramesForLayout(layout, also_hidden)
 	--@alpha@
 	expect(layout, 'typeof', 'string')
-	expect(only_shown, 'typeof', 'boolean;nil')
+	expect(also_hidden, 'typeof', 'boolean;nil')
 	--@end-alpha@
 	
-	return only_shown and layout_shown_iter or layout_iter, layout
+	return not also_hidden and layout_shown_iter or layout_iter, layout
 end
 
 --- call :Update() on all frames with the given layout
 -- @param layout the layout to check
 -- @usage PitBull4:UpdateForLayout("Normal")
 function PitBull4:UpdateForLayout(layout)
-	for frame in self:IterateFramesForLayout(layout, true) do
+	for frame in self:IterateFramesForLayout(layout) do
 		frame:Update(true, true)
 	end
 end

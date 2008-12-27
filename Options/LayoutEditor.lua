@@ -1020,7 +1020,7 @@ function PitBull4.Options.get_layout_options()
 				set = function(info, value)
 					PitBull4.db.profile.layouts[CURRENT_LAYOUT].size_x = value
 					
-					for frame in PitBull4:IterateFramesForLayout(CURRENT_LAYOUT, false) do
+					for frame in PitBull4:IterateFramesForLayout(CURRENT_LAYOUT, true) do
 						frame:RefreshLayout()
 					end
 				end
@@ -1039,7 +1039,7 @@ function PitBull4.Options.get_layout_options()
 				set = function(info, value)
 					PitBull4.db.profile.layouts[CURRENT_LAYOUT].size_y = value
 					
-					for frame in PitBull4:IterateFramesForLayout(CURRENT_LAYOUT, false) do
+					for frame in PitBull4:IterateFramesForLayout(CURRENT_LAYOUT, true) do
 						frame:RefreshLayout()
 					end
 				end
@@ -1059,7 +1059,7 @@ function PitBull4.Options.get_layout_options()
 				set = function(info, value)
 					PitBull4.db.profile.layouts[CURRENT_LAYOUT].scale = value
 					
-					for frame in PitBull4:IterateFramesForLayout(CURRENT_LAYOUT, false) do
+					for frame in PitBull4:IterateFramesForLayout(CURRENT_LAYOUT, true) do
 						frame:RefreshLayout()
 					end
 				end
