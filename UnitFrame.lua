@@ -126,14 +126,19 @@ end
 function UnitFrame__scripts:OnDragStop()
 	self:StopMovingOrSizing()
 	
+	local ui_scale = UIParent:GetEffectiveScale()
+	local scale = self:GetEffectiveScale() / ui_scale
+	
 	local x, y = self:GetCenter()
+	x, y = x * scale, y * scale
+	
 	x = x - GetScreenWidth()/2
 	y = y - GetScreenHeight()/2
 	
 	self.classification_db.position_x = x
 	self.classification_db.position_y = y
 	self:ClearAllPoints()
-	self:SetPoint("CENTER", UIParent, "CENTER", x, y)
+	self:SetPoint("CENTER", UIParent, "CENTER", x / scale, y / scale)
 end
 
 function UnitFrame__scripts:OnEnter()
@@ -200,12 +205,18 @@ function UnitFrame:RefreshLayout()
 	local old_layout = self.layout
 	
 	local classification_db = self.classification_db
+	
 	local layout = classification_db.layout
 	self.layout = layout
 	local layout_db = PitBull4.db.profile.layouts[layout]
+	
 	self:SetWidth(layout_db.size_x)
 	self:SetHeight(layout_db.size_y)
 	self:SetScale(layout_db.scale * classification_db.scale)
+
+	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
+	self:SetPoint("CENTER", UIParent, "CENTER", classification_db.position_x / scale, classification_db.position_y / scale)
+
 	if old_layout then
 		self:Update(true, true)
 	end

@@ -371,12 +371,6 @@ function PitBull4:MakeSingletonFrame(unit)
 	
 	frame:Activate()
 	
-	frame:SetPoint("CENTER",
-		UIParent,
-		"CENTER",
-		frame.classification_db.position_x,
-		frame.classification_db.position_y)
-	
 	frame:RefreshLayout()
 	
 	frame:UpdateGUID(UnitGUID(unit))
