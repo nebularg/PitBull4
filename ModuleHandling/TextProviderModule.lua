@@ -20,6 +20,8 @@ if not LibSharedMedia then
 	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 end
 
+local DEFAULT_FONT, DEFAULT_FONT_SIZE = ChatFontNormal:GetFont()
+
 local new, del = PitBull4.new, PitBull4.del
 
 -- clear all texts from the frame
@@ -90,9 +92,9 @@ function TextProviderModule:UpdateTexts(frame)
 			
 			local font
 			if LibSharedMedia then
-				font = LibSharedMedia:Fetch("font", text_db.font or PitBull4.db.profile.layouts[frame.layout].font or "Arial Narrow")
+				font = LibSharedMedia:Fetch("font", text_db.font or PitBull4.db.profile.layouts[frame.layout].font or "")
 			end
-			font_string:SetFont(font or [[Fonts\ARIALN.TTF]], 14 * text_db.size)
+			font_string:SetFont(font or DEFAULT_FONT, DEFAULT_FONT_SIZE * text_db.size)
 			font_string.db = text_db
 			if not self:HandleFontString(frame, font_string, text_db) then
 				self:RemoveFontString(font_string)

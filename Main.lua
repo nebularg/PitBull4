@@ -10,6 +10,47 @@ local SINGLETON_CLASSIFICATIONS = {
 	"focustarget",
 	"focustargettarget",
 }
+
+local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+if not LibSharedMedia then
+	LoadAddOn("LibSharedMedia-3.0")
+	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+end
+
+local DEFAULT_LSM_FONT = "Arial Narrow"
+if LibSharedMedia then
+	if not LibSharedMedia:IsValid("font", DEFAULT_LSM_FONT) then
+		-- non-Western languages
+		
+		DEFAULT_LSM_FONT = LibSharedMedia:GetDefault("font")
+	end
+end
+
+local DATABASE_DEFAULTS = {
+	profile = {
+		classifications = {
+			['**'] = {
+				hidden = false,
+				position_x = 0,
+				position_y = 0,
+				scale = 1,
+				layout = "Normal",
+				horizontal_mirror = false,
+				vertical_mirror = false,
+			},
+		},
+		layouts = {
+			['**'] = {
+				size_x = 300,
+				size_y = 100,
+				scale = 1,
+				font = DEFAULT_LSM_FONT,
+				status_bar_texture = LibSharedMedia and LibSharedMedia:GetDefault("statusbar") or "Blizzard",
+			},
+			Normal = {}
+		},
+	}
+}
 -----------------------------------------------------------------------------
 
 local _G = _G
@@ -378,31 +419,8 @@ end
 PitBull4.MakeSingletonFrame = PitBull4:OutOfCombatWrapper(PitBull4.MakeSingletonFrame)
 
 function PitBull4:OnInitialize()
-	db = LibStub("AceDB-3.0"):New("PitBull4DB", {
-		profile = {
-			classifications = {
-				['**'] = {
-					hidden = false,
-					position_x = 0,
-					position_y = 0,
-					scale = 1,
-					layout = "Normal",
-					horizontal_mirror = false,
-					vertical_mirror = false,
-				},
-			},
-			layouts = {
-				['**'] = {
-					size_x = 300,
-					size_y = 100,
-					scale = 1,
-					font = "Arial Narrow",
-					status_bar_texture = "Blizzard",
-				},
-				Normal = {}
-			},
-		}
-	}, 'global')
+	db = LibStub("AceDB-3.0"):New("PitBull4DB", DATABASE_DEFAULTS, 'global')
+	DATABASE_DEFAULTS = nil
 	self.db = db
 end
 
