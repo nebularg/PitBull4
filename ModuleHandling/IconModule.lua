@@ -85,10 +85,8 @@ function IconModule:UpdateForUnitID(unit)
 	--@end-alpha@
 	
 	local id = self.id
-	for frame in PitBull4:IterateFramesForUnitID(unit, true) do
-		if frame[id] then
-			self:Update(frame)
-		end
+	for frame in PitBull4:IterateFramesForUnitID(unit) do
+		self:Update(frame)
 	end
 end
 

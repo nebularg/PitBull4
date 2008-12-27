@@ -101,7 +101,7 @@ function StatusBarModule:UpdateForUnitID(unit)
 	--@end-alpha@
 	
 	local id = self.id
-	for frame in PitBull4:IterateFramesForUnitID(unit, true) do
+	for frame in PitBull4:IterateFramesForUnitID(unit) do
 		if frame[id] then
 			self:Update(frame)
 		end

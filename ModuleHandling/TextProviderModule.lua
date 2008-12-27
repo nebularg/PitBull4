@@ -152,9 +152,7 @@ function TextProviderModule:UpdateForUnitID(unit)
 	
 	local id = self.id
 	for frame in PitBull4:IterateFramesForUnitID(unit) do
-		if frame[id] then
-			self:Update(frame)
-		end
+		self:Update(frame)
 	end
 end
 
