@@ -238,7 +238,7 @@ end
 function PitBull4:IterateFramesForUnitID(unit, also_hidden)
 	--@alpha@
 	expect(unit, 'typeof', 'string')
-	expect(only_shown, 'typeof', 'boolean;nil')
+	expect(also_hidden, 'typeof', 'boolean;nil')
 	--@end-alpha@
 	
 	local id = PitBull4.Utils.GetBestUnitID(unit)
@@ -250,7 +250,7 @@ function PitBull4:IterateFramesForUnitID(unit, also_hidden)
 end
 
 --- Iterate over all shown frames with the given UnitIDs
--- @paramr ... a tuple of UnitIDs.
+-- @param ... a tuple of UnitIDs.
 -- @usage for frame in PitBull4:IterateFramesForUnitIDs("player", "target", "pet") do
 --     somethingAwesome(frame)
 -- end
@@ -271,9 +271,10 @@ function PitBull4:IterateFramesForUnitIDs(...)
 	return half_next_with_del, t
 end
 
---- Iterate over all frames with the given classification
+--- Iterate over all frames with the given classification.
+-- This iterates over only shown frames unless also_hidden is passed in.
 -- @param classification the classification to check
--- @param only_shown only return frames that are shown
+-- @param also_hidden only return frames that are shown
 -- @usage for frame in PitBull4:IterateFramesForClassification("player") do
 --     doSomethingWith(frame)
 -- end
@@ -281,10 +282,10 @@ end
 --     doSomethingWith(frame)
 -- end
 -- @return iterator which returns frames
-function PitBull4:IterateFramesForClassification(classification, only_shown)
+function PitBull4:IterateFramesForClassification(classification, also_hidden)
 	--@alpha@
 	expect(classification, 'typeof', 'string')
-	expect(only_shown, 'typeof', 'boolean;nil')
+	expect(also_hidden, 'typeof', 'boolean;nil')
 	--@end-alpha@
 
 	local unit_id_to_frames__classification = rawget(unit_id_to_frames, classification)
@@ -292,7 +293,7 @@ function PitBull4:IterateFramesForClassification(classification, only_shown)
 		return donothing
 	end
 	
-	return only_shown and iterate_shown_frames or half_next, unit_id_to_frames__classification
+	return not also_hidden and iterate_shown_frames or half_next, unit_id_to_frames__classification
 end
 
 local function layout_iter(layout, frame)

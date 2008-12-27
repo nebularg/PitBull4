@@ -40,7 +40,7 @@ function PitBull4.Options.get_unit_options()
 						if value == "" then
 							-- TODO: handle this properly
 							db.hidden = true
-							for frame in PitBull4:IterateFramesForClassification(classification, false) do
+							for frame in PitBull4:IterateFramesForClassification(classification, true) do
 								frame:Deactivate()
 							end
 						else
@@ -51,7 +51,7 @@ function PitBull4.Options.get_unit_options()
 							if was_hidden then
 								PitBull4:MakeSingletonFrame(classification)
 							else
-								for frame in PitBull4:IterateFramesForClassification(classification, false) do
+								for frame in PitBull4:IterateFramesForClassification(classification, true) do
 									frame:RefreshLayout()
 								end
 							end
@@ -69,7 +69,7 @@ function PitBull4.Options.get_unit_options()
 					set = function(info, value)
 						PitBull4.db.profile.classifications[classification].horizontal_mirror = value
 						
-						for frame in PitBull4:IterateFramesForClassification(classification, false) do
+						for frame in PitBull4:IterateFramesForClassification(classification, true) do
 							frame:Update(true, true)
 						end
 					end
@@ -85,7 +85,7 @@ function PitBull4.Options.get_unit_options()
 					set = function(info, value)
 						PitBull4.db.profile.classifications[classification].vertical_mirror = value
 						
-						for frame in PitBull4:IterateFramesForClassification(classification, false) do
+						for frame in PitBull4:IterateFramesForClassification(classification, true) do
 							frame:Update(true, true)
 						end
 					end
@@ -106,7 +106,7 @@ function PitBull4.Options.get_unit_options()
 					set = function(info, value)
 						PitBull4.db.profile.classifications[classification].scale = value
 						
-						for frame in PitBull4:IterateFramesForClassification(classification, false) do
+						for frame in PitBull4:IterateFramesForClassification(classification, true) do
 							frame:RefreshLayout()
 						end
 					end
