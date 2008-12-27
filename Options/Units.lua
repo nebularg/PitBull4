@@ -58,42 +58,59 @@ function PitBull4.Options.get_unit_options()
 						end
 					end
 				},
-				horizontalMirror = {
+				horizontal_mirror = {
 					name = "Mirror horizontally",
 					desc = "Whether all options will be mirrored, e.g. what would be on the left is now on the right and vice-versa.",
 					order = 2,
 					type = 'toggle',
 					get = function(info)
-						local db = PitBull4.db.profile.classifications[classification]
-						return db.horizontalMirror
+						return PitBull4.db.profile.classifications[classification].horizontal_mirror
 					end,
 					set = function(info, value)
-						local db = PitBull4.db.profile.classifications[classification]
-						db.horizontalMirror = value
+						PitBull4.db.profile.classifications[classification].horizontal_mirror = value
 						
 						for frame in PitBull4:IterateFramesForClassification(classification, false) do
 							frame:Update(true, true)
 						end
 					end
 				},
-				verticalMirror = {
+				vertical_mirror = {
 					name = "Mirror vertically",
 					desc = "Whether all options will be mirrored, e.g. what would be on the bottom is now on the top and vice-versa.",
 					order = 3,
 					type = 'toggle',
 					get = function(info)
-						local db = PitBull4.db.profile.classifications[classification]
-						return db.verticalMirror
+						return PitBull4.db.profile.classifications[classification].vertical_mirror
 					end,
 					set = function(info, value)
-						local db = PitBull4.db.profile.classifications[classification]
-						db.verticalMirror = value
+						PitBull4.db.profile.classifications[classification].vertical_mirror = value
 						
 						for frame in PitBull4:IterateFramesForClassification(classification, false) do
 							frame:Update(true, true)
 						end
 					end
 				},
+				scale = {
+					name = "Scale",
+					desc = "The scale of the unit. This will be multiplied against the layout's scale.",
+					order = 4,
+					type = 'range',
+					min = 0.5,
+					max = 2,
+					isPercent = true,
+					step = 0.01,
+					bigStep = 0.05,
+					get = function(info)
+						return PitBull4.db.profile.classifications[classification].scale
+					end,
+					set = function(info, value)
+						PitBull4.db.profile.classifications[classification].scale = value
+						
+						for frame in PitBull4:IterateFramesForClassification(classification, false) do
+							frame:RefreshLayout()
+						end
+					end
+				}
 			}
 		}
 	end

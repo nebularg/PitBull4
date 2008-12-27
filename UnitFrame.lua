@@ -198,12 +198,14 @@ UnitFrame.ConvertIntoUnitFrame = PitBull4:OutOfCombatWrapper(UnitFrame.ConvertIn
 
 function UnitFrame:RefreshLayout()
 	local old_layout = self.layout
-	local layout = self.classification_db.layout
+	
+	local classification_db = self.classification_db
+	local layout = classification_db.layout
 	self.layout = layout
 	local layout_db = PitBull4.db.profile.layouts[layout]
 	self:SetWidth(layout_db.size_x)
 	self:SetHeight(layout_db.size_y)
-	self:SetScale(layout_db.scale)
+	self:SetScale(layout_db.scale * classification_db.scale)
 	if old_layout then
 		self:Update(true, true)
 	end
@@ -366,8 +368,8 @@ end
 local function update_bar_layout(self)
 	local bars, center_bars, left_bars, right_bars = get_all_bars(self)
 	
-	local horizontal_mirror = self.classification_db.horizontalMirror
-	local vertical_mirror = self.classification_db.verticalMirror
+	local horizontal_mirror = self.classification_db.horizontal_mirror
+	local vertical_mirror = self.classification_db.vertical_mirror
 	
 	if horizontal_mirror then
 		left_bars, right_bars = right_bars, left_bars
@@ -708,8 +710,8 @@ local function update_icon_and_text_layout(self)
 	
 	local layout = self.layout
 	
-	local horizontal_mirror = self.classification_db.horizontalMirror
-	local vertical_mirror = self.classification_db.verticalMirror
+	local horizontal_mirror = self.classification_db.horizontal_mirror
+	local vertical_mirror = self.classification_db.vertical_mirror
 	
 	for _, id in ipairs_with_del(get_all_icons(self)) do
 		local icon = self[id]

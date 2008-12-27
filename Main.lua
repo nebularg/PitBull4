@@ -391,9 +391,10 @@ function PitBull4:OnInitialize()
 					hidden = false,
 					position_x = 0,
 					position_y = 0,
+					scale = 1,
 					layout = "Normal",
-					horizontalMirror = false,
-					verticalMirror = false,
+					horizontal_mirror = false,
+					vertical_mirror = false,
 				},
 			},
 			layouts = {
