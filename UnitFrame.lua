@@ -820,7 +820,7 @@ function UnitFrame:UpdateLayout()
 end
 
 local function iter(frame, id)
-	local func, t = PitBull4.IterateModules(true)
+	local func, t = PitBull4:IterateEnabledModules()
 	local id, module = func(t, id)
 	if id == nil then
 		return nil
