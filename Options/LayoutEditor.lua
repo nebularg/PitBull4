@@ -164,6 +164,8 @@ function PitBull4.Options.get_layout_options()
 	}
 	
 	local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+	LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
+	local AceGUI = LibStub("AceGUI-3.0")
 	
 	layout_options.args.bars.args.texture = {
 		type = 'select',
@@ -186,7 +188,8 @@ function PitBull4.Options.get_layout_options()
 		end,
 		hidden = function(info)
 			return not LibSharedMedia or #LibSharedMedia:List("statusbar") <= 1
-		end
+		end,
+		dialogControl = AceGUI.WidgetRegistry["LSM30_Statusbar"] and "LSM30_Statusbar" or nil,
 	}
 	
 	local statusbar_args = {
@@ -310,7 +313,8 @@ function PitBull4.Options.get_layout_options()
 			end,
 			hidden = function(info)
 				return not LibSharedMedia or #LibSharedMedia:List("statusbar") <= 1
-			end
+			end,
+			dialogControl = AceGUI.WidgetRegistry["LSM30_Statusbar"] and "LSM30_Statusbar" or nil,
 		},
 		size = {
 			type = 'range',
@@ -741,7 +745,8 @@ function PitBull4.Options.get_layout_options()
 		end,
 		hidden = function(info)
 			return not LibSharedMedia or #LibSharedMedia:List("font") <= 1
-		end
+		end,
+		dialogControl = AceGUI.WidgetRegistry["LSM30_Font"] and "LSM30_Font" or nil,
 	}
 	
 	layout_options.args.texts.args.edit = {
@@ -937,7 +942,8 @@ function PitBull4.Options.get_layout_options()
 		end,
 		hidden = function(info)
 			return not LibSharedMedia or #LibSharedMedia:List("font") <= 1
-		end
+		end,
+		dialogControl = AceGUI.WidgetRegistry["LSM30_Font"] and "LSM30_Font" or nil,
 	}
 	
 	layout_options.args.texts.args.edit.args.size = {
