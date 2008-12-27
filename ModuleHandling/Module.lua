@@ -33,8 +33,6 @@ function PitBull4:NewModuleType(name, defaults)
 	return module_types[name]
 end
 
-PitBull4:NewModuleType("custom", {})
-
 local Module = {}
 PitBull4:SetDefaultModulePrototype(Module)
 
@@ -143,7 +141,9 @@ function Module:SetModuleType(type)
 	self.module_type = type
 	
 	for k, v in pairs(module_types[type]) do
-		self[k] = v
+		if self[k] == nil then
+			self[k] = v
+		end
 	end
 end
 
