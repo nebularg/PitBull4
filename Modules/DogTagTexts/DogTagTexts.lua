@@ -172,7 +172,7 @@ function PitBull4_DogTagTexts:HandleFontString(...)
 end
 
 function PitBull4_DogTagTexts:RemoveFontString(font_string)
-	LibDogTag:RemoveFontString(frame)
+	LibDogTag:RemoveFontString(font_string)
 end
 
 PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
