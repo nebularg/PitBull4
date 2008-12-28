@@ -44,6 +44,7 @@ do
 		focus = "focus",
 		target = "target",
 		playertarget = "target",
+		npc = "npc",
 	}
 	for i = 1, 4 do
 		better_unit_ids["party" .. i] = "party" .. i
