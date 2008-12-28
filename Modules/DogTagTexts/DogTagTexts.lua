@@ -220,5 +220,12 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 			PitBull4.Options.UpdateFrames()
 		end,
 		values = values,
+	}, 'help', {
+		type = 'execute',
+		name = "DogTag help",
+		desc = "Click to pop up helpful DogTag documentation.",
+		func = function()
+			LibDogTag:OpenHelp()
+		end,
 	}
 end)
