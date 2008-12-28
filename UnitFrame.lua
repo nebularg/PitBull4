@@ -38,6 +38,7 @@ local MODULE_UPDATE_ORDER = {
 	"icon",
 	"custom_indicator",
 	"text_provider",
+	"custom_text",
 	"custom",
 }
 
@@ -488,6 +489,12 @@ function get_all_texts(frame)
 		end
 	end
 	
+	for id, module in PitBull4:IterateModulesOfType('custom_text') do
+		if frame[id] then
+			texts[#texts+1] = frame[id]
+		end
+	end
+	
 	return texts
 end
 
@@ -501,7 +508,12 @@ local function get_half_width(frame, indicators_and_texts)
 			-- probably a text
 			num = ASSUMED_TEXT_WIDTH * indicator_or_text.db.size
 		else
-			num = PitBull4.modules[indicator.id]:GetLayoutDB(layout).size * INDICATOR_SIZE * indicator_or_text:GetWidth() / indicator_or_text:GetHeight()
+			local module = PitBull4.modules[indicator_or_text.id]
+			if module.module_type == "custom_text" then
+				num = ASSUMED_TEXT_WIDTH * module:GetLayoutDB(layout).size
+			else
+				num = module:GetLayoutDB(layout).size * INDICATOR_SIZE * indicator_or_text:GetWidth() / indicator_or_text:GetHeight()
+			end
 		end
 	end
 	
@@ -518,7 +530,11 @@ function position_indicator_on_root:out_top_right(indicator)
 	indicator:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -INDICATOR_OUT_ROOT_BORDER, INDICATOR_OUT_ROOT_MARGIN)
 end
 function position_indicator_on_root:out_top(indicator, _, _, indicators_and_texts)
-	indicator:SetPoint("BOTTOMLEFT", self, "TOP", -get_half_width(self, indicators_and_texts), INDICATOR_OUT_ROOT_MARGIN)
+	if #indicators_and_texts == 1 then
+		indicator:SetPoint("BOTTOM", self, "TOP", 0, INDICATOR_OUT_ROOT_MARGIN)
+	else
+		indicator:SetPoint("BOTTOMLEFT", self, "TOP", -get_half_width(self, indicators_and_texts), INDICATOR_OUT_ROOT_MARGIN)
+	end
 end
 function position_indicator_on_root:out_bottom_left(indicator)
 	indicator:SetPoint("TOPLEFT", self, "BOTTOMLEFT", INDICATOR_OUT_ROOT_BORDER, -INDICATOR_OUT_ROOT_MARGIN)
@@ -527,7 +543,11 @@ function position_indicator_on_root:out_bottom_right(indicator)
 	indicator:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", -INDICATOR_OUT_ROOT_BORDER, -INDICATOR_OUT_ROOT_MARGIN)
 end
 function position_indicator_on_root:out_bottom(indicator, _, _, indicators_and_texts)
-	indicator:SetPoint("TOPLEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts), INDICATOR_OUT_ROOT_MARGIN)
+	if #indicators_and_texts == 1 then
+		indicator:SetPoint("TOP", self, "BOTTOM", 0, INDICATOR_OUT_ROOT_MARGIN)
+	else
+		indicator:SetPoint("TOPLEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts), INDICATOR_OUT_ROOT_MARGIN)
+	end
 end
 function position_indicator_on_root:out_left_top(indicator)
 	indicator:SetPoint("TOPRIGHT", self, "TOPLEFT", -INDICATOR_OUT_ROOT_MARGIN, -INDICATOR_OUT_ROOT_BORDER)
@@ -548,13 +568,21 @@ function position_indicator_on_root:out_right_bottom(indicator)
 	indicator:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", INDICATOR_OUT_ROOT_MARGIN, INDICATOR_OUT_ROOT_BORDER)
 end
 function position_indicator_on_root:in_center(indicator, _, _, indicators_and_texts)
-	indicator:SetPoint("LEFT", self, "CENTER", -get_half_width(self, indicators_and_texts), 0)
+	if #indicators_and_texts == 1 then
+		indicator:SetPoint("CENTER", self, "CENTER", 0, 0)
+	else
+		indicator:SetPoint("LEFT", self, "CENTER", -get_half_width(self, indicators_and_texts), 0)
+	end
 end
 function position_indicator_on_root:in_top_left(indicator)
 	indicator:SetPoint("TOPLEFT", self, "TOPLEFT", INDICATOR_IN_ROOT_HORIZONTAL_MARGIN, -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
 end
 function position_indicator_on_root:in_top(indicator, _, _, indicators_and_texts)
-	indicator:SetPoint("TOPLEFT", self, "TOP", -get_half_width(self, indicators_and_texts), -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
+	if #indicators_and_texts == 1 then
+		indicator:SetPoint("TOP", self, "TOP", 0, -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
+	else
+		indicator:SetPoint("TOPLEFT", self, "TOP", -get_half_width(self, indicators_and_texts), -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
+	end
 end
 function position_indicator_on_root:in_top_left(indicator)
 	indicator:SetPoint("TOPRIGHT", self, "TOPRIGHT", -INDICATOR_IN_ROOT_HORIZONTAL_MARGIN, -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
@@ -563,7 +591,11 @@ function position_indicator_on_root:in_bottom_left(indicator)
 	indicator:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", INDICATOR_IN_ROOT_HORIZONTAL_MARGIN, -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
 end
 function position_indicator_on_root:in_bottom(indicator, _, _, indicators_and_texts)
-	indicator:SetPoint("BOTTOMLEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts), -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
+	if #indicators_and_texts == 1 then
+		indicator:SetPoint("BOTTOM", self, "BOTTOM", 0, -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
+	else
+		indicator:SetPoint("BOTTOMLEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts), -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
+	end
 end
 function position_indicator_on_root:in_bottom_left(indicator)
 	indicator:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -INDICATOR_IN_ROOT_HORIZONTAL_MARGIN, -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
@@ -578,7 +610,11 @@ function position_indicator_on_root:edge_top_left(indicator)
 	indicator:SetPoint("CENTER", self, "TOPLEFT", 0, 0)
 end
 function position_indicator_on_root:edge_top(indicator, _, _, indicators_and_texts)
-	indicator:SetPoint("LEFT", self, "TOP", -get_half_width(self, indicators_and_texts), 0)
+	if #indicators_and_texts == 1 then
+		indicator:SetPoint("CENTER", self, "TOP", 0, 0)
+	else
+		indicator:SetPoint("LEFT", self, "TOP", -get_half_width(self, indicators_and_texts), 0)
+	end
 end
 function position_indicator_on_root:edge_top_right(indicator)
 	indicator:SetPoint("CENTER", self, "TOPRIGHT", 0, 0)
@@ -593,7 +629,11 @@ function position_indicator_on_root:edge_bottom_left(indicator)
 	indicator:SetPoint("CENTER", self, "BOTTOMLEFT", 0, 0)
 end
 function position_indicator_on_root:edge_bottom(indicator, _, _, indicators_and_texts)
-	indicator:SetPoint("LEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts), 0)
+	if #indicators_and_texts == 1 then
+		indicator:SetPoint("CENTER", self, "BOTTOM", 0, 0)
+	else
+		indicator:SetPoint("LEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts), 0)
+	end
 end
 function position_indicator_on_root:edge_bottom_right(indicator)
 	indicator:SetPoint("CENTER", self, "BOTTOMRIGHT", 0, 0)
@@ -604,16 +644,28 @@ function position_indicator_on_bar:left(indicator, bar)
 	indicator:SetPoint("LEFT", bar, "LEFT", INDICATOR_BAR_INSIDE_HORIZONTAL_SPACING, 0)
 end
 function position_indicator_on_bar:center(indicator, bar, _, indicators_and_texts)
-	indicator:SetPoint("LEFT", bar, "CENTER", -get_half_width(self, indicators_and_texts), 0)
+	if #indicators_and_texts == 1 then
+		indicator:SetPoint("CENTER", bar, "CENTER", 0, 0)
+	else
+		indicator:SetPoint("LEFT", bar, "CENTER", -get_half_width(self, indicators_and_texts), 0)
+	end
 end
 function position_indicator_on_bar:right(indicator, bar)
 	indicator:SetPoint("RIGHT", bar, "RIGHT", -INDICATOR_BAR_INSIDE_HORIZONTAL_SPACING, 0)
 end
-function position_indicator_on_bar:top(indicator, bar)
-	indicator:SetPoint("TOPLEFT", bar, "TOP", -get_half_width(self, "top"), -INDICATOR_BAR_INSIDE_VERTICAL_SPACING)
+function position_indicator_on_bar:top(indicator, bar, _, indicators_and_texts)
+	if #indicators_and_texts == 1 then
+		indicator:SetPoint("TOP", bar, "TOP", 0, 0)
+	else
+		indicator:SetPoint("TOPLEFT", bar, "TOP", -get_half_width(self, indicators_and_texts), -INDICATOR_BAR_INSIDE_VERTICAL_SPACING)
+	end
 end
 function position_indicator_on_bar:bottom(indicator, bar, _, indicators_and_texts)
-	indicator:SetPoint("BOTTOMLEFT", bar, "BOTTOM", -get_half_width(self, indicators_and_texts), INDICATOR_BAR_INSIDE_VERTICAL_SPACING)
+	if #indicators_and_texts == 1 then
+		indicator:SetPoint("BOTTOM", bar, "BOTTOM", 0, 0)
+	else
+		indicator:SetPoint("BOTTOMLEFT", bar, "BOTTOM", -get_half_width(self, indicators_and_texts), INDICATOR_BAR_INSIDE_VERTICAL_SPACING)
+	end
 end
 function position_indicator_on_bar:top_left(indicator, bar)
 	indicator:SetPoint("TOPLEFT", bar, "TOPLEFT", INDICATOR_BAR_INSIDE_HORIZONTAL_SPACING, -INDICATOR_BAR_INSIDE_VERTICAL_SPACING)
@@ -781,6 +833,9 @@ local function update_indicator_and_text_layout(self)
 	
 	for _, text in ipairs_with_del(get_all_texts(self)) do
 		local db = text.db
+		if not db then
+			db = PitBull4.modules[text.id]:GetLayoutDB(self)
+		end
 		local attach_to = db.attach_to
 		local attach_frame
 		if attach_to == "root" then

@@ -2,8 +2,9 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 
 local CURRENT_LAYOUT = "Normal"
-local CURRENT_TEXT_MODULE
-local CURRENT_TEXT_ID
+local CURRENT_CUSTOM_TEXT_MODULE
+local CURRENT_TEXT_PROVIDER_MODULE
+local CURRENT_TEXT_PROVIDER_ID
 
 --- Return the DB dictionary for the current layout selected in the options frame.
 -- Modules should be calling this and manipulating data within it.
@@ -28,11 +29,11 @@ end
 -- @usage local db = PitBull.Options.GetTextLayoutDB(); db.some_option = "something"
 -- @return the DB dictionary for the current text
 function PitBull4.Options.GetTextLayoutDB()
-	if not CURRENT_TEXT_MODULE then
+	if not CURRENT_TEXT_PROVIDER_MODULE then
 		return
 	end
 	
-	return CURRENT_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).texts[CURRENT_TEXT_ID]
+	return CURRENT_TEXT_PROVIDER_MODULE:GetLayoutDB(CURRENT_LAYOUT).texts[CURRENT_TEXT_PROVIDER_ID]
 end
 
 --- Update frames for the currently selected layout.
@@ -622,7 +623,7 @@ function PitBull4.Options.get_layout_options()
 	end
 	
 	local function disabled()
-		return not CURRENT_TEXT_MODULE
+		return not CURRENT_TEXT_PROVIDER_MODULE and not CURRENT_CUSTOM_TEXT_MODULE
 	end
 	
 	layout_options.args.texts.args.current_text = {
@@ -645,26 +646,53 @@ function PitBull4.Options.get_layout_options()
 					t[key] = v.name or "<Unnamed>"
 				end
 			end
-			if not CURRENT_TEXT_MODULE or not t[("%s;%03d"):format(CURRENT_TEXT_MODULE.id, CURRENT_TEXT_ID)] then
-				CURRENT_TEXT = first
-				CURRENT_TEXT_MODULE = first_module
-				CURRENT_TEXT_ID = first_id
+			for id, module in PitBull4:IterateModulesOfType("custom_text") do
+				t[id] = module.name
+				if not first then
+					first = key
+					first_module = module
+					first_id = nil
+				end
+			end
+			if (not CURRENT_TEXT_PROVIDER_MODULE or not t[("%s;%03d"):format(CURRENT_TEXT_PROVIDER_MODULE.id, CURRENT_TEXT_PROVIDER_ID)]) and (not CURRENT_CUSTOM_TEXT_MODULE or not t[CURRENT_CUSTOM_TEXT_MODULE.id]) then
+				if first_id then
+					CURRENT_TEXT_PROVIDER_MODULE = first_module
+					CURRENT_TEXT_PROVIDER_ID = first_id
+					CURRENT_CUSTOM_TEXT_MODULE = nil
+				else
+					CURRENT_TEXT_PROVIDER_MODULE = nil
+					CURRENT_TEXT_PROVIDER_ID = nil
+					CURRENT_CUSTOM_TEXT_MODULE = first_module
+				end
 			end
 			return t
 		end,
 		get = function(info)
-			if CURRENT_TEXT_MODULE then
-				return ("%s;%03d"):format(CURRENT_TEXT_MODULE.id, CURRENT_TEXT_ID)
+			if CURRENT_TEXT_PROVIDER_MODULE then
+				return ("%s;%03d"):format(CURRENT_TEXT_PROVIDER_MODULE.id, CURRENT_TEXT_PROVIDER_ID)
+			elseif CURRENT_CUSTOM_TEXT_MODULE then
+				return CURRENT_CUSTOM_TEXT_MODULE.id
 			else
 				return nil
 			end
 		end,
 		set = function(info, value)
 			local module_name, id = (";"):split(value)
-			for m_id, m in PitBull4:IterateModulesOfType("text_provider") do
-				if module_name == m_id then
-					CURRENT_TEXT_MODULE = m
-					CURRENT_TEXT_ID = id+0
+			if id then
+				for m_id, m in PitBull4:IterateModulesOfType("text_provider") do
+					if module_name == m_id then
+						CURRENT_TEXT_PROVIDER_MODULE = m
+						CURRENT_TEXT_PROVIDER_ID = id+0
+						CURRENT_CUSTOM_TEXT_MODULE = nil
+					end
+				end
+			else
+				for m_id, m in PitBull4:IterateModulesOfType("custom_text") do
+					if module_name == m_id then
+						CURRENT_TEXT_PROVIDER_MODULE = nil
+						CURRENT_TEXT_PROVIDER_ID = nil
+						CURRENT_CUSTOM_TEXT_MODULE = m
+					end
 				end
 			end
 		end,
@@ -699,7 +727,7 @@ function PitBull4.Options.get_layout_options()
 		order = 2,
 		get = function(info) return "" end,
 		set = function(info, value)
-			local module = CURRENT_TEXT_MODULE
+			local module = CURRENT_TEXT_PROVIDER_MODULE
 			
 			if not module then
 				for id, m in PitBull4:IterateModulesOfType("text_provider") do
@@ -716,8 +744,8 @@ function PitBull4.Options.get_layout_options()
 			local db = texts_db[texts_db.n]
 			db.name = value
 			
-			CURRENT_TEXT_MODULE = module
-			CURRENT_TEXT_ID = texts_db.n
+			CURRENT_TEXT_PROVIDER_MODULE = module
+			CURRENT_TEXT_PROVIDER_ID = texts_db.n
 			
 			UpdateFrames()
 		end,
@@ -762,24 +790,24 @@ function PitBull4.Options.get_layout_options()
 		desc = "Remove the text.",
 		order = 1,
 		func = function()
-			local texts_db = CURRENT_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).texts
+			local texts_db = CURRENT_TEXT_PROVIDER_MODULE:GetLayoutDB(CURRENT_LAYOUT).texts
 			
-			table.remove(texts_db, CURRENT_TEXT_ID)
+			table.remove(texts_db, CURRENT_TEXT_PROVIDER_ID)
 			local n = texts_db.n - 1
 			texts_db.n = n
 			if n >= 1 then
-				if CURRENT_TEXT_ID > n then
-					CURRENT_TEXT_ID = n
+				if CURRENT_TEXT_PROVIDER_ID > n then
+					CURRENT_TEXT_PROVIDER_ID = n
 				end
 			else
-				CURRENT_TEXT_MODULE = nil
-				CURRENT_TEXT_ID = nil
+				CURRENT_TEXT_PROVIDER_MODULE = nil
+				CURRENT_TEXT_PROVIDER_ID = nil
 				for id, m in PitBull4:IterateModulesOfType("text_provider") do
 					local texts_db = m:GetLayoutDB(CURRENT_LAYOUT).texts
 					
 					if texts_db.n > 0 then
-						CURRENT_TEXT_MODULE = m
-						CURRENT_TEXT_ID = 1
+						CURRENT_TEXT_PROVIDER_MODULE = m
+						CURRENT_TEXT_PROVIDER_ID = 1
 						break
 					end
 				end
@@ -787,7 +815,27 @@ function PitBull4.Options.get_layout_options()
 			
 			UpdateFrames()
 		end,
-		disabled = disabled
+		disabled = disabled,
+		hidden = function(info)
+			return not not CURRENT_CUSTOM_TEXT_MODULE
+		end
+	}
+	
+	layout_options.args.texts.args.edit.args.enabled = {
+		type = 'toggle',
+		name = "Enable",
+		order = 1,
+		get = function(info)
+			return not CURRENT_CUSTOM_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).hidden
+		end,
+		set = function(info, value)
+			CURRENT_CUSTOM_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).hidden = not value
+			
+			UpdateFrames()
+		end,
+		hidden = function(info)
+			return not CURRENT_CUSTOM_TEXT_MODULE
+		end,
 	}
 	
 	layout_options.args.texts.args.edit.args.name = {
@@ -809,6 +857,9 @@ function PitBull4.Options.get_layout_options()
 		end,
 		validate = text_name_validate,
 		disabled = disabled,
+		hidden = function(info)
+			return not not CURRENT_CUSTOM_TEXT_MODULE
+		end
 	}
 	
 	layout_options.args.texts.args.edit.args.provider = {
@@ -817,21 +868,21 @@ function PitBull4.Options.get_layout_options()
 		desc = "What text provider is used for this text.",
 		order = 3,
 		get = function(info)
-			return CURRENT_TEXT_MODULE and CURRENT_TEXT_MODULE.id
+			return CURRENT_TEXT_PROVIDER_MODULE and CURRENT_TEXT_PROVIDER_MODULE.id
 		end,
 		set = function(info, value)
-			if value == CURRENT_TEXT_MODULE.id then
+			if value == CURRENT_TEXT_PROVIDER_MODULE.id then
 				return
 			end
 			
-			local texts_db = CURRENT_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).texts
+			local texts_db = CURRENT_TEXT_PROVIDER_MODULE:GetLayoutDB(CURRENT_LAYOUT).texts
 			
-			local old_db = table.remove(texts_db, CURRENT_TEXT_ID)
+			local old_db = table.remove(texts_db, CURRENT_TEXT_PROVIDER_ID)
 			local n = texts_db.n - 1
 			texts_db.n = n
 			
-			CURRENT_TEXT_MODULE = Pitbull4:GetModule(value)
-			texts_db = CURRENT_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).texts
+			CURRENT_TEXT_PROVIDER_MODULE = Pitbull4:GetModule(value)
+			texts_db = CURRENT_TEXT_PROVIDER_MODULE:GetLayoutDB(CURRENT_LAYOUT).texts
 			n = texts_db.n + 1
 			texts_db.n = n
 			
@@ -852,6 +903,9 @@ function PitBull4.Options.get_layout_options()
 			return t
 		end,
 		disabled = disabled,
+		hidden = function(info)
+			return not not CURRENT_CUSTOM_TEXT_MODULE
+		end
 	}
 	
 	layout_options.args.texts.args.edit.args.attach_to = {
@@ -859,13 +913,20 @@ function PitBull4.Options.get_layout_options()
 		name = "Attach to",
 		order = 4,
 		get = function(info)
-			if not CURRENT_TEXT_MODULE then
+			if CURRENT_CUSTOM_TEXT_MODULE then
+				return CURRENT_CUSTOM_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).attach_to
+			end
+			if not CURRENT_TEXT_PROVIDER_MODULE then
 				return
 			end
 			return GetTextLayoutDB().attach_to
 		end,
 		set = function(info, value)
-			GetTextLayoutDB().attach_to = value
+			if CURRENT_CUSTOM_TEXT_MODULE then
+				CURRENT_CUSTOM_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).attach_to = value
+			else
+				GetTextLayoutDB().attach_to = value
+			end
 			
 			UpdateFrames()
 		end,
@@ -888,21 +949,32 @@ function PitBull4.Options.get_layout_options()
 		name = "Location",
 		order = 5,
 		get = function(info)
-			if not CURRENT_TEXT_MODULE then
+			if CURRENT_CUSTOM_TEXT_MODULE then
+				return CURRENT_CUSTOM_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).location
+			end
+			if not CURRENT_TEXT_PROVIDER_MODULE then
 				return nil
 			end
 			return GetTextLayoutDB().location
 		end,
 		set = function(info, value)
-			GetTextLayoutDB().location = value
+			if CURRENT_CUSTOM_TEXT_MODULE then
+				CURRENT_CUSTOM_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).location = value
+			else
+				GetTextLayoutDB().location = value
+			end
 			
 			UpdateFrames()
 		end,
 		values = function(info)
-			if not CURRENT_TEXT_MODULE then
-				return root_locations
+			local attach_to
+			if CURRENT_CUSTOM_TEXT_MODULE then
+				attach_to = CURRENT_CUSTOM_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).attach_to
+			elseif CURRENT_TEXT_PROVIDER_MODULE then
+				attach_to = GetTextLayoutDB().attach_to
+			else
+				attach_to = "root"
 			end
-			local attach_to = GetTextLayoutDB().attach_to
 			if attach_to == "root" then
 				return root_locations
 			else
@@ -917,14 +989,25 @@ function PitBull4.Options.get_layout_options()
 		name = "Font",
 		order = 4,
 		get = function(info)
-			return GetTextLayoutDB().font or PitBull4.db.profile.layouts[CURRENT_LAYOUT].font
+			local font
+			if CURRENT_CUSTOM_TEXT_MODULE then
+				font = CURRENT_CUSTOM_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).font
+			elseif CURRENT_TEXT_PROVIDER_MODULE then
+				font = GetTextLayoutDB().font
+			end
+			return font or PitBull4.db.profile.layouts[CURRENT_LAYOUT].font
 		end,
 		set = function(info, value)
 			local default = PitBull4.db.profile.layouts[CURRENT_LAYOUT].font
 			if value == default then
 				value = nil
 			end
-			GetTextLayoutDB().font = value
+			
+			if CURRENT_CUSTOM_TEXT_MODULE then
+				CURRENT_CUSTOM_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).font = value
+			else
+				GetTextLayoutDB().font = value
+			end
 			
 			UpdateFrames()
 		end,
@@ -940,6 +1023,7 @@ function PitBull4.Options.get_layout_options()
 			end
 			return t
 		end,
+		disabled = disabled,
 		hidden = function(info)
 			return not LibSharedMedia or #LibSharedMedia:List("font") <= 1
 		end,
@@ -951,13 +1035,20 @@ function PitBull4.Options.get_layout_options()
 		name = "Size",
 		order = 7,
 		get = function(info)
-			if not CURRENT_TEXT_MODULE then
+			if CURRENT_CUSTOM_TEXT_MODULE then
+				return CURRENT_CUSTOM_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).size
+			end
+			if not CURRENT_TEXT_PROVIDER_MODULE then
 				return 1
 			end
 			return GetTextLayoutDB().size
 		end,
 		set = function(info, value)
-			GetTextLayoutDB().size = value
+			if CURRENT_CUSTOM_TEXT_MODULE then
+				CURRENT_CUSTOM_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).size = value
+			else
+				GetTextLayoutDB().size = value
+			end
 			
 			UpdateFrames()
 		end,
@@ -970,10 +1061,6 @@ function PitBull4.Options.get_layout_options()
 	}
 	
 	for id, module in PitBull4:IterateModulesOfType("text_provider", true) do
-		local args = {}
-		for k, v in pairs(status_bar_args) do
-			args[k] = v
-		end
 		if layout_functions[module] then
 			local t = { layout_functions[module](module) }
 			layout_functions[module] = false
@@ -994,10 +1081,39 @@ function PitBull4.Options.get_layout_options()
 				
 				local old_hidden = v.hidden
 				v.hidden = function(info)
-					return module ~= CURRENT_TEXT_MODULE or (old_hidden and old_hidden(info))
+					return module ~= CURRENT_TEXT_PROVIDER_MODULE or (old_hidden and old_hidden(info))
 				end
 				
-				layout_options.args.texts.args.edit.args[k] = v
+				layout_options.args.texts.args.edit.args[id .. "-" .. k] = v
+			end
+		end
+	end
+	
+	for id, module in PitBull4:IterateModulesOfType("custom_text", true) do
+		if layout_functions[module] then
+			local t = { layout_functions[module](module) }
+			layout_functions[module] = false
+			
+			local order = 100
+			for i = 1, #t, 2 do
+				local k = t[i]
+				local v = t[i+1]
+				
+				order = order + 1
+				
+				v.order = order
+				
+				local old_disabled = v.disabled
+				v.disabled = function(info)
+					return disabled(info) or (old_disabled and old_disabled(info))
+				end
+				
+				local old_hidden = v.hidden
+				v.hidden = function(info)
+					return module ~= CURRENT_CUSTOM_TEXT_MODULE or (old_hidden and old_hidden(info))
+				end
+				
+				layout_options.args.texts.args.edit.args[id .. "-" .. k] = v
 			end
 		end
 	end

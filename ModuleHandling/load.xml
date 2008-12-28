@@ -5,6 +5,7 @@
 
 <Script file="CustomModule.lua"/>
 <Script file="CustomIndicatorModule.lua"/>
+<Script file="CustomTextModule.lua"/>
 <Script file="IconModule.lua"/>
 <Script file="StatusBarModule.lua"/>
 <Script file="TextProviderModule.lua"/>
