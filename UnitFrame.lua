@@ -1,43 +1,44 @@
 -- CONSTANTS ----------------------------------------------------------------
 
--- size in pixels of icons at 100% scaled
-local ICON_SIZE = 15
+-- size in pixels of indicators at 100% scaled
+local INDICATOR_SIZE = 15
 
 -- how many width points the center bars take up if at least one exists
 local CENTER_WIDTH_POINTS = 10
 
--- how far in pixels that icons are spaced away from the frame if set to Outside, something
-local ICON_OUT_ROOT_MARGIN = 5
+-- how far in pixels that indicators are spaced away from the frame if set to Outside, something
+local INDICATOR_OUT_ROOT_MARGIN = 5
 
 -- how far into the frame from the sides for something like Outside, Left-Above
-local ICON_OUT_ROOT_BORDER = 2
+local INDICATOR_OUT_ROOT_BORDER = 2
 
--- how far in pixels that icons are vertically spaced away from the edge of the frame if set to Inside, something
-local ICON_IN_ROOT_VERTICAL_MARGIN = 5
+-- how far in pixels that indicators are vertically spaced away from the edge of the frame if set to Inside, something
+local INDICATOR_IN_ROOT_VERTICAL_MARGIN = 5
 
--- how far in pixels that icons are horizontally spaced away from the edge of the frame if set to Inside, something
-local ICON_IN_ROOT_HORIZONTAL_MARGIN = 2
+-- how far in pixels that indicators are horizontally spaced away from the edge of the frame if set to Inside, something
+local INDICATOR_IN_ROOT_HORIZONTAL_MARGIN = 2
 
--- how far in pixels that icons are horizontally placed inside bars if they are not set to Outside, Left or Right
-local ICON_BAR_INSIDE_HORIZONTAL_SPACING = 3
+-- how far in pixels that indicators are horizontally placed inside bars if they are not set to Outside, Left or Right
+local INDICATOR_BAR_INSIDE_HORIZONTAL_SPACING = 3
 
--- how far in pixels that icons are vertically placed inside bars if they are not set to Outside, Left or Right
-local ICON_BAR_INSIDE_VERTICAL_SPACING = 3
+-- how far in pixels that indicators are vertically placed inside bars if they are not set to Outside, Left or Right
+local INDICATOR_BAR_INSIDE_VERTICAL_SPACING = 3
 
--- how far in pixels that icons are placed outside bars if they are set to Outside, Left or Right
-local ICON_BAR_OUTSIDE_SPACING = 3
+-- how far in pixels that indicators are placed outside bars if they are set to Outside, Left or Right
+local INDICATOR_BAR_OUTSIDE_SPACING = 3
 
--- how many pixels between adjacent icons
-local ICON_SPACING_BETWEEN = 3
+-- how many pixels between adjacent indicators
+local INDICATOR_SPACING_BETWEEN = 3
 
 -- how many pixels wide to assume a text is
 local ASSUMED_TEXT_WIDTH = 40
 
 local MODULE_UPDATE_ORDER = {
-	"custom",
 	"status_bar",
 	"icon",
+	"custom_indicator",
 	"text_provider",
+	"custom",
 }
 
 -----------------------------------------------------------------------------
@@ -462,18 +463,18 @@ local function update_bar_layout(self)
 	right_bars = del(right_bars)
 end
 
-local function get_all_icons(frame)
-	local icons = new()
+local function get_all_indicators(frame)
+	local indicators = new()
 	
-	for id, module in PitBull4:IterateModulesOfType('icon') do
+	for id, module in PitBull4:IterateModulesOfType('icon', 'custom_indicator') do
 		if frame[id] then
-			icons[#icons+1] = id
+			indicators[#indicators+1] = id
 		end
 	end
 	
-	sort_positions(icons, frame)
+	sort_positions(indicators, frame)
 	
-	return icons
+	return indicators
 end
 
 function get_all_texts(frame)
@@ -490,218 +491,218 @@ function get_all_texts(frame)
 	return texts
 end
 
-local function get_half_width(frame, icons_and_texts)
+local function get_half_width(frame, indicators_and_texts)
 	local num = 0
 	
 	local layout = frame.layout
 	
-	for _, icon_or_text in ipairs(icons_and_texts) do
-		if icon_or_text.db then
+	for _, indicator_or_text in ipairs(indicators_and_texts) do
+		if indicator_or_text.db then
 			-- probably a text
-			num = ASSUMED_TEXT_WIDTH * icon_or_text.db.size
+			num = ASSUMED_TEXT_WIDTH * indicator_or_text.db.size
 		else
-			num = PitBull4.modules[icon.id]:GetLayoutDB(layout).size * ICON_SIZE
+			num = PitBull4.modules[indicator.id]:GetLayoutDB(layout).size * INDICATOR_SIZE * indicator_or_text:GetWidth() / indicator_or_text:GetHeight()
 		end
 	end
 	
-	num = num + (#icons_and_texts - 1) * ICON_SPACING_BETWEEN
+	num = num + (#indicators_and_texts - 1) * INDICATOR_SPACING_BETWEEN
 	
 	return num / 2
 end
 
-local position_icon_on_root = {}
-function position_icon_on_root:out_top_left(icon)
-	icon:SetPoint("BOTTOMLEFT", self, "TOPLEFT", ICON_OUT_ROOT_BORDER, ICON_OUT_ROOT_MARGIN)
+local position_indicator_on_root = {}
+function position_indicator_on_root:out_top_left(indicator)
+	indicator:SetPoint("BOTTOMLEFT", self, "TOPLEFT", INDICATOR_OUT_ROOT_BORDER, INDICATOR_OUT_ROOT_MARGIN)
 end
-function position_icon_on_root:out_top_right(icon)
-	icon:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -ICON_OUT_ROOT_BORDER, ICON_OUT_ROOT_MARGIN)
+function position_indicator_on_root:out_top_right(indicator)
+	indicator:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -INDICATOR_OUT_ROOT_BORDER, INDICATOR_OUT_ROOT_MARGIN)
 end
-function position_icon_on_root:out_top(icon, _, _, icons_and_texts)
-	icon:SetPoint("BOTTOMLEFT", self, "TOP", -get_half_width(self, icons_and_texts), ICON_OUT_ROOT_MARGIN)
+function position_indicator_on_root:out_top(indicator, _, _, indicators_and_texts)
+	indicator:SetPoint("BOTTOMLEFT", self, "TOP", -get_half_width(self, indicators_and_texts), INDICATOR_OUT_ROOT_MARGIN)
 end
-function position_icon_on_root:out_bottom_left(icon)
-	icon:SetPoint("TOPLEFT", self, "BOTTOMLEFT", ICON_OUT_ROOT_BORDER, -ICON_OUT_ROOT_MARGIN)
+function position_indicator_on_root:out_bottom_left(indicator)
+	indicator:SetPoint("TOPLEFT", self, "BOTTOMLEFT", INDICATOR_OUT_ROOT_BORDER, -INDICATOR_OUT_ROOT_MARGIN)
 end
-function position_icon_on_root:out_bottom_right(icon)
-	icon:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", -ICON_OUT_ROOT_BORDER, -ICON_OUT_ROOT_MARGIN)
+function position_indicator_on_root:out_bottom_right(indicator)
+	indicator:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", -INDICATOR_OUT_ROOT_BORDER, -INDICATOR_OUT_ROOT_MARGIN)
 end
-function position_icon_on_root:out_bottom(icon, _, _, icons_and_texts)
-	icon:SetPoint("TOPLEFT", self, "BOTTOM", -get_half_width(self, icons_and_texts), ICON_OUT_ROOT_MARGIN)
+function position_indicator_on_root:out_bottom(indicator, _, _, indicators_and_texts)
+	indicator:SetPoint("TOPLEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts), INDICATOR_OUT_ROOT_MARGIN)
 end
-function position_icon_on_root:out_left_top(icon)
-	icon:SetPoint("TOPRIGHT", self, "TOPLEFT", -ICON_OUT_ROOT_MARGIN, -ICON_OUT_ROOT_BORDER)
+function position_indicator_on_root:out_left_top(indicator)
+	indicator:SetPoint("TOPRIGHT", self, "TOPLEFT", -INDICATOR_OUT_ROOT_MARGIN, -INDICATOR_OUT_ROOT_BORDER)
 end
-function position_icon_on_root:out_left(icon)
-	icon:SetPoint("RIGHT", self, "LEFT", -ICON_OUT_ROOT_MARGIN, 0)
+function position_indicator_on_root:out_left(indicator)
+	indicator:SetPoint("RIGHT", self, "LEFT", -INDICATOR_OUT_ROOT_MARGIN, 0)
 end
-function position_icon_on_root:out_left_bottom(icon)
-	icon:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", -ICON_OUT_ROOT_MARGIN, ICON_OUT_ROOT_BORDER)
+function position_indicator_on_root:out_left_bottom(indicator)
+	indicator:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", -INDICATOR_OUT_ROOT_MARGIN, INDICATOR_OUT_ROOT_BORDER)
 end
-function position_icon_on_root:out_right_top(icon)
-	icon:SetPoint("TOPLEFT", self, "TOPRIGHT", ICON_OUT_ROOT_MARGIN, -ICON_OUT_ROOT_BORDER)
+function position_indicator_on_root:out_right_top(indicator)
+	indicator:SetPoint("TOPLEFT", self, "TOPRIGHT", INDICATOR_OUT_ROOT_MARGIN, -INDICATOR_OUT_ROOT_BORDER)
 end
-function position_icon_on_root:out_right(icon)
-	icon:SetPoint("LEFT", self, "RIGHT", ICON_OUT_ROOT_MARGIN, 0)
+function position_indicator_on_root:out_right(indicator)
+	indicator:SetPoint("LEFT", self, "RIGHT", INDICATOR_OUT_ROOT_MARGIN, 0)
 end
-function position_icon_on_root:out_right_bottom(icon)
-	icon:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", ICON_OUT_ROOT_MARGIN, ICON_OUT_ROOT_BORDER)
+function position_indicator_on_root:out_right_bottom(indicator)
+	indicator:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", INDICATOR_OUT_ROOT_MARGIN, INDICATOR_OUT_ROOT_BORDER)
 end
-function position_icon_on_root:in_center(icon, _, _, icons_and_texts)
-	icon:SetPoint("LEFT", self, "CENTER", -get_half_width(self, icons_and_texts), 0)
+function position_indicator_on_root:in_center(indicator, _, _, indicators_and_texts)
+	indicator:SetPoint("LEFT", self, "CENTER", -get_half_width(self, indicators_and_texts), 0)
 end
-function position_icon_on_root:in_top_left(icon)
-	icon:SetPoint("TOPLEFT", self, "TOPLEFT", ICON_IN_ROOT_HORIZONTAL_MARGIN, -ICON_IN_ROOT_VERTICAL_MARGIN)
+function position_indicator_on_root:in_top_left(indicator)
+	indicator:SetPoint("TOPLEFT", self, "TOPLEFT", INDICATOR_IN_ROOT_HORIZONTAL_MARGIN, -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
 end
-function position_icon_on_root:in_top(icon, _, _, icons_and_texts)
-	icon:SetPoint("TOPLEFT", self, "TOP", -get_half_width(self, icons_and_texts), -ICON_IN_ROOT_VERTICAL_MARGIN)
+function position_indicator_on_root:in_top(indicator, _, _, indicators_and_texts)
+	indicator:SetPoint("TOPLEFT", self, "TOP", -get_half_width(self, indicators_and_texts), -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
 end
-function position_icon_on_root:in_top_left(icon)
-	icon:SetPoint("TOPRIGHT", self, "TOPRIGHT", -ICON_IN_ROOT_HORIZONTAL_MARGIN, -ICON_IN_ROOT_VERTICAL_MARGIN)
+function position_indicator_on_root:in_top_left(indicator)
+	indicator:SetPoint("TOPRIGHT", self, "TOPRIGHT", -INDICATOR_IN_ROOT_HORIZONTAL_MARGIN, -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
 end
-function position_icon_on_root:in_bottom_left(icon)
-	icon:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", ICON_IN_ROOT_HORIZONTAL_MARGIN, -ICON_IN_ROOT_VERTICAL_MARGIN)
+function position_indicator_on_root:in_bottom_left(indicator)
+	indicator:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", INDICATOR_IN_ROOT_HORIZONTAL_MARGIN, -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
 end
-function position_icon_on_root:in_bottom(icon, _, _, icons_and_texts)
-	icon:SetPoint("BOTTOMLEFT", self, "BOTTOM", -get_half_width(self, icons_and_texts), -ICON_IN_ROOT_VERTICAL_MARGIN)
+function position_indicator_on_root:in_bottom(indicator, _, _, indicators_and_texts)
+	indicator:SetPoint("BOTTOMLEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts), -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
 end
-function position_icon_on_root:in_bottom_left(icon)
-	icon:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -ICON_IN_ROOT_HORIZONTAL_MARGIN, -ICON_IN_ROOT_VERTICAL_MARGIN)
+function position_indicator_on_root:in_bottom_left(indicator)
+	indicator:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -INDICATOR_IN_ROOT_HORIZONTAL_MARGIN, -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
 end
-function position_icon_on_root:in_left(icon)
-	icon:SetPoint("LEFT", self, "LEFT", ICON_IN_ROOT_HORIZONTAL_MARGIN, 0)
+function position_indicator_on_root:in_left(indicator)
+	indicator:SetPoint("LEFT", self, "LEFT", INDICATOR_IN_ROOT_HORIZONTAL_MARGIN, 0)
 end
-function position_icon_on_root:in_right(icon)
-	icon:SetPoint("RIGHT", self, "RIGHT", -ICON_IN_ROOT_HORIZONTAL_MARGIN, 0)
+function position_indicator_on_root:in_right(indicator)
+	indicator:SetPoint("RIGHT", self, "RIGHT", -INDICATOR_IN_ROOT_HORIZONTAL_MARGIN, 0)
 end
-function position_icon_on_root:edge_top_left(icon)
-	icon:SetPoint("CENTER", self, "TOPLEFT", 0, 0)
+function position_indicator_on_root:edge_top_left(indicator)
+	indicator:SetPoint("CENTER", self, "TOPLEFT", 0, 0)
 end
-function position_icon_on_root:edge_top(icon, _, _, icons_and_texts)
-	icon:SetPoint("LEFT", self, "TOP", -get_half_width(self, icons_and_texts), 0)
+function position_indicator_on_root:edge_top(indicator, _, _, indicators_and_texts)
+	indicator:SetPoint("LEFT", self, "TOP", -get_half_width(self, indicators_and_texts), 0)
 end
-function position_icon_on_root:edge_top_right(icon)
-	icon:SetPoint("CENTER", self, "TOPRIGHT", 0, 0)
+function position_indicator_on_root:edge_top_right(indicator)
+	indicator:SetPoint("CENTER", self, "TOPRIGHT", 0, 0)
 end
-function position_icon_on_root:edge_left(icon)
-	icon:SetPoint("CENTER", self, "LEFT", 0, 0)
+function position_indicator_on_root:edge_left(indicator)
+	indicator:SetPoint("CENTER", self, "LEFT", 0, 0)
 end
-function position_icon_on_root:edge_right(icon)
-	icon:SetPoint("CENTER", self, "RIGHT", 0, 0)
+function position_indicator_on_root:edge_right(indicator)
+	indicator:SetPoint("CENTER", self, "RIGHT", 0, 0)
 end
-function position_icon_on_root:edge_bottom_left(icon)
-	icon:SetPoint("CENTER", self, "BOTTOMLEFT", 0, 0)
+function position_indicator_on_root:edge_bottom_left(indicator)
+	indicator:SetPoint("CENTER", self, "BOTTOMLEFT", 0, 0)
 end
-function position_icon_on_root:edge_bottom(icon, _, _, icons_and_texts)
-	icon:SetPoint("LEFT", self, "BOTTOM", -get_half_width(self, icons_and_texts), 0)
+function position_indicator_on_root:edge_bottom(indicator, _, _, indicators_and_texts)
+	indicator:SetPoint("LEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts), 0)
 end
-function position_icon_on_root:edge_bottom_right(icon)
-	icon:SetPoint("CENTER", self, "BOTTOMRIGHT", 0, 0)
-end
-
-local position_icon_on_bar = {}
-function position_icon_on_bar:left(icon, bar)
-	icon:SetPoint("LEFT", bar, "LEFT", ICON_BAR_INSIDE_HORIZONTAL_SPACING, 0)
-end
-function position_icon_on_bar:center(icon, bar, _, icons_and_texts)
-	icon:SetPoint("LEFT", bar, "CENTER", -get_half_width(self, icons_and_texts), 0)
-end
-function position_icon_on_bar:right(icon, bar)
-	icon:SetPoint("RIGHT", bar, "RIGHT", -ICON_BAR_INSIDE_HORIZONTAL_SPACING, 0)
-end
-function position_icon_on_bar:top(icon, bar)
-	icon:SetPoint("TOPLEFT", bar, "TOP", -get_half_width(self, "top"), -ICON_BAR_INSIDE_VERTICAL_SPACING)
-end
-function position_icon_on_bar:bottom(icon, bar, _, icons_and_texts)
-	icon:SetPoint("BOTTOMLEFT", bar, "BOTTOM", -get_half_width(self, icons_and_texts), ICON_BAR_INSIDE_VERTICAL_SPACING)
-end
-function position_icon_on_bar:top_left(icon, bar)
-	icon:SetPoint("TOPLEFT", bar, "TOPLEFT", ICON_BAR_INSIDE_HORIZONTAL_SPACING, -ICON_BAR_INSIDE_VERTICAL_SPACING)
-end
-function position_icon_on_bar:top_right(icon, bar)
-	icon:SetPoint("TOPRIGHT", bar, "TOPRIGHT", -ICON_BAR_INSIDE_HORIZONTAL_SPACING, -ICON_BAR_INSIDE_VERTICAL_SPACING)
-end
-function position_icon_on_bar:bottom_left(icon, bar)
-	icon:SetPoint("BOTTOMLEFT", bar, "BOTTOMLEFT", ICON_BAR_INSIDE_HORIZONTAL_SPACING, ICON_BAR_INSIDE_VERTICAL_SPACING)
-end
-function position_icon_on_bar:bottom_right(icon, bar)
-	icon:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", -ICON_BAR_INSIDE_HORIZONTAL_SPACING, ICON_BAR_INSIDE_VERTICAL_SPACING)
-end
-function position_icon_on_bar:out_right(icon, bar)
-	icon:SetPoint("LEFT", bar, "RIGHT", ICON_BAR_OUTSIDE_SPACING, 0)
-end
-function position_icon_on_bar:out_left(icon, bar)
-	icon:SetPoint("RIGHT", bar, "LEFT", -ICON_BAR_OUTSIDE_SPACING, 0)
+function position_indicator_on_root:edge_bottom_right(indicator)
+	indicator:SetPoint("CENTER", self, "BOTTOMRIGHT", 0, 0)
 end
 
-local position_next_icon_on_root = {}
-function position_next_icon_on_root:out_top_left(icon, _, last_icon)
-	icon:SetPoint("LEFT", last_icon, "RIGHT", ICON_SPACING_BETWEEN, 0)
+local position_indicator_on_bar = {}
+function position_indicator_on_bar:left(indicator, bar)
+	indicator:SetPoint("LEFT", bar, "LEFT", INDICATOR_BAR_INSIDE_HORIZONTAL_SPACING, 0)
 end
-position_next_icon_on_root.out_top = position_next_icon_on_root.out_top_left
-position_next_icon_on_root.out_bottom_left = position_next_icon_on_root.out_top_left
-position_next_icon_on_root.out_bottom = position_next_icon_on_root.out_top_left
-position_next_icon_on_root.out_right_top = position_next_icon_on_root.out_top_left
-position_next_icon_on_root.out_right = position_next_icon_on_root.out_top_left
-position_next_icon_on_root.out_right_bottom = position_next_icon_on_root.out_top_left
-position_next_icon_on_root.in_center = position_next_icon_on_root.out_top_left
-position_next_icon_on_root.in_top_left = position_next_icon_on_root.out_top_left
-position_next_icon_on_root.in_top = position_next_icon_on_root.out_top_left
-position_next_icon_on_root.in_bottom_left = position_next_icon_on_root.out_top_left
-position_next_icon_on_root.in_bottom = position_next_icon_on_root.out_top_left
-position_next_icon_on_root.in_left = position_next_icon_on_root.out_top_left
-position_next_icon_on_root.edge_top_left = position_next_icon_on_root.out_top_left
-position_next_icon_on_root.edge_top = position_next_icon_on_root.out_top_left
-position_next_icon_on_root.edge_left = position_next_icon_on_root.out_top_left
-position_next_icon_on_root.edge_bottom_left = position_next_icon_on_root.out_top_left
-position_next_icon_on_root.edge_bottom = position_next_icon_on_root.out_top_left
-function position_next_icon_on_root:out_top_right(icon, _, last_icon)
-	icon:SetPoint("RIGHT", last_icon, "LEFT", -ICON_SPACING_BETWEEN, 0)
+function position_indicator_on_bar:center(indicator, bar, _, indicators_and_texts)
+	indicator:SetPoint("LEFT", bar, "CENTER", -get_half_width(self, indicators_and_texts), 0)
 end
-position_next_icon_on_root.out_bottom_right = position_next_icon_on_root.out_top_right
-position_next_icon_on_root.out_left_top = position_next_icon_on_root.out_top_right
-position_next_icon_on_root.out_left = position_next_icon_on_root.out_top_right
-position_next_icon_on_root.out_left_bottom = position_next_icon_on_root.out_top_right
-position_next_icon_on_root.in_top_right = position_next_icon_on_root.out_top_right
-position_next_icon_on_root.in_bottom_right = position_next_icon_on_root.out_top_right
-position_next_icon_on_root.in_right = position_next_icon_on_root.out_top_right
-position_next_icon_on_root.edge_top_right = position_next_icon_on_root.out_top_right
-position_next_icon_on_root.edge_right = position_next_icon_on_root.out_top_right
-position_next_icon_on_root.edge_bottom_right = position_next_icon_on_root.out_top_right
+function position_indicator_on_bar:right(indicator, bar)
+	indicator:SetPoint("RIGHT", bar, "RIGHT", -INDICATOR_BAR_INSIDE_HORIZONTAL_SPACING, 0)
+end
+function position_indicator_on_bar:top(indicator, bar)
+	indicator:SetPoint("TOPLEFT", bar, "TOP", -get_half_width(self, "top"), -INDICATOR_BAR_INSIDE_VERTICAL_SPACING)
+end
+function position_indicator_on_bar:bottom(indicator, bar, _, indicators_and_texts)
+	indicator:SetPoint("BOTTOMLEFT", bar, "BOTTOM", -get_half_width(self, indicators_and_texts), INDICATOR_BAR_INSIDE_VERTICAL_SPACING)
+end
+function position_indicator_on_bar:top_left(indicator, bar)
+	indicator:SetPoint("TOPLEFT", bar, "TOPLEFT", INDICATOR_BAR_INSIDE_HORIZONTAL_SPACING, -INDICATOR_BAR_INSIDE_VERTICAL_SPACING)
+end
+function position_indicator_on_bar:top_right(indicator, bar)
+	indicator:SetPoint("TOPRIGHT", bar, "TOPRIGHT", -INDICATOR_BAR_INSIDE_HORIZONTAL_SPACING, -INDICATOR_BAR_INSIDE_VERTICAL_SPACING)
+end
+function position_indicator_on_bar:bottom_left(indicator, bar)
+	indicator:SetPoint("BOTTOMLEFT", bar, "BOTTOMLEFT", INDICATOR_BAR_INSIDE_HORIZONTAL_SPACING, INDICATOR_BAR_INSIDE_VERTICAL_SPACING)
+end
+function position_indicator_on_bar:bottom_right(indicator, bar)
+	indicator:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", -INDICATOR_BAR_INSIDE_HORIZONTAL_SPACING, INDICATOR_BAR_INSIDE_VERTICAL_SPACING)
+end
+function position_indicator_on_bar:out_right(indicator, bar)
+	indicator:SetPoint("LEFT", bar, "RIGHT", INDICATOR_BAR_OUTSIDE_SPACING, 0)
+end
+function position_indicator_on_bar:out_left(indicator, bar)
+	indicator:SetPoint("RIGHT", bar, "LEFT", -INDICATOR_BAR_OUTSIDE_SPACING, 0)
+end
 
-local position_next_icon_on_bar = {}
-function position_next_icon_on_bar:left(icon, bar, last_icon)
-	icon:SetPoint("LEFT", last_icon, "RIGHT", ICON_SPACING_BETWEEN, 0)
+local position_next_indicator_on_root = {}
+function position_next_indicator_on_root:out_top_left(indicator, _, last_indicator)
+	indicator:SetPoint("LEFT", last_indicator, "RIGHT", INDICATOR_SPACING_BETWEEN, 0)
 end
-position_next_icon_on_bar.center = position_next_icon_on_bar.left
-position_next_icon_on_bar.out_right = position_next_icon_on_bar.left
-position_next_icon_on_bar.top_left = position_next_icon_on_bar.left
-position_next_icon_on_bar.top = position_next_icon_on_bar.left
-position_next_icon_on_bar.bottom_left = position_next_icon_on_bar.left
-position_next_icon_on_bar.bottom = position_next_icon_on_bar.left
-function position_next_icon_on_bar:right(icon, bar, last_icon)
-	icon:SetPoint("RIGHT", last_icon, "LEFT", -ICON_SPACING_BETWEEN, 0)
+position_next_indicator_on_root.out_top = position_next_indicator_on_root.out_top_left
+position_next_indicator_on_root.out_bottom_left = position_next_indicator_on_root.out_top_left
+position_next_indicator_on_root.out_bottom = position_next_indicator_on_root.out_top_left
+position_next_indicator_on_root.out_right_top = position_next_indicator_on_root.out_top_left
+position_next_indicator_on_root.out_right = position_next_indicator_on_root.out_top_left
+position_next_indicator_on_root.out_right_bottom = position_next_indicator_on_root.out_top_left
+position_next_indicator_on_root.in_center = position_next_indicator_on_root.out_top_left
+position_next_indicator_on_root.in_top_left = position_next_indicator_on_root.out_top_left
+position_next_indicator_on_root.in_top = position_next_indicator_on_root.out_top_left
+position_next_indicator_on_root.in_bottom_left = position_next_indicator_on_root.out_top_left
+position_next_indicator_on_root.in_bottom = position_next_indicator_on_root.out_top_left
+position_next_indicator_on_root.in_left = position_next_indicator_on_root.out_top_left
+position_next_indicator_on_root.edge_top_left = position_next_indicator_on_root.out_top_left
+position_next_indicator_on_root.edge_top = position_next_indicator_on_root.out_top_left
+position_next_indicator_on_root.edge_left = position_next_indicator_on_root.out_top_left
+position_next_indicator_on_root.edge_bottom_left = position_next_indicator_on_root.out_top_left
+position_next_indicator_on_root.edge_bottom = position_next_indicator_on_root.out_top_left
+function position_next_indicator_on_root:out_top_right(indicator, _, last_indicator)
+	indicator:SetPoint("RIGHT", last_indicator, "LEFT", -INDICATOR_SPACING_BETWEEN, 0)
 end
-position_next_icon_on_bar.out_left = position_next_icon_on_bar.right
-position_next_icon_on_bar.top_right = position_next_icon_on_bar.right
-position_next_icon_on_bar.bottom_right = position_next_icon_on_bar.right
+position_next_indicator_on_root.out_bottom_right = position_next_indicator_on_root.out_top_right
+position_next_indicator_on_root.out_left_top = position_next_indicator_on_root.out_top_right
+position_next_indicator_on_root.out_left = position_next_indicator_on_root.out_top_right
+position_next_indicator_on_root.out_left_bottom = position_next_indicator_on_root.out_top_right
+position_next_indicator_on_root.in_top_right = position_next_indicator_on_root.out_top_right
+position_next_indicator_on_root.in_bottom_right = position_next_indicator_on_root.out_top_right
+position_next_indicator_on_root.in_right = position_next_indicator_on_root.out_top_right
+position_next_indicator_on_root.edge_top_right = position_next_indicator_on_root.out_top_right
+position_next_indicator_on_root.edge_right = position_next_indicator_on_root.out_top_right
+position_next_indicator_on_root.edge_bottom_right = position_next_indicator_on_root.out_top_right
 
-local function position_icon_or_text(root, icon, attach_frame, last_icon, location, location_icons_and_texts)
+local position_next_indicator_on_bar = {}
+function position_next_indicator_on_bar:left(indicator, bar, last_indicator)
+	indicator:SetPoint("LEFT", last_indicator, "RIGHT", INDICATOR_SPACING_BETWEEN, 0)
+end
+position_next_indicator_on_bar.center = position_next_indicator_on_bar.left
+position_next_indicator_on_bar.out_right = position_next_indicator_on_bar.left
+position_next_indicator_on_bar.top_left = position_next_indicator_on_bar.left
+position_next_indicator_on_bar.top = position_next_indicator_on_bar.left
+position_next_indicator_on_bar.bottom_left = position_next_indicator_on_bar.left
+position_next_indicator_on_bar.bottom = position_next_indicator_on_bar.left
+function position_next_indicator_on_bar:right(indicator, bar, last_indicator)
+	indicator:SetPoint("RIGHT", last_indicator, "LEFT", -INDICATOR_SPACING_BETWEEN, 0)
+end
+position_next_indicator_on_bar.out_left = position_next_indicator_on_bar.right
+position_next_indicator_on_bar.top_right = position_next_indicator_on_bar.right
+position_next_indicator_on_bar.bottom_right = position_next_indicator_on_bar.right
+
+local function position_indicator_or_text(root, indicator, attach_frame, last_indicator, location, location_indicators_and_texts)
 	local func
-	if root == last_icon then
+	if root == last_indicator then
 		if root == attach_frame then
-			func = position_icon_on_root[location]
+			func = position_indicator_on_root[location]
 		else
-			func = position_icon_on_bar[location]
+			func = position_indicator_on_bar[location]
 		end
 	else
 		if root == attach_frame then
-			func = position_next_icon_on_root[location]
+			func = position_next_indicator_on_root[location]
 		else
-			func = position_next_icon_on_bar[location]
+			func = position_next_indicator_on_bar[location]
 		end
 	end
 	if func then
-		func(root, icon, attach_frame, last_icon, location_icons_and_texts)
+		func(root, indicator, attach_frame, last_indicator, location_indicators_and_texts)
 	end
 end
 
@@ -717,7 +718,7 @@ local vertical_mirrored_location = setmetatable({}, {__index = function(self, ke
 	return value
 end})
 
-local function update_icon_and_text_layout(self)
+local function update_indicator_and_text_layout(self)
 	local attachments = new()
 	
 	local layout = self.layout
@@ -725,11 +726,11 @@ local function update_icon_and_text_layout(self)
 	local horizontal_mirror = self.classification_db.horizontal_mirror
 	local vertical_mirror = self.classification_db.vertical_mirror
 	
-	for _, id in ipairs_with_del(get_all_icons(self)) do
-		local icon = self[id]
-		local icon_layout_db = PitBull4.modules[id]:GetLayoutDB(layout)
+	for _, id in ipairs_with_del(get_all_indicators(self)) do
+		local indicator = self[id]
+		local indicator_layout_db = PitBull4.modules[id]:GetLayoutDB(layout)
 	
-		local attach_to = icon_layout_db.attach_to
+		local attach_to = indicator_layout_db.attach_to
 		local attach_frame
 		if attach_to == "root" then
 			attach_frame = self
@@ -738,7 +739,7 @@ local function update_icon_and_text_layout(self)
 		end
 		
 		if attach_frame then
-			local location = icon_layout_db.location
+			local location = indicator_layout_db.location
 		
 			local flip_positions = false
 			if horizontal_mirror then
@@ -753,10 +754,10 @@ local function update_icon_and_text_layout(self)
 				location = vertical_mirrored_location[location]
 			end
 			
-			local size = ICON_SIZE * icon_layout_db.size
-			icon:SetWidth(size)
-			icon:SetHeight(size)
-			icon:ClearAllPoints()
+			local size = INDICATOR_SIZE * indicator_layout_db.size
+			local unscaled_height = indicator:GetHeight()
+			indicator:SetScale(INDICATOR_SIZE / unscaled_height * indicator_layout_db.size)
+			indicator:ClearAllPoints()
 			
 			local attachments_attach_frame = attachments[attach_frame]
 			if not attachments_attach_frame then
@@ -771,9 +772,9 @@ local function update_icon_and_text_layout(self)
 			end
 			
 			if flip_positions then
-				table.insert(attachments_attach_frame_location, 1, icon)
+				table.insert(attachments_attach_frame_location, 1, indicator)
 			else
-				attachments_attach_frame_location[#attachments_attach_frame_location+1] = icon
+				attachments_attach_frame_location[#attachments_attach_frame_location+1] = indicator
 			end
 		end
 	end
@@ -827,13 +828,13 @@ local function update_icon_and_text_layout(self)
 	end
 	
 	for attach_frame, attachments_attach_frame in pairs(attachments) do
-		for location, loc_icons_and_texts in pairs(attachments_attach_frame) do
+		for location, loc_indicators_and_texts in pairs(attachments_attach_frame) do
 			local last = self
-			for _, icon_or_text in ipairs(loc_icons_and_texts) do
-				position_icon_or_text(self, icon_or_text, attach_frame, last, location, loc_icons_and_texts)
-				last = icon_or_text
+			for _, indicator_or_text in ipairs(loc_indicators_and_texts) do
+				position_indicator_or_text(self, indicator_or_text, attach_frame, last, location, loc_indicators_and_texts)
+				last = indicator_or_text
 			end
-			attachments_attach_frame[location] = del(loc_icons_and_texts)
+			attachments_attach_frame[location] = del(loc_indicators_and_texts)
 		end
 		attachments[attach_frame] = del(attachments_attach_frame)
 	end
@@ -844,7 +845,7 @@ end
 -- @usage frame:UpdateLayout()
 function UnitFrame:UpdateLayout()
 	update_bar_layout(self)
-	update_icon_and_text_layout(self)
+	update_indicator_and_text_layout(self)
 end
 
 local function iter(frame, id)
@@ -885,7 +886,7 @@ local iters = setmetatable({}, {__index=function(iters, module_type)
 end})
 
 --- Iterate over all controls on this frame of the given type
--- @param module_type one of "status_bar", "icon", "custom"
+-- @param module_type one of "status_bar", "icon", "custom_indicator", "custom"
 -- @usage for id, control, module in PitBull4.IterateControlsOfType("status_bar") do
 --     doSomethingWith(control)
 -- end

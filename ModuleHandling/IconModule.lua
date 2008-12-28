@@ -1,3 +1,5 @@
+local ICON_SIZE = 15
+
 local _G = _G
 local PitBull4 = _G.PitBull4
 
@@ -54,6 +56,8 @@ function IconModule:UpdateFrame(frame)
 		control = PitBull4.Controls.MakeIcon(frame)
 		frame[id] = control
 		control.id = id
+		control:SetWidth(ICON_SIZE)
+		control:SetHeight(ICON_SIZE)
 	end
 	
 	control:SetTexture(tex)

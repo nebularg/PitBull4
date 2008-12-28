@@ -140,8 +140,8 @@ function PitBull4.Options.get_layout_options()
 		args = {}
 	}
 
-	layout_options.args.icons = {
-		name = "Icons",
+	layout_options.args.indicators = {
+		name = "Indicators",
 		type = 'group',
 		childGroups = "tab",
 		order = 2,
@@ -464,7 +464,7 @@ function PitBull4.Options.get_layout_options()
 		out_right = "Outside, right",
 	}
 	
-	local icon_args = {
+	local indicator_args = {
 		enable = {
 			type = 'toggle',
 			name = "Enable",
@@ -532,7 +532,7 @@ function PitBull4.Options.get_layout_options()
 				local attach_to = db.attach_to
 				local location = db.location
 				local t = {}
-				for other_id, other_module in PitBull4:IterateModulesOfType("icon") do
+				for other_id, other_module in PitBull4:IterateModulesOfType("icon", "custom_indicator") do
 					local other_db = GetLayoutDB(other_id)
 					if attach_to == other_db.attach_to and location == other_db.location then
 						local position = other_db.position
@@ -553,11 +553,11 @@ function PitBull4.Options.get_layout_options()
 				local db = GetLayoutDB(id)
 				
 				local id_to_position = {}
-				local icons = {}
+				local indicators = {}
 				
 				local old_position = db.position
 				
-				for other_id, other_module in PitBull4:IterateModulesOfType("icon", true) do
+				for other_id, other_module in PitBull4:IterateModulesOfType("icon", "custom_indicator", true) do
 					local other_db = GetLayoutDB(other_id)
 					local other_position = other_db.position
 					if other_id == id then
@@ -569,15 +569,15 @@ function PitBull4.Options.get_layout_options()
 					end
 					
 					id_to_position[other_id] = other_position
-					icons[#icons+1] = other_id
+					indicators[#indicators+1] = other_id
 				end
 				
-				table.sort(icons, function(alpha, bravo)
+				table.sort(indicators, function(alpha, bravo)
 					return id_to_position[alpha] < id_to_position[bravo]
 				end)
 				
-				for position, icon_id in ipairs(icons) do
-					GetLayoutDB(icon_id).position = position
+				for position, indicator_id in ipairs(indicators) do
+					GetLayoutDB(indicator_id).position = position
 				end
 				
 				UpdateFrames()
@@ -603,9 +603,9 @@ function PitBull4.Options.get_layout_options()
 		}
 	}
 	
-	for id, module in PitBull4:IterateModulesOfType("icon", true) do
+	for id, module in PitBull4:IterateModulesOfType("icon", "custom_indicator", true) do
 		local args = {}
-		for k, v in pairs(icon_args) do
+		for k, v in pairs(indicator_args) do
 			args[k] = v
 		end
 		if layout_functions[module] then
@@ -613,7 +613,7 @@ function PitBull4.Options.get_layout_options()
 			layout_functions[module] = false
 		end
 		
-		layout_options.args.icons.args[id] = {
+		layout_options.args.indicators.args[id] = {
 			name = module.name,
 			desc = module.description,
 			type = 'group',

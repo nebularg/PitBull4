@@ -301,55 +301,60 @@ function PitBull4:IterateEnabledModules()
 	return enabled_iter, self.modules, nil
 end
 
-local function module_type_iter(module_type, id)
-	local id, module = next(PitBull4.modules, id)
-	if not id then
-		-- we're out of modules
-		return nil
-	end
-	if module.module_type ~= module_type then
-		-- wrong type, try again
-		return module_type_iter(module_type, id)
-	end
-	return id, module
-end
+local new, del = PitBull4.new, PitBull4.del
 
-local function module_type_enabled_iter(module_type, id)
+local function iter(types, id)
 	local id, module = next(PitBull4.modules, id)
 	if not id then
 		-- we're out of modules
+		del(types)
 		return nil
 	end
-	if module.module_type ~= module_type then
+	
+	if not types[module.module_type] then
 		-- wrong type, try again
-		return module_type_enabled_iter(module_type, id)
+		return iter(types, id)
 	end
-	if not module:IsEnabled() then
+	
+	if not types.also_disabled and not module:IsEnabled() then
 		-- skip disabled modules
-		return module_type_enabled_iter(module_type, id)
+		return iter(types, id)
 	end
+	
 	return id, module
 end
 
 --- Iterate over all modules of a given type.
--- Only enabled modules will be returned unless also_disabled is provided.
--- @param module_type one of "status_bar", "icon", "custom"
--- @param also_disabled whether to iterate over disabled modules also
+-- Only enabled modules will be returned unless true is provided as the last argument
+-- @param ... a tuple of module types, e.g. "status_bar", "icon". If the last argument is true, then iterate over disabled modules also
 -- @usage for id, module in PitBull4:IterateModulesOfType("status_bar") do
 --     doSomethingWith(module)
 -- end
--- @usage for id, module in PitBull4:IterateModulesOfType("status_bar", true) do
+-- @usage for id, module in PitBull4:IterateModulesOfType("status_bar", "icon", true) do
 --     doSomethingWith(module)
 -- end
 -- @return iterator which returns the id and module
-function PitBull4:IterateModulesOfType(module_type, also_disabled)
-	--@alpha@
-	expect(module_type, 'typeof', 'string')
-	expect(module_type, 'inset', module_types)
-	expect(also_disabled, 'typeof', 'boolean;nil')
-	--@end-alpha@
+function PitBull4:IterateModulesOfType(...)
+	local types = new()
+	local n = select('#', ...)
+	local also_disabled = false
+	if select(n, ...) == true then
+		also_disabled = true
+		n = n - 1
+	end
 	
-	return not also_disabled and module_type_enabled_iter or module_type_iter, module_type, nil
+	for i = 1, n do
+		--@alpha@
+		expect((select(i, ...)), 'typeof', 'string')
+		expect((select(i, ...)), 'inset', module_types)
+		--@end-alpha@
+		
+		types[(select(i, ...))] = true
+	end
+	
+	types.also_disabled = also_disabled
+	
+	return iter, types, nil
 end
 
 do
