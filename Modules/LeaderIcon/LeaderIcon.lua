@@ -5,7 +5,7 @@ if not PitBull4 then
 	error("PitBull4_LeaderIcon requires PitBull4")
 end
 
-local PitBull4_LeaderIcon = PitBull4:NewModule("LeaderIcon", "AceTimer-3.0")
+local PitBull4_LeaderIcon = PitBull4:NewModule("LeaderIcon", "AceEvent-3.0", "AceTimer-3.0")
 
 PitBull4_LeaderIcon:SetModuleType("icon")
 PitBull4_LeaderIcon:SetName("Leader Icon")

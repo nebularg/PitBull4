@@ -10,6 +10,7 @@
 <Include file="Modules\HideBlizzard\load.xml"/>
 <Include file="Modules\Highlight\load.xml"/>
 <Include file="Modules\LeaderIcon\load.xml"/>
+<Include file="Modules\MasterLooterIcon\load.xml"/>
 <Include file="Modules\PowerBar\load.xml"/>
 <Include file="Modules\ReputationBar\load.xml"/>
 

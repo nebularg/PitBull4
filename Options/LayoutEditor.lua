@@ -539,7 +539,7 @@ function PitBull4.Options.get_layout_options()
 						local position = other_db.position
 						while t[position] do
 							position = position + 1e-5
-							db[other_id].position = position
+							other_db.position = position
 						end
 						t[position] = other_module.name
 					end
