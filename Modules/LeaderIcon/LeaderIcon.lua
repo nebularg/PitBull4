@@ -21,12 +21,6 @@ function PitBull4_LeaderIcon:OnEnable()
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED")
 end
 
-local ACCEPTABLE_CLASSIFICATIONS = {
-	player = true,
-	party = true,
-	raid = true,
-}
-
 function PitBull4_LeaderIcon:GetTexture(frame)
 	local unit = frame.unit
 	
