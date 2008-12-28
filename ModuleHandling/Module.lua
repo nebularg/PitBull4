@@ -148,6 +148,12 @@ end
 
 -- set the db instance on the module with defaults handled
 local function fix_db_for_module(module, layout_defaults, global_defaults)
+	if not global_defaults then
+		global_defaults = {}
+	end
+	if global_defaults.enabled == nil then
+		global_defaults.enabled = true
+	end
 	module.db = PitBull4.db:RegisterNamespace(module.id, {
 		profile = {
 			layouts = {
@@ -156,6 +162,10 @@ local function fix_db_for_module(module, layout_defaults, global_defaults)
 			global = global_defaults
 		}
 	})
+	
+	if not module.db.profile.global.enabled then
+		module:Disable()
+	end
 end
 
 -- return the union of two dictionaries
@@ -370,5 +380,43 @@ do
 		-- no longer need these
 		module_to_layout_defaults = nil
 		module_to_global_defaults = nil
+	end
+end
+
+--- Enable a module properly.
+-- Unlike module:Enable(), this tracks it in the DB as well as updates any frames.
+-- @param module the module to enable
+-- @usage PitBull4:EnableModule(MyModule)
+function PitBull4:EnableModule(module)
+	if module:IsEnabled() then
+		return
+	end
+	
+	module.db.profile.global.enabled = true
+	module:Enable()
+	
+	for frame in self:IterateFrames() do
+		frame:Update(true, true)
+	end
+end
+
+--- Disable a module properly.
+-- Unlike module:Disable(), this tracks it in the DB as well as cleans up any frames.
+-- @param module the module to disable
+-- @usage PitBull4:DisableModule(MyModule)
+function PitBull4:DisableModule(module)
+	if not module:IsEnabled() then
+		return
+	end
+	
+	for frame in self:IterateFrames() do
+		module:Clear(frame)
+	end
+	
+	module.db.profile.global.enabled = false
+	module:Disable()
+	
+	for frame in self:IterateFrames() do
+		frame:Update(true, true)
 	end
 end

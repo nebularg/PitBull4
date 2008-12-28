@@ -4,5 +4,6 @@
 <Script file="Options.lua"/>
 <Script file="LayoutEditor.lua"/>
 <Script file="Units.lua"/>
+<Script file="Modules.lua"/>
 
 </Ui>
