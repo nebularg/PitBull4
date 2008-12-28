@@ -225,7 +225,7 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		get = get,
 		set = set,
 	}, 'party', {
-			type = 'toggle',
+		type = 'toggle',
 		name = "Party",
 		desc = "Hide the standard party frames.",
 		get = get,
