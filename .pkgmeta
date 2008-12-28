@@ -16,11 +16,26 @@ externals:
     libs/AceDB-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDB-3.0
         tag: latest
+    libs/AceEvent-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceEvent-3.0
+        tag: latest
+    libs/AceGUI-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
+        tag: latest
+    libs/AceTimer-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceTimer-3.0
+        tag: latest
     libs/LibDogTag-3.0:
         url: svn://svn.wowace.com/wow/libdogtag-3-0/mainline/trunk
         tag: latest
     libs/LibDogTag-Unit-3.0:
         url: svn://svn.wowace.com/wow/libdogtag-unit-3-0/mainline/trunk
+        tag: latest
+    libs/LibSharedMedia-3.0:
+        url: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/trunk
+        tag: latest
+    libs/AceGUI-3.0-SharedMediaWidgets:
+        url: svn://svn.wowace.com/wow/ace-gui-3-0-shared-media-widgets/mainline/trunk/AceGUI-3.0-SharedMediaWidgets
         tag: latest
 
 ignore:
