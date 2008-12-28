@@ -12,7 +12,7 @@ PitBull4_LeaderIcon:SetName("Leader Icon")
 PitBull4_LeaderIcon:SetDescription("Show an icon on the unit frame when the unit is the group leader.")
 PitBull4_LeaderIcon:SetDefaults({
 	attach_to = "root",
-	location = "edge_bottom_left",
+	location = "edge_top_left",
 	position = 1,
 })
 

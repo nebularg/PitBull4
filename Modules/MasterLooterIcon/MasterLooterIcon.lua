@@ -12,8 +12,8 @@ PitBull4_MasterLooterIcon:SetName("Master Looter Icon")
 PitBull4_MasterLooterIcon:SetDescription("Show an icon on the unit frame when the unit is the Master Looter.")
 PitBull4_MasterLooterIcon:SetDefaults({
 	attach_to = "root",
-	location = "edge_bottom_left",
-	position = 1,
+	location = "edge_top_left",
+	position = 2,
 })
 
 function PitBull4_MasterLooterIcon:OnEnable()
