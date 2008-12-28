@@ -62,8 +62,10 @@ function PitBull4_CombatText:UpdateFrame(frame)
 	if self:GetLayoutDB(frame).hidden then
 		return false
 	end
+
 	local font_string = frame.CombatText
-	if not frame.CombatText then
+	local created = not font_string
+	if created then
 		font_string = PitBull4.Controls.MakeFontString(frame.overlay, "OVERLAY")
 		frame.CombatText = font_string
 		font_string.id = "CombatText"
@@ -75,7 +77,7 @@ function PitBull4_CombatText:UpdateFrame(frame)
 	local font, size = self:GetFont(frame)
 	font_string:SetFont(font, size * font_string.size_modifier, "OUTLINE")
 	
-	return true
+	return created
 end
 
 local frame_to_time = {}
