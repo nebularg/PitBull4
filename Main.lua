@@ -413,6 +413,8 @@ function PitBull4:MakeSingletonFrame(unit)
 		
 		frame:SetAttribute("unit", unit)
 		
+		frame:SetClampedToScreen(true)
+		
 		self:ConvertIntoUnitFrame(frame)
 	end
 	
