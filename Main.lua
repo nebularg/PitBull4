@@ -249,20 +249,31 @@ function PitBull4:IterateFramesForUnitID(unit, also_hidden)
 	return not also_hidden and iterate_shown_frames or half_next, unit_id_to_frames[id]
 end
 
---- Iterate over all shown frames with the given UnitIDs
+--- Iterate over all shown frames with the given UnitIDs.
+-- To iterate over hidden frames as well, pass in true as the last argument.
 -- @param ... a tuple of UnitIDs.
 -- @usage for frame in PitBull4:IterateFramesForUnitIDs("player", "target", "pet") do
+--     somethingAwesome(frame)
+-- end
+-- @usage for frame in PitBull4:IterateFramesForUnitIDs("player", "target", "pet", true) do
 --     somethingAwesome(frame)
 -- end
 -- @return iterator which returns frames
 function PitBull4:IterateFramesForUnitIDs(...)
 	local t = new()
-	for i = 1, select('#', ...) do
+	local n = select('#', ...)
+	
+	local also_hidden = ((select(n, ...)) == true)
+	if also_hidden then
+		n = n - 1
+	end
+	
+	for i = 1, n do
 		local unit = (select(i, ...))
 		local frames = unit_id_to_frames[unit]
 		
 		for frame in pairs(frames) do
-			if frame:IsShown() then
+			if also_hidden or frame:IsShown() then
 				t[frame] = true
 			end
 		end

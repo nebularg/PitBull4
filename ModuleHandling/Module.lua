@@ -337,9 +337,8 @@ end
 function PitBull4:IterateModulesOfType(...)
 	local types = new()
 	local n = select('#', ...)
-	local also_disabled = false
-	if select(n, ...) == true then
-		also_disabled = true
+	local also_disabled = ((select(n, ...)) == true)
+	if also_disabled then
 		n = n - 1
 	end
 	
