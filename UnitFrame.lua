@@ -506,13 +506,14 @@ local function get_half_width(frame, indicators_and_texts)
 	for _, indicator_or_text in ipairs(indicators_and_texts) do
 		if indicator_or_text.db then
 			-- probably a text
-			num = ASSUMED_TEXT_WIDTH * indicator_or_text.db.size
+			num = num + ASSUMED_TEXT_WIDTH * indicator_or_text.db.size
 		else
 			local module = PitBull4.modules[indicator_or_text.id]
 			if module.module_type == "custom_text" then
-				num = ASSUMED_TEXT_WIDTH * module:GetLayoutDB(layout).size
+				num = num + ASSUMED_TEXT_WIDTH * module:GetLayoutDB(layout).size
 			else
-				num = module:GetLayoutDB(layout).size * INDICATOR_SIZE * indicator_or_text:GetWidth() / indicator_or_text:GetHeight()
+				local height_multiplier = indicator_or_text.height or 1
+				num = num + module:GetLayoutDB(layout).size * INDICATOR_SIZE * indicator_or_text:GetWidth() / indicator_or_text:GetHeight() * height_multiplier
 			end
 		end
 	end
@@ -808,7 +809,8 @@ local function update_indicator_and_text_layout(self)
 			
 			local size = INDICATOR_SIZE * indicator_layout_db.size
 			local unscaled_height = indicator:GetHeight()
-			indicator:SetScale(INDICATOR_SIZE / unscaled_height * indicator_layout_db.size)
+			local height_multiplier = indicator.height or 1
+			indicator:SetScale(INDICATOR_SIZE / unscaled_height * indicator_layout_db.size * height_multiplier)
 			indicator:ClearAllPoints()
 			
 			local attachments_attach_frame = attachments[attach_frame]

@@ -11,6 +11,7 @@ local CustomIndicatorModule = PitBull4:NewModuleType("custom_indicator", {
 
 --- Does nothing. This should be implemented by the module.
 -- When implementing, this should return whether :UpdateLayout(frame) should be called.
+-- If you want an indicator that would be a different height than what other indicators, you can specify .height on the frame you create, which will act as a multiplier.
 -- @param frame the Unit Frame to update
 -- @usage local update_layout = MyModule:UpdateFrame(frame)
 -- @return false

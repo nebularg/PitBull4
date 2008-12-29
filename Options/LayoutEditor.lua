@@ -610,7 +610,7 @@ function PitBull4.Options.get_layout_options()
 			args[k] = v
 		end
 		if layout_functions[module] then
-			merge_onto(args, layout_functions[module]())
+			merge_onto(args, layout_functions[module](module))
 			layout_functions[module] = false
 		end
 		
