@@ -40,16 +40,16 @@ function PitBull4_VoiceIcon:OnDisable()
 	timerFrame:Hide()
 end
 
-local unit_ids_to_update = {}
+local guids_to_update = {}
 timerFrame:SetScript("OnUpdate", function(self)
-	for unit in pairs(unit_ids_to_update) do
-		unit_ids_to_update[unit] = nil
-		PitBull4_VoiceIcon:UpdateForUnitID(unit)
+	for guid in pairs(guids_to_update) do
+		guids_to_update[guid] = nil
+		PitBull4_VoiceIcon:UpdateForGUID(guid)
 	end
 end)
 
 function PitBull4_VoiceIcon:VOICE_START(event, unit)
-	unit_ids_to_update[unit] = true
+	guids_to_update[UnitGUID(unit)] = true
 end
 
 PitBull4_VoiceIcon.VOICE_STOP = PitBull4_VoiceIcon.VOICE_START

@@ -274,8 +274,24 @@ function Module:UpdateForUnitID(unit)
 	expect(unit, 'typeof', 'string')
 	--@end-alpha@
 	
-	local id = self.id
 	for frame in PitBull4:IterateFramesForUnitID(unit) do
+		self:Update(frame)
+	end
+end
+
+--- Run :Update(frame) on all shown frames with the given GUID.
+-- @param guid the GUID in question to update
+-- @usage MyModule:UpdateForGUID(UnitGUID("player"))
+function Module:UpdateForGUID(guid)
+	--@alpha@
+	expect(guid, 'typeof', 'string;nil')
+	--@end-alpha@
+	
+	if not guid then
+		return
+	end
+	
+	for frame in PitBull4:IterateFramesForGUID(guid) do
 		self:Update(frame)
 	end
 end
@@ -283,7 +299,6 @@ end
 --- Run :Update(frame) on all shown frames.
 -- @usage MyModule:UpdateAll()
 function Module:UpdateAll()
-	local id = self.id
 	for frame in PitBull4:IterateFrames() do
 		self:Update(frame)
 	end
