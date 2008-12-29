@@ -64,6 +64,12 @@ PitBull4_DogTagTexts:SetDefaults({
 			attach_to = "CastBar",
 			location = "right",
 		},
+		{
+			name = "Experience",
+			code = "[FractionalXP] [PercentXP:Percent:Paren] [Concatenate('R: ', PercentRestXP:Hide(0):Percent)]",
+			attach_to = "ExperienceBar",
+			location = "center",
+		},
 	},
 })
 
