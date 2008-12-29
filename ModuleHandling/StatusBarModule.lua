@@ -53,7 +53,7 @@ function StatusBarModule:UpdateFrame(frame)
 		return self:ClearFrame(frame)
 	end
 	
-	local value = self:CallValueFunction(frame)
+	local value, extra = self:CallValueFunction(frame)
 	if not value then
 		return self:ClearFrame(frame)
 	end
@@ -72,50 +72,91 @@ function StatusBarModule:UpdateFrame(frame)
 	control:SetTexture(texture or [[Interface\TargetingFrame\UI-StatusBar]])
 	
 	control:SetValue(value)
-	local r, g, b, a = self:CallColorFunction(frame, value)
+	local r, g, b, a = self:CallColorFunction(frame, value, extra or 0)
 	control:SetColor(r, g, b)
 	control:SetAlpha(a)
+
+	if extra then
+		control:SetExtraValue(extra)
+		
+		local r, g, b, a = self:CallExtraColorFunction(frame, value, extra)
+		control:SetExtraColor(r, g, b)
+		control:SetExtraAlpha(a)
+	else
+		control:SetExtraValue(0)
+	end
 	
 	return made_control
 end
 
 --- Call the :GetValue function on the status bar module regarding the given frame.
 -- @param frame the frame to get the value of
--- @usage local value = MyModule:CallValueFunction(someFrame)
--- @return a number within [0, 1]
+-- @usage local value, extra = MyModule:CallValueFunction(someFrame)
+-- @return nil or a number within [0, 1]
+-- @return nil or a number within (0, 1 - value]
 function StatusBarModule:CallValueFunction(frame)
 	if not self.GetValue then
-		return nil
+		return nil, nil
 	end
-	local value = self:GetValue(frame)
+	local value, extra = self:GetValue(frame)
 	if not value then
-		return nil
+		return nil, nil
 	end
 	if value < 0 or value ~= value then -- NaN
-		return 0
+		value = 0
+	elseif value > 1 then
+		value = 1
 	end
-	if value > 1 then
-		return 1
+	if not extra or extra <= 0 or extra ~= extra then -- NaN
+		return value, nil
 	end
-	return value
+	
+	local max = 1 - value
+	if extra > max then
+		extra = max
+	end
+	
+	return value, extra
 end
 
 --- Call the :GetColor function on the status bar module regarding the given frame.
 --- Call the color function which the current status bar module has registered regarding the given frame.
 -- @param frame the frame to get the color of
 -- @param value the value as returned by :CallValueFunction
+-- @param extra the extra value as returned by :CallValueFunction
 -- @usage local r, g, b, a = MyModule:CallColorFunction(someFrame)
 -- @return red value within [0, 1]
 -- @return green value within [0, 1]
 -- @return blue value within [0, 1]
 -- @return alpha value within [0, 1]
-function StatusBarModule:CallColorFunction(frame, value)
+function StatusBarModule:CallColorFunction(frame, value, extra)
 	if not self.GetColor then
-		return 0.7, 0.7, 0.7
+		return 0.7, 0.7, 0.7, 1
 	end
-	local r, g, b, a = self:GetColor(frame, value)
+	local r, g, b, a = self:GetColor(frame, value, extra)
 	if not r or not g or not b then
 		return 0.7, 0.7, 0.7, a or 1
 	end
 	return r, g, b, a or 1
+end
+
+--- Call the :GetExtraColor function on the status bar module regarding the given frame.
+--- Call the color function which the current status bar module has registered regarding the given frame.
+-- @param frame the frame to get the color of
+-- @param value the value as returned by :CallValueFunction
+-- @param extra the extra value as returned by :CallValueFunction
+-- @usage local r, g, b, a = MyModule:CallColorFunction(someFrame)
+-- @return red value within [0, 1]
+-- @return green value within [0, 1]
+-- @return blue value within [0, 1]
+-- @return alpha value within [0, 1] or nil
+function StatusBarModule:CallExtraColorFunction(frame, value, extra)
+	if not self.GetExtraColor then
+		return 0.5, 0.5, 0.5, nil
+	end
+	local r, g, b, a = self:GetExtraColor(frame, value, extra)
+	if not r or not g or not b then
+		return 0.5, 0.5, 0.5
+	end
+	return r, g, b, a
 end
