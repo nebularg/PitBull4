@@ -5,6 +5,7 @@
 <Include file="Modules\CastBar\load.xml"/>
 <Include file="Modules\CombatIcon\load.xml"/>
 <Include file="Modules\CombatText\load.xml"/>
+<Include file="Modules\ComboPoints\load.xml"/>
 <Include file="Modules\DogTagTexts\load.xml"/>
 <Include file="Modules\HappinessIcon\load.xml"/>
 <Include file="Modules\HealthBar\load.xml"/>
