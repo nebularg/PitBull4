@@ -20,16 +20,20 @@ function PitBull4_ReputationBar:GetValue(frame)
 		return nil
 	end
 	
-	local repname, repreaction, repmin, repmax, repvalue = GetWatchedFactionInfo()
-	if not repname then
+	local name, _, min, max, value = GetWatchedFactionInfo()
+	if not name then
 		return nil
 	end
 	
-	return (repvalue - repmin) / (repmax - repmin)
+	return (value - min) / (max - min)
 end
 
 function PitBull4_ReputationBar:GetColor(frame, value)
-	return 0, 1, 0
+	local _, reaction = GetWatchedFactionInfo()
+	local color = FACTION_BAR_COLORS[reaction]
+	if color then
+		return color.r, color.g, color.b
+	end
 end
 
 hooksecurefunc("ReputationWatchBar_Update", function()
