@@ -31,11 +31,6 @@ local status_to_texture = {
 local guid_to_status = {}
 
 function PitBull4_ReadyCheckIcon:GetTexture(frame)
-	if not IsRaidLeader() and not IsRaidOfficer() and not IsPartyLeader() then
-		-- gotta be an officer
-		return nil
-	end
-	
 	return status_to_texture[guid_to_status[frame.guid]]
 end
 
