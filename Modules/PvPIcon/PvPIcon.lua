@@ -33,7 +33,7 @@ function PitBull4_PvPIcon:GetTexture(frame)
 		return nil
 	end
 	
-	return [[Interface\TargetingFrame\UI-PVP-]] .. UnitFactionGroup(unit)
+	return [[Interface\TargetingFrame\UI-PVP-]] .. (UnitFactionGroup(unit) or UnitFactionGroup("player"))
 end
 
 local tex_coords = {
