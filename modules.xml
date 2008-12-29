@@ -14,6 +14,7 @@
 <Include file="Modules\PowerBar\load.xml"/>
 <Include file="Modules\PvPIcon\load.xml"/>
 <Include file="Modules\RaidTargetIcon\load.xml"/>
+<Include file="Modules\ReadyCheckIcon\load.xml"/>
 <Include file="Modules\ReputationBar\load.xml"/>
 <Include file="Modules\RestIcon\load.xml"/>
 
