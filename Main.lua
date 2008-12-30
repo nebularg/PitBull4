@@ -369,19 +369,67 @@ local function guid_iter(guid, frame)
 	return guid_iter(guid, frame)
 end
 
---- Iterate over all frame with the given GUID
--- @param guid the GUID to check
+--- Iterate over all frames with the given GUID
+-- @param guid the GUID to check. can be nil, which will cause no frames to return.
 -- @usage for frame in PitBull4:IterateFramesForGUID("0x0000000000071278") do
 --     doSomethingWith(frame)
 -- end
 -- @return iterator which returns frames
 function PitBull4:IterateFramesForGUID(guid)
 	--@alpha@
-	expect(guid, 'typeof', 'string')
-	expect(guid, 'match', '^0x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x$')
+	expect(guid, 'typeof', 'string;nil')
+	if guid then
+		expect(guid, 'match', '^0x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x$')
+	end
 	--@end-alpha@
 	
+	if not guid then
+		return donothing
+	end
+	
 	return guid_iter, guid, nil
+end
+
+local function guids_iter(guids, frame)
+	frame = next(all_frames, frame)
+	if not frame then
+		del(guids)
+		return nil
+	end
+	if guids[frame.guid] then
+		return frame
+	end
+	return guids_iter(guids, frame)
+end
+
+--- Iterate over all frames with the given GUIDs
+-- @param ... the GUIDs to check. Can be nil.
+-- @usage for frame in PitBull4:IterateFramesForGUIDs(UnitGUID) do
+--     doSomethingWith(frame)
+-- end
+-- @return iterator which returns frames
+function PitBull4:IterateFramesForGUIDs(...)
+	local guids = new()
+	for i = 1, select('#', ...) do
+		local guid = (select(i, ...))
+		--@alpha@
+		expect(guid, 'typeof', 'string;nil')
+		if guid then
+			expect(guid, 'match', '^0x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x$')
+		end
+		--@end-alpha@
+		
+		if guid then
+			guids[guid] = true
+		end
+	end
+	
+	if not next(guids) then
+		guids = del(guids)
+		return donothing
+	end
+	
+	return guids_iter, guids, nil
 end
 
 --- Make a singleton unit frame.
