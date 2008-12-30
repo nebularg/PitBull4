@@ -21,7 +21,7 @@ PitBull4_DogTagTexts:SetDefaults({
 			position = 1,
 			code = "",
 		},
-		n = 7,
+		n = 8,
 		{
 			name = "Name",
 			code = "[Name] [(AFK or DND):Angle]",
