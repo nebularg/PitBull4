@@ -420,6 +420,9 @@ function PitBull4.Options.get_layout_options()
 			desc = module.description,
 			type = 'group',
 			args = args,
+			hidden = function(info)
+				return not module:IsEnabled()
+			end,
 		}
 	end
 	
@@ -619,6 +622,9 @@ function PitBull4.Options.get_layout_options()
 			desc = module.description,
 			type = 'group',
 			args = args,
+			hidden = function(info)
+				return not module:IsEnabled()
+			end,
 		}
 	end
 	
