@@ -18,7 +18,9 @@ PitBull4_HealthBar:SetDefaults({
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
 
+local PLAYER_GUID
 function PitBull4_HealthBar:OnEnable()
+	PLAYER_GUID = UnitGUID("player")
 	timerFrame:Show()
 	
 	self:RegisterEvent("UNIT_HEALTH")
@@ -31,7 +33,6 @@ function PitBull4_HealthBar:OnDisable()
 	timerFrame:Hide()
 end
 
-local PLAYER_GUID = UnitGUID("player")
 timerFrame:SetScript("OnUpdate", function()
 	for frame in PitBull4:IterateFramesForGUIDs(PLAYER_GUID, UnitGUID("pet")) do
 		PitBull4_HealthBar:Update(frame)

@@ -17,7 +17,9 @@ PitBull4_PowerBar:SetDefaults({
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
 
+local PLAYER_GUID
 function PitBull4_PowerBar:OnEnable()
+	PLAYER_GUID = UnitGUID("player")
 	timerFrame:Show()
 	
 	PitBull4_PowerBar:RegisterEvent("UNIT_MANA")
@@ -37,7 +39,6 @@ function PitBull4_PowerBar:OnDisable()
 	timerFrame:Hide()
 end
 
-local PLAYER_GUID = UnitGUID("player")
 timerFrame:SetScript("OnUpdate", function()
 	for frame in PitBull4:IterateFramesForGUIDs(PLAYER_GUID, UnitGUID("pet")) do
 		PitBull4_PowerBar:Update(frame)

@@ -16,7 +16,10 @@ PitBull4_ReadyCheckIcon:SetDefaults({
 	position = 1,
 })
 
+local PLAYER_GUID
 function PitBull4_ReadyCheckIcon:OnEnable()
+	PLAYER_GUID = UnitGUID("player")
+	
 	self:RegisterEvent("READY_CHECK")
 	self:RegisterEvent("READY_CHECK_CONFIRM")
 	self:RegisterEvent("READY_CHECK_FINISHED")
@@ -33,8 +36,6 @@ local guid_to_status = {}
 function PitBull4_ReadyCheckIcon:GetTexture(frame)
 	return status_to_texture[guid_to_status[frame.guid]]
 end
-
-local PLAYER_GUID = UnitGUID("player")
 
 function PitBull4_ReadyCheckIcon:CacheReachCheckStatuses()
 	wipe(guid_to_status)

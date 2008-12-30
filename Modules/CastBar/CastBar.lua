@@ -22,7 +22,10 @@ local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
 timerFrame:SetScript("OnUpdate", function() PitBull4_CastBar:FixCastDataAndUpdateAll() end)
 
+local playerGUID
 function PitBull4_CastBar:OnEnable()
+	playerGUID = UnitGUID("player")
+	
 	timerFrame:Show()
 	
 	self:RegisterEvent("UNIT_SPELLCAST_START")
@@ -161,7 +164,6 @@ function PitBull4_CastBar:UpdateInfo(event, unit)
 	end
 end
 
-local playerGUID = UnitGUID("player")
 function PitBull4_CastBar:FixCastData()
 	local frame
 	local currentTime = GetTime()

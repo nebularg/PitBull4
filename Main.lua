@@ -105,6 +105,8 @@ do
 	end
 end
 
+local do_nothing = function() end
+
 local new, del = PitBull4.new, PitBull4.del
 
 -- A set of all unit frames
@@ -303,7 +305,7 @@ function PitBull4:IterateFramesForClassification(classification, also_hidden)
 
 	local unit_id_to_frames__classification = rawget(unit_id_to_frames, classification)
 	if not unit_id_to_frames__classification then
-		return donothing
+		return do_nothing
 	end
 	
 	return not also_hidden and iterate_shown_frames or half_next, unit_id_to_frames__classification
@@ -386,7 +388,7 @@ function PitBull4:IterateFramesForGUID(guid)
 	--@end-alpha@
 	
 	if not guid then
-		return donothing
+		return do_nothing
 	end
 	
 	return guid_iter, guid, nil
@@ -428,7 +430,7 @@ function PitBull4:IterateFramesForGUIDs(...)
 	
 	if not next(guids) then
 		guids = del(guids)
-		return donothing
+		return do_nothing
 	end
 	
 	return guids_iter, guids, nil
