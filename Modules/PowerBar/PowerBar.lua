@@ -37,8 +37,9 @@ function PitBull4_PowerBar:OnDisable()
 	timerFrame:Hide()
 end
 
+local PLAYER_GUID = UnitGUID("player")
 timerFrame:SetScript("OnUpdate", function()
-	for frame in PitBull4:IterateFramesForUnitIDs("player", "target", "targettarget", "pet", "focus") do
+	for frame in PitBull4:IterateFramesForGUIDs(PLAYER_GUID, UnitGUID("pet")) do
 		PitBull4_PowerBar:Update(frame)
 	end
 end)
