@@ -219,8 +219,8 @@ function UnitFrame:RefreshLayout()
 	self.layout = layout
 	local layout_db = PitBull4.db.profile.layouts[layout]
 	
-	self:SetWidth(layout_db.size_x)
-	self:SetHeight(layout_db.size_y)
+	self:SetWidth(layout_db.size_x * classification_db.size_x)
+	self:SetHeight(layout_db.size_y * classification_db.size_y)
 	self:SetScale(layout_db.scale * classification_db.scale)
 
 	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
