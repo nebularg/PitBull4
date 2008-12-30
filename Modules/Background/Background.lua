@@ -14,7 +14,11 @@ PitBull4_Background:SetDefaults({
 	color = { 0, 0, 0, 0.5 }
 })
 
-function PitBull4_Background:Update(frame)
+function PitBull4_Background:UpdateFrame(frame)
+	if self:GetLayoutDB(frame).hidden then
+		return self:ClearFrame(frame)
+	end
+	
 	if frame.Background then
 		return false
 	end
@@ -23,14 +27,16 @@ function PitBull4_Background:Update(frame)
 	frame.Background = background
 	background:SetTexture(unpack(PitBull4_Background:GetLayoutDB(frame).color))
 	background:SetAllPoints(frame)
-	return true
+	return false
 end
 
-function PitBull4_Background:Clear(frame)
+function PitBull4_Background:ClearFrame(frame)
 	if not frame.Background then
 		return false
 	end
 	
 	frame.Background = frame.Background:Delete()
-	return true
+	return false
 end
+
+PitBull4_Background:SetLayoutOptionsFunction(function(self) end)

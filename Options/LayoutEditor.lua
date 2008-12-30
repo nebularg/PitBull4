@@ -160,7 +160,7 @@ function PitBull4.Options.get_layout_options()
 		name = "Other",
 		type = 'group',
 		childGroups = "tab",
-		order = 4,
+		order = 5,
 		args = {}
 	}
 	
@@ -1182,6 +1182,58 @@ function PitBull4.Options.get_layout_options()
 			},
 		}
 	}
+	
+	for id, module in PitBull4:IterateModulesOfType("custom", true) do
+		if layout_functions[module] then
+			local t = { layout_functions[module](module) }
+			layout_functions[module] = false
+			
+			local top_level = (t[1] == true)
+			if top_level then
+				table.remove(t, 1)
+			end
+			
+			local args = top_level and layout_options.args or layout_options.args.other.args
+			
+			args[id] = {
+				type = 'group',
+				name = module.name,
+				desc = module.description,
+				childGroups = 'tab',
+				order = 5,
+				hidden = function(info)
+					return not module:IsEnabled()
+				end,
+				args = {
+					enable = {
+						type = 'toggle',
+						name = "Enable",
+						order = 1,
+						get = function(info)
+							return not GetLayoutDB(module).hidden
+						end,
+						set = function(info, value)
+							GetLayoutDB(module).hidden = not value
+
+							UpdateFrames()
+						end
+					},
+				},
+			}
+			
+			local order = 100
+			for i = 1, #t, 2 do
+				local k = t[i]
+				local v = t[i+1]
+				
+				order = order + 1
+				
+				v.order = order
+				
+				args[id].args[k] = v
+			end
+		end
+	end
 	
 	return layout_options
 end

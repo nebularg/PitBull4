@@ -24,7 +24,11 @@ function PitBull4_Highlight:OnEnable()
 	end
 end
 
-function PitBull4_Highlight:Update(frame)
+function PitBull4_Highlight:UpdateFrame(frame)
+	if self:GetLayoutDB(frame).hidden then
+		return self:ClearFrame(frame)
+	end
+	
 	if frame.Highlight then
 		return false
 	end
@@ -42,10 +46,10 @@ function PitBull4_Highlight:Update(frame)
 	texture:SetAlpha(0.5)
 	texture:SetAllPoints(highlight)
 	
-	return true
+	return false
 end
 
-function PitBull4_Highlight:Clear(frame)
+function PitBull4_Highlight:ClearFrame(frame)
 	if not frame.Highlight then
 		return false
 	end
@@ -53,7 +57,7 @@ function PitBull4_Highlight:Clear(frame)
 	frame.Highlight.texture = frame.Highlight.texture:Delete()
 	frame.Highlight = frame.Highlight:Delete()
 	
-	return true
+	return false
 end
 
 function PitBull4_Highlight:OnEnter(frame)
@@ -69,3 +73,5 @@ function PitBull4_Highlight:OnLeave(frame)
 	end
 	frame.Highlight:Hide()
 end
+
+PitBull4_Highlight:SetLayoutOptionsFunction(function(self) end)
