@@ -15,53 +15,51 @@ function PitBull4.Options.get_unit_options()
 			name = PitBull4.Utils.GetLocalizedClassification(classification),
 			order = i,
 			args = {
+				enable = {
+					name = "Enable",
+					type = 'toggle',
+					order = 1,
+					get = function(info)
+						return not PitBull4.db.profile.classifications[classification].hidden
+					end,
+					set = function(info, value)
+						PitBull4.db.profile.classifications[classification].hidden = not value
+						
+						if value then
+							PitBull4:MakeSingletonFrame(classification)
+						else
+							for frame in PitBull4:IterateFramesForClassification(classification, true) do
+								frame:Deactivate()
+							end
+						end
+					end,
+				},
 				layout = {
 					name = "Layout",
 					type = 'select',
-					order = 1,
+					order = 2,
 					values = function(info)
 						local t = {}
-						t[""] = ("Disable %s"):format(PitBull4.Utils.GetLocalizedClassification(classification))
 						for name in pairs(PitBull4.db.profile.layouts) do
 							t[name] = name
 						end
 						return t
 					end,
 					get = function(info)
-						local db = PitBull4.db.profile.classifications[classification]
-						if db.hidden then
-							return ""
-						else
-							return db.layout
-						end
+						return PitBull4.db.profile.classifications[classification].layout
 					end,
 					set = function(info, value)
-						local db = PitBull4.db.profile.classifications[classification]
-						if value == "" then
-							-- TODO: handle this properly
-							db.hidden = true
-							for frame in PitBull4:IterateFramesForClassification(classification, true) do
-								frame:Deactivate()
-							end
-						else
-							local was_hidden = db.hidden
-							db.hidden = false
-							db.layout = value
-							
-							if was_hidden then
-								PitBull4:MakeSingletonFrame(classification)
-							else
-								for frame in PitBull4:IterateFramesForClassification(classification, true) do
-									frame:RefreshLayout()
-								end
-							end
+						PitBull4.db.profile.classifications[classification].layout = value
+						
+						for frame in PitBull4:IterateFramesForClassification(classification, true) do
+							frame:RefreshLayout()
 						end
 					end
 				},
 				horizontal_mirror = {
 					name = "Mirror horizontally",
 					desc = "Whether all options will be mirrored, e.g. what would be on the left is now on the right and vice-versa.",
-					order = 2,
+					order = 3,
 					type = 'toggle',
 					get = function(info)
 						return PitBull4.db.profile.classifications[classification].horizontal_mirror
@@ -77,7 +75,7 @@ function PitBull4.Options.get_unit_options()
 				vertical_mirror = {
 					name = "Mirror vertically",
 					desc = "Whether all options will be mirrored, e.g. what would be on the bottom is now on the top and vice-versa.",
-					order = 3,
+					order = 4,
 					type = 'toggle',
 					get = function(info)
 						return PitBull4.db.profile.classifications[classification].vertical_mirror
@@ -93,7 +91,7 @@ function PitBull4.Options.get_unit_options()
 				scale = {
 					name = "Scale",
 					desc = "The scale of the unit. This will be multiplied against the layout's scale.",
-					order = 4,
+					order = 5,
 					type = 'range',
 					min = 0.5,
 					max = 2,
@@ -114,7 +112,7 @@ function PitBull4.Options.get_unit_options()
 				width_multiplier = {
 					name = "Width multiplier",
 					desc = "A width multiplier applied to the unit. Your layout's width will be multiplied against this value.",
-					order = 5,
+					order = 6,
 					type = 'range',
 					min = 0.5,
 					max = 2,
@@ -135,7 +133,7 @@ function PitBull4.Options.get_unit_options()
 				height_multiplier = {
 					name = "Height multiplier",
 					desc = "A height multiplier applied to the unit. Your layout's height will be multiplied against this value.",
-					order = 6,
+					order = 7,
 					type = 'range',
 					min = 0.5,
 					max = 2,
