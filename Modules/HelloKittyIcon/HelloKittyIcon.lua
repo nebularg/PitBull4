@@ -22,9 +22,8 @@ function PitBull4_HelloKittyIcon:GetTexture(frame)
 	gender_code = UnitSex(unit)
 
 	if gender_code == 3 then
-	    return [[Interface\AddOns\PitBull4\Modules\HelloKittyIcon\hellokitty]]
+		return [[Interface\AddOns\PitBull4\Modules\HelloKittyIcon\hellokitty]]
 	end
 	
 	return nil
-	
 end

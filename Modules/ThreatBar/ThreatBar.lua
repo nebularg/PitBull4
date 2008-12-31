@@ -16,33 +16,33 @@ PitBull4_ThreatBar:SetDefaults({
 })
 
 function PitBull4_ThreatBar:OnEnable()
-    self:RegisterEvent("PLAYER_TARGET_CHANGED")
-    self:RegisterEvent("UNIT_THREAT_LIST_UPDATE")
-    self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE")
+	self:RegisterEvent("PLAYER_TARGET_CHANGED")
+	self:RegisterEvent("UNIT_THREAT_LIST_UPDATE")
+	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE")
 end
 
 function PitBull4_ThreatBar:GetValue(frame)
-    unit = frame.unit 
+	unit = frame.unit 
     
-    if unit == "player" or unit == "pet" then
-        local _,_,threatpct,_,_ = UnitDetailedThreatSituation(unit, "target");
+	if unit == "player" or unit == "pet" then
+		local _,_,threatpct,_,_ = UnitDetailedThreatSituation(unit, "target");
         
-        if threatpct ~= nil then
-            threatpct = tonumber(string.format("%.0f", threatpct)) / 100
-            return threatpct
-        end
-    end
+		if threatpct ~= nil then
+			threatpct = tonumber(string.format("%.0f", threatpct)) / 100
+			return threatpct
+		end
+	end
     
-    return nil
+	return nil
     
 end
 
 function PitBull4_ThreatBar:GetColor(frame, value)
-    return value, 0, 0
+	return value, 0, 0
 end
 
 function PitBull4_ThreatBar:PLAYER_TARGET_CHANGED()
-    self:UpdateAll()
+	self:UpdateAll()
 end
 
 
