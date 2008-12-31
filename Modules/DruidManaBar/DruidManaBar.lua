@@ -1,5 +1,7 @@
 if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
+if select(2, UnitClass("player")) ~= "DRUID" then return end
+
 local PitBull4 = _G.PitBull4
 if not PitBull4 then
 	error("PitBull4_DruidManaBar requires PitBull4")
@@ -19,11 +21,9 @@ PitBull4_DruidManaBar:SetDefaults({
 local MANA_TYPE = 0
 
 function PitBull4_DruidManaBar:OnEnable()
-	if UnitClass("player") == "Druid" then
 		PitBull4_DruidManaBar:RegisterEvent("UNIT_MANA")
 		PitBull4_DruidManaBar:RegisterEvent("UNIT_DISPLAYPOWER")
 		PitBull4_DruidManaBar:RegisterEvent("UNIT_MAXMANA")
-	end    
 end
 
 function PitBull4_DruidManaBar:GetValue(frame)
