@@ -7,9 +7,11 @@
 <Include file="Modules\CombatText\load.xml"/>
 <Include file="Modules\ComboPoints\load.xml"/>
 <Include file="Modules\DogTagTexts\load.xml"/>
+<Include file="Modules\DruidManaBar\load.xml"/>
 <Include file="Modules\ExperienceBar\load.xml"/>
 <Include file="Modules\HappinessIcon\load.xml"/>
 <Include file="Modules\HealthBar\load.xml"/>
+<Include file="Modules\HelloKittyIcon\load.xml"/>
 <Include file="Modules\HideBlizzard\load.xml"/>
 <Include file="Modules\Highlight\load.xml"/>
 <Include file="Modules\LeaderIcon\load.xml"/>
@@ -20,6 +22,7 @@
 <Include file="Modules\ReadyCheckIcon\load.xml"/>
 <Include file="Modules\ReputationBar\load.xml"/>
 <Include file="Modules\RestIcon\load.xml"/>
+<Include file="Modules\ThreatBar\load.xml"/>
 <Include file="Modules\VoiceIcon\load.xml"/>
 
 </Ui>
