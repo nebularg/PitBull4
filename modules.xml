@@ -11,7 +11,6 @@
 <Include file="Modules\ExperienceBar\load.xml"/>
 <Include file="Modules\HappinessIcon\load.xml"/>
 <Include file="Modules\HealthBar\load.xml"/>
-<Include file="Modules\HelloKittyIcon\load.xml"/>
 <Include file="Modules\HideBlizzard\load.xml"/>
 <Include file="Modules\Highlight\load.xml"/>
 <Include file="Modules\LeaderIcon\load.xml"/>
