@@ -36,7 +36,7 @@ function PitBull4_ThreatBar:GetValue(frame)
 	end
 	unit = frame.unit
     
-	local _,_,threatpct = UnitDetailedThreatSituation(unit, "target");
+	local _,_,threatpct = UnitDetailedThreatSituation(unit, "target")
        
 	if not threatpct then
 		return nil
@@ -46,7 +46,9 @@ function PitBull4_ThreatBar:GetValue(frame)
 end
 
 function PitBull4_ThreatBar:GetColor(frame, value)
-	return value, 0, 0
+	local _, status = UnitDetailedThreatSituation(frame.unit, "target")
+	
+	return GetThreatStatusColor(status)
 end
 
 function PitBull4_ThreatBar:PLAYER_TARGET_CHANGED()
