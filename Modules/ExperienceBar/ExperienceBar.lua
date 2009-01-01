@@ -35,7 +35,11 @@ function PitBull4_ExperienceBar:GetValue(frame)
 		end
 		
 		current, max = UnitXP("player"), UnitXPMax("player")
-		rest = GetXPExhaustion()
+		rest = GetXPExhaustion() 
+		if rest == nil then
+		    rest = 0
+		end
+		
 	else -- pet
 		if level == UnitLevel("player") then
 			return nil
