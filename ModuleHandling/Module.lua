@@ -304,6 +304,14 @@ function Module:UpdateAll()
 	end
 end
 
+--- Run :Update(frame) on all non-wacky shown frames.
+-- @usage MyModule:UpdateNonWacky()
+function Module:UpdateNonWacky()
+	for frame in PitBull4:IterateNonWackyFrames() do
+		self:Update(frame)
+	end
+end
+
 local function enabled_iter(modules, id)
 	local id, module = next(modules, id)
 	if not id then
