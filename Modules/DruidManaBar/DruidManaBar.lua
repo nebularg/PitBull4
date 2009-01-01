@@ -21,21 +21,21 @@ PitBull4_DruidManaBar:SetDefaults({
 local MANA_TYPE = 0
 
 function PitBull4_DruidManaBar:OnEnable()
-		PitBull4_DruidManaBar:RegisterEvent("UNIT_MANA")
-		PitBull4_DruidManaBar:RegisterEvent("UNIT_DISPLAYPOWER")
-		PitBull4_DruidManaBar:RegisterEvent("UNIT_MAXMANA")
+	PitBull4_DruidManaBar:RegisterEvent("UNIT_MANA")
+	PitBull4_DruidManaBar:RegisterEvent("UNIT_DISPLAYPOWER")
+	PitBull4_DruidManaBar:RegisterEvent("UNIT_MAXMANA")
 end
 
 function PitBull4_DruidManaBar:GetValue(frame)
 	if frame.unit ~= "player" then
-		return
-	end
-    
-	if UnitPowerType("player") ~= 0 then
-		return UnitPower(frame.unit, MANA_TYPE) / UnitPowerMax(frame.unit, MANA_TYPE)
-	else
 		return nil
 	end
+    
+	if UnitPowerType("player") == MANA_TYPE then
+		return nil
+	end
+	
+	return UnitPower("player", MANA_TYPE) / UnitPowerMax("player", MANA_TYPE)
 end
 
 function PitBull4_DruidManaBar:GetColor(frame, value)
@@ -43,22 +43,13 @@ function PitBull4_DruidManaBar:GetColor(frame, value)
 	return color.r, color.g, color.b
 end
 
-function PitBull4_DruidManaBar:UNIT_MANA(event, arg1)
-	if arg1 ~= "player" then
-		return
-	else
-		self:UpdateForUnitID("player")
-	end
-end
-
-function PitBull4_DruidManaBar:UNIT_DISPLAYPOWER(event, arg1)
-	-- return if its not the player.
-	if arg1 ~= "player" then
+function PitBull4_DruidManaBar:UNIT_MANA(event, unit)
+	if unit ~= "player" then
 		return
 	end
-    
-	self:UpdateForUnitID("player")
 	
+	self:UpdateForUnitID("player")
 end
 
 PitBull4_DruidManaBar.UNIT_MAXMANA = PitBull4_DruidManaBar.UNIT_MANA
+PitBull4_DruidManaBar.UNIT_DISPLAYPOWER = PitBull4_DruidManaBar.UNIT_MANA

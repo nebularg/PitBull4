@@ -21,7 +21,7 @@ PitBull4_DogTagTexts:SetDefaults({
 			position = 1,
 			code = "",
 		},
-		n = 9,
+		n = 10,
 		{
 			name = "Name",
 			code = "[Name] [(AFK or DND):Angle]",
@@ -76,6 +76,12 @@ PitBull4_DogTagTexts:SetDefaults({
 			attach_to = "ThreatBar",
 			location = "center",
 		},
+		{
+			name = "Druid mana",
+			code = "[if not IsMana then FractionalDruidMP]",
+			attach_to = "DruidManaBar",
+			location = "right",
+		}
 	},
 })
 
