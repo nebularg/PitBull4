@@ -82,10 +82,6 @@ local function icon_OnUpdate(self, elapsed)
 end
 
 function PitBull4_VoiceIcon:UpdateFrame(frame)
-	if not frame.guid or not self:GetLayoutDB(frame).enabled then
-		return self:ClearFrame(frame)
-	end
-	
 	if not UnitIsTalking(frame.unit) then
 		return self:ClearFrame(frame)
 	end

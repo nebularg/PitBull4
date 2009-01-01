@@ -59,10 +59,6 @@ function PitBull4_CombatText:ClearFrame(frame)
 end
 
 function PitBull4_CombatText:UpdateFrame(frame)
-	if not self:GetLayoutDB(frame).enabled then
-		return false
-	end
-
 	local font_string = frame.CombatText
 	local created = not font_string
 	if created then

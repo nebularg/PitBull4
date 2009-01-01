@@ -70,10 +70,6 @@ local function model_OnUpdate(self, elapsed)
 end
 
 function PitBull4_Portrait:UpdateFrame(frame)
-	if not frame.guid or not self:GetLayoutDB(frame).enabled then
-		return self:ClearFrame(frame)
-	end
-	
 	local layout_db = self:GetLayoutDB(frame)
 	local style = layout_db.style
 	local falling_back = false

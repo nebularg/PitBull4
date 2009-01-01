@@ -47,17 +47,12 @@ function StatusBarModule:UpdateFrame(frame)
 	expect(frame, 'typeof', 'frame')
 	--@end-alpha@
 	
-	local id = self.id
-	local layout_db = self:GetLayoutDB(frame)
-	if not frame.guid or not layout_db.enabled then
-		return self:ClearFrame(frame)
-	end
-	
 	local value, extra = self:CallValueFunction(frame)
 	if not value then
 		return self:ClearFrame(frame)
 	end
 	
+	local id = self.id
 	local control = frame[id]
 	local made_control = not control
 	if made_control then
@@ -65,6 +60,8 @@ function StatusBarModule:UpdateFrame(frame)
 		frame[id] = control
 		control.id = id
 	end
+	
+	local layout_db = self:GetLayoutDB(frame)
 	local texture
 	if LibSharedMedia then
 		texture = LibSharedMedia:Fetch("statusbar", layout_db.texture or PitBull4.db.profile.layouts[frame.layout].status_bar_texture or "Blizzard")

@@ -25,10 +25,6 @@ function PitBull4_Highlight:OnEnable()
 end
 
 function PitBull4_Highlight:UpdateFrame(frame)
-	if not self:GetLayoutDB(frame).enabled then
-		return self:ClearFrame(frame)
-	end
-	
 	if frame.Highlight then
 		return false
 	end

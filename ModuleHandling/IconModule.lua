@@ -40,16 +40,12 @@ function IconModule:UpdateFrame(frame)
 	expect(frame, 'typeof', 'frame')
 	--@end-alpha@
 	
-	local id = self.id
-	if not frame.guid or not self:GetLayoutDB(frame).enabled then
-		return self:ClearFrame(frame)
-	end
-	
 	local tex = self:CallTextureFunction(frame)
 	if not tex then
 		return self:ClearFrame(frame)
 	end
 	
+	local id = self.id
 	local control = frame[id]
 	local made_control = not control
 	if made_control then

@@ -121,11 +121,6 @@ function FaderModule:UpdateFrame(frame)
 		module_to_frame_to_opacity[self] = frame_to_opacity
 	end
 	
-	local layout_db = self:GetLayoutDB(frame)
-	if not frame.guid or not layout_db.enabled then
-		return self:ClearFrame(frame)
-	end
-	
 	local opacity = self:CallOpacityFunction(frame)
 	if not opacity then
 		return self:ClearFrame(frame)

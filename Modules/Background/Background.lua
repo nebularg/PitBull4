@@ -15,10 +15,6 @@ PitBull4_Background:SetDefaults({
 })
 
 function PitBull4_Background:UpdateFrame(frame)
-	if not self:GetLayoutDB(frame).enabled then
-		return self:ClearFrame(frame)
-	end
-	
 	if frame.Background then
 		return false
 	end

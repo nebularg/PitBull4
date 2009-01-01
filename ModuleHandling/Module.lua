@@ -235,7 +235,14 @@ function Module:Update(frame, return_changed)
 	expect(return_changed, 'typeof', 'nil;boolean')
 	--@end-alpha@
 	
-	local changed = self:UpdateFrame(frame)
+	local changed
+	
+	local layout_db = self:GetLayoutDB(frame)
+	if not frame.guid or not layout_db.enabled then
+		changed = self:ClearFrame(frame)
+	else
+		changed = self:UpdateFrame(frame)
+	end
 	
 	if return_changed then
 		return changed

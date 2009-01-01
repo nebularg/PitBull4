@@ -58,8 +58,8 @@ function TextProviderModule:UpdateFrame(frame)
 	expect(frame, 'typeof', 'frame')
 	--@end-alpha@
 	
-	local db = self:GetLayoutDB(frame)
-	if not frame.guid or not db.enabled or db.texts.n == 0 then
+	local layout_db = self:GetLayoutDB(frame)
+	if layout_db.texts.n == 0 then
 		return self:ClearFrame(frame)
 	end
 	
@@ -72,7 +72,7 @@ function TextProviderModule:UpdateFrame(frame)
 	local changed = false
 	
 	-- get rid of any font strings not in the db
-	local n = db.texts.n
+	local n = layout_db.texts.n
 	for k, font_string in pairs(texts) do
 		if k > n then
 			font_string.db = nil
@@ -83,8 +83,8 @@ function TextProviderModule:UpdateFrame(frame)
 	end
 	
 	-- create or update texts
-	for i = 1, db.texts.n do
-		local text_db = db.texts[i]
+	for i = 1, layout_db.texts.n do
+		local text_db = layout_db.texts[i]
 		
 		local font_string = texts[i]
 		

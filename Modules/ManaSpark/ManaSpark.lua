@@ -43,7 +43,7 @@ function PitBull4_ManaSpark:OnDisable()
 end
 
 function PitBull4_ManaSpark:UpdateFrame(frame)
-	if not self:GetLayoutDB(frame).enabled or frame.unit ~= "player" or not frame.PowerBar or UnitPowerType("player") ~= MANA_TYPE or UnitPower("player", MANA_TYPE) == UnitPowerMax("player", MANA_TYPE) then
+	if frame.unit ~= "player" or not frame.PowerBar or UnitPowerType("player") ~= MANA_TYPE or UnitPower("player", MANA_TYPE) == UnitPowerMax("player", MANA_TYPE) then
 		return self:ClearFrame(frame)
 	end
 	
