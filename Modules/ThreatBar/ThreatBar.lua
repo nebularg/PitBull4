@@ -25,11 +25,10 @@ function PitBull4_ThreatBar:GetValue(frame)
 	unit = frame.unit 
     
 	if unit == "player" or unit == "pet" then
-		local _,_,threatpct,_,_ = UnitDetailedThreatSituation(unit, "target");
+		local _,_,threatpct = UnitDetailedThreatSituation(unit, "target");
         
-		if threatpct ~= nil then
-			threatpct = tonumber(string.format("%.0f", threatpct)) / 100
-			return threatpct
+		if threatpct then
+			return threatpct / 100
 		end
 	end
     
@@ -44,7 +43,6 @@ end
 function PitBull4_ThreatBar:PLAYER_TARGET_CHANGED()
 	self:UpdateAll()
 end
-
 
 PitBull4_ThreatBar.UNIT_THREAT_LIST_UPDATE = PitBull4_ThreatBar.PLAYER_TARGET_CHANGED
 PitBull4_ThreatBar.UNIT_THREAT_SITUATION_UPDATE = PitBull4_ThreatBar.PLAYER_TARGET_CHANGED
