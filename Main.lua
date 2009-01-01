@@ -115,9 +115,11 @@ PitBull4.all_frames = all_frames
 
 -- A set of all unit frames with the is_wacky flag set to true
 local wacky_frames = {}
+PitBull4.wacky_frames = wacky_frames
 
 -- A set of all unit frames with the is_wacky flag set to false
 local non_wacky_frames = {}
+PitBull4.non_wacky_frames = non_wacky_frames
 
 -- metatable that automatically creates keys that return tables on access
 local auto_table__mt = {__index = function(self, key)
@@ -128,9 +130,11 @@ end}
 
 -- A dictionary of UnitID to a set of all unit frames of that UnitID
 local unit_id_to_frames = setmetatable({}, auto_table__mt)
+PitBull4.unit_id_to_frames = unit_id_to_frames
 
 -- A dictionary of classification to a set of all unit frames of that classification
 local classification_to_frames = setmetatable({}, auto_table__mt)
+PitBull4.classification_to_frames = classification_to_frames
 
 --- Wrap the given function so that any call to it will be piped through PitBull4:RunOnLeaveCombat.
 -- @param func function to call
@@ -456,29 +460,19 @@ function PitBull4:MakeSingletonFrame(unit)
 	if not frame then
 		frame = CreateFrame("Button", frame_name, UIParent, "SecureUnitButtonTemplate")
 		
-		all_frames[frame] = true
-		_G.ClickCastFrames[frame] = true
-		
 		frame.is_singleton = true
 		
 		-- for singletons, its classification is its UnitID
 		local classification = unit
 		frame.classification = classification
 		frame.classification_db = db.profile.classifications[classification]
-		classification_to_frames[classification][frame] = true
 		
 		local is_wacky = PitBull4.Utils.IsWackyClassification(classification)
-		frame.is_wacky = is_wacky;
-		(is_wacky and wacky_frames or non_wacky_frames)[frame] = true
-		
-		frame.unit = unit
-		unit_id_to_frames[unit][frame] = true
-		
-		frame:SetAttribute("unit", unit)
-		
-		frame:SetClampedToScreen(true)
+		frame.is_wacky = is_wacky
 		
 		self:ConvertIntoUnitFrame(frame)
+		
+		frame:SetAttribute("unit", unit)
 	end
 	
 	frame:Activate()
@@ -488,6 +482,61 @@ function PitBull4:MakeSingletonFrame(unit)
 	frame:UpdateGUID(UnitGUID(unit))
 end
 PitBull4.MakeSingletonFrame = PitBull4:OutOfCombatWrapper(PitBull4.MakeSingletonFrame)
+
+local template_names = {
+	[true] = { -- party-based
+		[true] = "SecurePartyPetHeaderTemplate",
+		[false] = "SecurePartyHeaderTemplate",
+	},
+	[false] = { -- raid-based
+		[true] = "SecureRaidPetHeaderTemplate",
+		[false] = "SecureRaidGroupHeaderTemplate",
+	},
+}
+
+--- Make a group header.
+-- @param classification the classification for the group.
+-- @param group the identifier for the group. This can be nil if inapplicable, e.g. "party" classification.
+-- @usage local header = PitBull4:MakeGroupHeader("party", nil)
+function PitBull4:MakeGroupHeader(classification, group)
+	--@alpha@
+	expect(classification, 'typeof', 'string')
+	expect(PitBull4.Utils.IsValidClassification(classification), '==', true)
+	if classification:sub(1, 5) == "party" then
+		expect(group, 'typeof', 'nil')
+	else
+		expect(group, 'typeof', 'string;number')
+	end
+	--@end-alpha@
+	
+	local party_based = classification:sub(1, 5) == "party"
+	
+	local pet_based = not not classification:match("pet") -- this feels dirty
+	
+	local header_name = "PitBull4_Groups_" .. classification
+	if group then
+		header_name = header_name .. "_" .. group
+	end
+	
+	local header = _G[header_name]
+	if not header then
+		header = CreateFrame("Frame", header_name, UIParent, template_names[party_based][pet_based])
+		header:Hide() -- it will be shown later and attributes being set won't cause lag
+		
+		header.classification = classification
+		header.classification_db = db.profile.classifications[classification]
+		header.group = group
+		
+		local is_wacky = PitBull4.Utils.IsWackyClassification(classification)
+		header.is_wacky = is_wacky
+		
+		self:ConvertIntoGroupHeader(header)
+		header:ForceUnitFrameCreation(party_based and MAX_PARTY_MEMBERS or MAX_RAID_MEMBERS)
+	end
+	
+	header:Show()
+end
+PitBull4.MakeGroupHeader = PitBull4:OutOfCombatWrapper(PitBull4.MakeGroupHeader)
 
 function PitBull4:OnInitialize()
 	db = LibStub("AceDB-3.0"):New("PitBull4DB", DATABASE_DEFAULTS, 'global')
@@ -516,6 +565,10 @@ function PitBull4:OnEnable()
 		if not db_classifications[classification].hidden then
 			self:MakeSingletonFrame(classification)
 		end
+	end
+	
+	if not db_classifications["party"].hidden then
+		self:MakeGroupHeader("party")
 	end
 end
 

@@ -33,7 +33,7 @@ function PitBull4.Options.get_module_options()
 		type = 'group',
 		name = "Modules",
 		args = {},
-		childGroups = "tab",
+		childGroups = "tree",
 	}
 	
 	local module_args = {
@@ -56,7 +56,7 @@ function PitBull4.Options.get_module_options()
 		local opt = {
 			type = 'group',
 			name = module.name,
-			desc = module.desc,
+			desc = module.description,
 			args = {},
 			handler = module,
 		}

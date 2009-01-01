@@ -6,7 +6,7 @@ function PitBull4.Options.get_unit_options()
 		type = 'group',
 		name = "Units",
 		args = {},
-		childGroups = "tab",
+		childGroups = "tree",
 	}
 	
 	for i, classification in ipairs(PitBull4.SINGLETON_CLASSIFICATIONS) do

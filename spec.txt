@@ -4,8 +4,8 @@ Definitions:
     classification: what kind of frame something is, also what settings it adheres to. e.g. player, party, raid, target, partypet
     singleton: a frame that is not part of a larger whole, e.g. player, pet, target, targettarget
     member: a frame that is part of a larget whole, e.g. raid1, party2pet
-    group: a set of members, e.g. raid, partypet
-    subgroup: a specific set of members, e.g. raid group 1, party members. All groups are made up of 1 or more subgroups.
+    supergroup: a set of members, e.g. raid, partypet
+    group: a specific set of members, e.g. raid group 1, party members. All supergroups are made up of 1 or more groups.
     wacky: Whether a unit frame receives standard Blizzard events for UNIT_HEALTH and such. player, target, pet, focus, mouseover, party, partypet, and raid receive such events.
 
 List of classifications:

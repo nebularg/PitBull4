@@ -1,3 +1,6 @@
+local _G = _G
+local PitBull4 = _G.PitBull4
+
 -- CONSTANTS ----------------------------------------------------------------
 
 -- size in pixels of indicators at 100% scaled
@@ -55,6 +58,18 @@ local MODULE_UPDATE_ORDER = {
 -- @field guid the current GUID of the Unit Frame. Can be nil.
 -- @field overlay an overlay frame for texts to be placed on.
 local UnitFrame = {}
+local SingletonUnitFrame = {}
+local MemberUnitFrame = {}
+PitBull4.UnitFrame = UnitFrame
+PitBull4.SingletonUnitFrame = SingletonUnitFrame
+PitBull4.MemberUnitFrame = MemberUnitFrame
+
+local UnitFrame__scripts = {}
+local SingletonUnitFrame__scripts = {}
+local MemberUnitFrame__scripts = {}
+PitBull4.UnitFrame__scripts = UnitFrame__scripts
+PitBull4.SingletonUnitFrame__scripts = SingletonUnitFrame__scripts
+PitBull4.MemberUnitFrame__scripts = MemberUnitFrame__scripts
 
 local PitBull4_UnitFrame_DropDown = CreateFrame("Frame", "PitBull4_UnitFrame_DropDown", UIParent, "UIDropDownMenuTemplate")
 
@@ -127,12 +142,11 @@ function UnitFrame:menu(unit)
 	ToggleDropDownMenu(1, nil, PitBull4_UnitFrame_DropDown, "cursor")
 end
 
-local UnitFrame__scripts = {}
-function UnitFrame__scripts:OnDragStart()
+function SingletonUnitFrame__scripts:OnDragStart()
 	self:StartMoving()
 end
 
-function UnitFrame__scripts:OnDragStop()
+function SingletonUnitFrame__scripts:OnDragStop()
 	self:StopMovingOrSizing()
 	
 	local ui_scale = UIParent:GetEffectiveScale()
@@ -165,19 +179,42 @@ function UnitFrame__scripts:OnLeave()
 	PitBull4:RunFrameScriptHooks("OnLeave", self)
 end
 
+function UnitFrame__scripts:OnAttributeChanged(key, value)
+	if key ~= "unit" and key ~= "unitsuffix" then
+		return
+	end
+	
+	local new_unit = PitBull4.Utils.GetBestUnitID(SecureButton_GetUnit(self)) or nil
+	
+	local old_unit = self.unit
+	if old_unit == new_unit then
+		return
+	end
+	
+	if old_unit then
+		PitBull4.unit_id_to_frames[old_unit][self] = nil
+	end
+	
+	self.unit = new_unit
+	if value then
+		PitBull4.unit_id_to_frames[new_unit][self] = true
+	end
+end
+
 function UnitFrame__scripts:OnShow()
-	if self.is_wacky then
-		self:UpdateGUID(UnitGUID(self.unit))
+	if self.unit then
+		local guid = UnitGUID(self.unit)
+		if self.is_wacky or guid ~= self.guid then
+			self:UpdateGUID(guid)
+		end
 	end
 end
 
 function UnitFrame__scripts:OnHide()
-	if self.is_wacky then
-		self:UpdateGUID(nil)
-	end
+	self:UpdateGUID(nil)
 end
 
---- Add the proper functions and scripts to a SecureUnitButton
+--- Add the proper functions and scripts to a SecureUnitButton, as well as some various initialization.
 -- @param frame a Button which inherits from SecureUnitButton
 -- @param isExampleFrame whether the button is an example frame, thus not a real unit frame
 -- @usage PitBull4:ConvertIntoUnitFrame(frame)
@@ -188,6 +225,17 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 	expect(isExampleFrame, 'typeof', 'nil;boolean')
 	--@end-alpha@
 	
+	self.all_frames[frame] = true
+	_G.ClickCastFrames[frame] = true
+	
+	self.classification_to_frames[frame.classification][frame] = true
+	
+	if frame.is_wacky then
+		self.wacky_frames[frame] = true
+	else
+		self.non_wacky_frames[frame] = true
+	end
+	
 	local overlay = PitBull4.Controls.MakeFrame(frame)
 	frame.overlay = overlay
 	overlay:SetFrameLevel(frame:GetFrameLevel() + 4)
@@ -196,20 +244,36 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 		frame:SetScript(k, v)
 	end
 	
+	for k, v in pairs(frame.is_singleton and SingletonUnitFrame__scripts or MemberUnitFrame__scripts) do
+		frame:SetScript(k, v)
+	end
+	
 	for k, v in pairs(UnitFrame) do
+		frame[k] = v
+	end
+
+	for k, v in pairs(frame.is_singleton and SingletonUnitFrame or MemberUnitFrame) do
 		frame[k] = v
 	end
 	
 	if not isExampleFrame then
-		frame:SetMovable(true)
+		if frame.is_singleton then
+			frame:SetMovable(true)
+		end
 		frame:RegisterForDrag("LeftButton")
 		frame:RegisterForClicks("LeftButtonUp","RightButtonUp","MiddleButtonUp","Button4Up","Button5Up")
 		frame:SetAttribute("*type1", "target")
 		frame:SetAttribute("*type2", "menu")
 	end
+	
+	UnitFrame__scripts:OnAttributeChanged(frame, "unit", frame:GetAttribute("unit"))
+	
+	frame:SetClampedToScreen(true)
 end
 UnitFrame.ConvertIntoUnitFrame = PitBull4:OutOfCombatWrapper(UnitFrame.ConvertIntoUnitFrame)
 
+--- Recheck the layout of the unit frame, make sure it's up to date, and update the frame.
+-- @usage frame:RefreshLayout()
 function UnitFrame:RefreshLayout()
 	local old_layout = self.layout
 	
@@ -217,14 +281,8 @@ function UnitFrame:RefreshLayout()
 	
 	local layout = classification_db.layout
 	self.layout = layout
-	local layout_db = PitBull4.db.profile.layouts[layout]
 	
-	self:SetWidth(layout_db.size_x * classification_db.size_x)
-	self:SetHeight(layout_db.size_y * classification_db.size_y)
-	self:SetScale(layout_db.scale * classification_db.scale)
-
-	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
-	self:SetPoint("CENTER", UIParent, "CENTER", classification_db.position_x / scale, classification_db.position_y / scale)
+	self:RefixSizeAndPosition()
 
 	if old_layout then
 		self:Update(true, true)
@@ -232,12 +290,32 @@ function UnitFrame:RefreshLayout()
 end
 UnitFrame.RefreshLayout = PitBull4:OutOfCombatWrapper(UnitFrame.RefreshLayout)
 
-function UnitFrame:Activate()
+--- Reset the size and position of the unit frame.
+-- @usage frame:RefixSizeAndPosition()
+function SingletonUnitFrame:RefixSizeAndPosition()
+	local layout_db = PitBull4.db.profile.layouts[self.layout]
+	local classification_db = self.classification_db
+	
+	self:SetWidth(layout_db.size_x * classification_db.size_x)
+	self:SetHeight(layout_db.size_y * classification_db.size_y)
+	self:SetScale(layout_db.scale * classification_db.scale)
+	
+	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
+	self:SetPoint("CENTER", UIParent, "CENTER", classification_db.position_x / scale, classification_db.position_y / scale)
+end
+
+--- Activate the unit frame.
+-- This is just a thin wrapper around RegisterUnitWatch.
+-- @usage frame:Activate()
+function SingletonUnitFrame:Activate()
 	RegisterUnitWatch(self)
 end
 UnitFrame.Activate = PitBull4:OutOfCombatWrapper(UnitFrame.Activate)
 
-function UnitFrame:Deactivate()
+--- Deactivate the unit frame.
+-- This is just a thin wrapper around UnregisterUnitWatch.
+-- @usage frame:Deactivate()
+function SingletonUnitFrame:Deactivate()
 	UnregisterUnitWatch(self)
 	self:Hide()
 end
@@ -278,16 +356,16 @@ end
 
 --- Check the guid of the Unit Frame, if it is changed, then update the frame.
 -- @param guid result from UnitGUID(unit)
--- @param forceUpdate force an update even if the guid isn't changed, but is non-nil
+-- @param force_update force an update even if the guid isn't changed, but is non-nil
 -- @usage frame:UpdateGUID(UnitGUID(frame.unit))
 -- @usage frame:UpdateGUID(UnitGUID(frame.unit), true)
-function UnitFrame:UpdateGUID(guid)
+function UnitFrame:UpdateGUID(guid, force_update)
 	--@alpha@
 	expect(guid, 'typeof', 'string;nil')
 	--@end-alpha@
 	
 	-- if the guids are the same, cut out, but don't if it's a wacky unit that has a guid.
-	if self.guid == guid and not (guid and self.is_wacky) then
+	if not force_update and self.guid == guid and not (guid and self.is_wacky) then
 		return
 	end
 	local previousGUID = self.guid

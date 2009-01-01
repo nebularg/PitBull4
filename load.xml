@@ -12,6 +12,7 @@
 <Include file="ModuleHandling\load.xml"/>
 
 <Script file="UnitFrame.lua"/>
+<Script file="GroupHeader.lua"/>
 
 <Include file="Controls\load.xml"/>
 

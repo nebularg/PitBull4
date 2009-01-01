@@ -84,6 +84,32 @@ do
 		return valid_singleton_unit_ids[unit]
 	end
 	
+	local valid_classifications = {
+		player = true,
+		pet = true,
+		mouseover = true,
+		focus = true,
+		target = true,
+		party = true,
+		partypet = true,
+		raid = true,
+		raidpet = true,
+	}
+	setmetatable(valid_classifications, target_same_mt)
+	
+	--- Return whether the classification is valid
+	-- @param classification the classification to check
+	-- @usage PitBull4.Utils.IsValidClassification("player") == true
+	-- @usage PitBull4.Utils.IsValidClassification("party") == true
+	-- @usage PitBull4.Utils.IsValidClassification("partytarget") == true
+	-- @usage PitBull4.Utils.IsValidClassification("partypettarget") == true
+	-- @usage PitBull4.Utils.IsValidClassification("party1") == false
+	-- @return whether it is a a valid classification
+	function PitBull4.Utils.IsValidClassification(unit)
+		return valid_classifications[unit]
+	end
+	
+	
 	local non_wacky_unit_ids = {
 		player = true,
 		pet = true,
