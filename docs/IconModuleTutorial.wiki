@@ -83,6 +83,11 @@ function PitBull4_HelloKittyIcon:GetTexture(frame)
 	    return nil
 	end
 end
+
+-- This will allow you to specify the TexCoord for the texture. This is completely optional to implement.
+function PitBull4_HelloKittyIcon:GetTexCoord(frame, texture)
+    return 0, 1, 0, 1
+end
 </code></pre>
 
 And that's it. You might be wondering about dealing with events such as when the target changes and the like, but since <tt>UnitSex</tt> doesn't change dynamically, PitBull takes care of all those details for you.
