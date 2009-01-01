@@ -43,6 +43,7 @@ local MODULE_UPDATE_ORDER = {
 	"text_provider",
 	"custom_text",
 	"custom",
+	"fader",
 }
 
 -----------------------------------------------------------------------------
@@ -208,6 +209,8 @@ function UnitFrame__scripts:OnShow()
 			self:UpdateGUID(guid)
 		end
 	end
+	
+	self:SetAlpha(PitBull4:GetFinalFrameOpacity(self))
 end
 
 function UnitFrame__scripts:OnHide()

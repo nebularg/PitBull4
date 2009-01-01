@@ -155,12 +155,19 @@ function PitBull4.Options.get_layout_options()
 		order = 3,
 		args = {}
 	}
+	
+	layout_options.args.faders = {
+		name = "Faders",
+		type = 'group',
+		order = 4,
+		args = {}
+	}
 
 	layout_options.args.other = {
 		name = "Other",
 		type = 'group',
 		childGroups = "tab",
-		order = 5,
+		order = 6,
 		args = {}
 	}
 	
@@ -1120,6 +1127,102 @@ function PitBull4.Options.get_layout_options()
 				end
 				
 				layout_options.args.texts.args.edit.args[id .. "-" .. k] = v
+			end
+		end
+	end
+	
+	layout_options.args.faders.args.min_opacity = {
+		type = 'range',
+		name = "Min opacity",
+		desc = "The minimum opacity that a shown frame can be.",
+		order = 1,
+		min = 0,
+		max = 1,
+		isPercent = true,
+		get = function(info)
+			return PitBull4.db.profile.layouts[CURRENT_LAYOUT].opacity_min
+		end,
+		set = function(info, value)
+			local db = PitBull4.db.profile.layouts[CURRENT_LAYOUT]
+			if value > db.opacity_max then
+				value = db.opacity_max
+			end
+			db.opacity_min = value
+			
+			UpdateFrames()
+			PitBull4:RecheckAllOpacities()
+		end,
+		step = 0.01,
+		bigStep = 0.05,
+	}
+	
+	layout_options.args.faders.args.max_opacity = {
+		type = 'range',
+		name = "Max opacity",
+		desc = "The maximum opacity that a shown frame can be.",
+		order = 2,
+		min = 0,
+		max = 1,
+		isPercent = true,
+		get = function(info)
+			return PitBull4.db.profile.layouts[CURRENT_LAYOUT].opacity_max
+		end,
+		set = function(info, value)
+			local db = PitBull4.db.profile.layouts[CURRENT_LAYOUT]
+			if value < db.opacity_min then
+				value = db.opacity_min
+			end
+			db.opacity_max = value
+			
+			UpdateFrames()
+			PitBull4:RecheckAllOpacities()
+		end,
+		step = 0.01,
+		bigStep = 0.05,
+	}
+	
+	for id, module in PitBull4:IterateModulesOfType("fader", true) do
+		layout_options.args.faders.args[id] = {
+			type = 'group',
+			inline = true,
+			name = module.name,
+			desc = module.description,
+			args = {
+				enable = {
+					type = 'toggle',
+					name = 'Enable',
+					get = function(info)
+						return not module:GetLayoutDB(CURRENT_LAYOUT).hidden
+					end,
+					set = function(info, value)
+						module:GetLayoutDB(CURRENT_LAYOUT).hidden = not value
+						
+						UpdateFrames()
+						PitBull4:RecheckAllOpacities()
+					end,
+				},
+			},
+			hidden = function(info)
+				return not module:IsEnabled()
+			end
+		}
+		
+		local args = layout_options.args.faders.args[id].args
+		
+		if layout_functions[module] then
+			local t = { layout_functions[module](module) }
+			layout_functions[module] = false
+
+			local order = 100
+			for i = 1, #t, 2 do
+				local k = t[i]
+				local v = t[i+1]
+
+				order = order + 1
+
+				v.order = order
+				
+				args[k] = v
 			end
 		end
 	end
