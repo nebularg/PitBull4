@@ -21,7 +21,7 @@ PitBull4_DogTagTexts:SetDefaults({
 			position = 1,
 			code = "",
 		},
-		n = 8,
+		n = 9,
 		{
 			name = "Name",
 			code = "[Name] [(AFK or DND):Angle]",
@@ -68,6 +68,12 @@ PitBull4_DogTagTexts:SetDefaults({
 			name = "Experience",
 			code = "[FractionalXP] [PercentXP:Percent:Paren] [Concatenate('R: ', PercentRestXP:Hide(0):Percent)]",
 			attach_to = "ExperienceBar",
+			location = "center",
+		},
+		{
+			name = "Threat",
+			code = "[PercentThreat:Short:Hide(0):Percent]",
+			attach_to = "ThreatBar",
 			location = "center",
 		},
 	},

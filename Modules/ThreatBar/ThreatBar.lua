@@ -21,19 +21,28 @@ function PitBull4_ThreatBar:OnEnable()
 	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE")
 end
 
+local ACCEPTABLE_CLASSIFICATIONS = {
+	player = true,
+	pet = true,
+	party = true,
+	raid = true,
+	partypet = true,
+	raidpet = true,
+}
+
 function PitBull4_ThreatBar:GetValue(frame)
-	unit = frame.unit 
+	if not ACCEPTABLE_CLASSIFICATIONS[frame.classification] then
+		return nil
+	end
+	unit = frame.unit
     
-	if unit == "player" or unit == "pet" then
-		local _,_,threatpct = UnitDetailedThreatSituation(unit, "target");
-        
-		if threatpct then
-			return threatpct / 100
-		end
+	local _,_,threatpct = UnitDetailedThreatSituation(unit, "target");
+       
+	if not threatpct then
+		return nil
 	end
     
-	return nil
-    
+	return threatpct / 100
 end
 
 function PitBull4_ThreatBar:GetColor(frame, value)
