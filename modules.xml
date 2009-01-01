@@ -17,6 +17,7 @@
 <Include file="Modules\LeaderIcon\load.xml"/>
 <Include file="Modules\ManaSpark\load.xml"/>
 <Include file="Modules\MasterLooterIcon\load.xml"/>
+<Include file="Modules\Portrait\load.xml"/>
 <Include file="Modules\PowerBar\load.xml"/>
 <Include file="Modules\PvPIcon\load.xml"/>
 <Include file="Modules\RaidTargetIcon\load.xml"/>

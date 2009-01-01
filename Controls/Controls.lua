@@ -203,6 +203,18 @@ function PitBull4.Controls.MakeFontString(parent, layer)
 	return fetch_control("FontString", parent, false, layer)
 end
 
+--- Make a frame
+-- @param parent frame the frame is parented to
+-- @usage local frame = PitBull4.Controls.MakeFrame(someFrame)
+-- @return a Frame object
+function PitBull4.Controls.MakePlayerModel(parent)
+	--@alpha@
+	expect(parent, 'typeof', 'frame')
+	--@end-alpha@
+	
+	return fetch_control("PlayerModel", parent)
+end
+
 --- Make a new control type
 -- @param name name of your control type
 -- @param frameType the real frame type to base upon

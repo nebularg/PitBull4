@@ -63,7 +63,11 @@ end
 function PitBull4.Options.get_layout_options()
 	local function merge_onto(dict, ...)
 		for i = 1, select('#', ...), 2 do
-			dict[(select(i, ...))] = (select(i+1, ...))
+			local k, v = select(i, ...)
+			if not v.order then
+				v.order = 100 + i
+			end
+			dict[k] = v
 		end
 	end
 
