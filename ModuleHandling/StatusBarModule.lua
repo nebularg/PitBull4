@@ -9,7 +9,7 @@ local StatusBarModule = PitBull4:NewModuleType("status_bar", {
 	background_alpha = 1,
 	position = 1,
 	side = 'center',
-	hidden = false,
+	enabled = true,
 })
 
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
@@ -49,7 +49,7 @@ function StatusBarModule:UpdateFrame(frame)
 	
 	local id = self.id
 	local layout_db = self:GetLayoutDB(frame)
-	if not frame.guid or layout_db.hidden then
+	if not frame.guid or not layout_db.enabled then
 		return self:ClearFrame(frame)
 	end
 	

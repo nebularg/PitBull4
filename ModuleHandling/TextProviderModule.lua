@@ -11,7 +11,7 @@ local TextProviderModule = PitBull4:NewModuleType("text_provider", {
 		},
 		n = 1,
 	},
-	hidden = false,
+	enabled = true,
 })
 
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
@@ -59,7 +59,7 @@ function TextProviderModule:UpdateFrame(frame)
 	--@end-alpha@
 	
 	local db = self:GetLayoutDB(frame)
-	if not frame.guid or db.hidden or db.texts.n == 0 then
+	if not frame.guid or not db.enabled or db.texts.n == 0 then
 		return self:ClearFrame(frame)
 	end
 	

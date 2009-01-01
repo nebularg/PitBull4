@@ -11,7 +11,9 @@ local OPACITY_POINTS_PER_SECOND = 1 / FADE_TIME
 local MANA_TYPE = 0
 ------------------------------------------------------------------------------
 
-local FaderModule = PitBull4:NewModuleType("fader", {})
+local FaderModule = PitBull4:NewModuleType("fader", {
+	enabled = true,
+})
 
 -- a dictionary of module to a dictionary of frame to final opacity level
 local module_to_frame_to_opacity = {}
@@ -120,7 +122,7 @@ function FaderModule:UpdateFrame(frame)
 	end
 	
 	local layout_db = self:GetLayoutDB(frame)
-	if not frame.guid or layout_db.hidden then
+	if not frame.guid or not layout_db.enabled then
 		return self:ClearFrame(frame)
 	end
 	

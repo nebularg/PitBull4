@@ -20,10 +20,10 @@ function PitBull4.Options.get_unit_options()
 					type = 'toggle',
 					order = 1,
 					get = function(info)
-						return not PitBull4.db.profile.classifications[classification].hidden
+						return PitBull4.db.profile.classifications[classification].enabled
 					end,
 					set = function(info, value)
-						PitBull4.db.profile.classifications[classification].hidden = not value
+						PitBull4.db.profile.classifications[classification].enabled = value
 						
 						if value then
 							PitBull4:MakeSingletonFrame(classification)

@@ -59,7 +59,7 @@ function PitBull4_CombatText:ClearFrame(frame)
 end
 
 function PitBull4_CombatText:UpdateFrame(frame)
-	if self:GetLayoutDB(frame).hidden then
+	if not self:GetLayoutDB(frame).enabled then
 		return false
 	end
 

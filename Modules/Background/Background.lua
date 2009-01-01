@@ -15,7 +15,7 @@ PitBull4_Background:SetDefaults({
 })
 
 function PitBull4_Background:UpdateFrame(frame)
-	if self:GetLayoutDB(frame).hidden then
+	if not self:GetLayoutDB(frame).enabled then
 		return self:ClearFrame(frame)
 	end
 	

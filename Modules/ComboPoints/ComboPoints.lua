@@ -49,7 +49,7 @@ function PitBull4_ComboPoints:ClearFrame(frame)
 end
 
 function PitBull4_ComboPoints:UpdateFrame(frame)
-	if not frame.guid or self:GetLayoutDB(frame).hidden or frame.unit ~= "target" then
+	if not frame.guid or not self:GetLayoutDB(frame).enabled or frame.unit ~= "target" then
 		return self:ClearFrame(frame)
 	end
 	

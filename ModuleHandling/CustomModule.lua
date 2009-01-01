@@ -1,7 +1,9 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
-local CustomModule = PitBull4:NewModuleType("custom", {})
+local CustomModule = PitBull4:NewModuleType("custom", {
+	enabled = true,
+})
 
 --- Does nothing. This should be implemented by the module.
 -- When implementing, this should return whether :UpdateLayout(frame) should be called.

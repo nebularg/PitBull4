@@ -30,7 +30,7 @@ local DATABASE_DEFAULTS = {
 	profile = {
 		classifications = {
 			['**'] = {
-				hidden = false,
+				enabled = true,
 				position_x = 0,
 				position_y = 0,
 				size_x = 1, -- this is a multiplier
@@ -564,12 +564,12 @@ function PitBull4:OnEnable()
 	-- show initial frames
 	local db_classifications = db.profile.classifications
 	for _, classification in ipairs(SINGLETON_CLASSIFICATIONS) do
-		if not db_classifications[classification].hidden then
+		if db_classifications[classification].enabled then
 			self:MakeSingletonFrame(classification)
 		end
 	end
 	
-	if not db_classifications["party"].hidden then
+	if db_classifications["party"].enabled then
 		self:MakeGroupHeader("party")
 	end
 end

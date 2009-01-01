@@ -8,7 +8,7 @@ local IconModule = PitBull4:NewModuleType("icon", {
 	attach_to = "root",
 	location = "edge_top_left",
 	position = 1,
-	hidden = false,
+	enabled = true,
 })
 
 --- Clear the icon for the current module if it exists.
@@ -41,7 +41,7 @@ function IconModule:UpdateFrame(frame)
 	--@end-alpha@
 	
 	local id = self.id
-	if not frame.guid or self:GetLayoutDB(frame).hidden then
+	if not frame.guid or not self:GetLayoutDB(frame).enabled then
 		return self:ClearFrame(frame)
 	end
 	

@@ -206,10 +206,10 @@ function PitBull4.Options.get_layout_options()
 			name = "Enable",
 			order = 1,
 			get = function(info)
-				return not GetLayoutDB(info[3]).hidden
+				return GetLayoutDB(info[3]).enabled
 			end,
 			set = function(info, value)
-				GetLayoutDB(info[3]).hidden = not value
+				GetLayoutDB(info[3]).enabled = value
 				
 				UpdateFrames()
 			end
@@ -481,10 +481,10 @@ function PitBull4.Options.get_layout_options()
 			name = "Enable",
 			order = 1,
 			get = function(info)
-				return not GetLayoutDB(info[3]).hidden
+				return GetLayoutDB(info[3]).enabled
 			end,
 			set = function(info, value)
-				GetLayoutDB(info[3]).hidden = not value
+				GetLayoutDB(info[3]).enabled = value
 				
 				UpdateFrames()
 			end
@@ -839,10 +839,10 @@ function PitBull4.Options.get_layout_options()
 		name = "Enable",
 		order = 1,
 		get = function(info)
-			return not CURRENT_CUSTOM_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).hidden
+			return CURRENT_CUSTOM_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).enabled
 		end,
 		set = function(info, value)
-			CURRENT_CUSTOM_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).hidden = not value
+			CURRENT_CUSTOM_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).enabled = value
 			
 			UpdateFrames()
 		end,
@@ -1192,10 +1192,10 @@ function PitBull4.Options.get_layout_options()
 					type = 'toggle',
 					name = 'Enable',
 					get = function(info)
-						return not module:GetLayoutDB(CURRENT_LAYOUT).hidden
+						return module:GetLayoutDB(CURRENT_LAYOUT).enabled
 					end,
 					set = function(info, value)
-						module:GetLayoutDB(CURRENT_LAYOUT).hidden = not value
+						module:GetLayoutDB(CURRENT_LAYOUT).enabled = value
 						
 						UpdateFrames()
 						PitBull4:RecheckAllOpacities()
@@ -1319,10 +1319,10 @@ function PitBull4.Options.get_layout_options()
 						name = "Enable",
 						order = 1,
 						get = function(info)
-							return not GetLayoutDB(module).hidden
+							return GetLayoutDB(module).enabled
 						end,
 						set = function(info, value)
-							GetLayoutDB(module).hidden = not value
+							GetLayoutDB(module).enabled = value
 
 							UpdateFrames()
 						end

@@ -11,6 +11,7 @@ PitBull4_CombatFader:SetModuleType("fader")
 PitBull4_CombatFader:SetName("Combat Fader")
 PitBull4_CombatFader:SetDescription("Make the unit frame fade if out of combat.")
 PitBull4_CombatFader:SetDefaults({
+	enabled = false,
 	hurt_opacity = 0.75,
 	in_combat_opacity = 1,
 	out_of_combat_opacity = 0.25,
