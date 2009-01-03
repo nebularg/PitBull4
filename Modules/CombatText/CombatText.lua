@@ -17,6 +17,8 @@ local COMBATFEEDBACK_FADEINTIME_AND_HOLDTIME_AND_FADEOUTTIME = COMBATFEEDBACK_FA
 local CRITICAL_HARM_SIZE_MODIFIER = 1.5
 local CRITICAL_HELP_SIZE_MODIFIER = 1.3
 local BLOCK_SIZE_MODIFIER = 0.75
+
+local EXAMPLE_TEXT = "123"
 -----------------------------------------------------------------------------
 
 
@@ -72,6 +74,12 @@ function PitBull4_CombatText:UpdateFrame(frame)
 	end
 	local font, size = self:GetFont(frame)
 	font_string:SetFont(font, size * font_string.size_modifier, "OUTLINE")
+	
+	if frame.force_show and not frame.guid then
+		font_string:SetText(EXAMPLE_TEXT)
+	elseif font_string:GetText() == EXAMPLE_TEXT then
+		font_string:SetText("")
+	end
 	
 	return created
 end
