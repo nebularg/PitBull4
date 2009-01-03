@@ -52,6 +52,15 @@ function PitBull4_MasterLooterIcon:GetTexture(frame)
 	return [[Interface\GroupFrame\UI-Group-MasterLooter]]
 end
 
+function PitBull4_MasterLooterIcon:GetExampleTexture(frame)
+	local unit = frame.unit
+	if unit == "player" or unit:match("^raid(%d%d?)$") or unit:match("^party(%d)$") then
+		return [[Interface\GroupFrame\UI-Group-MasterLooter]]
+	else
+		return nil
+	end
+end
+
 function PitBull4_MasterLooterIcon:GetTexCoord(frame, texture)
 	return 0.15, 0.9, 0.15, 0.9
 end

@@ -45,6 +45,13 @@ function PitBull4_ThreatBar:GetValue(frame)
 	return threatpct / 100
 end
 
+function PitBull4_ThreatBar:GetExampleValue(frame)
+	if not ACCEPTABLE_CLASSIFICATIONS[frame.classification] then
+		return nil
+	end
+	return 0.5
+end
+
 function PitBull4_ThreatBar:GetColor(frame, value)
 	local _, status = UnitDetailedThreatSituation(frame.unit, "target")
 	

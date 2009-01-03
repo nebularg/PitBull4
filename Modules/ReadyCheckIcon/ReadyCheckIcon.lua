@@ -37,6 +37,39 @@ function PitBull4_ReadyCheckIcon:GetTexture(frame)
 	return status_to_texture[guid_to_status[frame.guid]]
 end
 
+local EXAMPLE_CLASSIFICATIONS = {
+	player = true,
+	party = true,
+	raid = true,
+}
+function PitBull4_ReadyCheckIcon:GetExampleTexture(frame)
+	if not EXAMPLE_CLASSIFICATIONS[frame.classification] then
+		return nil
+	end
+	
+	local unit = frame.unit
+	local index = unit:match("(%d+)")
+	if index then
+		index = index+0
+	else
+		index = 0
+	end
+	index = index + #unit + unit:byte()
+	
+	index = index % 3
+	
+	local status
+	if index == 0 then
+		status = "ready"
+	elseif index == 1 then
+		status = "notready"
+	else
+		status = "waiting"
+	end
+	
+	return status_to_texture[status]
+end
+
 function PitBull4_ReadyCheckIcon:CacheReachCheckStatuses()
 	wipe(guid_to_status)
 	if not IsRaidLeader() and not IsRaidOfficer() and not IsPartyLeader() then

@@ -36,6 +36,34 @@ function PitBull4_PvPIcon:GetTexture(frame)
 	return [[Interface\TargetingFrame\UI-PVP-]] .. (UnitFactionGroup(unit) or UnitFactionGroup("player"))
 end
 
+local FRIENDLY_CLASSIFICATIONS = {
+	player = true,
+	pet = true,
+	party = true,
+	partypet = true,
+	raid = true,
+	raidpet = true,
+	targettarget = true,
+}
+local OPPOSITE_PLAYER_FACTION = {
+	["Horde"] = "Alliance",
+	["Alliance"] = "Horde",
+}
+function PitBull4_PvPIcon:GetExampleTexture(frame)
+	local classification = frame.classification
+	if classification == "focus" then
+		return [[Interface\TargetingFrame\UI-PVP-FFA]]
+	end
+	
+	local player_faction = UnitFactionGroup("player")
+	
+	if FRIENDLY_CLASSIFICATIONS[classification] then
+		return [[Interface\TargetingFrame\UI-PVP-]] .. player_faction
+	else
+		return [[Interface\TargetingFrame\UI-PVP-]] .. OPPOSITE_PLAYER_FACTION[player_faction]
+	end
+end
+
 local tex_coords = {
 	[ [[Interface\TargetingFrame\UI-PVP-FFA]] ] = {0.05, 0.605, 0.015, 0.57},
 	[ [[Interface\TargetingFrame\UI-PVP-Horde]] ] = {0.08, 0.58, 0.045, 0.545},

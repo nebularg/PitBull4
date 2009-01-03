@@ -33,6 +33,22 @@ function PitBull4_RaidTargetIcon:GetTexture(frame)
 	return [[Interface\TargetingFrame\UI-RaidTargetingIcon_]] .. index
 end
 
+function PitBull4_RaidTargetIcon:GetExampleTexture(frame)
+	local unit = frame.unit
+	
+	local index = unit:match("(%d+)")
+	if index then
+		index = index+0
+	else
+		index = 0
+	end
+	index = index + #unit + unit:byte()
+	
+	index = (index % 8) + 1
+	
+	return [[Interface\TargetingFrame\UI-RaidTargetingIcon_]] .. index
+end
+
 function PitBull4_RaidTargetIcon:RAID_TARGET_UPDATE()
 	self:UpdateAll()
 end

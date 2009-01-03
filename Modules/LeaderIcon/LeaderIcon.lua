@@ -46,6 +46,15 @@ function PitBull4_LeaderIcon:GetTexture(frame)
 	return [[Interface\GroupFrame\UI-Group-LeaderIcon]]
 end
 
+function PitBull4_LeaderIcon:GetExampleTexture(frame)
+	local unit = frame.unit
+	if unit == "player" or unit:match("^raid(%d%d?)$") or unit:match("^party(%d)$") then
+		return [[Interface\GroupFrame\UI-Group-LeaderIcon]]
+	else
+		return nil
+	end
+end
+
 function PitBull4_LeaderIcon:GetTexCoord(frame, texture)
 	return 0.1, 0.84, 0.14, 0.88
 end

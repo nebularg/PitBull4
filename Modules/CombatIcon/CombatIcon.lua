@@ -28,6 +28,10 @@ function PitBull4_CombatIcon:GetTexture(frame)
 	end
 end
 
+function PitBull4_CombatIcon:GetExampleTexture(frame)
+	return [[Interface\CharacterFrame\UI-StateIcon]]
+end
+
 function PitBull4_CombatIcon:GetTexCoord(frame, texture)
 	return 0.57, 0.90, 0.08, 0.41
 end

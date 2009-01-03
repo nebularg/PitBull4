@@ -36,6 +36,18 @@ function PitBull4_ReputationBar:GetColor(frame, value)
 	end
 end
 
+function PitBull4_ReputationBar:GetExampleValue(frame)
+	if frame.unit ~= "player" then
+		return nil
+	end
+	return 0.3
+end
+
+function PitBull4_ReputationBar:GetExampleColor(frame)
+	local color = FACTION_BAR_COLORS[5]
+	return color.r, color.g, color.b
+end
+
 hooksecurefunc("ReputationWatchBar_Update", function()
 	if not PitBull4_ReputationBar:IsEnabled() then
 		return

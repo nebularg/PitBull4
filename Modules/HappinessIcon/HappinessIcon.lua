@@ -33,6 +33,14 @@ function PitBull4_HappinessIcon:GetTexture(frame)
 	return [[Interface\PetPaperDollFrame\UI-PetHappiness]]
 end
 
+function PitBull4_HappinessIcon:GetExampleTexture(frame)
+	if frame.unit ~= "pet" then
+		return nil
+	end
+	
+	return [[Interface\PetPaperDollFrame\UI-PetHappiness]]
+end
+
 local tex_coords = {
 	-- unhappy
 	{0.375, 0.5625, 0, 0.359375},

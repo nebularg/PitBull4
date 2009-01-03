@@ -33,6 +33,14 @@ function PitBull4_RestIcon:GetTexture(frame)
 	end
 end
 
+function PitBull4_RestIcon:GetExampleTexture(frame)
+	if frame.unit ~= "player" then
+		return nil
+	end
+	
+	return [[Interface\CharacterFrame\UI-StateIcon]]
+end
+
 function PitBull4_RestIcon:GetTexCoord(frame, texture)
 	return 0.09, 0.43, 0.08, 0.42
 end

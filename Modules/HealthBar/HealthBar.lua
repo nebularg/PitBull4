@@ -12,7 +12,7 @@ PitBull4_HealthBar:SetName("Health Bar")
 PitBull4_HealthBar:SetDescription("Show a health bar.")
 PitBull4_HealthBar:SetDefaults({
 	position = 1,
-	colorByClass = true,
+	color_by_class = true,
 })
 
 local timerFrame = CreateFrame("Frame")
@@ -43,8 +43,12 @@ function PitBull4_HealthBar:GetValue(frame)
 	return UnitHealth(frame.unit) / UnitHealthMax(frame.unit)
 end
 
+function PitBull4_HealthBar:GetExampleValue(frame)
+	return 0.8
+end
+
 function PitBull4_HealthBar:GetColor(frame, value)
-	if self:GetLayoutDB(frame).colorByClass then
+	if self:GetLayoutDB(frame).color_by_class then
 		local _, class = UnitClass(frame.unit)
 		local t = RAID_CLASS_COLORS[class]
 		if t then
@@ -69,15 +73,15 @@ function PitBull4_HealthBar:UNIT_HEALTH(event, unit)
 end
 
 PitBull4_HealthBar:SetLayoutOptionsFunction(function(self)
-	return 'colorByClass', {
+	return 'color_by_class', {
 		name = "Color by class",
 		desc = "Color the health bar by unit class",
 		type = 'toggle',
 		get = function(info)
-			return PitBull4.Options.GetLayoutDB(self).colorByClass
+			return PitBull4.Options.GetLayoutDB(self).color_by_class
 		end,
 		set = function(info, value)
-			PitBull4.Options.GetLayoutDB(self).colorByClass = value
+			PitBull4.Options.GetLayoutDB(self).color_by_class = value
 			
 			PitBull4.Options.UpdateFrames()
 		end
