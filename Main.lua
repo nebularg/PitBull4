@@ -43,8 +43,8 @@ local DATABASE_DEFAULTS = {
 		},
 		layouts = {
 			['**'] = {
-				size_x = 300,
-				size_y = 100,
+				size_x = 200,
+				size_y = 60,
 				opacity_min = 0.1,
 				opacity_max = 1,
 				scale = 1,

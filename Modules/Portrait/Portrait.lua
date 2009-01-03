@@ -30,6 +30,7 @@ PitBull4_Portrait:SetDefaults({
 	full_body = false,
 	style = "three_dimensional",
 	fallback_style = "three_dimensional",
+	enabled = false,
 })
 
 function PitBull4_Portrait:OnEnable()
