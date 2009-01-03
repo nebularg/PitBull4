@@ -55,6 +55,10 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 	
 	local num_combos = GetComboPoints(UnitHasVehicleUI("player") and "vehicle" or "player", "target")
 	
+	if frame.force_show then
+		num_combos = 5
+	end
+	
 	if num_combos == 0 then
 		return self:ClearFrame(frame)
 	end
