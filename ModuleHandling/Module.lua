@@ -238,7 +238,7 @@ function Module:Update(frame, return_changed)
 	local changed
 	
 	local layout_db = self:GetLayoutDB(frame)
-	if not frame.guid or not layout_db.enabled then
+	if not layout_db.enabled or (not frame.guid and not frame.force_show) then
 		changed = self:ClearFrame(frame)
 	else
 		changed = self:UpdateFrame(frame)

@@ -324,6 +324,17 @@ function SingletonUnitFrame:Deactivate()
 end
 UnitFrame.Deactivate = PitBull4:OutOfCombatWrapper(UnitFrame.Deactivate)
 
+function UnitFrame:ForceShow()
+	self.force_show = true
+	UnregisterUnitWatch(self)
+	self:Show()
+end
+
+function UnitFrame:UnforceShow()
+	self.force_show = nil
+	RegisterUnitWatch(self)
+end
+
 --- Update all details about the UnitFrame, possibly after a GUID change
 -- @param same_guid whether the previous GUID is the same as the current, at which point is less crucial to update
 -- @param update_layout whether to update the layout no matter what
@@ -332,7 +343,7 @@ UnitFrame.Deactivate = PitBull4:OutOfCombatWrapper(UnitFrame.Deactivate)
 -- @usage frame:Update(false, true)
 function UnitFrame:Update(same_guid, update_layout)
 	-- TODO: something with same_guid
-	if not self.guid then
+	if not self.guid and not self.force_show then
 	 	if self.populated then
 			self.populated = nil
 			

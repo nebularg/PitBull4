@@ -39,7 +39,14 @@ function PitBull4:SetConfigMode(kind)
 	end
 	PitBull4.config_mode = kind
 	
-	for frame in self:IterateFrames() do
+	for frame in self:IterateFrames(true) do
+		if frame.is_singleton then
+			if kind then
+				frame:ForceShow()
+			else
+				frame:UnforceShow()
+			end
+		end
 		frame:Update(true, true)
 	end
 end
