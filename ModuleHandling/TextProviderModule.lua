@@ -103,7 +103,7 @@ function TextProviderModule:UpdateFrame(frame)
 			end
 			font_string:SetFont(font or DEFAULT_FONT, DEFAULT_FONT_SIZE * text_db.size)
 			font_string.db = text_db
-			if not self:HandleFontString(frame, font_string, text_db) then
+			if not self:AddFontString(frame, font_string, text_db) then
 				self:RemoveFontString(font_string)
 				font_string.db = nil
 				texts[i] = font_string:Delete()

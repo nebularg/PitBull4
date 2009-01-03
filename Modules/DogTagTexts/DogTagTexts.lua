@@ -170,7 +170,8 @@ local unit_kwargs = setmetatable({}, {__mode='kv', __index=function(self, unit)
 	return self[unit]
 end})
 
-function PitBull4_DogTagTexts:RealHandleFontString(frame, font_string, data)
+-- this will replace the normal :AddFontString
+function PitBull4_DogTagTexts:_AddFontString(frame, font_string, data)
 	if frame.force_show and not frame.guid and data.name ~= "Name" then
 		LibDogTag:RemoveFontString(font_string)
 		font_string:SetText(("[%s]"):format(data.name))
@@ -185,13 +186,13 @@ function PitBull4_DogTagTexts:RealHandleFontString(frame, font_string, data)
 	return true
 end
 
-function PitBull4_DogTagTexts:HandleFontString(...)
+function PitBull4_DogTagTexts:AddFontString(...)
 	run_first()
 	
-	self.HandleFontString = self.RealHandleFontString
-	self.RealHandleFontString = nil
+	self.AddFontString = self._AddFontString
+	self._AddFontString = nil
 	
-	return PitBull4_DogTagTexts:HandleFontString(...)
+	return PitBull4_DogTagTexts:AddFontString(...)
 end
 
 function PitBull4_DogTagTexts:RemoveFontString(font_string)
