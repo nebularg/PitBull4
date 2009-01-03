@@ -82,7 +82,7 @@ local function icon_OnUpdate(self, elapsed)
 end
 
 function PitBull4_VoiceIcon:UpdateFrame(frame)
-	if not UnitIsTalking(frame.unit) then
+	if not UnitIsTalking(frame.unit) and not frame.force_show then
 		return self:ClearFrame(frame)
 	end
 	
