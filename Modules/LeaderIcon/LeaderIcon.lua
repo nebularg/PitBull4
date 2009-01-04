@@ -5,11 +5,13 @@ if not PitBull4 then
 	error("PitBull4_LeaderIcon requires PitBull4")
 end
 
+local L = PitBull4.L
+
 local PitBull4_LeaderIcon = PitBull4:NewModule("LeaderIcon", "AceEvent-3.0", "AceTimer-3.0")
 
 PitBull4_LeaderIcon:SetModuleType("icon")
-PitBull4_LeaderIcon:SetName("Leader Icon")
-PitBull4_LeaderIcon:SetDescription("Show an icon on the unit frame when the unit is the group leader.")
+PitBull4_LeaderIcon:SetName(L["Leader icon"])
+PitBull4_LeaderIcon:SetDescription(L["Show an icon on the unit frame when the unit is the group leader."])
 PitBull4_LeaderIcon:SetDefaults({
 	attach_to = "root",
 	location = "edge_top_left",

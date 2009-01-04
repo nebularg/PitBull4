@@ -5,11 +5,13 @@ if not PitBull4 then
 	error("PitBull4_Highlight requires PitBull4")
 end
 
+local L = PitBull4.L
+
 local PitBull4_Highlight = PitBull4:NewModule("Highlight")
 
 PitBull4_Highlight:SetModuleType("custom")
-PitBull4_Highlight:SetName("Highlight")
-PitBull4_Highlight:SetDescription("Show a highlight when hovering or targeting.")
+PitBull4_Highlight:SetName(L["Highlight"])
+PitBull4_Highlight:SetDescription(L["Show a highlight when hovering or targeting."])
 PitBull4_Highlight:SetDefaults({})
 
 function PitBull4_Highlight:OnEnable()

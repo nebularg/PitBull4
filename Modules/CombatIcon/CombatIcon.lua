@@ -5,11 +5,13 @@ if not PitBull4 then
 	error("PitBull4_CombatIcon requires PitBull4")
 end
 
+local L = PitBull4.L
+
 local PitBull4_CombatIcon = PitBull4:NewModule("CombatIcon", "AceTimer-3.0")
 
 PitBull4_CombatIcon:SetModuleType("icon")
-PitBull4_CombatIcon:SetName("Combat Icon")
-PitBull4_CombatIcon:SetDescription("Show an icon based on whether or not the unit is in combat.")
+PitBull4_CombatIcon:SetName(L["Combat icon"])
+PitBull4_CombatIcon:SetDescription(L["Show an icon based on whether or not the unit is in combat."])
 PitBull4_CombatIcon:SetDefaults({
 	attach_to = "root",
 	location = "edge_bottom_left",

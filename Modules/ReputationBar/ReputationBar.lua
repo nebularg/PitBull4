@@ -5,11 +5,13 @@ if not PitBull4 then
 	error("PitBull4_ReputationBar requires PitBull4")
 end
 
+local L = PitBull4.L
+
 local PitBull4_ReputationBar = PitBull4:NewModule("ReputationBar")
 
 PitBull4_ReputationBar:SetModuleType("status_bar")
-PitBull4_ReputationBar:SetName("Reputation Bar")
-PitBull4_ReputationBar:SetDescription("Show a reputation bar.")
+PitBull4_ReputationBar:SetName(L["Reputation bar"])
+PitBull4_ReputationBar:SetDescription(L["Show a reputation bar."])
 PitBull4_ReputationBar:SetDefaults({
 	size = 1,
 	position = 3,

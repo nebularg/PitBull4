@@ -5,11 +5,13 @@ if not PitBull4 then
 	error("PitBull4_PvPIcon requires PitBull4")
 end
 
+local L = PitBull4.L
+
 local PitBull4_PvPIcon = PitBull4:NewModule("PvPIcon", "AceEvent-3.0")
 
 PitBull4_PvPIcon:SetModuleType("icon")
-PitBull4_PvPIcon:SetName("PvP Icon")
-PitBull4_PvPIcon:SetDescription("Show an icon on the unit frame when the unit is in PvP mode.")
+PitBull4_PvPIcon:SetName(L["PvP icon"])
+PitBull4_PvPIcon:SetDescription(L["Show an icon on the unit frame when the unit is in PvP mode."])
 PitBull4_PvPIcon:SetDefaults({
 	attach_to = "root",
 	location = "edge_top_right",

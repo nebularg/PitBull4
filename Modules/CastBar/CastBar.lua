@@ -4,12 +4,13 @@ local PitBull4 = _G.PitBull4
 if not PitBull4 then
 	error("PitBull4_CastBar requires PitBull4")
 end
+local L = PitBull4.L
 
 local PitBull4_CastBar = PitBull4:NewModule("CastBar", "AceEvent-3.0")
 
 PitBull4_CastBar:SetModuleType("status_bar")
-PitBull4_CastBar:SetName("Cast Bar")
-PitBull4_CastBar:SetDescription("Show a cast bar.")
+PitBull4_CastBar:SetName(L["Cast bar"])
+PitBull4_CastBar:SetDescription(L["Show a cast bar."])
 PitBull4_CastBar:SetDefaults({
 	size = 1,
 	position = 10,

@@ -5,11 +5,13 @@ if not PitBull4 then
 	error("PitBull4_HideBlizzard requires PitBull4")
 end
 
+local L = PitBull4.L
+
 local PitBull4_HideBlizzard = PitBull4:NewModule("HideBlizzard")
 
 PitBull4_HideBlizzard:SetModuleType("custom")
-PitBull4_HideBlizzard:SetName("Hide Blizzard Frames")
-PitBull4_HideBlizzard:SetDescription("Hide Blizzard frames that are no longer needed.")
+PitBull4_HideBlizzard:SetName(L["Hide Blizzard frames"])
+PitBull4_HideBlizzard:SetDescription(L["Hide Blizzard frames that are no longer needed."])
 PitBull4_HideBlizzard:SetDefaults({}, {
 	player = true,
 	party = true,
@@ -220,38 +222,38 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 	end
 	return 'player', {
 		type = 'toggle',
-		name = "Player",
-		desc = "Hide the standard player frame.",
+		name = L["Player"],
+		desc = L["Hide the standard player frame."],
 		get = get,
 		set = set,
 	}, 'party', {
 		type = 'toggle',
-		name = "Party",
-		desc = "Hide the standard party frames.",
+		name = L["Party"],
+		desc = L["Hide the standard party frames."],
 		get = get,
 		set = set,
 	}, 'target', {
 		type = 'toggle',
-		name = "Target",
-		desc = "Hides the standard target frame.",
+		name = L["Target"],
+		desc = L["Hide the standard target frame."],
 		get = get,
 		set = set,
 	}, 'focus', {
 		type = 'toggle',
-		name = "Focus",
-		desc = "Hides the standard focus frame.",
+		name = L["Focus"],
+		desc = L["Hide the standard focus frame."],
 		get = get,
 		set = set,
 	}, 'castbar', {
 		type = 'toggle',
-		name = "Cast bar",
-		desc = "Hides the standard cast bar.",
+		name = L["Cast bar"],
+		desc = L["Hides the standard cast bar."],
 		get = get,
 		set = set,
 	}, 'aura', {
 		type = 'toggle',
-		name = "Buffs/Debuffs",
-		desc = "Hides the standard buff/debuff frame in the top-right corner of the screen.",
+		name = L["Buffs/debuffs"],
+		desc = L["Hides the standard buff/debuff frame in the top-right corner of the screen."],
 		get = get,
 		set = set,
 	}

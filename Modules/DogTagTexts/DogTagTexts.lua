@@ -5,13 +5,15 @@ if not PitBull4 then
 	error("PitBull4_CombatIcon requires PitBull4")
 end
 
+local L = PitBull4.L
+
 local PitBull4_DogTagTexts = PitBull4:NewModule("DogTagTexts")
 
 local LibDogTag
 
 PitBull4_DogTagTexts:SetModuleType("text_provider")
-PitBull4_DogTagTexts:SetName("DogTag-3.0 Texts")
-PitBull4_DogTagTexts:SetDescription("Show an icon based on whether or not the unit is in combat.")
+PitBull4_DogTagTexts:SetName(L["DogTag-3.0 texts"])
+PitBull4_DogTagTexts:SetDescription(L["Text provider for LibDogTag-3.0 texts."])
 PitBull4_DogTagTexts:SetDefaults({
 	texts = {
 		['**'] = {
@@ -23,61 +25,61 @@ PitBull4_DogTagTexts:SetDefaults({
 		},
 		n = 10,
 		{
-			name = "Name",
+			name = L["Name"],
 			code = "[Name] [(AFK or DND):Angle]",
 			attach_to = "HealthBar",
 			location = "left"
 		},
 		{
-			name = "Health",
+			name = L["Health"],
 			code = "[Status or (if IsFriend then MissingHP:Hide(0):Short:Color('ff7f7f') else FractionalHP(known=true):Short or PercentHP:Percent)]",
 			attach_to = "HealthBar",
 			location = "right",
 		},
 		{
-			name = "Class",
+			name = L["Class"],
 			code = "[Classification] [Level:DifficultyColor] [(if (IsPlayer or (IsEnemy and not IsPet)) then Class):ClassColor] [DruidForm:Paren] [SmartRace]",
 			attach_to = "PowerBar",
 			location = "left",
 		},
 		{
-			name = "Power",
+			name = L["Power"],
 			code = "[if HasMP then FractionalMP]",
 			attach_to = "PowerBar",
 			location = "right",
 		},
 		{
-			name = "Reputation",
+			name = L["Reputation"],
 			code = "[if IsMouseOver then ReputationName else if ReputationName then FractionalReputation ' ' PercentReputation:Percent:Paren]",
 			attach_to = "ReputationBar",
 			location = "center",
 		},
 		{
-			name = "Cast",
+			name = L["Cast"],
 			code = "[Alpha((-CastStopDuration or 0) + 1) CastStopMessage or (CastName ' ' CastTarget:Paren)]",
 			attach_to = "CastBar",
 			location = "left",
 		},
 		{
-			name = "Cast time",
+			name = L["Cast time"],
 			code = "[if not CastStopDuration then Concatenate('+', CastDelay:Round(1):Hide(0)):Red ' ' [CastEndDuration >= 0 ? '%.1f':Format(CastEndDuration)]]",
 			attach_to = "CastBar",
 			location = "right",
 		},
 		{
-			name = "Experience",
+			name = L["Experience"],
 			code = "[FractionalXP] [PercentXP:Percent:Paren] [Concatenate('R: ', PercentRestXP:Hide(0):Percent)]",
 			attach_to = "ExperienceBar",
 			location = "center",
 		},
 		{
-			name = "Threat",
+			name = L["Threat"],
 			code = "[PercentThreat:Short:Hide(0):Percent]",
 			attach_to = "ThreatBar",
 			location = "center",
 		},
 		{
-			name = "Druid mana",
+			name = L["Druid mana"],
 			code = "[if not IsMana then FractionalDruidMP]",
 			attach_to = "DruidManaBar",
 			location = "right",
@@ -86,63 +88,63 @@ PitBull4_DogTagTexts:SetDefaults({
 })
 
 local PROVIDED_CODES = function() return {
-	["Class"] = {
-		["Standard"]            = "[Classification] [Level:DifficultyColor] [(if (IsPlayer or (IsEnemy and not IsPet)) then Class):ClassColor] [DruidForm:Paren] [SmartRace]",
-		["Player Classes Only"] = "[Classification] [Level:DifficultyColor] [(if IsPlayer then Class):ClassColor] [DruidForm:Paren] [SmartRace]",
-		["Short"]               = "[(Level (if Classification then '+')):DifficultyColor] [SmartRace]",
+	[L["Class"]] = {
+		[L["Standard"]]            = "[Classification] [Level:DifficultyColor] [(if (IsPlayer or (IsEnemy and not IsPet)) then Class):ClassColor] [DruidForm:Paren] [SmartRace]",
+		[L["Player classes only"]] = "[Classification] [Level:DifficultyColor] [(if IsPlayer then Class):ClassColor] [DruidForm:Paren] [SmartRace]",
+		[L["Short"]]               = "[(Level (if Classification then '+')):DifficultyColor] [SmartRace]",
 	},
-	["Health"] = {
-		["Absolute"]       = "[Status or FractionalHP(known=true) or PercentHP:Percent]",
-		["Absolute Short"] = "[Status or FractionalHP(known=true):Short or PercentHP:Percent]",
-		["Difference"]     = "[Status or -MissingHP:Hide(0)]",
-		["Percent"]        = "[Status or PercentHP:Percent]",
-		["Mini"]           = "[HP:VeryShort]",
-		["Smart"]          = "[Status or (if IsFriend then MissingHP:Hide(0):Short:Color('ff7f7f') else FractionalHP(known=true):Short or PercentHP:Percent)]",
-		["Absolute and Percent"]  = "[Status or (FractionalHP:Short ' || ' PercentHP:Percent)]",
-		["Informational"]  = "[Status or (Concatenate((if IsFriend then MissingHP:Hide(0):Short:Color('ff7f7f')), ' || ') FractionalHP:Short ' || ' PercentHP:Percent)]",
+	[L["Health"]] = {
+		[L["Absolute"]]       = "[Status or FractionalHP(known=true) or PercentHP:Percent]",
+		[L["Absolute short"]] = "[Status or FractionalHP(known=true):Short or PercentHP:Percent]",
+		[L["Difference"]]     = "[Status or -MissingHP:Hide(0)]",
+		[L["Percent"]]        = "[Status or PercentHP:Percent]",
+		[L["Mini"]]           = "[HP:VeryShort]",
+		[L["Smart"]]          = "[Status or (if IsFriend then MissingHP:Hide(0):Short:Color('ff7f7f') else FractionalHP(known=true):Short or PercentHP:Percent)]",
+		[L["Absolute and percent"]]  = "[Status or (FractionalHP:Short ' || ' PercentHP:Percent)]",
+		[L["Informational"]]  = "[Status or (Concatenate((if IsFriend then MissingHP:Hide(0):Short:Color('ff7f7f')), ' || ') FractionalHP:Short ' || ' PercentHP:Percent)]",
 	},
-	["Name"] = {
-		["Standard"]             = "[Name] [(AFK or DND):Angle]",
-		["Hostility Colored"]    = "[Name:HostileColor] [(AFK or DND):Angle]",
-		["Class Colored"]        = "[Name:ClassColor] [(AFK or DND):Angle]",
-		["Long"]                 = "[Level] [Name:ClassColor] [(AFK or DND):Angle]",
-		["Long w/ Druid form"]   = "[Level] [Name:ClassColor] [DruidForm:Paren] [(AFK or DND):Angle]",
+	[L["Name"]] = {
+		[L["Standard"]]             = "[Name] [(AFK or DND):Angle]",
+		[L["Hostility-colored"]]    = "[Name:HostileColor] [(AFK or DND):Angle]",
+		[L["Class-colored"]]        = "[Name:ClassColor] [(AFK or DND):Angle]",
+		[L["Long"]]                 = "[Level] [Name:ClassColor] [(AFK or DND):Angle]",
+		[L["Long w/ Druid form"]]   = "[Level] [Name:ClassColor] [DruidForm:Paren] [(AFK or DND):Angle]",
 	},
-	["Power"] = {
-		["Absolute"]       = "[if HasMP then FractionalMP]",
-		["Absolute Short"] = "[if HasMP then FractionalMP:Short]",
-		["Difference"]     = "[-MissingMP]",
-		["Percent"]        = "[PercentMP:Percent]",
-		["Mini"]           = "[if HasMP then CurMP:VeryShort]",
-		["Smart"]          = "[MissingMP:Hide(0):Short:Color('7f7fff')]",
+	[L["Power"]] = {
+		[L["Absolute"]]       = "[if HasMP then FractionalMP]",
+		[L["Absolute short"]] = "[if HasMP then FractionalMP:Short]",
+		[L["Difference"]]     = "[-MissingMP]",
+		[L["Percent"]]        = "[PercentMP:Percent]",
+		[L["Mini"]]           = "[if HasMP then CurMP:VeryShort]",
+		[L["Smart"]]          = "[MissingMP:Hide(0):Short:Color('7f7fff')]",
 	},
-	["Druid mana"] = {
-		["Absolute"]       = "[if not IsMana then FractionalDruidMP]",
-		["Absolute Short"] = "[if not IsMana then FractionalDruidMP:Short]",
-		["Difference"]     = "[if not IsMana then -MissingDruidMP]",
-		["Percent"]        = "[if not IsMana then PercentDruidMP:Percent]",
-		["Mini"]           = "[if not IsMana then DruidMP:VeryShort]",
-		["Smart"]          = "[if not IsMana then MissingDruidMP:Hide(0):Short:Color('7f7fff')]",
+	[L["Druid mana"]] = {
+		[L["Absolute"]]       = "[if not IsMana then FractionalDruidMP]",
+		[L["Absolute short"]] = "[if not IsMana then FractionalDruidMP:Short]",
+		[L["Difference"]]     = "[if not IsMana then -MissingDruidMP]",
+		[L["Percent"]]        = "[if not IsMana then PercentDruidMP:Percent]",
+		[L["Mini"]]           = "[if not IsMana then DruidMP:VeryShort]",
+		[L["Smart"]]          = "[if not IsMana then MissingDruidMP:Hide(0):Short:Color('7f7fff')]",
 	},
-	["Threat"] = {
-		["Percent"]            = "[PercentThreat:Short:Hide(0):Percent]",
-		["RawPercent"]         = "[RawPercentThreat:Short:Hide(0):Percent]",
-		["Colored Percent"]    = "[PercentThreat:Short:Hide(0):Percent:ThreatStatusColor(ThreatStatus)]",
-		["Colored RawPercent"] = "[RawPercentThreat:Short:Hide(0):Percent:ThreatStatusColor(ThreatStatus)]",
+	[L["Threat"]] = {
+		[L["Percent"]]            = "[PercentThreat:Short:Hide(0):Percent]",
+		[L["Raw percent"]]         = "[RawPercentThreat:Short:Hide(0):Percent]",
+		[L["Colored percent"]]    = "[PercentThreat:Short:Hide(0):Percent:ThreatStatusColor(ThreatStatus)]",
+		[L["Colored raw percent"]] = "[RawPercentThreat:Short:Hide(0):Percent:ThreatStatusColor(ThreatStatus)]",
 	},
-	["Cast"] = {
-		["Standard Name"] = "[Alpha((-CastStopDuration or 0) + 1) CastStopMessage or (CastName ' ' CastTarget:Paren)]",
-		["Standard Time"] = "[if not CastStopDuration then Concatenate('+', CastDelay:Round(1):Hide(0)):Red ' ' [CastEndDuration >= 0 ? '%.1f':Format(CastEndDuration)]]",
+	[L["Cast"]] = {
+		[L["Standard name"]] = "[Alpha((-CastStopDuration or 0) + 1) CastStopMessage or (CastName ' ' CastTarget:Paren)]",
+		[L["Standard time"]] = "[if not CastStopDuration then Concatenate('+', CastDelay:Round(1):Hide(0)):Red ' ' [CastEndDuration >= 0 ? '%.1f':Format(CastEndDuration)]]",
 	},
-	["Combo points"] = {
-		["Standard"]       = playerClass == "DRUID" and "[if IsEnergy(unit='player') then Combos:Hide(0)]" or "[Combos:Hide(0)]",
+	[L["Combo points"]] = {
+		[L["Standard"]]       = playerClass == "DRUID" and "[if IsEnergy(unit='player') then Combos:Hide(0)]" or "[Combos:Hide(0)]",
 	},
-	["Experience"] = {
-		["Standard"]       = "[FractionalXP] [PercentXP:Percent:Paren] [Concatenate('R: ', PercentRestXP:Hide(0):Percent)]",
-		["On Mouse-over"]       = "[if IsMouseOver then FractionalXP ' ' PercentXP:Percent:Paren ' ' Concatenate('R: ', PercentRestXP:Hide(0):Percent)]",
+	[L["Experience"]] = {
+		[L["Standard"]]       = "[FractionalXP] [PercentXP:Percent:Paren] [Concatenate('R: ', PercentRestXP:Hide(0):Percent)]",
+		[L["On mouse-over"]]       = "[if IsMouseOver then FractionalXP ' ' PercentXP:Percent:Paren ' ' Concatenate('R: ', PercentRestXP:Hide(0):Percent)]",
 	},
-	["Reputation"] = {
-		["Standard"]       = "[if IsMouseOver then ReputationName else if ReputationName then FractionalReputation ' ' PercentReputation:Percent:Paren]"
+	[L["Reputation"]] = {
+		[L["Standard"]]       = "[if IsMouseOver then ReputationName else if ReputationName then FractionalReputation ' ' PercentReputation:Percent:Paren]"
 	},
 } end
 
@@ -172,7 +174,7 @@ end})
 
 -- this will replace the normal :AddFontString
 function PitBull4_DogTagTexts:_AddFontString(frame, font_string, data)
-	if frame.force_show and not frame.guid and data.name ~= "Name" then
+	if frame.force_show and not frame.guid and data.name ~= L["Name"] then
 		LibDogTag:RemoveFontString(font_string)
 		font_string:SetText(("[%s]"):format(data.name))
 	else
@@ -202,7 +204,7 @@ end
 PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 	local values = {}
 	local value_key_to_code = {}
-	values[""] = "Custom"
+	values[""] = L["Custom"]
 	value_key_to_code[""] = ""
 	for base, codes in pairs(PROVIDED_CODES()) do
 		for name, code in pairs(codes) do
@@ -214,8 +216,8 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 	PROVIDED_CODES = nil
 	return 'code', {
 		type = 'input',
-		name = "Code",
-		desc = "LibDogTag-3.0 code tags",
+		name = L["Code"],
+		desc = L["Enter a LibDogTag-3.0 code tag. You can type /dog into your chat for help."],
 		get = function(info)
 			return LibDogTag:CleanCode(PitBull4.Options.GetTextLayoutDB().code)
 		end,
@@ -227,8 +229,8 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 		multiline = true,
 	}, 'default_codes', {
 		type = 'select',
-		name = "Code",
-		desc = "Some codes provided for you",
+		name = L["Code"],
+		desc = L["Some codes provided for you."],
 		get = function(info)
 			local code = PitBull4.Options.GetTextLayoutDB().code
 			for k, v in pairs(value_key_to_code) do
@@ -246,8 +248,8 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 		values = values,
 	}, 'help', {
 		type = 'execute',
-		name = "DogTag help",
-		desc = "Click to pop up helpful DogTag documentation.",
+		name = L["DogTag help"],
+		desc = L["Click to pop up helpful DogTag documentation."],
 		func = function()
 			LibDogTag:OpenHelp()
 		end,

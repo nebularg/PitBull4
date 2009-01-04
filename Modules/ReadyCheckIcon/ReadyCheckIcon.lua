@@ -5,11 +5,13 @@ if not PitBull4 then
 	error("PitBull4_ReadyCheckIcon requires PitBull4")
 end
 
+local L = PitBull4.L
+
 local PitBull4_ReadyCheckIcon = PitBull4:NewModule("ReadyCheckIcon", "AceEvent-3.0", "AceTimer-3.0")
 
 PitBull4_ReadyCheckIcon:SetModuleType("icon")
-PitBull4_ReadyCheckIcon:SetName("Ready Check Icon")
-PitBull4_ReadyCheckIcon:SetDescription("Show a ready check icon on the unit frame based on their response.")
+PitBull4_ReadyCheckIcon:SetName(L["Ready check icon"])
+PitBull4_ReadyCheckIcon:SetDescription(L["Show a ready check icon on the unit frame based on their response."])
 PitBull4_ReadyCheckIcon:SetDefaults({
 	attach_to = "root",
 	location = "edge_bottom_right",

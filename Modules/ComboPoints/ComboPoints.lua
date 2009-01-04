@@ -11,11 +11,13 @@ local TEXTURE_PATH = [[Interface\AddOns\]] .. debugstack():match("[d%.][d%.][O%.
 
 -----------------------------------------------------------------------------
 
+local L = PitBull4.L
+
 local PitBull4_ComboPoints = PitBull4:NewModule("ComboPoints", "AceEvent-3.0")
 
 PitBull4_ComboPoints:SetModuleType("custom_indicator")
-PitBull4_ComboPoints:SetName("Combo Points")
-PitBull4_ComboPoints:SetDescription("Show combo points on the unit frame if you are a Rogue or Druid in Cat form.")
+PitBull4_ComboPoints:SetName(L["Combo points"])
+PitBull4_ComboPoints:SetDescription(L["Show combo points on the unit frame if you are a Rogue or Druid in Cat form."])
 PitBull4_ComboPoints:SetDefaults({
 	attach_to = "root",
 	location = "edge_bottom_right",
@@ -120,8 +122,8 @@ end
 PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 	return 'vertical', {
 		type = 'toggle',
-		name = "Vertical",
-		desc = "Show the combo points stacked vertically instead of horizontally",
+		name = L["Vertical"],
+		desc = L["Show the combo points stacked vertically instead of horizontally."],
 		get = function(info)
 			return PitBull4.Options.GetLayoutDB(self).vertical
 		end,

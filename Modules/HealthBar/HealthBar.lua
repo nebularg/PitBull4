@@ -5,11 +5,13 @@ if not PitBull4 then
 	error("PitBull4_HealthBar requires PitBull4")
 end
 
+local L = PitBull4.L
+
 local PitBull4_HealthBar = PitBull4:NewModule("HealthBar", "AceEvent-3.0")
 
 PitBull4_HealthBar:SetModuleType("status_bar")
-PitBull4_HealthBar:SetName("Health Bar")
-PitBull4_HealthBar:SetDescription("Show a health bar.")
+PitBull4_HealthBar:SetName(L["Health bar"])
+PitBull4_HealthBar:SetDescription(L["Show a bar indicating the unit's health."])
 PitBull4_HealthBar:SetDefaults({
 	position = 1,
 	color_by_class = true,
@@ -74,8 +76,8 @@ end
 
 PitBull4_HealthBar:SetLayoutOptionsFunction(function(self)
 	return 'color_by_class', {
-		name = "Color by class",
-		desc = "Color the health bar by unit class",
+		name = L["Color by class"],
+		desc = L["Color the health bar by unit class"],
 		type = 'toggle',
 		get = function(info)
 			return PitBull4.Options.GetLayoutDB(self).color_by_class

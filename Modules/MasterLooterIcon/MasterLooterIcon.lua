@@ -5,11 +5,13 @@ if not PitBull4 then
 	error("PitBull4_MasterLooterIcon requires PitBull4")
 end
 
+local L = PitBull4.L
+
 local PitBull4_MasterLooterIcon = PitBull4:NewModule("MasterLooterIcon", "AceEvent-3.0", "AceTimer-3.0")
 
 PitBull4_MasterLooterIcon:SetModuleType("icon")
-PitBull4_MasterLooterIcon:SetName("Master Looter Icon")
-PitBull4_MasterLooterIcon:SetDescription("Show an icon on the unit frame when the unit is the Master Looter.")
+PitBull4_MasterLooterIcon:SetName(L["Master looter icon"])
+PitBull4_MasterLooterIcon:SetDescription(L["Show an icon on the unit frame when the unit is the master looter."])
 PitBull4_MasterLooterIcon:SetDefaults({
 	attach_to = "root",
 	location = "edge_top_left",
