@@ -1,5 +1,6 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
+local L = PitBull4.L
 
 local AceConfig = LibStub and LibStub("AceConfig-3.0", true)
 if not AceConfig then
@@ -15,13 +16,13 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local OpenConfig
 
 AceConfig:RegisterOptionsTable("PitBull4_Bliz", {
-	name = "PitBull Unit Frames 4.0",
+	name = L["PitBull Unit Frames 4.0"],
 	handler = PitBull4,
 	type = 'group',
 	args = {
 		config = {
-			name = "Standalone config",
-			desc = "Open a standlone config window, allowing you to actually configure PitBull Unit Frames 4.0.",
+			name = L["Standalone config"],
+			desc = L["Open a standlone config window, allowing you to actually configure PitBull Unit Frames 4.0."],
 			type = 'execute',
 			func = function()
 				OpenConfig()
@@ -52,7 +53,7 @@ function OpenConfig()
 	end
 	
 	local options = {
-		name = "PitBull",
+		name = L["PitBull"],
 		handler = PitBull4,
 		type = 'group',
 		args = {

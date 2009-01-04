@@ -1,9 +1,10 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
+local L = PitBull4.L
 
 local values = {
-	disabled = "Disable",
-	solo = "Solo",
+	disabled = L["Disable"],
+	solo = L["Solo"],
 }
 --- Return the select values dictionary used by PitBull4 to choose config mode.
 -- @usage local values = PitBull4:GetConfigModeValues()
@@ -64,8 +65,8 @@ end)
 
 function PitBull4.Options.get_config_mode_options()
 	return {
-		name = "Config mode",
-		desc = "Show all frames that can be shown, for easy configuration.",
+		name = L["Config mode"],
+		desc = L["Show all frames that can be shown, for easy configuration."],
 		type = 'select',
 		values = PitBull4:GetConfigModeValues(),
 		get = function(info)

@@ -1,6 +1,8 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
+local L = PitBull4.L
+
 local CURRENT_LAYOUT = "Normal"
 local CURRENT_CUSTOM_TEXT_MODULE
 local CURRENT_TEXT_PROVIDER_MODULE
@@ -90,13 +92,15 @@ function PitBull4.Options.get_layout_options()
 	
 	local layout_options = {
 		type = 'group',
-		name = "Layout editor",
+		name = L["Layout editor"],
+		desc = L["Edit the way your frames look, including the controls on your frames."],
 		args = {},
 		childGroups = "tab",
 	}
 	
 	layout_options.args.current_layout = {
-		name = "Current layout",
+		name = L["Current layout"],
+		desc = L["Change the layout you are currently editing."],
 		type = 'select',
 		order = 1,
 		values = function(info)
@@ -115,8 +119,8 @@ function PitBull4.Options.get_layout_options()
 	}
 	
 	layout_options.args.new_layout = {
-		name = "New layout",
-		desc = "This will copy the data of the currently-selected layout.",
+		name = L["New layout"],
+		desc = L["Create a new layout. This will copy the data of the currently-selected layout."],
 		type = 'input',
 		get = function(info) return "" end,
 		set = function(info, value)
@@ -131,14 +135,15 @@ function PitBull4.Options.get_layout_options()
 		end,
 		validate = function(info, value)
 			if value:len() < 3 then
-				return "Must be at least 3 characters long."
+				return L["Must be at least 3 characters long."]
 			end
 			return true
 		end,
 	}
 
 	layout_options.args.bars = {
-		name = "Bars",
+		name = L["Bars"],
+		desc = L["Status bars graphically display a value from 0% to 100%."],
 		type = 'group',
 		childGroups = "tab",
 		order = 1,
@@ -146,7 +151,8 @@ function PitBull4.Options.get_layout_options()
 	}
 
 	layout_options.args.indicators = {
-		name = "Indicators",
+		name = L["Indicators"],
+		desc = L["Indicators are icons or other graphical displays that convey a specific, usually temporary, status."],
 		type = 'group',
 		childGroups = "tab",
 		order = 2,
@@ -154,21 +160,23 @@ function PitBull4.Options.get_layout_options()
 	}
 
 	layout_options.args.texts = {
-		name = "Texts",
+		name = L["Texts"],
+		desc = L["Texts convey information in a non-graphical manner."],
 		type = 'group',
 		order = 3,
 		args = {}
 	}
 	
 	layout_options.args.faders = {
-		name = "Faders",
+		name = L["Faders"],
+		desc = L["Faders cause the unit frame to become more or less opaque on certain conditions."],
 		type = 'group',
 		order = 4,
 		args = {}
 	}
 
 	layout_options.args.other = {
-		name = "Other",
+		name = L["Other"],
 		type = 'group',
 		childGroups = "tab",
 		order = 6,
@@ -181,7 +189,8 @@ function PitBull4.Options.get_layout_options()
 	
 	layout_options.args.bars.args.texture = {
 		type = 'select',
-		name = "Default Texture",
+		name = L["Default texture"],
+		desc = L["The texture of status bars, unless overridden."],
 		order = 1,
 		get = function(info)
 			return PitBull4.db.profile.layouts[CURRENT_LAYOUT].status_bar_texture
@@ -207,7 +216,8 @@ function PitBull4.Options.get_layout_options()
 	local status_bar_args = {
 		enable = {
 			type = 'toggle',
-			name = "Enable",
+			name = L["Enable"],
+			desc = L["Enable this status bar."],
 			order = 1,
 			get = function(info)
 				return GetLayoutDB(info[3]).enabled
@@ -220,7 +230,8 @@ function PitBull4.Options.get_layout_options()
 		},
 		side = {
 			type = 'select',
-			name = "Side",
+			name = L["Side"],
+			desc = L["Which side of the unit frame to place the status bar on. Note: For the left and right sides, your bar will be vertical rather than horizontal."],
 			order = 2,
 			get = function(info)
 				return GetLayoutDB(info[3]).side
@@ -239,7 +250,8 @@ function PitBull4.Options.get_layout_options()
 		},
 		position = {
 			type = 'select',
-			name = "Position",
+			name = L["Position"],
+			desc = L["Where to place the bar in relation to other bars on the frame."],
 			order = 3,
 			values = function(info)
 				local db = GetLayoutDB(info[3])
@@ -297,7 +309,8 @@ function PitBull4.Options.get_layout_options()
 		},
 		texture = {
 			type = 'select',
-			name = "Texture",
+			name = L["Texture"],
+			desc = L["What texture the status bar should use."],
 			order = 4,
 			get = function(info)
 				return GetLayoutDB(info[3]).texture or PitBull4.db.profile.layouts[CURRENT_LAYOUT].status_bar_texture
@@ -332,9 +345,16 @@ function PitBull4.Options.get_layout_options()
 			type = 'range',
 			name = function(info)
 				if GetLayoutDB(info[3]).side == "center" then
-					return "Height"
+					return L["Height"]
 				else
-					return "Width"
+					return L["Width"]
+				end
+			end,
+			desc = function(info)
+				if GetLayoutDB(info[3]).side == "center" then
+					return L["How tall the bar should be in relation to other bars."]
+				else
+					return L["How wide the bar should be in relation to other bars."]
 				end
 			end,
 			order = 5,
@@ -352,8 +372,8 @@ function PitBull4.Options.get_layout_options()
 		},
 		deficit = {
 			type = 'toggle',
-			name = "Deficit",
-			desc = "Drain the bar instead of filling it.",
+			name = L["Deficit"],
+			desc = L["Drain the bar instead of filling it."],
 			order = 6,
 			get = function(info)
 				return GetLayoutDB(info[3]).deficit
@@ -366,8 +386,8 @@ function PitBull4.Options.get_layout_options()
 		},
 		reverse = {
 			type = 'toggle',
-			name = "Reverse",
-			desc = "Reverse the direction of the bar, filling from right-to-left instead of left-to-right",
+			name = L["Reverse"],
+			desc = L["Reverse the direction of the bar, filling from right-to-left instead of left-to-right."],
 			order = 7,
 			get = function(info)
 				return GetLayoutDB(info[3]).reverse
@@ -380,7 +400,8 @@ function PitBull4.Options.get_layout_options()
 		},
 		alpha = {
 			type = 'range',
-			name = "Full opacity",
+			name = L["Full opacity"],
+			desc = L["How opaque the full section of the bar is."],
 			order = 8,
 			get = function(info)
 				return GetLayoutDB(info[3]).alpha
@@ -398,7 +419,8 @@ function PitBull4.Options.get_layout_options()
 		},
 		background_alpha = {
 			type = 'range',
-			name = "Empty opacity",
+			name = L["Empty opacity"],
+			desc = L["How opaque the empty section of the bar is."],
 			order = 9,
 			get = function(info)
 				return GetLayoutDB(info[3]).background_alpha
@@ -438,51 +460,52 @@ function PitBull4.Options.get_layout_options()
 	end
 	
 	local root_locations = {
-		out_top_left = "Outside, Above-left",
-		out_top = "Outside, Above-middle",
-		out_top_right = "Outside, Above-right",
-		out_bottom_left = "Outside, Below-left",
-		out_bottom = "Outside, Below",
-		out_bottom_right = "Outside, Below-right",
-		out_left_top = "Outside, Left-top",
-		out_left = "Outside, Left",
-		out_left_bottom = "Outside, Left-bottom",
-		out_right_top = "Outside, Right-top",
-		out_right = "Outside, Right",
-		out_right_bottom = "Outside, Right-bottom",
+		out_top_left = ("%s, %s"):format(L["Outside"], L["Above-left"]),
+		out_top = ("%s, %s"):format(L["Outside"], L["Above"]),
+		out_top_right = ("%s, %s"):format(L["Outside"], L["Above-right"]),
+		out_bottom_left = ("%s, %s"):format(L["Outside"], L["Below-left"]),
+		out_bottom = ("%s, %s"):format(L["Outside"], L["Below"]),
+		out_bottom_right = ("%s, %s"):format(L["Outside"], L["Below-right"]),
+		out_left_top = ("%s, %s"):format(L["Outside"], L["Left-top"]),
+		out_left = ("%s, %s"):format(L["Outside"], L["Left"]),
+		out_left_bottom = ("%s, %s"):format(L["Outside"], L["Left-bottom"]),
+		out_right_top = ("%s, %s"):format(L["Outside"], L["Right-top"]),
+		out_right = ("%s, %s"):format(L["Outside"], L["Right"]),
+		out_right_bottom = ("%s, %s"):format(L["Outside"], L["Right-bottom"]),
 		
-		in_center = "Inside, Middle",
-		in_top_left = "Inside, Top-left",
-		in_top = "Inside, Top",
-		in_top_right = "Inside, Top-right",
-		in_bottom_left = "Inside, Bottom-left",
-		in_bottom = "Inside, Bottom",
-		in_bottom_right = "Inside, Bottom-right",
-		in_left = "Inside, Left",
-		in_right = "Inside, Right",
+		in_center = ("%s, %s"):format(L["Inside"], L["Middle"]),
+		in_top_left = ("%s, %s"):format(L["Inside"], L["Top-left"]),
+		in_top = ("%s, %s"):format(L["Inside"], L["Top"]),
+		in_top_right = ("%s, %s"):format(L["Inside"], L["Top-right"]),
+		in_bottom_left = ("%s, %s"):format(L["Inside"], L["Bottom-left"]),
+		in_bottom = ("%s, %s"):format(L["Inside"], L["Bottom"]),
+		in_bottom_right = ("%s, %s"):format(L["Inside"], L["Bottom-right"]),
+		in_left = ("%s, %s"):format(L["Inside"], L["Left"]),
+		in_right = ("%s, %s"):format(L["Inside"], L["Right"]),
 		
-		edge_top_left = "Edge, Top-left",
-		edge_top = "Edge, Top",
-		edge_top_right = "Edge, Top-right",
-		edge_left = "Edge, Left",
-		edge_right = "Edge, Right",
-		edge_bottom_left = "Edge, Bottom-left",
-		edge_bottom = "Edge, Bottom",
-		edge_bottom_right = "Edge, Bottom-right",
+		edge_top_left = ("%s, %s"):format(L["Edge"], L["Top-left"]),
+		edge_top = ("%s, %s"):format(L["Edge"], L["Top"]),
+		edge_top_right = ("%s, %s"):format(L["Edge"], L["Top-right"]),
+		edge_left = ("%s, %s"):format(L["Edge"], L["Left"]),
+		edge_right = ("%s, %s"):format(L["Edge"], L["Right"]),
+		edge_bottom_left = ("%s, %s"):format(L["Edge"], L["Bottom-left"]),
+		edge_bottom = ("%s, %s"):format(L["Edge"], L["Bottom"]),
+		edge_bottom_right = ("%s, %s"):format(L["Edge"], L["Bottom-right"]),
 	}
 	
 	local bar_locations = {
-		out_left = "Outside, left",
-		left = "Left",
-		center = "Middle",
-		right = "Right",
-		out_right = "Outside, right",
+		out_left = ("%s, %s"):format(L["Outside"], L["Left"]),
+		left = L["Left"],
+		center = L["Middle"],
+		right = L["Right"],
+		out_right = ("%s, %s"):format(L["Outside"], L["Right"]),
 	}
 	
 	local indicator_args = {
 		enable = {
 			type = 'toggle',
-			name = "Enable",
+			name = L["Enable"],
+			desc = L["Enable this indicator."],
 			order = 1,
 			get = function(info)
 				return GetLayoutDB(info[3]).enabled
@@ -495,7 +518,8 @@ function PitBull4.Options.get_layout_options()
 		},
 		attach_to = {
 			type = 'select',
-			name = "Attach to",
+			name = L["Attach to"],
+			desc = L["Which control to attach to."],
 			order = 2,
 			get = function(info)
 				return GetLayoutDB(info[3]).attach_to
@@ -508,7 +532,7 @@ function PitBull4.Options.get_layout_options()
 			values = function(info)
 				local t = {}
 				
-				t["root"] = "Unit frame"
+				t["root"] = L["Unit frame"]
 				
 				for id, module in PitBull4:IterateModulesOfType("status_bar") do
 					t[id] = module.name
@@ -519,7 +543,8 @@ function PitBull4.Options.get_layout_options()
 		},
 		location = {
 			type = 'select',
-			name = "Location",
+			name = L["Location"],
+			desc = L["Where on the control to place the indicator."],
 			order = 3,
 			get = function(info)
 				return GetLayoutDB(info[3]).location
@@ -540,7 +565,8 @@ function PitBull4.Options.get_layout_options()
 		},
 		position = {
 			type = 'select',
-			name = "Position",
+			name = L["Position"],
+			desc = L["Where to place the indicator compared to others in the same location."],
 			order = 4,
 			values = function(info)
 				local db = GetLayoutDB(info[3])
@@ -600,7 +626,8 @@ function PitBull4.Options.get_layout_options()
 		},
 		size = {
 			type = 'range',
-			name = "Size",
+			name = L["Size"],
+			desc = L["Size of the indicator."],
 			order = 5,
 			get = function(info)
 				return GetLayoutDB(info[3]).size
@@ -644,7 +671,8 @@ function PitBull4.Options.get_layout_options()
 	end
 	
 	layout_options.args.texts.args.current_text = {
-		name = "Current text",
+		name = L["Current text"],
+		desc = L["Change the current text that you are editing."],
 		type = 'select',
 		order = 1,
 		values = function(info)
@@ -660,7 +688,7 @@ function PitBull4.Options.get_layout_options()
 						first_module = module
 						first_id = i
 					end
-					t[key] = v.name or "<Unnamed>"
+					t[key] = v.name or L["<Unnamed>"]
 				end
 			end
 			for id, module in PitBull4:IterateModulesOfType("custom_text") do
@@ -718,7 +746,7 @@ function PitBull4.Options.get_layout_options()
 	
 	local function text_name_validate(info, value)
 		if value:len() < 3 then
-			return "Must be at least 3 characters long."
+			return L["Must be at least 3 characters long."]
 		end
 		
 		for id, module in PitBull4:IterateModulesOfType("text_provider") do
@@ -726,7 +754,7 @@ function PitBull4.Options.get_layout_options()
 			
 			for i = 1, texts_db.n do
 				if texts_db[i].name and value:lower() == texts_db[i].name:lower() then
-					return ("'%s' is already a text."):format(value)
+					return L["'%s' is already a text."]:format(value)
 				end
 			end
 		end
@@ -734,12 +762,12 @@ function PitBull4.Options.get_layout_options()
 		for id, module in PitBull4:IterateModulesOfType("text_provider") do
 			return true -- found a module
 		end
-		return "You have no enabled text providers."
+		return L["You have no enabled text providers."]
 	end
 	
 	layout_options.args.texts.args.new_text = {
-		name = "New text",
-		desc = "This will make a new text for the layout.",
+		name = L["New text"],
+		desc = L["This will make a new text for the layout."],
 		type = 'input',
 		order = 2,
 		get = function(info) return "" end,
@@ -771,7 +799,8 @@ function PitBull4.Options.get_layout_options()
 	
 	layout_options.args.texts.args.font = {
 		type = 'select',
-		name = "Default Font",
+		name = L["Default font"],
+		desc = L["The font of texts, unless overridden."],
 		order = 3,
 		get = function(info)
 			return PitBull4.db.profile.layouts[CURRENT_LAYOUT].font
@@ -796,15 +825,15 @@ function PitBull4.Options.get_layout_options()
 	
 	layout_options.args.texts.args.edit = {
 		type = 'group',
-		name = "Edit text",
+		name = L["Edit text"],
 		inline = true,
 		args = {},
 	}
 	
 	layout_options.args.texts.args.edit.args.remove = {
 		type = 'execute',
-		name = "Remove",
-		desc = "Remove the text.",
+		name = L["Remove"],
+		desc = L["Remove this text."],
 		order = 1,
 		func = function()
 			local texts_db = CURRENT_TEXT_PROVIDER_MODULE:GetLayoutDB(CURRENT_LAYOUT).texts
@@ -840,7 +869,8 @@ function PitBull4.Options.get_layout_options()
 	
 	layout_options.args.texts.args.edit.args.enabled = {
 		type = 'toggle',
-		name = "Enable",
+		name = L["Enable"],
+		desc = L["Enable this text."],
 		order = 1,
 		get = function(info)
 			return CURRENT_CUSTOM_TEXT_MODULE:GetLayoutDB(CURRENT_LAYOUT).enabled
@@ -857,15 +887,16 @@ function PitBull4.Options.get_layout_options()
 	
 	layout_options.args.texts.args.edit.args.name = {
 		type = 'input',
-		name = "Name",
+		name = L["Name"],
+		desc = L["What to call the text."],
 		order = 2,
 		desc = function()
 			local db = GetTextLayoutDB()
-			return ("Rename the '%s' text."):format(db and db.name or "<Unnamed>")
+			return L["Rename the '%s' text."]:format(db and db.name or L["<Unnamed>"])
 		end,
 		get = function(info)
 			local db = GetTextLayoutDB()
-			return db and db.name or "<Unnamed>"
+			return db and db.name or L["<Unnamed>"]
 		end,
 		set = function(info, value)
 			GetTextLayoutDB().name = value
@@ -881,8 +912,8 @@ function PitBull4.Options.get_layout_options()
 	
 	layout_options.args.texts.args.edit.args.provider = {
 		type = 'select',
-		name = "Type",
-		desc = "What text provider is used for this text.",
+		name = L["Type"],
+		desc = L["What text provider is used for this text."],
 		order = 3,
 		get = function(info)
 			return CURRENT_TEXT_PROVIDER_MODULE and CURRENT_TEXT_PROVIDER_MODULE.id
@@ -927,7 +958,8 @@ function PitBull4.Options.get_layout_options()
 	
 	layout_options.args.texts.args.edit.args.attach_to = {
 		type = 'select',
-		name = "Attach to",
+		name = L["Attach to"],
+		desc = L["What control to attach to."],
 		order = 4,
 		get = function(info)
 			if CURRENT_CUSTOM_TEXT_MODULE then
@@ -950,7 +982,7 @@ function PitBull4.Options.get_layout_options()
 		values = function(info)
 			local t = {}
 			
-			t["root"] = "Unit frame"
+			t["root"] = L["Unit frame"]
 			
 			for id, module in PitBull4:IterateModulesOfType("status_bar") do
 				t[id] = module.name
@@ -963,7 +995,8 @@ function PitBull4.Options.get_layout_options()
 	
 	layout_options.args.texts.args.edit.args.location = {
 		type = 'select',
-		name = "Location",
+		name = L["Location"],
+		desc = L["Where on the control to place the text."],
 		order = 5,
 		get = function(info)
 			if CURRENT_CUSTOM_TEXT_MODULE then
@@ -1003,7 +1036,8 @@ function PitBull4.Options.get_layout_options()
 	
 	layout_options.args.texts.args.edit.args.font = {
 		type = 'select',
-		name = "Font",
+		name = L["Font"],
+		desc = L["Which font to use for this text."],
 		order = 4,
 		get = function(info)
 			local font
@@ -1049,7 +1083,8 @@ function PitBull4.Options.get_layout_options()
 	
 	layout_options.args.texts.args.edit.args.size = {
 		type = 'range',
-		name = "Size",
+		name = L["Size"],
+		desc = L["Size of the text."],
 		order = 7,
 		get = function(info)
 			if CURRENT_CUSTOM_TEXT_MODULE then
@@ -1137,8 +1172,8 @@ function PitBull4.Options.get_layout_options()
 	
 	layout_options.args.faders.args.min_opacity = {
 		type = 'range',
-		name = "Min opacity",
-		desc = "The minimum opacity that a shown frame can be.",
+		name = L["Minimum opacity"],
+		desc = L["The minimum opacity that a shown frame can be."],
 		order = 1,
 		min = 0,
 		max = 1,
@@ -1162,8 +1197,8 @@ function PitBull4.Options.get_layout_options()
 	
 	layout_options.args.faders.args.max_opacity = {
 		type = 'range',
-		name = "Max opacity",
-		desc = "The maximum opacity that a shown frame can be.",
+		name = L["Maximum opacity"],
+		desc = L["The maximum opacity that a shown frame can be."],
 		order = 2,
 		min = 0,
 		max = 1,
@@ -1194,7 +1229,8 @@ function PitBull4.Options.get_layout_options()
 			args = {
 				enable = {
 					type = 'toggle',
-					name = 'Enable',
+					name = L["Enable"],
+					desc = L["Enable this fader."],
 					get = function(info)
 						return module:GetLayoutDB(CURRENT_LAYOUT).enabled
 					end,
@@ -1233,11 +1269,13 @@ function PitBull4.Options.get_layout_options()
 	
 	layout_options.args.other.args.size = {
 		type = 'group',
-		name = "Size",
+		name = L["Size"],
+		desc = L["Size of the unit frame."],
 		args = {
 			width = {
 				type = 'range',
-				name = "Width",
+				name = L["Width"],
+				desc = L["Width of the unit frame."],
 				min = 20,
 				max = 400,
 				step = 1,
@@ -1256,7 +1294,8 @@ function PitBull4.Options.get_layout_options()
 			},
 			height = {
 				type = 'range',
-				name = "Height",
+				name = L["Height"],
+				desc = L["Height of the unit frame."],
 				min = 5,
 				max = 400,
 				step = 1,
@@ -1275,7 +1314,8 @@ function PitBull4.Options.get_layout_options()
 			},
 			scale = {
 				type = 'range',
-				name = "Scale",
+				name = L["Scale"],
+				desc = L["Multiplicative scale of the unit frame."],
 				min = 0.5,
 				max = 2,
 				step = 0.01,
@@ -1320,7 +1360,8 @@ function PitBull4.Options.get_layout_options()
 				args = {
 					enable = {
 						type = 'toggle',
-						name = "Enable",
+						name = L["Enable"],
+						desc = L["Enable this module for this layout."],
 						order = 1,
 						get = function(info)
 							return GetLayoutDB(module).enabled

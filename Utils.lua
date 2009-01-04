@@ -1,6 +1,8 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
+local L = PitBull4.L
+
 PitBull4.Utils = {}
 
 do
@@ -132,7 +134,25 @@ do
 end
 
 do
-	local classifications = {player = "Player", target = "Target", pet = "Player's pet", party = "Party", party_sing = "Party", partypet = "Party pets", partypet_sing = "Party pet", raid = "Raid", raid_sing = "Raid", raidpet = "Raid pets", raidpet_sing = "Raid pet", mouseover = "Mouse-over", focus = "Focus", maintank = "Main tanks", maintank_sing = "Main tank", mainassist = "Main assists", mainassist_sing = "Main assist"}
+	local classifications = {
+		player = L["Player"],
+		target = L["Target"],
+		pet = L["Player's pet"],
+		party = L["Party"],
+		party_sing = L["Party"],
+		partypet = L["Party pets"],
+		partypet_sing = L["Party pet"],
+		raid = L["Raid"],
+		raid_sing = L["Raid"],
+		raidpet = L["Raid pets"],
+		raidpet_sing = L["Raid pet"],
+		mouseover = L["Mouse-over"],
+		focus = L["Focus"],
+		maintank = L["Main tanks"],
+		maintank_sing = L["Main tank"],
+		mainassist = L["Main assists"],
+		mainassist_sing = L["Main assist"]
+	}
 	setmetatable(classifications, {__index=function(self, group)
 		local nonTarget
 		local singular = false
@@ -147,11 +167,11 @@ do
 		end
 		local good
 		if group:find("^player") or group:find("^pet") or group:find("^mouseover") or group:find("^target") or group:find("^focus") then
-			good = ("%s's target"):format(self[nonTarget])
+			good = L["%s's target"]:format(self[nonTarget])
 		elseif singular then
-			good = ("%s target"):format(self[nonTarget .. "_sing"])
+			good = L["%s target"]:format(self[nonTarget .. "_sing"])
 		else
-			good = ("%s targets"):format(self[nonTarget .. "_sing"])
+			good = L["%s targets"]:format(self[nonTarget .. "_sing"])
 		end
 		self[group] = good
 		return good

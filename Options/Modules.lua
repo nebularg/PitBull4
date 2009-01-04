@@ -1,5 +1,6 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
+local L = PitBull4.L
 
 local global_functions = {}
 
@@ -31,7 +32,8 @@ function PitBull4.Options.get_module_options()
 	
 	local module_options = {
 		type = 'group',
-		name = "Modules",
+		name = L["Modules"],
+		desc = L["Modules provide actual functionality for PitBull."],
 		args = {},
 		childGroups = "tree",
 	}
@@ -39,7 +41,8 @@ function PitBull4.Options.get_module_options()
 	local module_args = {
 		enabled = {
 			type = 'toggle',
-			name = "Enable",
+			name = L["Enable"],
+			desc = L["Globally enable this module."],
 			get = function(info)
 				return info.handler:IsEnabled()
 			end,

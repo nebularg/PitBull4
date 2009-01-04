@@ -1,10 +1,12 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
+local L = PitBull4.L
 
 function PitBull4.Options.get_unit_options()
 	local unit_options = {
 		type = 'group',
-		name = "Units",
+		name = L["Units"],
+		desc = L["Change individual settings for units and unit groups."],
 		args = {},
 		childGroups = "tree",
 	}
@@ -16,7 +18,8 @@ function PitBull4.Options.get_unit_options()
 			order = i,
 			args = {
 				enable = {
-					name = "Enable",
+					name = L["Enable"],
+					desc = L["Enable this unit."],
 					type = 'toggle',
 					order = 1,
 					get = function(info)
@@ -35,7 +38,8 @@ function PitBull4.Options.get_unit_options()
 					end,
 				},
 				layout = {
-					name = "Layout",
+					name = L["Layout"],
+					desc = L["Which layout the unit should use. Note: Use the layout editor to change any layout settings."],
 					type = 'select',
 					order = 2,
 					values = function(info)
@@ -57,8 +61,8 @@ function PitBull4.Options.get_unit_options()
 					end
 				},
 				horizontal_mirror = {
-					name = "Mirror horizontally",
-					desc = "Whether all options will be mirrored, e.g. what would be on the left is now on the right and vice-versa.",
+					name = L["Mirror horizontally"],
+					desc = L["Whether all options will be mirrored, e.g. what would be on the left is now on the right and vice-versa."],
 					order = 3,
 					type = 'toggle',
 					get = function(info)
@@ -73,8 +77,8 @@ function PitBull4.Options.get_unit_options()
 					end
 				},
 				vertical_mirror = {
-					name = "Mirror vertically",
-					desc = "Whether all options will be mirrored, e.g. what would be on the bottom is now on the top and vice-versa.",
+					name = L["Mirror vertically"],
+					desc = L["Whether all options will be mirrored, e.g. what would be on the bottom is now on the top and vice-versa."],
 					order = 4,
 					type = 'toggle',
 					get = function(info)
@@ -89,8 +93,8 @@ function PitBull4.Options.get_unit_options()
 					end
 				},
 				scale = {
-					name = "Scale",
-					desc = "The scale of the unit. This will be multiplied against the layout's scale.",
+					name = L["Scale"],
+					desc = L["The scale of the unit. This will be multiplied against the layout's scale."],
 					order = 5,
 					type = 'range',
 					min = 0.5,
@@ -110,8 +114,8 @@ function PitBull4.Options.get_unit_options()
 					end
 				},
 				width_multiplier = {
-					name = "Width multiplier",
-					desc = "A width multiplier applied to the unit. Your layout's width will be multiplied against this value.",
+					name = L["Width multiplier"],
+					desc = L["A width multiplier applied to the unit. Your layout's width will be multiplied against this value."],
 					order = 6,
 					type = 'range',
 					min = 0.5,
@@ -131,8 +135,8 @@ function PitBull4.Options.get_unit_options()
 					end,
 				},
 				height_multiplier = {
-					name = "Height multiplier",
-					desc = "A height multiplier applied to the unit. Your layout's height will be multiplied against this value.",
+					name = L["Height multiplier"],
+					desc = L["A height multiplier applied to the unit. Your layout's height will be multiplied against this value."],
 					order = 7,
 					type = 'range',
 					min = 0.5,
