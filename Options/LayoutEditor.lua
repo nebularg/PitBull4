@@ -888,7 +888,6 @@ function PitBull4.Options.get_layout_options()
 	layout_options.args.texts.args.edit.args.name = {
 		type = 'input',
 		name = L["Name"],
-		desc = L["What to call the text."],
 		order = 2,
 		desc = function()
 			local db = GetTextLayoutDB()
@@ -959,7 +958,7 @@ function PitBull4.Options.get_layout_options()
 	layout_options.args.texts.args.edit.args.attach_to = {
 		type = 'select',
 		name = L["Attach to"],
-		desc = L["What control to attach to."],
+		desc = L["Which control to attach to."],
 		order = 4,
 		get = function(info)
 			if CURRENT_CUSTOM_TEXT_MODULE then
