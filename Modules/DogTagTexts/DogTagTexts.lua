@@ -174,7 +174,7 @@ end})
 
 -- this will replace the normal :AddFontString
 function PitBull4_DogTagTexts:_AddFontString(frame, font_string, data)
-	if frame.force_show and not frame.guid and data.name ~= L["Name"] then
+	if frame.force_show and not frame.guid and (data.name ~= L["Name"] or not frame.unit) then
 		LibDogTag:RemoveFontString(font_string)
 		font_string:SetText(("[%s]"):format(data.name))
 	else

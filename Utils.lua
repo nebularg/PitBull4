@@ -48,12 +48,12 @@ do
 		playertarget = "target",
 		npc = "npc",
 	}
-	for i = 1, 4 do
+	for i = 1, MAX_PARTY_MEMBERS do
 		better_unit_ids["party" .. i] = "party" .. i
 		better_unit_ids["partypet" .. i] = "partypet" .. i
 		better_unit_ids["party" .. i .. "pet"] = "partypet" .. i
 	end
-	for i = 1, 40 do
+	for i = 1, MAX_RAID_MEMBERS do
 		better_unit_ids["raid" .. i] = "raid" .. i
 		better_unit_ids["raidpet" .. i] = "raidpet" .. i
 		better_unit_ids["raid" .. i .. "pet"] = "raidpet" .. i

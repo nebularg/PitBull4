@@ -95,7 +95,10 @@ function StatusBarModule:CallValueFunction(frame)
 	if not self.GetValue then
 		return nil, nil
 	end
-	local value, extra = self:GetValue(frame)
+	local value, extra
+	if frame.guid then
+		value, extra = self:GetValue(frame)
+	end
 	
 	if not value and PitBull4.config_mode and self.GetExampleValue then
 		value, extra = self:GetExampleValue(frame)

@@ -168,10 +168,12 @@ function SingletonUnitFrame__scripts:OnDragStop()
 end
 
 function UnitFrame__scripts:OnEnter()
-	GameTooltip_SetDefaultAnchor(GameTooltip, self)
-	GameTooltip:SetUnit(self.unit)
-	local r, g, b = GameTooltip_UnitColor(self.unit)
-	GameTooltipTextLeft1:SetTextColor(r, g, b)
+	if self.guid then
+		GameTooltip_SetDefaultAnchor(GameTooltip, self)
+		GameTooltip:SetUnit(self.unit)
+		local r, g, b = GameTooltip_UnitColor(self.unit)
+		GameTooltipTextLeft1:SetTextColor(r, g, b)
+	end
 	
 	PitBull4:RunFrameScriptHooks("OnEnter", self)
 end
@@ -239,6 +241,12 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 		self.wacky_frames[frame] = true
 	else
 		self.non_wacky_frames[frame] = true
+	end
+	
+	if frame.is_singleton then
+		self.singleton_frames[frame] = true
+	else
+		self.member_frames[frame] = true
 	end
 	
 	local overlay = PitBull4.Controls.MakeFrame(frame)
@@ -328,13 +336,23 @@ function SingletonUnitFrame:Deactivate()
 end
 UnitFrame.Deactivate = PitBull4:OutOfCombatWrapper(UnitFrame.Deactivate)
 
+local do_nothing = function() end
+
 function UnitFrame:ForceShow()
+	if self.force_show then
+		return
+	end
 	self.force_show = true
+	self.Hide = do_nothing
 	UnregisterUnitWatch(self)
 	self:Show()
 end
 
 function UnitFrame:UnforceShow()
+	if not self.force_show then
+		return
+	end
+	self.Hide = nil
 	self.force_show = nil
 	RegisterUnitWatch(self)
 end

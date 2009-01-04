@@ -5,6 +5,7 @@ local L = PitBull4.L
 local values = {
 	disabled = L["Disable"],
 	solo = L["Solo"],
+	party = L["Party"],
 }
 --- Return the select values dictionary used by PitBull4 to choose config mode.
 -- @usage local values = PitBull4:GetConfigModeValues()
@@ -18,6 +19,14 @@ end
 -- @return nil meaning disabled or one of the keys from PitBull4:GetConfigModeValues() (except "disabled")
 function PitBull4:IsInConfigMode()
 	return self.config_mode
+end
+
+local function should_show_header(config_mode, header)
+	if not config_mode or config_mode == "solo" then
+		return false
+	end
+	
+	return true
 end
 
 --- Set the config mode type.
@@ -40,15 +49,25 @@ function PitBull4:SetConfigMode(kind)
 	end
 	PitBull4.config_mode = kind
 	
-	for frame in self:IterateFrames(true) do
-		if frame.is_singleton then
-			if kind then
+	for frame in self:IterateSingletonFrames(true) do
+		if kind then
+			frame:ForceShow()
+		else
+			frame:UnforceShow()
+		end
+		frame:Update(true, true)
+	end
+	
+	for header in self:IterateHeaders() do
+		local should_show = should_show_header(kind, header)
+		for _, frame in ipairs(header) do
+			if should_show then
 				frame:ForceShow()
 			else
 				frame:UnforceShow()
 			end
+			frame:Update(true, true)
 		end
-		frame:Update(true, true)
 	end
 end
 

@@ -72,7 +72,10 @@ function IconModule:CallTextureFunction(frame)
 		-- no function, let's just return
 		return nil
 	end
-	local tex = self:GetTexture(frame)
+	local tex
+	if frame.guid then
+		tex = self:GetTexture(frame)
+	end
 	if not tex and PitBull4.config_mode and self.GetExampleTexture then
 		tex = self:GetExampleTexture(frame)
 	end

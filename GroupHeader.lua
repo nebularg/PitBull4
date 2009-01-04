@@ -88,8 +88,12 @@ function GroupHeader:ForceUnitFrameCreation(num)
 	local maxColumns = self:GetAttribute("maxColumns")
 	local unitsPerColumn = self:GetAttribute("unitsPerColumn")
 	local startingIndex = self:GetAttribute("startingIndex")
-	self:SetAttribute("maxColumns", 1)
-	self:SetAttribute("unitsPerColumn", num)
+	if maxColumns ~= nil then
+		self:SetAttribute("unitsPerColumn", math.ceil(num / maxColumns))
+	else
+		self:SetAttribute("maxColumns", 1)
+		self:SetAttribute("unitsPerColumn", num)
+	end
 	self:SetAttribute("startingIndex", -num + 1)
 	
 	SecureGroupHeader_Update(self)
@@ -152,6 +156,9 @@ function PitBull4:ConvertIntoGroupHeader(header)
 	expect(header, 'typeof', 'frame')
 	expect(header, 'frametype', 'Frame')
 	--@end-alpha@
+	
+	self.all_headers[header] = true
+	self.classification_to_headers[header.classification][header] = true
 	
 	for k, v in pairs(GroupHeader__scripts) do
 		header:SetScript(k, v)

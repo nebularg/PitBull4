@@ -123,6 +123,18 @@ PitBull4.wacky_frames = wacky_frames
 local non_wacky_frames = {}
 PitBull4.non_wacky_frames = non_wacky_frames
 
+-- A set of all unit frames with the is_singleton flag set to true
+local singleton_frames = {}
+PitBull4.singleton_frames = singleton_frames
+
+-- A set of all unit frames with the is_singleton flag set to false
+local member_frames = {}
+PitBull4.member_frames = member_frames
+
+-- A set of all group headers
+local all_headers = {}
+PitBull4.all_headers = all_headers
+
 -- metatable that automatically creates keys that return tables on access
 local auto_table__mt = {__index = function(self, key)
 	local value = {}
@@ -137,6 +149,10 @@ PitBull4.unit_id_to_frames = unit_id_to_frames
 -- A dictionary of classification to a set of all unit frames of that classification
 local classification_to_frames = setmetatable({}, auto_table__mt)
 PitBull4.classification_to_frames = classification_to_frames
+
+-- A dictionary of classification to a set of all group headers of that classification
+local classification_to_headers = setmetatable({}, auto_table__mt)
+PitBull4.classification_to_headers = classification_to_headers
 
 --- Wrap the given function so that any call to it will be piped through PitBull4:RunOnLeaveCombat.
 -- @param func function to call
@@ -234,6 +250,42 @@ function PitBull4:IterateNonWackyFrames(also_hidden)
 	return not also_hidden and iterate_shown_frames or half_next, non_wacky_frames
 end
 
+--- Iterate over all singleton frames.
+-- This iterates over only shown frames unless also_hidden is passed in.
+-- @param also_hidden also return frames that are hidden
+-- @usage for frame in PitBull4:IterateWackyFrames() do
+--     doSomethingWith(frame)
+-- end
+-- @usage for frame in PitBull4:IterateWackyFrames(true) do
+--     doSomethingWith(frame)
+-- end
+-- @return iterator which returns frames
+function PitBull4:IterateSingletonFrames(also_hidden)
+	--@alpha@
+	expect(also_hidden, 'typeof', 'boolean;nil')
+	--@end-alpha@
+	
+	return not also_hidden and iterate_shown_frames or half_next, singleton_frames
+end
+
+--- Iterate over all member frames.
+-- This iterates over only shown frames unless also_hidden is passed in.
+-- @param also_hidden also return frames that are hidden
+-- @usage for frame in PitBull4:IterateNonWackyFrames() do
+--     doSomethingWith(frame)
+-- end
+-- @usage for frame in PitBull4:IterateNonWackyFrames(true) do
+--     doSomethingWith(frame)
+-- end
+-- @return iterator which returns frames
+function PitBull4:IterateMemberFrames(also_hidden)
+	--@alpha@
+	expect(also_hidden, 'typeof', 'boolean;nil')
+	--@end-alpha@
+	
+	return not also_hidden and iterate_shown_frames or half_next, member_frames
+end
+
 --- Iterate over all frames with the given unit ID
 -- This iterates over only shown frames unless also_hidden is passed in.
 -- @param unit the UnitID of the unit in question
@@ -308,13 +360,13 @@ function PitBull4:IterateFramesForClassification(classification, also_hidden)
 	expect(classification, 'typeof', 'string')
 	expect(also_hidden, 'typeof', 'boolean;nil')
 	--@end-alpha@
-
-	local unit_id_to_frames__classification = rawget(unit_id_to_frames, classification)
-	if not unit_id_to_frames__classification then
+	
+	local frames = rawget(classification_to_frames, classification)
+	if not frames then
 		return do_nothing
 	end
 	
-	return not also_hidden and iterate_shown_frames or half_next, unit_id_to_frames__classification
+	return not also_hidden and iterate_shown_frames or half_next, frames
 end
 
 local function layout_iter(layout, frame)
@@ -440,6 +492,34 @@ function PitBull4:IterateFramesForGUIDs(...)
 	end
 	
 	return guids_iter, guids, nil
+end
+
+--- Iterate over all headers.
+-- @usage for header in PitBull4:IterateHeaders()
+--     doSomethingWith(header)
+-- end
+-- @return iterator which returns headers
+function PitBull4:IterateHeaders()
+	return half_next, all_headers
+end
+
+--- Iterate over all headers with the given classification.
+-- @param classification the classification to check
+-- @usage for header in PitBull4:IterateHeadersForClassification("party")
+--     doSomethingWith(header)
+-- end
+-- @return iterator which returns headers
+function PitBull4:IterateHeadersForClassification(classification)
+	--@alpha@
+	expect(classification, 'typeof', 'string')
+	--@end-alpha@
+	
+	local headers = rawget(classification_to_headers, classification)
+	if not headers then
+		return do_nothing
+	end
+	
+	return not also_hidden and iterate_shown_frames or half_next, headers
 end
 
 --- Make a singleton unit frame.

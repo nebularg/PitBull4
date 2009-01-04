@@ -56,7 +56,7 @@ function PitBull4_PowerBar:GetExampleValue(frame)
 end
 
 function PitBull4_PowerBar:GetColor(frame, value)
-	local powerType = UnitPowerType(frame.unit)
+	local powerType = frame.guid and UnitPowerType(frame.unit) or "MANA"
 	local color = PowerBarColor[powerType]
 	if color then
 		return color.r, color.g, color.b

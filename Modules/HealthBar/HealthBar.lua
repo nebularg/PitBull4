@@ -50,7 +50,7 @@ function PitBull4_HealthBar:GetExampleValue(frame)
 end
 
 function PitBull4_HealthBar:GetColor(frame, value)
-	if self:GetLayoutDB(frame).color_by_class then
+	if self:GetLayoutDB(frame).color_by_class and frame.unit then
 		local _, class = UnitClass(frame.unit)
 		local t = RAID_CLASS_COLORS[class]
 		if t then

@@ -50,11 +50,17 @@ end
 
 function PitBull4_LeaderIcon:GetExampleTexture(frame)
 	local unit = frame.unit
-	if unit == "player" or unit:match("^raid(%d%d?)$") or unit:match("^party(%d)$") then
-		return [[Interface\GroupFrame\UI-Group-LeaderIcon]]
-	else
+	if unit then
+		if unit == "player" or unit:match("^raid(%d%d?)$") or unit:match("^party(%d)$") then
+			return [[Interface\GroupFrame\UI-Group-LeaderIcon]]
+		end
 		return nil
 	end
+	local classification = frame.classification
+	if classification == "player" or classification == "raid" or classification == "party" then
+		return [[Interface\GroupFrame\UI-Group-LeaderIcon]]
+	end
+	return nil
 end
 
 function PitBull4_LeaderIcon:GetTexCoord(frame, texture)

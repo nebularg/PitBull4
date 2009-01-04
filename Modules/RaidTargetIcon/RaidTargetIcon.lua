@@ -36,9 +36,9 @@ function PitBull4_RaidTargetIcon:GetTexture(frame)
 end
 
 function PitBull4_RaidTargetIcon:GetExampleTexture(frame)
-	local unit = frame.unit
+	local unit = frame.unit or frame:GetName()
 	
-	local index = unit:match("(%d+)")
+	local index = unit:match(".*(%d+)")
 	if index then
 		index = index+0
 	else

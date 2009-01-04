@@ -49,8 +49,8 @@ function PitBull4_ReadyCheckIcon:GetExampleTexture(frame)
 		return nil
 	end
 	
-	local unit = frame.unit
-	local index = unit:match("(%d+)")
+	local unit = frame.unit or frame:GetName()
+	local index = unit:match(".*(%d+)")
 	if index then
 		index = index+0
 	else
@@ -72,7 +72,7 @@ function PitBull4_ReadyCheckIcon:GetExampleTexture(frame)
 	return status_to_texture[status]
 end
 
-function PitBull4_ReadyCheckIcon:CacheReachCheckStatuses()
+function PitBull4_ReadyCheckIcon:CacheRaidCheckStatuses()
 	wipe(guid_to_status)
 	if not IsRaidLeader() and not IsRaidOfficer() and not IsPartyLeader() then
 		-- gotta be an officer
@@ -105,7 +105,7 @@ function PitBull4_ReadyCheckIcon:StartFadeOut()
 end
 
 function PitBull4_ReadyCheckIcon:READY_CHECK()
-	self:CacheReachCheckStatuses()
+	self:CacheRaidCheckStatuses()
 	self:UpdateAll()
 end
 PitBull4_ReadyCheckIcon.READY_CHECK_CONFIRM = PitBull4_ReadyCheckIcon.READY_CHECK
