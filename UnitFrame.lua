@@ -162,6 +162,8 @@ function SingletonUnitFrame__scripts:OnDragStop()
 	self.classification_db.position_x = x
 	self.classification_db.position_y = y
 	
+	LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
+	
 	self:RefreshLayout()
 end
 
@@ -304,8 +306,10 @@ function SingletonUnitFrame:RefixSizeAndPosition()
 	self:SetScale(layout_db.scale * classification_db.scale)
 	
 	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
+	self:ClearAllPoints()
 	self:SetPoint("CENTER", UIParent, "CENTER", classification_db.position_x / scale, classification_db.position_y / scale)
 end
+SingletonUnitFrame.RefixSizeAndPosition = PitBull4:OutOfCombatWrapper(SingletonUnitFrame.RefixSizeAndPosition)
 
 --- Activate the unit frame.
 -- This is just a thin wrapper around RegisterUnitWatch.

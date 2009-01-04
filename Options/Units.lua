@@ -155,6 +155,46 @@ function PitBull4.Options.get_unit_options()
 						end
 					end,
 				},
+				position_x = {
+					name = L["Horizontal position"],
+					desc = L["Horizontal position on the x-axis of the screen."],
+					order = 8,
+					type = 'range',
+					min = -math.floor(GetScreenWidth() / 10) * 5,
+					max = math.floor(GetScreenWidth() / 10) * 5,
+					get = function(info)
+						return math.floor(PitBull4.db.profile.classifications[classification].position_x + 0.5)
+					end,
+					set = function(info, value)
+						PitBull4.db.profile.classifications[classification].position_x = value
+						
+						for frame in PitBull4:IterateFramesForClassification(classification, true) do
+							frame:RefreshLayout()
+						end
+					end,
+					step = 1,
+					bigStep = 5,
+				},
+				position_y = {
+					name = L["Vertical position"],
+					desc = L["Vertical position on the y-axis of the screen."],
+					order = 8,
+					type = 'range',
+					min = -math.floor(GetScreenHeight() / 10) * 5,
+					max = math.floor(GetScreenHeight() / 10) * 5,
+					get = function(info)
+						return math.floor(PitBull4.db.profile.classifications[classification].position_y + 0.5)
+					end,
+					set = function(info, value)
+						PitBull4.db.profile.classifications[classification].position_y = value
+						
+						for frame in PitBull4:IterateFramesForClassification(classification, true) do
+							frame:RefreshLayout()
+						end
+					end,
+					step = 1,
+					bigStep = 5,
+				},
 			}
 		}
 	end

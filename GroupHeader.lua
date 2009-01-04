@@ -127,6 +127,8 @@ function MemberUnitFrame__scripts:OnDragStop()
 	header.classification_db.position_x = x
 	header.classification_db.position_y = y
 	
+	LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
+	
 	header:RefreshLayout()
 end
 
@@ -140,6 +142,7 @@ function MemberUnitFrame:RefixSizeAndPosition()
 	self:SetWidth(layout_db.size_x * classification_db.size_x)
 	self:SetHeight(layout_db.size_y * classification_db.size_y)
 end
+MemberUnitFrame.RefixSizeAndPosition = PitBull4:OutOfCombatWrapper(MemberUnitFrame.RefixSizeAndPosition)
 
 --- Add the proper functions and scripts to a SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate, as well as some initialization.
 -- @param frame a Frame which inherits from SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate
