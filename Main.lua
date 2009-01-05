@@ -11,6 +11,13 @@ local SINGLETON_CLASSIFICATIONS = {
 	"focustargettarget",
 }
 
+local PARTY_CLASSIFICATIONS = {
+	"party",
+	"partytarget",
+	"partypet",
+	"partypettarget",
+}
+
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 if not LibSharedMedia then
 	LoadAddOn("LibSharedMedia-3.0")
@@ -63,6 +70,7 @@ local PitBull4 = LibStub("AceAddon-3.0"):NewAddon("PitBull4", "AceEvent-3.0", "A
 _G.PitBull4 = PitBull4
 
 PitBull4.SINGLETON_CLASSIFICATIONS = SINGLETON_CLASSIFICATIONS
+PitBull4.PARTY_CLASSIFICATIONS = PARTY_CLASSIFICATIONS
 
 local db
 
@@ -605,6 +613,9 @@ function PitBull4:MakeGroupHeader(classification, group)
 		header = CreateFrame("Frame", header_name, UIParent, template_names[party_based][pet_based])
 		header:Hide() -- it will be shown later and attributes being set won't cause lag
 		
+		if party_based then
+			header.unitsuffix = classification:sub(6)
+		end
 		header.classification = classification
 		header.classification_db = db.profile.classifications[classification]
 		header.group = group
@@ -649,16 +660,20 @@ function PitBull4:OnEnable()
 		end
 	end
 	
-	if db_classifications["party"].enabled then
-		self:MakeGroupHeader("party")
+	for _, classification in ipairs(PARTY_CLASSIFICATIONS) do
+		if db_classifications[classification].enabled then
+			self:MakeGroupHeader(classification)
+		end
 	end
 end
 
 --- Iterate over all wacky frames, and call their respective :UpdateGUID methods.
 -- @usage PitBull4:CheckWackyFramesForGUIDUpdate()
 function PitBull4:CheckWackyFramesForGUIDUpdate()
-	for frame in self:IterateWackyFrames(true) do
-		frame:UpdateGUID(UnitGUID(frame.unit))
+	for frame in self:IterateWackyFrames() do
+		if frame.unit then
+			frame:UpdateGUID(UnitGUID(frame.unit))
+		end
 	end
 end
 

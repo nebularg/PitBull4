@@ -60,6 +60,10 @@ function GroupHeader:InitialConfigFunction(frame)
 	frame.classification_db = self.classification_db
 	frame.is_wacky = self.is_wacky
 	
+	if self.unitsuffix then
+		frame:SetAttribute("unitsuffix", self.unitsuffix)
+	end
+	
 	local layout = self.classification_db.layout
 	frame.layout = layout
 	
@@ -110,6 +114,60 @@ function GroupHeader:ForceUnitFrameCreation(num)
 	end
 end
 GroupHeader.ForceUnitFrameCreation = PitBull4:OutOfCombatWrapper(GroupHeader.ForceUnitFrameCreation)
+
+local function hook_SecureGroupHeader_Update()
+	hook_SecureGroupHeader_Update = nil
+	hooksecurefunc("SecureGroupHeader_Update", function(self)
+		self:AssignFakeUnitIDs()
+	end)
+end
+
+function GroupHeader:AssignFakeUnitIDs()
+	if not self.force_show then
+		return
+	end
+	
+	local current_group_num = 0
+	
+	for _, frame in ipairs(self) do
+		if not frame.guid then
+			repeat
+				current_group_num = current_group_num + 1
+			until not UnitExists("party" .. current_group_num)
+			
+			frame:SetAttribute("unit", "party" .. current_group_num)
+		end
+	end
+end
+GroupHeader.AssignFakeUnitIDs = PitBull4:OutOfCombatWrapper(GroupHeader.AssignFakeUnitIDs)
+
+function GroupHeader:ForceShow()
+	if self.force_show then
+		return
+	end
+	if hook_SecureGroupHeader_Update then
+		hook_SecureGroupHeader_Update()
+	end
+	self.force_show = true
+	self:AssignFakeUnitIDs()
+	for _, frame in ipairs(self) do
+		frame:ForceShow()
+		frame:Update(true, true)
+	end
+end
+GroupHeader.ForceShow = PitBull4:OutOfCombatWrapper(GroupHeader.ForceShow)
+
+function GroupHeader:UnforceShow()
+	if not self.force_show then
+		return
+	end
+	self.force_show = nil
+	for _, frame in ipairs(self) do
+		frame:UnforceShow()
+		frame:Update(true, true)
+	end
+end
+GroupHeader.UnforceShow = PitBull4:OutOfCombatWrapper(GroupHeader.UnforceShow)
 
 function MemberUnitFrame__scripts:OnDragStart()
 	return self.header:StartMoving()

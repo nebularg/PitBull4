@@ -347,6 +347,7 @@ function UnitFrame:ForceShow()
 	UnregisterUnitWatch(self)
 	self:Show()
 end
+UnitFrame.ForceShow = PitBull4:OutOfCombatWrapper(UnitFrame.ForceShow)
 
 function UnitFrame:UnforceShow()
 	if not self.force_show then
@@ -356,6 +357,7 @@ function UnitFrame:UnforceShow()
 	self.force_show = nil
 	RegisterUnitWatch(self)
 end
+UnitFrame.UnforceShow = PitBull4:OutOfCombatWrapper(UnitFrame.UnforceShow)
 
 --- Update all details about the UnitFrame, possibly after a GUID change
 -- @param same_guid whether the previous GUID is the same as the current, at which point is less crucial to update

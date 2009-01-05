@@ -59,14 +59,10 @@ function PitBull4:SetConfigMode(kind)
 	end
 	
 	for header in self:IterateHeaders() do
-		local should_show = should_show_header(kind, header)
-		for _, frame in ipairs(header) do
-			if should_show then
-				frame:ForceShow()
-			else
-				frame:UnforceShow()
-			end
-			frame:Update(true, true)
+		if should_show_header(kind, header) then
+			header:ForceShow()
+		else
+			header:UnforceShow()
 		end
 	end
 end
