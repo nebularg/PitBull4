@@ -47,6 +47,10 @@ local DATABASE_DEFAULTS = {
 				horizontal_mirror = false,
 				vertical_mirror = false,
 			},
+			party = {
+				sort_method = "INDEX",
+				sort_direction = "ASC",
+			},
 		},
 		layouts = {
 			['**'] = {
@@ -161,6 +165,10 @@ PitBull4.classification_to_frames = classification_to_frames
 -- A dictionary of classification to a set of all group headers of that classification
 local classification_to_headers = setmetatable({}, auto_table__mt)
 PitBull4.classification_to_headers = classification_to_headers
+
+-- A dictionary of super-classification to a set of all group headers of that super-classification
+local super_classification_to_headers = setmetatable({}, auto_table__mt)
+PitBull4.super_classification_to_headers = super_classification_to_headers
 
 --- Wrap the given function so that any call to it will be piped through PitBull4:RunOnLeaveCombat.
 -- @param func function to call
@@ -530,6 +538,25 @@ function PitBull4:IterateHeadersForClassification(classification)
 	return not also_hidden and iterate_shown_frames or half_next, headers
 end
 
+--- Iterate over all headers with the given super-classification.
+-- @param super_classification the super-classification to check
+-- @usage for header in PitBull4:IterateHeadersForSuperClassification("party")
+--     doSomethingWith(header)
+-- end
+-- @return iterator which returns headers
+function PitBull4:IterateHeadersForSuperClassification(super_classification)
+	--@alpha@
+	expect(super_classification, 'typeof', 'string')
+	--@end-alpha@
+	
+	local headers = rawget(super_classification_to_headers, super_classification)
+	if not headers then
+		return do_nothing
+	end
+	
+	return not also_hidden and iterate_shown_frames or half_next, headers
+end
+
 --- Make a singleton unit frame.
 -- @param unit the UnitID of the frame in question
 -- @usage local frame = PitBull4:MakeSingletonFrame("player")
@@ -614,7 +641,12 @@ function PitBull4:MakeGroupHeader(classification, group)
 		header:Hide() -- it will be shown later and attributes being set won't cause lag
 		
 		if party_based then
+			header.super_classification = "party"
+			header.super_classification_db = db.profile.classifications["party"]
 			header.unitsuffix = classification:sub(6)
+			if header.unitsuffix == "" then
+				header.unitsuffix = nil
+			end
 		end
 		header.classification = classification
 		header.classification_db = db.profile.classifications[classification]

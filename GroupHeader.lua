@@ -21,6 +21,7 @@ GroupHeader.Update = PitBull4:OutOfCombatWrapper(GroupHeader.Update)
 -- @usage header:RefreshLayout()
 function GroupHeader:RefreshLayout()
 	local classification_db = self.classification_db
+	local super_classification_db = self.super_classification_db
 
 	local layout = classification_db.layout
 	self.layout = layout
@@ -32,8 +33,8 @@ function GroupHeader:RefreshLayout()
 	
 	self:SetAttribute("xOffset", 0)
 	self:SetAttribute("yOffset", 0)
-	self:SetAttribute("sortMethod", "INDEX") -- or "NAME"
-	self:SetAttribute("sortDir", "ASC") -- or "DESC"
+	self:SetAttribute("sortMethod", super_classification_db.sort_method)
+	self:SetAttribute("sortDir", super_classification_db.sort_direction)
 	self:SetAttribute("template", "SecureUnitButtonTemplate")
 	self:SetAttribute("templateType", "Button")
 	self:SetAttribute("groupBy", nil) -- or "GROUP", "CLASS", "ROLE"
@@ -43,6 +44,8 @@ function GroupHeader:RefreshLayout()
 	self:SetAttribute("startingIndex", 1)
 	self:SetAttribute("columnSpacing", 0)
 	self:SetAttribute("columnAnchorPoint", "LEFT") -- or "RIGHT", but all directions apparently work
+	
+	self:AssignFakeUnitIDs()
 	
 	for i, frame in ipairs(self) do
 		frame:RefreshLayout()
@@ -129,7 +132,15 @@ function GroupHeader:AssignFakeUnitIDs()
 	
 	local current_group_num = 0
 	
-	for _, frame in ipairs(self) do
+	local start, finish, step = 1, #self, 1
+	
+	if self:GetAttribute("sortDir") == "DESC" then
+		start, finish, step = finish, start, -1
+	end
+	
+	for i = start, finish, step do
+		local frame = self[i]
+		
 		if not frame.guid then
 			repeat
 				current_group_num = current_group_num + 1
@@ -217,6 +228,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 	
 	self.all_headers[header] = true
 	self.classification_to_headers[header.classification][header] = true
+	self.super_classification_to_headers[header.super_classification][header] = true
 	
 	for k, v in pairs(GroupHeader__scripts) do
 		header:SetScript(k, v)
