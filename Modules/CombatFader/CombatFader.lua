@@ -48,17 +48,17 @@ function PitBull4_CombatFader:OnEnable()
 end
 
 local power_check = {
-	[0] = function() -- Mana
+	MANA = function()
 		return UnitMana('player') < UnitManaMax('player')
 	end,
-	[1] = function() -- Rage
+	RAGE = function()
 		-- this seems counter-intuitive, but if rage > 0, you're up for fighting
 		return UnitMana('player') > 0
 	end,
-	[3] = function() -- Energy
+	ENERGY = function()
 		return UnitMana('player') < UnitManaMax('player')
 	end,
-	[6] = function() -- Runic power
+	RUNICPOWER = function()
 		return UnitMana('player') > 0
 	end,
 }
@@ -71,8 +71,8 @@ function PitBull4_CombatFader:RecalculateState()
 	elseif UnitHealth('player') < UnitHealthMax('player') then
 		state = 'hurt'
 	else
-		local power_type = UnitPowerType('player')
-		local func = power_check[power_type]
+		local _, power_token = UnitPowerType('player')
+		local func = power_check[power_token]
 		if func and func() then
 			state = 'hurt'
 		else
