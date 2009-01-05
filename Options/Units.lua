@@ -282,6 +282,133 @@ function PitBull4.Options.get_unit_options()
 		}
 	}
 	
+	local VERTICAL_FIRST = {
+		down_right = true,
+		down_left = true,
+		up_right = true,
+		up_left = true,
+	}
+	
+	local group_args = {
+		vertical_spacing = {
+			name = L["Vertical spacing"],
+			desc = L["How many pixels between rows in this group."],
+			order = 10,
+			type = 'range',
+			min = 0,
+			max = 300,
+			step = 1,
+			bigStep = 5,
+			get = function(info)
+				local classification = info[2]
+				
+				return PitBull4.db.profile.classifications[classification].vertical_spacing
+			end,
+			set = function(info, value)
+				local classification = info[2]
+				
+				PitBull4.db.profile.classifications[classification].vertical_spacing = value
+				
+				for header in PitBull4:IterateHeadersForClassification(classification) do
+					header:RefreshLayout()
+				end
+			end,
+		},
+		horizontal_spacing = {
+			name = L["Horizontal spacing"],
+			desc = L["How many pixels between columns in this group."],
+			order = 11,
+			type = 'range',
+			min = 0,
+			max = 300,
+			step = 1,
+			bigStep = 5,
+			get = function(info)
+				local classification = info[2]
+				
+				return PitBull4.db.profile.classifications[classification].horizontal_spacing
+			end,
+			set = function(info, value)
+				local classification = info[2]
+				
+				PitBull4.db.profile.classifications[classification].horizontal_spacing = value
+				
+				for header in PitBull4:IterateHeadersForClassification(classification) do
+					header:RefreshLayout()
+				end
+			end,
+		},
+		direction = {
+			name = L["Growth direction"],
+			desc = L["Which way frames should placed."],
+			order = 12,
+			type = 'select',
+			values = {
+				down_right = ("%s, %s"):format(L["Rows down"], L["Columns right"]),
+				down_left = ("%s, %s"):format(L["Rows down"], L["Columns left"]),
+				up_right = ("%s, %s"):format(L["Rows up"], L["Columns right"]),
+				up_left = ("%s, %s"):format(L["Rows up"], L["Columns left"]),
+				right_down = ("%s, %s"):format(L["Columns right"], L["Rows down"]),
+				right_up = ("%s, %s"):format(L["Columns right"], L["Rows up"]),
+				left_down = ("%s, %s"):format(L["Columns left"], L["Rows down"]),
+				left_up = ("%s, %s"):format(L["Columns left"], L["Rows up"]),
+			},
+			get = function(info)
+				local classification = info[2]
+				
+				return PitBull4.db.profile.classifications[classification].direction
+			end,
+			set = function(info, value)
+				local classification = info[2]
+				
+				PitBull4.db.profile.classifications[classification].direction = value
+				
+				for header in PitBull4:IterateHeadersForClassification(classification) do
+					header:RefreshLayout()
+				end
+			end,
+		},
+		units_per_column = {
+			name = function(info)
+				local classification = info[2]
+				
+				if VERTICAL_FIRST[PitBull4.db.profile.classifications[classification].direction] then
+					return L["Units per column"]
+				else
+					return L["Units per row"]
+				end
+			end,
+			desc = function(info)
+				local classification = info[2]
+				
+				if VERTICAL_FIRST[PitBull4.db.profile.classifications[classification].direction] then
+					return L["The maximum amount of units per column before making a new column."]
+				else
+					return L["The maximum amount of units per row before making a new row."]
+				end
+			end,
+			order = 13,
+			type = 'range',
+			min = 1,
+			max = MAX_RAID_MEMBERS,
+			get = function(info)
+				local classification = info[2]
+				
+				return PitBull4.db.profile.classifications[classification].units_per_column
+			end,
+			set = function(info, value)
+				local classification = info[2]
+				
+				PitBull4.db.profile.classifications[classification].units_per_column = value
+				
+				for header in PitBull4:IterateHeadersForClassification("party") do
+					header:RefreshLayout()
+				end
+			end,
+			step = 1,
+		},
+	}
+	
 	local current_order = 0
 	
 	for _, classification in ipairs(PitBull4.SINGLETON_CLASSIFICATIONS) do
@@ -312,6 +439,9 @@ function PitBull4.Options.get_unit_options()
 			for k, v in pairs(party_only_args) do
 				args[k] = v
 			end
+		end
+		for k, v in pairs(group_args) do
+			args[k] = v
 		end
 		
 		unit_options.args[classification] = {

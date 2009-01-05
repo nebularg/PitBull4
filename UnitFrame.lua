@@ -283,7 +283,7 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 	
 	frame:SetClampedToScreen(true)
 end
-UnitFrame.ConvertIntoUnitFrame = PitBull4:OutOfCombatWrapper(UnitFrame.ConvertIntoUnitFrame)
+PitBull4.ConvertIntoUnitFrame = PitBull4:OutOfCombatWrapper(PitBull4.ConvertIntoUnitFrame)
 
 --- Recheck the layout of the unit frame, make sure it's up to date, and update the frame.
 -- @usage frame:RefreshLayout()
@@ -325,7 +325,7 @@ SingletonUnitFrame.RefixSizeAndPosition = PitBull4:OutOfCombatWrapper(SingletonU
 function SingletonUnitFrame:Activate()
 	RegisterUnitWatch(self)
 end
-UnitFrame.Activate = PitBull4:OutOfCombatWrapper(UnitFrame.Activate)
+SingletonUnitFrame.Activate = PitBull4:OutOfCombatWrapper(SingletonUnitFrame.Activate)
 
 --- Deactivate the unit frame.
 -- This is just a thin wrapper around UnregisterUnitWatch.
@@ -334,7 +334,7 @@ function SingletonUnitFrame:Deactivate()
 	UnregisterUnitWatch(self)
 	self:Hide()
 end
-UnitFrame.Deactivate = PitBull4:OutOfCombatWrapper(UnitFrame.Deactivate)
+SingletonUnitFrame.Deactivate = PitBull4:OutOfCombatWrapper(SingletonUnitFrame.Deactivate)
 
 local do_nothing = function() end
 

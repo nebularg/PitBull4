@@ -17,6 +17,52 @@ function GroupHeader:Update()
 end
 GroupHeader.Update = PitBull4:OutOfCombatWrapper(GroupHeader.Update)
 
+local DIRECTION_TO_POINT = {
+	down_right = "TOP",
+	down_left = "TOP",
+	up_right = "BOTTOM",
+	up_left = "BOTTOM",
+	right_down = "LEFT",
+	right_up = "LEFT",
+	left_down = "RIGHT",
+	left_up = "RIGHT",
+}
+
+local DIRECTION_TO_COLUMN_ANCHOR_POINT = {
+	down_right = "LEFT",
+	down_left = "RIGHT",
+	up_right = "LEFT",
+	up_left = "RIGHT",
+	right_down = "TOP",
+	right_up = "BOTTOM",
+	left_down = "TOP",
+	left_up = "BOTTOM",
+}
+
+local DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER = {
+	down_right = 1,
+	down_left = -1,
+	up_right = 1,
+	up_left = -1,
+	right_down = 1,
+	right_up = 1,
+	left_down = -1,
+	left_up = -1,
+}
+
+local DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER = {
+	down_right = -1,
+	down_left = -1,
+	up_right = 1,
+	up_left = 1,
+	right_down = -1,
+	right_up = 1,
+	left_down = -1,
+	left_up = 1,
+}
+
+UNITS_PER_COLUMN = 2
+MAX_COLUMNS = 2
 --- Recheck the layout of the group header, including sorting, position, what units are shown, and refreshing the layout of all members.
 -- @usage header:RefreshLayout()
 function GroupHeader:RefreshLayout()
@@ -29,23 +75,47 @@ function GroupHeader:RefreshLayout()
 	local layout_db = PitBull4.db.profile.layouts[layout]
 	
 	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
-	self:SetPoint("CENTER", UIParent, "CENTER", classification_db.position_x / scale, classification_db.position_y / scale)
 	
-	self:SetAttribute("xOffset", 0)
-	self:SetAttribute("yOffset", 0)
+	local direction = classification_db.direction
+	local point = DIRECTION_TO_POINT[direction]
+	
+	self:SetAttribute("point", point)
+	if point == "LEFT" or point == "RIGHT" then
+		self:SetAttribute("xOffset", classification_db.horizontal_spacing * DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction])
+		self:SetAttribute("yOffset", 0)
+		self:SetAttribute("columnSpacing", classification_db.vertical_spacing)
+	else
+		self:SetAttribute("xOffset", 0)
+		self:SetAttribute("yOffset", classification_db.vertical_spacing * DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction])
+		self:SetAttribute("columnSpacing", classification_db.horizontal_spacing)
+	end
 	self:SetAttribute("sortMethod", super_classification_db.sort_method)
 	self:SetAttribute("sortDir", super_classification_db.sort_direction)
 	self:SetAttribute("template", "SecureUnitButtonTemplate")
 	self:SetAttribute("templateType", "Button")
 	self:SetAttribute("groupBy", nil) -- or "GROUP", "CLASS", "ROLE"
 	self:SetAttribute("groupingOrder", "1,2,3,4,5,6,7,8")
-	self:SetAttribute("maxColumns", 1)
-	self:SetAttribute("unitsPerColumn", nil)
+	self:SetAttribute("unitsPerColumn", classification_db.units_per_column)
+	self:SetAttribute("maxColumns", MAX_RAID_MEMBERS)
 	self:SetAttribute("startingIndex", 1)
-	self:SetAttribute("columnSpacing", 0)
-	self:SetAttribute("columnAnchorPoint", "LEFT") -- or "RIGHT", but all directions apparently work
+	self:SetAttribute("columnAnchorPoint", DIRECTION_TO_COLUMN_ANCHOR_POINT[direction])
 	
+	self:ForceUnitFrameCreation(#self)
 	self:AssignFakeUnitIDs()
+	
+	self:ClearAllPoints()
+	
+	local x_diff, y_diff = 0, 0
+	if point == "TOP" then
+		y_diff = self[1]:GetHeight() / 2
+	elseif point == "BOTTOM" then
+		y_diff = -self[1]:GetHeight() / 2
+	elseif point == "LEFT" then
+		x_diff = -self[1]:GetWidth() / 2
+	elseif point == "RIGHT" then
+		x_diff = self[1]:GetWidth() / 2
+	end
+	self:SetPoint(point, UIParent, "CENTER", classification_db.position_x / scale + x_diff, (classification_db.position_y + y_diff) / scale)
 	
 	for i, frame in ipairs(self) do
 		frame:RefreshLayout()
@@ -87,7 +157,7 @@ end
 -- @usage header:ForceUnitFrameCreation(4)
 function GroupHeader:ForceUnitFrameCreation(num)
 	for _, frame in ipairs(self) do
-		if frame:GetAttribute("unit") then
+		if frame:GetAttribute("unit") and UnitExists(frame:GetAttribute("unit")) then
 			num = num - 1
 		end
 	end
@@ -95,9 +165,7 @@ function GroupHeader:ForceUnitFrameCreation(num)
 	local maxColumns = self:GetAttribute("maxColumns")
 	local unitsPerColumn = self:GetAttribute("unitsPerColumn")
 	local startingIndex = self:GetAttribute("startingIndex")
-	if maxColumns ~= nil then
-		self:SetAttribute("unitsPerColumn", math.ceil(num / maxColumns))
-	else
+	if maxColumns == nil then
 		self:SetAttribute("maxColumns", 1)
 		self:SetAttribute("unitsPerColumn", num)
 	end
@@ -189,9 +257,9 @@ function MemberUnitFrame__scripts:OnDragStop()
 	header:StopMovingOrSizing()
 	
 	local ui_scale = UIParent:GetEffectiveScale()
-	local scale = header:GetEffectiveScale() / ui_scale
+	local scale = header[1]:GetEffectiveScale() / ui_scale
 	
-	local x, y = header:GetCenter()
+	local x, y = header[1]:GetCenter()
 	x, y = x * scale, y * scale
 	
 	x = x - GetScreenWidth()/2

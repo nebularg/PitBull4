@@ -46,6 +46,10 @@ local DATABASE_DEFAULTS = {
 				layout = "Normal",
 				horizontal_mirror = false,
 				vertical_mirror = false,
+				horizontal_spacing = 30,
+				vertical_spacing = 30,
+				direction = "down_right",
+				units_per_column = MAX_RAID_MEMBERS,
 			},
 			party = {
 				sort_method = "INDEX",
@@ -176,6 +180,10 @@ PitBull4.super_classification_to_headers = super_classification_to_headers
 -- @usage MyNamespace.MyMethod = PitBull4:OutOfCombatWrapper(MyNamespace.MyMethod)
 -- @return the wrapped function
 function PitBull4:OutOfCombatWrapper(func)
+	--@alpha@
+	expect(func, 'typeof', 'function')
+	--@end-alpha@
+	
 	return function(...)
 		return PitBull4:RunOnLeaveCombat(func, ...)
 	end
@@ -758,6 +766,12 @@ do
 	-- @usage PitBull4:RunOnLeaveCombat(frame.SetAttribute, frame, "key", "value")
 	-- @usage PitBull4:RunOnLeaveCombat(frame, 'SetAttribute', "key", "value")
 	function PitBull4:RunOnLeaveCombat(func, ...)
+		--@alpha@
+		expect(func, 'typeof', 'table;function')
+		if type(func) == "table" then
+			expect(func[(...)], 'typeof', 'function')
+		end
+		--@end-alpha@
 		if type(func) == "table" then
 			return self:RunOnLeaveCombat(func[(...)], func, select(2, ...))
 		end
