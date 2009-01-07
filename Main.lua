@@ -79,6 +79,11 @@ local _G = _G
 local PitBull4 = LibStub("AceAddon-3.0"):NewAddon("PitBull4", "AceEvent-3.0", "AceTimer-3.0")
 _G.PitBull4 = PitBull4
 
+--@debug@
+LibStub("AceLocale-3.0"):NewLocale("PitBull4", "enUS", true, true)
+--@end-debug@
+PitBull4.L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
+
 PitBull4.SINGLETON_CLASSIFICATIONS = SINGLETON_CLASSIFICATIONS
 PitBull4.PARTY_CLASSIFICATIONS = PARTY_CLASSIFICATIONS
 

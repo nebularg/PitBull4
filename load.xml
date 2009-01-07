@@ -5,9 +5,9 @@
 <Script file="Debug.lua"/>
 <!--@end-alpha@-->
 
-<Script file="Main.lua"/>
-
 <Include file="Localization\load.xml"/>
+
+<Script file="Main.lua"/>
 
 <Script file="Utils.lua"/>
 
