@@ -193,10 +193,10 @@ function PitBull4.Options.get_layout_options()
 		desc = L["The texture of status bars, unless overridden."],
 		order = 1,
 		get = function(info)
-			return PitBull4.db.profile.layouts[CURRENT_LAYOUT].status_bar_texture
+			return PitBull4.db.profile.layouts[CURRENT_LAYOUT].bar_texture
 		end,
 		set = function(info, value)
-			PitBull4.db.profile.layouts[CURRENT_LAYOUT].status_bar_texture = value
+			PitBull4.db.profile.layouts[CURRENT_LAYOUT].bar_texture = value
 
 			UpdateFrames()
 		end,
@@ -211,6 +211,42 @@ function PitBull4.Options.get_layout_options()
 			return not LibSharedMedia or #LibSharedMedia:List("statusbar") <= 1
 		end,
 		dialogControl = AceGUI.WidgetRegistry["LSM30_Statusbar"] and "LSM30_Statusbar" or nil,
+	}
+	
+	layout_options.args.bars.args.spacing = {
+		type = 'range',
+		name = L["Spacing"],
+		desc = L["Spacing in pixels between bars."],
+		order = 2,
+		min = 0,
+		max = 10,
+		step = 1,
+		get = function(info)
+			return PitBull4.db.profile.layouts[CURRENT_LAYOUT].bar_spacing
+		end,
+		set = function(info, value)
+			PitBull4.db.profile.layouts[CURRENT_LAYOUT].bar_spacing = value
+
+			UpdateFrames()
+		end,
+	}
+	
+	layout_options.args.bars.args.padding = {
+		type = 'range',
+		name = L["Padding"],
+		desc = L["Padding in pixels between bars and the sides of the unit frame."],
+		order = 3,
+		min = 0,
+		max = 10,
+		step = 1,
+		get = function(info)
+			return PitBull4.db.profile.layouts[CURRENT_LAYOUT].bar_padding
+		end,
+		set = function(info, value)
+			PitBull4.db.profile.layouts[CURRENT_LAYOUT].bar_padding = value
+
+			UpdateFrames()
+		end,
 	}
 	
 	local status_bar_args = {
@@ -313,10 +349,10 @@ function PitBull4.Options.get_layout_options()
 			desc = L["What texture the status bar should use."],
 			order = 4,
 			get = function(info)
-				return GetLayoutDB(info[3]).texture or PitBull4.db.profile.layouts[CURRENT_LAYOUT].status_bar_texture
+				return GetLayoutDB(info[3]).texture or PitBull4.db.profile.layouts[CURRENT_LAYOUT].bar_texture
 			end,
 			set = function(info, value)
-				local default = PitBull4.db.profile.layouts[CURRENT_LAYOUT].status_bar_texture
+				local default = PitBull4.db.profile.layouts[CURRENT_LAYOUT].bar_texture
 				if value == default then
 					value = nil
 				end
@@ -326,7 +362,7 @@ function PitBull4.Options.get_layout_options()
 			end,
 			values = function(info)
 				local t = {}
-				local default = PitBull4.db.profile.layouts[CURRENT_LAYOUT].status_bar_texture
+				local default = PitBull4.db.profile.layouts[CURRENT_LAYOUT].bar_texture
 				for k in pairs(LibSharedMedia:HashTable("statusbar")) do
 					if k == default then
 						t[k] = ("%s (Default)"):format(k)

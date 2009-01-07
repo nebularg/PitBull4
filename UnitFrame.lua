@@ -510,11 +510,21 @@ local function update_bar_layout(self)
 	local layout = self.layout
 	
 	local bar_width_points, bar_height_points = calculate_width_height_points(layout, center_bars, left_bars, right_bars)
+	
+	local bar_spacing = PitBull4.db.profile.layouts[layout].bar_spacing
+	local bar_padding = PitBull4.db.profile.layouts[layout].bar_padding
+	
+	local height_of_bars = height - bar_spacing * (#center_bars - 1) - bar_padding * 2
+	local num_vertical_bars = #left_bars + #right_bars
+	if #center_bars > 0 then
+		num_vertical_bars = num_vertical_bars + num_vertical_bars
+	end
+	local width_of_bars = width - bar_spacing * (num_vertical_bars - 1) - bar_padding * 2
+	
+	local bar_height_per_point = height_of_bars / bar_height_points
+	local bar_width_per_point = width_of_bars / bar_width_points
 
-	local bar_height_per_point = height/bar_height_points
-	local bar_width_per_point = width/bar_width_points
-
-	local last_x = 0
+	local last_x = bar_padding
 	for _, id in ipairs(left_bars) do
 		local bar = self[id]
 		bar:ClearAllPoints()
@@ -523,12 +533,13 @@ local function update_bar_layout(self)
 		local bar_width = PitBull4.modules[id]:GetLayoutDB(layout).size * bar_width_per_point
 		last_x = last_x + bar_width
 		bar:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", last_x, 0)
+		last_x = last_x + bar_spacing
 	
 		bar:SetOrientation("VERTICAL")
 	end
 	local left = last_x
 
-	last_x = 0
+	last_x = -bar_padding
 	for _, id in ipairs(right_bars) do
 		local bar = self[id]
 		bar:ClearAllPoints()
@@ -537,12 +548,13 @@ local function update_bar_layout(self)
 		local bar_width = PitBull4.modules[id]:GetLayoutDB(layout).size * bar_width_per_point
 		last_x = last_x - bar_width
 		bar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", last_x, 0)
+		last_x = last_x - bar_spacing
 	
 		bar:SetOrientation("VERTICAL")
 	end
 	local right = last_x
 	
-	local last_y = 0
+	local last_y = -bar_padding
 	for i, id in (not vertical_mirror and ipairs or reverse_ipairs)(center_bars) do
 		local bar = self[id]
 		bar:ClearAllPoints()
@@ -551,6 +563,7 @@ local function update_bar_layout(self)
 		local bar_height = PitBull4.modules[id]:GetLayoutDB(layout).size * bar_height_per_point
 		last_y = last_y - bar_height
 		bar:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", right, last_y)
+		last_y = last_y - bar_spacing
 	
 		bar:SetOrientation("HORIZONTAL")
 	end
