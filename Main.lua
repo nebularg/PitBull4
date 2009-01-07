@@ -641,10 +641,6 @@ function PitBull4:MakeGroupHeader(classification, group)
 	end
 	--@end-alpha@
 	
-	local party_based = classification:sub(1, 5) == "party"
-	
-	local pet_based = not not classification:match("pet") -- this feels dirty
-	
 	local header_name = "PitBull4_Groups_" .. classification
 	if group then
 		header_name = header_name .. "_" .. group
@@ -652,6 +648,10 @@ function PitBull4:MakeGroupHeader(classification, group)
 	
 	local header = _G[header_name]
 	if not header then
+		local party_based = classification:sub(1, 5) == "party"
+	
+		local pet_based = not not classification:match("pet") -- this feels dirty
+		
 		header = CreateFrame("Frame", header_name, UIParent, template_names[party_based][pet_based])
 		header:Hide() -- it will be shown later and attributes being set won't cause lag
 		

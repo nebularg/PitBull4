@@ -49,6 +49,12 @@ function PitBull4:SetConfigMode(kind)
 	end
 	PitBull4.config_mode = kind
 	
+	self:RecheckConfigMode()
+end
+
+function PitBull4:RecheckConfigMode()
+	local kind = PitBull4.config_mode
+	
 	for frame in self:IterateSingletonFrames(true) do
 		if kind then
 			frame:ForceShow()

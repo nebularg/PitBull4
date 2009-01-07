@@ -27,13 +27,25 @@ function PitBull4.Options.get_unit_options()
 				
 				PitBull4.db.profile.classifications[classification].enabled = value
 				
-				if value then
-					PitBull4:MakeSingletonFrame(classification)
+				if PitBull4.Utils.IsSingletonUnitID(classification) then
+					if value then
+						PitBull4:MakeSingletonFrame(classification)
+					else
+						for frame in PitBull4:IterateFramesForClassification(classification, true) do
+							frame:Deactivate()
+						end
+					end
 				else
-					for frame in PitBull4:IterateFramesForClassification(classification, true) do
-						frame:Deactivate()
+					if value then
+						PitBull4:MakeGroupHeader(classification, nil)
+					else
+						for header in PitBull4:IterateHeadersForClassification(classification) do
+							header:Hide()
+						end
 					end
 				end
+				
+				PitBull4:RecheckConfigMode()
 			end,
 		},
 		layout = {

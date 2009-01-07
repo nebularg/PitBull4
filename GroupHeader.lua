@@ -189,6 +189,9 @@ GroupHeader.ForceUnitFrameCreation = PitBull4:OutOfCombatWrapper(GroupHeader.For
 local function hook_SecureGroupHeader_Update()
 	hook_SecureGroupHeader_Update = nil
 	hooksecurefunc("SecureGroupHeader_Update", function(self)
+		if not PitBull4.all_headers[self] then
+			return
+		end
 		self:AssignFakeUnitIDs()
 	end)
 end
