@@ -16,6 +16,8 @@
 <Script file="UnitFrame.lua"/>
 <Script file="GroupHeader.lua"/>
 
+<Script file="UnitFrameLayout.lua"/>
+
 <Include file="Controls\load.xml"/>
 
 <Include file="Options\load.xml"/>
