@@ -279,7 +279,6 @@ end
 
 function PitBull4_TotemTimers:StartTimer()
 	if not self.timerhandle then
-		--self:AddRepeatingTimer("pbtotemtimerall", 0.25, function() PitBull4_TotemTimers:UpdateAllTimes() end)
 		self.timerhandle = self:ScheduleRepeatingTimer(function() PitBull4_TotemTimers:UpdateAllTimes() end, 0.25)
 	end
 end
@@ -296,7 +295,6 @@ function PitBull4_TotemTimers:StartPulse(frame) -- starts a continuous pulse
 	frame.pulseStart = true
 	frame.lastUpdated = 0
 	if frame:GetScript("OnUpdate") == nil then
-		--PitBull:Print("DEBUG: Added OnUpdate handlder")
 		frame:SetScript("OnUpdate", self.ButtonOnUpdate)
 	end
 end
@@ -306,7 +304,6 @@ function PitBull4_TotemTimers:StartPulseOnce(frame) -- starts a single pulse
 	frame.pulseStart = true
 	frame.lastUpdated = 0
 	if frame:GetScript("OnUpdate") == nil then
-		--PitBull:Print("DEBUG: Added OnUpdate handlder")
 		frame:SetScript("OnUpdate", self.ButtonOnUpdate)
 	end
 end
@@ -320,7 +317,6 @@ function PitBull4_TotemTimers:StopPulse(frame)
 	end
 	frame.lastUpdated = 0
 	if frame:GetScript("OnUpdate") ~= nil then
-		--PitBull:Print("DEBUG: Removed OnUpdate handlder")
 		frame:SetScript("OnUpdate", nil)
 	end
 end
@@ -341,10 +337,7 @@ function PitBull4_TotemTimers:UpdateAllTimes()
 			for slot=1, MAX_TOTEMS do
 				if (not elements) or (not elements[slot]) or (not elements[slot].frame) then return end
 				
-				--local endTime = self.startTimes[slot] + self.durations[slot]
-				--local timeleft = endTime - nowTime
 				local timeleft = GetTotemTimeLeft(slot)
-				--PitBull:Print(string.format("now = %f, start = %f, duration = %d",nowTime,self.startTimes[slot], self.durations[slot]))
 				
 				if timeleft > 0 then
 					-- need to update shown time
@@ -405,9 +398,7 @@ function PitBull4_TotemTimers:ActivateTotem(slot)
 	self.durations[slot] = duration
 	
 	for frame in PitBull4:IterateFramesForUnitID('player') do
-		--self:Print("DBG: Activate iterate, found a frame")
 		if not frame.TotemTimers then
-			--self:Print("DBG: Activate iterate, ..but frame didn't have our frame on it.")
 			return
 		end
 
@@ -420,7 +411,6 @@ function PitBull4_TotemTimers:ActivateTotem(slot)
 		tframe:SetAlpha(1)
 		tframe:Show()
 		
-		--tframe.pulse.icon:Hide()
 		self:StopPulse(tframe)
 		
 		--tframe.border:SetVertexColor(lOptGetColor("totembordercolor"))
@@ -530,7 +520,6 @@ function PitBull4_TotemTimers:ResizeMainFrame(frame)
 		ttf:SetWidth((nlines*tSize)+((nlines-1)*tSpacing))
 		ttf:SetHeight((lbreak*tSize)+((lbreak-1)*tSpacing))
 	end
-	--self:Print(string.format("Set the size of the main frame to: %d and %d",ttf:GetWidth(),ttf:GetHeight()))
 end
 
 function PitBull4_TotemTimers:RealignTotems(frame)
@@ -729,7 +718,6 @@ end
 
 
 function PitBull4_TotemTimers:PLAYER_TOTEM_UPDATE(event, slot)
-	--self:Print(string.format("Got %s and %s", tostring(event), tostring(slot)))
 	local haveTotem, name, startTime, duration, icon = GetTotemInfo(slot)
 	local sSlot = tostring(slot)
 
@@ -768,7 +756,6 @@ end
 
 
 function PitBull4_TotemTimers:UpdateFrame(frame)
-	--self:Print(fmt("Update called, unit is %s", tostring(frame.unit)))
 	if frame.unit ~= 'player' then return end -- we only work for the player unit itself
 	
 	if frame.TotemTimers and (lOptGet('enabled') ~= true) then
@@ -777,7 +764,6 @@ function PitBull4_TotemTimers:UpdateFrame(frame)
 	
 	if frame.TotemTimers then
 		-- make sure the timer is still running (it gets deactivated if the frame is gone for a moment
-		--self:Print("DBG: Update, frame exists, starting timer and returning false")
 		self:StartTimer()
 		return false -- our frame exists already, nothing more to do...
 	end
@@ -916,7 +902,6 @@ function PitBull4_TotemTimers:UpdateFrame(frame)
 	
 	self:ResizeMainFrame(frame)
 	self:RealignTotems(frame)
-	--self:Print("DBG: Update, finished update fully")
 	
 	return true
 end
@@ -944,7 +929,6 @@ function PitBull4_TotemTimers:ClearFrame(frame)
 end
 
 function PitBull4_TotemTimers:OnInitialize()
-	self:Print("OnInitialize called!")
 	-- Initialize Timer variables
 	self.startTimes = {}
 	self.durations = {}
