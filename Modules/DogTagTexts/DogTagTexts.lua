@@ -149,6 +149,7 @@ local PROVIDED_CODES = function() return {
 } end
 
 local function run_first()
+	run_first = nil
 	LibDogTag = LibStub("LibDogTag-3.0", true)
 	if not LibDogTag then
 		LoadAddOn("LibDogTag-3.0")
@@ -189,7 +190,9 @@ function PitBull4_DogTagTexts:_AddFontString(frame, font_string, data)
 end
 
 function PitBull4_DogTagTexts:AddFontString(...)
-	run_first()
+	if run_first then
+		run_first()
+	end
 	
 	self.AddFontString = self._AddFontString
 	self._AddFontString = nil
@@ -221,6 +224,10 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 		get = function(info)
 			local code = PitBull4.Options.GetTextLayoutDB().code
 			
+			if run_first then
+				run_first()
+			end
+			
 			if LibDogTag then
 				return LibDogTag:CleanCode(PitBull4.Options.GetTextLayoutDB().code)
 			else
@@ -234,6 +241,9 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 		end,
 		multiline = true,
 		disabled = function(info)
+			if run_first then
+				run_first()
+			end
 			return not LibDogTag
 		end,
 	}, 'default_codes', {
@@ -260,9 +270,15 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 		name = L["DogTag help"],
 		desc = L["Click to pop up helpful DogTag documentation."],
 		func = function()
+			if run_first then
+				run_first()
+			end
 			LibDogTag:OpenHelp()
 		end,
 		disabled = function(info)
+			if run_first then
+				run_first()
+			end
 			return not LibDogTag
 		end,
 	}
