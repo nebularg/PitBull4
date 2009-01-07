@@ -60,8 +60,8 @@ function OpenConfig()
 		},
 	}
 	
-	options.args.layout_editor = PitBull4.Options.get_layout_options()
-	PitBull4.Options.get_layout_options = nil
+	options.args.layout_editor = PitBull4.Options.get_layout_editor_options()
+	PitBull4.Options.get_layout_editor_options = nil
 	options.args.layout_editor.order = 1
 	
 	options.args.units = PitBull4.Options.get_unit_options()
