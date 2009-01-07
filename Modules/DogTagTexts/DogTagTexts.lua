@@ -219,7 +219,13 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 		name = L["Code"],
 		desc = L["Enter a LibDogTag-3.0 code tag. You can type /dog into your chat for help."],
 		get = function(info)
-			return LibDogTag:CleanCode(PitBull4.Options.GetTextLayoutDB().code)
+			local code = PitBull4.Options.GetTextLayoutDB().code
+			
+			if LibDogTag then
+				return LibDogTag:CleanCode(PitBull4.Options.GetTextLayoutDB().code)
+			else
+				return code
+			end
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetTextLayoutDB().code = LibDogTag:CleanCode(value)
@@ -227,6 +233,9 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 			PitBull4.Options.UpdateFrames()
 		end,
 		multiline = true,
+		disabled = function(info)
+			return not LibDogTag
+		end,
 	}, 'default_codes', {
 		type = 'select',
 		name = L["Code"],
@@ -252,6 +261,9 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 		desc = L["Click to pop up helpful DogTag documentation."],
 		func = function()
 			LibDogTag:OpenHelp()
+		end,
+		disabled = function(info)
+			return not LibDogTag
 		end,
 	}
 end)
