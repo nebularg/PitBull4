@@ -58,6 +58,15 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		args = {}
 	}
 	
+	options.args.general = {
+		type = 'group',
+		name = L["General"],
+		desc = L["Options that apply to all indicators."],
+		order = 1,
+		args = {},
+		hidden = true,
+	}
+	
 	local indicator_args = {}
 	
 	indicator_args.enable = {

@@ -18,7 +18,15 @@ function PitBull4.Options.get_layout_editor_bar_options()
 	LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
 	local AceGUI = LibStub("AceGUI-3.0")
 	
-	options.args.texture = {
+	options.args.general = {
+		type = 'group',
+		name = L["General"],
+		desc = L["Options that apply to all status bars."],
+		order = 1,
+		args = {}
+	}
+	
+	options.args.general.args.texture = {
 		type = 'select',
 		name = L["Default texture"],
 		desc = L["The texture of status bars, unless overridden."],
@@ -44,7 +52,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		dialogControl = AceGUI.WidgetRegistry["LSM30_Statusbar"] and "LSM30_Statusbar" or nil,
 	}
 	
-	options.args.spacing = {
+	options.args.general.args.spacing = {
 		type = 'range',
 		name = L["Spacing"],
 		desc = L["Spacing in pixels between bars."],
@@ -62,7 +70,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		end,
 	}
 	
-	options.args.padding = {
+	options.args.general.args.padding = {
 		type = 'range',
 		name = L["Padding"],
 		desc = L["Padding in pixels between bars and the sides of the unit frame."],
