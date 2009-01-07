@@ -998,32 +998,6 @@ PitBull4_TotemTimers:SetDefaults({
 })
 
 PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
-	--[[
-	local function get(info)
-		local id = info[#info]
-		return PitBull4.Options.GetLayoutDB("TotemTimers")[id]
-	end
-	local function set(info, value)
-		local id = info[#info]
-		PitBull4.Options.GetLayoutDB("TotemTimers")[id] = value
-	end
-	local function getRaw(id)
-		return PitBull4.Options.GetLayoutDB("TotemTimers")[id]
-	end
-	local function getColor(info)
-		local id = info[#info]
-		if not PitBull4.Options.GetLayoutDB("TotemTimers")[id] then
-			return {0.2, 0.3, 0.4, 1} -- dummy
-		end
-		
-		return unpack(PitBull4.Options.GetLayoutDB("TotemTimers")[id])
-	end
-	local function setColor(info, r, g, b, a)
-		local id = info[#info]
-		PitBull4.Options.GetLayoutDB("TotemTimers")[id] = {r, g, b, a}
-	end
-	]]--
-	
 	return 'totemsize', {
 		type = 'range',
 		name = L["Totem Size"],
@@ -1149,6 +1123,7 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 		name = L["Spiral Timer"],
 		desc = L["Options relating to the spiral display timer."],
 		inline = true,
+		order = 18,
 		disabled = function() return not lOptGet('enabled') end,
 		args = {
 			timerspiral = {
@@ -1157,6 +1132,7 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 				desc = L["Shows the pie-like cooldown spiral on the icons."],
 				get = lOptGet,
 				set = lOptSet,
+				width = 'full',
 				disabled = function() return not lOptGet('enabled') end,
 				order = 1,
 			},
@@ -1166,7 +1142,8 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 				desc = L["Tries to suppress CooldownCount-like addons on the spiral timer. (Requires UI reload to change the setting!)"],
 				get = lOptGet,
 				set = lOptSet,
-				disabled = function() return not getRaw('timerspiral') or not lOptGet('enabled') end,
+				width = 'full',
+				disabled = function() return not lOptGet('timerspiral') or not lOptGet('enabled') end,
 				order = 2,
 			},
 		},
@@ -1176,6 +1153,7 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 		name = L["Text Timer"],
 		desc = L["Options relating to the text display timer."],
 		inline = true,
+		order = 19,
 		disabled = function() return not lOptGet('enabled') end,
 		args = {
 			timertext = {
@@ -1206,7 +1184,7 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 						end
 					end
 				end,
-				disabled = function() return not getRaw('timertext') or not lOptGet('enabled')  end,
+				disabled = function() return not lOptGet('timertext') or not lOptGet('enabled')  end,
 				order = 2,
 			},
 			timertextside = {
@@ -1229,7 +1207,7 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 						self:RealignTimerTexts(frame)
 					end
 				end,
-				disabled = function() return not getRaw('timertext') or not lOptGet('enabled')  end,
+				disabled = function() return not lOptGet('timertext') or not lOptGet('enabled')  end,
 				order = 3,
 			},
 			timertextscale = {
@@ -1246,15 +1224,30 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 						self:RealignTimerTexts(frame)
 					end
 				end,
-				disabled = function() return not getRaw('timertext') or not lOptGet('enabled')  end,
+				disabled = function() return not lOptGet('timertext') or not lOptGet('enabled')  end,
 				order = 4,
 			},
 		}
+	},
+	'globnoticehdr', {
+		type = 'header',
+		name = L["Did you know?"],
+		order = 30,
+	},
+	'globnoticedesc', {
+		type = 'description',
+		name = L["There are more options for this module in the Modules -> TotemTimers section."],
+		order = 31,
 	}
 end)
 
 local function getOrderOptionGroup()
 	local oo = {}
+	oo['orderdesc'] = {
+		type = 'description',
+		name = L["Define your preferred order in which the lements will be displayed. The numbers describe positions from left to right."],
+		order = 1,
+	}
 	for i=1, MAX_TOTEMS do
 		local verboseName = getVerboseSlotName(i)
 		local slot = { 
@@ -1267,7 +1260,7 @@ local function getOrderOptionGroup()
 			get = getOrderAsString,
 			set = setOrder,
 			arg = i,
-			order = i,
+			order = 10+i,
 			--disabled = getHide,
 		}
 		oo["slot"..tostring(i)] = slot
@@ -1279,12 +1272,12 @@ local function getSoundOptionGroup()
 	local so = {}
 	so['deathsound'] = {
 		type = 'toggle',
-		name = L["Sound"],
-		desc = L["This plays a sound file when a totem expires or gets destroyed. See the Sounds-tab for more detailed options."],
+		name = L["Totemsounds"],
+		desc = L["This plays a sound file when a totem expires or gets destroyed. Individual sounds can be set per element."],
 		get = gOptGet,
 		set = gOptSet,
 		order = 1,
-		}
+	}
 	for i=1, MAX_TOTEMS do
 		local verboseName = getVerboseSlotName(i)
 		local slot = { 
@@ -1305,21 +1298,19 @@ local function getSoundOptionGroup()
 end
 
 PitBull4_TotemTimers:SetGlobalOptionsFunction(function(self)
-	--[[
-	local function get(info)
-		local id = info[#info]
-		return self.db.profile.global[id]
-	end
-	local function set(info, value)
-		local id = info[#info]
-		self.db.profile.global[id] = value
-	end
-	local function getRaw(id)
-		return self.db.profile.global[id]
-	end
-	]]--
-	
-	return 'totemtooltips', {
+	return 'layoutnoticehdr', {
+		type = 'header',
+		name = L["Did you know?"],
+		order = 128,
+		width = 'full',
+	},
+	'layoutnoticedesc', {
+		type = 'description',
+		name = L["There are more options for this module in the Layout editor -> Indicators -> TotemTimers section."],
+		order = 129,
+		width = 'full',
+	},
+	'totemtooltips', {
 		type = 'toggle',
 		width = 'full',
 		name = L["Totem Tooltips"],
@@ -1333,6 +1324,7 @@ PitBull4_TotemTimers:SetGlobalOptionsFunction(function(self)
 		name = L["Pulsing"],
 		desc = L["Options related to the pulsing visualisation."],
 		order = 111,
+		inline = true,
 		args = {
 			expirypulse = {
 				type = 'toggle',
@@ -1364,6 +1356,7 @@ PitBull4_TotemTimers:SetGlobalOptionsFunction(function(self)
 		name = L["Order"],
 		desc = L["The order in which the elements appear."],
 		order = 113,
+		inline = true,
 		args = getOrderOptionGroup(),
 	},
 	'grptotemsound', {
@@ -1371,6 +1364,7 @@ PitBull4_TotemTimers:SetGlobalOptionsFunction(function(self)
 		name = L["Sounds"],
 		desc = L["Options relating to sound effects on totem events."],
 		order = 114,
+		inline = true,
 		args = getSoundOptionGroup(),
 	} 
 end)
