@@ -1,6 +1,6 @@
 if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
-if select(2, UnitClass("player")) ~= "SHAMAN" then
+if select(2, UnitClass('player')) ~= "SHAMAN" then
 	-- don't load if player is not a shaman.
 	return
 end
@@ -54,24 +54,27 @@ end
 -- Register our default sound. (comes with the wow engine)
 LibSharedMedia:Register('sound','Drop',"Sound\\interface\\DropOnGround.wav")
 
+-- Fetch localization
+local L = PitBull4.L
+
 -- Register some metadata of ours with PB4
 PitBull4_TotemTimers:SetModuleType("custom_indicator")
-PitBull4_TotemTimers:SetName("Totem Timers")
-PitBull4_TotemTimers:SetDescription("Show which Totems are dropped and the time left until they expire.")
+PitBull4_TotemTimers:SetName(L["Totem Timers"])
+PitBull4_TotemTimers:SetDescription(L["Show which Totems are dropped and the time left until they expire."])
 
 
 
 local function getVerboseSlotName(slot)
 	if slot == FIRE_TOTEM_SLOT then
-		return "Fire"
+		return L["Fire"]
 	elseif slot == EARTH_TOTEM_SLOT then
-		return "Earth"
+		return L["Earth"]
 	elseif slot == WATER_TOTEM_SLOT then
-		return "Water"
+		return L["Water"]
 	elseif slot == AIR_TOTEM_SLOT then
-		return "Air"
+		return L["Air"]
 	else
-		return "Unknown Slot "..tostring(slot)
+		return L["Unknown Slot "]..tostring(slot)
 	end
 end
 
@@ -107,28 +110,28 @@ end
 -------------------------------
 ---- General Purpose Proxies
 local function gOptGet(key)
-	if type(key) == "table" then
+	if type(key) == 'table' then
 		return self.db.profile.global[key[#key]]
 	else
 		return self.db.profile.global[key]
 	end
 end
 local function gOptSet(key, value)
-	if type(key) == "table" then
+	if type(key) == 'table' then
 		self.db.profile.global[key[#key]] = value
 	else
 		self.db.profile.global[key] = value
 	end
 end
 local function lOptGet(key)
-	if type(key) == "table" then
+	if type(key) == 'table' then
 		return PitBull4.Options.GetLayoutDB("TotemTimers")[key[#key]]
 	else
 		return PitBull4.Options.GetLayoutDB("TotemTimers")[key]
 	end
 end
 local function lOptSet(key, value)
-	if type(key) == "table" then
+	if type(key) == 'table' then
 		PitBull4.Options.GetLayoutDB("TotemTimers")[key[#key]] = value
 	else
 		PitBull4.Options.GetLayoutDB("TotemTimers")[key] = value
@@ -181,7 +184,7 @@ local function listOrder(info)
 	end
 	local choices = {}
 	for i=1, MAX_TOTEMS do
-		choices[tostring(i)] = fmt("Position %i (Currently: %s)", i,getVerboseSlotName(getSlotFromOrder(i)))
+		choices[tostring(i)] = fmt(L["Position %i (Currently: %s)"], i,getVerboseSlotName(getSlotFromOrder(i)))
 	end
 	return choices
 end
@@ -199,7 +202,7 @@ local function setOrder(info, neworderposstring)
 			end
 		end
 	end
-	for frame in PitBull4:IterateFramesForUnitID("player") do
+	for frame in PitBull4:IterateFramesForUnitID('player') do
 		self:RealignTotems(frame)
 	end
 	return true
@@ -210,7 +213,7 @@ end
 
 local function getSoundNameForSlot(info)
 	local slot = 1
-	if type(info) == "table" then
+	if type(info) == 'table' then
 		slot = info.arg
 	else
 		slot = info
@@ -325,7 +328,7 @@ end
 
 function PitBull4_TotemTimers:UpdateAllTimes()
 	local mf = nil
-	for frame in PitBull4:IterateFramesForUnitID("player") do
+	for frame in PitBull4:IterateFramesForUnitID('player') do
 		mf = frame
 		if (not mf) or (not mf.TotemTimers) or (not mf.TotemTimers.elements) then
 			self:Print("ERROR: Update time called but no Totemtimer Frame initialized.")
@@ -401,7 +404,7 @@ function PitBull4_TotemTimers:ActivateTotem(slot)
 	self.startTimes[slot] = startTime
 	self.durations[slot] = duration
 	
-	for frame in PitBull4:IterateFramesForUnitID("player") do
+	for frame in PitBull4:IterateFramesForUnitID('player') do
 		--self:Print("DBG: Activate iterate, found a frame")
 		if not frame.TotemTimers then
 			--self:Print("DBG: Activate iterate, ..but frame didn't have our frame on it.")
@@ -448,7 +451,7 @@ function PitBull4_TotemTimers:DeactivateTotem(slot)
 	self.startTimes[slot] = 0
 	self.durations[slot] = 0
 	
-	for frame in PitBull4:IterateFramesForUnitID("player") do
+	for frame in PitBull4:IterateFramesForUnitID('player') do
 		if not frame.TotemTimers then
 			return
 		end
@@ -620,7 +623,7 @@ function PitBull4_TotemTimers:RealignTimerTexts(frame)
 end
 
 function PitBull4_TotemTimers:UpdateIconColor()
-	for frame in PitBull4:IterateFramesForUnitID("player") do
+	for frame in PitBull4:IterateFramesForUnitID('player') do
 		if frame.TotemTimers and frame.TotemTimers.elements then
 			local elements = frame.TotemTimers.elements
 			for i=1, MAX_TOTEMS do
@@ -730,9 +733,9 @@ function PitBull4_TotemTimers:PLAYER_TOTEM_UPDATE(event, slot)
 	local haveTotem, name, startTime, duration, icon = GetTotemInfo(slot)
 	local sSlot = tostring(slot)
 
-	for frame in PitBull4:IterateFramesForUnitID("player") do
+	for frame in PitBull4:IterateFramesForUnitID('player') do
 		if not frame.TotemTimers then
-			--self:OnPopulateUnitFrame("player", frame)
+			--self:OnPopulateUnitFrame('player', frame)
 			if frame.TotemTimers then
 				--PitBull:UpdateLayout(frame)
 			end
@@ -766,7 +769,7 @@ end
 
 function PitBull4_TotemTimers:UpdateFrame(frame)
 	--self:Print(fmt("Update called, unit is %s", tostring(frame.unit)))
-	if frame.unit ~= "player" then return end -- we only work for the player unit itself
+	if frame.unit ~= 'player' then return end -- we only work for the player unit itself
 	
 	if frame.TotemTimers and (lOptGet('enabled') ~= true) then
 		return self:ClearFrame(frame)
@@ -995,6 +998,7 @@ PitBull4_TotemTimers:SetDefaults({
 })
 
 PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
+	--[[
 	local function get(info)
 		local id = info[#info]
 		return PitBull4.Options.GetLayoutDB("TotemTimers")[id]
@@ -1018,19 +1022,19 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 		local id = info[#info]
 		PitBull4.Options.GetLayoutDB("TotemTimers")[id] = {r, g, b, a}
 	end
-	
+	]]--
 	
 	return 'totemsize', {
 		type = 'range',
-		name = "Totem Size",
-		desc = "Sets the size of the individual totem icons.",
+		name = L["Totem Size"],
+		desc = L["Sets the size of the individual totem icons."],
 		min = 5,
 		max = 100,
 		step = 1,
 		get = lOptGet,
 		set = function(info, value) 
 			lOptSet('totemsize', value) 
-			for frame in PitBull4:IterateFramesForUnitID("player") do
+			for frame in PitBull4:IterateFramesForUnitID('player') do
 				if frame.TotemTimers then
 					local elements = frame.TotemTimers.elements
 					for i=1, MAX_TOTEMS do
@@ -1048,15 +1052,15 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 	},
 	'totemspacing', {
 		type = 'range',
-		name = "Totem Spacing",
-		desc = "Sets the size of the gap between the totem icons.",
+		name = L["Totem Spacing"],
+		desc = L["Sets the size of the gap between the totem icons."],
 		min = 0,
 		max = 100,
 		step = 1,
 		get = lOptGet,
 		set = function(info, value)
 			lOptSet('totemspacing', value)
-			for frame in PitBull4:IterateFramesForUnitID("player") do
+			for frame in PitBull4:IterateFramesForUnitID('player') do
 				self:RealignTotems(frame)
 			end
 		end,
@@ -1065,18 +1069,18 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 	},
 	'totemdirection', {
 		type = 'select',
-		name = "Totem Direction",
-		desc = "Choose wether to grow horizontally or vertically.",
+		name = L["Totem Direction"],
+		desc = L["Choose wether to grow horizontally or vertically."],
 		get = lOptGet,
 		set = function(info, value)
 			lOptSet('totemdirection', value)
-			for frame in PitBull4:IterateFramesForUnitID("player") do
+			for frame in PitBull4:IterateFramesForUnitID('player') do
 				self:RealignTotems(frame)
 			end
 		end,
 		values = {
-			["h"] = "Horizontal",
-			["v"] = "Vertical"
+			["h"] = L["Horizontal"],
+			["v"] = L["Vertical"]
 		},
 		style = "radio",
 		disabled = function() return not lOptGet('enabled') end,
@@ -1084,15 +1088,15 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 	},
 	'linebreak', {
 		type = 'range',
-		name = "Totems per line",
-		desc = "How many totems to draw per line.",
+		name = L["Totems per line"],
+		desc = L["How many totems to draw per line."],
 		min = 1,
 		max = MAX_TOTEMS,
 		step = 1,
 		get = lOptGet,
 		set = function(info, value)
 			lOptSet('linebreak', value)
-			for frame in PitBull4:IterateFramesForUnitID("player") do
+			for frame in PitBull4:IterateFramesForUnitID('player') do
 				self:RealignTotems(frame)
 			end
 		end,
@@ -1101,8 +1105,8 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 	},
 	'hideinactive', {
 		type = 'toggle',
-		name = "Hide inactive",
-		desc = "Hides inactive totem icons completely.",
+		name = L["Hide inactive"],
+		desc = L["Hides inactive totem icons completely."],
 		get = lOptGet,
 		set = lOptSet,
 		disabled = function() return not lOptGet('enabled') end,
@@ -1110,14 +1114,14 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 	},
 	'mainbgcolor', {
 		type = 'color',
-		name = "Background Color",
-		desc = "Sets the color and transparency of the background of the timers.",
+		name = L["Background Color"],
+		desc = L["Sets the color and transparency of the background of the timers."],
 		hasAlpha = true,
 		get = lOptGetColor,
 		--set = lOptSetColor,
 		set = function(info, r,g,b,a) 
 			lOptSetColor('mainbgcolor', r,g,b,a)
-			for frame in PitBull4:IterateFramesForUnitID("player") do
+			for frame in PitBull4:IterateFramesForUnitID('player') do
 				if frame.TotemTimers then
 					frame.TotemTimers.background:SetTexture(r,g,b,a)
 				end
@@ -1128,8 +1132,8 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 	},
 	'totembordercolor', {
 		type = 'color',
-		name = "Border Color",
-		desc = "Sets the bordercolor of the individual icons.",
+		name = L["Border Color"],
+		desc = L["Sets the bordercolor of the individual icons."],
 		hasAlpha = true,
 		get = lOptGetColor,
 		--set = lOptSetColor,
@@ -1142,26 +1146,26 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 	},
 	'grptimerspiral', {
 		type = 'group',
-		name = "Spiral Timer",
-		desc = "Options relating to the spiral display timer.",
+		name = L["Spiral Timer"],
+		desc = L["Options relating to the spiral display timer."],
 		inline = true,
 		disabled = function() return not lOptGet('enabled') end,
 		args = {
 			timerspiral = {
 				type = 'toggle',
-				name = "Timer Spiral",
-				desc = "Shows the pie-like cooldown spiral on the icons.",
-				get = get,
-				set = set,
+				name = L["Timer Spiral"],
+				desc = L["Shows the pie-like cooldown spiral on the icons."],
+				get = lOptGet,
+				set = lOptSet,
 				disabled = function() return not lOptGet('enabled') end,
 				order = 1,
 			},
 			suppressocc = {
 				type = 'toggle',
-				name = "Suppress Cooldown Counts",
-				desc = "Tries to suppress CooldownCount-like addons on the spiral timer. (Requires UI reload to change the setting!)",
-				get = get,
-				set = set,
+				name = L["Suppress Cooldown Counts"],
+				desc = L["Tries to suppress CooldownCount-like addons on the spiral timer. (Requires UI reload to change the setting!)"],
+				get = lOptGet,
+				set = lOptSet,
 				disabled = function() return not getRaw('timerspiral') or not lOptGet('enabled') end,
 				order = 2,
 			},
@@ -1169,29 +1173,29 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 	},
 	'grptimertext', {
 		type = 'group',
-		name = "Text Timer",
-		desc = "Options relating to the text display timer.",
+		name = L["Text Timer"],
+		desc = L["Options relating to the text display timer."],
 		inline = true,
 		disabled = function() return not lOptGet('enabled') end,
 		args = {
 			timertext = {
 				type = 'toggle',
-				name = "Timer Text",
-				desc = "Shows the remaining time in as text.",
-				get = get,
-				set = set,
+				name = L["Timer Text"],
+				desc = L["Shows the remaining time in as text."],
+				get = lOptGet,
+				set = lOptSet,
 				order = 1,
 				disabled = function() return not lOptGet('enabled') end,
 			},
 			timertextcolor = {
 				type = 'color',
-				name = "Text Color",
-				desc = "Color of the timer text.",
+				name = L["Text Color"],
+				desc = L["Color of the timer text."],
 				hasAlpha = true,
 				get = lOptGetColor,
 				set = function(info, r,g,b,a)
 					lOptSetColor('timertextcolor', r,g,b,a)
-					for frame in PitBull4:IterateFramesForUnitID("player") do
+					for frame in PitBull4:IterateFramesForUnitID('player') do
 						if frame.TotemTimers and frame.TotemTimers.elements then
 							local elements = frame.TotemTimers.elements
 							for i=1, MAX_TOTEMS do
@@ -1207,21 +1211,21 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 			},
 			timertextside = {
 				type = 'select',
-				name = "Text Side",
-				desc = "Which side to position the timer text at.",
+				name = L["Text Side"],
+				desc = L["Which side to position the timer text at."],
 				values = {
-					topinside = "Top, Inside",
-					topoutside = "Top, Outside",
-					bottominside = "Bottom, Inside",
-					bottomoutside = "Bottom, Outside",
-					leftoutside = "Left, Outside",
-					rightoutside = "Right, Outside",
-					middle = "Middle",
+					topinside = L["Top, Inside"],
+					topoutside = L["Top, Outside"],
+					bottominside = L["Bottom, Inside"],
+					bottomoutside = L["Bottom, Outside"],
+					leftoutside = L["Left, Outside"],
+					rightoutside = L["Right, Outside"],
+					middle = L["Middle"],
 				},
 				get = lOptGet,
 				set = function(info, value)
 					lOptSet('timertextside', value)
-					for frame in PitBull4:IterateFramesForUnitID("player") do
+					for frame in PitBull4:IterateFramesForUnitID('player') do
 						self:RealignTimerTexts(frame)
 					end
 				end,
@@ -1230,15 +1234,15 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 			},
 			timertextscale = {
 				type = 'range',
-				name = "Text Scale",
-				desc = "Change the scaling of the text timer. Note: It's relative to PitBull's font size.",
+				name = L["Text Scale"],
+				desc = L["Change the scaling of the text timer. Note: It's relative to PitBull's font size."],
 				min = 0.1,
 				max = 2,
 				step = 0.01,
 				get = lOptGet,
 				set = function(info, value)
 					lOptSet('timertextscale', value)
-					for frame in PitBull4:IterateFramesForUnitID("player") do
+					for frame in PitBull4:IterateFramesForUnitID('player') do
 						self:RealignTimerTexts(frame)
 					end
 				end,
@@ -1275,8 +1279,8 @@ local function getSoundOptionGroup()
 	local so = {}
 	so['deathsound'] = {
 		type = 'toggle',
-		name = "Sound",
-		desc = "This plays a sound file when a totem expires or gets destroyed. See the Sounds-tab for more detailed options.",
+		name = L["Sound"],
+		desc = L["This plays a sound file when a totem expires or gets destroyed. See the Sounds-tab for more detailed options."],
 		get = gOptGet,
 		set = gOptSet,
 		order = 1,
@@ -1301,6 +1305,7 @@ local function getSoundOptionGroup()
 end
 
 PitBull4_TotemTimers:SetGlobalOptionsFunction(function(self)
+	--[[
 	local function get(info)
 		local id = info[#info]
 		return self.db.profile.global[id]
@@ -1312,41 +1317,42 @@ PitBull4_TotemTimers:SetGlobalOptionsFunction(function(self)
 	local function getRaw(id)
 		return self.db.profile.global[id]
 	end
+	]]--
 	
 	return 'totemtooltips', {
 		type = 'toggle',
 		width = 'full',
-		name = "Totem Tooltips",
-		desc = "Enables tooltips when hovering over the icons.",
-		get = get,
-		set = set,
+		name = L["Totem Tooltips"],
+		desc = L["Enables tooltips when hovering over the icons."],
+		get = gOptGet,
+		set = gOptSet,
 		order = 110,
 	},
 	'grppulse', {
 		type = 'group',
-		name = "Pulsing",
-		desc = "Options related to the pulsing visualisation.",
+		name = L["Pulsing"],
+		desc = L["Options related to the pulsing visualisation."],
 		order = 111,
 		args = {
 			expirypulse = {
 				type = 'toggle',
 				width = 'full',
-				name = "Expiry pulse",
-				desc = "Causes the icon to pulse in the last few seconds of its lifetime.",
-				get = get,
-				set = set,
+				name = L["Expiry pulse"],
+				desc = L["Causes the icon to pulse in the last few seconds of its lifetime."],
+				get = gOptGet,
+				set = gOptSet,
 				order = 10,
 			},
 			expirypulsetime = {
 				type = 'range',
 				width = 'full',
-				name = "Expiry time",
-				desc = "Pulse for this many seconds before the totem runs out.",
+				name = L["Expiry time"],
+				desc = L["Pulse for this many seconds before the totem runs out."],
 				min = 0.5,
 				max = 60,
 				step = 0.5,
-				get = get,
-				set = set,
+				get = gOptGet,
+				set = gOptSet,
 				order = 11,
 				disabled = function() return not gOptGet('expirypulse') end
 			},
@@ -1355,15 +1361,15 @@ PitBull4_TotemTimers:SetGlobalOptionsFunction(function(self)
 
 	'grptotemorder', {
 		type = 'group',
-		name = "Order",
-		desc = "The order in which the elements appear.",
+		name = L["Order"],
+		desc = L["The order in which the elements appear."],
 		order = 113,
 		args = getOrderOptionGroup(),
 	},
 	'grptotemsound', {
 		type = 'group',
-		name = "Sounds",
-		desc = "Options relating to sound effects on totem events.",
+		name = L["Sounds"],
+		desc = L["Options relating to sound effects on totem events."],
 		order = 114,
 		args = getSoundOptionGroup(),
 	} 
