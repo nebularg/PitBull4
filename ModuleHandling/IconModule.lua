@@ -72,7 +72,13 @@ function IconModule:CallTextureFunction(frame)
 		-- no function, let's just return
 		return nil
 	end
-	local tex = self:GetTexture(frame)
+	local tex
+	if frame.guid then
+		tex = self:GetTexture(frame)
+	end
+	if not tex and PitBull4.config_mode and self.GetExampleTexture then
+		tex = self:GetExampleTexture(frame)
+	end
 	if not tex then
 		return nil
 	end
@@ -94,6 +100,9 @@ function IconModule:CallTexCoordFunction(frame, texture)
 		return 0, 1, 0, 1
 	end
 	local c1, c2, c3, c4 = self:GetTexCoord(frame, texture)
+	if not c4 and PitBull4.config_mode and self.GetExampleTexCoord then
+		c1, c2, c3, c4 = self:GetExampleTexCoord(frame, texture)
+	end
 	if not c4 then
 		return 0, 1, 0, 1
 	end

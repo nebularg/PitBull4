@@ -5,11 +5,13 @@ if not PitBull4 then
 	error("PitBull4_PowerBar requires PitBull4")
 end
 
+local L = PitBull4.L
+
 local PitBull4_PowerBar = PitBull4:NewModule("PowerBar", "AceEvent-3.0")
 
 PitBull4_PowerBar:SetModuleType("status_bar")
-PitBull4_PowerBar:SetName("Power Bar")
-PitBull4_PowerBar:SetDescription("Show a mana, rage, energy, or runic mana bar.")
+PitBull4_PowerBar:SetName(L["Power bar"])
+PitBull4_PowerBar:SetDescription(L["Show a mana, rage, energy, or runic power bar."])
 PitBull4_PowerBar:SetDefaults({
 	position = 2,
 })
@@ -49,9 +51,13 @@ function PitBull4_PowerBar:GetValue(frame)
 	return UnitMana(frame.unit) / UnitManaMax(frame.unit)
 end
 
+function PitBull4_PowerBar:GetExampleValue(frame)
+	return 0.6
+end
+
 function PitBull4_PowerBar:GetColor(frame, value)
-	local powerType = UnitPowerType(frame.unit)
-	local color = PowerBarColor[powerType]
+	local power_token = frame.guid and select(2, UnitPowerType(frame.unit)) or "MANA"
+	local color = PowerBarColor[power_token]
 	if color then
 		return color.r, color.g, color.b
 	end

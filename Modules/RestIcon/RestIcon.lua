@@ -5,11 +5,13 @@ if not PitBull4 then
 	error("PitBull4_RestIcon requires PitBull4")
 end
 
+local L = PitBull4.L
+
 local PitBull4_RestIcon = PitBull4:NewModule("RestIcon", "AceEvent-3.0")
 
 PitBull4_RestIcon:SetModuleType("icon")
-PitBull4_RestIcon:SetName("Rest Icon")
-PitBull4_RestIcon:SetDescription("Show an icon on the unit frame when the unit is resting in an inn or city.")
+PitBull4_RestIcon:SetName(L["Rest icon"])
+PitBull4_RestIcon:SetDescription(L["Show an icon on the unit frame when the unit is resting in an inn or city."])
 PitBull4_RestIcon:SetDefaults({
 	attach_to = "root",
 	location = "edge_bottom_left",
@@ -31,6 +33,14 @@ function PitBull4_RestIcon:GetTexture(frame)
 	else
 		return nil
 	end
+end
+
+function PitBull4_RestIcon:GetExampleTexture(frame)
+	if frame.unit ~= "player" then
+		return nil
+	end
+	
+	return [[Interface\CharacterFrame\UI-StateIcon]]
 end
 
 function PitBull4_RestIcon:GetTexCoord(frame, texture)

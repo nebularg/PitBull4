@@ -11,6 +11,13 @@ local SINGLETON_CLASSIFICATIONS = {
 	"focustargettarget",
 }
 
+local PARTY_CLASSIFICATIONS = {
+	"party",
+	"partytarget",
+	"partypet",
+	"partypettarget",
+}
+
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 if not LibSharedMedia then
 	LoadAddOn("LibSharedMedia-3.0")
@@ -39,17 +46,27 @@ local DATABASE_DEFAULTS = {
 				layout = "Normal",
 				horizontal_mirror = false,
 				vertical_mirror = false,
+				horizontal_spacing = 30,
+				vertical_spacing = 30,
+				direction = "down_right",
+				units_per_column = MAX_RAID_MEMBERS,
+			},
+			party = {
+				sort_method = "INDEX",
+				sort_direction = "ASC",
 			},
 		},
 		layouts = {
 			['**'] = {
-				size_x = 300,
-				size_y = 100,
+				size_x = 200,
+				size_y = 60,
 				opacity_min = 0.1,
 				opacity_max = 1,
 				scale = 1,
 				font = DEFAULT_LSM_FONT,
-				status_bar_texture = LibSharedMedia and LibSharedMedia:GetDefault("statusbar") or "Blizzard",
+				bar_texture = LibSharedMedia and LibSharedMedia:GetDefault("statusbar") or "Blizzard",
+				bar_spacing = 2,
+				bar_padding = 2,
 			},
 			Normal = {}
 		},
@@ -62,7 +79,13 @@ local _G = _G
 local PitBull4 = LibStub("AceAddon-3.0"):NewAddon("PitBull4", "AceEvent-3.0", "AceTimer-3.0")
 _G.PitBull4 = PitBull4
 
+--@debug@
+LibStub("AceLocale-3.0"):NewLocale("PitBull4", "enUS", true, true)
+--@end-debug@
+PitBull4.L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
+
 PitBull4.SINGLETON_CLASSIFICATIONS = SINGLETON_CLASSIFICATIONS
+PitBull4.PARTY_CLASSIFICATIONS = PARTY_CLASSIFICATIONS
 
 local db
 
@@ -123,6 +146,18 @@ PitBull4.wacky_frames = wacky_frames
 local non_wacky_frames = {}
 PitBull4.non_wacky_frames = non_wacky_frames
 
+-- A set of all unit frames with the is_singleton flag set to true
+local singleton_frames = {}
+PitBull4.singleton_frames = singleton_frames
+
+-- A set of all unit frames with the is_singleton flag set to false
+local member_frames = {}
+PitBull4.member_frames = member_frames
+
+-- A set of all group headers
+local all_headers = {}
+PitBull4.all_headers = all_headers
+
 -- metatable that automatically creates keys that return tables on access
 local auto_table__mt = {__index = function(self, key)
 	local value = {}
@@ -138,12 +173,24 @@ PitBull4.unit_id_to_frames = unit_id_to_frames
 local classification_to_frames = setmetatable({}, auto_table__mt)
 PitBull4.classification_to_frames = classification_to_frames
 
+-- A dictionary of classification to a set of all group headers of that classification
+local classification_to_headers = setmetatable({}, auto_table__mt)
+PitBull4.classification_to_headers = classification_to_headers
+
+-- A dictionary of super-classification to a set of all group headers of that super-classification
+local super_classification_to_headers = setmetatable({}, auto_table__mt)
+PitBull4.super_classification_to_headers = super_classification_to_headers
+
 --- Wrap the given function so that any call to it will be piped through PitBull4:RunOnLeaveCombat.
 -- @param func function to call
 -- @usage myFunc = PitBull4:OutOfCombatWrapper(func)
 -- @usage MyNamespace.MyMethod = PitBull4:OutOfCombatWrapper(MyNamespace.MyMethod)
 -- @return the wrapped function
 function PitBull4:OutOfCombatWrapper(func)
+	--@alpha@
+	expect(func, 'typeof', 'function')
+	--@end-alpha@
+	
 	return function(...)
 		return PitBull4:RunOnLeaveCombat(func, ...)
 	end
@@ -234,6 +281,42 @@ function PitBull4:IterateNonWackyFrames(also_hidden)
 	return not also_hidden and iterate_shown_frames or half_next, non_wacky_frames
 end
 
+--- Iterate over all singleton frames.
+-- This iterates over only shown frames unless also_hidden is passed in.
+-- @param also_hidden also return frames that are hidden
+-- @usage for frame in PitBull4:IterateWackyFrames() do
+--     doSomethingWith(frame)
+-- end
+-- @usage for frame in PitBull4:IterateWackyFrames(true) do
+--     doSomethingWith(frame)
+-- end
+-- @return iterator which returns frames
+function PitBull4:IterateSingletonFrames(also_hidden)
+	--@alpha@
+	expect(also_hidden, 'typeof', 'boolean;nil')
+	--@end-alpha@
+	
+	return not also_hidden and iterate_shown_frames or half_next, singleton_frames
+end
+
+--- Iterate over all member frames.
+-- This iterates over only shown frames unless also_hidden is passed in.
+-- @param also_hidden also return frames that are hidden
+-- @usage for frame in PitBull4:IterateNonWackyFrames() do
+--     doSomethingWith(frame)
+-- end
+-- @usage for frame in PitBull4:IterateNonWackyFrames(true) do
+--     doSomethingWith(frame)
+-- end
+-- @return iterator which returns frames
+function PitBull4:IterateMemberFrames(also_hidden)
+	--@alpha@
+	expect(also_hidden, 'typeof', 'boolean;nil')
+	--@end-alpha@
+	
+	return not also_hidden and iterate_shown_frames or half_next, member_frames
+end
+
 --- Iterate over all frames with the given unit ID
 -- This iterates over only shown frames unless also_hidden is passed in.
 -- @param unit the UnitID of the unit in question
@@ -308,13 +391,13 @@ function PitBull4:IterateFramesForClassification(classification, also_hidden)
 	expect(classification, 'typeof', 'string')
 	expect(also_hidden, 'typeof', 'boolean;nil')
 	--@end-alpha@
-
-	local unit_id_to_frames__classification = rawget(unit_id_to_frames, classification)
-	if not unit_id_to_frames__classification then
+	
+	local frames = rawget(classification_to_frames, classification)
+	if not frames then
 		return do_nothing
 	end
 	
-	return not also_hidden and iterate_shown_frames or half_next, unit_id_to_frames__classification
+	return not also_hidden and iterate_shown_frames or half_next, frames
 end
 
 local function layout_iter(layout, frame)
@@ -442,6 +525,53 @@ function PitBull4:IterateFramesForGUIDs(...)
 	return guids_iter, guids, nil
 end
 
+--- Iterate over all headers.
+-- @usage for header in PitBull4:IterateHeaders()
+--     doSomethingWith(header)
+-- end
+-- @return iterator which returns headers
+function PitBull4:IterateHeaders()
+	return half_next, all_headers
+end
+
+--- Iterate over all headers with the given classification.
+-- @param classification the classification to check
+-- @usage for header in PitBull4:IterateHeadersForClassification("party")
+--     doSomethingWith(header)
+-- end
+-- @return iterator which returns headers
+function PitBull4:IterateHeadersForClassification(classification)
+	--@alpha@
+	expect(classification, 'typeof', 'string')
+	--@end-alpha@
+	
+	local headers = rawget(classification_to_headers, classification)
+	if not headers then
+		return do_nothing
+	end
+	
+	return not also_hidden and iterate_shown_frames or half_next, headers
+end
+
+--- Iterate over all headers with the given super-classification.
+-- @param super_classification the super-classification to check
+-- @usage for header in PitBull4:IterateHeadersForSuperClassification("party")
+--     doSomethingWith(header)
+-- end
+-- @return iterator which returns headers
+function PitBull4:IterateHeadersForSuperClassification(super_classification)
+	--@alpha@
+	expect(super_classification, 'typeof', 'string')
+	--@end-alpha@
+	
+	local headers = rawget(super_classification_to_headers, super_classification)
+	if not headers then
+		return do_nothing
+	end
+	
+	return not also_hidden and iterate_shown_frames or half_next, headers
+end
+
 --- Make a singleton unit frame.
 -- @param unit the UnitID of the frame in question
 -- @usage local frame = PitBull4:MakeSingletonFrame("player")
@@ -511,10 +641,6 @@ function PitBull4:MakeGroupHeader(classification, group)
 	end
 	--@end-alpha@
 	
-	local party_based = classification:sub(1, 5) == "party"
-	
-	local pet_based = not not classification:match("pet") -- this feels dirty
-	
 	local header_name = "PitBull4_Groups_" .. classification
 	if group then
 		header_name = header_name .. "_" .. group
@@ -522,9 +648,21 @@ function PitBull4:MakeGroupHeader(classification, group)
 	
 	local header = _G[header_name]
 	if not header then
+		local party_based = classification:sub(1, 5) == "party"
+	
+		local pet_based = not not classification:match("pet") -- this feels dirty
+		
 		header = CreateFrame("Frame", header_name, UIParent, template_names[party_based][pet_based])
 		header:Hide() -- it will be shown later and attributes being set won't cause lag
 		
+		if party_based then
+			header.super_classification = "party"
+			header.super_classification_db = db.profile.classifications["party"]
+			header.unitsuffix = classification:sub(6)
+			if header.unitsuffix == "" then
+				header.unitsuffix = nil
+			end
+		end
 		header.classification = classification
 		header.classification_db = db.profile.classifications[classification]
 		header.group = group
@@ -569,16 +707,20 @@ function PitBull4:OnEnable()
 		end
 	end
 	
-	if db_classifications["party"].enabled then
-		self:MakeGroupHeader("party")
+	for _, classification in ipairs(PARTY_CLASSIFICATIONS) do
+		if db_classifications[classification].enabled then
+			self:MakeGroupHeader(classification)
+		end
 	end
 end
 
 --- Iterate over all wacky frames, and call their respective :UpdateGUID methods.
 -- @usage PitBull4:CheckWackyFramesForGUIDUpdate()
 function PitBull4:CheckWackyFramesForGUIDUpdate()
-	for frame in self:IterateWackyFrames(true) do
-		frame:UpdateGUID(UnitGUID(frame.unit))
+	for frame in self:IterateWackyFrames() do
+		if frame.unit then
+			frame:UpdateGUID(UnitGUID(frame.unit))
+		end
 	end
 end
 
@@ -631,6 +773,12 @@ do
 	-- @usage PitBull4:RunOnLeaveCombat(frame.SetAttribute, frame, "key", "value")
 	-- @usage PitBull4:RunOnLeaveCombat(frame, 'SetAttribute', "key", "value")
 	function PitBull4:RunOnLeaveCombat(func, ...)
+		--@alpha@
+		expect(func, 'typeof', 'table;function')
+		if type(func) == "table" then
+			expect(func[(...)], 'typeof', 'function')
+		end
+		--@end-alpha@
 		if type(func) == "table" then
 			return self:RunOnLeaveCombat(func[(...)], func, select(2, ...))
 		end

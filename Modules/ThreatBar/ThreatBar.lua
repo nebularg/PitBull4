@@ -5,11 +5,13 @@ if not PitBull4 then
 	error("PitBull4_ThreatBar requires PitBull4")
 end
 
+local L = PitBull4.L
+
 local PitBull4_ThreatBar = PitBull4:NewModule("ThreatBar", "AceEvent-3.0")
 
 PitBull4_ThreatBar:SetModuleType("status_bar")
-PitBull4_ThreatBar:SetName("Threat Bar")
-PitBull4_ThreatBar:SetDescription("Show a threat bar.")
+PitBull4_ThreatBar:SetName(L["Threat bar"])
+PitBull4_ThreatBar:SetDescription(L["Show a threat bar."])
 PitBull4_ThreatBar:SetDefaults({
 	size = 1,
 	position = 5,
@@ -45,8 +47,21 @@ function PitBull4_ThreatBar:GetValue(frame)
 	return threatpct / 100
 end
 
+function PitBull4_ThreatBar:GetExampleValue(frame)
+	if not ACCEPTABLE_CLASSIFICATIONS[frame.classification] then
+		return nil
+	end
+	return 0.5
+end
+
 function PitBull4_ThreatBar:GetColor(frame, value)
-	local _, status = UnitDetailedThreatSituation(frame.unit, "target")
+	local status
+	if frame.guid then
+		local _
+		_, status = UnitDetailedThreatSituation(frame.unit, "target")
+	else
+		status = 0
+	end
 	
 	return GetThreatStatusColor(status)
 end

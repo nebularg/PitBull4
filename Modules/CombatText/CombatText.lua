@@ -17,14 +17,17 @@ local COMBATFEEDBACK_FADEINTIME_AND_HOLDTIME_AND_FADEOUTTIME = COMBATFEEDBACK_FA
 local CRITICAL_HARM_SIZE_MODIFIER = 1.5
 local CRITICAL_HELP_SIZE_MODIFIER = 1.3
 local BLOCK_SIZE_MODIFIER = 0.75
+
+local EXAMPLE_TEXT = "123"
 -----------------------------------------------------------------------------
 
+local L = PitBull4.L
 
 local PitBull4_CombatText = PitBull4:NewModule("CombatText", "AceEvent-3.0")
 
 PitBull4_CombatText:SetModuleType("custom_text")
-PitBull4_CombatText:SetName("Combat Text")
-PitBull4_CombatText:SetDescription("Show information like damage taken, healing taken, resists, etc. on the unit frame.")
+PitBull4_CombatText:SetName(L["Combat text"])
+PitBull4_CombatText:SetDescription(L["Show information like damage taken, healing taken, resists, etc. on the unit frame."])
 PitBull4_CombatText:SetDefaults({
 	attach_to = "root",
 	location = "in_center",
@@ -72,6 +75,12 @@ function PitBull4_CombatText:UpdateFrame(frame)
 	end
 	local font, size = self:GetFont(frame)
 	font_string:SetFont(font, size * font_string.size_modifier, "OUTLINE")
+	
+	if frame.force_show and not frame.guid then
+		font_string:SetText(EXAMPLE_TEXT)
+	elseif font_string:GetText() == EXAMPLE_TEXT then
+		font_string:SetText("")
+	end
 	
 	return created
 end

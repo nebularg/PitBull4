@@ -16,11 +16,13 @@ local HALF_FLASH_TIME = FLASH_TIME / 2
 local INVERSE_HALF_FLASH_TIME = 1 / HALF_FLASH_TIME
 -----------------------------------------------------------------------------
 
+local L = PitBull4.L
+
 local PitBull4_VoiceIcon = PitBull4:NewModule("VoiceIcon", "AceEvent-3.0")
 
 PitBull4_VoiceIcon:SetModuleType("custom_indicator")
-PitBull4_VoiceIcon:SetName("Voice Icon")
-PitBull4_VoiceIcon:SetDescription("Show an icon based on whether or not the unit's voice status.")
+PitBull4_VoiceIcon:SetName(L["Voice icon"])
+PitBull4_VoiceIcon:SetDescription(L["Show an icon based on whether or not the unit's voice status."])
 PitBull4_VoiceIcon:SetDefaults({
 	attach_to = "root",
 	location = "edge_top_right",
@@ -82,7 +84,7 @@ local function icon_OnUpdate(self, elapsed)
 end
 
 function PitBull4_VoiceIcon:UpdateFrame(frame)
-	if not UnitIsTalking(frame.unit) then
+	if not UnitIsTalking(frame.unit) and not frame.force_show then
 		return self:ClearFrame(frame)
 	end
 	

@@ -5,6 +5,8 @@
 <Script file="Debug.lua"/>
 <!--@end-alpha@-->
 
+<Include file="Localization\load.xml"/>
+
 <Script file="Main.lua"/>
 
 <Script file="Utils.lua"/>
@@ -13,6 +15,8 @@
 
 <Script file="UnitFrame.lua"/>
 <Script file="GroupHeader.lua"/>
+
+<Script file="UnitFrameLayout.lua"/>
 
 <Include file="Controls\load.xml"/>
 

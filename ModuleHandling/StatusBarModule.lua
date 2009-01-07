@@ -64,7 +64,7 @@ function StatusBarModule:UpdateFrame(frame)
 	local layout_db = self:GetLayoutDB(frame)
 	local texture
 	if LibSharedMedia then
-		texture = LibSharedMedia:Fetch("statusbar", layout_db.texture or PitBull4.db.profile.layouts[frame.layout].status_bar_texture or "Blizzard")
+		texture = LibSharedMedia:Fetch("statusbar", layout_db.texture or PitBull4.db.profile.layouts[frame.layout].bar_texture or "Blizzard")
 	end
 	control:SetTexture(texture or [[Interface\TargetingFrame\UI-StatusBar]])
 	
@@ -95,7 +95,14 @@ function StatusBarModule:CallValueFunction(frame)
 	if not self.GetValue then
 		return nil, nil
 	end
-	local value, extra = self:GetValue(frame)
+	local value, extra
+	if frame.guid then
+		value, extra = self:GetValue(frame)
+	end
+	
+	if not value and PitBull4.config_mode and self.GetExampleValue then
+		value, extra = self:GetExampleValue(frame)
+	end
 	if not value then
 		return nil, nil
 	end
@@ -131,6 +138,9 @@ function StatusBarModule:CallColorFunction(frame, value, extra)
 		return 0.7, 0.7, 0.7, 1
 	end
 	local r, g, b, a = self:GetColor(frame, value, extra)
+	if (not r or not g or not b) and PitBull4.config_mode and self.GetExampleColor then
+		r, g, b, a = self:GetExampleColor(frame, value, extra)
+	end
 	if not r or not g or not b then
 		return 0.7, 0.7, 0.7, a or 1
 	end
@@ -152,8 +162,11 @@ function StatusBarModule:CallExtraColorFunction(frame, value, extra)
 		return 0.5, 0.5, 0.5, nil
 	end
 	local r, g, b, a = self:GetExtraColor(frame, value, extra)
+	if (not r or not g or not b) and PitBull4.config_mode and self.GetExampleExtraColor then
+		r, g, b, a = self:GetExampleExtraColor(frame, value, extra)
+	end
 	if not r or not g or not b then
-		return 0.5, 0.5, 0.5
+		return 0.5, 0.5, 0.5, nil
 	end
 	return r, g, b, a
 end

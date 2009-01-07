@@ -5,11 +5,13 @@ if not PitBull4 then
 	error("PitBull4_RangeFader requires PitBull4")
 end
 
+local L = PitBull4.L
+
 local PitBull4_RangeFader = PitBull4:NewModule("RangeFader", "AceTimer-3.0")
 
 PitBull4_RangeFader:SetModuleType("fader")
-PitBull4_RangeFader:SetName("Range Fader")
-PitBull4_RangeFader:SetDescription("Make the unit frame fade if out of range.")
+PitBull4_RangeFader:SetName(L["Range fader"])
+PitBull4_RangeFader:SetDescription(L["Make the unit frame fade if out of range."])
 PitBull4_RangeFader:SetDefaults({
 	enabled = false,
 	out_of_range_opacity = 0.6,
@@ -138,8 +140,8 @@ end
 PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 	return 'out_of_range', {
 		type = 'range',
-		name = "Out-of-range opacity",
-		desc = "The opacity to display if the player is out of range of the unit.",
+		name = L["Out-of-range opacity"],
+		desc = L["The opacity to display if the player is out of range of the unit."],
 		min = 0,
 		max = 1,
 		isPercent = true,

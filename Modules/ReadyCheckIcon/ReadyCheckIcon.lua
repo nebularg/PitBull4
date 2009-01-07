@@ -5,11 +5,13 @@ if not PitBull4 then
 	error("PitBull4_ReadyCheckIcon requires PitBull4")
 end
 
+local L = PitBull4.L
+
 local PitBull4_ReadyCheckIcon = PitBull4:NewModule("ReadyCheckIcon", "AceEvent-3.0", "AceTimer-3.0")
 
 PitBull4_ReadyCheckIcon:SetModuleType("icon")
-PitBull4_ReadyCheckIcon:SetName("Ready Check Icon")
-PitBull4_ReadyCheckIcon:SetDescription("Show a ready check icon on the unit frame based on their response.")
+PitBull4_ReadyCheckIcon:SetName(L["Ready check icon"])
+PitBull4_ReadyCheckIcon:SetDescription(L["Show a ready check icon on the unit frame based on their response."])
 PitBull4_ReadyCheckIcon:SetDefaults({
 	attach_to = "root",
 	location = "edge_bottom_right",
@@ -37,7 +39,40 @@ function PitBull4_ReadyCheckIcon:GetTexture(frame)
 	return status_to_texture[guid_to_status[frame.guid]]
 end
 
-function PitBull4_ReadyCheckIcon:CacheReachCheckStatuses()
+local EXAMPLE_CLASSIFICATIONS = {
+	player = true,
+	party = true,
+	raid = true,
+}
+function PitBull4_ReadyCheckIcon:GetExampleTexture(frame)
+	if not EXAMPLE_CLASSIFICATIONS[frame.classification] then
+		return nil
+	end
+	
+	local unit = frame.unit or frame:GetName()
+	local index = unit:match(".*(%d+)")
+	if index then
+		index = index+0
+	else
+		index = 0
+	end
+	index = index + #unit + unit:byte()
+	
+	index = index % 3
+	
+	local status
+	if index == 0 then
+		status = "ready"
+	elseif index == 1 then
+		status = "notready"
+	else
+		status = "waiting"
+	end
+	
+	return status_to_texture[status]
+end
+
+function PitBull4_ReadyCheckIcon:CacheRaidCheckStatuses()
 	wipe(guid_to_status)
 	if not IsRaidLeader() and not IsRaidOfficer() and not IsPartyLeader() then
 		-- gotta be an officer
@@ -70,7 +105,7 @@ function PitBull4_ReadyCheckIcon:StartFadeOut()
 end
 
 function PitBull4_ReadyCheckIcon:READY_CHECK()
-	self:CacheReachCheckStatuses()
+	self:CacheRaidCheckStatuses()
 	self:UpdateAll()
 end
 PitBull4_ReadyCheckIcon.READY_CHECK_CONFIRM = PitBull4_ReadyCheckIcon.READY_CHECK

@@ -5,11 +5,13 @@ if not PitBull4 then
 	error("PitBull4_ExperienceBar requires PitBull4")
 end
 
+local L = PitBull4.L
+
 local PitBull4_ExperienceBar = PitBull4:NewModule("ExperienceBar", "AceEvent-3.0")
 
 PitBull4_ExperienceBar:SetModuleType("status_bar")
-PitBull4_ExperienceBar:SetName("Experience Bar")
-PitBull4_ExperienceBar:SetDescription("Show an experience bar.")
+PitBull4_ExperienceBar:SetName(L["Experience bar"])
+PitBull4_ExperienceBar:SetDescription(L["Show an experience bar."])
 PitBull4_ExperienceBar:SetDefaults({
 	size = 1,
 	position = 4,

@@ -5,11 +5,13 @@ if not PitBull4 then
 	error("PitBull4_LeaderIcon requires PitBull4")
 end
 
+local L = PitBull4.L
+
 local PitBull4_LeaderIcon = PitBull4:NewModule("LeaderIcon", "AceEvent-3.0", "AceTimer-3.0")
 
 PitBull4_LeaderIcon:SetModuleType("icon")
-PitBull4_LeaderIcon:SetName("Leader Icon")
-PitBull4_LeaderIcon:SetDescription("Show an icon on the unit frame when the unit is the group leader.")
+PitBull4_LeaderIcon:SetName(L["Leader icon"])
+PitBull4_LeaderIcon:SetDescription(L["Show an icon on the unit frame when the unit is the group leader."])
 PitBull4_LeaderIcon:SetDefaults({
 	attach_to = "root",
 	location = "edge_top_left",
@@ -44,6 +46,21 @@ function PitBull4_LeaderIcon:GetTexture(frame)
 	end
 	
 	return [[Interface\GroupFrame\UI-Group-LeaderIcon]]
+end
+
+function PitBull4_LeaderIcon:GetExampleTexture(frame)
+	local unit = frame.unit
+	if unit then
+		if unit == "player" or unit:match("^raid(%d%d?)$") or unit:match("^party(%d)$") then
+			return [[Interface\GroupFrame\UI-Group-LeaderIcon]]
+		end
+		return nil
+	end
+	local classification = frame.classification
+	if classification == "player" or classification == "raid" or classification == "party" then
+		return [[Interface\GroupFrame\UI-Group-LeaderIcon]]
+	end
+	return nil
 end
 
 function PitBull4_LeaderIcon:GetTexCoord(frame, texture)

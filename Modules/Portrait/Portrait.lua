@@ -18,11 +18,13 @@ if not PitBull4 then
 	error("PitBull4_Portrait requires PitBull4")
 end
 
+local L = PitBull4.L
+
 local PitBull4_Portrait = PitBull4:NewModule("Portrait", "AceEvent-3.0")
 
 PitBull4_Portrait:SetModuleType("custom_indicator")
-PitBull4_Portrait:SetName("Portrait")
-PitBull4_Portrait:SetDescription("Show a portrait of the unit.")
+PitBull4_Portrait:SetName(L["Portrait"])
+PitBull4_Portrait:SetDescription(L["Show a portrait of the unit."])
 PitBull4_Portrait:SetDefaults({
 	attach_to = "root",
 	location = "out_left",
@@ -30,6 +32,7 @@ PitBull4_Portrait:SetDefaults({
 	full_body = false,
 	style = "three_dimensional",
 	fallback_style = "three_dimensional",
+	enabled = false,
 })
 
 function PitBull4_Portrait:OnEnable()
@@ -159,8 +162,8 @@ end
 PitBull4_Portrait:SetLayoutOptionsFunction(function(self)
 	return 'full_body', {
 		type = 'toggle',
-		name = "Full body",
-		desc = "Show the full body of the unit when in 3D mode.",
+		name = L["Full body"],
+		desc = L["Show the full body of the unit when in 3D mode."],
 		get = function(info)
 			return PitBull4.Options.GetLayoutDB(self).full_body
 		end,
@@ -174,8 +177,8 @@ PitBull4_Portrait:SetLayoutOptionsFunction(function(self)
 		end
 	}, 'style', {
 		type = 'select',
-		name = "Style",
-		desc = "Set the portrait style.",
+		name = L["Style"],
+		desc = L["Set the portrait style."],
 		get = function(info)
 			return PitBull4.Options.GetLayoutDB(self).style
 		end,
@@ -188,14 +191,14 @@ PitBull4_Portrait:SetLayoutOptionsFunction(function(self)
 			self:UpdateAll()
 		end,
 		values = {
-			["two_dimensional"] = "2D",
-			["three_dimensional"] = "3D",
-			["class"] = "Class",
+			["two_dimensional"] = L["2D"],
+			["three_dimensional"] = L["3D"],
+			["class"] = L["Class"],
 		},
 	}, 'fallback_style', {
 		type = 'select',
-		name = "Fallback style",
-		desc = "Set the portrait style for when the normal style can't be shown, such as if they are out of visibility.",
+		name = L["Fallback style"],
+		desc = L["Set the portrait style for when the normal style can't be shown, such as if they are out of visibility."],
 		get = function(info)
 			return PitBull4.Options.GetLayoutDB(self).fallback_style
 		end,
@@ -208,9 +211,9 @@ PitBull4_Portrait:SetLayoutOptionsFunction(function(self)
 			self:UpdateAll()
 		end,
 		values = {
-			["two_dimensional"] = "2D",
-			["three_dimensional"] = "3D question mark",
-			["class"] = "Class",
+			["two_dimensional"] = L["2D"],
+			["three_dimensional"] = L["3D question mark"],
+			["class"] = L["Class"],
 		},
 	}
 end)

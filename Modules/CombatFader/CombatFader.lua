@@ -5,11 +5,13 @@ if not PitBull4 then
 	error("PitBull4_CombatFader requires PitBull4")
 end
 
+local L = PitBull4.L
+
 local PitBull4_CombatFader = PitBull4:NewModule("CombatFader", "AceEvent-3.0")
 
 PitBull4_CombatFader:SetModuleType("fader")
-PitBull4_CombatFader:SetName("Combat Fader")
-PitBull4_CombatFader:SetDescription("Make the unit frame fade if out of combat.")
+PitBull4_CombatFader:SetName(L["Combat fader"])
+PitBull4_CombatFader:SetDescription(L["Make the unit frame fade if out of combat."])
 PitBull4_CombatFader:SetDefaults({
 	enabled = false,
 	hurt_opacity = 0.75,
@@ -46,17 +48,17 @@ function PitBull4_CombatFader:OnEnable()
 end
 
 local power_check = {
-	[0] = function() -- Mana
+	MANA = function()
 		return UnitMana('player') < UnitManaMax('player')
 	end,
-	[1] = function() -- Rage
+	RAGE = function()
 		-- this seems counter-intuitive, but if rage > 0, you're up for fighting
 		return UnitMana('player') > 0
 	end,
-	[3] = function() -- Energy
+	ENERGY = function()
 		return UnitMana('player') < UnitManaMax('player')
 	end,
-	[6] = function() -- Runic power
+	RUNICPOWER = function()
 		return UnitMana('player') > 0
 	end,
 }
@@ -69,8 +71,8 @@ function PitBull4_CombatFader:RecalculateState()
 	elseif UnitHealth('player') < UnitHealthMax('player') then
 		state = 'hurt'
 	else
-		local power_type = UnitPowerType('player')
-		local func = power_check[power_type]
+		local _, power_token = UnitPowerType('player')
+		local func = power_check[power_token]
 		if func and func() then
 			state = 'hurt'
 		else
@@ -110,8 +112,8 @@ end
 PitBull4_CombatFader:SetLayoutOptionsFunction(function(self)
 	return 'hurt', {
 		type = 'range',
-		name = "Hurt opacity",
-		desc = "The opacity to display if the player is missing health or mana.",
+		name = L["Hurt opacity"],
+		desc = L["The opacity to display if the player is missing health or mana."],
 		min = 0,
 		max = 1,
 		isPercent = true,
@@ -132,8 +134,8 @@ PitBull4_CombatFader:SetLayoutOptionsFunction(function(self)
 		bigStep = 0.05,
 	}, 'in_combat', {
 		type = 'range',
-		name = "In-combat opacity",
-		desc = "The opacity to display if the player is in combat.",
+		name = L["In-combat opacity"],
+		desc = L["The opacity to display if the player is in combat."],
 		min = 0,
 		max = 1,
 		isPercent = true,
@@ -154,8 +156,8 @@ PitBull4_CombatFader:SetLayoutOptionsFunction(function(self)
 		bigStep = 0.05,
 	}, 'out_of_combat', {
 		type = 'range',
-		name = "Out-of-combat opacity",
-		desc = "The opacity to display if the player is out of combat.",
+		name = L["Out-of-combat opacity"],
+		desc = L["The opacity to display if the player is out of combat."],
 		min = 0,
 		max = 1,
 		isPercent = true,
@@ -176,8 +178,8 @@ PitBull4_CombatFader:SetLayoutOptionsFunction(function(self)
 		bigStep = 0.05,
 	}, 'target', {
 		type = 'range',
-		name = "Target-selected opacity",
-		desc = "The opacity to display if the player is selecting a target.",
+		name = L["Target-selected opacity"],
+		desc = L["The opacity to display if the player is selecting a target."],
 		min = 0,
 		max = 1,
 		isPercent = true,

@@ -6,10 +6,11 @@ if not PitBull4 then
 end
 
 local PitBull4_Background = PitBull4:NewModule("Background")
+local L = PitBull4.L
 
 PitBull4_Background:SetModuleType("custom")
-PitBull4_Background:SetName("Background")
-PitBull4_Background:SetDescription("Show a flat background for your unit frames.")
+PitBull4_Background:SetName(L["Background"])
+PitBull4_Background:SetDescription(L["Show a flat background for your unit frames."])
 PitBull4_Background:SetDefaults({
 	color = { 0, 0, 0, 0.5 }
 })

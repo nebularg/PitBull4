@@ -7,11 +7,13 @@ if not PitBull4 then
 	error("PitBull4_ManaSpark requires PitBull4")
 end
 
+local L = PitBull4.L
+
 local PitBull4_ManaSpark = PitBull4:NewModule("ManaSpark", "AceEvent-3.0")
 
 PitBull4_ManaSpark:SetModuleType("custom")
-PitBull4_ManaSpark:SetName("Mana Spark")
-PitBull4_ManaSpark:SetDescription("Show the spellcasting five-second rule.")
+PitBull4_ManaSpark:SetName(L["Mana spark"])
+PitBull4_ManaSpark:SetDescription(L["Show the spellcasting five-second rule."])
 PitBull4_ManaSpark:SetDefaults({})
 
 local timerFrame = CreateFrame("Frame")

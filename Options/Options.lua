@@ -1,5 +1,6 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
+local L = PitBull4.L
 
 local AceConfig = LibStub and LibStub("AceConfig-3.0", true)
 if not AceConfig then
@@ -15,13 +16,13 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local OpenConfig
 
 AceConfig:RegisterOptionsTable("PitBull4_Bliz", {
-	name = "PitBull Unit Frames 4.0",
+	name = L["PitBull Unit Frames 4.0"],
 	handler = PitBull4,
 	type = 'group',
 	args = {
 		config = {
-			name = "Standalone config",
-			desc = "Open a standlone config window, allowing you to actually configure PitBull Unit Frames 4.0.",
+			name = L["Standalone config"],
+			desc = L["Open a standlone config window, allowing you to actually configure PitBull Unit Frames 4.0."],
 			type = 'execute',
 			func = function()
 				OpenConfig()
@@ -52,15 +53,15 @@ function OpenConfig()
 	end
 	
 	local options = {
-		name = "PitBull",
+		name = L["PitBull"],
 		handler = PitBull4,
 		type = 'group',
 		args = {
 		},
 	}
 	
-	options.args.layout_editor = PitBull4.Options.get_layout_options()
-	PitBull4.Options.get_layout_options = nil
+	options.args.layout_editor = PitBull4.Options.get_layout_editor_options()
+	PitBull4.Options.get_layout_editor_options = nil
 	options.args.layout_editor.order = 1
 	
 	options.args.units = PitBull4.Options.get_unit_options()
@@ -70,6 +71,10 @@ function OpenConfig()
 	options.args.modules = PitBull4.Options.get_module_options()
 	PitBull4.Options.get_module_options = nil
 	options.args.modules.order = 3
+	
+	options.args.config_mode = PitBull4.Options.get_config_mode_options()
+	PitBull4.Options.get_config_mode_options = nil
+	options.args.modules.order = 4
 	
 	AceConfig:RegisterOptionsTable("PitBull4", options)
 	AceConfigDialog:SetDefaultSize("PitBull4", 825, 550)
