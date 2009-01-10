@@ -1015,7 +1015,7 @@ PitBull4_TotemTimers:SetDefaults({
 	size = 2, -- default to a 200% scaling, the 100% seems way too tiny.
 	bgcolor = {0.8, 0.8, 0.8},
 	tlo1 = true, -- dummy for optiontests
-	totemsize = 50,
+	totemsize = 25,
 	totemspacing = 0,
 	totemdirection = "h",
 	timerspiral = true,
