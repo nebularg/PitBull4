@@ -242,6 +242,12 @@ function UnitFrame:RefreshLayout()
 	local layout = classification_db.layout
 	self.layout = layout
 	
+	if classification_db.click_through then
+		self:EnableMouse(false)
+	else
+		self:EnableMouse(true)
+	end
+	
 	self:RefixSizeAndPosition()
 
 	if old_layout then
