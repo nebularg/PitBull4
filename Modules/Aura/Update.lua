@@ -6,6 +6,7 @@ if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les
 local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
 local PitBull4_Aura = PitBull4:GetModule("Aura")
+local L = PitBull4.L
 local UnitAura = _G.UnitAura
 local math_ceil = _G.math.ceil
 local GetTime = _G.GetTime
@@ -61,7 +62,7 @@ end
 -- constants for building sample auras
 local sample_buff_icon   = [[Interface\Icons\Spell_ChargePositive]]
 local sample_debuff_icon = [[Interface\Icons\Spell_ChargeNegative]]
-local sample_debuff_types = { 'Poison', 'Magic', 'Disease', 'Curse', 'Enrage', 'nil' }
+local sample_debuff_types = { L['Poison'], L['Magic'], L['Disease'], L['Curse'], L['Enrage'], 'nil' }
 
 -- Fills up to the maximum number of auras with sample auras
 local function get_aura_list_sample(list, max, is_buff)
@@ -74,7 +75,7 @@ local function get_aura_list_sample(list, max, is_buff)
 	
 		-- Create our bogus aura entry
 		entry[1]  = 0 -- index 0 means PitBull generated aura
-		entry[2]  = is_buff and "Sample Buff" or "Sample Debuff" -- name
+		entry[2]  = is_buff and L["Sample Buff"] or L["Sample Debuff"] -- name
 		entry[3]  = "" -- rank
 		entry[4]  = is_buff and sample_buff_icon or sample_debuff_icon
 		entry[5]  = i -- count set to index to make order show

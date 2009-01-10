@@ -8,11 +8,12 @@ if not PitBull4 then
         error("PitBull4_Aura requires PitBull4")
 end
 
+local L = PitBull4.L
 local PitBull4_Aura= PitBull4:NewModule("Aura", "AceEvent-3.0", "AceTimer-3.0")
 
 PitBull4_Aura:SetModuleType("custom")
-PitBull4_Aura:SetName("Aura")
-PitBull4_Aura:SetDescription("Shows buffs and debuffs for PitBull4 frames.")
+PitBull4_Aura:SetName(L["Aura"])
+PitBull4_Aura:SetDescription(L["Shows buffs and debuffs for PitBull4 frames."])
 
 function PitBull4_Aura:OnEnable()
 	self:RegisterEvent("UNIT_AURA")
