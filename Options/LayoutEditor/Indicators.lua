@@ -143,6 +143,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			local attach_to = db.attach_to
 			local location = db.location
 			local t = {}
+			local sort = {}
 			for other_id, other_module in PitBull4:IterateModulesOfType("icon", "custom_indicator") do
 				local other_db = GetLayoutDB(other_id)
 				if attach_to == other_db.attach_to and location == other_db.location then
@@ -152,7 +153,16 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 						other_db.position = position
 					end
 					t[position] = other_module.name
+					sort[#sort+1] = position
 				end
+			end
+			table.sort(sort)
+			local sort_reverse = {}
+			for k, v in pairs(sort) do
+				sort_reverse[v] = k
+			end
+			for position, name in pairs(t) do
+				t[position] = ("%d. %s"):format(sort_reverse[position], name)
 			end
 			return t
 		end,

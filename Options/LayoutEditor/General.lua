@@ -2,16 +2,15 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-function PitBull4.Options.get_layout_editor_other_options(layout_options)
+function PitBull4.Options.get_layout_editor_general_options(layout_options)
 	local GetLayoutDB = PitBull4.Options.GetLayoutDB
 	local UpdateFrames = PitBull4.Options.UpdateFrames
 	local RefreshFrameLayouts = PitBull4.Options.RefreshFrameLayouts
 	
 	local options = {
-		name = L["Other"],
+		name = L["General"],
 		type = 'group',
 		childGroups = "tab",
-		order = 6,
 		args = {}
 	}
 	
@@ -79,57 +78,57 @@ function PitBull4.Options.get_layout_editor_other_options(layout_options)
 		}
 	}
 	
-	local layout_functions = PitBull4.Options.layout_functions
-	
-	for id, module in PitBull4:IterateModulesOfType("custom", true) do
-		if layout_functions[module] then
-			local t = { layout_functions[module](module) }
-			layout_functions[module] = false
-			
-			local top_level = (t[1] == true)
-			if top_level then
-				table.remove(t, 1)
-			end
-			
-			local args = top_level and layout_options.args or options.args
-			
-			args[id] = {
-				type = 'group',
-				name = module.name,
-				desc = module.description,
-				childGroups = 'tab',
-				order = 5,
-				hidden = function(info)
-					return not module:IsEnabled()
+	options.args.remove = {
+		type = 'group',
+		name = L["Delete"],
+		desc = L["Delete this layout."],
+		order = -1,
+		args = {
+			remove = {
+				type = 'execute',
+				name = L["Delete"],
+				desc = L["Delete this layout."],
+				confirm = function(info)
+					return L["Are you sure you want to delete the '%s' layout? This is irreversible."]:format(PitBull4.Options.GetCurrentLayout())
 				end,
-				args = {
-					enable = {
-						type = 'toggle',
-						name = L["Enable"],
-						desc = L["Enable this module for this layout."],
-						order = 1,
-						get = function(info)
-							return GetLayoutDB(module).enabled
-						end,
-						set = function(info, value)
-							GetLayoutDB(module).enabled = value
-
-							UpdateFrames()
+				func = function(info)
+					local layout = PitBull4.Options.GetCurrentLayout()
+					
+					PitBull4.db.profile.layouts[layout] = nil
+					
+					for id, module in PitBull4:IterateModules() do
+						if module.db then
+							module.db.profile.layouts[layout] = nil
 						end
-					},
-				},
+					end
+					
+					local new_layout = "Normal"
+					for name in pairs(PitBull4.db.profile.layouts) do
+						new_layout = name
+						break
+					end
+					
+					PitBull4.Options.SetCurrentLayout(new_layout)
+					
+					for classification, db in pairs(PitBull4.db.profile.classifications) do
+						if db.layout == layout then
+							db.layout = new_layout
+							for frame in PitBull4:IterateFramesForClassification(classification, true) do
+								frame:RefreshLayout()
+							end
+						end
+					end
+				end,
+				disabled = function(info)
+					local num = 0
+					for name in pairs(PitBull4.db.profile.layouts) do
+						num = num + 1
+					end
+					return num <= 1 or InCombatLockdown()
+				end
 			}
-			
-			for i = 1, #t, 2 do
-				local k = t[i]
-				local v = t[i+1]
-				
-				v.order = i + 100
-				
-				args[id].args[k] = v
-			end
-		end
-	end
+		}
+	}
 	
 	return options
 end

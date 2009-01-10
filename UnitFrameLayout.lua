@@ -283,17 +283,19 @@ local function get_half_width(frame, indicators_and_texts)
 	local layout = frame.layout
 	
 	for _, indicator_or_text in ipairs(indicators_and_texts) do
-		if indicator_or_text.db then
-			-- probably a text
-			num = num + ASSUMED_TEXT_WIDTH * indicator_or_text.db.size
-		else
-			local module = PitBull4.modules[indicator_or_text.id]
-			if module.module_type == "custom_text" then
-				num = num + ASSUMED_TEXT_WIDTH * module:GetLayoutDB(layout).size
+		if indicator_or_text.SetJustifyH then
+			-- a text
+			if indicator_or_text.db then
+				num = num + ASSUMED_TEXT_WIDTH * indicator_or_text.db.size
 			else
-				local height_multiplier = indicator_or_text.height or 1
-				num = num + module:GetLayoutDB(layout).size * INDICATOR_SIZE * indicator_or_text:GetWidth() / indicator_or_text:GetHeight() * height_multiplier
+				local module = PitBull4.modules[indicator_or_text.id]
+				num = num + ASSUMED_TEXT_WIDTH * module:GetLayoutDB(layout).size
 			end
+		else
+			-- an indicator
+			local module = PitBull4.modules[indicator_or_text.id]
+			local height_multiplier = indicator_or_text.height or 1
+			num = num + module:GetLayoutDB(layout).size * INDICATOR_SIZE * indicator_or_text:GetWidth() / indicator_or_text:GetHeight() * height_multiplier
 		end
 	end
 	
@@ -538,6 +540,73 @@ local function position_indicator_or_text(root, indicator, attach_frame, last_in
 	end
 end
 
+local function position_overlapping_texts_helper(attach_frame, left, center, right, inside_width)
+	if center then
+		-- clamp left to center
+		if left and left[#left].SetJustifyH then
+			left[#left]:SetJustifyH("LEFT")
+			left[#left]:SetPoint("RIGHT", center[1], "LEFT", -INDICATOR_SPACING_BETWEEN, 0)
+		end
+	
+		-- clamp right to center
+		if right and right[#right].SetJustifyH("RIGHT") then
+			right[#right]:SetJustifyH("RIGHT")
+			right[#right]:SetPoint("LEFT", center[#center], "RIGHT", INDICATOR_SPACING_BETWEEN, 0)
+		end
+	elseif left and left[#left].SetJustifyH then	
+		left[#left]:SetJustifyH("LEFT")
+		if right then
+			-- clamp left to right
+			left[#left]:SetPoint("RIGHT", right[#right], "LEFT", -INDICATOR_SPACING_BETWEEN, 0)
+		else
+			-- clamp left to attach_frame's right side
+			left[#left]:SetPoint("RIGHT", attach_frame, "RIGHT", -inside_width, 0)
+		end
+	end
+end
+
+local function position_overlapping_texts(root, attach_frame, location_to_indicators_and_texts)
+	if root == attach_frame then
+		position_overlapping_texts_helper(
+			attach_frame,
+			location_to_indicators_and_texts.in_left,
+			location_to_indicators_and_texts.in_center,
+			location_to_indicators_and_texts.in_right,
+			INDICATOR_OUT_ROOT_BORDER)
+		position_overlapping_texts_helper(
+			attach_frame,
+			location_to_indicators_and_texts.in_bottom_left,
+			location_to_indicators_and_texts.in_bottom,
+			location_to_indicators_and_texts.in_bottom_right,
+			INDICATOR_OUT_ROOT_BORDER)
+		position_overlapping_texts_helper(
+			attach_frame,
+			location_to_indicators_and_texts.in_top_left,
+			location_to_indicators_and_texts.in_top,
+			location_to_indicators_and_texts.in_top_right,
+			INDICATOR_OUT_ROOT_BORDER)
+		position_overlapping_texts_helper(
+			attach_frame,
+			location_to_indicators_and_texts.out_bottom_left,
+			location_to_indicators_and_texts.out_bottom,
+			location_to_indicators_and_texts.out_bottom_right,
+			INDICATOR_OUT_ROOT_BORDER)
+		position_overlapping_texts_helper(
+			attach_frame,
+			location_to_indicators_and_texts.out_top_left,
+			location_to_indicators_and_texts.out_top,
+			location_to_indicators_and_texts.out_top_right,
+			INDICATOR_OUT_ROOT_BORDER)
+	else
+		position_overlapping_texts_helper(
+			attach_frame,
+			location_to_indicators_and_texts.left,
+			location_to_indicators_and_texts.center,
+			location_to_indicators_and_texts.right,
+			INDICATOR_BAR_INSIDE_HORIZONTAL_SPACING)
+	end
+end
+
 local horizontal_mirrored_location = setmetatable({}, {__index = function(self, key)
 	local value = key:gsub("left", "temp"):gsub("right", "left"):gsub("temp", "right")
 	self[key] = value
@@ -670,6 +739,11 @@ local function update_indicator_and_text_layout(self)
 				position_indicator_or_text(self, indicator_or_text, attach_frame, last, location, loc_indicators_and_texts)
 				last = indicator_or_text
 			end
+		end
+		
+		position_overlapping_texts(self, attach_frame, attachments_attach_frame)
+		
+		for location, loc_indicators_and_texts in pairs(attachments_attach_frame) do
 			attachments_attach_frame[location] = del(loc_indicators_and_texts)
 		end
 		attachments[attach_frame] = del(attachments_attach_frame)

@@ -35,6 +35,7 @@ end
 
 local DATABASE_DEFAULTS = {
 	profile = {
+		lock_movement = false,
 		classifications = {
 			['**'] = {
 				enabled = true,
@@ -50,6 +51,7 @@ local DATABASE_DEFAULTS = {
 				vertical_spacing = 30,
 				direction = "down_right",
 				units_per_column = MAX_RAID_MEMBERS,
+				click_through = false,
 			},
 			party = {
 				sort_method = "INDEX",

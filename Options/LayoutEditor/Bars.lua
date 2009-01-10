@@ -135,6 +135,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			local db = GetLayoutDB(info[#info-1])
 			local side = db.side
 			local t = {}
+			local sort = {}
 			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar") do
 				local other_db = GetLayoutDB(other_id)
 				if side == other_db.side then
@@ -144,7 +145,16 @@ function PitBull4.Options.get_layout_editor_bar_options()
 						other_db.position = position
 					end
 					t[position] = other_module.name
+					sort[#sort+1] = position
 				end
+			end
+			table.sort(sort)
+			local sort_reverse = {}
+			for k, v in pairs(sort) do
+				sort_reverse[v] = k
+			end
+			for position, name in pairs(t) do
+				t[position] = ("%d. %s"):format(sort_reverse[position], name)
 			end
 			return t
 		end,

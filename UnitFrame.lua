@@ -91,6 +91,9 @@ function UnitFrame:menu(unit)
 end
 
 function SingletonUnitFrame__scripts:OnDragStart()
+	if PitBull4.db.profile.lock_movement then
+		return
+	end
 	self:StartMoving()
 end
 
@@ -241,6 +244,12 @@ function UnitFrame:RefreshLayout()
 	
 	local layout = classification_db.layout
 	self.layout = layout
+	
+	if classification_db.click_through then
+		self:EnableMouse(false)
+	else
+		self:EnableMouse(true)
+	end
 	
 	self:RefixSizeAndPosition()
 

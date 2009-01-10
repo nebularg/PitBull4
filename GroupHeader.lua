@@ -252,6 +252,9 @@ end
 GroupHeader.UnforceShow = PitBull4:OutOfCombatWrapper(GroupHeader.UnforceShow)
 
 function MemberUnitFrame__scripts:OnDragStart()
+	if PitBull4.db.profile.lock_movement then
+		return
+	end
 	return self.header:StartMoving()
 end
 
