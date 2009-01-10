@@ -81,6 +81,9 @@ function PitBull4.Options.get_unit_options()
 			
 			PitBull4.db.profile.classifications[classification].layout = value
 			
+			for header in PitBull4:IterateHeadersForClassification(classification) do
+				header:RefreshLayout(true)
+			end
 			for frame in PitBull4:IterateFramesForClassification(classification, true) do
 				frame:RefreshLayout()
 			end
@@ -149,6 +152,9 @@ function PitBull4.Options.get_unit_options()
 			
 			PitBull4.db.profile.classifications[classification].scale = value
 			
+			for header in PitBull4:IterateHeadersForClassification(classification) do
+				header:RefreshLayout(true)
+			end
 			for frame in PitBull4:IterateFramesForClassification(classification, true) do
 				frame:RefreshLayout()
 			end

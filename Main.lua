@@ -583,6 +583,31 @@ function PitBull4:IterateHeadersForSuperClassification(super_classification)
 	return not also_hidden and iterate_shown_frames or half_next, headers
 end
 
+local function header_layout_iter(layout, header)
+	header = next(all_headers, header)
+	if not header then
+		return nil
+	end
+	if header.layout == layout then
+		return header
+	end
+	return layout_iter(layout, header)
+end
+
+--- Iterate over all headers with the given layout.
+-- @param layout the layout to check
+-- @usage for header in PitBull4:IterateHeadersForLayout("Normal") do
+--     header:RefreshLayout()
+-- end
+-- @return iterator which returns headers
+function PitBull4:IterateHeadersForLayout(layout, also_hidden)
+	--@alpha@
+	expect(layout, 'typeof', 'string')
+	--@end-alpha@
+	
+	return header_layout_iter, layout
+end
+
 --- Make a singleton unit frame.
 -- @param unit the UnitID of the frame in question
 -- @usage local frame = PitBull4:MakeSingletonFrame("player")

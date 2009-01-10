@@ -5,7 +5,6 @@ local L = PitBull4.L
 function PitBull4.Options.get_layout_editor_module_options(layout_options)
 	local GetLayoutDB = PitBull4.Options.GetLayoutDB
 	local UpdateFrames = PitBull4.Options.UpdateFrames
-	local RefreshFrameLayouts = PitBull4.Options.RefreshFrameLayouts
 	
 	local options = {
 		name = L["Modules"],
