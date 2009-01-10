@@ -60,20 +60,20 @@ function OpenConfig()
 		},
 	}
 	
+	options.args.general = PitBull4.Options.get_general_options()
+	PitBull4.Options.get_general_options = nil
+	options.args.general.order = 1
+	
 	options.args.layout_editor = PitBull4.Options.get_layout_editor_options()
 	PitBull4.Options.get_layout_editor_options = nil
-	options.args.layout_editor.order = 1
+	options.args.layout_editor.order = 2
 	
 	options.args.units = PitBull4.Options.get_unit_options()
 	PitBull4.Options.get_unit_options = nil
-	options.args.units.order = 2
+	options.args.units.order = 3
 	
 	options.args.modules = PitBull4.Options.get_module_options()
 	PitBull4.Options.get_module_options = nil
-	options.args.modules.order = 3
-	
-	options.args.config_mode = PitBull4.Options.get_config_mode_options()
-	PitBull4.Options.get_config_mode_options = nil
 	options.args.modules.order = 4
 	
 	AceConfig:RegisterOptionsTable("PitBull4", options)

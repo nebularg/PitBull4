@@ -152,21 +152,27 @@ function PitBull4.Options.get_layout_editor_options()
 	}
 	
 	layout_options.args.general = PitBull4.Options.get_layout_editor_general_options()
+	PitBull4.Options.get_layout_editor_general_options = nil
 	layout_options.args.general.order = 1
 	
 	layout_options.args.bars = PitBull4.Options.get_layout_editor_bar_options()
+	PitBull4.Options.get_layout_editor_bar_options = nil
 	layout_options.args.bars.order = 2
 	
 	layout_options.args.indicators = PitBull4.Options.get_layout_editor_indicator_options()
+	PitBull4.Options.get_layout_editor_indicator_options = nil
 	layout_options.args.indicators.order = 3
 	
 	layout_options.args.texts = PitBull4.Options.get_layout_editor_text_options()
+	PitBull4.Options.get_layout_editor_text_options = nil
 	layout_options.args.texts.order = 4
 	
 	layout_options.args.faders = PitBull4.Options.get_layout_editor_fader_options()
+	PitBull4.Options.get_layout_editor_fader_options = nil
 	layout_options.args.faders.order = 5
 	
 	layout_options.args.modules = PitBull4.Options.get_layout_editor_module_options(layout_options)
+	PitBull4.Options.get_layout_editor_module_options = nil
 	layout_options.args.modules.order = 7
 	
 	return layout_options

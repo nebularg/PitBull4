@@ -91,6 +91,9 @@ function UnitFrame:menu(unit)
 end
 
 function SingletonUnitFrame__scripts:OnDragStart()
+	if PitBull4.db.profile.lock_movement then
+		return
+	end
 	self:StartMoving()
 end
 

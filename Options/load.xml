@@ -2,6 +2,8 @@
 ..\FrameXML\UI.xsd">
 
 <Script file="Options.lua"/>
+<Script file="General.lua"/>
+<Script file="ConfigMode.lua"/>
 <Script file="LayoutEditor.lua"/>
 <Script file="LayoutEditor\General.lua"/>
 <Script file="LayoutEditor\Bars.lua"/>
@@ -11,6 +13,5 @@
 <Script file="LayoutEditor\Modules.lua"/>
 <Script file="Units.lua"/>
 <Script file="Modules.lua"/>
-<Script file="ConfigMode.lua"/>
 
 </Ui>

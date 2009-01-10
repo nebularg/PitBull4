@@ -35,6 +35,7 @@ end
 
 local DATABASE_DEFAULTS = {
 	profile = {
+		lock_movement = false,
 		classifications = {
 			['**'] = {
 				enabled = true,
