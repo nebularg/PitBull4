@@ -64,8 +64,9 @@ local DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER = {
 UNITS_PER_COLUMN = 2
 MAX_COLUMNS = 2
 --- Recheck the layout of the group header, including sorting, position, what units are shown, and refreshing the layout of all members.
+-- @param dont_refresh_children don't call :RefreshLayout on the child frames
 -- @usage header:RefreshLayout()
-function GroupHeader:RefreshLayout()
+function GroupHeader:RefreshLayout(dont_refresh_children)
 	local classification_db = self.classification_db
 	local super_classification_db = self.super_classification_db
 
@@ -75,6 +76,7 @@ function GroupHeader:RefreshLayout()
 	local layout_db = PitBull4.db.profile.layouts[layout]
 	self.layout_db = layout_db
 	
+	self:SetScale(layout_db.scale * classification_db.scale)
 	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
 	
 	local direction = classification_db.direction
@@ -118,8 +120,10 @@ function GroupHeader:RefreshLayout()
 	end
 	self:SetPoint(point, UIParent, "CENTER", classification_db.position_x / scale + x_diff, (classification_db.position_y + y_diff) / scale)
 	
-	for i, frame in ipairs(self) do
-		frame:RefreshLayout()
+	if not dont_refresh_children then
+		for i, frame in ipairs(self) do
+			frame:RefreshLayout()
+		end
 	end
 end
 GroupHeader.RefreshLayout = PitBull4:OutOfCombatWrapper(GroupHeader.RefreshLayout)
@@ -278,7 +282,7 @@ function MemberUnitFrame__scripts:OnDragStop()
 	
 	LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
 	
-	header:RefreshLayout()
+	header:RefreshLayout(true)
 end
 
 --- Reset the size of the unit frame, not position as that is handled through the group header.

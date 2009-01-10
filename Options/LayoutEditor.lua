@@ -37,6 +37,9 @@ end
 -- This should be called by modules after changing an option in the DB.
 -- @usage PitBull.Options.UpdateFrames()
 function PitBull4.Options.RefreshFrameLayouts()
+	for header in PitBull4:IterateHeadersForLayout(CURRENT_LAYOUT) do
+		header:RefreshLayout(true)
+	end
 	for frame in PitBull4:IterateFramesForLayout(CURRENT_LAYOUT, true) do
 		frame:RefreshLayout()
 	end
