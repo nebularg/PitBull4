@@ -118,7 +118,7 @@ function PitBull4_RangeFader:GetOpacity(frame)
 		if enemy_is_in_range(unit) then
 			return 1
 		elseif enemy_is_in_long_range(unit) then
-			return (self:GetLayoutDB(frame).out_of_range_opacity + PitBull4.db.profile.layouts[frame.layout].opacity_max) / 2
+			return (self:GetLayoutDB(frame).out_of_range_opacity + frame.layout_db.opacity_max) / 2
 		else
 			return self:GetLayoutDB(frame).out_of_range_opacity
 		end

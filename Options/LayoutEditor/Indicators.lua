@@ -64,7 +64,170 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		desc = L["Options that apply to all indicators."],
 		order = 1,
 		args = {},
+	}
+	
+	local general_args = options.args.general.args
+	
+	general_args.spacing = {
+		type = 'range',
+		name = L["Spacing"],
+		desc = L["Spacing between adjacent indicators."],
+		min = 1,
+		max = 20,
+		step = 1,
+		order = 1,
+		get = function(info)
+			return GetLayoutDB(false).indicator_spacing
+		end,
+		set = function(info, value)
+			GetLayoutDB(false).indicator_spacing = value
+			
+			UpdateFrames()
+		end,
+	}
+	
+	general_args.size = {
+		type = 'range',
+		name = L["Size"],
+		desc = L["Unscaled size of indicators."],
+		min = 5,
+		max = 50,
+		step = 1,
+		bigStep = 5,
+		order = 2,
+		get = function(info)
+			return GetLayoutDB(false).indicator_size
+		end,
+		set = function(info, value)
+			GetLayoutDB(false).indicator_size = value
+			
+			UpdateFrames()
+		end,
+	}
+	
+	general_args.bar = {
+		type = 'group',
+		name = L["Bar relation"],
+		inline = true,
+		order = 3,
+		args = {}
+	}
+	
+	general_args.bar.args.inside_horizontal_padding = {
+		type = 'range',
+		name = L["Inside horizontal padding"],
+		desc = L["How far in pixels that indicators are horizontally placed inside bars."],
+		min = 0,
+		max = 20,
+		step = 1,
+		order = 1,
+		get = function(info)
+			return GetLayoutDB(false).indicator_bar_inside_horizontal_padding
+		end,
+		set = function(info, value)
+			GetLayoutDB(false).indicator_bar_inside_horizontal_padding = value
+			
+			UpdateFrames()
+		end,
+	}
+	
+	general_args.bar.args.inside_vertical_padding = {
+		type = 'range',
+		name = L["Inside vertical padding"],
+		desc = L["How far in pixels that indicators are vertically placed inside bars."],
+		min = 0,
+		max = 20,
+		step = 1,
+		order = 2,
+		get = function(info)
+			return GetLayoutDB(false).indicator_bar_inside_vertical_padding
+		end,
+		set = function(info, value)
+			GetLayoutDB(false).indicator_bar_inside_vertical_padding = value
+			
+			UpdateFrames()
+		end,
 		hidden = true,
+	}
+	
+	general_args.bar.args.outside_margin = {
+		type = 'range',
+		name = L["Outside margin"],
+		desc = L["How far in pixels that indicators are placed outside of bars."],
+		min = 0,
+		max = 20,
+		step = 1,
+		order = 3,
+		get = function(info)
+			return GetLayoutDB(false).indicator_bar_outside_margin
+		end,
+		set = function(info, value)
+			GetLayoutDB(false).indicator_bar_outside_margin = value
+			
+			UpdateFrames()
+		end,
+	}
+	
+	general_args.root = {
+		type = 'group',
+		name = L["Frame relation"],
+		inline = true,
+		order = 4,
+		args = {}
+	}
+	
+	general_args.root.args.root_inside_horizontal_padding = {
+		type = 'range',
+		name = L["Inside horizontal padding"],
+		desc = L["How far in pixels that indicators are horizontally placed inside the unit frame."],
+		min = 0,
+		max = 20,
+		step = 1,
+		order = 1,
+		get = function(info)
+			return GetLayoutDB(false).indicator_root_inside_horizontal_padding
+		end,
+		set = function(info, value)
+			GetLayoutDB(false).indicator_root_inside_horizontal_padding = value
+			
+			UpdateFrames()
+		end,
+	}
+	
+	general_args.root.args.root_inside_vertical_padding = {
+		type = 'range',
+		name = L["Inside vertical padding"],
+		desc = L["How far in pixels that indicators are vertically placed inside the unit frame."],
+		min = 0,
+		max = 20,
+		step = 1,
+		order = 2,
+		get = function(info)
+			return GetLayoutDB(false).indicator_root_inside_vertical_padding
+		end,
+		set = function(info, value)
+			GetLayoutDB(false).indicator_root_inside_vertical_padding = value
+			
+			UpdateFrames()
+		end,
+	}
+	
+	general_args.root.args.root_outside_margin = {
+		type = 'range',
+		name = L["Outside margin"],
+		desc = L["How far in pixels that indicators are placed outside the unit frame."],
+		min = 0,
+		max = 20,
+		step = 1,
+		order = 3,
+		get = function(info)
+			return GetLayoutDB(false).indicator_root_outside_margin
+		end,
+		set = function(info, value)
+			GetLayoutDB(false).indicator_root_outside_margin = value
+			
+			UpdateFrames()
+		end,
 	}
 	
 	local indicator_args = {}
