@@ -494,7 +494,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			max = {
 				type = 'group',
-				name = L['Limit number of displayed auras'],
+				name = L['Limit number of displayed auras.'],
 				inline = true,
 				order = 2,
 				args = {
