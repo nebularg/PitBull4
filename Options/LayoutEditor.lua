@@ -42,6 +42,20 @@ function PitBull4.Options.RefreshFrameLayouts()
 	end
 end
 
+--- Return the name of the current layout.
+-- @usage local layout = PitBull4.Options.GetCurrentLayout()
+-- @return the name of the current layout
+function PitBull4.Options.GetCurrentLayout()
+	return CURRENT_LAYOUT
+end
+
+--- Set the current layout.
+-- @param layout the name of the layout
+-- @usage PitBull4.Options.SetCurrentLayout("Normal")
+function PitBull4.Options.SetCurrentLayout(layout)
+	CURRENT_LAYOUT = layout
+end
+
 local layout_functions = {}
 PitBull4.Options.layout_functions = layout_functions
 
@@ -137,20 +151,23 @@ function PitBull4.Options.get_layout_editor_options()
 		end,
 	}
 	
+	layout_options.args.general = PitBull4.Options.get_layout_editor_general_options()
+	layout_options.args.general.order = 1
+	
 	layout_options.args.bars = PitBull4.Options.get_layout_editor_bar_options()
-	layout_options.args.bars.order = 1
+	layout_options.args.bars.order = 2
 	
 	layout_options.args.indicators = PitBull4.Options.get_layout_editor_indicator_options()
-	layout_options.args.indicators.order = 2
+	layout_options.args.indicators.order = 3
 	
 	layout_options.args.texts = PitBull4.Options.get_layout_editor_text_options()
-	layout_options.args.texts.order = 3
+	layout_options.args.texts.order = 4
 	
 	layout_options.args.faders = PitBull4.Options.get_layout_editor_fader_options()
-	layout_options.args.faders.order = 4
+	layout_options.args.faders.order = 5
 	
-	layout_options.args.other = PitBull4.Options.get_layout_editor_other_options(layout_options)
-	layout_options.args.other.order = 6
+	layout_options.args.modules = PitBull4.Options.get_layout_editor_module_options(layout_options)
+	layout_options.args.modules.order = 7
 	
 	return layout_options
 end
