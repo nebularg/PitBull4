@@ -7,8 +7,6 @@ local FADE_TIME = 0.5
 
 -- how many opacity points can change in one second
 local OPACITY_POINTS_PER_SECOND = 1 / FADE_TIME
-
-local MANA_TYPE = 0
 ------------------------------------------------------------------------------
 
 local FaderModule = PitBull4:NewModuleType("fader", {
@@ -30,7 +28,7 @@ function PitBull4:GetFinalFrameOpacity(frame)
 	expect(frame, 'typeof', 'frame')
 	--@end-alpha@
 	
-	local layout_db = PitBull4.db.profile.layouts[frame.layout]
+	local layout_db = frame.layout_db
 	local unit = frame.unit
 	
 	local low = layout_db.opacity_max
@@ -143,7 +141,7 @@ function FaderModule:CallOpacityFunction(frame)
 		return nil, nil
 	end
 	
-	local layout_db = PitBull4.db.profile.layouts[frame.layout]
+	local layout_db = frame.layout_db
 	
 	local opacity_min = layout_db.opacity_min
 	local opacity_max = layout_db.opacity_max

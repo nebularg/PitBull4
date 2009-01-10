@@ -73,6 +73,7 @@ function GroupHeader:RefreshLayout()
 	self.layout = layout
 	
 	local layout_db = PitBull4.db.profile.layouts[layout]
+	self.layout_db = layout_db
 	
 	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
 	
@@ -143,6 +144,7 @@ function GroupHeader:InitialConfigFunction(frame)
 	PitBull4:ConvertIntoUnitFrame(frame)
 	
 	local layout_db = PitBull4.db.profile.layouts[layout]
+	frame.layout_db = layout_db
 	
 	frame:SetAttribute("initial-width", layout_db.size_x * self.classification_db.size_x)
 	frame:SetAttribute("initial-height", layout_db.size_y * self.classification_db.size_y)
@@ -282,8 +284,7 @@ end
 --- Reset the size of the unit frame, not position as that is handled through the group header.
 -- @usage frame:RefixSizeAndPosition()
 function MemberUnitFrame:RefixSizeAndPosition()
-	local layout_db = PitBull4.db.profile.layouts[self.layout]
-	
+	local layout_db = self.layout_db
 	local classification_db = self.classification_db
 	
 	self:SetWidth(layout_db.size_x * classification_db.size_x)
