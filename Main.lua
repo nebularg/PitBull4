@@ -92,6 +92,7 @@ _G.PitBull4 = PitBull4
 --@debug@
 LibStub("AceLocale-3.0"):NewLocale("PitBull4", "enUS", true, true)
 --@end-debug@
+
 PitBull4.L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
 
 PitBull4.SINGLETON_CLASSIFICATIONS = SINGLETON_CLASSIFICATIONS
