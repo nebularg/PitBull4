@@ -537,7 +537,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			cooldown = {
 				type = 'multiselect',
 				name = L['Time remaining spiral'],
-				desc = L['Set when the cooldown spiral shows.'],
+				desc = L['Set when the time remaining spiral shows.'],
 				values = show_when_values,
 				get = get_multi,
 				set = set_multi,
@@ -547,7 +547,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			cooldown_text = {
 				type = 'multiselect',
 				name = L['Time remaining text'],
-				desc = L['Set when the cooldown text shows.'],
+				desc = L['Set when the time remaining text shows.'],
 				values = show_when_values, 
 				get = get_multi,
 				set = set_multi,
