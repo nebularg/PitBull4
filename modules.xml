@@ -27,5 +27,6 @@
 <Include file="Modules\RestIcon\load.xml"/>
 <Include file="Modules\ThreatBar\load.xml"/>
 <Include file="Modules\VoiceIcon\load.xml"/>
+<Include file="Modules\Aura\load.xml"/>
 
 </Ui>
