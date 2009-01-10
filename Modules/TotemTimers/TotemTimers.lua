@@ -504,6 +504,55 @@ function PitBull4_TotemTimers:myGetFont(frame)
 	return font or DEFAULT_FONT, DEFAULT_FONT_SIZE * db.size
 end
 
+-- this function reads what PB tried to anchor us at and applies some fixing
+function PitBull4_TotemTimers:FixAnchoring(frame)
+	--self:Print("DBG: FixAnchoring called")
+	if not frame then
+		--self:Print("DBG: ... but frame doesn't exist?!")
+		return
+	end
+	
+	local tos = tostring
+
+	local oldpoints = {}
+	local newpoints = {}
+
+	if not frame:GetNumPoints() then 
+		--self:Print("DBG: FixAnchoring, No Points found...")
+		return 
+	end
+
+	local point, relativeTo, relativePoint, xOfs, yOfs = frame:GetPoint(1)
+	local npoint, nrelativeTo, nrelativePoint, nxOfs, nyOfs = frame:GetPoint(1)
+	
+	if not point then 
+		--self:Print("DBG: ... but no anchoring point is available yet.")
+		return 
+	end
+	
+	if relativePoint == "TOP" then
+		-- when pitbull anchors to top (middle) we force our point to be bottom (middle)
+		npoint = "BOTTOM"
+	elseif relativePoint == "BOTTOM" then
+		npoint = "TOP"
+	elseif relativePoint == "LEFT" then
+		npoint = "RIGHT"
+	elseif relativePoint == "RIGHT" then
+		npoint = "LEFT"
+	end
+	--self:Print(fmt("DEBUG: FixAnchoring: Found: %s connected to parent %s. Changed to: %s connected to parent %s.",tos(point),tos(relativePoint),tos(npoint),tos(nrelativePoint)))
+
+	-- add the configured offsets while we're at it
+	nxOfs = lOptGet('mainoffset_x') or 0
+	nyOfs = lOptGet('mainoffset_y') or 0
+	--self:Print(fmt("DEBUG: FixAnchoring: xOfs is %s and yOfs is %s", tos(nxOfs), tos(nxOfs)))
+	
+	
+	frame:ClearAllPoints()
+	frame:SetPoint(npoint, nrelativeTo, nrelativePoint, nxOfs, nyOfs)
+	
+end
+
 function PitBull4_TotemTimers:ResizeMainFrame(frame)
 	if not frame.TotemTimers then
 		return
@@ -528,7 +577,9 @@ function PitBull4_TotemTimers:RealignTotems(frame)
 
 	if frame.TotemTimers then
 		self:ResizeMainFrame(frame)
-
+		
+		self:FixAnchoring(frame.TotemTimers)
+		
 		local elements = frame.TotemTimers.elements
 		for i=1, MAX_TOTEMS do
 			local o = getSlotFromOrder(i)
@@ -754,30 +805,17 @@ function PitBull4_TotemTimers:PLAYER_ENTERING_WORLD(...)
 	end
 end
 
+function PitBull4_TotemTimers:BuildFrames(frame)
+	if not frame then return end -- not enough legit parameters
+	if frame.TotemTimers then return end -- Can't create the frames when they already exist..
 
-function PitBull4_TotemTimers:UpdateFrame(frame)
-	if frame.unit ~= 'player' then return end -- we only work for the player unit itself
-	
-	if frame.TotemTimers and (lOptGet('enabled') ~= true) then
-		return self:ClearFrame(frame)
-	end
-	
-	if frame.TotemTimers then
-		-- make sure the timer is still running (it gets deactivated if the frame is gone for a moment
-		self:StartTimer()
-		return false -- our frame exists already, nothing more to do...
-	end
-	
 	local font, fontsize = self:myGetFont(frame)
 	local tSize = lOptGet('totemsize')
 	local tSpacing = lOptGet('totemspacing')
 	
 	-- Main frame
 	
-	-- ttf shouldn't ever exist at this point but if it does, make sure we don't leak frames.
-	if not frame.TotemTimers then
-		frame.TotemTimers = PitBull4.Controls.MakeFrame(frame)
-	end
+	frame.TotemTimers = PitBull4.Controls.MakeFrame(frame)
 	local ttf = frame.TotemTimers
 
 	if (lOptGet('totemdirection') == "h") then
@@ -850,10 +888,10 @@ function PitBull4_TotemTimers:UpdateFrame(frame)
 		end
 		local textFrame = elements[i].textFrame
 		textFrame:SetAllPoints(frame)
-		--textFrame:SetFrameLevel(spiral:GetFrameLevel() + 7)
+		textFrame:SetFrameLevel(spiral:GetFrameLevel() + 7)
 		
 		if not elements[i].text then
-			elements[i].text = PitBull4.Controls.MakeFontString(frame, "OVERLAY")
+			elements[i].text = PitBull4.Controls.MakeFontString(textFrame, "OVERLAY")
 		end
 		local text = elements[i].text
 		text:SetWidth(tSize)
@@ -902,6 +940,26 @@ function PitBull4_TotemTimers:UpdateFrame(frame)
 	
 	self:ResizeMainFrame(frame)
 	self:RealignTotems(frame)
+	self:FixAnchoring(frame.TotemTimers)
+end
+
+function PitBull4_TotemTimers:UpdateFrame(frame)
+	if frame.unit ~= 'player' then return end -- we only work for the player unit itself
+	
+	--self:Print('DBG: UpdateFrame called.')
+	
+	if (lOptGet('enabled') ~= true) and frame.TotemTimers then
+		return self:ClearFrame(frame)
+	end
+	
+	if frame.TotemTimers then
+		-- make sure the timer is still running (it gets deactivated if the frame is gone for a moment
+		self:StartTimer()
+		self:FixAnchoring(frame.TotemTimers)
+		return false -- our frame exists already, nothing more to do...
+	end
+	
+	self:BuildFrames(frame)
 	
 	return true
 end
@@ -954,9 +1012,10 @@ PitBull4_TotemTimers:SetDefaults({
 	attach_to = "root",
 	location = "edge_bottom_left",
 	position = 1,
+	size = 2, -- default to a 200% scaling, the 100% seems way too tiny.
 	bgcolor = {0.8, 0.8, 0.8},
 	tlo1 = true, -- dummy for optiontests
-	totemsize = 25,
+	totemsize = 50,
 	totemspacing = 0,
 	totemdirection = "h",
 	timerspiral = true,
@@ -969,8 +1028,8 @@ PitBull4_TotemTimers:SetDefaults({
 	linebreak = MAX_TOTEMS,
 	hideinactive = false,
 	totembordercolor = {0, 0, 0, 0.5},
-	mainoffsetx = 0,
-	mainoffsety = 0,
+	mainoffset_x = 0,
+	mainoffset_y = 0,
 }, {
 	totemtooltips = true,
 	order = getOrderDefault(), -- this is the order _by_slot_ not by position!
@@ -982,7 +1041,43 @@ PitBull4_TotemTimers:SetDefaults({
 })
 
 PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
-	return 'totemsize', {
+	return 'mainoffset_x', {
+		type = 'range',
+		name = L["Horizontal offset"],
+		desc = L["Number of pixels to offset the totem frame from the start point horizontally."],
+		min = -690,
+		max = 690,
+		step = 1,
+		get = lOptGet,
+		--set = lOptSet,
+		set = function(info, value)
+			lOptSet('mainoffset_x', value)
+			for frame in PitBull4:IterateFramesForUnitID('player') do
+				self:RealignTotems(frame)
+			end
+		end,
+		disabled = function() return not lOptGet('enabled') end,
+		order = 8,
+	},
+	'mainoffset_y', {
+		type = 'range',
+		name = L["Vertical offset"],
+		desc = L["Number of pixels to offset the totem frame from the start point vertically."],
+		min = -430,
+		max = 430,
+		step = 1,
+		get = lOptGet,
+		--set = lOptSet,
+		set = function(info, value)
+			lOptSet('mainoffset_y', value)
+			for frame in PitBull4:IterateFramesForUnitID('player') do
+				self:RealignTotems(frame)
+			end
+		end,
+		disabled = function() return not lOptGet('enabled') end,
+		order = 9,
+	},
+	'totemsize', {
 		type = 'range',
 		name = L["Totem Size"],
 		desc = L["Sets the size of the individual totem icons."],
@@ -1112,7 +1207,7 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 		args = {
 			timerspiral = {
 				type = 'toggle',
-				name = L["Timer Spiral"],
+				name = L["Spiral timer enabled"],
 				desc = L["Shows the pie-like cooldown spiral on the icons."],
 				get = lOptGet,
 				set = lOptSet,
@@ -1142,16 +1237,17 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 		args = {
 			timertext = {
 				type = 'toggle',
-				name = L["Timer Text"],
+				name = L["Text timer enabled"],
 				desc = L["Shows the remaining time in as text."],
 				get = lOptGet,
 				set = lOptSet,
 				order = 1,
+				width = 'full',
 				disabled = function() return not lOptGet('enabled') end,
 			},
 			timertextcolor = {
 				type = 'color',
-				name = L["Text Color"],
+				name = L["Text color"],
 				desc = L["Color of the timer text."],
 				hasAlpha = true,
 				get = lOptGetColor,
@@ -1170,10 +1266,11 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 				end,
 				disabled = function() return not lOptGet('timertext') or not lOptGet('enabled')  end,
 				order = 2,
+				width = 'full',
 			},
 			timertextside = {
 				type = 'select',
-				name = L["Text Side"],
+				name = L["Text side"],
 				desc = L["Which side to position the timer text at."],
 				values = {
 					topinside = L["Top, Inside"],
@@ -1196,7 +1293,7 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 			},
 			timertextscale = {
 				type = 'range',
-				name = L["Text Scale"],
+				name = L["Text scale"],
 				desc = L["Change the scaling of the text timer. Note: It's relative to PitBull's font size."],
 				min = 0.1,
 				max = 2,
