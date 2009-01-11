@@ -158,7 +158,7 @@ PitBull4_HealthBar:SetLayoutOptionsFunction(function(self)
 		end,
 	}, 'hostility_color_npcs', {
 		name = L["Color NPCs by hostility"],
-		desc = L["Color the health bar by hostility for NPCs.  Note that color by class takes precedence over this."],
+		desc = L["Color the health bar by hostility for NPCs."],
 		type = 'toggle',
 		get = function(info)
 			return PitBull4.Options.GetLayoutDB(self).hostility_color_npcs
