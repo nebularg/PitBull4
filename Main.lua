@@ -594,7 +594,7 @@ local function header_layout_iter(layout, header)
 	if header.layout == layout then
 		return header
 	end
-	return layout_iter(layout, header)
+	return header_layout_iter(layout, header)
 end
 
 --- Iterate over all headers with the given layout.
