@@ -24,7 +24,7 @@ local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
 
 local color_constants = {
-	unknown = { 0.8, 0.8, 0.8 }
+	unknown = { 0.8, 0.8, 0.8 },
 	hostile = { 226/255, 45/255, 75/255 },
 	neutral = { 1, 1, 34/255 },
 	friendly = { 0.2, 0.8, 0.15 },
