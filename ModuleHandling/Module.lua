@@ -105,6 +105,19 @@ function Module:AddFrameScriptHook(script, method)
 	module_script_hooks[script][self] = PitBull4.Utils.ConvertMethodToFunction(self, method)
 end
 
+--- Remove a script hook for the unit frames.
+-- @name Module:RemoveFrameScriptHook
+-- @param script name of the script
+-- @usage MyModule:RemoveFrameScriptHook("OnEnter")
+function Module:RemoveFrameScriptHook(script)
+        --@alpha@
+        expect(script, 'typeof', 'string')
+        expect(script, 'match', '^On[A-Z][A-Za-z]+$')
+        --@end-alpha@
+
+        module_script_hooks[script][self] = nil
+end
+
 --- Set the localized name of the module.
 -- @param name the localized name of the module, with proper spacing, and in Title Case.
 -- @usage MyModule:SetName("My Module")
