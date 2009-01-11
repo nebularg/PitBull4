@@ -244,6 +244,7 @@ function UnitFrame:RefreshLayout()
 	
 	local layout = classification_db.layout
 	self.layout = layout
+	self.layout_db = PitBull4.db.profile.layouts[layout]
 	
 	if classification_db.click_through then
 		self:EnableMouse(false)
@@ -262,7 +263,7 @@ UnitFrame.RefreshLayout = PitBull4:OutOfCombatWrapper(UnitFrame.RefreshLayout)
 --- Reset the size and position of the unit frame.
 -- @usage frame:RefixSizeAndPosition()
 function SingletonUnitFrame:RefixSizeAndPosition()
-	local layout_db = PitBull4.db.profile.layouts[self.layout]
+	local layout_db = self.layout_db
 	local classification_db = self.classification_db
 	
 	self:SetWidth(layout_db.size_x * classification_db.size_x)

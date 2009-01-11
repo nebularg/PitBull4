@@ -60,21 +60,36 @@ function OpenConfig()
 		},
 	}
 	
-	options.args.general = PitBull4.Options.get_general_options()
+	local new_order
+	do
+		local current = 0
+		function new_order()
+			current = current + 1
+			return current
+		end
+	end
+	
+	local t = { PitBull4.Options.get_general_options() }
 	PitBull4.Options.get_general_options = nil
-	options.args.general.order = 1
+	
+	for i = 1, #t, 2 do
+		local k, v = t[i], t[i+1]
+		
+		options.args[k] = v
+		v.order = new_order()
+	end
 	
 	options.args.layout_editor = PitBull4.Options.get_layout_editor_options()
 	PitBull4.Options.get_layout_editor_options = nil
-	options.args.layout_editor.order = 2
+	options.args.layout_editor.order = new_order()
 	
 	options.args.units = PitBull4.Options.get_unit_options()
 	PitBull4.Options.get_unit_options = nil
-	options.args.units.order = 3
+	options.args.units.order = new_order()
 	
 	options.args.modules = PitBull4.Options.get_module_options()
 	PitBull4.Options.get_module_options = nil
-	options.args.modules.order = 4
+	options.args.modules.order = new_order()
 	
 	AceConfig:RegisterOptionsTable("PitBull4", options)
 	AceConfigDialog:SetDefaultSize("PitBull4", 825, 550)

@@ -38,7 +38,7 @@ function CustomTextModule:GetFont(frame)
 	local db = self:GetLayoutDB(frame)
 	local font
 	if LibSharedMedia then
-		font = LibSharedMedia:Fetch("font", db.font or PitBull4.db.profile.layouts[frame.layout].font or "")
+		font = LibSharedMedia:Fetch("font", db.font or frame.layout_db.font or "")
 	end
 	return font or DEFAULT_FONT, DEFAULT_FONT_SIZE * db.size
 end

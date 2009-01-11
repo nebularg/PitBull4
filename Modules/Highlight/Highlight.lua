@@ -26,6 +26,11 @@ function PitBull4_Highlight:OnEnable()
 	end
 end
 
+function PitBull4_Highlight:OnDisable()
+        self:RemoveFrameScriptHook("OnEnter")
+        self:RemoveFrameScriptHook("OnLeave")
+end
+
 function PitBull4_Highlight:UpdateFrame(frame)
 	if frame.Highlight then
 		return false

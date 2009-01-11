@@ -99,7 +99,7 @@ function TextProviderModule:UpdateFrame(frame)
 			
 			local font
 			if LibSharedMedia then
-				font = LibSharedMedia:Fetch("font", text_db.font or PitBull4.db.profile.layouts[frame.layout].font or "")
+				font = LibSharedMedia:Fetch("font", text_db.font or frame.layout_db.font or "")
 			end
 			font_string:SetFont(font or DEFAULT_FONT, DEFAULT_FONT_SIZE * text_db.size)
 			font_string.db = text_db

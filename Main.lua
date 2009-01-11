@@ -69,6 +69,14 @@ local DATABASE_DEFAULTS = {
 				bar_texture = LibSharedMedia and LibSharedMedia:GetDefault("statusbar") or "Blizzard",
 				bar_spacing = 2,
 				bar_padding = 2,
+				indicator_spacing = 3,
+				indicator_size = 15,
+				indicator_bar_inside_horizontal_padding = 3,
+				indicator_bar_inside_vertical_padding = 3,
+				indicator_bar_outside_margin = 3,
+				indicator_root_inside_horizontal_padding = 2,
+				indicator_root_inside_vertical_padding = 5,
+				indicator_root_outside_margin = 5,
 			},
 			Normal = {}
 		},
@@ -84,6 +92,7 @@ _G.PitBull4 = PitBull4
 --@debug@
 LibStub("AceLocale-3.0"):NewLocale("PitBull4", "enUS", true, true)
 --@end-debug@
+
 PitBull4.L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
 
 PitBull4.SINGLETON_CLASSIFICATIONS = SINGLETON_CLASSIFICATIONS
@@ -572,6 +581,31 @@ function PitBull4:IterateHeadersForSuperClassification(super_classification)
 	end
 	
 	return not also_hidden and iterate_shown_frames or half_next, headers
+end
+
+local function header_layout_iter(layout, header)
+	header = next(all_headers, header)
+	if not header then
+		return nil
+	end
+	if header.layout == layout then
+		return header
+	end
+	return layout_iter(layout, header)
+end
+
+--- Iterate over all headers with the given layout.
+-- @param layout the layout to check
+-- @usage for header in PitBull4:IterateHeadersForLayout("Normal") do
+--     header:RefreshLayout()
+-- end
+-- @return iterator which returns headers
+function PitBull4:IterateHeadersForLayout(layout, also_hidden)
+	--@alpha@
+	expect(layout, 'typeof', 'string')
+	--@end-alpha@
+	
+	return header_layout_iter, layout
 end
 
 --- Make a singleton unit frame.

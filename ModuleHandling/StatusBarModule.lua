@@ -64,7 +64,7 @@ function StatusBarModule:UpdateFrame(frame)
 	local layout_db = self:GetLayoutDB(frame)
 	local texture
 	if LibSharedMedia then
-		texture = LibSharedMedia:Fetch("statusbar", layout_db.texture or PitBull4.db.profile.layouts[frame.layout].bar_texture or "Blizzard")
+		texture = LibSharedMedia:Fetch("statusbar", layout_db.texture or frame.layout_db.bar_texture or "Blizzard")
 	end
 	control:SetTexture(texture or [[Interface\TargetingFrame\UI-StatusBar]])
 	

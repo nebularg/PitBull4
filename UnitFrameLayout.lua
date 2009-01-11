@@ -1,35 +1,8 @@
 
 -- CONSTANTS ----------------------------------------------------------------
 
--- size in pixels of indicators at 100% scaled
-local INDICATOR_SIZE = 15
-
 -- how many width points the center bars take up if at least one exists
 local CENTER_WIDTH_POINTS = 10
-
--- how far in pixels that indicators are spaced away from the frame if set to Outside, something
-local INDICATOR_OUT_ROOT_MARGIN = 5
-
--- how far into the frame from the sides for something like Outside, Left-Above
-local INDICATOR_OUT_ROOT_BORDER = 2
-
--- how far in pixels that indicators are vertically spaced away from the edge of the frame if set to Inside, something
-local INDICATOR_IN_ROOT_VERTICAL_MARGIN = 5
-
--- how far in pixels that indicators are horizontally spaced away from the edge of the frame if set to Inside, something
-local INDICATOR_IN_ROOT_HORIZONTAL_MARGIN = 2
-
--- how far in pixels that indicators are horizontally placed inside bars if they are not set to Outside, Left or Right
-local INDICATOR_BAR_INSIDE_HORIZONTAL_SPACING = 3
-
--- how far in pixels that indicators are vertically placed inside bars if they are not set to Outside, Left or Right
-local INDICATOR_BAR_INSIDE_VERTICAL_SPACING = 3
-
--- how far in pixels that indicators are placed outside bars if they are set to Outside, Left or Right
-local INDICATOR_BAR_OUTSIDE_SPACING = 3
-
--- how many pixels between adjacent indicators
-local INDICATOR_SPACING_BETWEEN = 3
 
 -- how many pixels wide to assume a text is
 local ASSUMED_TEXT_WIDTH = 40
@@ -161,8 +134,8 @@ local function update_bar_layout(self)
 	
 	local bar_width_points, bar_height_points = calculate_width_height_points(layout, center_bars, left_bars, right_bars)
 	
-	local bar_spacing = PitBull4.db.profile.layouts[layout].bar_spacing
-	local bar_padding = PitBull4.db.profile.layouts[layout].bar_padding
+	local bar_spacing = self.layout_db.bar_spacing
+	local bar_padding = self.layout_db.bar_padding
 	
 	local height_of_bars = height - bar_spacing * (#center_bars - 1) - bar_padding * 2
 	local num_vertical_bars = #left_bars + #right_bars
@@ -281,6 +254,7 @@ local function get_half_width(frame, indicators_and_texts)
 	local num = 0
 	
 	local layout = frame.layout
+	local layout_db = frame.layout_db
 	
 	for _, indicator_or_text in ipairs(indicators_and_texts) do
 		if indicator_or_text.SetJustifyH then
@@ -295,59 +269,59 @@ local function get_half_width(frame, indicators_and_texts)
 			-- an indicator
 			local module = PitBull4.modules[indicator_or_text.id]
 			local height_multiplier = indicator_or_text.height or 1
-			num = num + module:GetLayoutDB(layout).size * INDICATOR_SIZE * indicator_or_text:GetWidth() / indicator_or_text:GetHeight() * height_multiplier
+			num = num + module:GetLayoutDB(layout).size * layout_db.indicator_size * indicator_or_text:GetWidth() / indicator_or_text:GetHeight() * height_multiplier
 		end
 	end
 	
-	num = num + (#indicators_and_texts - 1) * INDICATOR_SPACING_BETWEEN
+	num = num + (#indicators_and_texts - 1) * layout_db.indicator_spacing
 	
 	return num / 2
 end
 
 local position_indicator_on_root = {}
 function position_indicator_on_root:out_top_left(indicator)
-	indicator:SetPoint("BOTTOMLEFT", self, "TOPLEFT", INDICATOR_OUT_ROOT_BORDER, INDICATOR_OUT_ROOT_MARGIN)
+	indicator:SetPoint("BOTTOMLEFT", self, "TOPLEFT", self.layout_db.bar_padding, self.layout_db.indicator_root_outside_margin)
 end
 function position_indicator_on_root:out_top_right(indicator)
-	indicator:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -INDICATOR_OUT_ROOT_BORDER, INDICATOR_OUT_ROOT_MARGIN)
+	indicator:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -self.layout_db.bar_padding, self.layout_db.indicator_root_outside_margin)
 end
 function position_indicator_on_root:out_top(indicator, _, _, indicators_and_texts)
 	if #indicators_and_texts == 1 then
-		indicator:SetPoint("BOTTOM", self, "TOP", 0, INDICATOR_OUT_ROOT_MARGIN)
+		indicator:SetPoint("BOTTOM", self, "TOP", 0, self.layout_db.indicator_root_outside_margin)
 	else
-		indicator:SetPoint("BOTTOMLEFT", self, "TOP", -get_half_width(self, indicators_and_texts), INDICATOR_OUT_ROOT_MARGIN)
+		indicator:SetPoint("BOTTOMLEFT", self, "TOP", -get_half_width(self, indicators_and_texts), self.layout_db.indicator_root_outside_margin)
 	end
 end
 function position_indicator_on_root:out_bottom_left(indicator)
-	indicator:SetPoint("TOPLEFT", self, "BOTTOMLEFT", INDICATOR_OUT_ROOT_BORDER, -INDICATOR_OUT_ROOT_MARGIN)
+	indicator:SetPoint("TOPLEFT", self, "BOTTOMLEFT", self.layout_db.bar_padding, -self.layout_db.indicator_root_outside_margin)
 end
 function position_indicator_on_root:out_bottom_right(indicator)
-	indicator:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", -INDICATOR_OUT_ROOT_BORDER, -INDICATOR_OUT_ROOT_MARGIN)
+	indicator:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", -self.layout_db.bar_padding, -self.layout_db.indicator_root_outside_margin)
 end
 function position_indicator_on_root:out_bottom(indicator, _, _, indicators_and_texts)
 	if #indicators_and_texts == 1 then
-		indicator:SetPoint("TOP", self, "BOTTOM", 0, INDICATOR_OUT_ROOT_MARGIN)
+		indicator:SetPoint("TOP", self, "BOTTOM", 0, self.layout_db.indicator_root_outside_margin)
 	else
-		indicator:SetPoint("TOPLEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts), INDICATOR_OUT_ROOT_MARGIN)
+		indicator:SetPoint("TOPLEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts), self.layout_db.indicator_root_outside_margin)
 	end
 end
 function position_indicator_on_root:out_left_top(indicator)
-	indicator:SetPoint("TOPRIGHT", self, "TOPLEFT", -INDICATOR_OUT_ROOT_MARGIN, -INDICATOR_OUT_ROOT_BORDER)
+	indicator:SetPoint("TOPRIGHT", self, "TOPLEFT", -self.layout_db.indicator_root_outside_margin, -self.layout_db.bar_padding)
 end
 function position_indicator_on_root:out_left(indicator)
-	indicator:SetPoint("RIGHT", self, "LEFT", -INDICATOR_OUT_ROOT_MARGIN, 0)
+	indicator:SetPoint("RIGHT", self, "LEFT", -self.layout_db.indicator_root_outside_margin, 0)
 end
 function position_indicator_on_root:out_left_bottom(indicator)
-	indicator:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", -INDICATOR_OUT_ROOT_MARGIN, INDICATOR_OUT_ROOT_BORDER)
+	indicator:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", -self.layout_db.indicator_root_outside_margin, self.layout_db.bar_padding)
 end
 function position_indicator_on_root:out_right_top(indicator)
-	indicator:SetPoint("TOPLEFT", self, "TOPRIGHT", INDICATOR_OUT_ROOT_MARGIN, -INDICATOR_OUT_ROOT_BORDER)
+	indicator:SetPoint("TOPLEFT", self, "TOPRIGHT", self.layout_db.indicator_root_outside_margin, -self.layout_db.bar_padding)
 end
 function position_indicator_on_root:out_right(indicator)
-	indicator:SetPoint("LEFT", self, "RIGHT", INDICATOR_OUT_ROOT_MARGIN, 0)
+	indicator:SetPoint("LEFT", self, "RIGHT", self.layout_db.indicator_root_outside_margin, 0)
 end
 function position_indicator_on_root:out_right_bottom(indicator)
-	indicator:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", INDICATOR_OUT_ROOT_MARGIN, INDICATOR_OUT_ROOT_BORDER)
+	indicator:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", self.layout_db.indicator_root_outside_margin, self.layout_db.bar_padding)
 end
 function position_indicator_on_root:in_center(indicator, _, _, indicators_and_texts)
 	if #indicators_and_texts == 1 then
@@ -357,36 +331,36 @@ function position_indicator_on_root:in_center(indicator, _, _, indicators_and_te
 	end
 end
 function position_indicator_on_root:in_top_left(indicator)
-	indicator:SetPoint("TOPLEFT", self, "TOPLEFT", INDICATOR_IN_ROOT_HORIZONTAL_MARGIN, -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
+	indicator:SetPoint("TOPLEFT", self, "TOPLEFT", self.layout_db.indicator_root_inside_horizontal_padding, -self.layout_db.indicator_root_inside_vertical_padding)
 end
 function position_indicator_on_root:in_top(indicator, _, _, indicators_and_texts)
 	if #indicators_and_texts == 1 then
-		indicator:SetPoint("TOP", self, "TOP", 0, -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
+		indicator:SetPoint("TOP", self, "TOP", 0, -self.layout_db.indicator_root_inside_vertical_padding)
 	else
-		indicator:SetPoint("TOPLEFT", self, "TOP", -get_half_width(self, indicators_and_texts), -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
+		indicator:SetPoint("TOPLEFT", self, "TOP", -get_half_width(self, indicators_and_texts), -self.layout_db.indicator_root_inside_vertical_padding)
 	end
 end
 function position_indicator_on_root:in_top_left(indicator)
-	indicator:SetPoint("TOPRIGHT", self, "TOPRIGHT", -INDICATOR_IN_ROOT_HORIZONTAL_MARGIN, -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
+	indicator:SetPoint("TOPRIGHT", self, "TOPRIGHT", -self.layout_db.indicator_root_inside_horizontal_padding, -self.layout_db.indicator_root_inside_vertical_padding)
 end
 function position_indicator_on_root:in_bottom_left(indicator)
-	indicator:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", INDICATOR_IN_ROOT_HORIZONTAL_MARGIN, -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
+	indicator:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", self.layout_db.indicator_root_inside_horizontal_padding, -self.layout_db.indicator_root_inside_vertical_padding)
 end
 function position_indicator_on_root:in_bottom(indicator, _, _, indicators_and_texts)
 	if #indicators_and_texts == 1 then
-		indicator:SetPoint("BOTTOM", self, "BOTTOM", 0, -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
+		indicator:SetPoint("BOTTOM", self, "BOTTOM", 0, -self.layout_db.indicator_root_inside_vertical_padding)
 	else
-		indicator:SetPoint("BOTTOMLEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts), -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
+		indicator:SetPoint("BOTTOMLEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts), -self.layout_db.indicator_root_inside_vertical_padding)
 	end
 end
 function position_indicator_on_root:in_bottom_left(indicator)
-	indicator:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -INDICATOR_IN_ROOT_HORIZONTAL_MARGIN, -INDICATOR_IN_ROOT_VERTICAL_MARGIN)
+	indicator:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -self.layout_db.indicator_root_inside_horizontal_padding, -self.layout_db.indicator_root_inside_vertical_padding)
 end
 function position_indicator_on_root:in_left(indicator)
-	indicator:SetPoint("LEFT", self, "LEFT", INDICATOR_IN_ROOT_HORIZONTAL_MARGIN, 0)
+	indicator:SetPoint("LEFT", self, "LEFT", self.layout_db.indicator_root_inside_horizontal_padding, 0)
 end
 function position_indicator_on_root:in_right(indicator)
-	indicator:SetPoint("RIGHT", self, "RIGHT", -INDICATOR_IN_ROOT_HORIZONTAL_MARGIN, 0)
+	indicator:SetPoint("RIGHT", self, "RIGHT", -self.layout_db.indicator_root_inside_horizontal_padding, 0)
 end
 function position_indicator_on_root:edge_top_left(indicator)
 	indicator:SetPoint("CENTER", self, "TOPLEFT", 0, 0)
@@ -423,7 +397,7 @@ end
 
 local position_indicator_on_bar = {}
 function position_indicator_on_bar:left(indicator, bar)
-	indicator:SetPoint("LEFT", bar, "LEFT", INDICATOR_BAR_INSIDE_HORIZONTAL_SPACING, 0)
+	indicator:SetPoint("LEFT", bar, "LEFT", self.layout_db.indicator_bar_inside_horizontal_padding, 0)
 end
 function position_indicator_on_bar:center(indicator, bar, _, indicators_and_texts)
 	if #indicators_and_texts == 1 then
@@ -433,44 +407,44 @@ function position_indicator_on_bar:center(indicator, bar, _, indicators_and_text
 	end
 end
 function position_indicator_on_bar:right(indicator, bar)
-	indicator:SetPoint("RIGHT", bar, "RIGHT", -INDICATOR_BAR_INSIDE_HORIZONTAL_SPACING, 0)
+	indicator:SetPoint("RIGHT", bar, "RIGHT", -self.layout_db.indicator_bar_inside_horizontal_padding, 0)
 end
 function position_indicator_on_bar:top(indicator, bar, _, indicators_and_texts)
 	if #indicators_and_texts == 1 then
 		indicator:SetPoint("TOP", bar, "TOP", 0, 0)
 	else
-		indicator:SetPoint("TOPLEFT", bar, "TOP", -get_half_width(self, indicators_and_texts), -INDICATOR_BAR_INSIDE_VERTICAL_SPACING)
+		indicator:SetPoint("TOPLEFT", bar, "TOP", -get_half_width(self, indicators_and_texts), -self.layout_db.indicator_bar_inside_vertical_padding)
 	end
 end
 function position_indicator_on_bar:bottom(indicator, bar, _, indicators_and_texts)
 	if #indicators_and_texts == 1 then
 		indicator:SetPoint("BOTTOM", bar, "BOTTOM", 0, 0)
 	else
-		indicator:SetPoint("BOTTOMLEFT", bar, "BOTTOM", -get_half_width(self, indicators_and_texts), INDICATOR_BAR_INSIDE_VERTICAL_SPACING)
+		indicator:SetPoint("BOTTOMLEFT", bar, "BOTTOM", -get_half_width(self, indicators_and_texts), self.layout_db.indicator_bar_inside_vertical_padding)
 	end
 end
 function position_indicator_on_bar:top_left(indicator, bar)
-	indicator:SetPoint("TOPLEFT", bar, "TOPLEFT", INDICATOR_BAR_INSIDE_HORIZONTAL_SPACING, -INDICATOR_BAR_INSIDE_VERTICAL_SPACING)
+	indicator:SetPoint("TOPLEFT", bar, "TOPLEFT", self.layout_db.indicator_bar_inside_horizontal_padding, -self.layout_db.indicator_bar_inside_vertical_padding)
 end
 function position_indicator_on_bar:top_right(indicator, bar)
-	indicator:SetPoint("TOPRIGHT", bar, "TOPRIGHT", -INDICATOR_BAR_INSIDE_HORIZONTAL_SPACING, -INDICATOR_BAR_INSIDE_VERTICAL_SPACING)
+	indicator:SetPoint("TOPRIGHT", bar, "TOPRIGHT", -self.layout_db.indicator_bar_inside_horizontal_padding, -self.layout_db.indicator_bar_inside_vertical_padding)
 end
 function position_indicator_on_bar:bottom_left(indicator, bar)
-	indicator:SetPoint("BOTTOMLEFT", bar, "BOTTOMLEFT", INDICATOR_BAR_INSIDE_HORIZONTAL_SPACING, INDICATOR_BAR_INSIDE_VERTICAL_SPACING)
+	indicator:SetPoint("BOTTOMLEFT", bar, "BOTTOMLEFT", self.layout_db.indicator_bar_inside_horizontal_padding, self.layout_db.indicator_bar_inside_vertical_padding)
 end
 function position_indicator_on_bar:bottom_right(indicator, bar)
-	indicator:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", -INDICATOR_BAR_INSIDE_HORIZONTAL_SPACING, INDICATOR_BAR_INSIDE_VERTICAL_SPACING)
+	indicator:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", -self.layout_db.indicator_bar_inside_horizontal_padding, self.layout_db.indicator_bar_inside_vertical_padding)
 end
 function position_indicator_on_bar:out_right(indicator, bar)
-	indicator:SetPoint("LEFT", bar, "RIGHT", INDICATOR_BAR_OUTSIDE_SPACING, 0)
+	indicator:SetPoint("LEFT", bar, "RIGHT", self.layout_db.indicator_bar_outside_margin, 0)
 end
 function position_indicator_on_bar:out_left(indicator, bar)
-	indicator:SetPoint("RIGHT", bar, "LEFT", -INDICATOR_BAR_OUTSIDE_SPACING, 0)
+	indicator:SetPoint("RIGHT", bar, "LEFT", -self.layout_db.indicator_bar_outside_margin, 0)
 end
 
 local position_next_indicator_on_root = {}
 function position_next_indicator_on_root:out_top_left(indicator, _, last_indicator)
-	indicator:SetPoint("LEFT", last_indicator, "RIGHT", INDICATOR_SPACING_BETWEEN, 0)
+	indicator:SetPoint("LEFT", last_indicator, "RIGHT", self.layout_db.indicator_spacing, 0)
 end
 position_next_indicator_on_root.out_top = position_next_indicator_on_root.out_top_left
 position_next_indicator_on_root.out_bottom_left = position_next_indicator_on_root.out_top_left
@@ -490,7 +464,7 @@ position_next_indicator_on_root.edge_left = position_next_indicator_on_root.out_
 position_next_indicator_on_root.edge_bottom_left = position_next_indicator_on_root.out_top_left
 position_next_indicator_on_root.edge_bottom = position_next_indicator_on_root.out_top_left
 function position_next_indicator_on_root:out_top_right(indicator, _, last_indicator)
-	indicator:SetPoint("RIGHT", last_indicator, "LEFT", -INDICATOR_SPACING_BETWEEN, 0)
+	indicator:SetPoint("RIGHT", last_indicator, "LEFT", -self.layout_db.indicator_spacing, 0)
 end
 position_next_indicator_on_root.out_bottom_right = position_next_indicator_on_root.out_top_right
 position_next_indicator_on_root.out_left_top = position_next_indicator_on_root.out_top_right
@@ -505,7 +479,7 @@ position_next_indicator_on_root.edge_bottom_right = position_next_indicator_on_r
 
 local position_next_indicator_on_bar = {}
 function position_next_indicator_on_bar:left(indicator, bar, last_indicator)
-	indicator:SetPoint("LEFT", last_indicator, "RIGHT", INDICATOR_SPACING_BETWEEN, 0)
+	indicator:SetPoint("LEFT", last_indicator, "RIGHT", self.layout_db.indicator_spacing, 0)
 end
 position_next_indicator_on_bar.center = position_next_indicator_on_bar.left
 position_next_indicator_on_bar.out_right = position_next_indicator_on_bar.left
@@ -514,7 +488,7 @@ position_next_indicator_on_bar.top = position_next_indicator_on_bar.left
 position_next_indicator_on_bar.bottom_left = position_next_indicator_on_bar.left
 position_next_indicator_on_bar.bottom = position_next_indicator_on_bar.left
 function position_next_indicator_on_bar:right(indicator, bar, last_indicator)
-	indicator:SetPoint("RIGHT", last_indicator, "LEFT", -INDICATOR_SPACING_BETWEEN, 0)
+	indicator:SetPoint("RIGHT", last_indicator, "LEFT", -self.layout_db.indicator_spacing, 0)
 end
 position_next_indicator_on_bar.out_left = position_next_indicator_on_bar.right
 position_next_indicator_on_bar.top_right = position_next_indicator_on_bar.right
@@ -540,24 +514,24 @@ local function position_indicator_or_text(root, indicator, attach_frame, last_in
 	end
 end
 
-local function position_overlapping_texts_helper(attach_frame, left, center, right, inside_width)
+local function position_overlapping_texts_helper(attach_frame, left, center, right, inside_width, spacing)
 	if center then
 		-- clamp left to center
 		if left and left[#left].SetJustifyH then
 			left[#left]:SetJustifyH("LEFT")
-			left[#left]:SetPoint("RIGHT", center[1], "LEFT", -INDICATOR_SPACING_BETWEEN, 0)
+			left[#left]:SetPoint("RIGHT", center[1], "LEFT", -spacing, 0)
 		end
 	
 		-- clamp right to center
 		if right and right[#right].SetJustifyH("RIGHT") then
 			right[#right]:SetJustifyH("RIGHT")
-			right[#right]:SetPoint("LEFT", center[#center], "RIGHT", INDICATOR_SPACING_BETWEEN, 0)
+			right[#right]:SetPoint("LEFT", center[#center], "RIGHT", spacing, 0)
 		end
 	elseif left and left[#left].SetJustifyH then	
 		left[#left]:SetJustifyH("LEFT")
 		if right then
 			-- clamp left to right
-			left[#left]:SetPoint("RIGHT", right[#right], "LEFT", -INDICATOR_SPACING_BETWEEN, 0)
+			left[#left]:SetPoint("RIGHT", right[#right], "LEFT", -spacing, 0)
 		else
 			-- clamp left to attach_frame's right side
 			left[#left]:SetPoint("RIGHT", attach_frame, "RIGHT", -inside_width, 0)
@@ -566,44 +540,52 @@ local function position_overlapping_texts_helper(attach_frame, left, center, rig
 end
 
 local function position_overlapping_texts(root, attach_frame, location_to_indicators_and_texts)
+	local spacing = root.layout_db.indicator_spacing
 	if root == attach_frame then
+		local padding = root.layout_db.bar_padding
 		position_overlapping_texts_helper(
 			attach_frame,
 			location_to_indicators_and_texts.in_left,
 			location_to_indicators_and_texts.in_center,
 			location_to_indicators_and_texts.in_right,
-			INDICATOR_OUT_ROOT_BORDER)
+			padding,
+			spacing)
 		position_overlapping_texts_helper(
 			attach_frame,
 			location_to_indicators_and_texts.in_bottom_left,
 			location_to_indicators_and_texts.in_bottom,
 			location_to_indicators_and_texts.in_bottom_right,
-			INDICATOR_OUT_ROOT_BORDER)
+			padding,
+			spacing)
 		position_overlapping_texts_helper(
 			attach_frame,
 			location_to_indicators_and_texts.in_top_left,
 			location_to_indicators_and_texts.in_top,
 			location_to_indicators_and_texts.in_top_right,
-			INDICATOR_OUT_ROOT_BORDER)
+			padding,
+			spacing)
 		position_overlapping_texts_helper(
 			attach_frame,
 			location_to_indicators_and_texts.out_bottom_left,
 			location_to_indicators_and_texts.out_bottom,
 			location_to_indicators_and_texts.out_bottom_right,
-			INDICATOR_OUT_ROOT_BORDER)
+			padding,
+			spacing)
 		position_overlapping_texts_helper(
 			attach_frame,
 			location_to_indicators_and_texts.out_top_left,
 			location_to_indicators_and_texts.out_top,
 			location_to_indicators_and_texts.out_top_right,
-			INDICATOR_OUT_ROOT_BORDER)
+			padding,
+			spacing)
 	else
 		position_overlapping_texts_helper(
 			attach_frame,
 			location_to_indicators_and_texts.left,
 			location_to_indicators_and_texts.center,
 			location_to_indicators_and_texts.right,
-			INDICATOR_BAR_INSIDE_HORIZONTAL_SPACING)
+			root.layout_db.indicator_bar_inside_horizontal_padding,
+			spacing)
 	end
 end
 
@@ -626,6 +608,8 @@ local function update_indicator_and_text_layout(self)
 	
 	local horizontal_mirror = self.classification_db.horizontal_mirror
 	local vertical_mirror = self.classification_db.vertical_mirror
+	
+	local indicator_size = self.layout_db.indicator_size
 	
 	for _, id in ipairs_with_del(get_all_indicators(self)) do
 		local indicator = self[id]
@@ -655,10 +639,10 @@ local function update_indicator_and_text_layout(self)
 				location = vertical_mirrored_location[location]
 			end
 			
-			local size = INDICATOR_SIZE * indicator_layout_db.size
+			local size = indicator_size * indicator_layout_db.size
 			local unscaled_height = indicator:GetHeight()
 			local height_multiplier = indicator.height or 1
-			indicator:SetScale(INDICATOR_SIZE / unscaled_height * indicator_layout_db.size * height_multiplier)
+			indicator:SetScale(indicator_size / unscaled_height * indicator_layout_db.size * height_multiplier)
 			indicator:ClearAllPoints()
 			
 			local attachments_attach_frame = attachments[attach_frame]

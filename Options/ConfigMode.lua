@@ -56,7 +56,7 @@ function PitBull4:RecheckConfigMode()
 	local kind = PitBull4.config_mode
 	
 	for frame in self:IterateSingletonFrames(true) do
-		if kind then
+		if kind and frame.classification_db.enabled then
 			frame:ForceShow()
 		else
 			frame:UnforceShow()
@@ -65,7 +65,7 @@ function PitBull4:RecheckConfigMode()
 	end
 	
 	for header in self:IterateHeaders() do
-		if should_show_header(kind, header) then
+		if should_show_header(kind, header) and header.classification_db.enabled then
 			header:ForceShow()
 		else
 			header:UnforceShow()

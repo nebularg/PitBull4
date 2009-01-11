@@ -90,14 +90,14 @@ PitBull4_Aura:SetDefaults({
 -- tables of options for the selection options
 
 local anchor_values = {
-	TOPLEFT_TOP        = L['Top Left on Top'],
-	TOPRIGHT_TOP       = L['Top Right on Top'],
-	TOPLEFT_LEFT       = L['Top Left on Left'],
-	TOPRIGHT_RIGHT     = L['Top Right on Right'],
-	BOTTOMLEFT_BOTTOM  = L['Bottom Left on Bottom'],
-	BOTTOMRIGHT_BOTTOM = L['Bottom Right on Bottom'],
-	BOTTOMLEFT_LEFT    = L['Bottom Left on Left'],
-	BOTTOMRIGHT_RIGHT  = L['Bottom Right on Right']
+	TOPLEFT_TOP        = L['Top-left on top'],
+	TOPRIGHT_TOP       = L['Top-right on top'],
+	TOPLEFT_LEFT       = L['Top-left on left'],
+	TOPRIGHT_RIGHT     = L['Top-right on right'],
+	BOTTOMLEFT_BOTTOM  = L['Bottom-left on bottom'],
+	BOTTOMRIGHT_BOTTOM = L['Bottom-right on bottom'],
+	BOTTOMLEFT_LEFT    = L['Bottom-left on left'],
+	BOTTOMRIGHT_RIGHT  = L['Bottom-right on right']
 }
 
 local growth_values = {
@@ -117,10 +117,10 @@ local width_type_values = {
 }
 
 local show_when_values = {
-	my_buffs = L['My Own Buffs'],
-	my_debuffs = L['My Own Debuffs'],
-	other_buffs = L["Others' Buffs"],
-	other_debuffs = L["Others' Debuffs"]
+	my_buffs = L['My own buffs'],
+	my_debuffs = L['My own debuffs'],
+	other_buffs = L["Others' buffs"],
+	other_debuffs = L["Others' debuffs"]
 }
 
 -- table to decide if the width option is actuually
@@ -278,9 +278,9 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 		name = function(info)
 			local group = info[#info]
 			if group == 'buff' then
-				return L['Buff Layout']
+				return L['Buff layout']
 			else
-				return L['Debuff Layout']
+				return L['Debuff layout']
 			end
 		end,
 		args = {
@@ -494,7 +494,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			max = {
 				type = 'group',
-				name = L['Limit number of displayed auras'],
+				name = L['Limit number of displayed auras.'],
 				inline = true,
 				order = 2,
 				args = {
@@ -537,7 +537,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			cooldown = {
 				type = 'multiselect',
 				name = L['Time remaining spiral'],
-				desc = L['Set when the cooldown spiral shows.'],
+				desc = L['Set when the time remaining spiral shows.'],
 				values = show_when_values,
 				get = get_multi,
 				set = set_multi,
@@ -547,7 +547,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			cooldown_text = {
 				type = 'multiselect',
 				name = L['Time remaining text'],
-				desc = L['Set when the cooldown text shows.'],
+				desc = L['Set when the time remaining text shows.'],
 				values = show_when_values, 
 				get = get_multi,
 				set = set_multi,
