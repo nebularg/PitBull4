@@ -21,7 +21,14 @@ function PitBull4_ThreatBar:OnEnable()
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterEvent("UNIT_THREAT_LIST_UPDATE")
 	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE")
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED")
+	self:RegisterEvent("RAID_ROSTER_UPDATE")
+	self:RegisterEvent("PLAYER_PET_CHANGED")
+	
+	self:PARTY_MEMBERS_CHANGED()
 end
+
+local player_in_group = false
 
 local ACCEPTABLE_CLASSIFICATIONS = {
 	player = true,
@@ -32,12 +39,22 @@ local ACCEPTABLE_CLASSIFICATIONS = {
 	raidpet = true,
 }
 
+function PitBull4_ThreatBar:PARTY_MEMBERS_CHANGED()
+	player_in_group = UnitExists("pet") or GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0
+	
+	for classification in pairs(ACCEPTABLE_CLASSIFICATIONS) do
+		self:UpdateForClassification(classification)
+	end
+end
+PitBull4_ThreatBar.RAID_ROSTER_UPDATE = PitBull4_ThreatBar.PARTY_MEMBERS_CHANGED
+PitBull4_ThreatBar.PLAYER_PET_CHANGED = PitBull4_ThreatBar.PARTY_MEMBERS_CHANGED
+
 function PitBull4_ThreatBar:GetValue(frame)
-	if not ACCEPTABLE_CLASSIFICATIONS[frame.classification] then
+	if not ACCEPTABLE_CLASSIFICATIONS[frame.classification] or not player_in_group then
 		return nil
 	end
 	unit = frame.unit
-    
+	
 	local _,_,threatpct = UnitDetailedThreatSituation(unit, "target")
        
 	if not threatpct then

@@ -316,6 +316,19 @@ function Module:UpdateForGUID(guid)
 	end
 end
 
+--- Run :Update(frame) on all shown frames with the given classification.
+-- @param classification the classification in question to update
+-- @usage MyModule:UpdateForClassification("player")
+function Module:UpdateForClassification(classification)
+	--@alpha@
+	expect(classification, 'typeof', 'string')
+	--@end-alpha@
+	
+	for frame in PitBull4:IterateFramesForClassification(classification) do
+		self:Update(frame)
+	end
+end
+
 --- Run :Update(frame) on all shown frames.
 -- @usage MyModule:UpdateAll()
 function Module:UpdateAll()
