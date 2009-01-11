@@ -164,7 +164,7 @@ PitBull4_HealthBar:SetLayoutOptionsFunction(function(self)
 			return PitBull4.Options.GetLayoutDB(self).hostility_color_npcs
 		end,
 		set = function(info, value)
-			PitBull4.Options.GetLayoutDB(self).hostility_colori_npcs = value
+			PitBull4.Options.GetLayoutDB(self).hostility_color_npcs = value
 
 			PitBull4.Options.UpdateFrames()
 		end,
