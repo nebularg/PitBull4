@@ -523,7 +523,7 @@ local function position_overlapping_texts_helper(attach_frame, left, center, rig
 		end
 	
 		-- clamp right to center
-		if right and right[#right].SetJustifyH("RIGHT") then
+		if right and right[#right].SetJustifyH then
 			right[#right]:SetJustifyH("RIGHT")
 			right[#right]:SetPoint("LEFT", center[#center], "RIGHT", spacing, 0)
 		end
