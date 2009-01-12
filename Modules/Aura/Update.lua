@@ -35,6 +35,13 @@ local function get_aura_list(list, unit, is_buff)
 			entry[7], entry[8], entry[9], entry[10] =
 			id, UnitAura(unit, id, filter)
 
+		-- Hack to get around a Blizzard bug.  The Enrage debuff_type
+		-- gets set to "" instead of "Enrage" like it should.
+		-- Once this is fixed this code should be removed.
+		if entry[6] == "" then
+			entry[6] = "Enrage"
+		end
+
 		if not entry[2] then 
 			-- No more auras, break the outer loop
 			break
