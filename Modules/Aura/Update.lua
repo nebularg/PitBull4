@@ -150,7 +150,11 @@ local function set_aura(frame, db, aura_controls, aura, i, is_buff)
 		if (is_buff and is_friend) or (not is_buff and not is_friend) then
 			border:SetVertexColor(unpack(colors.friend[who]))
 		else
-			border:SetVertexColor(unpack(colors.enemy[tostring(debuff_type)]))
+			local color = colors.enemy[tostring(debuff_type)]
+			if not color then
+				color.enemy["nil"]
+			end
+			border:SetVertexColor(color)
 		end
 	else
 		control.border:Hide()
