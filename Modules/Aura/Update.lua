@@ -152,9 +152,11 @@ local function set_aura(frame, db, aura_controls, aura, i, is_buff)
 		else
 			local color = colors.enemy[tostring(debuff_type)]
 			if not color then
-				color.enemy["nil"]
+				-- Use the Other color if there's not
+				-- a color for the specific debuff type.
+				color = colors.enemy["nil"]
 			end
-			border:SetVertexColor(color)
+			border:SetVertexColor(unpack(color))
 		end
 	else
 		control.border:Hide()
