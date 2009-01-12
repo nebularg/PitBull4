@@ -37,7 +37,13 @@ function PitBull4_DruidManaBar:GetValue(frame)
 		return nil
 	end
 	
-	return UnitPower("player", MANA_TYPE) / UnitPowerMax("player", MANA_TYPE)
+	local percent = UnitPower("player", MANA_TYPE) / UnitPowerMax("player", MANA_TYPE)
+	
+	if percent == 1 then
+		return nil
+	end
+	
+	return percent
 end
 
 function PitBull4_DruidManaBar:GetColor(frame, value)

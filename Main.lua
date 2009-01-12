@@ -171,6 +171,9 @@ PitBull4.all_headers = all_headers
 
 -- metatable that automatically creates keys that return tables on access
 local auto_table__mt = {__index = function(self, key)
+	if key == nil then
+		return nil
+	end
 	local value = {}
 	self[key] = value
 	return value
@@ -591,7 +594,7 @@ local function header_layout_iter(layout, header)
 	if header.layout == layout then
 		return header
 	end
-	return layout_iter(layout, header)
+	return header_layout_iter(layout, header)
 end
 
 --- Iterate over all headers with the given layout.
