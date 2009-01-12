@@ -35,6 +35,13 @@ local function get_aura_list(list, unit, is_buff)
 			entry[7], entry[8], entry[9], entry[10] =
 			id, UnitAura(unit, id, filter)
 
+		-- Hack to get around a Blizzard bug.  The Enrage debuff_type
+		-- gets set to "" instead of "Enrage" like it should.
+		-- Once this is fixed this code should be removed.
+		if entry[6] == "" then
+			entry[6] = "Enrage"
+		end
+
 		if not entry[2] then 
 			-- No more auras, break the outer loop
 			break
@@ -62,7 +69,7 @@ end
 -- constants for building sample auras
 local sample_buff_icon   = [[Interface\Icons\Spell_ChargePositive]]
 local sample_debuff_icon = [[Interface\Icons\Spell_ChargeNegative]]
-local sample_debuff_types = { L['Poison'], L['Magic'], L['Disease'], L['Curse'], L['Enrage'], 'nil' }
+local sample_debuff_types = { 'Poison', 'Magic', 'Disease', 'Curse', 'Enrage', 'nil' }
 
 -- Fills up to the maximum number of auras with sample auras
 local function get_aura_list_sample(list, max, is_buff)
