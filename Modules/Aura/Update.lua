@@ -69,7 +69,7 @@ end
 -- constants for building sample auras
 local sample_buff_icon   = [[Interface\Icons\Spell_ChargePositive]]
 local sample_debuff_icon = [[Interface\Icons\Spell_ChargeNegative]]
-local sample_debuff_types = { L['Poison'], L['Magic'], L['Disease'], L['Curse'], L['Enrage'], 'nil' }
+local sample_debuff_types = { 'Poison', 'Magic', 'Disease', 'Curse', 'Enrage', 'nil' }
 
 -- Fills up to the maximum number of auras with sample auras
 local function get_aura_list_sample(list, max, is_buff)
