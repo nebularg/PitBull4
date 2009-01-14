@@ -49,7 +49,7 @@ local function OnUpdate(self)
 		-- purposes.  However the debuff types still need to be in our
 		-- localization tables.  They are L["Poison"], L["Magic"],
 		-- L["Disease"], L["Enrage"]
-		GameTooltip:AddDoubleLine(self.name, L[self.debuff_type], 1, 0.82, 0, 1, 0.82, 0)
+		GameTooltip:AddDoubleLine(self.name, self.debuff_type and L[self.debuff_type] or "", 1, 0.82, 0, 1, 0.82, 0)
 		GameTooltip:AddLine(L["Sample aura created by PitBull to allow you to see the results of your configuration easily."], 1, 1, 1, 1)
 		if self.is_mine then
 			GameTooltip:AddLine(L["Aura shown as if cast by you."], 1, 0.82, 0, 1)
