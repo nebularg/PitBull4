@@ -352,23 +352,13 @@ function PitBull4_TotemTimers:UpdateAllTimes()
 					end
 					
 					if gOptGet('expirypulse') and (timeleft < gOptGet('expirypulsetime')) and (timeleft > 0) then
-						--elements[slot].frame.pulseStart = true
-						--elements[slot].frame.lastUpdate = 0
 						self:StartPulse(elements[slot].frame)
 					else
-						--elements[slot].frame.pulseStart = false
-						--elements[slot].frame.pulseActive = false
-						--if elements[slot].frame.pulse.icon:IsVisible() then
-						--	elements[slot].frame.pulse.icon:Hide()
-						--end
 						self:StopPulse(elements[slot].frame)
 					end
 				else
 					-- Totem expired
 					
-					--elements[slot].frame.pulseStart = false
-					--elements[slot].frame.pulseActive = false
-					--elements[slot].frame.lastUpdate = 0
 					self:StopPulse(elements[slot].frame)
 					elements[slot].frame:SetAlpha(0.5)
 					if lOptGet(frame,'hideinactive') then
@@ -394,8 +384,6 @@ function PitBull4_TotemTimers:ActivateTotem(slot)
 	end
 	
 	self.totemIsDown[slot] = true
-	self.startTimes[slot] = startTime
-	self.durations[slot] = duration
 	
 	for frame in PitBull4:IterateFramesForUnitID('player') do
 		if not frame.TotemTimers then
@@ -413,7 +401,6 @@ function PitBull4_TotemTimers:ActivateTotem(slot)
 		
 		self:StopPulse(tframe)
 		
-		--tframe.border:SetVertexColor(lOptGetColor(frame,"totembordercolor"))
 		tframe.border:Show()
 		if ( lOptGet(frame,'timertext') ) then
 			ttext:SetText(self:SecondsToTimeAbbrev(timeleft))
@@ -438,8 +425,6 @@ function PitBull4_TotemTimers:DeactivateTotem(slot)
 	end
 	
 	self.totemIsDown[slot] = false
-	self.startTimes[slot] = 0
-	self.durations[slot] = 0
 	
 	for frame in PitBull4:IterateFramesForUnitID('player') do
 		if not frame.TotemTimers then
@@ -456,10 +441,7 @@ function PitBull4_TotemTimers:DeactivateTotem(slot)
 		end
 		tspiral:Hide()
 		
-		--tframe.pulseStart = true
-		--tframe.lastUpdate = 0
 		self:StopPulse(tframe)
-		
 		
 		tframe:SetAlpha(0.5)
 		if lOptGet(frame,'hideinactive') then
@@ -469,30 +451,13 @@ function PitBull4_TotemTimers:DeactivateTotem(slot)
 	end
 end
 
-function PitBull4_TotemTimers:GetTotemStatus()
-	for i=1, MAX_TOTEMS do
-		local haveTotem, name, startTime, duration, icon = GetTotemInfo(i)
-		if (name ~= "") then
-			self.totemIsDown[i] = true
-			self.startTimes[i] = startTime
-			self.durations[i] = duration
-			-- TODO: Must run the rest of the enabling stuff also to be useful (frame modifications, etc.)
-		else
-			self.totemIsDown[i] = false
-			self.startTimes[i] = 0
-			self.durations[i] = 0
-		end
-	end
-end
-
-
-
 --------------------------------------------------------------
 --------------------------------------------------------------
 --------------------------------------------------------------
 -- Frame functions
 
-
+-- This function is a hack and wants to be replaced by a proper solution to ticket:
+-- http://www.wowace.com/projects/pitbull4/tickets/14-make-get-font-available-to-custom_frame-modules/
 local DEFAULT_FONT, DEFAULT_FONT_SIZE = ChatFontNormal:GetFont()
 function PitBull4_TotemTimers:myGetFont(frame)
 	local db = self:GetLayoutDB(frame)
@@ -505,6 +470,8 @@ function PitBull4_TotemTimers:myGetFont(frame)
 end
 
 -- this function reads what PB tried to anchor us at and applies some fixing
+-- NOTE: This function currently does not work and wants to replaced with a proper solution.
+-- See: http://www.wowace.com/projects/pitbull4/tickets/15-offsets-for-custom_frame-anchoring/
 function PitBull4_TotemTimers:FixAnchoring(frame)
 	--self:Print("DBG: FixAnchoring called")
 	if not frame.TotemTimers then
@@ -722,12 +689,7 @@ function PitBull4_TotemTimers:ButtonOnUpdate(elapsed)
 				local pulse = this.pulse
 				if pulse then
 					pulse.scale = 1
-					--local normtex = this:GetNormalTexture()
-					--pulse.icon:SetTexture(normtex)
-					--local r, g, b = normtex:GetVertexColor()
-					--pulse.icon:SetVertexColor(r, g, b, 0.7)
 					pulse.icon:SetTexture(this.totemIcon)
-					--pulse.icon:SetVertexColor(0.5,0.5,0.5,0.7)
 					this.pulseActive = true
 					--PitBull:Print(fmt("DEBUG: Starting pulse on slot %i, elapsed is: %s", this.slot, tostring(elapsed)))
 				end
@@ -776,20 +738,11 @@ function PitBull4_TotemTimers:PLAYER_TOTEM_UPDATE(event, slot)
 	local sSlot = tostring(slot)
 
 	for frame in PitBull4:IterateFramesForUnitID('player') do
-		if not frame.TotemTimers then
-			--self:OnPopulateUnitFrame('player', frame)
-			if frame.TotemTimers then
-				--PitBull:UpdateLayout(frame)
-			end
-		end
-		
 		if ( haveTotem and name ~= "") then
 			-- New totem created
-			--self:Print("Activating Totem")
 			self:ActivateTotem(slot)
 		elseif ( haveTotem ) then
 			-- Totem just got removed or killed.
-			--self:Print("Deactivating Totem")
 			self:DeactivateTotem(slot)
 			
 			-- Sound functions
@@ -990,7 +943,7 @@ function PitBull4_TotemTimers:UpdateFrame(frame)
 	end
 	
 	if frame.TotemTimers then
-		-- make sure the timer is still running (it gets deactivated if the frame is gone for a moment
+		-- make sure the timer is still running (it gets deactivated if the frame is gone for a moment)
 		self:StartTimer()
 		
 		-- Now rebuild most of the layout since some setting might have changed.
@@ -999,11 +952,8 @@ function PitBull4_TotemTimers:UpdateFrame(frame)
 		self:ApplyLayoutSettings(frame)
 		return false -- our frame exists already, nothing more to do...
 	else
-		
 		self:BuildFrames(frame)
-		
 		self:ForceSilentTotemUpdate()
-		
 	end
 	
 	return true
@@ -1050,12 +1000,8 @@ end
 
 function PitBull4_TotemTimers:OnInitialize()
 	-- Initialize Timer variables
-	self.startTimes = {}
-	self.durations = {}
 	self.totemIsDown = {}
 	for i=1,MAX_TOTEMS do
-		self.startTimes[i] = 0
-		self.durations[i] = 0
 		self.totemIsDown[i] = false
 	end
 	
@@ -1066,8 +1012,6 @@ function PitBull4_TotemTimers:OnInitialize()
 	PitBull4.Controls.MakeNewControlType("TTButton", "Button", function(control) end, function(control) end, function(control) end)
 	PitBull4.Controls.MakeNewControlType("TTCooldown", "Cooldown", function(control) end, function(control) end, function(control) end)
 	
-	-- Get initial status
-	self:GetTotemStatus()
 end
 
 PitBull4_TotemTimers:SetDefaults({
@@ -1110,7 +1054,6 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 	local function set(info, value)
 		local id = info[#info]
 		PitBull4.Options.GetLayoutDB(self)[id] = value
-		--PitBull4.Options.RefreshFrameLayout()
 		PitBull4.Options.UpdateFrames()
 	end
 	local function getColor(info)
