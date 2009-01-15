@@ -626,7 +626,7 @@ function PitBull4_TotemTimers:RealignTimerTexts(frame)
 			local font, fontsize = self:myGetFont(frame)
 			elements[i].text:SetFont(font, fontsize * lOptGet(frame,'timertextscale'), "OUTLINE")
 
-			elements[i].text:SetTextColor(lOptGet(frame,'timertextcolor'))
+			elements[i].text:SetTextColor(lOptGetColor(frame,'timertextcolor'))
 		end
 	end
 end
