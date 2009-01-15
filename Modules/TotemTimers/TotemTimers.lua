@@ -123,27 +123,27 @@ local function gOptSet(key, value)
 		self.db.profile.global[key] = value
 	end
 end
-local function lOptGet(key)
-	if type(key) == 'table' then
-		return PitBull4.Options.GetLayoutDB("TotemTimers")[key[#key]]
-	else
-		return PitBull4.Options.GetLayoutDB("TotemTimers")[key]
-	end
-end
-local function lOptSet(key, value)
-	if type(key) == 'table' then
-		PitBull4.Options.GetLayoutDB("TotemTimers")[key[#key]] = value
-	else
-		PitBull4.Options.GetLayoutDB("TotemTimers")[key] = value
-	end
-end
-local function lOptGetColor(key)
-	return unpack(lOptGet(key))
-end
-local function lOptSetColor(key, r, g, b, a)
-	lOptSet(key, {r, g, b, a})
-end
 
+local function lOptGet(frame,key)
+	if type(key) == 'table' then
+		return self:GetLayoutDB(frame)[key[#key]]
+	else
+		return self:GetLayoutDB(frame)[key]
+	end
+end
+local function lOptSet(frame,key, value)
+	if type(key) == 'table' then
+		self:GetLayoutDB(frame)[key[#key]]  = value
+	else
+		self:GetLayoutDB(frame)[key] = value
+	end
+end
+local function lOptGetColor(frame,key)
+	return unpack(lOptGet(frame,key))
+end
+local function lOptSetColor(frame,key, r, g, b, a)
+	lOptSet(frame, key, {r, g, b, a})
+end
 
 
 -------------------------------
@@ -189,7 +189,7 @@ local function listOrder(info)
 	return choices
 end
 
-local function setOrder(info, neworderposstring)
+local function setOrder(info, neworderposstring) -- global option
 	local slot = info.arg
 	local neworderpos = tonumber(neworderposstring)
 	for i=1, MAX_TOTEMS do
@@ -341,13 +341,13 @@ function PitBull4_TotemTimers:UpdateAllTimes()
 				
 				if timeleft > 0 then
 					-- need to update shown time
-					if ( lOptGet('timertext') ) then
+					if ( lOptGet(frame,'timertext') ) then
 						elements[slot].text:SetText(self:SecondsToTimeAbbrev(timeleft))
 					else
 						elements[slot].text:SetText("")
 					end
 					-- Hide the cooldown frame if it's shown and the user changed preference
-					if ( not lOptGet('timerspiral') and elements[slot].spiral:IsShown() ) then
+					if ( not lOptGet(frame,'timerspiral') and elements[slot].spiral:IsShown() ) then
 						elements[slot].spiral:Hide()
 					end
 					
@@ -371,7 +371,7 @@ function PitBull4_TotemTimers:UpdateAllTimes()
 					--elements[slot].frame.lastUpdate = 0
 					self:StopPulse(elements[slot].frame)
 					elements[slot].frame:SetAlpha(0.5)
-					if lOptGet('hideinactive') then
+					if lOptGet(frame,'hideinactive') then
 						elements[slot].frame:Hide()
 					end
 					elements[slot].text:SetText("")
@@ -413,13 +413,13 @@ function PitBull4_TotemTimers:ActivateTotem(slot)
 		
 		self:StopPulse(tframe)
 		
-		--tframe.border:SetVertexColor(lOptGetColor("totembordercolor"))
+		--tframe.border:SetVertexColor(lOptGetColor(frame,"totembordercolor"))
 		tframe.border:Show()
-		if ( lOptGet('timertext') ) then
+		if ( lOptGet(frame,'timertext') ) then
 			ttext:SetText(self:SecondsToTimeAbbrev(timeleft))
 		end
 		tspiral:SetCooldown(startTime, timeleft)
-		if ( lOptGet('timerspiral') ) then
+		if ( lOptGet(frame,'timerspiral') ) then
 			tspiral:Show()
 		else
 			tspiral:Hide()
@@ -462,7 +462,7 @@ function PitBull4_TotemTimers:DeactivateTotem(slot)
 		
 		
 		tframe:SetAlpha(0.5)
-		if lOptGet('hideinactive') then
+		if lOptGet(frame,'hideinactive') then
 			tframe:Hide()
 		end
 		ttext:SetText("")
@@ -507,7 +507,7 @@ end
 -- this function reads what PB tried to anchor us at and applies some fixing
 function PitBull4_TotemTimers:FixAnchoring(frame)
 	--self:Print("DBG: FixAnchoring called")
-	if not frame then
+	if not frame.TotemTimers then
 		--self:Print("DBG: ... but frame doesn't exist?!")
 		return
 	end
@@ -517,13 +517,13 @@ function PitBull4_TotemTimers:FixAnchoring(frame)
 	local oldpoints = {}
 	local newpoints = {}
 
-	if not frame:GetNumPoints() then 
+	if not frame.TotemTimers:GetNumPoints() then 
 		--self:Print("DBG: FixAnchoring, No Points found...")
 		return 
 	end
 
-	local point, relativeTo, relativePoint, xOfs, yOfs = frame:GetPoint(1)
-	local npoint, nrelativeTo, nrelativePoint, nxOfs, nyOfs = frame:GetPoint(1)
+	local point, relativeTo, relativePoint, xOfs, yOfs = frame.TotemTimers:GetPoint(1)
+	local npoint, nrelativeTo, nrelativePoint, nxOfs, nyOfs = frame.TotemTimers:GetPoint(1)
 	
 	if not point then 
 		--self:Print("DBG: ... but no anchoring point is available yet.")
@@ -543,13 +543,13 @@ function PitBull4_TotemTimers:FixAnchoring(frame)
 	--self:Print(fmt("DEBUG: FixAnchoring: Found: %s connected to parent %s. Changed to: %s connected to parent %s.",tos(point),tos(relativePoint),tos(npoint),tos(nrelativePoint)))
 
 	-- add the configured offsets while we're at it
-	nxOfs = lOptGet('mainoffset_x') or 0
-	nyOfs = lOptGet('mainoffset_y') or 0
+	nxOfs = lOptGet(frame,'mainoffset_x') or 0
+	nyOfs = lOptGet(frame,'mainoffset_y') or 0
 	--self:Print(fmt("DEBUG: FixAnchoring: xOfs is %s and yOfs is %s", tos(nxOfs), tos(nxOfs)))
 	
 	
-	frame:ClearAllPoints()
-	frame:SetPoint(npoint, nrelativeTo, nrelativePoint, nxOfs, nyOfs)
+	frame.TotemTimers:ClearAllPoints()
+	frame.TotemTimers:SetPoint(npoint, nrelativeTo, nrelativePoint, nxOfs, nyOfs)
 	
 end
 
@@ -557,12 +557,12 @@ function PitBull4_TotemTimers:ResizeMainFrame(frame)
 	if not frame.TotemTimers then
 		return
 	end
-	local tSize = lOptGet('totemsize')
-	local tSpacing = lOptGet('totemspacing')
-	local lbreak = lOptGet('linebreak')
+	local tSize = lOptGet(frame,'totemsize')
+	local tSpacing = lOptGet(frame,'totemspacing')
+	local lbreak = lOptGet(frame,'linebreak')
 	local nlines = ceil(MAX_TOTEMS / lbreak)
 	local ttf = frame.TotemTimers
-	if (lOptGet('totemdirection') == "h") then
+	if (lOptGet(frame,'totemdirection') == "h") then
 		ttf:SetWidth((lbreak*tSize)+((lbreak-1)*tSpacing))
 		ttf:SetHeight((nlines*tSize)+((nlines-1)*tSpacing))
 	else
@@ -572,13 +572,13 @@ function PitBull4_TotemTimers:ResizeMainFrame(frame)
 end
 
 function PitBull4_TotemTimers:RealignTotems(frame)
-	local lbreak = lOptGet('linebreak') or MAX_TOTEMS
-	local tspacing = lOptGet('totemspacing') or 0
+	local lbreak = lOptGet(frame,'linebreak') or MAX_TOTEMS
+	local tspacing = lOptGet(frame,'totemspacing') or 0
 
 	if frame.TotemTimers then
 		self:ResizeMainFrame(frame)
 		
-		self:FixAnchoring(frame.TotemTimers)
+		self:FixAnchoring(frame)
 		
 		local elements = frame.TotemTimers.elements
 		for i=1, MAX_TOTEMS do
@@ -595,7 +595,7 @@ function PitBull4_TotemTimers:RealignTotems(frame)
 			else
 				elements[o].frame:ClearAllPoints()
 				-- Attach the button to the previous one
-				if (lOptGet('totemdirection') == "h") then
+				if (lOptGet(frame,'totemdirection') == "h") then
 					-- grow horizontally
 					if (fmod(i - 1, lbreak) == 0) then
 						-- Reached a linebreak
@@ -650,32 +650,33 @@ local function TimerTextAlignmentLogic(frame, parent, side, offsetX, offsetY)
 end
 
 function PitBull4_TotemTimers:RealignTimerTexts(frame)
-	if frame.TotemTimers then
+	if not frame or not frame.TotemTimers then return end
+
+	local elements = frame.TotemTimers.elements
+	for i=1, MAX_TOTEMS do
+		if (elements[i].text) then
+			TimerTextAlignmentLogic(elements[i].text, elements[i].textFrame, lOptGet(frame, 'timertextside'), 0, 0)
+			local font, fontsize = self:myGetFont(frame)
+			elements[i].text:SetFont(font, fontsize * lOptGet(frame,'timertextscale'), "OUTLINE")
+
+			elements[i].text:SetTextColor(lOptGet(frame,'timertextcolor'))
+		end
+	end
+end
+
+function PitBull4_TotemTimers:UpdateIconColor(frame)
+	if frame.TotemTimers and frame.TotemTimers.elements then
 		local elements = frame.TotemTimers.elements
 		for i=1, MAX_TOTEMS do
-			if (elements[i].text) then
-				TimerTextAlignmentLogic(elements[i].text, elements[i].textFrame, lOptGet('timertextside'), 0, 0)
-				local font, fontsize = self:myGetFont(frame)
-				elements[i].text:SetFont(font, fontsize * lOptGet('timertextscale'), "OUTLINE")
+			if elements[i].frame and elements[i].frame.border then
+				elements[i].frame.border:Hide()
+				elements[i].frame.border:SetVertexColor(lOptGetColor(frame,'totembordercolor'))
+				elements[i].frame.border:Show()
 			end
 		end
 	end
 end
 
-function PitBull4_TotemTimers:UpdateIconColor()
-	for frame in PitBull4:IterateFramesForUnitID('player') do
-		if frame.TotemTimers and frame.TotemTimers.elements then
-			local elements = frame.TotemTimers.elements
-			for i=1, MAX_TOTEMS do
-				if elements[i].frame and elements[i].frame.border then
-					elements[i].frame.border:Hide()
-					elements[i].frame.border:SetVertexColor(lOptGetColor('totembordercolor'))
-					elements[i].frame.border:Show()
-				end
-			end
-		end
-	end
-end
 function PitBull4_TotemTimers:ButtonOnClick(mousebutton)
 	if (mousebutton == "RightButton" and this.slot ) then
 		DestroyTotem( this.slot )
@@ -749,9 +750,11 @@ function PitBull4_TotemTimers:ButtonOnUpdate(elapsed)
 				this.pulseActive = false
 				this.pulseStart = false
 				this.pulseStopAfterThis = false
-				if lOptGet('hideinactive') then
+
+				if this.hideinactive then
 					this:Hide()
 				end
+				
 				--self:Print(fmt("DEBUG: Stopping pulse on slot %i", this.slot))
 			else
 				-- Applying the new scaling (animation frame)
@@ -798,11 +801,15 @@ function PitBull4_TotemTimers:PLAYER_TOTEM_UPDATE(event, slot)
 	end
 end
 
+function PitBull4_TotemTimers:ForceSilentTotemUpdate()
+	for i=1, MAX_TOTEMS do
+		self:PLAYER_TOTEM_UPDATE(nil, i) -- we intentionally send a nil event (to avoid sounds)
+	end
+end
+
 function PitBull4_TotemTimers:PLAYER_ENTERING_WORLD(...)
 	-- we simulate totem events whenever a player zones to make sure totems left back in the instance hide properly.
-	for i=1, MAX_TOTEMS do
-		self:PLAYER_TOTEM_UPDATE(nil, i) -- we intentionally send a nil event (to avoid sounds upon login)
-	end
+	self:ForceSilentTotemUpdate()
 end
 
 function PitBull4_TotemTimers:BuildFrames(frame)
@@ -810,15 +817,15 @@ function PitBull4_TotemTimers:BuildFrames(frame)
 	if frame.TotemTimers then return end -- Can't create the frames when they already exist..
 
 	local font, fontsize = self:myGetFont(frame)
-	local tSize = lOptGet('totemsize')
-	local tSpacing = lOptGet('totemspacing')
+	local tSize = lOptGet(frame,'totemsize')
+	local tSpacing = lOptGet(frame,'totemspacing')
 	
 	-- Main frame
 	
 	frame.TotemTimers = PitBull4.Controls.MakeFrame(frame)
 	local ttf = frame.TotemTimers
 
-	if (lOptGet('totemdirection') == "h") then
+	if (lOptGet(frame,'totemdirection') == "h") then
 		ttf:SetWidth((MAX_TOTEMS*tSize)+((MAX_TOTEMS-1)*tSpacing))
 		ttf:SetHeight(tSize)
 	else
@@ -832,7 +839,7 @@ function PitBull4_TotemTimers:BuildFrames(frame)
 		ttf.background = PitBull4.Controls.MakeTexture(ttf, "BACKGROUND")
 	end
 	local bg = ttf.background
-	bg:SetTexture(lOptGetColor('mainbgcolor'))
+	bg:SetTexture(lOptGetColor(frame,'mainbgcolor'))
 	bg:SetAllPoints(ttf)
 	
 	-- Now create the main timer frames for each totem element
@@ -844,35 +851,36 @@ function PitBull4_TotemTimers:BuildFrames(frame)
 		if not elements[i].frame then
 			elements[i].frame = PitBull4.Controls.MakeTTButton(ttf)
 		end
-		local frame = elements[i].frame
+		local frm = elements[i].frame
 		
-		frame:SetWidth(tSize)
-		frame:SetHeight(tSize)
-		frame:Hide()
-		frame.slot = i
+		frm:SetWidth(tSize)
+		frm:SetHeight(tSize)
+		frm:Hide()
+		frm.slot = i
+		frm.hideinactive = lOptGet(frame,'hideinactive')
 		
 		-------------------------------
 		-- totem slot border frame
-		if not frame.border then
-			frame.border = PitBull4.Controls.MakeTexture(frame, "OVERLAY")
+		if not frm.border then
+			frm.border = PitBull4.Controls.MakeTexture(frm, "OVERLAY")
 		end
-		local border = frame.border
+		local border = frm.border
 		border:SetAlpha(1)
 		border:ClearAllPoints()
-		border:SetAllPoints(frame)
+		border:SetAllPoints(frm)
 		border:SetTexture(border_path)
-		border:SetVertexColor(lOptGetColor('totembordercolor'))
+		border:SetVertexColor(lOptGetColor(frame,'totembordercolor'))
 		border:Show()
 		
 		----------------------------
 		-- Spiral cooldown frame
 		if not elements[i].spiral then
-			elements[i].spiral = PitBull4.Controls.MakeTTCooldown(frame)
+			elements[i].spiral = PitBull4.Controls.MakeTTCooldown(frm)
 		end
 		local spiral = elements[i].spiral
 		spiral:SetReverse(true)
-		spiral:SetAllPoints(frame)
-		if ( lOptGet('suppressocc') ) then
+		spiral:SetAllPoints(frm)
+		if ( lOptGet(frame,'suppressocc') ) then
 			-- user wishes to suppress omnicc on his timer spiral, requires recent (post-2.4) omnicc version!
 			if OMNICC_VERSION and OMNICC_VERSION < 210 then
 				spiral.noomnicc = true
@@ -887,7 +895,7 @@ function PitBull4_TotemTimers:BuildFrames(frame)
 			elements[i].textFrame = PitBull4.Controls.MakeFrame(frame)
 		end
 		local textFrame = elements[i].textFrame
-		textFrame:SetAllPoints(frame)
+		textFrame:SetAllPoints(frm)
 		textFrame:SetFrameLevel(spiral:GetFrameLevel() + 7)
 		
 		if not elements[i].text then
@@ -898,49 +906,78 @@ function PitBull4_TotemTimers:BuildFrames(frame)
 		text:SetHeight((tSize/3))
 		text:ClearAllPoints()
 		text:SetPoint("BOTTOM", textFrame, "BOTTOM", 0, 0)
-		text:SetFont(font, fontsize * lOptGet('timertextscale'), "OUTLINE")
+		text:SetFont(font, fontsize * lOptGet(frame,'timertextscale'), "OUTLINE")
 		text:SetShadowColor(0,0,0,1)
 		text:SetShadowOffset(0.8, -0.8)
-		if ( lOptGetColor('timertextcolor') ) then
-			text:SetTextColor(lOptGetColor('timertextcolor'))
+		if ( lOptGetColor(frame,'timertextcolor') ) then
+			text:SetTextColor(lOptGetColor(frame,'timertextcolor'))
 		end
 		text:Show()
 		
 		--------------------
 		-- Pulse frame
-		if not frame.pulse then
-			frame.pulse = PitBull4.Controls.MakeFrame(frame)
+		if not frm.pulse then
+			frm.pulse = PitBull4.Controls.MakeFrame(frm)
 		end
-		local pulse = frame.pulse
-		pulse:SetAllPoints(frame)
+		local pulse = frm.pulse
+		pulse:SetAllPoints(frm)
 		pulse:SetToplevel(true)
-		pulse.icon = PitBull4.Controls.MakeTexture(frame, "OVERLAY")
+		pulse.icon = PitBull4.Controls.MakeTexture(frm, "OVERLAY")
 		pulse.icon:SetPoint("CENTER")
 		pulse.icon:SetBlendMode("ADD")
 		pulse.icon:SetVertexColor(0.5,0.5,0.5,0.7)
-		pulse.icon:SetHeight(frame:GetHeight())
-		pulse.icon:SetWidth(frame:GetWidth())
+		pulse.icon:SetHeight(frm:GetHeight())
+		pulse.icon:SetWidth(frm:GetWidth())
 		pulse.icon:Hide()
-		frame.pulseActive = false
-		frame.pulseStart = false
+		frm.pulseActive = false
+		frm.pulseStart = false
+		
 		
 		-----------------
 		-- Click handling
 		-- click handling for destroying single totems
-		frame:RegisterForClicks("RightButtonUp")
-		frame:SetScript("OnClick", self.ButtonOnClick)
+		frm:RegisterForClicks("RightButtonUp")
+		frm:SetScript("OnClick", self.ButtonOnClick)
 		-- tooltip handling
-		frame:SetScript("OnEnter", self.ButtonOnEnter)
-		frame:SetScript("OnLeave", self.ButtonOnLeave)
-		frame.lastUpdate = 1
-		frame:SetScript("OnUpdate", self.ButtonOnUpdate)
+		frm:SetScript("OnEnter", self.ButtonOnEnter)
+		frm:SetScript("OnLeave", self.ButtonOnLeave)
+		frm.lastUpdate = 1
+		frm:SetScript("OnUpdate", self.ButtonOnUpdate)
 	end
 	
 	ttf.elements = elements
 	
 	self:ResizeMainFrame(frame)
 	self:RealignTotems(frame)
-	self:FixAnchoring(frame.TotemTimers)
+	self:FixAnchoring(frame)
+end
+
+function PitBull4_TotemTimers:ApplyLayoutSettings(frame)
+	if not frame or not frame.TotemTimers then return end
+
+	local elements = frame.TotemTimers.elements
+
+	local value = lOptGet(frame, 'totemsize')
+	for i=1, MAX_TOTEMS do
+		elements[i].frame:SetHeight(value)
+		elements[i].frame:SetWidth(value)
+		elements[i].text:SetWidth(value)
+		elements[i].text:SetHeight((value/3))
+
+		elements[i].frame.hideinactive = lOptGet(frame,'hideinactive')
+	end
+
+
+	self:ResizeMainFrame(frame)
+	
+	-- Background color of the main frame
+	frame.TotemTimers.background:SetTexture(lOptGetColor(frame,'mainbgcolor'))
+	
+	-- Bordercolor of the buttons
+	self:UpdateIconColor(frame)
+
+	-- Update timertext settings
+	self:RealignTimerTexts(frame)
 end
 
 function PitBull4_TotemTimers:UpdateFrame(frame)
@@ -948,18 +985,26 @@ function PitBull4_TotemTimers:UpdateFrame(frame)
 	
 	--self:Print('DBG: UpdateFrame called.')
 	
-	if (lOptGet('enabled') ~= true) and frame.TotemTimers then
+	if (lOptGet(frame,'enabled') ~= true) and frame.TotemTimers then
 		return self:ClearFrame(frame)
 	end
 	
 	if frame.TotemTimers then
 		-- make sure the timer is still running (it gets deactivated if the frame is gone for a moment
 		self:StartTimer()
-		self:FixAnchoring(frame.TotemTimers)
+		
+		-- Now rebuild most of the layout since some setting might have changed.
+		self:FixAnchoring(frame)
+		self:RealignTotems(frame)
+		self:ApplyLayoutSettings(frame)
 		return false -- our frame exists already, nothing more to do...
+	else
+		
+		self:BuildFrames(frame)
+		
+		self:ForceSilentTotemUpdate()
+		
 	end
-	
-	self:BuildFrames(frame)
 	
 	return true
 end
@@ -975,8 +1020,25 @@ function PitBull4_TotemTimers:ClearFrame(frame)
 	
 	--cleanup the element frames
 	for i=1, MAX_TOTEMS do
-		if frame.TotemTimers.elements[i].frame then
-			frame.TotemTimers.elements[i].frame = frame.TotemTimers.elements[i].frame:Delete()
+		local element = frame.TotemTimers.elements[i]
+		
+		if element.pulse then
+			element.pulse = element.pulse:Delete()
+		end
+		if element.text then
+			element.text = element.text:Delete()
+		end
+		if element.textFrame then
+			element.textFrame = element.textFrame:Delete()
+		end
+		if element.spiral then
+			element.spiral = element.spiral:Delete()
+		end
+		if element.border then
+			element.border = element.border:Delete()
+		end
+		if element.frame then
+			element.frame = element.frame:Delete()
 		end
 	end
 	
@@ -1010,7 +1072,7 @@ end
 
 PitBull4_TotemTimers:SetDefaults({
 	attach_to = "root",
-	location = "edge_bottom_left",
+	location = "out_top_left",
 	position = 1,
 	size = 2, -- default to a 200% scaling, the 100% seems way too tiny.
 	bgcolor = {0.8, 0.8, 0.8},
@@ -1041,6 +1103,27 @@ PitBull4_TotemTimers:SetDefaults({
 })
 
 PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
+	local function get(info)
+		local id = info[#info]
+		return PitBull4.Options.GetLayoutDB(self)[id]
+	end
+	local function set(info, value)
+		local id = info[#info]
+		PitBull4.Options.GetLayoutDB(self)[id] = value
+		--PitBull4.Options.RefreshFrameLayout()
+		PitBull4.Options.UpdateFrames()
+	end
+	local function getColor(info)
+		return unpack(get(info))
+	end
+	local function setColor(info, r,g,b,a)
+		return set(info, {r,g,b,a})
+	end
+	local function is_pbtt_disabled(info)
+		return not PitBull4.Options.GetLayoutDB(self).enabled
+	end
+
+
 	return 'mainoffset_x', {
 		type = 'range',
 		name = L["Horizontal offset"],
@@ -1048,15 +1131,9 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 		min = -690,
 		max = 690,
 		step = 1,
-		get = lOptGet,
-		--set = lOptSet,
-		set = function(info, value)
-			lOptSet('mainoffset_x', value)
-			for frame in PitBull4:IterateFramesForUnitID('player') do
-				self:RealignTotems(frame)
-			end
-		end,
-		disabled = function() return not lOptGet('enabled') end,
+		get = get,
+		set = set,
+		disabled = is_pbtt_disabled,
 		order = 8,
 	},
 	'mainoffset_y', {
@@ -1066,15 +1143,9 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 		min = -430,
 		max = 430,
 		step = 1,
-		get = lOptGet,
-		--set = lOptSet,
-		set = function(info, value)
-			lOptSet('mainoffset_y', value)
-			for frame in PitBull4:IterateFramesForUnitID('player') do
-				self:RealignTotems(frame)
-			end
-		end,
-		disabled = function() return not lOptGet('enabled') end,
+		get = get,
+		set = set,
+		disabled = is_pbtt_disabled,
 		order = 9,
 	},
 	'totemsize', {
@@ -1084,23 +1155,9 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 		min = 5,
 		max = 100,
 		step = 1,
-		get = lOptGet,
-		set = function(info, value) 
-			lOptSet('totemsize', value) 
-			for frame in PitBull4:IterateFramesForUnitID('player') do
-				if frame.TotemTimers then
-					local elements = frame.TotemTimers.elements
-					for i=1, MAX_TOTEMS do
-						elements[i].frame:SetHeight(value)
-						elements[i].frame:SetWidth(value)
-						elements[i].text:SetWidth(value)
-						elements[i].text:SetHeight((value/3))
-					end
-					self:ResizeMainFrame(frame)
-				end
-			end
-		end,
-		disabled = function() return not lOptGet('enabled') end,
+		get = get,
+		set = set,
+		disabled = is_pbtt_disabled,
 		order = 11,
 	},
 	'totemspacing', {
@@ -1110,33 +1167,23 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 		min = 0,
 		max = 100,
 		step = 1,
-		get = lOptGet,
-		set = function(info, value)
-			lOptSet('totemspacing', value)
-			for frame in PitBull4:IterateFramesForUnitID('player') do
-				self:RealignTotems(frame)
-			end
-		end,
-		disabled = function() return not lOptGet('enabled') end,
+		get = get,
+		set = set,
+		disabled = is_pbtt_disabled,
 		order = 12,
 	},
 	'totemdirection', {
 		type = 'select',
 		name = L["Totem Direction"],
 		desc = L["Choose wether to grow horizontally or vertically."],
-		get = lOptGet,
-		set = function(info, value)
-			lOptSet('totemdirection', value)
-			for frame in PitBull4:IterateFramesForUnitID('player') do
-				self:RealignTotems(frame)
-			end
-		end,
+		get = get,
+		set = set,
 		values = {
 			["h"] = L["Horizontal"],
 			["v"] = L["Vertical"]
 		},
 		style = "radio",
-		disabled = function() return not lOptGet('enabled') end,
+		disabled = is_pbtt_disabled,
 		order = 13,
 	},
 	'linebreak', {
@@ -1146,23 +1193,18 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 		min = 1,
 		max = MAX_TOTEMS,
 		step = 1,
-		get = lOptGet,
-		set = function(info, value)
-			lOptSet('linebreak', value)
-			for frame in PitBull4:IterateFramesForUnitID('player') do
-				self:RealignTotems(frame)
-			end
-		end,
-		disabled = function() return not lOptGet('enabled') end,
+		get = get,
+		set = set,
+		disabled = is_pbtt_disabled,
 		order = 14,
 	},
 	'hideinactive', {
 		type = 'toggle',
 		name = L["Hide inactive"],
 		desc = L["Hides inactive totem icons completely."],
-		get = lOptGet,
-		set = lOptSet,
-		disabled = function() return not lOptGet('enabled') end,
+		get = get,
+		set = set,
+		disabled = is_pbtt_disabled,
 		order = 15,
 	},
 	'mainbgcolor', {
@@ -1170,17 +1212,9 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 		name = L["Background Color"],
 		desc = L["Sets the color and transparency of the background of the timers."],
 		hasAlpha = true,
-		get = lOptGetColor,
-		--set = lOptSetColor,
-		set = function(info, r,g,b,a) 
-			lOptSetColor('mainbgcolor', r,g,b,a)
-			for frame in PitBull4:IterateFramesForUnitID('player') do
-				if frame.TotemTimers then
-					frame.TotemTimers.background:SetTexture(r,g,b,a)
-				end
-			end
-		end,
-		disabled = function() return not lOptGet('enabled') end,
+		get = getColor,
+		set = setColor,
+		disabled = is_pbtt_disabled,
 		order = 16,
 	},
 	'totembordercolor', {
@@ -1188,13 +1222,9 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 		name = L["Border Color"],
 		desc = L["Sets the bordercolor of the individual icons."],
 		hasAlpha = true,
-		get = lOptGetColor,
-		--set = lOptSetColor,
-		set = function(info, r,g,b,a) 
-			lOptSetColor(info, r,g,b,a)
-			self:UpdateIconColor()
-		end,
-		disabled = function() return not lOptGet('enabled') end,
+		get = getColor,
+		set = setColor,
+		disabled = is_pbtt_disabled,
 		order = 17,
 	},
 	'grptimerspiral', {
@@ -1203,26 +1233,26 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 		desc = L["Options relating to the spiral display timer."],
 		inline = true,
 		order = 18,
-		disabled = function() return not lOptGet('enabled') end,
+		disabled = is_pbtt_disabled,
 		args = {
 			timerspiral = {
 				type = 'toggle',
 				name = L["Spiral timer enabled"],
 				desc = L["Shows the pie-like cooldown spiral on the icons."],
-				get = lOptGet,
-				set = lOptSet,
+				get = get,
+				set = set,
 				width = 'full',
-				disabled = function() return not lOptGet('enabled') end,
+				disabled = is_pbtt_disabled,
 				order = 1,
 			},
 			suppressocc = {
 				type = 'toggle',
 				name = L["Suppress Cooldown Counts"],
 				desc = L["Tries to suppress CooldownCount-like addons on the spiral timer. (Requires UI reload to change the setting!)"],
-				get = lOptGet,
-				set = lOptSet,
+				get = get,
+				set = set,
 				width = 'full',
-				disabled = function() return not lOptGet('timerspiral') or not lOptGet('enabled') end,
+				disabled = function() return not get({'timerspiral'}) or is_pbtt_disabled() end,
 				order = 2,
 			},
 		},
@@ -1233,38 +1263,26 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 		desc = L["Options relating to the text display timer."],
 		inline = true,
 		order = 19,
-		disabled = function() return not lOptGet('enabled') end,
+		disabled = is_pbtt_disabled,
 		args = {
 			timertext = {
 				type = 'toggle',
 				name = L["Text timer enabled"],
 				desc = L["Shows the remaining time in as text."],
-				get = lOptGet,
-				set = lOptSet,
+				get = get,
+				set = set,
 				order = 1,
 				width = 'full',
-				disabled = function() return not lOptGet('enabled') end,
+				disabled = is_pbtt_disabled,
 			},
 			timertextcolor = {
 				type = 'color',
 				name = L["Text color"],
 				desc = L["Color of the timer text."],
 				hasAlpha = true,
-				get = lOptGetColor,
-				set = function(info, r,g,b,a)
-					lOptSetColor('timertextcolor', r,g,b,a)
-					for frame in PitBull4:IterateFramesForUnitID('player') do
-						if frame.TotemTimers and frame.TotemTimers.elements then
-							local elements = frame.TotemTimers.elements
-							for i=1, MAX_TOTEMS do
-								if elements[i].text then
-									elements[i].text:SetTextColor(r,g,b,a)
-								end
-							end
-						end
-					end
-				end,
-				disabled = function() return not lOptGet('timertext') or not lOptGet('enabled')  end,
+				get = getColor,
+				set = setColor,
+				disabled = function() return not get({'timertext'}) or is_pbtt_disabled()  end,
 				order = 2,
 				width = 'full',
 			},
@@ -1281,14 +1299,9 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 					rightoutside = L["Right, Outside"],
 					middle = L["Middle"],
 				},
-				get = lOptGet,
-				set = function(info, value)
-					lOptSet('timertextside', value)
-					for frame in PitBull4:IterateFramesForUnitID('player') do
-						self:RealignTimerTexts(frame)
-					end
-				end,
-				disabled = function() return not lOptGet('timertext') or not lOptGet('enabled')  end,
+				get = get,
+				set = set,
+				disabled = function() return not get({'timertext'}) or is_pbtt_disabled()  end,
 				order = 3,
 			},
 			timertextscale = {
@@ -1298,14 +1311,9 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 				min = 0.1,
 				max = 2,
 				step = 0.01,
-				get = lOptGet,
-				set = function(info, value)
-					lOptSet('timertextscale', value)
-					for frame in PitBull4:IterateFramesForUnitID('player') do
-						self:RealignTimerTexts(frame)
-					end
-				end,
-				disabled = function() return not lOptGet('timertext') or not lOptGet('enabled')  end,
+				get = get,
+				set = set,
+				disabled = function() return not get({'timertext'}) or is_pbtt_disabled()  end,
 				order = 4,
 			},
 		}
