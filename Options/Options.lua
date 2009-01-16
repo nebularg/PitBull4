@@ -91,6 +91,10 @@ function OpenConfig()
 	PitBull4.Options.get_module_options = nil
 	options.args.modules.order = new_order()
 	
+	options.args.colors = PitBull4.Options.get_color_options()
+	PitBull4.Options.get_color_options = nil
+	options.args.colors.order = new_order()
+	
 	AceConfig:RegisterOptionsTable("PitBull4", options)
 	AceConfigDialog:SetDefaultSize("PitBull4", 825, 550)
 	

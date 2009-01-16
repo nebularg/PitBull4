@@ -32,22 +32,22 @@ end
 
 function PitBull4_ReputationBar:GetColor(frame, value)
 	local _, reaction = GetWatchedFactionInfo()
-	local color = FACTION_BAR_COLORS[reaction]
+	local color = PitBull4.ReactionColors[reaction]
 	if color then
-		return color.r, color.g, color.b
+		return color[1], color[2], color[3]
 	end
 end
 
 function PitBull4_ReputationBar:GetExampleValue(frame)
-	if frame.unit ~= "player" then
+	if frame and frame.unit ~= "player" then
 		return nil
 	end
 	return 0.3
 end
 
 function PitBull4_ReputationBar:GetExampleColor(frame)
-	local color = FACTION_BAR_COLORS[5]
-	return color.r, color.g, color.b
+	local color = PitBull4.ReactionColors[5]
+	return color[1], color[2], color[3]
 end
 
 hooksecurefunc("ReputationWatchBar_Update", function()

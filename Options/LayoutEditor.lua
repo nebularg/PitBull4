@@ -174,7 +174,7 @@ function PitBull4.Options.get_layout_editor_options()
 	PitBull4.Options.get_layout_editor_fader_options = nil
 	layout_options.args.faders.order = 5
 	
-	layout_options.args.modules = PitBull4.Options.get_layout_editor_module_options(layout_options)
+	layout_options.args.modules = PitBull4.Options.get_layout_editor_other_options(layout_options)
 	PitBull4.Options.get_layout_editor_module_options = nil
 	layout_options.args.modules.order = 7
 	

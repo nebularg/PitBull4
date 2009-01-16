@@ -102,6 +102,7 @@ function GroupHeader:RefreshLayout(dont_refresh_children)
 	self:SetAttribute("maxColumns", MAX_RAID_MEMBERS)
 	self:SetAttribute("startingIndex", 1)
 	self:SetAttribute("columnAnchorPoint", DIRECTION_TO_COLUMN_ANCHOR_POINT[direction])
+	self:SetAttribute("useOwnerUnit", 1)
 	
 	self:ForceUnitFrameCreation(#self)
 	self:AssignFakeUnitIDs()

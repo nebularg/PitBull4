@@ -18,21 +18,23 @@ PitBull4_HealthBar:SetDefaults({
 	color_by_class = true,
 	hostility_color = true,
 	hostility_color_npcs = true
+}, {
+	colors = {
+		dead = { 0.6, 0.6, 0.6 },
+		disconnected = { 0.7, 0.7, 0.7 },
+		tapped = { 0.5, 0.5, 0.5 },
+		max_health = { 0, 1, 0 },
+		half_health = { 1, 1, 0 },
+		min_health = { 1, 0, 0 },
+	}
 })
 
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
 
-local color_constants = {
-	unknown = { 0.8, 0.8, 0.8 },
-	hostile = { 226/255, 45/255, 75/255 },
-	neutral = { 1, 1, 34/255 },
-	friendly = { 0.2, 0.8, 0.15 },
-	civilian = { 48/255, 113/255, 191/255 },
-	dead = { 0.6, 0.6, 0.6 },
-	disconnected = { 0.7, 0.7, 0.7 },
-	tapped = { 0.5, 0.5, 0.5 }
-}
+local HOSTILE_REACTION = 2
+local NEUTRAL_REACTION = 4
+local FRIENDLY_REACTION = 5
 
 local PLAYER_GUID
 function PitBull4_HealthBar:OnEnable()
@@ -67,64 +69,79 @@ function PitBull4_HealthBar:GetColor(frame, value)
 	local db = self:GetLayoutDB(frame)
 	local unit = frame.unit
 	if not UnitIsConnected(unit) then
-		return unpack(color_constants.disconnected)
+		return unpack(self.db.profile.global.colors.disconnected)
 	elseif UnitIsDeadOrGhost(unit) then
-		return unpack(color_constants.dead)
+		return unpack(self.db.profile.global.colors.dead)
 	elseif UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) then
-		return unpack(color_constants.tapped)
+		return unpack(self.db.profile.global.colors.tapped)
 	elseif UnitIsPlayer(unit) then
 		if db.color_by_class and unit then
 			local _, class = UnitClass(unit)
-			local t = RAID_CLASS_COLORS[class]
+			local t = PitBull4.ClassColors[class]
 			if t then
-				return t.r, t.g, t.b
+				return t[1], t[2], t[3]
 			end
 		elseif db.hostility_color then
 			if UnitCanAttack(unit, "player") then
 				-- they can attack me
 				if UnitCanAttack("player", unit) then
 					-- and I can attack them
-					return unpack(color_constants.hostile)
+					return unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
 				else
 					-- but I can't attack them
-					return unpack(color_constants.civilian)
+					return unpack(PitBull4.ReactionColors.civilian)
 				end
 			elseif UnitCanAttack("player", unit) then
 				-- they can't attack me, but I can attack them
-				return unpack(color_constants.neutral)
+				return unpack(PitBull4.ReactionColors[NEUTRAL_REACTION])
 			elseif UnitIsFriend("player", unit) then
 				-- on my team
-				return unpack(color_constants.friendly)
+				return unpack(PitBull4.ReactionColors[FRIENDLY_REACTION])
 			else
 				-- either enemy or friend, no violence
-				return unpack(color_constants.civilian)
+				return unpack(PitBull4.ReactionColors.civilian)
 			end
 		end
 	elseif db.hostility_color_npcs then
 		local reaction = UnitReaction(unit, "player")
 		if reaction then
 			if reaction >= 5 then
-				return unpack(color_constants.friendly)
+				return unpack(PitBull4.ReactionColors[FRIENDLY_REACTION])
 			elseif reaction == 4 then
-				return unpack(color_constants.neutral)
+				return unpack(PitBull4.ReactionColors[NEUTRAL_REACTION])
 			else
-				return unpack(color_constants.hostile)
+				return unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
 			end
 		else
-			return unpack(color_constants.unknown)
+			if UnitIsFriend("player", unit) then
+				return unpack(PitBull4.ReactionColors[FRIENDLY_REACTION])
+			elseif UnitIsEnemy("player", unit) then
+				return unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
+			else
+				return nil
+			end
 		end
 	end
+	local high_r, high_g, high_b
+	local low_r, low_g, low_b
+	local colors = self.db.profile.global.colors
+	local normalized_value
 	if value < 0.5 then
-		return
-			1,
-			value * 2,
-			0
+		high_r, high_g, high_b = unpack(colors.half_health)
+		low_r, low_g, low_b = unpack(colors.min_health)
+		normalized_value = value * 2
 	else
-		return
-			(1 - value) * 2,
-			1,
-			0
+		high_r, high_g, high_b = unpack(colors.max_health)
+		low_r, low_g, low_b = unpack(colors.half_health)
+		normalized_value = value * 2 - 1
 	end
+	
+	local inverse_value = 1 - normalized_value
+	
+	return
+		low_r * inverse_value + high_r * normalized_value,
+		low_g * inverse_value + high_g * normalized_value,
+		low_b * inverse_value + high_b * normalized_value
 end
 
 function PitBull4_HealthBar:UNIT_HEALTH(event, unit)
@@ -169,4 +186,69 @@ PitBull4_HealthBar:SetLayoutOptionsFunction(function(self)
 			PitBull4.Options.UpdateFrames()
 		end,
 	}
+end)
+
+PitBull4_HealthBar:SetColorOptionsFunction(function(self)
+	local function get(info)
+		return unpack(self.db.profile.global.colors[info[#info]])
+	end
+	local function set(info, r, g, b)
+		local color = self.db.profile.global.colors[info[#info]]
+		color[1], color[2], color[3] = r, g, b
+	end
+	return 'dead', {
+		type = 'color',
+		name = L["Dead"],
+		get = get,
+		set = set,
+	},
+	'disconnected', {
+		type = 'color',
+		name = L["Disconnected"],
+		get = get,
+		set = set,
+	},
+	'tapped', {
+		type = 'color',
+		name = L["Tapped"],
+		get = get,
+		set = set,
+	},
+	'max_health', {
+		type = 'color',
+		name = L["Full health"],
+		get = get,
+		set = set,
+	},
+	'half_health', {
+		type = 'color',
+		name = L["Half health"],
+		get = get,
+		set = set,
+	},
+	'min_health', {
+		type = 'color',
+		name = L["Empty health"],
+		get = get,
+		set = set,
+	},
+	function(info)
+		local color = self.db.profile.global.colors.dead
+		color[1], color[2], color[3] = 0.6, 0.6, 0.6
+		
+		local color = self.db.profile.global.colors.disconnected
+		color[1], color[2], color[3] = 0.7, 0.7, 0.7
+		
+		local color = self.db.profile.global.colors.tapped
+		color[1], color[2], color[3] = 0.5, 0.5, 0.5
+		
+		local color = self.db.profile.global.colors.max_health
+		color[1], color[2], color[3] = 0, 1, 0
+		
+		local color = self.db.profile.global.colors.half_health
+		color[1], color[2], color[3] = 1, 1, 0
+		
+		local color = self.db.profile.global.colors.min_health
+		color[1], color[2], color[3] = 1, 0, 0
+	end
 end)

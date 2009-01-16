@@ -5,6 +5,10 @@ if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les
 local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
+local PitBull4_Aura = PitBull4:GetModule("Aura")
+
+local MAINHAND = PitBull4_Aura.MAINHAND
+local OFFHAND = PitBull4_Aura.OFFHAND
 
 -- Table of functions included into the aura controls
 local Aura = {}
@@ -24,6 +28,7 @@ function Aura:GetUnit()
       return self:GetParent().unit
 end
 
+
 -- Update handler for tooltips.
 -- Not in the Aura table since it is only active when the
 -- tooltip is displayed.
@@ -40,6 +45,14 @@ local function OnUpdate(self)
 			GameTooltip:SetUnitBuff(self:GetUnit(), self.id)
 		else
 			GameTooltip:SetUnitDebuff(self:GetUnit(), self.id)
+		end
+	elseif self.slot then
+		local has_item = GameTooltip:SetInventoryItem("player", self.slot)	
+		if not has_item then
+			GameTooltip:ClearLines()
+			GameTooltip:AddLine(self.name, 1, 0.82, 0)
+			GameTooltip:AddLine(L["Sample tempoary weapon enchant created by PitBull to allow you to see the results of your configuration easily."], 1, 1, 1, 1)
+			GameTooltip:Show()
 		end
 	else
 		-- Sample auras for config mode
@@ -64,10 +77,25 @@ end
 -- Not in the Aura table since it is only active on
 -- buff aura controls.
 local function OnClick(self)
-	if not self.is_mine or not self.is_buff then
-		return
+	local slot = self.slot
+	if not self.is_buff or (not self.is_mine and not slot) then return end
+	if slot then
+		if slot == MAINHAND then
+			CancelItemTempEnchantment(1)
+		elseif slot == OFFHAND then
+			CancelItemTempEnchantment(2)
+		end
+	else
+		CancelUnitBuff("player", self.id)
 	end
-	CancelUnitBuff("player", self.id)
+end
+
+function Aura:SetCancelable(is_cancelable)
+	if is_cancelable then
+		self:SetScript("OnClick", OnClick)
+	else
+		self:SetScript("OnClick", nil)
+	end
 end
 
 function Aura_scripts:OnEnter()
@@ -124,19 +152,20 @@ PitBull4.Controls.MakeNewControlType("Aura", "Button", function(control)
 	for k,v in pairs(Aura_scripts) do
 		control:SetScript(k, v)
 	end
-end, function(control, is_buff)
+end, function(control)
 	-- onRetrieve
-	control.is_buff = is_buff
-	local unit = control:GetUnit()
-	if is_buff and unit == "player" then
-		control:SetScript("OnClick", OnClick)
-	end
+	-- It's important to note that you should never ever do something
+	-- here that is dependent upon the actual aura being set or even
+	-- the unit of the frame it is parented to.  It is fine to do things
+	-- that depend upon the frame it is parented to here.  Other than
+	-- that everything should be done when the actual aura is set on
+	-- the control.  This is because the controls are recyled unless
+	-- the number of them changes a new control will not be retrieved.
 -- TODO: Fix frame levels.  Need to talk to ck about figuring out
 -- standards for framelevels.
 --	control:SetFrameLevel(control:GetParent():GetFrameLevel() + 2)
 end, function(control)
 	-- onDelete
-	control.is_buff = nil
 	control:SetScript("OnClick", nil)
 	control:SetScript("OnUpdate", nil)
 end)

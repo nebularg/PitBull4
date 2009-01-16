@@ -7,10 +7,30 @@ local PitBull4 = _G.PitBull4
 local PitBull4_Aura= PitBull4:GetModule("Aura")
 local L = PitBull4.L
 
+local color_defaults = {
+	friend = {
+		my = {0, 1, 0, 1},
+		other = {1, 0, 0, 1}
+	},
+	weapon = {
+		weapon = {1, 0, 0, 1},
+		quality_color = true
+	},
+	enemy = {
+		Poison = {0, 1, 0, 1},
+		Magic = {0, 0, 1, 1},
+		Disease = {.55, .15, 0, 1},
+		Curse = {5, 0, 5, 1},
+		Enrage = {1, .55, 0, 1},
+		["nil"] = {1, 0, 0, 1},
+	}
+}
+
 PitBull4_Aura:SetDefaults({
 	-- Layout defaults
 	enabled_buffs = true,
 	enabled_debuffs = true,
+	enabled_weapons = true,
 	buff_size = 16,
 	debuff_size = 16,
 	--  TODO: max_buffs and max_debuffs are set low
@@ -23,19 +43,22 @@ PitBull4_Aura:SetDefaults({
 		my_buffs = true,
 		my_debuffs = true,
 		other_buffs = true,
-		other_debuffs = true
+		other_debuffs = true,
+		weapon_buffs = true
 	},
 	cooldown_text = {
 		my_buffs = false,
 		my_debuffs = false,
 		other_buffs = false,
-		other_debuffs = false 
+		other_debuffs = false,
+		weapon_buffs = false
 	},
 	border = {
 		my_buffs = true,
 		my_debuffs = true,
 		other_buffs = true,
-		other_debuffs = true
+		other_debuffs = true,
+		weapon_buffs = true
 	},
 	layout = {
 		buff = {
@@ -48,6 +71,7 @@ PitBull4_Aura:SetDefaults({
 			width = 100,
 			width_percent = 0.50,
 			growth = "right_down",
+			sort = true,
 			reverse = false,
 			row_spacing = 0,
 			col_spacing = 0,
@@ -62,6 +86,7 @@ PitBull4_Aura:SetDefaults({
 			width = 100,
 			width_percent = 0.50,
 			growth = "left_down",
+			sort = true,
 			reverse = false,
 			col_spacing = 0,
 			row_spacing = 0,
@@ -70,21 +95,8 @@ PitBull4_Aura:SetDefaults({
 },
 {
 	-- Global defaults
-	colors = {
-		friend = {
-			my = {0, 1, 0, 1},
-			other = {1, 0, 0, 1},
-			weapon = {1, 0, 0, 1},
-		},
-		enemy = {
-			Poison = {0, 1, 0, 1},
-			Magic = {0, 0, 1, 1},
-			Disease = {.55, .15, 0, 1},
-			Curse = {5, 0, 5, 1},
-			Enrage = {1, .55, 0, 1},
-			["nil"] = {1, 0, 0, 1},
-		},
-	}
+	colors = color_defaults,
+	guess_weapon_enchant_icon = true,
 })
 
 -- tables of options for the selection options
@@ -120,7 +132,8 @@ local show_when_values = {
 	my_buffs = L['My own buffs'],
 	my_debuffs = L['My own debuffs'],
 	other_buffs = L["Others' buffs"],
-	other_debuffs = L["Others' debuffs"]
+	other_debuffs = L["Others' debuffs"],
+	weapon_buffs = L["Weapon buffs"]
 }
 
 -- table to decide if the width option is actuually
@@ -132,8 +145,7 @@ local is_height = {
 	up_left    = true
 }
 
-
-PitBull4_Aura:SetGlobalOptionsFunction(function(self)
+PitBull4_Aura:SetColorOptionsFunction(function(self)
 	local function get(info)
 		local group = info[#info - 1]
 		local id = info[#info]
@@ -167,6 +179,37 @@ PitBull4_Aura:SetGlobalOptionsFunction(function(self)
 				order = 1
 			}
 		}
+	},
+	'weapon', {
+		type = 'group',
+		name = L['Weapon auras'],
+		inline = true,
+		args = {
+			weapon = {
+				type = 'color',
+				name = L['Weapon enchants'],
+				desc = L['Color for temporary weapon enchants.'],
+				get = get,
+				set = set,
+				disabled = function(info)
+					return self.db.profile.global.colors.weapon.quality_color
+				end,
+				order = 3
+			},
+			quality_color = {
+				type = 'toggle',
+				name = L['Color by quality'],
+				desc = L['Color temporary weapon enchants by weapon quality.'],
+				get = function(info)
+					return self.db.profile.global.colors.weapon.quality_color
+				end,
+				set = function(info, value)
+					self.db.profile.global.colors.weapon.quality_color = value
+					self:UpdateAll()
+				end,
+			},
+		}
+		
 	},
 	'enemy', {
 		type = 'group',
@@ -222,6 +265,36 @@ PitBull4_Aura:SetGlobalOptionsFunction(function(self)
 				order = 5
 			}
 		}
+	}, function(info)
+		-- reset_default_colors
+		local db = self.db.profile.global.colors
+		for group,group_table in pairs(color_defaults) do
+			for color,color_value in pairs(group_table) do
+				if type(color_value) == "table" then
+					for i = 1, #color_value do
+						db[group][color][i] = color_value[i] 	
+					end
+				else
+					db[group][color] = color_value
+				end
+			end
+		end
+	end
+end)
+
+
+PitBull4_Aura:SetGlobalOptionsFunction(function(self)
+	return 'guess_weapon_enchant_icon', {
+		type = 'toggle',
+		name = L['Use spell icon'],
+		desc = L['Use the spell icon for the weapon enchant rather than the icon for the weapon.'],
+		get = function(info)
+			return self.db.profile.global.guess_weapon_enchant_icon
+		end,
+		set = function(info, value)
+			self.db.profile.global.guess_weapon_enchant_icon = value
+			self:UpdateWeaponEnchants(true)
+		end,
 	}
 end)
 
@@ -343,6 +416,15 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				bigStep = 5,
 				order = 4,
 			},
+			sort = {
+				type = 'toggle',
+				name = L['Sort'],
+				desc = L['Sort auras by type and alphabetically, preferring your own auras first.'],
+				get = get_layout,
+				set = set_layout,
+				disabled = is_aura_disabled,
+				order = 5
+			},
 			reverse = {
 				type = 'toggle',
 				name = L['Reverse'],
@@ -350,7 +432,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get_layout, 
 				set = set_layout, 
 				disabled = is_aura_disabled,
-				order = 5,
+				order = 6,
 			},
 			width_type = {
 				type = 'select',
@@ -376,7 +458,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				set = set_layout, 
 				disabled = is_aura_disabled,
 				values = width_type_values,
-				order = 6,
+				order = 7,
 			},
 			width = {
 				type = 'range',
@@ -409,7 +491,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				max = 400,
 				step = 1,
 				bigStep = 5,
-				order = 7,
+				order = 8,
 			},
 			width_percent = {
 				type = 'range',
@@ -442,7 +524,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				max = 1.0,
 				step = 0.01,
 				isPercent = true,
-				order = 8,
+				order = 9,
 			},
 			row_spacing = {
 				type = 'range',
@@ -454,7 +536,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				min = 0,
 				max = 10,
 				step = 1,
-				order = 9,
+				order = 10,
 			},
 			col_spacing = {
 				type = 'range',
@@ -466,7 +548,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				min = 0,
 				max = 10,
 				step = 1,
-				order = 10,
+				order = 11,
 			}
 		}
 	}
@@ -483,6 +565,20 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				disabled = is_aura_disabled, 
 				order = 0
 			},
+			enabled_weapons = {
+				type = 'toggle',
+				name = L['Weapon enchants'],
+				desc = L['Enable display of temporary weapon enchants.'],
+				get = function(info)
+					local db = PitBull4.Options.GetLayoutDB(self)
+					return db.enabled_buffs and db.enabled_weapons
+				end,
+				set = set,
+				disabled = function(info)
+					return is_aura_disabled(info) or not PitBull4.Options.GetLayoutDB(self).enabled_buffs
+				end,
+				order = 1
+			},
 			enabled_debuffs = {
 				type = 'toggle',
 				name = L['Debuffs'],
@@ -490,13 +586,13 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get,
 				set = set,
 				disabled = is_aura_disabled,
-				order = 1
+				order = 2
 			},
 			max = {
 				type = 'group',
 				name = L['Limit number of displayed auras.'],
 				inline = true,
-				order = 2,
+				order = 3,
 				args = {
 					max_buffs = {
 						type = 'range',

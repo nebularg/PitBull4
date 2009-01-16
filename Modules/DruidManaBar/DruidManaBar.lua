@@ -47,8 +47,8 @@ function PitBull4_DruidManaBar:GetValue(frame)
 end
 
 function PitBull4_DruidManaBar:GetColor(frame, value)
-	local color = PowerBarColor[MANA_TYPE]
-	return color.r, color.g, color.b
+	local color = PitBull4.PowerColors["MANA"]
+	return color[1], color[2], color[3]
 end
 
 function PitBull4_DruidManaBar:UNIT_MANA(event, unit)

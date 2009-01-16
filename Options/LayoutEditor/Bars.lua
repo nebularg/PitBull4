@@ -331,6 +331,43 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		isPercent = true,
 	}
 	
+	bar_args.toggle_custom_color = {
+		type = 'toggle',
+		name = L["Custom color"],
+		desc = L["Whether to override the color and use a custom one."],
+		order = -2,
+		get = function(info)
+			return not not GetLayoutDB(info[#info-1]).custom_color
+		end,
+		set = function(info, value)
+			if value then
+				GetLayoutDB(info[#info-1]).custom_color = { 0.75, 0.75, 0.75, 1 }
+			else
+				GetLayoutDB(info[#info-1]).custom_color = nil
+			end
+		end,
+	}
+	
+	bar_args.custom_color = {
+		type = 'color',
+		name = L["Custom color"],
+		desc = L["What color to override the bar with."],
+		order = -1,
+		hasAlpha = true,
+		get = function(info)
+			return unpack(GetLayoutDB(info[#info-1]).custom_color)
+		end,
+		set = function(info, r, g, b, a)
+			local color = GetLayoutDB(info[#info-1]).custom_color
+			color[1], color[2], color[3], color[4] = r, g, b, a
+			
+			UpdateFrames()
+		end,
+		hidden = function(info)
+			return not GetLayoutDB(info[#info-1]).custom_color
+		end
+	}
+	
 	local layout_functions = PitBull4.Options.layout_functions
 	
 	for id, module in PitBull4:IterateModulesOfType("status_bar", true) do

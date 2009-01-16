@@ -57,9 +57,9 @@ end
 
 function PitBull4_PowerBar:GetColor(frame, value)
 	local power_token = frame.guid and select(2, UnitPowerType(frame.unit)) or "MANA"
-	local color = PowerBarColor[power_token]
+	local color = PitBull4.PowerColors[power_token]
 	if color then
-		return color.r, color.g, color.b
+		return color[1], color[2], color[3]
 	end
 end
 

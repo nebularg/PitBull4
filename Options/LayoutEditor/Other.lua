@@ -2,12 +2,12 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-function PitBull4.Options.get_layout_editor_module_options(layout_options)
+function PitBull4.Options.get_layout_editor_other_options(layout_options)
 	local GetLayoutDB = PitBull4.Options.GetLayoutDB
 	local UpdateFrames = PitBull4.Options.UpdateFrames
 	
 	local options = {
-		name = L["Modules"],
+		name = L["Other"],
 		type = 'group',
 		childGroups = "tab",
 		args = {}

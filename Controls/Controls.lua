@@ -199,7 +199,7 @@ function PitBull4.Controls.MakeFontString(parent, layer)
 	expect(parent, 'typeof', 'frame')
 	expect(layer, 'typeof', 'string;nil')
 	--@end-alpha@
-
+	
 	return fetch_control("FontString", parent, false, layer)
 end
 

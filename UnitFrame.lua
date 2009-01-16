@@ -151,7 +151,7 @@ function UnitFrame__scripts:OnAttributeChanged(key, value)
 	end
 	
 	self.unit = new_unit
-	if value then
+	if new_unit then
 		PitBull4.unit_id_to_frames[new_unit][self] = true
 	end
 end
@@ -323,7 +323,6 @@ UnitFrame.UnforceShow = PitBull4:OutOfCombatWrapper(UnitFrame.UnforceShow)
 -- @usage frame:Update(true)
 -- @usage frame:Update(false, true)
 function UnitFrame:Update(same_guid, update_layout)
-	-- TODO: something with same_guid
 	if not self.guid and not self.force_show then
 	 	if self.populated then
 			self.populated = nil
@@ -340,7 +339,7 @@ function UnitFrame:Update(same_guid, update_layout)
 	
 	for _, module_type in ipairs(MODULE_UPDATE_ORDER) do
 		for _, module in PitBull4:IterateModulesOfType(module_type) do
-			changed = module:Update(self, true) or changed
+			changed = module:Update(self, true, same_guid) or changed
 		end
 	end
 	

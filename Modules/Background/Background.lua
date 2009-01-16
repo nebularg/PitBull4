@@ -16,14 +16,14 @@ PitBull4_Background:SetDefaults({
 })
 
 function PitBull4_Background:UpdateFrame(frame)
-	if frame.Background then
-		return false
+	local background = frame.Background
+	if not background then
+		background = PitBull4.Controls.MakeTexture(frame, "BACKGROUND")
+		frame.Background = background
+		background:SetAllPoints(frame)
 	end
 	
-	local background = PitBull4.Controls.MakeTexture(frame, "BACKGROUND")
-	frame.Background = background
 	background:SetTexture(unpack(PitBull4_Background:GetLayoutDB(frame).color))
-	background:SetAllPoints(frame)
 	return false
 end
 
@@ -36,4 +36,20 @@ function PitBull4_Background:ClearFrame(frame)
 	return false
 end
 
-PitBull4_Background:SetLayoutOptionsFunction(function(self) end)
+PitBull4_Background:SetLayoutOptionsFunction(function(self)
+	return 'color', {
+		type = 'color',
+		name = L["Color"],
+		desc = L["Color that the background should be."],
+		hasAlpha = true,
+		get = function(info)
+			return unpack(PitBull4.Options.GetLayoutDB(self).color)
+		end,
+		set = function(info, r, g, b, a)
+			local color = PitBull4.Options.GetLayoutDB(self).color
+			color[1], color[2], color[3], color[4] = r, g, b, a
+			
+			PitBull4.Options.UpdateFrames()
+		end,
+	}
+end)
