@@ -36,9 +36,14 @@ PitBull4_Portrait:SetDefaults({
 })
 
 function PitBull4_Portrait:OnEnable()
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE")
 end
 
 function PitBull4_Portrait:OnDisable()
+end
+
+function PitBull4_Portrait:UNIT_PORTRAIT_UPDATE(event, unit)
+	self:UpdateForUnitID(unit)
 end
 
 function PitBull4_Portrait:ClearFrame(frame)
@@ -106,6 +111,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 		portrait:SetHeight(60)
 		portrait.height = 4
 		portrait.style = style
+		portrait.falling_back = falling_back
 		
 		if style == "three_dimensional" then
 			local model = PitBull4.Controls.MakePlayerModel(frame)
