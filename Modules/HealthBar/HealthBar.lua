@@ -18,6 +18,12 @@ PitBull4_HealthBar:SetDefaults({
 	color_by_class = true,
 	hostility_color = true,
 	hostility_color_npcs = true
+}, {
+	colors = {
+		dead = { 0.6, 0.6, 0.6 },
+		disconnected = { 0.7, 0.7, 0.7 },
+		tapped = { 0.5, 0.5, 0.5 }
+	}
 })
 
 local timerFrame = CreateFrame("Frame")
@@ -66,11 +72,11 @@ function PitBull4_HealthBar:GetColor(frame, value)
 	local db = self:GetLayoutDB(frame)
 	local unit = frame.unit
 	if not UnitIsConnected(unit) then
-		return unpack(color_constants.disconnected)
+		return unpack(self.db.profile.global.colors.disconnected)
 	elseif UnitIsDeadOrGhost(unit) then
-		return unpack(color_constants.dead)
+		return unpack(self.db.profile.global.colors.dead)
 	elseif UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) then
-		return unpack(color_constants.tapped)
+		return unpack(self.db.profile.global.colors.tapped)
 	elseif UnitIsPlayer(unit) then
 		if db.color_by_class and unit then
 			local _, class = UnitClass(unit)
@@ -174,4 +180,50 @@ PitBull4_HealthBar:SetLayoutOptionsFunction(function(self)
 			PitBull4.Options.UpdateFrames()
 		end,
 	}
+end)
+
+PitBull4_HealthBar:SetColorOptionsFunction(function(self)
+	return 'dead', {
+		type = 'color',
+		name = L["Dead"],
+		get = function(info)
+			return unpack(self.db.profile.global.colors.dead)
+		end,
+		set = function(info, r, g, b)
+			local color = self.db.profile.global.colors.dead
+			color[1], color[2], color[3] = r, g, b
+		end,
+	},
+	'disconnected', {
+		type = 'color',
+		name = L["Disconnected"],
+		get = function(info)
+			return unpack(self.db.profile.global.colors.disconnected)
+		end,
+		set = function(info, r, g, b)
+			local color = self.db.profile.global.colors.disconnected
+			color[1], color[2], color[3] = r, g, b
+		end,
+	},
+	'tapped', {
+		type = 'color',
+		name = L["Tapped"],
+		get = function(info)
+			return unpack(self.db.profile.global.colors.tapped)
+		end,
+		set = function(info, r, g, b)
+			local color = self.db.profile.global.colors.tapped
+			color[1], color[2], color[3] = r, g, b
+		end,
+	},
+	function(info)
+		local color = self.db.profile.global.colors.dead
+		color[1], color[2], color[3] = 0.6, 0.6, 0.6
+		
+		local color = self.db.profile.global.colors.disconnected
+		color[1], color[2], color[3] = 0.7, 0.7, 0.7
+		
+		local color = self.db.profile.global.colors.tapped
+		color[1], color[2], color[3] = 0.5, 0.5, 0.5
+	end
 end)
