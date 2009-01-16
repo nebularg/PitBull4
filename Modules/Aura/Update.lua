@@ -12,6 +12,7 @@ local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
 local math_ceil = _G.math.ceil
 local GetTime = _G.GetTime
 local unpack = _G.unpack
+local table_sort = table.sort
 
 -- The table we use for gathering the aura data, filtering
 -- and then sorting them.  This table is reused without
@@ -290,9 +291,72 @@ local function copy_weapon_entry(src, dst, slot)
 	end
 end
 
+local aura_sort__is_friend 
+local aura_sort__is_buff
 
-local function sort_aura_list()
-	-- TODO implement sorting
+local function aura_sort(a, b)
+	if not a then
+		return false
+	elseif not b then
+		return true
+	end
+
+	if aura_sort__is_buff then
+		-- item buffs first
+		local a_slot, b_slot = a[2], b[2]
+		if a_slot and not b_slot then
+			return true
+		elseif not a_slot and b_slot then
+			return false
+		elseif a_slot and b_slot then
+			return a_slot < b_slot
+		end
+	else
+		if aura_sort__is_friend then
+			--  sort by debuff type
+			local a_debuff_type, b_debuff_type = a[8], b[8]
+			if a_debuff_type ~= b_debuff_type then
+				if not a_debuff_type then
+					return false
+				elseif not b_debuff_type then
+					return true
+				end
+				-- TODO: Add sort by ones we can remove
+				return a_debuff_type < b_debuff_type
+			end
+		end
+	end
+
+	-- sort by name
+	local a_name, b_name = a[4], b[4]
+	if a_name ~= b[name] then
+		if not a_name then
+			return false
+		elseif not b_name then
+			return true
+		end
+		-- TODO: Add sort by ones we can cast
+		return a_name < b_name
+	end
+
+	-- show your own buffs first
+	local a_mine, b_mine =  a[11], b[11]
+	if a_mine ~= b_mine then
+		if a_mine then
+			return true
+		else
+			return false
+		end
+	end
+
+	-- keep ID order
+	local a_id, b_id = a[1], b[1]
+	if not a_id then
+		return false
+	elseif not b_id then
+		return true
+	end
+	return a_id < b_id
 end
 
 -- Setups up the aura frame and fill it with the proper data
@@ -418,7 +482,12 @@ local function update_auras(frame, db, is_buff)
 		get_aura_list_sample(list, max, is_buff)
 	end
 
-	sort_aura_list(list)
+	local layout = is_buff and db.layout.buff or db.layout.debuff
+	if layout.sort then
+		aura_sort__is_friend = is_friend
+		aura_sort__is_buff = is_buff
+		table_sort(list, aura_sort)
+	end
 
 	-- Limit the number of displayed buffs here after we
 	-- have filtered and sorted to allow the most important

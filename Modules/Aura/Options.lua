@@ -71,6 +71,7 @@ PitBull4_Aura:SetDefaults({
 			width = 100,
 			width_percent = 0.50,
 			growth = "right_down",
+			sort = true,
 			reverse = false,
 			row_spacing = 0,
 			col_spacing = 0,
@@ -85,6 +86,7 @@ PitBull4_Aura:SetDefaults({
 			width = 100,
 			width_percent = 0.50,
 			growth = "left_down",
+			sort = true,
 			reverse = false,
 			col_spacing = 0,
 			row_spacing = 0,
@@ -414,6 +416,15 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				bigStep = 5,
 				order = 4,
 			},
+			sort = {
+				type = 'toggle',
+				name = L['Sort'],
+				desc = L['Sort auras by type and alphabetically, preferring your own auras first.'],
+				get = get_layout,
+				set = set_layout,
+				disabled = is_aura_disabled,
+				order = 5
+			},
 			reverse = {
 				type = 'toggle',
 				name = L['Reverse'],
@@ -421,7 +432,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get_layout, 
 				set = set_layout, 
 				disabled = is_aura_disabled,
-				order = 5,
+				order = 6,
 			},
 			width_type = {
 				type = 'select',
@@ -447,7 +458,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				set = set_layout, 
 				disabled = is_aura_disabled,
 				values = width_type_values,
-				order = 6,
+				order = 7,
 			},
 			width = {
 				type = 'range',
@@ -480,7 +491,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				max = 400,
 				step = 1,
 				bigStep = 5,
-				order = 7,
+				order = 8,
 			},
 			width_percent = {
 				type = 'range',
@@ -513,7 +524,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				max = 1.0,
 				step = 0.01,
 				isPercent = true,
-				order = 8,
+				order = 9,
 			},
 			row_spacing = {
 				type = 'range',
@@ -525,7 +536,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				min = 0,
 				max = 10,
 				step = 1,
-				order = 9,
+				order = 10,
 			},
 			col_spacing = {
 				type = 'range',
@@ -537,7 +548,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				min = 0,
 				max = 10,
 				step = 1,
-				order = 10,
+				order = 11,
 			}
 		}
 	}
