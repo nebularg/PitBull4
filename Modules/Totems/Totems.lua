@@ -125,6 +125,20 @@ local function gOptSet(key, value)
 		self.db.profile.global[key] = value
 	end
 end
+local function cOptGet(key)
+	if type(key) == 'table' then
+		return unpack(self.db.profile.global.colors[key[#key]])
+	else
+		return unpack(self.db.profile.global.colors[key])
+	end
+end
+local function cOptSet(key, r, g, b, a)
+	if type(key) == 'table' then
+		self.db.profile.global.colors[key[#key]] = {r, g, b, a} 
+	else
+		self.db.profile.global.colors[key] = {r, g, b, a} 
+	end
+end
 
 local function lOptGet(frame,key)
 	if type(key) == 'table' then
@@ -139,12 +153,6 @@ local function lOptSet(frame,key, value)
 	else
 		self:GetLayoutDB(frame)[key] = value
 	end
-end
-local function lOptGetColor(frame,key)
-	return unpack(lOptGet(frame,key))
-end
-local function lOptSetColor(frame,key, r, g, b, a)
-	lOptSet(frame, key, {r, g, b, a})
 end
 
 
@@ -633,7 +641,7 @@ function PitBull4_Totems:RealignTimerTexts(frame)
 			local font, fontsize = self:myGetFont(frame)
 			elements[i].text:SetFont(font, fontsize * lOptGet(frame,'timertextscale'), "OUTLINE")
 
-			elements[i].text:SetTextColor(lOptGetColor(frame,'timertextcolor'))
+			elements[i].text:SetTextColor(cOptGet('timertext'))
 		end
 	end
 end
@@ -644,7 +652,7 @@ function PitBull4_Totems:UpdateIconColor(frame)
 		for i=1, MAX_TOTEMS do
 			if elements[i].frame and elements[i].frame.border then
 				elements[i].frame.border:Hide()
-				elements[i].frame.border:SetVertexColor(lOptGetColor(frame,'totembordercolor'))
+				elements[i].frame.border:SetVertexColor(cOptGet('totemborder'))
 				elements[i].frame.border:Show()
 			end
 		end
@@ -798,7 +806,7 @@ function PitBull4_Totems:BuildFrames(frame)
 		ttf.background = PitBull4.Controls.MakeTexture(ttf, "BACKGROUND")
 	end
 	local bg = ttf.background
-	bg:SetTexture(lOptGetColor(frame,'mainbgcolor'))
+	bg:SetTexture(cOptGet('mainbg'))
 	bg:SetAllPoints(ttf)
 	
 	-- Now create the main timer frames for each totem element
@@ -828,7 +836,7 @@ function PitBull4_Totems:BuildFrames(frame)
 		border:ClearAllPoints()
 		border:SetAllPoints(frm)
 		border:SetTexture(border_path)
-		border:SetVertexColor(lOptGetColor(frame,'totembordercolor'))
+		border:SetVertexColor(cOptGet('totemborder'))
 		border:Show()
 		
 		----------------------------
@@ -866,9 +874,7 @@ function PitBull4_Totems:BuildFrames(frame)
 		text:SetFont(font, fontsize * lOptGet(frame,'timertextscale'), "OUTLINE")
 		text:SetShadowColor(0,0,0,1)
 		text:SetShadowOffset(0.8, -0.8)
-		if ( lOptGetColor(frame,'timertextcolor') ) then
-			text:SetTextColor(lOptGetColor(frame,'timertextcolor'))
-		end
+		text:SetTextColor(cOptGet('timertext'))
 		text:Show()
 		
 		--------------------
@@ -927,7 +933,7 @@ function PitBull4_Totems:ApplyLayoutSettings(frame)
 	self:ResizeMainFrame(frame)
 	
 	-- Background color of the main frame
-	frame.Totems.background:SetTexture(lOptGetColor(frame,'mainbgcolor'))
+	frame.Totems.background:SetTexture(cOptGet('mainbg'))
 	
 	-- Bordercolor of the buttons
 	self:UpdateIconColor(frame)
@@ -1017,25 +1023,27 @@ function PitBull4_Totems:OnInitialize()
 	
 end
 
+local color_defaults = {
+	mainbg = {0, 0, 0, 0.5},
+	timertext = {0, 1, 0, 1},
+	totemborder = {0, 0, 0, 0.5},
+}
+
 PitBull4_Totems:SetDefaults({
 	attach_to = "root",
 	location = "out_top_left",
 	position = 1,
 	size = 2, -- default to a 200% scaling, the 100% seems way too tiny.
-	bgcolor = {0.8, 0.8, 0.8},
 	tlo1 = true, -- dummy for optiontests
 	totemspacing = 0,
 	totemdirection = "h",
 	timerspiral = true,
 	suppressocc = true,
 	timertext = true,
-	timertextcolor = {0, 1, 0, 1},
 	timertextside = "bottominside",
 	timertextscale = 0.45,
-	mainbgcolor = {0, 0, 0, 0.5},
 	linebreak = MAX_TOTEMS,
 	hideinactive = false,
-	totembordercolor = {0, 0, 0, 0.5},
 	mainoffset_x = 0,
 	mainoffset_y = 0,
 }, {
@@ -1046,6 +1054,7 @@ PitBull4_Totems:SetDefaults({
 	recastenabled = false,
 	deathsound = false,
 	deathsoundpaths = getSoundpathsDefault(),
+	colors = color_defaults,
 })
 
 PitBull4_Totems:SetLayoutOptionsFunction(function(self)
@@ -1057,12 +1066,6 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 		local id = info[#info]
 		PitBull4.Options.GetLayoutDB(self)[id] = value
 		PitBull4.Options.UpdateFrames()
-	end
-	local function getColor(info)
-		return unpack(get(info))
-	end
-	local function setColor(info, r,g,b,a)
-		return set(info, {r,g,b,a})
 	end
 	local function is_pbt_disabled(info)
 		return not PitBull4.Options.GetLayoutDB(self).enabled
@@ -1140,26 +1143,6 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 		disabled = is_pbt_disabled,
 		order = 15,
 	},
-	'mainbgcolor', {
-		type = 'color',
-		name = L["Background Color"],
-		desc = L["Sets the color and transparency of the background of the timers."],
-		hasAlpha = true,
-		get = getColor,
-		set = setColor,
-		disabled = is_pbt_disabled,
-		order = 16,
-	},
-	'totembordercolor', {
-		type = 'color',
-		name = L["Border Color"],
-		desc = L["Sets the bordercolor of the individual icons."],
-		hasAlpha = true,
-		get = getColor,
-		set = setColor,
-		disabled = is_pbt_disabled,
-		order = 17,
-	},
 	'grptimerspiral', {
 		type = 'group',
 		name = L["Spiral Timer"],
@@ -1170,7 +1153,7 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 		args = {
 			timerspiral = {
 				type = 'toggle',
-				name = L["Spiral timer enabled"],
+				name = L["Enabled"],
 				desc = L["Shows the pie-like cooldown spiral on the icons."],
 				get = get,
 				set = set,
@@ -1200,7 +1183,7 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 		args = {
 			timertext = {
 				type = 'toggle',
-				name = L["Text timer enabled"],
+				name = L["Enabled"],
 				desc = L["Shows the remaining time in as text."],
 				get = get,
 				set = set,
@@ -1208,21 +1191,10 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 				width = 'full',
 				disabled = is_pbt_disabled,
 			},
-			timertextcolor = {
-				type = 'color',
-				name = L["Text color"],
-				desc = L["Color of the timer text."],
-				hasAlpha = true,
-				get = getColor,
-				set = setColor,
-				disabled = function() return not get({'timertext'}) or is_pbt_disabled()  end,
-				order = 2,
-				width = 'full',
-			},
 			timertextside = {
 				type = 'select',
-				name = L["Text side"],
-				desc = L["Which side to position the timer text at."],
+				name = L["Location"],
+				desc = L["What location to position the timer text at."],
 				values = {
 					topinside = L["Top, Inside"],
 					topoutside = L["Top, Outside"],
@@ -1239,7 +1211,7 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 			},
 			timertextscale = {
 				type = 'range',
-				name = L["Text scale"],
+				name = L["Scale"],
 				desc = L["Change the scaling of the text timer. Note: It's relative to PitBull's font size."],
 				min = 0.1,
 				max = 2,
@@ -1389,5 +1361,74 @@ PitBull4_Totems:SetGlobalOptionsFunction(function(self)
 		inline = true,
 		args = getSoundOptionGroup(),
 	} 
+end)
+
+PitBull4_Totems:SetColorOptionsFunction(function(self)
+	local function get(info)
+		local id = info[#info]
+		return unpack(self.db.profile.global.colors[id])
+	end
+	local function set(info, r, g, b, a)
+		local id = info[#info]
+		self.db.profile.global.colors[id] = {r, g, b, a} 
+		self:UpdateAll()
+	end
+	return 'colgrpframes', {
+		type = 'group',
+		name = L["Frames"],
+		inline = true,
+		args = {
+			mainbg = {
+				type = 'color',
+				name = L["Main Background"],
+				desc = L["Sets the color and transparency of the background of the timers."],
+				hasAlpha = true,
+				get = get,
+				set = set,
+				width = 'full',
+				order = 1
+			},
+			totemborder = {
+				type = 'color',
+				name = L["Icon Border"],
+				desc = L["Sets the color of the individual iconborders."],
+				hasAlpha = true,
+				get = get,
+				set = set,
+				width = 'full',
+				order = 2
+			}
+		}
+	},
+	'colgrptimertext', {
+		type = 'group',
+		name = L["Text Timer"],
+		inline = true,
+		args = {
+			timertext = {
+				type = 'color',
+				name = L["Text"],
+				desc = L["Color of the timer text."],
+				hasAlpha = true,
+				get = get,
+				set = set,
+				width = 'full',
+				order = 1
+			},
+		}
+	}, function(info)
+		local db = self.db.profile.global.colors
+		for setting,value in pairs(color_defaults) do
+			if type(value) == "table" then
+				for i = 1, #value do
+					db[setting][i] = value[i]
+				end
+			else
+				db[setting] = value
+			end
+		end
+		-- update frames...
+		self:UpdateAll()
+	end
 end)
 
