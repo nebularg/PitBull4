@@ -22,18 +22,15 @@ PitBull4_HealthBar:SetDefaults({
 	colors = {
 		dead = { 0.6, 0.6, 0.6 },
 		disconnected = { 0.7, 0.7, 0.7 },
-		tapped = { 0.5, 0.5, 0.5 }
+		tapped = { 0.5, 0.5, 0.5 },
+		max_health = { 0, 1, 0 },
+		half_health = { 1, 1, 0 },
+		min_health = { 1, 0, 0 },
 	}
 })
 
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
-
-local color_constants = {
-	dead = { 0.6, 0.6, 0.6 },
-	disconnected = { 0.7, 0.7, 0.7 },
-	tapped = { 0.5, 0.5, 0.5 }
-}
 
 local HOSTILE_REACTION = 2
 local NEUTRAL_REACTION = 4
@@ -125,17 +122,26 @@ function PitBull4_HealthBar:GetColor(frame, value)
 			end
 		end
 	end
+	local high_r, high_g, high_b
+	local low_r, low_g, low_b
+	local colors = self.db.profile.global.colors
+	local normalized_value
 	if value < 0.5 then
-		return
-			1,
-			value * 2,
-			0
+		high_r, high_g, high_b = unpack(colors.half_health)
+		low_r, low_g, low_b = unpack(colors.min_health)
+		normalized_value = value * 2
 	else
-		return
-			(1 - value) * 2,
-			1,
-			0
+		high_r, high_g, high_b = unpack(colors.max_health)
+		low_r, low_g, low_b = unpack(colors.half_health)
+		normalized_value = value * 2 - 1
 	end
+	
+	local inverse_value = 1 - normalized_value
+	
+	return
+		low_r * normalized_value + high_r * inverse_value,
+		low_g * normalized_value + high_g * inverse_value,
+		low_b * normalized_value + high_b * inverse_value
 end
 
 function PitBull4_HealthBar:UNIT_HEALTH(event, unit)
@@ -183,38 +189,48 @@ PitBull4_HealthBar:SetLayoutOptionsFunction(function(self)
 end)
 
 PitBull4_HealthBar:SetColorOptionsFunction(function(self)
+	local function get(info)
+		return unpack(self.db.profile.global.colors[info[#info]])
+	end
+	local function set(info, r, g, b)
+		local color = self.db.profile.global.colors[info[#info]]
+		color[1], color[2], color[3] = r, g, b
+	end
 	return 'dead', {
 		type = 'color',
 		name = L["Dead"],
-		get = function(info)
-			return unpack(self.db.profile.global.colors.dead)
-		end,
-		set = function(info, r, g, b)
-			local color = self.db.profile.global.colors.dead
-			color[1], color[2], color[3] = r, g, b
-		end,
+		get = get,
+		set = set,
 	},
 	'disconnected', {
 		type = 'color',
 		name = L["Disconnected"],
-		get = function(info)
-			return unpack(self.db.profile.global.colors.disconnected)
-		end,
-		set = function(info, r, g, b)
-			local color = self.db.profile.global.colors.disconnected
-			color[1], color[2], color[3] = r, g, b
-		end,
+		get = get,
+		set = set,
 	},
 	'tapped', {
 		type = 'color',
 		name = L["Tapped"],
-		get = function(info)
-			return unpack(self.db.profile.global.colors.tapped)
-		end,
-		set = function(info, r, g, b)
-			local color = self.db.profile.global.colors.tapped
-			color[1], color[2], color[3] = r, g, b
-		end,
+		get = get,
+		set = set,
+	},
+	'max_health', {
+		type = 'color',
+		name = L["Full health"],
+		get = get,
+		set = set,
+	},
+	'half_health', {
+		type = 'color',
+		name = L["Half health"],
+		get = get,
+		set = set,
+	},
+	'min_health', {
+		type = 'color',
+		name = L["Empty health"],
+		get = get,
+		set = set,
 	},
 	function(info)
 		local color = self.db.profile.global.colors.dead
@@ -225,5 +241,14 @@ PitBull4_HealthBar:SetColorOptionsFunction(function(self)
 		
 		local color = self.db.profile.global.colors.tapped
 		color[1], color[2], color[3] = 0.5, 0.5, 0.5
+		
+		local color = self.db.profile.global.colors.max_health
+		color[1], color[2], color[3] = 0, 1, 0
+		
+		local color = self.db.profile.global.colors.half_health
+		color[1], color[2], color[3] = 1, 1, 0
+		
+		local color = self.db.profile.global.colors.min_health
+		color[1], color[2], color[3] = 1, 0, 0
 	end
 end)
