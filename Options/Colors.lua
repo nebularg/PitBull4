@@ -5,10 +5,14 @@ local L = PitBull4.L
 local color_functions = {}
 
 --- Set the function to be called that will return a tuple of key-value pairs that will cause an options table show in the colors section.
+-- The last return must be a function that resets all colors.
 -- @name Module:SetColorOptionsFunction
 -- @param func function to call
 -- @usage MyModule:SetColorOptionsFunction(function(self)
---     return 'someOption', { name = "Some option", } -- etc
+--     return 'someOption', { name = "Some option", }, -- etc
+--     function(info)
+--         -- reset all colors
+--     end
 -- end)
 function PitBull4.defaultModulePrototype:SetColorOptionsFunction(func)
 	--@alpha@
@@ -274,11 +278,37 @@ function PitBull4.Options.get_color_options()
 			color_options.args[id] = opt
 			
 			local t = { color_functions[module](module) }
+			
+			local reset_func = table.remove(t)
+			--@alpha@
+			expect(reset_func, 'typeof', 'function')
+			--@end-alpha@
 			for i = 1, #t, 2 do
 				local k, v = t[i], t[i + 1]
 				opt.args[k] = v
 				v.order = i
 			end
+			
+			
+			opt.args.reset_sep = {
+				type = 'header',
+				name = '',
+				order = -2,
+			}
+			opt.args.reset = {
+				type = 'execute',
+				name = L["Reset to defaults"],
+				confirm = true,
+				confirmText = L["Are you sure you want to reset to defaults?"],
+				order = -1,
+				func = function(info)
+					reset_func(info)
+					
+					for frame in PitBull4:IterateFrames() do
+						module:Update(frame)
+					end
+				end,
+			}
 			
 			color_functions[module] = false
 		end
