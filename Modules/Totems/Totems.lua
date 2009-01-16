@@ -382,6 +382,19 @@ function PitBull4_Totems:UpdateAllTimes()
 	end
 end
 
+function PitBull4_Totems:SpiralUpdate(frame,slot,start,left)
+	if not frame.Totems then return end
+	local tspiral = frame.Totems.elements[slot].spiral
+	local startTime = start or select(3, GetTotemInfo(slot))
+	local timeLeft = left or GetTotemTimeLeft(slot)
+	tspiral:SetCooldown(startTime, timeLeft)
+	if self.totemIsDown[slot] == true and lOptGet(frame,'timerspiral') then
+		tspiral:Show()
+	else
+		tspiral:Hide()
+	end
+end
+
 
 function PitBull4_Totems:ActivateTotem(slot)
 	local haveTotem, name, startTime, duration, icon = GetTotemInfo(slot)
@@ -402,7 +415,6 @@ function PitBull4_Totems:ActivateTotem(slot)
 
 		local tframe = frame.Totems.elements[slot].frame
 		local ttext = frame.Totems.elements[slot].text
-		local tspiral = frame.Totems.elements[slot].spiral
 		
 		tframe:SetNormalTexture(icon)
 		tframe.totemIcon = icon
@@ -415,12 +427,7 @@ function PitBull4_Totems:ActivateTotem(slot)
 		if ( lOptGet(frame,'timertext') ) then
 			ttext:SetText(self:SecondsToTimeAbbrev(timeleft))
 		end
-		tspiral:SetCooldown(startTime, timeleft)
-		if ( lOptGet(frame,'timerspiral') ) then
-			tspiral:Show()
-		else
-			tspiral:Hide()
-		end
+		self:SpiralUpdate(frame, slot, startTime, timeLeft)
 		
 		self:StartTimer()
 	end
@@ -872,11 +879,7 @@ function PitBull4_Totems:ApplyLayoutSettings(frame)
 
 		elements[i].frame.hideinactive = lOptGet(frame,'hideinactive')
 		
-		if lOptGet(frame,'timerspiral') then
-			elements[i].spiral:Show()
-		else
-			elements[i].spiral:Hide()
-		end
+		self:SpiralUpdate(frame, i, nil, nil)
 	end
 
 
