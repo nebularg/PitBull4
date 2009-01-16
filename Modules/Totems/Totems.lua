@@ -21,15 +21,15 @@ local TOTEMSIZE = 50
 
 local _G = _G
 local GetTime = _G.GetTime
-local floor = math.floor
-local ceil = math.ceil
-local fmod = math.fmod
-local max = math.max
-local min = math.min
-local fmt = string.format
-local type = type
-local GetTotemTimeLeft = GetTotemTimeLeft
-local GetTotemInfo = GetTotemInfo
+local floor = _G.math.floor
+local ceil = _G.math.ceil
+local fmod = _G.math.fmod
+local max = _G.math.max
+local min = _G.math.min
+local fmt = _G.string.format
+local type = _G.type
+local GetTotemTimeLeft = _G.GetTotemTimeLeft
+local GetTotemInfo = _G.GetTotemInfo
 -----------------------------------------------------------------------------
 
 
