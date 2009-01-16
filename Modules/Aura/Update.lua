@@ -146,26 +146,54 @@ local function get_aura_list(list, unit, is_buff)
 end
 
 -- Fills up to the maximum number of auras with sample auras
-local function get_aura_list_sample(list, max, is_buff)
+local function get_aura_list_sample(list, unit, max, is_buff)
+	-- figure the slot to use for the mainhand and offhand slots
+	local mainhand, offhand
+	if is_buff and unit and UnitIsUnit(unit, "player") then
+		if not weapon_list[MAINHAND] then
+			mainhand = #list + 1
+		end
+		if not weapon_list[OFFHAND] then
+			offhand = (mainhand and mainhand + 1) or #list + 1
+		end
+	end
+
 	for i = #list + 1, max do
 		local entry = list[i]
 		if not entry then
 			entry = new_entry() 
 			list[i] = entry
 		end
-	
+
+		
 		-- Create our bogus aura entry
 		entry[1]  = 0 -- index 0 means PitBull generated aura
-		entry[2]  = nil -- not a weapon enchant
-		entry[3]  = nil -- no quality color
-		entry[4]  = is_buff and L["Sample Buff"] or L["Sample Debuff"] -- name
+		if i == mainhand then
+			entry[2] = MAINHAND
+			local link = GetInventoryItemLink("player", OFFHAND)
+			entry[3] = link and select(3,GetItemInfo(link)) or 4 -- quality or epic if no item
+			entry[4] = L["Sample Weapon Buff"] -- name
+			entry[8] = nil -- no debuff type
+			entry[11] =  nil -- not mine
+		elseif i == offhand then
+			entry[2] = OFFHAND
+			local link = GetInventoryItemLink("player", OFFHAND)
+			entry[3] = link and select(3,GetItemInfo(link)) or 4 -- quality or epic if no item
+			entry[4] = L["Sample Weapon Buff"] -- name
+			entry[8] = nil -- no debuff type
+			entry[11] = nil -- not mine
+		else
+			entry[2]  = nil -- not a weapon enchant
+			entry[3]  = nil -- no quality color
+			entry[4]  = is_buff and L["Sample Buff"] or L["Sample Debuff"] -- name
+			entry[8]  = sample_debuff_types[(i-1)% #sample_debuff_types]
+			entry[11]  = ((i % 2) == 1) and 1 or nil -- is_mine
+		end
 		entry[5]  = "" -- rank
 		entry[6]  = is_buff and sample_buff_icon or sample_debuff_icon
 		entry[7]  = i -- count set to index to make order show
-		entry[8]  = sample_debuff_types[(i-1)% #sample_debuff_types]
 		entry[9]  = 0 -- duration
 		entry[10]  = 0 -- expiration_time
-		entry[11]  = ((i % 2) == 1) and 1 or nil -- is_mine
 		entry[12] = nil -- is_stealable
 	end
 end
@@ -302,35 +330,33 @@ local function aura_sort(a, b)
 		return true
 	end
 
-	if aura_sort__is_buff then
-		-- item buffs first
-		local a_slot, b_slot = a[2], b[2]
-		if a_slot and not b_slot then
-			return true
-		elseif not a_slot and b_slot then
-			return false
-		elseif a_slot and b_slot then
-			return a_slot < b_slot
-		end
-	else
-		if aura_sort__is_friend then
-			--  sort by debuff type
-			local a_debuff_type, b_debuff_type = a[8], b[8]
-			if a_debuff_type ~= b_debuff_type then
-				if not a_debuff_type then
-					return false
-				elseif not b_debuff_type then
-					return true
-				end
-				-- TODO: Add sort by ones we can remove
-				return a_debuff_type < b_debuff_type
+	-- item buffs first
+	local a_slot, b_slot = a[2], b[2]
+	if a_slot and not b_slot then
+		return true
+	elseif not a_slot and b_slot then
+		return false
+	elseif a_slot and b_slot then
+		return a_slot < b_slot
+	end
+		
+	--  sort by debuff type
+	if (aura_sort__is_buff and not aura_sort__is_friend) or (not aura_sort__is_buff and aura_sort__is_friend) then
+		local a_debuff_type, b_debuff_type = a[8], b[8]
+		if a_debuff_type ~= b_debuff_type then
+			if not a_debuff_type then
+				return false
+			elseif not b_debuff_type then
+				return true
 			end
+			-- TODO: Add sort by ones we can remove
+			return a_debuff_type < b_debuff_type
 		end
 	end
 
 	-- sort by name
 	local a_name, b_name = a[4], b[4]
-	if a_name ~= b[name] then
+	if a_name ~= b_name then
 		if not a_name then
 			return false
 		elseif not b_name then
@@ -345,7 +371,7 @@ local function aura_sort(a, b)
 	if a_mine ~= b_mine then
 		if a_mine then
 			return true
-		else
+		elseif b_mine then
 			return false
 		end
 	end
@@ -357,12 +383,24 @@ local function aura_sort(a, b)
 	elseif not b_id then
 		return true
 	end
+	if a_id == 0 and b_id == 0 then
+		-- both ids are zero and it wasn't an item buff
+		-- so it's a sample aura and use the count to preserve
+		-- ID order.
+		local a_count, b_count = a[7], b[7]
+		if not a_id then
+			return false
+		elseif not b_id then
+			return true
+		end
+		return a_count < b_count
+	end
 	return a_id < b_id
 end
 
 -- Setups up the aura frame and fill it with the proper data
 -- to display the proper aura.
-local function set_aura(frame, db, aura_controls, aura, i, is_buff)
+local function set_aura(frame, db, aura_controls, aura, i, is_buff, is_friend)
 	local control = aura_controls[i]
 	local unit = frame.unit
 
@@ -422,11 +460,6 @@ local function set_aura(frame, db, aura_controls, aura, i, is_buff)
 	if db.border[rule] then
 		local border = control.border
 		local colors = PitBull4_Aura.db.profile.global.colors
-		local is_friend = UnitIsFriend("player", unit) 
-		if frame.force_show then
-			-- config mode so treat all frames as friendly
-			is_friend = true
-		end
 		border:Show()
 		if quality and colors.weapon.quality_color then
 			local r,g,b = GetItemQualityColor(quality)
@@ -466,10 +499,12 @@ local function update_auras(frame, db, is_buff)
 		end
 	end
 	local unit = frame.unit
+	local is_friend = UnitIsFriend("player", unit) 
 
 	local max = is_buff and db.max_buffs or db.max_debuffs
 
 	get_aura_list(list, unit, is_buff)
+
 
 	-- If weapons are enabled and the unit is the player
 	-- copy the weapon entries into the aura list
@@ -478,9 +513,12 @@ local function update_auras(frame, db, is_buff)
 		copy_weapon_entry(weapon_list, list, OFFHAND)
 	end		
 
-	-- Fill extra auras if we're in config mode
 	if frame.force_show then
-		get_aura_list_sample(list, max, is_buff)
+		-- config mode so treat all frames as friendly
+		is_friend = true
+
+		-- Fill extra auras if we're in config mode
+		get_aura_list_sample(list, unit, max, is_buff)
 	end
 
 	local layout = is_buff and db.layout.buff or db.layout.debuff
@@ -497,7 +535,7 @@ local function update_auras(frame, db, is_buff)
 	local buff_count = (#list > max) and max or #list
 
 	for i = 1, buff_count do
-		set_aura(frame, db, controls, list[i], i, is_buff)
+		set_aura(frame, db, controls, list[i], i, is_buff, is_friend)
 	end
 
 	-- Remove unnecessary aura frames
