@@ -95,6 +95,73 @@ local function get_class_options()
 	return class_options
 end
 
+local function get_power_options()
+	local power_options = {
+		type = 'group',
+		name = L["Power"],
+		args = {},
+	}
+	
+	local option = {
+		type = 'color',
+		name = function(info)
+			local power_token = info[#info]
+			
+			return _G[power_token] or power_token
+		end,
+		hasAlpha = false,
+		get = function(info)
+			local power_token = info[#info]
+			
+			return unpack(PitBull4.db.profile.colors.power[power_token])
+		end,
+		set = function(info, r, g, b)
+			local power_token = info[#info]
+			
+			local color = PitBull4.db.profile.colors.power[power_token]
+			color[1], color[2], color[3] = r, g, b
+			
+			for frame in PitBull4:IterateFrames() do
+				frame:Update()
+			end
+		end
+	}
+	
+	for class in pairs(PowerBarColor) do
+		if type(class) == "string" then
+			power_options.args[class] = option
+		end
+	end
+	
+	
+	power_options.args.reset_sep = {
+		type = 'header',
+		name = '',
+		order = -2,
+	}
+	power_options.args.reset = {
+		type = 'execute',
+		name = L["Reset to defaults"],
+		confirm = true,
+		confirmText = L["Are you sure you want to reset to defaults?"],
+		order = -1,
+		func = function(info)
+			for power_token, color in pairs(PowerBarColor) do
+				if type(power_token) == "string" then
+					local db_color = PitBull4.db.profile.colors.power[power_token]
+					db_color[1], db_color[2], db_color[3] = color.r, color.g, color.b
+				end
+			end
+			
+			for frame in PitBull4:IterateFrames() do
+				frame:Update()
+			end
+		end,
+	}
+	
+	return power_options
+end
+
 function PitBull4.Options.get_color_options()
 	local color_options = {
 		type = 'group',
@@ -105,6 +172,7 @@ function PitBull4.Options.get_color_options()
 	}
 	
 	color_options.args.class = get_class_options()
+	color_options.args.power = get_power_options()
 	
 	for id, module in PitBull4:IterateModules() do
 		if color_functions[module] then

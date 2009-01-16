@@ -82,11 +82,17 @@ local DATABASE_DEFAULTS = {
 		},
 		colors = {
 			class = {}, -- filled in by RAID_CLASS_COLORS
+			power = {}, -- filled in by PowerBarColor
 		}
 	}
 }
 for class, color in pairs(RAID_CLASS_COLORS) do
 	DATABASE_DEFAULTS.profile.colors.class[class] = { color.r, color.g, color.b }
+end
+for power_token, color in pairs(PowerBarColor) do
+	if type(power_token) == "string" then
+		DATABASE_DEFAULTS.profile.colors.power[power_token] = { color.r, color.g, color.b }
+	end
 end
 -----------------------------------------------------------------------------
 
@@ -729,6 +735,7 @@ function PitBull4:OnInitialize()
 	self.db = db
 	
 	self.ClassColors = PitBull4.db.profile.colors.class
+	self.PowerColors = PitBull4.db.profile.colors.power
 end
 
 function PitBull4:OnEnable()
