@@ -40,6 +40,9 @@ local unpack = _G.unpack
 -- [12] = is_stealable
 local list = {}
 
+-- pool of available entries to be used in list 
+local pool = {}
+
 -- The final index of the entries.  We need this so we can always
 -- get all values when copying or using unpack.
 local ENTRY_END = 12
@@ -73,8 +76,23 @@ local function filter_aura_entry()
 	-- TODO implement filtering
 end
 
+local function new_entry()
+	local t = next(pool)
+	if t then
+		pool[t] = nil
+	else	
+		t = {}
+	end
+	return t
+end
+
+local function del_entry(t)
+	table.wipe(t)
+	pool[t] = true
+	return nil
+end
+
 -- Fills an array of arrays with the information about the auras
--- The 'n' field is the size of the array entries.
 local function get_aura_list(list, unit, is_buff)
 	local filter = is_buff and "HELPFUL" or "HARMFUL"
 	local id = 1
@@ -84,7 +102,7 @@ local function get_aura_list(list, unit, is_buff)
 	while true do
 		local entry = list[index]
 		if not entry then
-			entry = {} 
+			entry = new_entry() 
 			list[index] = entry
 		end
 
@@ -117,20 +135,20 @@ local function get_aura_list(list, unit, is_buff)
 
 	end
 
-	-- Set the size of the list to the n key.
-	-- We can't use #list because we recyle the 
-	-- table without clearing it.
-	list.n = index - 1
+	-- Clear the list of extra entries
+	for i = index, #list do
+		list[i] = del_entry(list[i])
+	end
 
 	return list
 end
 
 -- Fills up to the maximum number of auras with sample auras
 local function get_aura_list_sample(list, max, is_buff)
-	for i = list.n + 1, max do
+	for i = #list + 1, max do
 		local entry = list[i]
 		if not entry then
-			entry = {}
+			entry = new_entry() 
 			list[i] = entry
 		end
 	
@@ -148,7 +166,6 @@ local function get_aura_list_sample(list, max, is_buff)
 		entry[11]  = ((i % 2) == 1) and 1 or nil -- is_mine
 		entry[12] = nil -- is_stealable
 	end
-	list.n = max
 end
 
 -- Get the name of the temporary enchant on a weapon from the tooltip
@@ -255,25 +272,22 @@ local function set_weapon_entry(list, is_enchant, time_left, expiration_time, co
 end
 
 -- If the src table has a valid weapon enchant entry for the slot
--- copy it to the dst table.  Uses dst.n to determine next entry
--- and increments dst.n to the new last entry.
+-- copy it to the dst table.  Uses #dst + 1 to determine next entry
 local function copy_weapon_entry(src, dst, slot)
 	local src_entry = src[slot]
 	-- If there's no src_entry or the slot value of the src_entry
 	-- is empty don't copy anything.
 	if not src_entry or not src_entry[2] then return end
-	local i = dst.n + 1
+	local i = #dst + 1
 	local dst_entry = dst[i]
 	if not entry then
-		dst_entry = {}
+		dst_entry = new_entry() 
 		dst[i] = dst_entry
 	end
 
 	for pos = 1, ENTRY_END do
 		dst_entry[pos] = src_entry[pos]
 	end
-
-	dst.n = i
 end
 
 
@@ -410,7 +424,7 @@ local function update_auras(frame, db, is_buff)
 	-- have filtered and sorted to allow the most important
 	-- auras to be displayed rather than randomly tossing
 	-- some away that may not be our prefered auras
-	local buff_count = (list.n > max) and max or list.n
+	local buff_count = (#list > max) and max or #list
 
 	for i = 1, buff_count do
 		set_aura(frame, db, controls, list[i], i, is_buff)
@@ -516,8 +530,7 @@ end
 --
 -- General operation of the Weapon Enchant aura system:
 -- * Load changed weapon enchants into weapon_list which
---   is an table of aura entries identical in layout to list except
---   without the .n parameter.
+--   is an table of aura entries identical in layout to list
 -- * The aura entries are indexed by the slot id of the weapon.
 -- * When a frames auras are updated (either normally or triggered
 --   by a weapon enchant change) the weapon enchants are copied
