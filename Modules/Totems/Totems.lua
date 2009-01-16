@@ -479,57 +479,6 @@ function PitBull4_Totems:myGetFont(frame)
 	return font or DEFAULT_FONT, DEFAULT_FONT_SIZE * db.size
 end
 
--- this function reads what PB tried to anchor us at and applies some fixing
--- NOTE: This function currently does not work and wants to replaced with a proper solution.
--- See: http://www.wowace.com/projects/pitbull4/tickets/15-offsets-for-custom_frame-anchoring/
-function PitBull4_Totems:FixAnchoring(frame)
-	--self:Print("DBG: FixAnchoring called")
-	if not frame.Totems then
-		--self:Print("DBG: ... but frame doesn't exist?!")
-		return
-	end
-	
-	local tos = tostring
-
-	local oldpoints = {}
-	local newpoints = {}
-
-	if not frame.Totems:GetNumPoints() then 
-		--self:Print("DBG: FixAnchoring, No Points found...")
-		return 
-	end
-
-	local point, relativeTo, relativePoint, xOfs, yOfs = frame.Totems:GetPoint(1)
-	local npoint, nrelativeTo, nrelativePoint, nxOfs, nyOfs = frame.Totems:GetPoint(1)
-	
-	if not point then 
-		--self:Print("DBG: ... but no anchoring point is available yet.")
-		return 
-	end
-	
-	if relativePoint == "TOP" then
-		-- when pitbull anchors to top (middle) we force our point to be bottom (middle)
-		npoint = "BOTTOM"
-	elseif relativePoint == "BOTTOM" then
-		npoint = "TOP"
-	elseif relativePoint == "LEFT" then
-		npoint = "RIGHT"
-	elseif relativePoint == "RIGHT" then
-		npoint = "LEFT"
-	end
-	--self:Print(fmt("DEBUG: FixAnchoring: Found: %s connected to parent %s. Changed to: %s connected to parent %s.",tos(point),tos(relativePoint),tos(npoint),tos(nrelativePoint)))
-
-	-- add the configured offsets while we're at it
-	nxOfs = lOptGet(frame,'mainoffset_x') or 0
-	nyOfs = lOptGet(frame,'mainoffset_y') or 0
-	--self:Print(fmt("DEBUG: FixAnchoring: xOfs is %s and yOfs is %s", tos(nxOfs), tos(nxOfs)))
-	
-	
-	frame.Totems:ClearAllPoints()
-	frame.Totems:SetPoint(npoint, nrelativeTo, nrelativePoint, nxOfs, nyOfs)
-	
-end
-
 function PitBull4_Totems:ResizeMainFrame(frame)
 	if not frame.Totems then
 		return
@@ -912,7 +861,6 @@ function PitBull4_Totems:BuildFrames(frame)
 	
 	self:ResizeMainFrame(frame)
 	self:RealignTotems(frame)
-	self:FixAnchoring(frame)
 end
 
 function PitBull4_Totems:ApplyLayoutSettings(frame)
@@ -927,6 +875,12 @@ function PitBull4_Totems:ApplyLayoutSettings(frame)
 		elements[i].text:SetHeight(TOTEMSIZE/3)
 
 		elements[i].frame.hideinactive = lOptGet(frame,'hideinactive')
+		
+		if lOptGet(frame,'timerspiral') then
+			elements[i].spiral:Show()
+		else
+			elements[i].spiral:Hide()
+		end
 	end
 
 
@@ -956,7 +910,6 @@ function PitBull4_Totems:UpdateFrame(frame)
 		self:StartTimer()
 		
 		-- Now rebuild most of the layout since some setting might have changed.
-		self:FixAnchoring(frame)
 		self:RealignTotems(frame)
 		self:ApplyLayoutSettings(frame)
 		return false -- our frame exists already, nothing more to do...
@@ -1044,8 +997,6 @@ PitBull4_Totems:SetDefaults({
 	timertextscale = 0.45,
 	linebreak = MAX_TOTEMS,
 	hideinactive = false,
-	mainoffset_x = 0,
-	mainoffset_y = 0,
 }, {
 	totemtooltips = true,
 	order = getOrderDefault(), -- this is the order _by_slot_ not by position!
@@ -1072,31 +1023,7 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 	end
 
 
-	return 'mainoffset_x', {
-		type = 'range',
-		name = L["Horizontal offset"],
-		desc = L["Number of pixels to offset the totem frame from the start point horizontally."],
-		min = -690,
-		max = 690,
-		step = 1,
-		get = get,
-		set = set,
-		disabled = is_pbt_disabled,
-		order = 8,
-	},
-	'mainoffset_y', {
-		type = 'range',
-		name = L["Vertical offset"],
-		desc = L["Number of pixels to offset the totem frame from the start point vertically."],
-		min = -430,
-		max = 430,
-		step = 1,
-		get = get,
-		set = set,
-		disabled = is_pbt_disabled,
-		order = 9,
-	},
-	'totemspacing', {
+	return 'totemspacing', {
 		type = 'range',
 		name = L["Totem Spacing"],
 		desc = L["Sets the size of the gap between the totem icons."],
