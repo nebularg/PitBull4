@@ -240,9 +240,10 @@ end
 --- Update the frame for the current module for the given frame and handle any layout changes.
 -- @param frame the Unit Frame to update
 -- @param return_changed whether to return if the update should change the layout. If this is false, it will call :UpdateLayout() automatically.
+-- @param same_guid whether when called from :UpdateGUID, the unit is the same GUID as before.
 -- @usage MyModule:Update(frame)
 -- @return whether the update requires UpdateLayout to be called if return_changed is specified
-function Module:Update(frame, return_changed)
+function Module:Update(frame, return_changed, same_guid)
 	--@alpha@
 	expect(frame, 'typeof', 'frame')
 	expect(return_changed, 'typeof', 'nil;boolean')
@@ -254,7 +255,7 @@ function Module:Update(frame, return_changed)
 	if not layout_db.enabled or (not frame.guid and not frame.force_show) then
 		changed = self:ClearFrame(frame)
 	else
-		changed = self:UpdateFrame(frame)
+		changed = self:UpdateFrame(frame, same_guid)
 	end
 	
 	if return_changed then

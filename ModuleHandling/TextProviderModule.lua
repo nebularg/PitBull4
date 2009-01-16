@@ -101,7 +101,8 @@ function TextProviderModule:UpdateFrame(frame)
 			if LibSharedMedia then
 				font = LibSharedMedia:Fetch("font", text_db.font or frame.layout_db.font or "")
 			end
-			font_string:SetFont(font or DEFAULT_FONT, DEFAULT_FONT_SIZE * text_db.size)
+			local _, _, modifier = font_string:GetFont()
+			font_string:SetFont(font or DEFAULT_FONT, DEFAULT_FONT_SIZE * text_db.size, modifier)
 			font_string.db = text_db
 			if not self:AddFontString(frame, font_string, text_db) then
 				self:RemoveFontString(font_string)
