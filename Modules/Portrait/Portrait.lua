@@ -74,7 +74,20 @@ end
 
 local function model_OnUpdate(self, elapsed)
 	self:SetScript("OnUpdate", nil)
-	self:SetCamera(0)
+	
+	local frame = self:GetParent()
+	
+	local layout_db = PitBull4_Portrait:GetLayoutDB(frame)
+	if not layout_db.full_body then
+		self:SetCamera(0)
+	end
+	
+	if type(self:GetModel()) ~= "string" then
+		-- the portrait wasn't set properly, let's try again
+		
+		PitBull4_Portrait:Clear(frame)
+		PitBull4_Portrait:Update(frame)
+	end
 end
 
 function PitBull4_Portrait:UpdateFrame(frame)
@@ -138,9 +151,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 		if not falling_back then
 			portrait.model:SetUnit(unit)
 			portrait.model:SetCamera(1)
-			if not layout_db.full_body then
-				portrait.model:SetScript("OnUpdate", model_OnUpdate)
-			end
+			portrait.model:SetScript("OnUpdate", model_OnUpdate)
 		else	
 			portrait.model:SetModelScale(4.25)
 			portrait.model:SetPosition(0, 0, -1.5)
