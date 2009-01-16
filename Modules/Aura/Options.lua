@@ -141,8 +141,7 @@ local is_height = {
 	up_left    = true
 }
 
-
-PitBull4_Aura:SetGlobalOptionsFunction(function(self)
+PitBull4_Aura:SetColorOptionsFunction(function(self)
 	local function get(info)
 		local group = info[#info - 1]
 		local id = info[#info]
@@ -205,18 +204,6 @@ PitBull4_Aura:SetGlobalOptionsFunction(function(self)
 					self:UpdateAll()
 				end,
 			},
-			guess_weapon_enchant_icon = {
-				type = 'toggle',
-				name = L['Use spell icon'],
-				desc = L['Use the spell icon for the weapon enchant rather than the icon for the weapon.'],
-				get = function(info)
-					return self.db.profile.global.guess_weapon_enchant_icon
-				end,
-				set = function(info, value)
-					self.db.profile.global.guess_weapon_enchant_icon = value
-					self:UpdateWeaponEnchants(true)
-				end,
-			}
 		}
 		
 	},
@@ -274,6 +261,22 @@ PitBull4_Aura:SetGlobalOptionsFunction(function(self)
 				order = 5
 			}
 		}
+	}
+end)
+
+
+PitBull4_Aura:SetGlobalOptionsFunction(function(self)
+	return 'guess_weapon_enchant_icon', {
+		type = 'toggle',
+		name = L['Use spell icon'],
+		desc = L['Use the spell icon for the weapon enchant rather than the icon for the weapon.'],
+		get = function(info)
+			return self.db.profile.global.guess_weapon_enchant_icon
+		end,
+		set = function(info, value)
+			self.db.profile.global.guess_weapon_enchant_icon = value
+			self:UpdateWeaponEnchants(true)
+		end,
 	}
 end)
 
