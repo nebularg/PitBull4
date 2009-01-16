@@ -25,19 +25,21 @@ function PitBull4_Aura:OnEnable()
 	self:ScheduleRepeatingTimer("OnUpdate", 0.2)
 end
 
-local units_to_update = {}
+local guids_to_update = {}
 
 function PitBull4_Aura:UNIT_AURA(event, unit)
 	-- UNIT_AURA updates are throttled to 1 per frame
-	-- by collecting them in units_to_update and then updating
-	-- the relevent frames once every 0.2 seconds 
-	units_to_update[unit] = true	
+	-- by collecting them in guids_to_update and then updating
+	-- the relevent frames once every 0.2 seconds.  We capture
+	-- the GUID at the event time because the unit ids can change
+	-- between when we receive the event and do the throttled update
+	guids_to_update[UnitGUID(unit)] = true	
 end
 
 -- Function to execute the throttled updates
 function PitBull4_Aura:OnUpdate()
 	for frame in PitBull4:IterateFrames() do
-		if units_to_update[frame.unit] then
+		if guids_to_update[frame.guid] then
 			if self:GetLayoutDB(frame).enabled then
 				self:UpdateFrame(frame)
 			else
@@ -45,7 +47,7 @@ function PitBull4_Aura:OnUpdate()
 			end
 		end
 	end
-	table.wipe(units_to_update)
+	table.wipe(guids_to_update)
 
 	self:UpdateCooldownTexts()
 
