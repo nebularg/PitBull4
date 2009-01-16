@@ -68,7 +68,13 @@ local function get_class_options()
 		class_options.args[class] = option
 	end
 	
-	class_options.args.default = {
+	
+	class_options.args.reset_sep = {
+		type = 'header',
+		name = '',
+		order = -2,
+	}
+	class_options.args.reset = {
 		type = 'execute',
 		name = L["Reset to defaults"],
 		confirm = true,
