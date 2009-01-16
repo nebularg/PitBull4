@@ -19,6 +19,8 @@ local AIR_TOTEM_SLOT   = AIR_TOTEM_SLOT   or 4
 
 local TOTEMSIZE = 50
 
+local CFGMODE_ICON = [[Interface\Icons\Spell_Fire_TotemOfWrath]]
+
 local _G = _G
 local GetTime = _G.GetTime
 local floor = _G.math.floor
@@ -78,12 +80,6 @@ local function getVerboseSlotName(slot)
 	else
 		return L["Unknown Slot "]..tostring(slot)
 	end
-end
-
-
-function PitBull4_Totems:OnEnable()
-	self:RegisterEvent("PLAYER_TOTEM_UPDATE")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
 --------------------------------------------------------------------------------
@@ -277,6 +273,27 @@ end
 --------------------------------------------------------------
 -- Totem Logic
 
+-- Wrapper function to simulate totems most accurately when configmode is enabled.
+local function MyGetTotemTimeLeft(slot, frame)
+	if not frame.force_show then return GetTotemTimeLeft(slot) end
+	
+	-- Config mode is on, simulate some time.
+	return 10*slot
+end
+-- Wrapper function to simulate totems most accurately when configmode is enabled.
+local function MyGetTotemInfo(slot, frame)
+	if not frame.force_show then return GetTotemInfo(slot) end
+	
+	-- Config mode on, simulate some fake totem info
+	local fakeLeft = MyGetTotemTimeLeft(slot, frame)
+	return true,
+		"Fake Totem",
+		ceil(GetTime()),
+		119,
+		CFGMODE_ICON
+	
+end
+
 function PitBull4_Totems:OneOrMoreDown()
 	for i=1, MAX_TOTEMS do
 		if ( self.totemIsDown[i] == true ) then
@@ -347,7 +364,7 @@ function PitBull4_Totems:UpdateAllTimes()
 			for slot=1, MAX_TOTEMS do
 				if (not elements) or (not elements[slot]) or (not elements[slot].frame) then return end
 				
-				local timeleft = GetTotemTimeLeft(slot)
+				local timeleft = MyGetTotemTimeLeft(slot,mf)
 				
 				if timeleft > 0 then
 					-- need to update shown time
@@ -385,8 +402,9 @@ end
 function PitBull4_Totems:SpiralUpdate(frame,slot,start,left)
 	if not frame.Totems then return end
 	local tspiral = frame.Totems.elements[slot].spiral
-	local startTime = start or select(3, GetTotemInfo(slot))
-	local timeLeft = left or GetTotemTimeLeft(slot)
+	local startTime = start or select(3, MyGetTotemInfo(slot,frame))
+	local timeLeft = left or MyGetTotemTimeLeft(slot,frame)
+
 	tspiral:SetCooldown(startTime, timeLeft)
 	if self.totemIsDown[slot] == true and lOptGet(frame,'timerspiral') then
 		tspiral:Show()
@@ -397,21 +415,21 @@ end
 
 
 function PitBull4_Totems:ActivateTotem(slot)
-	local haveTotem, name, startTime, duration, icon = GetTotemInfo(slot)
-	-- queried seperately because GetTotemInfo apprears to give less reliable results (wtf?!)
-	local timeleft = GetTotemTimeLeft(slot)
-	
-	if ( name == "" ) then
-		self:Print("WARNING: Can't activate a nondropped totem")
-		return
-	end
-	
-	self.totemIsDown[slot] = true
-	
 	for frame in PitBull4:IterateFramesForUnitID('player') do
 		if not frame.Totems then
 			return
 		end
+		
+		local haveTotem, name, startTime, duration, icon = MyGetTotemInfo(slot, frame)
+		-- queried seperately because GetTotemInfo apprears to give less reliable results (wtf?!)
+		local timeleft = MyGetTotemTimeLeft(slot, frame)
+	
+		if ( name == "" ) then
+			self:Print("WARNING: Can't activate a nondropped totem")
+			return
+		end
+	
+		self.totemIsDown[slot] = true
 
 		local tframe = frame.Totems.elements[slot].frame
 		local ttext = frame.Totems.elements[slot].text
@@ -420,6 +438,7 @@ function PitBull4_Totems:ActivateTotem(slot)
 		tframe.totemIcon = icon
 		tframe:SetAlpha(1)
 		tframe:Show()
+		tframe.force_show = frame.force_show
 		
 		self:StopPulse(tframe)
 		
@@ -434,20 +453,20 @@ function PitBull4_Totems:ActivateTotem(slot)
 end
 
 function PitBull4_Totems:DeactivateTotem(slot)
-	local haveTotem, name, startTime, duration, icon = GetTotemInfo(slot)
-	
-	if ( name ~= "" ) then
-		self:Print("WARNING: Can't deactivate a dropped totem")
-		return
-	end
-	
-	self.totemIsDown[slot] = false
-	
 	for frame in PitBull4:IterateFramesForUnitID('player') do
 		if not frame.Totems then
 			return
 		end
 
+		local haveTotem, name, startTime, duration, icon = MyGetTotemInfo(slot, frame)
+	
+		if ( name ~= "" ) then
+			self:Print("WARNING: Can't deactivate a dropped totem")
+			return
+		end
+	
+		self.totemIsDown[slot] = false
+		
 		local tframe = frame.Totems.elements[slot].frame
 		local ttext = frame.Totems.elements[slot].text
 		local tspiral = frame.Totems.elements[slot].spiral
@@ -612,12 +631,13 @@ function PitBull4_Totems:UpdateIconColor(frame)
 end
 
 function PitBull4_Totems:ButtonOnClick(mousebutton)
-	if (mousebutton == "RightButton" and this.slot ) then
+	if (mousebutton == "RightButton" and this.slot and not this.force_show) then
 		DestroyTotem( this.slot )
 	end
 end
 
 function PitBull4_Totems:ButtonOnEnter()
+	if this.force_show then return end
 	if ( this.slot and gOptGet('totemtooltips') ) then
 		-- setting the tooltip
 		GameTooltip_SetDefaultAnchor(GameTooltip, this)
@@ -626,6 +646,7 @@ function PitBull4_Totems:ButtonOnEnter()
 end
 
 function PitBull4_Totems:ButtonOnLeave()
+	if this.force_show then return end
 	if ( gOptGet('totemtooltips') ) then
 		-- hiding the tooltip
 		GameTooltip:Hide()
@@ -701,10 +722,10 @@ end
 
 
 function PitBull4_Totems:PLAYER_TOTEM_UPDATE(event, slot)
-	local haveTotem, name, startTime, duration, icon = GetTotemInfo(slot)
 	local sSlot = tostring(slot)
 
 	for frame in PitBull4:IterateFramesForUnitID('player') do
+		local haveTotem, name, startTime, duration, icon = MyGetTotemInfo(slot,frame)
 		if ( haveTotem and name ~= "") then
 			-- New totem created
 			self:ActivateTotem(slot)
@@ -911,6 +932,7 @@ function PitBull4_Totems:UpdateFrame(frame)
 		-- Now rebuild most of the layout since some setting might have changed.
 		self:RealignTotems(frame)
 		self:ApplyLayoutSettings(frame)
+		self:ForceSilentTotemUpdate()
 		return false -- our frame exists already, nothing more to do...
 	else
 		self:BuildFrames(frame)
@@ -957,6 +979,11 @@ function PitBull4_Totems:ClearFrame(frame)
 	frame.Totems = frame.Totems:Delete()
 	
 	return true
+end
+
+function PitBull4_Totems:OnEnable()
+	self:RegisterEvent("PLAYER_TOTEM_UPDATE")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
 function PitBull4_Totems:OnInitialize()
