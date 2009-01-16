@@ -47,7 +47,13 @@ local function OnUpdate(self)
 			GameTooltip:SetUnitDebuff(self:GetUnit(), self.id)
 		end
 	elseif self.slot then
-		GameTooltip:SetInventoryItem("player", self.slot)	
+		local has_item = GameTooltip:SetInventoryItem("player", self.slot)	
+		if not has_item then
+			GameTooltip:ClearLines()
+			GameTooltip:AddLine(self.name, 1, 0.82, 0)
+			GameTooltip:AddLine(L["Sample tempoary weapon enchant created by PitBull to allow you to see the results of your configuration easily."], 1, 1, 1, 1)
+			GameTooltip:Show()
+		end
 	else
 		-- Sample auras for config mode
 		GameTooltip:ClearLines()

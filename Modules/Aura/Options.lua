@@ -7,6 +7,25 @@ local PitBull4 = _G.PitBull4
 local PitBull4_Aura= PitBull4:GetModule("Aura")
 local L = PitBull4.L
 
+local color_defaults = {
+	friend = {
+		my = {0, 1, 0, 1},
+		other = {1, 0, 0, 1}
+	},
+	weapon = {
+		weapon = {1, 0, 0, 1},
+		quality_color = true
+	},
+	enemy = {
+		Poison = {0, 1, 0, 1},
+		Magic = {0, 0, 1, 1},
+		Disease = {.55, .15, 0, 1},
+		Curse = {5, 0, 5, 1},
+		Enrage = {1, .55, 0, 1},
+		["nil"] = {1, 0, 0, 1},
+	}
+}
+
 PitBull4_Aura:SetDefaults({
 	-- Layout defaults
 	enabled_buffs = true,
@@ -52,6 +71,7 @@ PitBull4_Aura:SetDefaults({
 			width = 100,
 			width_percent = 0.50,
 			growth = "right_down",
+			sort = true,
 			reverse = false,
 			row_spacing = 0,
 			col_spacing = 0,
@@ -66,6 +86,7 @@ PitBull4_Aura:SetDefaults({
 			width = 100,
 			width_percent = 0.50,
 			growth = "left_down",
+			sort = true,
 			reverse = false,
 			col_spacing = 0,
 			row_spacing = 0,
@@ -74,24 +95,7 @@ PitBull4_Aura:SetDefaults({
 },
 {
 	-- Global defaults
-	colors = {
-		friend = {
-			my = {0, 1, 0, 1},
-			other = {1, 0, 0, 1}
-		},
-		weapon = {
-			weapon = {1, 0, 0, 1},
-			quality_color = true
-		},
-		enemy = {
-			Poison = {0, 1, 0, 1},
-			Magic = {0, 0, 1, 1},
-			Disease = {.55, .15, 0, 1},
-			Curse = {5, 0, 5, 1},
-			Enrage = {1, .55, 0, 1},
-			["nil"] = {1, 0, 0, 1},
-		},
-	},
+	colors = color_defaults,
 	guess_weapon_enchant_icon = true,
 })
 
@@ -261,7 +265,21 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 				order = 5
 			}
 		}
-	}, function() end
+	}, function(info)
+		-- reset_default_colors
+		local db = self.db.profile.global.colors
+		for group,group_table in pairs(color_defaults) do
+			for color,color_value in pairs(group_table) do
+				if type(color_value) == "table" then
+					for i = 1, #color_value do
+						db[group][color][i] = color_value[i] 	
+					end
+				else
+					db[group][color] = color_value
+				end
+			end
+		end
+	end
 end)
 
 
@@ -398,6 +416,15 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				bigStep = 5,
 				order = 4,
 			},
+			sort = {
+				type = 'toggle',
+				name = L['Sort'],
+				desc = L['Sort auras by type and alphabetically, preferring your own auras first.'],
+				get = get_layout,
+				set = set_layout,
+				disabled = is_aura_disabled,
+				order = 5
+			},
 			reverse = {
 				type = 'toggle',
 				name = L['Reverse'],
@@ -405,7 +432,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get_layout, 
 				set = set_layout, 
 				disabled = is_aura_disabled,
-				order = 5,
+				order = 6,
 			},
 			width_type = {
 				type = 'select',
@@ -431,7 +458,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				set = set_layout, 
 				disabled = is_aura_disabled,
 				values = width_type_values,
-				order = 6,
+				order = 7,
 			},
 			width = {
 				type = 'range',
@@ -464,7 +491,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				max = 400,
 				step = 1,
 				bigStep = 5,
-				order = 7,
+				order = 8,
 			},
 			width_percent = {
 				type = 'range',
@@ -497,7 +524,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				max = 1.0,
 				step = 0.01,
 				isPercent = true,
-				order = 8,
+				order = 9,
 			},
 			row_spacing = {
 				type = 'range',
@@ -509,7 +536,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				min = 0,
 				max = 10,
 				step = 1,
-				order = 9,
+				order = 10,
 			},
 			col_spacing = {
 				type = 'range',
@@ -521,7 +548,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				min = 0,
 				max = 10,
 				step = 1,
-				order = 10,
+				order = 11,
 			}
 		}
 	}
