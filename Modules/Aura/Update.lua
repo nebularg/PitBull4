@@ -9,10 +9,11 @@ local PitBull4_Aura = PitBull4:GetModule("Aura")
 local L = PitBull4.L
 local UnitAura = _G.UnitAura
 local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
-local math_ceil = _G.math.ceil
+local ceil = _G.math.ceil
 local GetTime = _G.GetTime
 local unpack = _G.unpack
-local table_sort = table.sort
+local sort = _G.table.sort
+local wipe = _G.table.wipe
 
 -- The table we use for gathering the aura data, filtering
 -- and then sorting them.  This table is reused without
@@ -88,7 +89,7 @@ local function new_entry()
 end
 
 local function del_entry(t)
-	table.wipe(t)
+	wipe(t)
 	pool[t] = true
 	return nil
 end
@@ -236,7 +237,7 @@ local function set_weapon_entry(list, is_enchant, time_left, expiration_time, co
 
 	-- No such enchant, clear the table 
 	if is_enchant ~= 1 then
-		table.wipe(entry)	
+		wipe(entry)	
 		return
 	end
 
@@ -251,7 +252,7 @@ local function set_weapon_entry(list, is_enchant, time_left, expiration_time, co
 	-- Figure the duration by keeping track of the longest
 	-- time_left we've seen.  
 	local duration = weapon_durations[name]
-	time_left = math_ceil(time_left / 1000)
+	time_left = ceil(time_left / 1000)
 	if not duration or duration < time_left then
 		duration = time_left
 		weapon_durations[name] = duration
@@ -486,7 +487,7 @@ local function update_auras(frame, db, is_buff)
 	if layout.sort then
 		aura_sort__is_friend = is_friend
 		aura_sort__is_buff = is_buff
-		table_sort(list, aura_sort)
+		sort(list, aura_sort)
 	end
 
 	-- Limit the number of displayed buffs here after we
@@ -508,14 +509,14 @@ end
 -- TODO Configurable formatting
 local function format_time(seconds)
 	if seconds >= 3600 then
-		return HOUR_ONELETTER_ABBR:format(math_ceil(seconds/3600))
+		return HOUR_ONELETTER_ABBR:format(ceil(seconds/3600))
 	elseif seconds >= 180 then
-		return MINUTE_ONELETTER_ABBR:format(math_ceil(seconds/60))
+		return MINUTE_ONELETTER_ABBR:format(ceil(seconds/60))
 	elseif seconds > 60 then
-		seconds = math_ceil(seconds)
+		seconds = ceil(seconds)
 		return ("%d:%d"):format(seconds/60, seconds%60)
 	else
-		return ("%d"):format(math_ceil(seconds))
+		return ("%d"):format(ceil(seconds))
 	end
 end
 
@@ -613,7 +614,7 @@ end
 function PitBull4_Aura:UpdateWeaponEnchants(force)
 	local updated = false
 	if force then
-		table.wipe(weapon_list)
+		wipe(weapon_list)
 	end
 	local mh, mh_time_left, mh_count, oh, oh_time_left, oh_count = GetWeaponEnchantInfo()
 	local current_time = GetTime()
