@@ -15,9 +15,14 @@ PitBull4_Aura:SetModuleType("custom")
 PitBull4_Aura:SetName(L["Aura"])
 PitBull4_Aura:SetDescription(L["Shows buffs and debuffs for PitBull4 frames."])
 
+-- constants for slot ids
+PitBull4_Aura.MAINHAND = GetInventorySlotInfo("MainHandSlot")
+PitBull4_Aura.OFFHAND = GetInventorySlotInfo("SecondaryHandSlot")
+
+
 function PitBull4_Aura:OnEnable()
 	self:RegisterEvent("UNIT_AURA")
-	self:ScheduleRepeatingTimer("OnUpdate", 0)
+	self:ScheduleRepeatingTimer("OnUpdate", 0.2)
 end
 
 local units_to_update = {}
@@ -25,7 +30,7 @@ local units_to_update = {}
 function PitBull4_Aura:UNIT_AURA(event, unit)
 	-- UNIT_AURA updates are throttled to 1 per frame
 	-- by collecting them in units_to_update and then updating
-	-- the relevent frames once per frame.
+	-- the relevent frames once every 0.2 seconds 
 	units_to_update[unit] = true	
 end
 
@@ -43,6 +48,8 @@ function PitBull4_Aura:OnUpdate()
 	table.wipe(units_to_update)
 
 	self:UpdateCooldownTexts()
+
+	self:UpdateWeaponEnchants()
 end
 
 function PitBull4_Aura:ClearFrame(frame)
