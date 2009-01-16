@@ -24,15 +24,14 @@ local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
 
 local color_constants = {
-	unknown = { 0.8, 0.8, 0.8 },
-	hostile = { 226/255, 45/255, 75/255 },
-	neutral = { 1, 1, 34/255 },
-	friendly = { 0.2, 0.8, 0.15 },
-	civilian = { 48/255, 113/255, 191/255 },
 	dead = { 0.6, 0.6, 0.6 },
 	disconnected = { 0.7, 0.7, 0.7 },
 	tapped = { 0.5, 0.5, 0.5 }
 }
+
+local HOSTILE_REACTION = 2
+local NEUTRAL_REACTION = 4
+local FRIENDLY_REACTION = 5
 
 local PLAYER_GUID
 function PitBull4_HealthBar:OnEnable()
@@ -84,39 +83,39 @@ function PitBull4_HealthBar:GetColor(frame, value)
 				-- they can attack me
 				if UnitCanAttack("player", unit) then
 					-- and I can attack them
-					return unpack(color_constants.hostile)
+					return unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
 				else
 					-- but I can't attack them
-					return unpack(color_constants.civilian)
+					return unpack(PitBull4.ReactionColors.civilian)
 				end
 			elseif UnitCanAttack("player", unit) then
 				-- they can't attack me, but I can attack them
-				return unpack(color_constants.neutral)
+				return unpack(PitBull4.ReactionColors[NEUTRAL_REACTION])
 			elseif UnitIsFriend("player", unit) then
 				-- on my team
-				return unpack(color_constants.friendly)
+				return unpack(PitBull4.ReactionColors[FRIENDLY_REACTION])
 			else
 				-- either enemy or friend, no violence
-				return unpack(color_constants.civilian)
+				return unpack(PitBull4.ReactionColors.civilian)
 			end
 		end
 	elseif db.hostility_color_npcs then
 		local reaction = UnitReaction(unit, "player")
 		if reaction then
 			if reaction >= 5 then
-				return unpack(color_constants.friendly)
+				return unpack(PitBull4.ReactionColors[FRIENDLY_REACTION])
 			elseif reaction == 4 then
-				return unpack(color_constants.neutral)
+				return unpack(PitBull4.ReactionColors[NEUTRAL_REACTION])
 			else
-				return unpack(color_constants.hostile)
+				return unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
 			end
 		else
 			if UnitIsFriend("player", unit) then
-				return unpack(color_constants.friendly)
+				return unpack(PitBull4.ReactionColors[FRIENDLY_REACTION])
 			elseif UnitIsEnemy("player", unit) then
-				return unpack(color_constants.hostile)
+				return unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
 			else
-				return unpack(color_constants.unknown)
+				return nil
 			end
 		end
 	end

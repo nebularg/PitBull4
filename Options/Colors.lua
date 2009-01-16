@@ -127,9 +127,9 @@ local function get_power_options()
 		end
 	}
 	
-	for class in pairs(PowerBarColor) do
-		if type(class) == "string" then
-			power_options.args[class] = option
+	for power_token in pairs(PowerBarColor) do
+		if type(power_token) == "string" then
+			power_options.args[power_token] = option
 		end
 	end
 	
@@ -162,6 +162,93 @@ local function get_power_options()
 	return power_options
 end
 
+local function get_reaction_options()
+	local reaction_options = {
+		type = 'group',
+		name = L["Reaction"],
+		args = {},
+	}
+	
+	local option = {
+		type = 'color',
+		name = function(info)
+			local reaction = info[#info]
+			
+			local label = "FACTION_STANDING_LABEL" .. reaction
+			return _G[label] or label
+		end,
+		hasAlpha = false,
+		get = function(info)
+			local reaction = info[#info]+0
+			
+			return unpack(PitBull4.db.profile.colors.reaction[reaction])
+		end,
+		set = function(info, r, g, b)
+			local reaction = info[#info]+0
+			
+			local color = PitBull4.db.profile.colors.reaction[reaction]
+			color[1], color[2], color[3] = r, g, b
+			
+			for frame in PitBull4:IterateFrames() do
+				frame:Update()
+			end
+		end
+	}
+	
+	for reaction in pairs(FACTION_BAR_COLORS) do
+		local my_option = {}
+		for k, v in pairs(option) do
+			my_option[k] = v
+		end
+		my_option.order = reaction
+		reaction_options.args[reaction..""] = my_option
+	end
+	
+	reaction_options.args.civilan = {
+		type = 'color',
+		name = L["Civilian"],
+		get = function(info)
+			return unpack(PitBull4.db.profile.colors.reaction.civilian)
+		end,
+		set = function(info, r, g, b)
+			local color = PitBull4.db.profile.colors.reaction.civilian
+			color[1], color[2], color[3] = r, g, b
+			
+			for frame in PitBull4:IterateFrames() do
+				frame:Update()
+			end
+		end
+	}
+	
+	reaction_options.args.reset_sep = {
+		type = 'header',
+		name = '',
+		order = -2,
+	}
+	reaction_options.args.reset = {
+		type = 'execute',
+		name = L["Reset to defaults"],
+		confirm = true,
+		confirmText = L["Are you sure you want to reset to defaults?"],
+		order = -1,
+		func = function(info)
+			for reaction, color in pairs(FACTION_BAR_COLORS) do
+				local db_color = PitBull4.db.profile.colors.reaction[reaction]
+				db_color[1], db_color[2], db_color[3] = color.r, color.g, color.b
+			end
+			
+			local db_color = PitBull4.db.profile.colors.reaction.civilian
+			db_color[1], db_color[2], db_color[3] = 48/255, 113/255, 191/255
+			
+			for frame in PitBull4:IterateFrames() do
+				frame:Update()
+			end
+		end,
+	}
+	
+	return reaction_options
+end
+
 function PitBull4.Options.get_color_options()
 	local color_options = {
 		type = 'group',
@@ -173,6 +260,7 @@ function PitBull4.Options.get_color_options()
 	
 	color_options.args.class = get_class_options()
 	color_options.args.power = get_power_options()
+	color_options.args.reaction = get_reaction_options()
 	
 	for id, module in PitBull4:IterateModules() do
 		if color_functions[module] then
