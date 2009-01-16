@@ -492,11 +492,11 @@ function PitBull4_Totems:ResizeMainFrame(frame)
 	if (lOptGet(frame,'totemdirection') == "h") then
 		width = (lbreak*TOTEMSIZE)+((lbreak-1)*tSpacing)
 		height = (nlines*TOTEMSIZE)+((nlines-1)*tSpacing)
-		ttf.height = 1
+		ttf.height = nlines
 	else
 		width = (nlines*TOTEMSIZE)+((nlines-1)*tSpacing) 
 		height = (lbreak*TOTEMSIZE)+((lbreak-1)*tSpacing)
-		ttf.height = height/width
+		ttf.height = lbreak
 	end
 	ttf:SetWidth(width)
 	ttf:SetHeight(height)
@@ -507,10 +507,6 @@ function PitBull4_Totems:RealignTotems(frame)
 	local tspacing = lOptGet(frame,'totemspacing') or 0
 
 	if frame.Totems then
-		self:ResizeMainFrame(frame)
-		
-		--self:FixAnchoring(frame)
-		
 		local elements = frame.Totems.elements
 		for i=1, MAX_TOTEMS do
 			local o = getSlotFromOrder(i)
