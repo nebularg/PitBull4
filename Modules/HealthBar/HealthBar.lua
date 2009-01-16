@@ -75,9 +75,9 @@ function PitBull4_HealthBar:GetColor(frame, value)
 	elseif UnitIsPlayer(unit) then
 		if db.color_by_class and unit then
 			local _, class = UnitClass(unit)
-			local t = RAID_CLASS_COLORS[class]
+			local t = PitBull4.ClassColors[class]
 			if t then
-				return t.r, t.g, t.b
+				return t[1], t[2], t[3]
 			end
 		elseif db.hostility_color then
 			if UnitCanAttack(unit, "player") then

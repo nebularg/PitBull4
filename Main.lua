@@ -80,8 +80,14 @@ local DATABASE_DEFAULTS = {
 			},
 			Normal = {}
 		},
+		colors = {
+			class = {}, -- filled in by RAID_CLASS_COLORS
+		}
 	}
 }
+for class, color in pairs(RAID_CLASS_COLORS) do
+	DATABASE_DEFAULTS.profile.colors.class[class] = { color.r, color.g, color.b }
+end
 -----------------------------------------------------------------------------
 
 local _G = _G
@@ -721,6 +727,8 @@ function PitBull4:OnInitialize()
 	db = LibStub("AceDB-3.0"):New("PitBull4DB", DATABASE_DEFAULTS, 'global')
 	DATABASE_DEFAULTS = nil
 	self.db = db
+	
+	self.ClassColors = PitBull4.db.profile.colors.class
 end
 
 function PitBull4:OnEnable()

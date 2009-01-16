@@ -13,5 +13,6 @@
 <Script file="LayoutEditor\Other.lua"/>
 <Script file="Units.lua"/>
 <Script file="Modules.lua"/>
+<Script file="Colors.lua"/>
 
 </Ui>
