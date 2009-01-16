@@ -111,7 +111,13 @@ function PitBull4_HealthBar:GetColor(frame, value)
 				return unpack(color_constants.hostile)
 			end
 		else
-			return unpack(color_constants.unknown)
+			if UnitIsFriend("player", unit) then
+				return unpack(color_constants.friendly)
+			elseif UnitIsEnemy("player", unit) then
+				return unpack(color_constants.hostile)
+			else
+				return unpack(color_constants.unknown)
+			end
 		end
 	end
 	if value < 0.5 then
