@@ -499,11 +499,11 @@ function PitBull4_Totems:ResizeMainFrame(frame)
 	if (lOptGet(frame,'totemdirection') == "h") then
 		width = (lbreak*TOTEMSIZE)+((lbreak-1)*tSpacing)
 		height = (nlines*TOTEMSIZE)+((nlines-1)*tSpacing)
-		ttf.height = nlines
+		ttf.height = nlines + ((nlines-1)*(tSpacing/TOTEMSIZE))
 	else
 		width = (nlines*TOTEMSIZE)+((nlines-1)*tSpacing) 
 		height = (lbreak*TOTEMSIZE)+((lbreak-1)*tSpacing)
-		ttf.height = lbreak
+		ttf.height = lbreak + ((lbreak-1)*(tSpacing/TOTEMSIZE))
 	end
 	ttf:SetWidth(width)
 	ttf:SetHeight(height)
