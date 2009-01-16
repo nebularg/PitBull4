@@ -151,7 +151,7 @@ function UnitFrame__scripts:OnAttributeChanged(key, value)
 	end
 	
 	self.unit = new_unit
-	if value then
+	if new_unit then
 		PitBull4.unit_id_to_frames[new_unit][self] = true
 	end
 end
