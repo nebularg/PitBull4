@@ -10,6 +10,7 @@ local StatusBarModule = PitBull4:NewModuleType("status_bar", {
 	position = 1,
 	side = 'center',
 	enabled = true,
+	custom_color = nil,
 })
 
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
@@ -134,6 +135,12 @@ end
 -- @return blue value within [0, 1]
 -- @return alpha value within [0, 1]
 function StatusBarModule:CallColorFunction(frame, value, extra)
+	local layout_db = self:GetLayoutDB(frame)
+	local custom_color = layout_db.custom_color
+	if custom_color then
+		return unpack(custom_color)
+	end
+	
 	if not self.GetColor then
 		return 0.7, 0.7, 0.7, 1
 	end
@@ -158,6 +165,13 @@ end
 -- @return blue value within [0, 1]
 -- @return alpha value within [0, 1] or nil
 function StatusBarModule:CallExtraColorFunction(frame, value, extra)
+	local layout_db = self:GetLayoutDB(frame)
+	local custom_color = layout_db.custom_color
+	if custom_color then
+		local r, g, b, a = custom_color
+		return (1 + 2*r) / 3, (1 + 2*g) / 3, (1 + 2*b) / 3, a
+	end
+	
 	if not self.GetExtraColor then
 		return 0.5, 0.5, 0.5, nil
 	end
