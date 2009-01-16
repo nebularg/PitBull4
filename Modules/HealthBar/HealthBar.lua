@@ -139,9 +139,9 @@ function PitBull4_HealthBar:GetColor(frame, value)
 	local inverse_value = 1 - normalized_value
 	
 	return
-		low_r * normalized_value + high_r * inverse_value,
-		low_g * normalized_value + high_g * inverse_value,
-		low_b * normalized_value + high_b * inverse_value
+		low_r * inverse_value + high_r * normalized_value,
+		low_g * inverse_value + high_g * normalized_value,
+		low_b * inverse_value + high_b * normalized_value
 end
 
 function PitBull4_HealthBar:UNIT_HEALTH(event, unit)
