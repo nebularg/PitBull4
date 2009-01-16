@@ -39,7 +39,7 @@ function PitBull4_ReputationBar:GetColor(frame, value)
 end
 
 function PitBull4_ReputationBar:GetExampleValue(frame)
-	if frame.unit ~= "player" then
+	if frame and frame.unit ~= "player" then
 		return nil
 	end
 	return 0.3

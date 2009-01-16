@@ -65,7 +65,7 @@ function PitBull4_ThreatBar:GetValue(frame)
 end
 
 function PitBull4_ThreatBar:GetExampleValue(frame)
-	if not ACCEPTABLE_CLASSIFICATIONS[frame.classification] then
+	if frame and not ACCEPTABLE_CLASSIFICATIONS[frame.classification] then
 		return nil
 	end
 	return 0.5
