@@ -261,7 +261,7 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 				order = 5
 			}
 		}
-	}
+	}, function() end
 end)
 
 
