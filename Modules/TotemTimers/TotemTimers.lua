@@ -17,6 +17,8 @@ local EARTH_TOTEM_SLOT = EARTH_TOTEM_SLOT or 2
 local WATER_TOTEM_SLOT = WATER_TOTEM_SLOT or 3
 local AIR_TOTEM_SLOT   = AIR_TOTEM_SLOT   or 4
 
+local TOTEMSIZE = 50
+
 local _G = _G
 local GetTime = _G.GetTime
 local floor = math.floor
@@ -524,18 +526,23 @@ function PitBull4_TotemTimers:ResizeMainFrame(frame)
 	if not frame.TotemTimers then
 		return
 	end
-	local tSize = lOptGet(frame,'totemsize')
 	local tSpacing = lOptGet(frame,'totemspacing')
 	local lbreak = lOptGet(frame,'linebreak')
 	local nlines = ceil(MAX_TOTEMS / lbreak)
 	local ttf = frame.TotemTimers
+	local width = nil
+	local height = nil
 	if (lOptGet(frame,'totemdirection') == "h") then
-		ttf:SetWidth((lbreak*tSize)+((lbreak-1)*tSpacing))
-		ttf:SetHeight((nlines*tSize)+((nlines-1)*tSpacing))
+		width = (lbreak*TOTEMSIZE)+((lbreak-1)*tSpacing)
+		height = (nlines*TOTEMSIZE)+((nlines-1)*tSpacing)
+		ttf.height = 1
 	else
-		ttf:SetWidth((nlines*tSize)+((nlines-1)*tSpacing))
-		ttf:SetHeight((lbreak*tSize)+((lbreak-1)*tSpacing))
+		width = (nlines*TOTEMSIZE)+((nlines-1)*tSpacing) 
+		height = (lbreak*TOTEMSIZE)+((lbreak-1)*tSpacing)
+		ttf.height = height/width
 	end
+	ttf:SetWidth(width)
+	ttf:SetHeight(height)
 end
 
 function PitBull4_TotemTimers:RealignTotems(frame)
@@ -545,7 +552,7 @@ function PitBull4_TotemTimers:RealignTotems(frame)
 	if frame.TotemTimers then
 		self:ResizeMainFrame(frame)
 		
-		self:FixAnchoring(frame)
+		--self:FixAnchoring(frame)
 		
 		local elements = frame.TotemTimers.elements
 		for i=1, MAX_TOTEMS do
@@ -770,7 +777,6 @@ function PitBull4_TotemTimers:BuildFrames(frame)
 	if frame.TotemTimers then return end -- Can't create the frames when they already exist..
 
 	local font, fontsize = self:myGetFont(frame)
-	local tSize = lOptGet(frame,'totemsize')
 	local tSpacing = lOptGet(frame,'totemspacing')
 	
 	-- Main frame
@@ -779,11 +785,11 @@ function PitBull4_TotemTimers:BuildFrames(frame)
 	local ttf = frame.TotemTimers
 
 	if (lOptGet(frame,'totemdirection') == "h") then
-		ttf:SetWidth((MAX_TOTEMS*tSize)+((MAX_TOTEMS-1)*tSpacing))
-		ttf:SetHeight(tSize)
+		ttf:SetWidth((MAX_TOTEMS*TOTEMSIZE)+((MAX_TOTEMS-1)*tSpacing))
+		ttf:SetHeight(TOTEMSIZE)
 	else
-		ttf:SetWidth(tSize)
-		ttf:SetHeight((MAX_TOTEMS*tSize)+((MAX_TOTEMS-1)*tSpacing))
+		ttf:SetWidth(TOTEMSIZE)
+		ttf:SetHeight((MAX_TOTEMS*TOTEMSIZE)+((MAX_TOTEMS-1)*tSpacing))
 	end
 	ttf:Show()
 	
@@ -806,8 +812,8 @@ function PitBull4_TotemTimers:BuildFrames(frame)
 		end
 		local frm = elements[i].frame
 		
-		frm:SetWidth(tSize)
-		frm:SetHeight(tSize)
+		frm:SetWidth(TOTEMSIZE)
+		frm:SetHeight(TOTEMSIZE)
 		frm:Hide()
 		frm.slot = i
 		frm.hideinactive = lOptGet(frame,'hideinactive')
@@ -855,8 +861,6 @@ function PitBull4_TotemTimers:BuildFrames(frame)
 			elements[i].text = PitBull4.Controls.MakeFontString(textFrame, "OVERLAY")
 		end
 		local text = elements[i].text
-		text:SetWidth(tSize)
-		text:SetHeight((tSize/3))
 		text:ClearAllPoints()
 		text:SetPoint("BOTTOM", textFrame, "BOTTOM", 0, 0)
 		text:SetFont(font, fontsize * lOptGet(frame,'timertextscale'), "OUTLINE")
@@ -910,12 +914,11 @@ function PitBull4_TotemTimers:ApplyLayoutSettings(frame)
 
 	local elements = frame.TotemTimers.elements
 
-	local value = lOptGet(frame, 'totemsize')
 	for i=1, MAX_TOTEMS do
-		elements[i].frame:SetHeight(value)
-		elements[i].frame:SetWidth(value)
-		elements[i].text:SetWidth(value)
-		elements[i].text:SetHeight((value/3))
+		elements[i].frame:SetHeight(TOTEMSIZE)
+		elements[i].frame:SetWidth(TOTEMSIZE)
+		elements[i].text:SetWidth(TOTEMSIZE)
+		elements[i].text:SetHeight(TOTEMSIZE/3)
 
 		elements[i].frame.hideinactive = lOptGet(frame,'hideinactive')
 	end
@@ -1021,7 +1024,6 @@ PitBull4_TotemTimers:SetDefaults({
 	size = 2, -- default to a 200% scaling, the 100% seems way too tiny.
 	bgcolor = {0.8, 0.8, 0.8},
 	tlo1 = true, -- dummy for optiontests
-	totemsize = 25,
 	totemspacing = 0,
 	totemdirection = "h",
 	timerspiral = true,
@@ -1029,7 +1031,7 @@ PitBull4_TotemTimers:SetDefaults({
 	timertext = true,
 	timertextcolor = {0, 1, 0, 1},
 	timertextside = "bottominside",
-	timertextscale = 0.75,
+	timertextscale = 0.45,
 	mainbgcolor = {0, 0, 0, 0.5},
 	linebreak = MAX_TOTEMS,
 	hideinactive = false,
@@ -1090,18 +1092,6 @@ PitBull4_TotemTimers:SetLayoutOptionsFunction(function(self)
 		set = set,
 		disabled = is_pbtt_disabled,
 		order = 9,
-	},
-	'totemsize', {
-		type = 'range',
-		name = L["Totem Size"],
-		desc = L["Sets the size of the individual totem icons."],
-		min = 5,
-		max = 100,
-		step = 1,
-		get = get,
-		set = set,
-		disabled = is_pbtt_disabled,
-		order = 11,
 	},
 	'totemspacing', {
 		type = 'range',
