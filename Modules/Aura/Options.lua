@@ -7,6 +7,25 @@ local PitBull4 = _G.PitBull4
 local PitBull4_Aura= PitBull4:GetModule("Aura")
 local L = PitBull4.L
 
+local color_defaults = {
+	friend = {
+		my = {0, 1, 0, 1},
+		other = {1, 0, 0, 1}
+	},
+	weapon = {
+		weapon = {1, 0, 0, 1},
+		quality_color = true
+	},
+	enemy = {
+		Poison = {0, 1, 0, 1},
+		Magic = {0, 0, 1, 1},
+		Disease = {.55, .15, 0, 1},
+		Curse = {5, 0, 5, 1},
+		Enrage = {1, .55, 0, 1},
+		["nil"] = {1, 0, 0, 1},
+	}
+}
+
 PitBull4_Aura:SetDefaults({
 	-- Layout defaults
 	enabled_buffs = true,
@@ -74,24 +93,7 @@ PitBull4_Aura:SetDefaults({
 },
 {
 	-- Global defaults
-	colors = {
-		friend = {
-			my = {0, 1, 0, 1},
-			other = {1, 0, 0, 1}
-		},
-		weapon = {
-			weapon = {1, 0, 0, 1},
-			quality_color = true
-		},
-		enemy = {
-			Poison = {0, 1, 0, 1},
-			Magic = {0, 0, 1, 1},
-			Disease = {.55, .15, 0, 1},
-			Curse = {5, 0, 5, 1},
-			Enrage = {1, .55, 0, 1},
-			["nil"] = {1, 0, 0, 1},
-		},
-	},
+	colors = color_defaults,
 	guess_weapon_enchant_icon = true,
 })
 
@@ -261,7 +263,21 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 				order = 5
 			}
 		}
-	}, function() end
+	}, function(info)
+		-- reset_default_colors
+		local db = self.db.profile.global.colors
+		for group,group_table in pairs(color_defaults) do
+			for color,color_value in pairs(group_table) do
+				if type(color_value) == "table" then
+					for i = 1, #color_value do
+						db[group][color][i] = color_value[i] 	
+					end
+				else
+					db[group][color] = color_value
+				end
+			end
+		end
+	end
 end)
 
 
