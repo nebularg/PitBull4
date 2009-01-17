@@ -300,9 +300,9 @@ function position_indicator_on_root:out_bottom_right(indicator)
 end
 function position_indicator_on_root:out_bottom(indicator, _, _, indicators_and_texts)
 	if #indicators_and_texts == 1 then
-		indicator:SetPoint("TOP", self, "BOTTOM", 0, self.layout_db.indicator_root_outside_margin)
+		indicator:SetPoint("TOP", self, "BOTTOM", 0, -self.layout_db.indicator_root_outside_margin)
 	else
-		indicator:SetPoint("TOPLEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts), self.layout_db.indicator_root_outside_margin)
+		indicator:SetPoint("TOPLEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts), -self.layout_db.indicator_root_outside_margin)
 	end
 end
 function position_indicator_on_root:out_left_top(indicator)
