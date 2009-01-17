@@ -187,7 +187,7 @@ local function get_aura_list_sample(list, unit, max, is_buff)
 			entry[3]  = nil -- no quality color
 			entry[4]  = is_buff and L["Sample Buff"] or L["Sample Debuff"] -- name
 			entry[8]  = sample_debuff_types[(i-1)% #sample_debuff_types]
-			entry[11]  = ((i % 2) == 1) and 1 or nil -- is_mine
+			entry[11]  = ((random(2) % 2) == 1) and 1 or nil -- is_mine
 		end
 		entry[5]  = "" -- rank
 		entry[6]  = is_buff and sample_buff_icon or sample_debuff_icon
@@ -340,6 +340,16 @@ local function aura_sort(a, b)
 		return a_slot < b_slot
 	end
 		
+	-- show your own auras first
+	local a_mine, b_mine =  a[11], b[11]
+	if a_mine ~= b_mine then
+		if a_mine then
+			return true
+		elseif b_mine then
+			return false
+		end
+	end
+
 	--  sort by debuff type
 	if (aura_sort__is_buff and not aura_sort__is_friend) or (not aura_sort__is_buff and aura_sort__is_friend) then
 		local a_debuff_type, b_debuff_type = a[8], b[8]
@@ -354,46 +364,42 @@ local function aura_sort(a, b)
 		end
 	end
 
+	-- sort real auras before samples
+	local a_id, b_id = a[1], b[1]
+	if a_id ~= 0 and b_id == 0 then
+		return true 
+	elseif a_id == 0 and b_id ~= 0 then
+		return false 
+	end
+
 	-- sort by name
 	local a_name, b_name = a[4], b[4]
 	if a_name ~= b_name then
 		if not a_name then
-			return false
+			return true 
 		elseif not b_name then
-			return true
+			return false 
 		end
 		-- TODO: Add sort by ones we can cast
 		return a_name < b_name
 	end
 
-	-- show your own buffs first
-	local a_mine, b_mine =  a[11], b[11]
-	if a_mine ~= b_mine then
-		if a_mine then
-			return true
-		elseif b_mine then
+	-- Use count for sample ids to preserve ID order.
+	if a_id == 0 and b_id == 0 then
+		local a_count, b_count = a[7], b[7]
+		if not a_count then
 			return false
+		elseif not b_count then
+			return true
 		end
+		return a_count < b_count
 	end
 
 	-- keep ID order
-	local a_id, b_id = a[1], b[1]
 	if not a_id then
 		return false
 	elseif not b_id then
 		return true
-	end
-	if a_id == 0 and b_id == 0 then
-		-- both ids are zero and it wasn't an item buff
-		-- so it's a sample aura and use the count to preserve
-		-- ID order.
-		local a_count, b_count = a[7], b[7]
-		if not a_id then
-			return false
-		elseif not b_id then
-			return true
-		end
-		return a_count < b_count
 	end
 	return a_id < b_id
 end
@@ -514,8 +520,10 @@ local function update_auras(frame, db, is_buff)
 	end		
 
 	if frame.force_show then
-		-- config mode so treat all frames as friendly
-		is_friend = true
+		-- config mode so treat sample frames as friendly
+		if not UnitExists(unit) then
+			is_friend = true
+		end
 
 		-- Fill extra auras if we're in config mode
 		get_aura_list_sample(list, unit, max, is_buff)
