@@ -29,6 +29,7 @@ local fmod = _G.math.fmod
 local max = _G.math.max
 local min = _G.math.min
 local fmt = _G.string.format
+local tos = _G.tostring
 local type = _G.type
 local GetTotemTimeLeft = _G.GetTotemTimeLeft
 local GetTotemInfo = _G.GetTotemInfo
@@ -66,7 +67,12 @@ PitBull4_Totems:SetModuleType("custom_indicator")
 PitBull4_Totems:SetName(L["Totems"])
 PitBull4_Totems:SetDescription(L["Show which Totems are dropped and the time left until they expire."])
 
-
+local function dbg(msg)
+--@alpha@
+	print(msg)
+--@end-alpha@
+	return
+end
 
 local function getVerboseSlotName(slot)
 	if slot == FIRE_TOTEM_SLOT then
@@ -78,7 +84,7 @@ local function getVerboseSlotName(slot)
 	elseif slot == AIR_TOTEM_SLOT then
 		return L["Air"]
 	else
-		return L["Unknown Slot "]..tostring(slot)
+		return L["Unknown Slot "]..tos(slot)
 	end
 end
 
@@ -120,13 +126,18 @@ local function gOptSet(key, value)
 	else
 		self.db.profile.global[key] = value
 	end
+	PitBull4.Options.UpdateFrames()
 end
-local function cOptGet(key)
+local function cOptGet(key, default)
+	local ret = nil
 	if type(key) == 'table' then
-		return unpack(self.db.profile.global.colors[key[#key]])
+		ret = self.db.profile.global.colors[key[#key]]
+		
 	else
-		return unpack(self.db.profile.global.colors[key])
+		ret = self.db.profile.global.colors[key]
 	end
+	if not ret and default then ret = default end
+	return unpack(ret)
 end
 local function cOptSet(key, r, g, b, a)
 	if type(key) == 'table' then
@@ -134,6 +145,7 @@ local function cOptSet(key, r, g, b, a)
 	else
 		self.db.profile.global.colors[key] = {r, g, b, a} 
 	end
+	PitBull4.Options.UpdateFrames()
 end
 
 local function lOptGet(frame,key)
@@ -149,6 +161,7 @@ local function lOptSet(frame,key, value)
 	else
 		self:GetLayoutDB(frame)[key] = value
 	end
+	PitBull4.Options.UpdateFrames()
 end
 
 
@@ -170,7 +183,7 @@ end
 
 local function getOrderAsString(info)
 	local slot = info.arg
-	return tostring(getOrder(slot))
+	return tos(getOrder(slot))
 end
 
 local function getSlotFromOrder(pos)
@@ -179,7 +192,7 @@ local function getSlotFromOrder(pos)
 			return k
 		end
 	end
-	self:Print("ERROR: getSlotFromOrder failed to find slot for pos "..tostring(pos))
+	dbg("ERROR: getSlotFromOrder failed to find slot for pos "..tos(pos))
 	return nil -- this shouldn't ever happen
 end
 
@@ -190,7 +203,7 @@ local function listOrder(info)
 	end
 	local choices = {}
 	for i=1, MAX_TOTEMS do
-		choices[tostring(i)] = fmt(L["Position %i (Currently: %s)"], i,getVerboseSlotName(getSlotFromOrder(i)))
+		choices[tos(i)] = fmt(L["Position %i (Currently: %s)"], i,getVerboseSlotName(getSlotFromOrder(i)))
 	end
 	return choices
 end
@@ -354,7 +367,7 @@ function PitBull4_Totems:UpdateAllTimes()
 	for frame in PitBull4:IterateFramesForUnitID('player') do
 		mf = frame
 		if (not mf) or (not mf.Totems) or (not mf.Totems.elements) then
-			self:Print("ERROR: Update time called but no Totemtimer Frame initialized.")
+			dbg("ERROR: Update time called but no Totemtimer Frame initialized.")
 			--self:StopTimer()
 			--return
 		else 
@@ -425,7 +438,7 @@ function PitBull4_Totems:ActivateTotem(slot)
 		local timeleft = MyGetTotemTimeLeft(slot, frame)
 	
 		if ( name == "" ) then
-			self:Print("WARNING: Can't activate a nondropped totem")
+			dbg("WARNING: Can't activate a nondropped totem")
 			return
 		end
 	
@@ -461,7 +474,7 @@ function PitBull4_Totems:DeactivateTotem(slot)
 		local haveTotem, name, startTime, duration, icon = MyGetTotemInfo(slot, frame)
 	
 		if ( name ~= "" ) then
-			self:Print("WARNING: Can't deactivate a dropped totem")
+			dbg("WARNING: Can't deactivate a dropped totem")
 			return
 		end
 	
@@ -612,7 +625,12 @@ function PitBull4_Totems:RealignTimerTexts(frame)
 			local font, fontsize = self:myGetFont(frame)
 			elements[i].text:SetFont(font, fontsize * lOptGet(frame,'timertextscale'), "OUTLINE")
 
-			elements[i].text:SetTextColor(cOptGet('timertext'))
+			if gOptGet('textcolorperelement') then
+				elements[i].text:SetTextColor(cOptGet('slot'..tos(i), {1,1,1,1}))
+			else
+				elements[i].text:SetTextColor(cOptGet('timertext'))
+			end
+			
 		end
 	end
 end
@@ -623,7 +641,11 @@ function PitBull4_Totems:UpdateIconColor(frame)
 		for i=1, MAX_TOTEMS do
 			if elements[i].frame and elements[i].frame.border then
 				elements[i].frame.border:Hide()
-				elements[i].frame.border:SetVertexColor(cOptGet('totemborder'))
+				if gOptGet('totembordersperelement') then
+					elements[i].frame.border:SetVertexColor(cOptGet('slot'..tos(i), {1,1,1,1}))
+				else
+					elements[i].frame.border:SetVertexColor(cOptGet('totemborder'))
+				end
 				elements[i].frame.border:Show()
 			end
 		end
@@ -679,7 +701,7 @@ function PitBull4_Totems:ButtonOnUpdate(elapsed)
 					pulse.scale = 1
 					pulse.icon:SetTexture(this.totemIcon)
 					this.pulseActive = true
-					--PitBull:Print(fmt("DEBUG: Starting pulse on slot %i, elapsed is: %s", this.slot, tostring(elapsed)))
+					--PitBull:Print(fmt("DEBUG: Starting pulse on slot %i, elapsed is: %s", this.slot, tos(elapsed)))
 				end
 			end
 		else
@@ -705,10 +727,10 @@ function PitBull4_Totems:ButtonOnUpdate(elapsed)
 					this:Hide()
 				end
 				
-				--self:Print(fmt("DEBUG: Stopping pulse on slot %i", this.slot))
+				--dbg(fmt("DEBUG: Stopping pulse on slot %i", this.slot))
 			else
 				-- Applying the new scaling (animation frame)
-				--self:Print(fmt("DEBUG: Showing with scale %s", tostring(pulse.scale)))
+				--dbg(fmt("DEBUG: Showing with scale %s", tos(pulse.scale)))
 				pulse.icon:Show()
 				pulse.icon:SetHeight(pulse:GetHeight() * pulse.scale)
 				pulse.icon:SetWidth(pulse:GetWidth() * pulse.scale)
@@ -722,7 +744,7 @@ end
 
 
 function PitBull4_Totems:PLAYER_TOTEM_UPDATE(event, slot)
-	local sSlot = tostring(slot)
+	local sSlot = tos(slot)
 
 	for frame in PitBull4:IterateFramesForUnitID('player') do
 		local haveTotem, name, startTime, duration, icon = MyGetTotemInfo(slot,frame)
@@ -735,7 +757,7 @@ function PitBull4_Totems:PLAYER_TOTEM_UPDATE(event, slot)
 			
 			-- Sound functions
 			if gOptGet('deathsound') and getSoundNameForSlot(slot) and not (event == nil) then
-				--self:Print(string.format('DEBUG: Playing Death sound for slot %s: %s', tostring(slot), tostring(getSoundPathForSlot(slot))))
+				--dbg(string.format('DEBUG: Playing Death sound for slot %s: %s', tos(slot), tos(getSoundPathForSlot(slot))))
 				PlaySoundFile(getSoundPathForSlot(slot))
 			end
 		end
@@ -809,7 +831,6 @@ function PitBull4_Totems:BuildFrames(frame)
 		border:ClearAllPoints()
 		border:SetAllPoints(frm)
 		border:SetTexture(border_path)
-		border:SetVertexColor(cOptGet('totemborder'))
 		border:Show()
 		
 		----------------------------
@@ -883,13 +904,13 @@ function PitBull4_Totems:BuildFrames(frame)
 	
 	ttf.elements = elements
 	
-	self:ResizeMainFrame(frame)
-	self:RealignTotems(frame)
 end
 
 function PitBull4_Totems:ApplyLayoutSettings(frame)
 	if not frame or not frame.Totems then return end
 
+	self:RealignTotems(frame)
+	
 	local elements = frame.Totems.elements
 
 	for i=1, MAX_TOTEMS do
@@ -919,7 +940,7 @@ end
 function PitBull4_Totems:UpdateFrame(frame)
 	if frame.unit ~= 'player' then return end -- we only work for the player unit itself
 	
-	--self:Print('DBG: UpdateFrame called.')
+	--dbg('DBG: UpdateFrame called.')
 	
 	if (lOptGet(frame,'enabled') ~= true) and frame.Totems then
 		return self:ClearFrame(frame)
@@ -930,16 +951,15 @@ function PitBull4_Totems:UpdateFrame(frame)
 		self:StartTimer()
 		
 		-- Now rebuild most of the layout since some setting might have changed.
-		self:RealignTotems(frame)
 		self:ApplyLayoutSettings(frame)
 		self:ForceSilentTotemUpdate()
 		return false -- our frame exists already, nothing more to do...
 	else
 		self:BuildFrames(frame)
+		self:ApplyLayoutSettings(frame)
 		self:ForceSilentTotemUpdate()
+		return true
 	end
-	
-	return true
 end
 
 
@@ -1006,6 +1026,10 @@ local color_defaults = {
 	mainbg = {0, 0, 0, 0.5},
 	timertext = {0, 1, 0, 1},
 	totemborder = {0, 0, 0, 0.5},
+	slot1 = {1,0,0,1},
+	slot2 = {0,1,0,1},
+	slot3 = {0,1,1,1},
+	slot4 = {0,0,1,1},
 }
 
 PitBull4_Totems:SetDefaults({
@@ -1032,6 +1056,8 @@ PitBull4_Totems:SetDefaults({
 	deathsound = false,
 	deathsoundpaths = getSoundpathsDefault(),
 	colors = color_defaults,
+	totembordersperelement = true,
+	textcolorperelement = false,
 })
 
 PitBull4_Totems:SetLayoutOptionsFunction(function(self)
@@ -1210,7 +1236,41 @@ local function getOrderOptionGroup()
 			order = 10+i,
 			--disabled = getHide,
 		}
-		oo["slot"..tostring(i)] = slot
+		oo["slot"..tos(i)] = slot
+	end
+	return oo
+end
+
+local function getElementsColorGroup()
+	local function get(info)
+		return cOptGet(info, { 1,1,1,1 } )
+	end
+	local function set(info, ...)
+		cOptSet(info, ...)
+	end
+	
+	local oo = {}
+	
+	oo['colordesc'] = {
+		type = 'description',
+		name = L["These color definitions will be used by per-element settings that need seperate color info per element."],
+		order = 1,
+	}
+	
+	for i=1, MAX_TOTEMS do
+		local verboseName = getVerboseSlotName(i)
+		local slot = { 
+			type = 'color',
+			name = verboseName,
+			desc = verboseName,
+			hasAlpha = true,
+			get = get,
+			set = set,
+			arg = i,
+			order = 10+i,
+			--disabled = getHide,
+		}
+		oo['slot'..tos(i)] = slot
 	end
 	return oo
 end
@@ -1239,7 +1299,7 @@ local function getSoundOptionGroup()
 			disabled = function() return not gOptGet('deathsound') end,
 			order = 10 + i,
 		}
-		so["soundslot"..tostring(i)] = slot
+		so["soundslot"..tos(i)] = slot
 	end
 	return so
 end
@@ -1328,10 +1388,10 @@ PitBull4_Totems:SetColorOptionsFunction(function(self)
 	end
 	return 'colgrpframes', {
 		type = 'group',
-		name = L["Frames"],
+		name = L["Backgrounds"],
 		inline = true,
 		args = {
-			mainbg = {
+			mainbg = { -- color option
 				type = 'color',
 				name = L["Main Background"],
 				desc = L["Sets the color and transparency of the background of the timers."],
@@ -1341,16 +1401,30 @@ PitBull4_Totems:SetColorOptionsFunction(function(self)
 				width = 'full',
 				order = 1
 			},
-			totemborder = {
+		}
+	},
+	'colgrpiconborder', {
+		type = 'group',
+		name = L["Borders"],
+		inline = true,
+		args = {
+			totemborder = { -- color option
 				type = 'color',
-				name = L["Icon Border"],
+				name = L["Icon"],
 				desc = L["Sets the color of the individual iconborders."],
 				hasAlpha = true,
 				get = get,
 				set = set,
-				width = 'full',
-				order = 2
-			}
+				order = 1,
+				disabled = function() return gOptGet('totembordersperelement') end
+			},
+			totembordersperelement = { -- global option
+				type = 'toggle',
+				name = L["Color Icon by Element"],
+				get = gOptGet,
+				set = gOptSet,
+				order = 2,
+			},
 		}
 	},
 	'colgrptimertext', {
@@ -1358,17 +1432,30 @@ PitBull4_Totems:SetColorOptionsFunction(function(self)
 		name = L["Text Timer"],
 		inline = true,
 		args = {
-			timertext = {
+			timertext = { -- color option
 				type = 'color',
 				name = L["Text"],
 				desc = L["Color of the timer text."],
 				hasAlpha = true,
 				get = get,
 				set = set,
-				width = 'full',
-				order = 1
+				order = 1,
+				disabled = function() return gOptGet('textcolorperelement') end,
+			},
+			textcolorperelement = { --global option
+				type = 'toggle',
+				name = L["Color Text by Element"],
+				get = gOptGet,
+				set = gOptSet,
+				order = 2,
 			},
 		}
+	}, 
+	'colgrpelements', {
+		type = 'group',
+		name = L["Elements"],
+		inline = true,
+		args = getElementsColorGroup(), 
 	}, function(info)
 		local db = self.db.profile.global.colors
 		for setting,value in pairs(color_defaults) do
@@ -1380,6 +1467,8 @@ PitBull4_Totems:SetColorOptionsFunction(function(self)
 				db[setting] = value
 			end
 		end
+		gOptSet('totembordersperelement', true)
+		gOptSet('textcolorperelement', false)
 		-- update frames...
 		self:UpdateAll()
 	end
