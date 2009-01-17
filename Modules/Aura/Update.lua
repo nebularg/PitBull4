@@ -310,7 +310,7 @@ local function copy_weapon_entry(src, dst, slot)
 	if not src_entry or not src_entry[2] then return end
 	local i = #dst + 1
 	local dst_entry = dst[i]
-	if not entry then
+	if not dst_entry then
 		dst_entry = new_entry() 
 		dst[i] = dst_entry
 	end
