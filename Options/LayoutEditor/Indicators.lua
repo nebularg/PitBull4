@@ -270,7 +270,9 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			t["root"] = L["Unit frame"]
 			
 			for id, module in PitBull4:IterateModulesOfType("status_bar") do
-				t[id] = module.name
+				if GetLayoutDB(module).enabled then
+					t[id] = module.name
+				end
 			end
 			
 			return t
