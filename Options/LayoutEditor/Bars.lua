@@ -345,6 +345,8 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			else
 				GetLayoutDB(info[#info-1]).custom_color = nil
 			end
+			
+			UpdateFrames()
 		end,
 	}
 	
