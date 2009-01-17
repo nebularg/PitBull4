@@ -38,7 +38,11 @@ function PitBull4.Options.get_layout_editor_text_options()
 	local bar_locations = PitBull4.Options.bar_locations
 	
 	local function disabled()
-		return not CURRENT_TEXT_PROVIDER_MODULE and not CURRENT_CUSTOM_TEXT_MODULE
+		if CURRENT_CUSTOM_TEXT_MODULE then
+			return not GetLayoutDB(CURRENT_CUSTOM_TEXT_MODULE).enabled
+		else
+			return not CURRENT_TEXT_PROVIDER_MODULE
+		end
 	end
 	
 	options.args.current_text = {
@@ -203,6 +207,8 @@ function PitBull4.Options.get_layout_editor_text_options()
 		type = 'execute',
 		name = L["Remove"],
 		desc = L["Remove this text."],
+		confirm = true,
+		confirmText = L["Are you sure you want to remove this text?"],
 		order = 1,
 		func = function()
 			local texts_db = GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).texts

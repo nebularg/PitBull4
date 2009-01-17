@@ -247,6 +247,10 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end
 	}
 	
+	local function disabled(info)
+		return not GetLayoutDB(info[#info-1]).enabled
+	end
+	
 	indicator_args.attach_to = {
 		type = 'select',
 		name = L["Attach to"],
@@ -271,6 +275,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			
 			return t
 		end,
+		disabled = disabled,
 	}
 	
 	indicator_args.location = {
@@ -294,6 +299,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 				return bar_locations
 			end
 		end,
+		disabled = disabled,
 	}
 	
 	indicator_args.position = {
@@ -365,7 +371,8 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			end
 			
 			UpdateFrames()
-		end
+		end,
+		disabled = disabled,
 	}
 	
 	indicator_args.size = {
@@ -386,6 +393,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		step = 0.01,
 		bigStep = 0.05,
 		isPercent = true,
+		disabled = disabled,
 	}
 	
 	local layout_functions = PitBull4.Options.layout_functions
@@ -402,6 +410,11 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 				
 				args[k] = v
 				v.order = 100 + i
+				
+				local v_disabled = v.disabled
+				function v.disabled(info)
+					return disabled(info) or (v_disabled and v_disabled(info))
+				end
 			end
 			layout_functions[module] = false
 		end
