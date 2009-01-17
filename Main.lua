@@ -167,6 +167,10 @@ local new, del = PitBull4.new, PitBull4.del
 local all_frames = {}
 PitBull4.all_frames = all_frames
 
+-- A list of all unit frames
+local all_frames_list = {}
+PitBull4.all_frames_list = all_frames_list
+
 -- A set of all unit frames with the is_wacky flag set to true
 local wacky_frames = {}
 PitBull4.wacky_frames = wacky_frames
