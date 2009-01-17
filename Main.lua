@@ -744,9 +744,32 @@ function PitBull4:OnInitialize()
 	DATABASE_DEFAULTS = nil
 	self.db = db
 	
+	db.RegisterCallback(self, "OnProfileChanged")
+	
+	self:OnProfileChanged()
+end
+
+function PitBull4:OnProfileChanged()
 	self.ClassColors = PitBull4.db.profile.colors.class
 	self.PowerColors = PitBull4.db.profile.colors.power
 	self.ReactionColors = PitBull4.db.profile.colors.reaction
+	
+	local db = self.db
+	
+	for header in PitBull4:IterateHeaders() do
+		header.super_classification_db = db.profile.classifications[header.super_classification]
+		header.classification_db = db.profile.classifications[header.classification]
+	end
+	for frame in PitBull4:IterateFrames(true) do
+		frame.classification_db = db.profile.classifications[frame.classification]
+	end
+	
+	for frame in PitBull4:IterateFrames(true) do
+		frame:RefreshLayout()
+	end
+	for header in PitBull4:IterateHeaders() do
+		header:RefreshLayout(true)
+	end
 end
 
 function PitBull4:OnEnable()
