@@ -115,6 +115,7 @@ local PROVIDED_CODES = function() return {
 		[L["Absolute short"]] = "[if HasMP then FractionalMP:Short]",
 		[L["Difference"]]     = "[-MissingMP]",
 		[L["Percent"]]        = "[PercentMP:Percent]",
+		[L["Absolute and percent"]]  = "[if HasMP then FractionalMP] || [PercentMP:Percent]",
 		[L["Mini"]]           = "[if HasMP then CurMP:VeryShort]",
 		[L["Smart"]]          = "[MissingMP:Hide(0):Short:Color('7f7fff')]",
 	},
@@ -217,6 +218,7 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 		end
 	end
 	PROVIDED_CODES = nil
+	local provided_codes_cleaned = false
 	return 'code', {
 		type = 'input',
 		name = L["Code"],
@@ -229,10 +231,10 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 			end
 			
 			if LibDogTag then
-				return LibDogTag:CleanCode(PitBull4.Options.GetTextLayoutDB().code)
-			else
-				return code
+				code = LibDogTag:CleanCode(code)
 			end
+			
+			return code
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetTextLayoutDB().code = LibDogTag:CleanCode(value)
@@ -252,6 +254,15 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 		desc = L["Some codes provided for you."],
 		get = function(info)
 			local code = PitBull4.Options.GetTextLayoutDB().code
+			if LibDogTag then
+				code = LibDogTag:CleanCode(code)
+			end
+			if not provided_codes_cleaned and LibDogTag then
+				provided_codes_cleaned = true
+				for k, v in pairs(value_key_to_code) do
+					value_key_to_code[k] = LibDogTag:CleanCode(v)
+				end
+			end
 			for k, v in pairs(value_key_to_code) do
 				if v == code then
 					return k
@@ -265,6 +276,12 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 			PitBull4.Options.UpdateFrames()
 		end,
 		values = values,
+		disabled = function(info)
+			if run_first then
+				run_first()
+			end
+			return not LibDogTag
+		end,
 	}, 'help', {
 		type = 'execute',
 		name = L["DogTag help"],
