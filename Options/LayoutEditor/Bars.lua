@@ -386,22 +386,28 @@ function PitBull4.Options.get_layout_editor_bar_options()
 	
 	local layout_functions = PitBull4.Options.layout_functions
 	
+	local function table_with_size(...)
+		return { ... }, select('#', ...)
+	end
+	
 	for id, module in PitBull4:IterateModulesOfType("status_bar", true) do
 		local args = {}
 		for k, v in pairs(bar_args) do
 			args[k] = v
 		end
 		if layout_functions[module] then
-			local data = { layout_functions[module](module) }
+			local data, data_n = table_with_size(layout_functions[module](module))
 			layout_functions[module] = false
-			for i = 1, #data, 2 do
+			for i = 1, data_n, 2 do
 				local k, v = data[i], data[i + 1]
 				
 				args[k] = v
-				v.order = 100 + i
-				local v_disabled = v.disabled
-				function v.disabled(info)
-					return disabled(info) or (v_disabled and v_disabled(info))
+				if v then
+					v.order = 100 + i
+					local v_disabled = v.disabled
+					function v.disabled(info)
+						return disabled(info) or (v_disabled and v_disabled(info))
+					end
 				end
 			end
 		end

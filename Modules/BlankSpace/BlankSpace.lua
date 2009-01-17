@@ -28,3 +28,9 @@ end
 function PitBull4_BlankSpace:GetColor(frame, value)
 	return 0, 0, 0
 end
+
+PitBull4_BlankSpace:SetLayoutOptionsFunction(function(self)
+	return
+		'deficit', nil,
+		'background_alpha', nil
+end)
