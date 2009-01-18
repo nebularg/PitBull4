@@ -103,6 +103,9 @@ function TextProviderModule:UpdateFrame(frame)
 				font_string = PitBull4.Controls.MakeFontString(frame.overlay, "OVERLAY")
 				texts[name] = font_string
 				frame[self.id .. ";" .. name] = font_string
+				font_string:SetShadowColor(0, 0, 0, 1)
+				font_string:SetShadowOffset(0.8, -0.8)
+				font_string:SetNonSpaceWrap(false)
 			end
 			
 			local font

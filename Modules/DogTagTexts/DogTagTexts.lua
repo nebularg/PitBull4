@@ -129,7 +129,7 @@ local PROVIDED_CODES = function() return {
 		[L["Difference"]]     = "[-MissingMP]",
 		[L["Percent"]]        = "[PercentMP:Percent]",
 		[L["Absolute and percent"]]  = "[if HasMP then FractionalMP] || [PercentMP:Percent]",
-		[L["Mini"]]           = "[if HasMP then CurMP:VeryShort]",
+		[L["Mini"]]           = "[if HasMP then MP:VeryShort]",
 		[L["Smart"]]          = "[MissingMP:Hide(0):Short:Color('7f7fff')]",
 	},
 	[L["Druid mana"]] = {
@@ -255,6 +255,7 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 			PitBull4.Options.UpdateFrames()
 		end,
 		multiline = true,
+		width = 'full',
 		disabled = function(info)
 			if run_first then
 				run_first()
