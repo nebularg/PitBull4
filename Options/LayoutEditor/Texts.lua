@@ -55,14 +55,9 @@ function PitBull4.Options.get_layout_editor_text_options()
 			local first, first_module, first_id
 			for id, module in PitBull4:IterateModulesOfType("text_provider") do
 				local texts_db = GetLayoutDB(module).texts
-				for i = 1, texts_db.n do
-					local v = texts_db[i]
-					local key = ("%s;%03d"):format(id, i)
-					if not first_module then
-						first_module = module
-						first_id = i
-					end
-					t[key] = v.name or L["<Unnamed>"]
+				for name, text_db in pairs(texts_db) do
+					local key = id .. ";" .. name
+					t[key] = name
 				end
 			end
 			for id, module in PitBull4:IterateModulesOfType("custom_text") do
@@ -72,7 +67,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 					first_id = nil
 				end
 			end
-			if (not CURRENT_TEXT_PROVIDER_MODULE or not t[("%s;%03d"):format(CURRENT_TEXT_PROVIDER_MODULE.id, CURRENT_TEXT_PROVIDER_ID)]) and (not CURRENT_CUSTOM_TEXT_MODULE or not t[CURRENT_CUSTOM_TEXT_MODULE.id]) then
+			if (not CURRENT_TEXT_PROVIDER_MODULE or not t[CURRENT_TEXT_PROVIDER_MODULE.id .. ";" .. CURRENT_TEXT_PROVIDER_ID]) and (not CURRENT_CUSTOM_TEXT_MODULE or not t[CURRENT_CUSTOM_TEXT_MODULE.id]) then
 				if first_id then
 					CURRENT_TEXT_PROVIDER_MODULE = first_module
 					CURRENT_TEXT_PROVIDER_ID = first_id
@@ -87,7 +82,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 		end,
 		get = function(info)
 			if CURRENT_TEXT_PROVIDER_MODULE then
-				return ("%s;%03d"):format(CURRENT_TEXT_PROVIDER_MODULE.id, CURRENT_TEXT_PROVIDER_ID)
+				return CURRENT_TEXT_PROVIDER_MODULE.id .. ";" .. CURRENT_TEXT_PROVIDER_ID
 			elseif CURRENT_CUSTOM_TEXT_MODULE then
 				return CURRENT_CUSTOM_TEXT_MODULE.id
 			else
@@ -95,13 +90,14 @@ function PitBull4.Options.get_layout_editor_text_options()
 			end
 		end,
 		set = function(info, value)
-			local module_name, id = (";"):split(value)
+			local module_name, id = (";"):split(value, 2)
 			if id then
 				for m_id, m in PitBull4:IterateModulesOfType("text_provider") do
 					if module_name == m_id then
 						CURRENT_TEXT_PROVIDER_MODULE = m
-						CURRENT_TEXT_PROVIDER_ID = id+0
+						CURRENT_TEXT_PROVIDER_ID = id
 						CURRENT_CUSTOM_TEXT_MODULE = nil
+						break
 					end
 				end
 			else
@@ -110,6 +106,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 						CURRENT_TEXT_PROVIDER_MODULE = nil
 						CURRENT_TEXT_PROVIDER_ID = nil
 						CURRENT_CUSTOM_TEXT_MODULE = m
+						break
 					end
 				end
 			end
@@ -124,8 +121,8 @@ function PitBull4.Options.get_layout_editor_text_options()
 		for id, module in PitBull4:IterateModulesOfType("text_provider") do
 			local texts_db = GetLayoutDB(module).texts
 			
-			for i = 1, texts_db.n do
-				if texts_db[i].name and value:lower() == texts_db[i].name:lower() then
+			for name in pairs(texts_db) do
+				if value:lower() == name:lower() then
 					return L["'%s' is already a text."]:format(value)
 				end
 			end
@@ -156,13 +153,11 @@ function PitBull4.Options.get_layout_editor_text_options()
 			end
 			
 			local texts_db = GetLayoutDB(module).texts
-			
-			texts_db.n = texts_db.n + 1
-			local db = texts_db[texts_db.n]
-			db.name = value
+			local db = texts_db[value]
+			db.exists = true
 			
 			CURRENT_TEXT_PROVIDER_MODULE = module
-			CURRENT_TEXT_PROVIDER_ID = texts_db.n
+			CURRENT_TEXT_PROVIDER_ID = value
 			
 			UpdateFrames()
 		end,
@@ -212,22 +207,26 @@ function PitBull4.Options.get_layout_editor_text_options()
 		func = function()
 			local texts_db = GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).texts
 			
-			table.remove(texts_db, CURRENT_TEXT_PROVIDER_ID)
-			local n = texts_db.n - 1
-			texts_db.n = n
-			if n >= 1 then
-				if CURRENT_TEXT_PROVIDER_ID > n then
-					CURRENT_TEXT_PROVIDER_ID = n
-				end
-			else
+			texts_db[CURRENT_TEXT_PROVIDER_ID] = nil
+			
+			CURRENT_TEXT_PROVIDER_ID = next(texts_db)
+			
+			if not CURRENT_TEXT_PROVIDER_ID then
 				CURRENT_TEXT_PROVIDER_MODULE = nil
 				CURRENT_TEXT_PROVIDER_ID = nil
 				for id, module in PitBull4:IterateModulesOfType("text_provider") do
 					local texts_db = GetLayoutDB(module).texts
 					
-					if texts_db.n > 0 then
+					CURRENT_TEXT_PROVIDER_ID = next(texts_db)
+					if CURRENT_TEXT_PROVIDER_ID then
 						CURRENT_TEXT_PROVIDER_MODULE = module
-						CURRENT_TEXT_PROVIDER_ID = 1
+						break
+					end
+				end
+				
+				if not CURRENT_TEXT_PROVIDER_ID then
+					for id, module in PitBull4:IterateModulesOfType("custom_text") do
+						CURRENT_CUSTOM_TEXT_MODULE = module
 						break
 					end
 				end
@@ -263,16 +262,18 @@ function PitBull4.Options.get_layout_editor_text_options()
 		type = 'input',
 		name = L["Name"],
 		order = 2,
-		desc = function()
-			local db = GetTextLayoutDB()
-			return L["Rename the '%s' text."]:format(db and db.name or L["<Unnamed>"])
+		desc = function(info)
+			return L["Rename the '%s' text."]:format(CURRENT_TEXT_PROVIDER_ID or L["<Unnamed>"])
 		end,
 		get = function(info)
-			local db = GetTextLayoutDB()
-			return db and db.name or L["<Unnamed>"]
+			return CURRENT_TEXT_PROVIDER_ID or L["<Unnamed>"]
 		end,
 		set = function(info, value)
-			GetTextLayoutDB().name = value
+			local texts_db = GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).texts
+			local text_db = texts_db[CURRENT_TEXT_PROVIDER_ID]
+			texts_db[CURRENT_TEXT_PROVIDER_ID] = nil
+			CURRENT_TEXT_PROVIDER_ID = value
+			texts_db[CURRENT_TEXT_PROVIDER_ID] = text_db
 			
 			UpdateFrames()
 		end,
@@ -298,21 +299,18 @@ function PitBull4.Options.get_layout_editor_text_options()
 			
 			local texts_db = GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).texts
 			
-			local old_db = table.remove(texts_db, CURRENT_TEXT_PROVIDER_ID)
-			local n = texts_db.n - 1
-			texts_db.n = n
+			local old_db = texts_db[CURRENT_TEXT_PROVIDER_ID]
+			texts_db[CURRENT_TEXT_PROVIDER_ID] = nil
 			
 			CURRENT_TEXT_PROVIDER_MODULE = PitBull4:GetModule(value)
 			texts_db = GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).texts
-			n = texts_db.n + 1
-			texts_db.n = n
 			
-			local new_db = texts_db[n]
-			new_db.name = old_db.name
+			local new_db = texts_db[CURRENT_TEXT_PROVIDER_ID]
 			new_db.size = old_db.size
 			new_db.attach_to = old_db.attach_to
 			new_db.location = old_db.location
 			new_db.position = old_db.position
+			new_db.exists = true
 			
 			UpdateFrames()
 		end,

@@ -177,8 +177,12 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			return L["Must be at least 3 characters long."]
 		end
 		
-		if rawget(GetLayoutDB(info[3]).bars, value) then
-			return L["'%s' is already a text."]:format(value)
+		local value_lower = value:lower()
+		
+		for name in pairs(GetLayoutDB(info[3]).bars) do
+		 	if value_lower == name:lower() then
+				return L["'%s' is already a text."]:format(value)
+			end
 		end
 		
 		return true
