@@ -121,6 +121,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 	if created then
 		portrait = PitBull4.Controls.MakeFrame(frame)
 		frame.Portrait = portrait
+		portrait:SetFrameLevel(frame:GetFrameLevel() + 3)
 		portrait:SetWidth(60)
 		portrait:SetHeight(60)
 		portrait.height = 4
