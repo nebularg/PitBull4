@@ -39,10 +39,11 @@ function TextProviderModule:ClearFrame(frame)
 		return false
 	end
 	
-	for _, text in pairs(texts) do
+	for name, text in pairs(texts) do
 		self:RemoveFontString(text)
 		text.db = nil
 		text:Delete()
+		frame[id .. ";" .. name] = nil
 	end
 	frame[id] = del(texts)
 	

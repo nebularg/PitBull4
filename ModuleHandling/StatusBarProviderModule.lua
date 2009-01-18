@@ -41,9 +41,10 @@ function StatusBarProviderModule:ClearFrame(frame)
 		return false
 	end
 	
-	for _, bar in pairs(bars) do
+	for name, bar in pairs(bars) do
 		bar.db = nil
 		bar:Delete()
+		frame[id .. ";" .. name]
 	end
 	frame[id] = del(bars)
 	
