@@ -23,6 +23,8 @@ local UPDATE_FREQ = 0.25 -- delay this many second between timer updates
 
 local CFGMODE_ICON = [[Interface\Icons\Spell_Fire_TotemOfWrath]]
 local BORDER_PATH  = [[Interface\AddOns\]] .. debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z]-%.lua") .. [[\border]]
+local DEFAULT_SOUND_NAME = 'Drop'
+local DEFAULT_SOUND_PATH =  [[Sound\interface\DropOnGround.wav]]
 
 local _G = _G
 local GetTime = _G.GetTime
@@ -48,13 +50,17 @@ PBTDBG = PitBull4_Totems
 --@end-alpha@
 
 -- Load LibSharedMedia
-local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
-if not LibSharedMedia then
+local LSM = LibStub("LibSharedMedia-3.0", true)
+if not LSM then
 	LoadAddOn("LibSharedMedia-3.0")
-	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+	LSM = LibStub("LibSharedMedia-3.0", true)
 end
+
 -- Register our default sound. (comes with the wow engine)
-LibSharedMedia:Register('sound','Drop',"Sound\\interface\\DropOnGround.wav")
+if LSM then LSM:Register('sound',DEFAULT_SOUND_NAME,DEFAULT_SOUND_PATH) end
+
+LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
+local AceGUI = LibStub("AceGUI-3.0")
 
 -- Fetch localization
 local L = PitBull4.L
@@ -64,9 +70,9 @@ PitBull4_Totems:SetModuleType('custom_indicator')
 PitBull4_Totems:SetName(L["Totems"])
 PitBull4_Totems:SetDescription(L["Show which Totems are dropped and the time left until they expire."])
 
-local function dbg(msg)
+local function dbg(...)
 --@alpha@
-	print(msg)
+	print(fmt(...))
 --@end-alpha@
 	return
 end
@@ -222,60 +228,6 @@ local function setOrder(info, neworderposstring) -- global option
 	PitBull4.Options.UpdateFrames()
 	return true
 end
-
--------------------------------
----- Sound Proxies
-
-local function getSoundNameForSlot(info)
-	local slot = 1
-	if type(info) == 'table' then
-		slot = info.arg
-	else
-		slot = info
-	end
-	
-	if self.db.profile.global.deathsoundpaths and self.db.profile.global.deathsoundpaths[slot] then
-		return self.db.profile.global.deathsoundpaths[slot]
-	else
-		return false
-	end
-end
-
-local function getSoundPathForSlot(slot)
-	local chosen = getSoundNameForSlot(slot)
-	if LibSharedMedia and chosen then
-		return LibSharedMedia:Fetch('sound', chosen)
-	else
-		return false
-	end
-end
-local function getSoundNumForSlot(info)
-	local soundName = getSoundNameForSlot(info) or 'Drop'
-	local lsmsounds = LibSharedMedia:List('sound')
-	for i=1,#lsmsounds do
-		if lsmsounds[i] == soundName then
-			return i
-		end
-	end
-	return 1
-end
-local function setSoundNumForSlot(info, pathnum)
-	local slot = info.arg
-	local path = LibSharedMedia:List('sound')[pathnum]
-	if self.db.profile.global.deathsoundpaths then
-		self.db.profile.global.deathsoundpaths[slot] = path
-		PlaySoundFile(getSoundPathForSlot(slot))
-	end
-end
-
-local function getSoundpathsDefault()
-	local dsf = {}
-	for i=1, MAX_TOTEMS do
-		dsf[i] = 'Drop'
-	end
-	return dsf
-end
-
 
 --------------------------------------------------------------
 --------------------------------------------------------------
@@ -504,8 +456,8 @@ local DEFAULT_FONT, DEFAULT_FONT_SIZE = ChatFontNormal:GetFont()
 function PitBull4_Totems:myGetFont(frame)
 	local db = self:GetLayoutDB(frame)
 	local font
-	if LibSharedMedia then
-		font = LibSharedMedia:Fetch("font", db.font or PitBull4.db.profile.layouts[frame.layout].font or "")
+	if LSM then
+		font = LSM:Fetch("font", db.font or PitBull4.db.profile.layouts[frame.layout].font or "")
 	end
 	
 	return font or DEFAULT_FONT, DEFAULT_FONT_SIZE * db.size
@@ -749,9 +701,13 @@ function PitBull4_Totems:PLAYER_TOTEM_UPDATE(event, slot)
 			self:DeactivateTotem(slot)
 			
 			-- Sound functions
-			if gOptGet('deathsound') and getSoundNameForSlot(slot) and not (event == nil) then
-				--dbg(fmt('DEBUG: Playing Death sound for slot %s: %s', tos(slot), tos(getSoundPathForSlot(slot))))
-				PlaySoundFile(getSoundPathForSlot(slot))
+			if gOptGet('deathsound') and not (event == nil) then
+				local soundpath = DEFAULT_SOUND_PATH 
+				if LSM then
+					soundpath = LSM:Fetch('sound', gOptGet('soundslot'..tos(slot)))
+				end
+				--dbg('Playing Death sound for slot %s: %s', tos(slot), tos(soundpath))
+				PlaySoundFile(soundpath)
 			end
 		end
 	end
@@ -1026,7 +982,7 @@ local color_defaults = {
 	slot4 = {0,0,1,1},
 }
 
-PitBull4_Totems:SetDefaults({
+local layout_defaults = {
 	attach_to = "root",
 	location = "out_top_left",
 	position = 1,
@@ -1041,18 +997,27 @@ PitBull4_Totems:SetDefaults({
 	timertextscale = 0.45,
 	linebreak = MAX_TOTEMS,
 	hideinactive = false,
-}, {
+}
+
+local global_defaults = {
 	totemtooltips = true,
 	order = getOrderDefault(), -- this is the order _by_slot_ not by position!
 	expirypulse = true,
 	expirypulsetime = 5,
 	recastenabled = false,
 	deathsound = false,
-	deathsoundpaths = getSoundpathsDefault(),
 	colors = color_defaults,
 	totembordersperelement = true,
 	textcolorperelement = false,
-})
+}
+
+-- inject sounds for each slot (non-fixed amount)
+for i=1, MAX_TOTEMS do
+	global_defaults['soundslot'..tos(i)] = DEFAULT_SOUND_NAME
+end
+
+
+PitBull4_Totems:SetDefaults(layout_defaults, global_defaults)
 
 PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 	local function get(info)
@@ -1228,7 +1193,7 @@ local function getOrderOptionGroup()
 		local slot = { 
 			type = 'select',
 			style = 'dropdown',
-			width = 'full',
+			width = 'double',
 			name = verboseName,
 			desc = verboseName,
 			values = listOrder,
@@ -1281,27 +1246,44 @@ local function getSoundOptionGroup()
 	local so = {}
 	so['deathsound'] = {
 		type = 'toggle',
+		width = 'full',
 		name = L["Totemsounds"],
 		desc = L["This plays a sound file when a totem expires or gets destroyed. Individual sounds can be set per element."],
 		get = gOptGet,
 		set = gOptSet,
 		order = 1,
 	}
-	for i=1, MAX_TOTEMS do
-		local verboseName = getVerboseSlotName(i)
-		local slot = { 
-			name = verboseName,
-			desc = verboseName,
-			type = 'select',
-			width = 'full',
-			values = LibSharedMedia:List('sound'),
-			get = getSoundNumForSlot,
-			set = setSoundNumForSlot,
-			arg = i,
-			disabled = function() return not gOptGet('deathsound') end,
-			order = 10 + i,
+	if LSM then
+		for i=1, MAX_TOTEMS do
+			local verboseName = getVerboseSlotName(i)
+			local slot = { 
+				name = verboseName,
+				desc = verboseName,
+				type = 'select',
+				width = 'double',
+				values = AceGUIWidgetLSMlists.sound,
+				get = function(info)
+					return gOptGet(info) or DEFAULT_SOUND_NAME
+				end,
+				set = gOptSet,
+				arg = i,
+				disabled = function() return not gOptGet('deathsound') end,
+				order = 10 + i,
+				dialogControl = AceGUI.WidgetRegistry["LSM30_Sound"] and "LSM30_Sound" or nil,
+			}
+			so["soundslot"..tos(i)] = slot
+		end
+	else
+		so['nolsmsoundhdr'] = { 
+			type = 'header',
+			name = L["No LibSharedMedia detected"],
+			order = 2,
 		}
-		so["soundslot"..tos(i)] = slot
+		so['nolsmsounddesc'] = {
+			type = 'description',
+			name = L["You do not appear to have any addon installed that uses LibSharedMedia. If you want to select which sounds are used it is recommended that you install at least the 'SharedMedia' addon. (Don't install the 'LibSharedMedia' library yourself.)"],
+			order = 3,
+		}
 	end
 	return so
 end
@@ -1346,7 +1328,7 @@ PitBull4_Totems:SetGlobalOptionsFunction(function(self)
 			},
 			expirypulsetime = {
 				type = 'range',
-				width = 'full',
+				width = 'double',
 				name = L["Expiry time"],
 				desc = L["Pulse for this many seconds before the totem runs out."],
 				min = 0.5,
