@@ -25,12 +25,6 @@ function PitBull4_BlankSpace:OnNewLayout(layout)
 		local default_bar = layout_db.bars[L["Default"]]
 		default_bar.exists = true
 	end
-	
-	local index = getmetatable(layout_db.bars).__index
-	getmetatable(layout_db.bars).__index = function(self, key)
-		print("__index", self, key)
-		return index(self, key)
-	end
 end
 
 function PitBull4_BlankSpace:GetValue(frame, bar_db)
