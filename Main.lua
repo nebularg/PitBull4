@@ -41,6 +41,11 @@ end
 local DATABASE_DEFAULTS = {
 	profile = {
 		lock_movement = false,
+		minimap_icon = {
+				hide = false,
+				minimapPos = 200,
+				radius = 80,
+		},
 		classifications = {
 			['**'] = {
 				enabled = true,
@@ -766,6 +771,43 @@ function PitBull4:OnInitialize()
 	db.RegisterCallback(self, "OnProfileChanged")
 	
 	self:OnProfileChanged()
+	
+	-- used for run-once-only initialization
+	self:RegisterEvent("ADDON_LOADED")
+	self:ADDON_LOADED()
+end
+
+function PitBull4:ADDON_LOADED()
+	local LibDataBroker = LibStub("LibDataBroker-1.1", true)
+	if LibDataBroker and not PitBull4.LibDataBrokerLauncher then
+		PitBull4.LibDataBrokerLauncher = LibDataBroker:NewDataObject("PitBull4", {
+			type = "launcher",
+			icon = [[Interface\Icons\Ability_Hunter_BeastTraining]],
+			OnClick = function(clickedframe, button)
+				if button == "RightButton" then 
+					return PitBull4.Options.OpenConfig() 
+				else 
+					PitBull4.db.profile.lock_movement = not PitBull4.db.profile.lock_movement
+					LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
+				end
+			end,
+			OnTooltipShow = function(tt)
+				tt:AddLine(L["PitBull Unit Frames 4.0"])
+				tt:AddLine(L["Click|r to toggle frame lock"], 1, 1, 1)
+				tt:AddLine(L["Right-click|r to open the options menu"], 1, 1, 1)
+			end,
+		})
+	end
+	local LibDBIcon = LibDataBroker and LibStub("LibDBIcon-1.0", true)
+	if not LibDBIcon then
+		return
+	end
+	self:UnregisterEvent("ADDON_LOADED")
+	
+	if LibDBIcon and not IsAddOnLoaded("Broker2FuBar") then
+		LibDBIcon:Register("PitBull4", PitBull4.LibDataBrokerLauncher, PitBull4.db.profile.minimap_icon)
+		PitBull4.ldb_icon_registered = true -- needed to ensure OnProfileChanged doesn't do LDBI stuff before we register it
+	end
 end
 
 function PitBull4:OnProfileChanged()
@@ -788,6 +830,10 @@ function PitBull4:OnProfileChanged()
 	end
 	for header in PitBull4:IterateHeaders() do
 		header:RefreshLayout(true)
+	end
+	
+	if self.ldb_icon_registered and not IsAddOnLoaded("Broker2FuBar") then
+		LibStub("LibDBIcon-1.0"):Refresh("PitBull4", db.profile.minimap_icon)
 	end
 end
 
