@@ -305,33 +305,29 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			local old_position = db.position
 			
 			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar", true) do
-				local other_position = GetLayoutDB(other_id).position
-				if other_id == id then
-					other_position = new_position
-				elseif other_position >= old_position and other_position <= new_position then
-					other_position = other_position - 1
-				elseif other_position <= old_position and other_position >= new_position then
-					other_position = other_position + 1
-				end
-				
-				id_to_position[other_id] = other_position
+				id_to_position[other_id] = GetLayoutDB(other_id).position
 				bars[#bars+1] = other_id
 			end
 			
 			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar_provider", true) do
 				for name, bar_db in pairs(GetLayoutDB(other_id).elements) do
-					local other_position = bar_db.position
-					if other_id == id and name == CURRENT_BAR_PROVIDER_ID[id] then
-						other_position = new_position
-					elseif other_position >= old_position and other_position <= new_position then
-						other_position = other_position - 1
-					elseif other_position <= old_position and other_position >= new_position then
-						other_position = other_position + 1
-					end
-					
 					local joined_id = other_id .. ";" .. name
-					id_to_position[joined_id] = other_position
+					id_to_position[joined_id] = bar_db.position
 					bars[#bars+1] = joined_id
+				end
+			end
+			
+			local current_id = id
+			if CURRENT_BAR_PROVIDER_ID[id] then
+				current_id = current_id .. ";" .. CURRENT_BAR_PROVIDER_ID[id]
+			end
+			for bar_id, other_position in pairs(id_to_position) do
+				if bar_id == current_id then
+					id_to_position[bar_id] = new_position
+				elseif other_position >= old_position and other_position <= new_position then
+					id_to_position[bar_id] = other_position - 1
+				elseif other_position <= old_position and other_position >= new_position then
+					id_to_position[bar_id] = other_position + 1
 				end
 			end
 			
