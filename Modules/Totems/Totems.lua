@@ -766,6 +766,7 @@ function PitBull4_Totems:BuildFrames(frame)
 		
 		frm:SetWidth(TOTEMSIZE)
 		frm:SetHeight(TOTEMSIZE)
+		frm:SetFrameLevel(frame:GetFrameLevel() + 3)
 		frm:Hide()
 		frm.slot = i
 		frm.hideinactive = lOptGet(frame,'hideinactive')
