@@ -6,7 +6,7 @@ local CustomTextModule = PitBull4:NewModuleType("custom_text", {
 	attach_to = "root",
 	location = "edge_top_left",
 	position = 1,
-	side = nil,
+	side = false,
 	enabled = true,
 })
 
