@@ -9,23 +9,22 @@ local L = PitBull4.L
 
 local PitBull4_BlankSpace = PitBull4:NewModule("BlankSpace")
 
-PitBull4_BlankSpace:SetModuleType("status_bar")
+PitBull4_BlankSpace:SetModuleType("status_bar_provider")
 PitBull4_BlankSpace:SetName(L["Blank space"])
-PitBull4_BlankSpace:SetDescription(L["Show an empty bar for spacing."])
+PitBull4_BlankSpace:SetDescription(L["Provide empty bars for spacing."])
 PitBull4_BlankSpace:SetDefaults({
-	position = 2,
-	enabled = false
+	enabled = false,
 })
 
-function PitBull4_BlankSpace:GetValue(frame)
+function PitBull4_BlankSpace:GetValue(frame, bar_db)
 	return 1
 end
 
-function PitBull4_BlankSpace:GetExampleValue(frame)
+function PitBull4_BlankSpace:GetExampleValue(frame, bar_db)
 	return 1
 end
 
-function PitBull4_BlankSpace:GetColor(frame, value)
+function PitBull4_BlankSpace:GetColor(frame, bar_db, value)
 	return 0, 0, 0
 end
 
