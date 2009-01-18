@@ -233,9 +233,9 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			UpdateFrames()
 		end,
 		values = {
-			center = "Center",
-			left = "Left",
-			right = "Right",
+			center = L["Center"],
+			left = L["Left"],
+			right = L["Right"],
 		},
 		disabled = disabled,
 	}
@@ -253,7 +253,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			local side = db.side
 			local t = {}
 			local sort = {}
-			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar") do
+			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar", "icon", "custom_indicator") do
 				local other_db = GetLayoutDB(other_id)
 				if side == other_db.side and other_db.enabled then
 					local position = other_db.position
@@ -304,9 +304,12 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			
 			local old_position = db.position
 			
-			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar", true) do
-				id_to_position[other_id] = GetLayoutDB(other_id).position
-				bars[#bars+1] = other_id
+			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar", "icon", "custom_indicator", true) do
+				local other_db = GetLayoutDB(other_id)
+				if other_db.side then
+					id_to_position[other_id] = other_db.position
+					bars[#bars+1] = other_id
+				end
 			end
 			
 			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar_provider", true) do

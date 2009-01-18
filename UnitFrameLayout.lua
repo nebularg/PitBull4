@@ -7,6 +7,21 @@ local CENTER_WIDTH_POINTS = 10
 -- how many pixels wide to assume a text is
 local ASSUMED_TEXT_WIDTH = 40
 
+local BAR_MODULE_TYPES = {
+	status_bar = true,
+	status_bar_provider = true,
+}
+
+local INDICATOR_MODULE_TYPES = {
+	icon = true,
+	custom_indicator = true,
+}
+
+local TEXT_MODULE_TYPES = {
+	text_provider = true,
+	custom_text = true,
+}
+
 -----------------------------------------------------------------------------
 
 local _G = _G
@@ -46,6 +61,21 @@ local function get_element_db(id, layout)
 	end
 end
 
+local element_id_to_module_type = setmetatable({}, {
+	__index = function(self, id)
+		local module_id = id
+		if module_id:match(";") then
+			module_id = (";"):split(id, 2)
+		end
+		local module = modules[module_id]
+		--@alpha@
+		expect(module, 'typeof', 'table')
+		--@end-alpha@
+		self[id] = module.module_type
+		return self[id]
+	end,
+})
+
 -- sort the bars in the order specified by the layout
 local sort_positions
 do
@@ -78,9 +108,16 @@ end
 -- return a list of existing status bars on frame of the given side in the correct order
 local function get_all_bars(frame)
 	local bars = new()
+	local layout = frame.layout
 	
 	for id, module in PitBull4:IterateModulesOfType('status_bar') do
 		if frame[id] then
+			bars[#bars+1] = id
+		end
+	end
+	
+	for id, module in PitBull4:IterateModulesOfType('icon', 'custom_indicator') do
+		if frame[id] and module:GetLayoutDB(layout).side then
 			bars[#bars+1] = id
 		end
 	end
@@ -95,8 +132,6 @@ local function get_all_bars(frame)
 	
 	sort_positions(bars, frame)
 	
-	local layout = frame.layout
-	
 	return bars,
 		filter_bars_for_side(layout, bars, 'center'),
 		filter_bars_for_side(layout, bars, 'left'),
@@ -107,6 +142,8 @@ end
 local function calculate_width_height_points(layout, center_bars, left_bars, right_bars)
 	local bar_height_points = 0
 	local bar_width_points = 0
+	local left_exempt_width = 0
+	local right_exempt_width = 0
 	
 	for _, id in ipairs(center_bars) do
 		bar_height_points = bar_height_points + get_element_db(id, layout).size
@@ -118,13 +155,21 @@ local function calculate_width_height_points(layout, center_bars, left_bars, rig
 	end
 	
 	for _, id in ipairs(left_bars) do
-		bar_width_points = bar_width_points + get_element_db(id, layout).size
+		if INDICATOR_MODULE_TYPES[element_id_to_module_type[id]] then
+			left_exempt_width = left_exempt_width + 1
+		else
+			bar_width_points = bar_width_points + get_element_db(id, layout).size
+		end
 	end
 	for _, id in ipairs(right_bars) do
-		bar_width_points = bar_width_points + get_element_db(id, layout).size
+		if INDICATOR_MODULE_TYPES[element_id_to_module_type[id]] then
+			right_exempt_width = right_exempt_width + 1
+		else
+			bar_width_points = bar_width_points + get_element_db(id, layout).size
+		end
 	end
 	
-	return bar_width_points, bar_height_points
+	return bar_width_points, bar_height_points, left_exempt_width, right_exempt_width
 end
 
 local reverse_ipairs
@@ -156,17 +201,21 @@ local function update_bar_layout(self)
 	
 	local layout = self.layout
 	
-	local bar_width_points, bar_height_points = calculate_width_height_points(layout, center_bars, left_bars, right_bars)
+	local bar_width_points, bar_height_points, left_exempt_width, right_exempt_width = calculate_width_height_points(layout, center_bars, left_bars, right_bars)
 	
 	local bar_spacing = self.layout_db.bar_spacing
 	local bar_padding = self.layout_db.bar_padding
+	
+	local bar_height = height - bar_padding * 2
+	
+	local leftover_width = width - (left_exempt_width + right_exempt_width) * (height + bar_spacing)
 	
 	local height_of_bars = height - bar_spacing * (#center_bars - 1) - bar_padding * 2
 	local num_vertical_bars = #left_bars + #right_bars
 	if #center_bars > 0 then
 		num_vertical_bars = num_vertical_bars + num_vertical_bars
 	end
-	local width_of_bars = width - bar_spacing * (num_vertical_bars - 1) - bar_padding * 2
+	local width_of_bars = leftover_width - bar_spacing * (num_vertical_bars - 1) - bar_padding * 2
 	
 	local bar_height_per_point = height_of_bars / bar_height_points
 	local bar_width_per_point = width_of_bars / bar_width_points
@@ -175,14 +224,20 @@ local function update_bar_layout(self)
 	for _, id in ipairs(left_bars) do
 		local bar = self[id]
 		bar:ClearAllPoints()
-	
-		bar:SetPoint("TOPLEFT", self, "TOPLEFT", last_x, 0)
-		local bar_width = get_element_db(id, layout).size * bar_width_per_point
-		last_x = last_x + bar_width
-		bar:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", last_x, 0)
-		last_x = last_x + bar_spacing
-	
-		bar:SetOrientation("VERTICAL")
+		
+		local bar_width
+		if INDICATOR_MODULE_TYPES[element_id_to_module_type[id]] then
+			local bar_scale = bar_height / math.max(bar:GetHeight(), bar:GetWidth())
+			bar:SetScale(bar_scale)
+			bar_width = bar_height
+			bar:SetPoint("CENTER", self, "LEFT", (last_x + bar_width/2) / bar_scale, 0)
+		else
+			bar_width = get_element_db(id, layout).size * bar_width_per_point
+			bar:SetOrientation("VERTICAL")
+			bar:SetPoint("TOPLEFT", self, "TOPLEFT", last_x, 0)
+			bar:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", last_x + bar_width, 0)
+		end	
+		last_x = last_x + bar_width + bar_spacing
 	end
 	local left = last_x
 
@@ -190,14 +245,20 @@ local function update_bar_layout(self)
 	for _, id in ipairs(right_bars) do
 		local bar = self[id]
 		bar:ClearAllPoints()
-	
-		bar:SetPoint("TOPRIGHT", self, "TOPRIGHT", last_x, 0)
-		local bar_width = get_element_db(id, layout).size * bar_width_per_point
-		last_x = last_x - bar_width
-		bar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", last_x, 0)
-		last_x = last_x - bar_spacing
-	
-		bar:SetOrientation("VERTICAL")
+		
+		local bar_width
+		if INDICATOR_MODULE_TYPES[element_id_to_module_type[id]] then
+			local bar_scale = bar_height / math.max(bar:GetHeight(), bar:GetWidth())
+			bar:SetScale(bar_scale)
+			bar_width = bar_height
+			bar:SetPoint("CENTER", self, "RIGHT", (last_x - bar_width/2) / bar_scale, 0)
+		else
+			bar_width = get_element_db(id, layout).size * bar_width_per_point
+			bar:SetOrientation("VERTICAL")
+			bar:SetPoint("TOPLEFT", self, "TOPLEFT", last_x, 0)
+			bar:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", last_x - bar_width, 0)
+		end	
+		last_x = last_x - bar_width - bar_spacing
 	end
 	local right = last_x
 	
@@ -228,10 +289,12 @@ local function update_bar_layout(self)
 				reverse = not reverse
 			end
 		end
-		bar:SetReverse(reverse)
-		bar:SetDeficit(bar_layout_db.deficit)
-		bar:SetNormalAlpha(bar_layout_db.alpha)
-		bar:SetBackgroundAlpha(bar_layout_db.background_alpha)
+		if not INDICATOR_MODULE_TYPES[element_id_to_module_type[id]] then
+			bar:SetReverse(reverse)
+			bar:SetDeficit(bar_layout_db.deficit)
+			bar:SetNormalAlpha(bar_layout_db.alpha)
+			bar:SetBackgroundAlpha(bar_layout_db.background_alpha)
+		end
 	end
 
 	bars = del(bars)
@@ -242,9 +305,10 @@ end
 
 local function get_all_indicators_and_texts(frame)
 	local indicators_and_texts = new()
+	local layout = frame.layout
 	
 	for id, module in PitBull4:IterateModulesOfType('icon', 'custom_indicator', 'custom_text') do
-		if frame[id] then
+		if frame[id] and not module:GetLayoutDB(layout).side then
 			indicators_and_texts[#indicators_and_texts+1] = id
 		end
 	end
@@ -667,7 +731,7 @@ local function update_indicator_and_text_layout(self)
 				location = vertical_mirrored_location[location]
 			end
 			
-			if module.module_type ~= "text_provider" and module.module_type ~= "custom_text" then
+			if INDICATOR_MODULE_TYPES[module.module_type] then
 				local size = indicator_size * element_db.size
 				local unscaled_height = element:GetHeight()
 				local height_multiplier = element.height or 1
