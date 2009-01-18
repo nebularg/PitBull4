@@ -48,6 +48,7 @@ function PitBull4_HideBlizzard:UpdateFrames()
 		end
 	end
 end
+PitBull4_HideBlizzard.UpdateFrames = PitBull4:OutOfCombatWrapper(PitBull4_HideBlizzard.UpdateFrames)
 
 function hiders:player()
 	PlayerFrame:UnregisterAllEvents()

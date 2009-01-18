@@ -268,8 +268,9 @@ local function get_half_width(frame, indicators_and_texts)
 		else
 			-- an indicator
 			local module = PitBull4.modules[indicator_or_text.id]
+			local module_layout_size = module and module:GetLayoutDB(layout).size or 1
 			local height_multiplier = indicator_or_text.height or 1
-			num = num + module:GetLayoutDB(layout).size * layout_db.indicator_size * indicator_or_text:GetWidth() / indicator_or_text:GetHeight() * height_multiplier
+			num = num + module_layout_size * layout_db.indicator_size * indicator_or_text:GetWidth() / indicator_or_text:GetHeight() * height_multiplier
 		end
 	end
 	

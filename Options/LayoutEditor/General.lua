@@ -36,6 +36,9 @@ function PitBull4.Options.get_layout_editor_general_options(layout_options)
 					GetLayoutDB(false).size_x = value
 					
 					RefreshFrameLayouts()
+				end,
+				disabled = function(info)
+					return InCombatLockdown()
 				end
 			},
 			height = {
@@ -54,6 +57,9 @@ function PitBull4.Options.get_layout_editor_general_options(layout_options)
 					GetLayoutDB(false).size_y = value
 					
 					RefreshFrameLayouts()
+				end,
+				disabled = function(info)
+					return InCombatLockdown()
 				end
 			},
 			scale = {
@@ -73,6 +79,9 @@ function PitBull4.Options.get_layout_editor_general_options(layout_options)
 					GetLayoutDB(false).scale = value
 					
 					RefreshFrameLayouts()
+				end,
+				disabled = function(info)
+					return InCombatLockdown()
 				end
 			},
 		}

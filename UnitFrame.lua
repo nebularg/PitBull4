@@ -90,15 +90,23 @@ function UnitFrame:menu(unit)
 	ToggleDropDownMenu(1, nil, PitBull4_UnitFrame_DropDown, "cursor")
 end
 
+local moving_frame = nil
 function SingletonUnitFrame__scripts:OnDragStart()
-	if PitBull4.db.profile.lock_movement then
+	if PitBull4.db.profile.lock_movement or InCombatLockdown() then
 		return
 	end
+	
+	-- this start/stop thing is to make WoW move the frame the initial few pixels between OnMouseDown and OnDragStart
 	self:StartMoving()
+	self:StopMovingOrSizing()
+	
+	moving_frame = self
+	LibStub("LibSimpleSticky-1.0"):StartMoving(self, PitBull4.all_frames_list, 0, 0, 0, 0)
 end
 
 function SingletonUnitFrame__scripts:OnDragStop()
-	self:StopMovingOrSizing()
+	moving_frame = nil
+	LibStub("LibSimpleSticky-1.0"):StopMoving(self)
 	
 	local ui_scale = UIParent:GetEffectiveScale()
 	local scale = self:GetEffectiveScale() / ui_scale
@@ -116,6 +124,12 @@ function SingletonUnitFrame__scripts:OnDragStop()
 	
 	self:RefreshLayout()
 end
+
+LibStub("AceEvent-3.0").RegisterEvent("PitBull4-SingletonUnitFrame:OnDragStop", "PLAYER_REGEN_DISABLED", function()
+	if moving_frame then
+		SingletonUnitFrame__scripts.OnDragStop(moving_frame)
+	end
+end)
 
 function UnitFrame__scripts:OnEnter()
 	if self.guid then
@@ -184,6 +198,7 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 	
 	self.all_frames[frame] = true
 	_G.ClickCastFrames[frame] = true
+	table.insert(self.all_frames_list, frame)
 	
 	self.classification_to_frames[frame.classification][frame] = true
 	

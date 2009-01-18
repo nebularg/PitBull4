@@ -95,8 +95,23 @@ function OpenConfig()
 	PitBull4.Options.get_color_options = nil
 	options.args.colors.order = new_order()
 	
+	options.args.profile = LibStub("AceDBOptions-3.0"):GetOptionsTable(PitBull4.db)
+	options.args.profile.order = new_order()
+	local old_disabled = options.args.profile.disabled
+	options.args.profile.disabled = function(info)
+		return InCombatLockdown() or (old_disabled and old_disabled(info))
+	end
+	
 	AceConfig:RegisterOptionsTable("PitBull4", options)
 	AceConfigDialog:SetDefaultSize("PitBull4", 825, 550)
+	
+	LibStub("AceEvent-3.0").RegisterEvent("PitBull4.Options", "PLAYER_REGEN_ENABLED", function()
+		LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
+	end)
+	
+	LibStub("AceEvent-3.0").RegisterEvent("PitBull4.Options", "PLAYER_REGEN_DISABLED", function()
+		LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
+	end)
 	
 	return OpenConfig()
 end

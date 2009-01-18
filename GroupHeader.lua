@@ -258,16 +258,20 @@ function GroupHeader:UnforceShow()
 end
 GroupHeader.UnforceShow = PitBull4:OutOfCombatWrapper(GroupHeader.UnforceShow)
 
+local moving_frame = nil
 function MemberUnitFrame__scripts:OnDragStart()
-	if PitBull4.db.profile.lock_movement then
+	if PitBull4.db.profile.lock_movement or InCombatLockdown() then
 		return
 	end
-	return self.header:StartMoving()
+	
+	moving_frame = self
+	LibStub("LibSimpleSticky-1.0"):StartMoving(self.header, PitBull4.all_frames_list, 0, 0, 0, 0)
 end
 
 function MemberUnitFrame__scripts:OnDragStop()
+	moving_frame = nil
 	local header = self.header
-	header:StopMovingOrSizing()
+	LibStub("LibSimpleSticky-1.0"):StopMoving(header)
 	
 	local ui_scale = UIParent:GetEffectiveScale()
 	local scale = header[1]:GetEffectiveScale() / ui_scale
@@ -285,6 +289,12 @@ function MemberUnitFrame__scripts:OnDragStop()
 	
 	header:RefreshLayout(true)
 end
+
+LibStub("AceEvent-3.0").RegisterEvent("PitBull4-MemberUnitFrame:OnDragStop", "PLAYER_REGEN_DISABLED", function()
+	if moving_frame then
+		MemberUnitFrame__scripts.OnDragStop(moving_frame)
+	end
+end)
 
 --- Reset the size of the unit frame, not position as that is handled through the group header.
 -- @usage frame:RefixSizeAndPosition()

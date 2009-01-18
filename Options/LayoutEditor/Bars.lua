@@ -105,6 +105,10 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		end
 	}
 	
+	local disabled = function(info)
+		return not GetLayoutDB(info[#info-1]).enabled
+	end
+	
 	bar_args.side = {
 		type = 'select',
 		name = L["Side"],
@@ -123,7 +127,8 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			center = "Center",
 			left = "Left",
 			right = "Right",
-		}
+		},
+		disabled = disabled,
 	}
 	
 	bar_args.position = {
@@ -138,7 +143,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			local sort = {}
 			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar") do
 				local other_db = GetLayoutDB(other_id)
-				if side == other_db.side then
+				if side == other_db.side and other_db.enabled then
 					local position = other_db.position
 					while t[position] do
 						position = position + 1e-5
@@ -193,7 +198,8 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			end
 			
 			UpdateFrames()
-		end
+		end,
+		disabled = disabled,
 	}
 	
 	bar_args.texture = {
@@ -225,6 +231,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			end
 			return t
 		end,
+		disabled = disabled,
 		hidden = function(info)
 			return not LibSharedMedia or #LibSharedMedia:List("statusbar") <= 1
 		end,
@@ -259,6 +266,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		min = 1,
 		max = 12,
 		step = 1,
+		disabled = disabled,
 	}
 	
 	bar_args.deficit = {
@@ -274,6 +282,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 
 			UpdateFrames()
 		end,
+		disabled = disabled,
 	}
 	
 	bar_args.reverse = {
@@ -289,6 +298,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 
 			UpdateFrames()
 		end,
+		disabled = disabled,
 	}
 	
 	bar_args.alpha = {
@@ -309,6 +319,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		step = 0.01,
 		bigStep = 0.05,
 		isPercent = true,
+		disabled = disabled,
 	}
 	
 	bar_args.background_alpha = {
@@ -329,6 +340,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		step = 0.01,
 		bigStep = 0.05,
 		isPercent = true,
+		disabled = disabled,
 	}
 	
 	bar_args.toggle_custom_color = {
@@ -345,7 +357,10 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			else
 				GetLayoutDB(info[#info-1]).custom_color = nil
 			end
+			
+			UpdateFrames()
 		end,
+		disabled = disabled,
 	}
 	
 	bar_args.custom_color = {
@@ -365,10 +380,15 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		end,
 		hidden = function(info)
 			return not GetLayoutDB(info[#info-1]).custom_color
-		end
+		end,
+		disabled = disabled,
 	}
 	
 	local layout_functions = PitBull4.Options.layout_functions
+	
+	local function table_with_size(...)
+		return { ... }, select('#', ...)
+	end
 	
 	for id, module in PitBull4:IterateModulesOfType("status_bar", true) do
 		local args = {}
@@ -376,13 +396,19 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			args[k] = v
 		end
 		if layout_functions[module] then
-			local data = { layout_functions[module](module) }
+			local data, data_n = table_with_size(layout_functions[module](module))
 			layout_functions[module] = false
-			for i = 1, #data, 2 do
+			for i = 1, data_n, 2 do
 				local k, v = data[i], data[i + 1]
 				
 				args[k] = v
-				v.order = 100 + i
+				if v then
+					v.order = 100 + i
+					local v_disabled = v.disabled
+					function v.disabled(info)
+						return disabled(info) or (v_disabled and v_disabled(info))
+					end
+				end
 			end
 		end
 		

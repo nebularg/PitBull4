@@ -57,6 +57,9 @@ function PitBull4.Options.get_unit_options()
 			
 			PitBull4:RecheckConfigMode()
 		end,
+		disabled = function(info)
+			return InCombatLockdown()
+		end,
 	}
 	
 	shared_args.layout = {
@@ -87,7 +90,10 @@ function PitBull4.Options.get_unit_options()
 			for frame in PitBull4:IterateFramesForClassification(classification, true) do
 				frame:RefreshLayout()
 			end
-		end
+		end,
+		disabled = function(info)
+			return InCombatLockdown()
+		end,
 	}
 	
 	shared_args.horizontal_mirror = {
@@ -108,7 +114,10 @@ function PitBull4.Options.get_unit_options()
 			for frame in PitBull4:IterateFramesForClassification(classification, true) do
 				frame:Update(true, true)
 			end
-		end
+		end,
+		disabled = function(info)
+			return InCombatLockdown()
+		end,
 	}
 	
 	shared_args.vertical_mirror = {
@@ -129,7 +138,10 @@ function PitBull4.Options.get_unit_options()
 			for frame in PitBull4:IterateFramesForClassification(classification, true) do
 				frame:Update(true, true)
 			end
-		end
+		end,
+		disabled = function(info)
+			return InCombatLockdown()
+		end,
 	}
 	
 	shared_args.scale = {
@@ -158,7 +170,10 @@ function PitBull4.Options.get_unit_options()
 			for frame in PitBull4:IterateFramesForClassification(classification, true) do
 				frame:RefreshLayout()
 			end
-		end
+		end,
+		disabled = function(info)
+			return InCombatLockdown()
+		end,
 	}
 	
 	shared_args.width_multiplier = {
@@ -184,6 +199,9 @@ function PitBull4.Options.get_unit_options()
 			for frame in PitBull4:IterateFramesForClassification(classification, true) do
 				frame:RefreshLayout()
 			end
+		end,
+		disabled = function(info)
+			return InCombatLockdown()
 		end,
 	}
 	
@@ -211,6 +229,9 @@ function PitBull4.Options.get_unit_options()
 				frame:RefreshLayout()
 			end
 		end,
+		disabled = function(info)
+			return InCombatLockdown()
+		end,
 	}
 	
 	shared_args.click_through = {
@@ -231,7 +252,10 @@ function PitBull4.Options.get_unit_options()
 			for frame in PitBull4:IterateFramesForClassification(classification, true) do
 				frame:RefreshLayout()
 			end
-		end
+		end,
+		disabled = function(info)
+			return InCombatLockdown()
+		end,
 	}
 	
 	local singleton_args = {}
@@ -259,6 +283,9 @@ function PitBull4.Options.get_unit_options()
 		end,
 		step = 1,
 		bigStep = 5,
+		disabled = function(info)
+			return InCombatLockdown()
+		end,
 	}
 	
 	singleton_args.position_y = {
@@ -284,6 +311,9 @@ function PitBull4.Options.get_unit_options()
 		end,
 		step = 1,
 		bigStep = 5,
+		disabled = function(info)
+			return InCombatLockdown()
+		end,
 	}
 	
 	local party_only_args = {}
@@ -311,6 +341,9 @@ function PitBull4.Options.get_unit_options()
 				header:RefreshLayout()
 			end
 		end,
+		disabled = function(info)
+			return InCombatLockdown()
+		end,
 	}
 	
 	party_only_args.sort_direction = {
@@ -335,6 +368,9 @@ function PitBull4.Options.get_unit_options()
 			for header in PitBull4:IterateHeadersForSuperClassification(classification) do
 				header:RefreshLayout()
 			end
+		end,
+		disabled = function(info)
+			return InCombatLockdown()
 		end,
 	}
 	
@@ -370,6 +406,9 @@ function PitBull4.Options.get_unit_options()
 				header:RefreshLayout()
 			end
 		end,
+		disabled = function(info)
+			return InCombatLockdown()
+		end,
 	}
 	
 	group_args.horizontal_spacing = {
@@ -394,6 +433,9 @@ function PitBull4.Options.get_unit_options()
 			for header in PitBull4:IterateHeadersForClassification(classification) do
 				header:RefreshLayout()
 			end
+		end,
+		disabled = function(info)
+			return InCombatLockdown()
 		end,
 	}
 	
@@ -425,6 +467,9 @@ function PitBull4.Options.get_unit_options()
 			for header in PitBull4:IterateHeadersForClassification(classification) do
 				header:RefreshLayout()
 			end
+		end,
+		disabled = function(info)
+			return InCombatLockdown()
 		end,
 	}
 	
@@ -466,6 +511,9 @@ function PitBull4.Options.get_unit_options()
 			end
 		end,
 		step = 1,
+		disabled = function(info)
+			return InCombatLockdown()
+		end,
 	}
 	
 	local current_order = 0
