@@ -51,7 +51,7 @@ function IconModule:UpdateFrame(frame)
 	local made_control = not control
 	if made_control then
 		control = PitBull4.Controls.MakeIcon(frame)
-		control:SetFrameLevel(frame:GetFrameLevel() + 2)
+		control:SetFrameLevel(frame:GetFrameLevel() + 3)
 		frame[id] = control
 		control.id = id
 		control:SetWidth(ICON_SIZE)

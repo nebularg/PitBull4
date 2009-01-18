@@ -83,7 +83,7 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 	if not combos then
 		combos = PitBull4.Controls.MakeFrame(frame)
 		frame.ComboPoints = combos
-		combos:SetFrameLevel(frame:GetFrameLevel() + 2)
+		combos:SetFrameLevel(frame:GetFrameLevel() + 3)
 		combos.vertical = vertical
 	end
 	
