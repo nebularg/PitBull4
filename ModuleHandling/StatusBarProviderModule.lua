@@ -77,6 +77,7 @@ function StatusBarProviderModule:UpdateFrame(frame)
 		if not rawget(layout_db.bars, name) then
 			bar.db = nil
 			bars[name] = bar:Delete()
+			frame[self.id .. ";" .. name] = nil
 			changed = true
 		end
 	end
@@ -90,12 +91,14 @@ function StatusBarProviderModule:UpdateFrame(frame)
 			if bar then
 				bar.db = nil
 				bars[name] = bar:Delete()
+				frame[self.id .. ";" .. name] = nil
 				changed = true
 			end
 		else
 			if not bar then
 				bar = PitBull4.Controls.MakeBetterStatusBar(frame)
 				bars[name] = bar
+				frame[self.id .. ";" .. name] = bar
 				bar.db = bar_db
 				changed = true
 			end

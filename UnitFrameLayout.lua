@@ -140,20 +140,6 @@ do
 	end
 end
 
-local function get_split_attribute(self, id)
-	local attr = self[id]
-	if attr then
-		return attr
-	end
-	
-	if id:match(";") then
-		local alpha, bravo = (";"):split(id, 2)
-		return self[alpha][bravo]
-	end
-	
-	return nil
-end
-
 local function update_bar_layout(self)
 	local bars, center_bars, left_bars, right_bars = get_all_bars(self)
 	
@@ -185,7 +171,7 @@ local function update_bar_layout(self)
 
 	local last_x = bar_padding
 	for _, id in ipairs(left_bars) do
-		local bar = get_split_attribute(self, id)
+		local bar = self[id]
 		bar:ClearAllPoints()
 	
 		bar:SetPoint("TOPLEFT", self, "TOPLEFT", last_x, 0)
@@ -200,7 +186,7 @@ local function update_bar_layout(self)
 
 	last_x = -bar_padding
 	for _, id in ipairs(right_bars) do
-		local bar = get_split_attribute(self, id)
+		local bar = self[id]
 		bar:ClearAllPoints()
 	
 		bar:SetPoint("TOPRIGHT", self, "TOPRIGHT", last_x, 0)
@@ -215,7 +201,7 @@ local function update_bar_layout(self)
 	
 	local last_y = -bar_padding
 	for i, id in (not vertical_mirror and ipairs or reverse_ipairs)(center_bars) do
-		local bar = get_split_attribute(self, id)
+		local bar = self[id]
 		bar:ClearAllPoints()
 	
 		bar:SetPoint("TOPLEFT", self, "TOPLEFT", left, last_y)
@@ -228,7 +214,7 @@ local function update_bar_layout(self)
 	end
 
 	for _, id in ipairs(bars) do
-		local bar = get_split_attribute(self, id)
+		local bar = self[id]
 		local bar_layout_db = get_bar_db(id, layout)
 		local reverse = bar_layout_db.reverse
 		if bar_layout_db.side == "center" then
@@ -712,7 +698,7 @@ local function update_indicator_and_text_layout(self)
 		if attach_to == "root" then
 			attach_frame = self
 		else
-			attach_frame = get_split_attribute(self, attach_to)
+			attach_frame = self[attach_to]
 		end
 		
 		if attach_frame then

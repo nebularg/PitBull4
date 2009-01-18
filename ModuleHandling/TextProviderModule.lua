@@ -77,6 +77,7 @@ function TextProviderModule:UpdateFrame(frame)
 			self:RemoveFontString(font_string)
 			font_string.db = nil
 			texts[name] = font_string:Delete()
+			frame[self.id .. ";" .. name] = nil
 			changed = true
 		end
 	end
@@ -90,17 +91,8 @@ function TextProviderModule:UpdateFrame(frame)
 		local has_attach_to = false
 		if attach_to == "root" then
 			has_attach_to = true
-		else
-			if frame[attach_to] then
-				has_attach_to = true
-			else
-				if attach_to:match(";") then
-					local alpha, bravo = (";"):split(attach_to, 2)
-					if frame[alpha] and frame[alpha][bravo] then
-						has_attach_to = true
-					end
-				end
-			end
+		elseif frame[attach_to] then
+			has_attach_to = true
 		end
 		
 		if has_attach_to then
@@ -109,6 +101,7 @@ function TextProviderModule:UpdateFrame(frame)
 			if not font_string then
 				font_string = PitBull4.Controls.MakeFontString(frame.overlay, "OVERLAY")
 				texts[name] = font_string
+				frame[self.id .. ";" .. name] = font_string
 			end
 			
 			local font
@@ -122,6 +115,7 @@ function TextProviderModule:UpdateFrame(frame)
 				self:RemoveFontString(font_string)
 				font_string.db = nil
 				texts[name] = font_string:Delete()
+				frame[self.id .. ";" .. name] = nil
 			else
 				changed = true
 			end
@@ -131,6 +125,7 @@ function TextProviderModule:UpdateFrame(frame)
 				self:RemoveFontString(font_string)
 				font_string.db = nil
 				texts[name] = font_string:Delete()
+				frame[self.id .. ";" .. name] = nil
 				changed = true
 			end
 		end
