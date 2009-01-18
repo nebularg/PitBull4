@@ -114,7 +114,6 @@ function PitBull4.Options.get_layout_editor_text_options()
 				end
 			end
 		end,
-		disabled = disabled
 	}
 	
 	local function text_name_validate(info, value)
