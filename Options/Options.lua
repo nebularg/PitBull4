@@ -2,6 +2,8 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local LDB = LibStub("LibDataBroker-1.1", true)
+
 local AceConfig = LibStub and LibStub("AceConfig-3.0", true)
 if not AceConfig then
 	LoadAddOn("Ace3")
@@ -114,4 +116,24 @@ function OpenConfig()
 	end)
 	
 	return OpenConfig()
+end
+
+if LDB then
+	PitBull4.LDBLauncher = LDB:NewDataObject("PitBull4", {
+		type = "launcher",
+		icon = [[Interface\Icons\Ability_Hunter_BeastTraining]],
+		OnClick = function(clickedframe, button)
+			if button == "RightButton" then 
+				return OpenConfig() 
+			else 
+				PitBull4.db.profile.lock_movement = not PitBull4.db.profile.lock_movement
+				LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
+			end
+		end,
+		OnTooltipShow = function(tt)
+			tt:AddLine(L["PitBull Unit Frames 4.0"])
+			tt:AddLine(L["Click|r to toggle frame lock"], 1, 1, 1)
+			tt:AddLine(L["Right-click|r to open the options menu"], 1, 1, 1)
+		end,
+	})
 end
