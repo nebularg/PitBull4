@@ -68,6 +68,9 @@ function PitBull4_CombatText:UpdateFrame(frame)
 		font_string = PitBull4.Controls.MakeFontString(frame.overlay, "OVERLAY")
 		frame.CombatText = font_string
 		font_string.id = "CombatText"
+		font_string:SetShadowColor(0, 0, 0, 1)
+		font_string:SetShadowOffset(0.8, -0.8)
+		font_string:SetNonSpaceWrap(false)
 	end
 	
 	if not font_string.size_modifier then
