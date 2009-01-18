@@ -75,8 +75,8 @@ function TextProviderModule:UpdateFrame(frame)
 	local n = layout_db.texts.n
 	for k, font_string in pairs(texts) do
 		if k > n then
-			font_string.db = nil
 			self:RemoveFontString(font_string)
+			font_string.db = nil
 			texts[k] = font_string:Delete()
 			changed = true
 		end
@@ -89,7 +89,24 @@ function TextProviderModule:UpdateFrame(frame)
 		local font_string = texts[i]
 		
 		local attach_to = text_db.attach_to
-		if attach_to == "root" or frame[text_db.attach_to] then
+		
+		local has_attach_to = false
+		if attach_to == "root" then
+			has_attach_to = true
+		else
+			if frame[attach_to] then
+				has_attach_to = true
+			else
+				if attach_to:match(";") then
+					local alpha, bravo = (";"):split(attach_to, 2)
+					if frame[alpha] and frame[alpha][bravo] then
+						has_attach_to = true
+					end
+				end
+			end
+		end
+		
+		if has_attach_to then
 			-- what we're attaching to exists
 			
 			if not font_string then
