@@ -3,7 +3,7 @@ local PitBull4 = _G.PitBull4
 
 local L = PitBull4.L
 
-local CURRENT_LAYOUT = "Normal"
+local CURRENT_LAYOUT = L["Normal"]
 
 --- Return the DB dictionary for the current layout selected in the options frame.
 -- Modules should be calling this and manipulating data within it.

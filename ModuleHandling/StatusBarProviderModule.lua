@@ -13,6 +13,7 @@ local StatusBarProviderModule = PitBull4:NewModuleType("status_bar_provider", {
 			position = 10,
 			side = 'center',
 			custom_color = nil,
+			exists = false,
 		}
 	}
 })
@@ -73,7 +74,7 @@ function StatusBarProviderModule:UpdateFrame(frame)
 	
 	-- get rid of any bars not in the db
 	for name, bar in pairs(bars) do
-		if not layout_db.bars[name] then
+		if not rawget(layout_db.bars, name) then
 			bar.db = nil
 			bars[name] = bar:Delete()
 			changed = true

@@ -251,6 +251,9 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 end
 PitBull4.ConvertIntoUnitFrame = PitBull4:OutOfCombatWrapper(PitBull4.ConvertIntoUnitFrame)
 
+-- we store layout_db instead of layout, since if a new profile comes up, it'll be a distinct table
+local seen_layout_dbs = setmetatable({}, {__mode='k'})
+
 --- Recheck the layout of the unit frame, make sure it's up to date, and update the frame.
 -- @usage frame:RefreshLayout()
 function UnitFrame:RefreshLayout()
@@ -261,6 +264,10 @@ function UnitFrame:RefreshLayout()
 	local layout = classification_db.layout
 	self.layout = layout
 	self.layout_db = PitBull4.db.profile.layouts[layout]
+	if not seen_layout_dbs[self.layout_db] then
+		seen_layout_dbs[self.layout_db] = true
+		PitBull4:CallMethodOnModules("OnNewLayout", layout)
+	end
 	
 	if classification_db.click_through then
 		self:EnableMouse(false)

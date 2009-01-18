@@ -38,7 +38,7 @@ local modules = PitBull4.modules
 local function get_bar_db(id, layout)
 	if id:match(";") then
 		local module_id, bar_id = (";"):split(id, 2)
-		return modules[module_id]:GetLayoutDB(layout).bars[bar_id]
+		return rawget(modules[module_id]:GetLayoutDB(layout).bars, bar_id)
 	else
 		return modules[id]:GetLayoutDB(layout)
 	end
