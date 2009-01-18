@@ -2,6 +2,22 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local CURRENT_BAR_PROVIDER_ID = {}
+
+--- Return the DB dictionary for the current text for the current layout selected in the options frame.
+-- BarProvider modules should be calling this and manipulating data within it.
+-- @param module the status_bar_provider module
+-- @usage local db = PitBull.Options.GetTextLayoutDB(MyModule); db.some_option = "something"
+-- @return the DB dictionary for the current text
+function PitBull4.Options.GetBarLayoutDB(module)
+	local bar_id = CURRENT_BAR_PROVIDER_ID[module.id]
+	if not bar_id then
+		return
+	end
+	
+	return rawget(PitBull4.Options.GetLayoutDB(module).elements, bar_id)
+end
+
 function PitBull4.Options.get_layout_editor_bar_options()
 	local GetLayoutDB = PitBull4.Options.GetLayoutDB
 	local UpdateFrames = PitBull4.Options.UpdateFrames
@@ -88,26 +104,119 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		end,
 	}
 	
-	local bar_args = {}
-	
-	bar_args.enable = {
+	local enable_option = {
 		type = 'toggle',
 		name = L["Enable"],
-		desc = L["Enable this status bar."],
+		desc = function(info)
+			if #info == 4 then 
+				return L["Enable this status bar."]
+			else
+				return L["Enable this status bar provider."]
+			end
+		end,
 		order = 1,
 		get = function(info)
-			return GetLayoutDB(info[#info-1]).enabled
+			return GetLayoutDB(info[3]).enabled
 		end,
 		set = function(info, value)
-			GetLayoutDB(info[#info-1]).enabled = value
+			GetLayoutDB(info[3]).enabled = value
 			
 			UpdateFrames()
-		end
+		end,
 	}
 	
-	local disabled = function(info)
-		return not GetLayoutDB(info[#info-1]).enabled
+	local function get_current_layout_db(info)
+		if #info == 4 then
+			return GetLayoutDB(info[3])
+		else
+			assert(#info == 5)
+			local bar_id = CURRENT_BAR_PROVIDER_ID[info[3]]
+			if not bar_id then
+				return nil
+			end
+			return rawget(GetLayoutDB(info[3]).elements, bar_id)
+		end
 	end
+	
+	local bar_args = {}
+	
+	local disabled = function(info)
+		return not GetLayoutDB(info[3]).enabled or not get_current_layout_db(info)
+	end
+	
+	bar_args.remove = {
+		type = 'execute',
+		name = L["Remove"],
+		desc = L["Remove this status bar."],
+		confirm = true,
+		confirmText = L["Are you sure you want to remove this status bar?"],
+		order = 1.5,
+		func = function(info, value)
+			local id = info[3]
+			local bars = GetLayoutDB(id).elements
+			local bar_id = CURRENT_BAR_PROVIDER_ID[id]
+			if bar_id then
+				bars[bar_id] = nil
+			end
+			CURRENT_BAR_PROVIDER_ID[id] = nil
+			for k in pairs(bars) do
+				CURRENT_BAR_PROVIDER_ID[id] = k
+				break
+			end
+			
+			UpdateFrames()
+		end,
+		hidden = function(info)
+			return #info ~= 5
+		end,
+		disabled = disabled,
+	}
+	
+	local function bar_name_validate(info, value)
+		if value:len() < 3 then
+			return L["Must be at least 3 characters long."]
+		end
+		
+		local value_lower = value:lower()
+		
+		for name in pairs(GetLayoutDB(info[3]).elements) do
+		 	if value_lower == name:lower() then
+				return L["'%s' is already a text."]:format(value)
+			end
+		end
+		
+		return true
+	end
+	
+	bar_args.name = {
+		type = 'input',
+		name = L["Name"],
+		order = 1.75,
+		get = function(info)
+			local id = info[3]
+			local bar_id = CURRENT_BAR_PROVIDER_ID[id]
+			return bar_id or ""
+		end,
+		set = function(info, value)
+			local id = info[3]
+			local bar_id = CURRENT_BAR_PROVIDER_ID[id]
+			
+			local bars = GetLayoutDB(id).elements
+			
+			bars[value] = rawget(bars, bar_id)
+			if bar_id then
+				bars[bar_id] = nil
+			end
+			CURRENT_BAR_PROVIDER_ID[id] = value
+			
+			UpdateFrames()
+		end,
+		hidden = function(info)
+			return #info ~= 5
+		end,
+		disabled = disabled,
+		validate = bar_name_validate
+	}
 	
 	bar_args.side = {
 		type = 'select',
@@ -115,11 +224,11 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		desc = L["Which side of the unit frame to place the status bar on. Note: For the left and right sides, your bar will be vertical rather than horizontal."],
 		order = 2,
 		get = function(info)
-			return GetLayoutDB(info[#info-1]).side
+			local db = get_current_layout_db(info)
+			return db and db.side
 		end,
 		set = function(info, value)
-			local db = GetLayoutDB(info[#info-1])
-			db.side = value
+			get_current_layout_db(info).side = value
 
 			UpdateFrames()
 		end,
@@ -137,7 +246,10 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		desc = L["Where to place the bar in relation to other bars on the frame."],
 		order = 3,
 		values = function(info)
-			local db = GetLayoutDB(info[#info-1])
+			local db = get_current_layout_db(info)
+			if not db then
+				return {}
+			end
 			local side = db.side
 			local t = {}
 			local sort = {}
@@ -153,6 +265,22 @@ function PitBull4.Options.get_layout_editor_bar_options()
 					sort[#sort+1] = position
 				end
 			end
+			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar_provider") do
+				local other_db = GetLayoutDB(other_id)
+				if other_db.enabled then
+					for name, bar_db in pairs(other_db.elements) do
+						if side == bar_db.side then
+							local position = bar_db.position
+							while t[position] do
+								position = position + 1e-5
+								bar_db.position = position
+							end
+							t[position] = ("%s: %s"):format(other_module.name, name)
+							sort[#sort+1] = position
+						end
+					end
+				end
+			end
 			table.sort(sort)
 			local sort_reverse = {}
 			for k, v in pairs(sort) do
@@ -164,11 +292,12 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			return t
 		end,
 		get = function(info)
-			return GetLayoutDB(info[#info-1]).position
+			local db = get_current_layout_db(info)
+			return db and db.position
 		end,
 		set = function(info, new_position)
-			local id = info[#info-1]
-			local db = GetLayoutDB(id)
+			local id = info[3]
+			local db = get_current_layout_db(info)
 			
 			local id_to_position = {}
 			local bars = {}
@@ -189,12 +318,37 @@ function PitBull4.Options.get_layout_editor_bar_options()
 				bars[#bars+1] = other_id
 			end
 			
+			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar_provider", true) do
+				for name, bar_db in pairs(GetLayoutDB(other_id).elements) do
+					local other_position = bar_db.position
+					if other_id == id and name == CURRENT_BAR_PROVIDER_ID[id] then
+						other_position = new_position
+					elseif other_position >= old_position and other_position <= new_position then
+						other_position = other_position - 1
+					elseif other_position <= old_position and other_position >= new_position then
+						other_position = other_position + 1
+					end
+					
+					local joined_id = other_id .. ";" .. name
+					id_to_position[joined_id] = other_position
+					bars[#bars+1] = joined_id
+				end
+			end
+			
 			table.sort(bars, function(alpha, bravo)
 				return id_to_position[alpha] < id_to_position[bravo]
 			end)
 			
 			for position, bar_id in ipairs(bars) do
-				GetLayoutDB(bar_id).position = position
+				if bar_id:match(";") then
+					local module_id, name = (";"):split(bar_id, 2)
+					local bar_db = rawget(GetLayoutDB(module_id).elements, name)
+					if bar_db then
+						bar_db.position = position
+					end
+				else
+					GetLayoutDB(bar_id).position = position
+				end
 			end
 			
 			UpdateFrames()
@@ -208,14 +362,15 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		desc = L["What texture the status bar should use."],
 		order = 4,
 		get = function(info)
-			return GetLayoutDB(info[#info-1]).texture or GetLayoutDB(false).bar_texture
+			local db = get_current_layout_db(info)
+			return db and db.texture or GetLayoutDB(false).bar_texture
 		end,
 		set = function(info, value)
-			local default = GetLayoutDB(false).bar_texture
+			local default = get_current_layout_db(info).bar_texture
 			if value == default then
 				value = nil
 			end
-			GetLayoutDB(info[#info-1]).texture = value
+			get_current_layout_db(info).texture = value
 			
 			UpdateFrames()
 		end,
@@ -241,14 +396,16 @@ function PitBull4.Options.get_layout_editor_bar_options()
 	bar_args.size = {
 		type = 'range',
 		name = function(info)
-			if GetLayoutDB(info[#info-1]).side == "center" then
+			local db = get_current_layout_db(info)
+			if not db or db.side == "center" then
 				return L["Height"]
 			else
 				return L["Width"]
 			end
 		end,
 		desc = function(info)
-			if GetLayoutDB(info[#info-1]).side == "center" then
+			local db = get_current_layout_db(info)
+			if not db or db.side == "center" then
 				return L["How tall the bar should be in relation to other bars."]
 			else
 				return L["How wide the bar should be in relation to other bars."]
@@ -256,10 +413,11 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		end,
 		order = 5,
 		get = function(info)
-			return GetLayoutDB(info[#info-1]).size
+			local db = get_current_layout_db(info)
+			return db and db.size or 2
 		end,
 		set = function(info, value)
-			GetLayoutDB(info[#info-1]).size = value
+			get_current_layout_db(info).size = value
 
 			UpdateFrames()
 		end,
@@ -275,10 +433,11 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		desc = L["Drain the bar instead of filling it."],
 		order = 6,
 		get = function(info)
-			return GetLayoutDB(info[#info-1]).deficit
+			local db = get_current_layout_db(info)
+			return db and db.deficit
 		end,
 		set = function(info, value)
-			GetLayoutDB(info[#info-1]).deficit = value
+			get_current_layout_db(info).deficit = value
 
 			UpdateFrames()
 		end,
@@ -291,10 +450,11 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		desc = L["Reverse the direction of the bar, filling from right-to-left instead of left-to-right."],
 		order = 7,
 		get = function(info)
-			return GetLayoutDB(info[#info-1]).reverse
+			local db = get_current_layout_db(info)
+			return db and db.reverse
 		end,
 		set = function(info, value)
-			GetLayoutDB(info[#info-1]).reverse = value
+			get_current_layout_db(info).reverse = value
 
 			UpdateFrames()
 		end,
@@ -307,10 +467,11 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		desc = L["How opaque the full section of the bar is."],
 		order = 8,
 		get = function(info)
-			return GetLayoutDB(info[#info-1]).alpha
+			local db = get_current_layout_db(info)
+			return db and db.alpha or 1
 		end,
 		set = function(info, value)
-			GetLayoutDB(info[#info-1]).alpha = value
+			get_current_layout_db(info).alpha = value
 
 			UpdateFrames()
 		end,
@@ -328,10 +489,11 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		desc = L["How opaque the empty section of the bar is."],
 		order = 9,
 		get = function(info)
-			return GetLayoutDB(info[#info-1]).background_alpha
+			local db = get_current_layout_db(info)
+			return db and db.background_alpha or 1
 		end,
 		set = function(info, value)
-			GetLayoutDB(info[#info-1]).background_alpha = value
+			get_current_layout_db(info).background_alpha = value
 
 			UpdateFrames()
 		end,
@@ -349,13 +511,14 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		desc = L["Whether to override the color and use a custom one."],
 		order = -2,
 		get = function(info)
-			return not not GetLayoutDB(info[#info-1]).custom_color
+			local db = get_current_layout_db(info)
+			return db and not not db.custom_color
 		end,
 		set = function(info, value)
 			if value then
-				GetLayoutDB(info[#info-1]).custom_color = { 0.75, 0.75, 0.75, 1 }
+				get_current_layout_db(info).custom_color = { 0.75, 0.75, 0.75, 1 }
 			else
-				GetLayoutDB(info[#info-1]).custom_color = nil
+				get_current_layout_db(info).custom_color = nil
 			end
 			
 			UpdateFrames()
@@ -370,16 +533,17 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		order = -1,
 		hasAlpha = true,
 		get = function(info)
-			return unpack(GetLayoutDB(info[#info-1]).custom_color)
+			return unpack(get_current_layout_db(info).custom_color)
 		end,
 		set = function(info, r, g, b, a)
-			local color = GetLayoutDB(info[#info-1]).custom_color
+			local color = get_current_layout_db(info).custom_color
 			color[1], color[2], color[3], color[4] = r, g, b, a
 			
 			UpdateFrames()
 		end,
 		hidden = function(info)
-			return not GetLayoutDB(info[#info-1]).custom_color
+			local db = get_current_layout_db(info)
+			return not db or not db.custom_color
 		end,
 		disabled = disabled,
 	}
@@ -392,6 +556,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 	
 	for id, module in PitBull4:IterateModulesOfType("status_bar", true) do
 		local args = {}
+		args.enable = enable_option
 		for k, v in pairs(bar_args) do
 			args[k] = v
 		end
@@ -420,6 +585,98 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			hidden = function(info)
 				return not module:IsEnabled()
 			end,
+		}
+	end
+	
+	for id, module in PitBull4:IterateModulesOfType("status_bar_provider", true) do
+		options.args[id] = {
+			name = module.name,
+			desc = module.description,
+			type = 'group',
+			hidden = function(info)
+				return not module:IsEnabled()
+			end,
+			args = {}
+		}
+		
+		options.args[id].args.enable = enable_option
+		
+		options.args[id].args.current_bar = {
+			name = L["Current bar"],
+			desc = L["Change the current bar that you are editing."],
+			type = 'select',
+			order = 2,
+			values = function(info)
+				local bars_db = GetLayoutDB(module).elements
+				local t = {}
+				if not rawget(bars_db, CURRENT_BAR_PROVIDER_ID[id]) then
+					CURRENT_BAR_PROVIDER_ID[id] = nil
+				end
+				for name in pairs(GetLayoutDB(module).elements) do
+					if not CURRENT_BAR_PROVIDER_ID[id] then
+						CURRENT_BAR_PROVIDER_ID[id] = name
+					end
+					t[name] = name
+				end
+				return t
+			end,
+			get = function(info)
+				return CURRENT_BAR_PROVIDER_ID[id]
+			end,
+			set = function(info, value)
+				CURRENT_BAR_PROVIDER_ID[id] = value
+			end,
+			disabled = function(info)
+				return disabled(info) or next(GetLayoutDB(module).elements) == nil
+			end,
+		}
+		
+		options.args[id].args.new_bar = {
+			name = L["New bar"],
+			desc = L["This will make a new bar for this layout."],
+			type = 'input',
+			order = 3,
+			get = function(info) return "" end,
+			set = function(info, value)
+				local bars_db = GetLayoutDB(module).elements
+				
+				local bar_db = bars_db[value]
+				bar_db.exists = true
+				
+				CURRENT_BAR_PROVIDER_ID[id] = value
+				
+				UpdateFrames()
+			end,
+			validate = bar_name_validate,
+			disabled = disabled,
+		}
+		
+		local args = {}
+		for k, v in pairs(bar_args) do
+			args[k] = v
+		end
+		if layout_functions[module] then
+			local data, data_n = table_with_size(layout_functions[module](module))
+			layout_functions[module] = false
+			for i = 1, data_n, 2 do
+				local k, v = data[i], data[i + 1]
+				
+				args[k] = v
+				if v then
+					v.order = 100 + i
+					local v_disabled = v.disabled
+					function v.disabled(info)
+						return disabled(info) or (v_disabled and v_disabled(info))
+					end
+				end
+			end
+		end
+		
+		options.args[id].args.edit = {
+			name = L["Edit bar"],
+			type = 'group',
+			inline = true,
+			args = args,
 		}
 	end
 	

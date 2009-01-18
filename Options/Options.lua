@@ -103,7 +103,7 @@ function OpenConfig()
 	end
 	
 	AceConfig:RegisterOptionsTable("PitBull4", options)
-	AceConfigDialog:SetDefaultSize("PitBull4", 825, 550)
+	AceConfigDialog:SetDefaultSize("PitBull4", 835, 550)
 	
 	LibStub("AceEvent-3.0").RegisterEvent("PitBull4.Options", "PLAYER_REGEN_ENABLED", function()
 		LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")

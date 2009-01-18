@@ -9,6 +9,7 @@
 <Script file="FaderModule.lua"/>
 <Script file="IconModule.lua"/>
 <Script file="StatusBarModule.lua"/>
+<Script file="StatusBarProviderModule.lua"/>
 <Script file="TextProviderModule.lua"/>
 
 </Ui>

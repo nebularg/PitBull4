@@ -275,6 +275,15 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 				end
 			end
 			
+			for id, module in PitBull4:IterateModulesOfType("status_bar_provider") do
+				local db = GetLayoutDB(module)
+				if db.enabled then
+					for name in pairs(db.elements) do
+						t[id .. ";" .. name] = ("%s: %s"):format(module.name, name)
+					end
+				end
+			end
+			
 			return t
 		end,
 		disabled = disabled,

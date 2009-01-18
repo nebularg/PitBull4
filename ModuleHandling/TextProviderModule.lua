@@ -2,14 +2,14 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 
 local TextProviderModule = PitBull4:NewModuleType("text_provider", {
-	texts = {
+	elements = {
 		['**'] = {
 			size = 1,
 			attach_to = "root",
 			location = "edge_top_left",
 			position = 1,
+			exists = false,
 		},
-		n = 1,
 	},
 	enabled = true,
 })
@@ -39,10 +39,11 @@ function TextProviderModule:ClearFrame(frame)
 		return false
 	end
 	
-	for _, text in pairs(texts) do
+	for name, text in pairs(texts) do
 		self:RemoveFontString(text)
 		text.db = nil
 		text:Delete()
+		frame[id .. ";" .. name] = nil
 	end
 	frame[id] = del(texts)
 	
@@ -59,7 +60,7 @@ function TextProviderModule:UpdateFrame(frame)
 	--@end-alpha@
 	
 	local layout_db = self:GetLayoutDB(frame)
-	if layout_db.texts.n == 0 then
+	if not next(layout_db.elements) then
 		return self:ClearFrame(frame)
 	end
 	
@@ -72,29 +73,36 @@ function TextProviderModule:UpdateFrame(frame)
 	local changed = false
 	
 	-- get rid of any font strings not in the db
-	local n = layout_db.texts.n
-	for k, font_string in pairs(texts) do
-		if k > n then
-			font_string.db = nil
+	for name, font_string in pairs(texts) do
+		if not rawget(layout_db.elements, name) then
 			self:RemoveFontString(font_string)
-			texts[k] = font_string:Delete()
+			font_string.db = nil
+			texts[name] = font_string:Delete()
+			frame[self.id .. ";" .. name] = nil
 			changed = true
 		end
 	end
 	
-	-- create or update texts
-	for i = 1, layout_db.texts.n do
-		local text_db = layout_db.texts[i]
-		
-		local font_string = texts[i]
+	-- create or update bars
+	for name, text_db in pairs(layout_db.elements) do
+		local font_string = texts[name]
 		
 		local attach_to = text_db.attach_to
-		if attach_to == "root" or frame[text_db.attach_to] then
+		
+		local has_attach_to = false
+		if attach_to == "root" then
+			has_attach_to = true
+		elseif frame[attach_to] then
+			has_attach_to = true
+		end
+		
+		if has_attach_to then
 			-- what we're attaching to exists
 			
 			if not font_string then
 				font_string = PitBull4.Controls.MakeFontString(frame.overlay, "OVERLAY")
-				texts[i] = font_string
+				texts[name] = font_string
+				frame[self.id .. ";" .. name] = font_string
 			end
 			
 			local font
@@ -104,10 +112,11 @@ function TextProviderModule:UpdateFrame(frame)
 			local _, _, modifier = font_string:GetFont()
 			font_string:SetFont(font or DEFAULT_FONT, DEFAULT_FONT_SIZE * text_db.size, modifier)
 			font_string.db = text_db
-			if not self:AddFontString(frame, font_string, text_db) then
+			if not self:AddFontString(frame, font_string, name, text_db) then
 				self:RemoveFontString(font_string)
 				font_string.db = nil
-				texts[i] = font_string:Delete()
+				texts[name] = font_string:Delete()
+				frame[self.id .. ";" .. name] = nil
 			else
 				changed = true
 			end
@@ -116,7 +125,8 @@ function TextProviderModule:UpdateFrame(frame)
 			if font_string then
 				self:RemoveFontString(font_string)
 				font_string.db = nil
-				texts[i] = font_string:Delete()
+				texts[name] = font_string:Delete()
+				frame[self.id .. ";" .. name] = nil
 				changed = true
 			end
 		end

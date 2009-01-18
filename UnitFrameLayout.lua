@@ -34,25 +34,39 @@ do
 	end
 end
 
+local modules = PitBull4.modules
+local function get_bar_db(id, layout)
+	if id:match(";") then
+		local module_id, bar_id = (";"):split(id, 2)
+		return rawget(modules[module_id]:GetLayoutDB(layout).elements, bar_id)
+	else
+		return modules[id]:GetLayoutDB(layout)
+	end
+end
+
 -- sort the bars in the order specified by the layout
 local sort_positions
 do
-	local sort_positions__layout
+	local id_to_position = {}
 	local function helper(alpha, bravo)
-		return PitBull4.modules[alpha]:GetLayoutDB(sort_positions__layout).position < PitBull4.modules[bravo]:GetLayoutDB(sort_positions__layout).position
+		return id_to_position[alpha] < id_to_position[bravo]
 	end
 
 	function sort_positions(positions, frame)
-		sort_positions__layout = frame.layout
+		local layout = frame.layout
+		for _, id in ipairs(positions) do
+			id_to_position[id] = get_bar_db(id, layout).position
+		end
+		
 		table.sort(positions, helper)
-		sort_positions__layout = nil
+		wipe(id_to_position)
 	end
 end
 
 local function filter_bars_for_side(layout, bars, side)
 	local side_bars = new()
 	for _, id in ipairs(bars) do
-		if PitBull4.modules[id]:GetLayoutDB(layout).side == side then
+		if get_bar_db(id, layout).side == side then
 			side_bars[#side_bars+1] = id
 		end
 	end
@@ -66,6 +80,14 @@ local function get_all_bars(frame)
 	for id, module in PitBull4:IterateModulesOfType('status_bar') do
 		if frame[id] then
 			bars[#bars+1] = id
+		end
+	end
+	
+	for id, module in PitBull4:IterateModulesOfType('status_bar_provider') do
+		if frame[id] then
+			for name in pairs(frame[id]) do
+				bars[#bars+1] = id .. ";" .. name
+			end
 		end
 	end
 	
@@ -85,7 +107,7 @@ local function calculate_width_height_points(layout, center_bars, left_bars, rig
 	local bar_width_points = 0
 	
 	for _, id in ipairs(center_bars) do
-		bar_height_points = bar_height_points + PitBull4.modules[id]:GetLayoutDB(layout).size
+		bar_height_points = bar_height_points + get_bar_db(id, layout).size
 	end
 	
 	if #center_bars > 0 then
@@ -94,10 +116,10 @@ local function calculate_width_height_points(layout, center_bars, left_bars, rig
 	end
 	
 	for _, id in ipairs(left_bars) do
-		bar_width_points = bar_width_points + PitBull4.modules[id]:GetLayoutDB(layout).size
+		bar_width_points = bar_width_points + get_bar_db(id, layout).size
 	end
 	for _, id in ipairs(right_bars) do
-		bar_width_points = bar_width_points + PitBull4.modules[id]:GetLayoutDB(layout).size
+		bar_width_points = bar_width_points + get_bar_db(id, layout).size
 	end
 	
 	return bar_width_points, bar_height_points
@@ -153,7 +175,7 @@ local function update_bar_layout(self)
 		bar:ClearAllPoints()
 	
 		bar:SetPoint("TOPLEFT", self, "TOPLEFT", last_x, 0)
-		local bar_width = PitBull4.modules[id]:GetLayoutDB(layout).size * bar_width_per_point
+		local bar_width = get_bar_db(id, layout).size * bar_width_per_point
 		last_x = last_x + bar_width
 		bar:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", last_x, 0)
 		last_x = last_x + bar_spacing
@@ -168,7 +190,7 @@ local function update_bar_layout(self)
 		bar:ClearAllPoints()
 	
 		bar:SetPoint("TOPRIGHT", self, "TOPRIGHT", last_x, 0)
-		local bar_width = PitBull4.modules[id]:GetLayoutDB(layout).size * bar_width_per_point
+		local bar_width = get_bar_db(id, layout).size * bar_width_per_point
 		last_x = last_x - bar_width
 		bar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", last_x, 0)
 		last_x = last_x - bar_spacing
@@ -183,7 +205,7 @@ local function update_bar_layout(self)
 		bar:ClearAllPoints()
 	
 		bar:SetPoint("TOPLEFT", self, "TOPLEFT", left, last_y)
-		local bar_height = PitBull4.modules[id]:GetLayoutDB(layout).size * bar_height_per_point
+		local bar_height = get_bar_db(id, layout).size * bar_height_per_point
 		last_y = last_y - bar_height
 		bar:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", right, last_y)
 		last_y = last_y - bar_spacing
@@ -193,7 +215,7 @@ local function update_bar_layout(self)
 
 	for _, id in ipairs(bars) do
 		local bar = self[id]
-		local bar_layout_db = PitBull4.modules[id]:GetLayoutDB(layout)
+		local bar_layout_db = get_bar_db(id, layout)
 		local reverse = bar_layout_db.reverse
 		if bar_layout_db.side == "center" then
 			if horizontal_mirror then
