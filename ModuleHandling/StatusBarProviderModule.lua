@@ -3,7 +3,7 @@ local PitBull4 = _G.PitBull4
 
 local StatusBarProviderModule = PitBull4:NewModuleType("status_bar_provider", {
 	enabled = true,
-	bars = {
+	elements = {
 		['**'] = {
 			size = 2,
 			reverse = false,
@@ -44,7 +44,7 @@ function StatusBarProviderModule:ClearFrame(frame)
 	for name, bar in pairs(bars) do
 		bar.db = nil
 		bar:Delete()
-		frame[id .. ";" .. name]
+		frame[id .. ";" .. name] = nil
 	end
 	frame[id] = del(bars)
 	
@@ -61,7 +61,7 @@ function StatusBarProviderModule:UpdateFrame(frame)
 	--@end-alpha@
 	
 	local layout_db = self:GetLayoutDB(frame)
-	if not next(layout_db.bars) then
+	if not next(layout_db.elements) then
 		return self:ClearFrame(frame)
 	end
 	
@@ -75,7 +75,7 @@ function StatusBarProviderModule:UpdateFrame(frame)
 	
 	-- get rid of any bars not in the db
 	for name, bar in pairs(bars) do
-		if not rawget(layout_db.bars, name) then
+		if not rawget(layout_db.elements, name) then
 			bar.db = nil
 			bars[name] = bar:Delete()
 			frame[self.id .. ";" .. name] = nil
@@ -84,7 +84,7 @@ function StatusBarProviderModule:UpdateFrame(frame)
 	end
 	
 	-- create or update bars
-	for name, bar_db in pairs(layout_db.bars) do
+	for name, bar_db in pairs(layout_db.elements) do
 		local bar = bars[name]
 		
 		local value, extra = self:CallValueFunction(frame, bar_db)

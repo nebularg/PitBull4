@@ -15,7 +15,7 @@ function PitBull4.Options.GetBarLayoutDB(module)
 		return
 	end
 	
-	return rawget(PitBull4.Options.GetLayoutDB(module).bars, bar_id)
+	return rawget(PitBull4.Options.GetLayoutDB(module).elements, bar_id)
 end
 
 function PitBull4.Options.get_layout_editor_bar_options()
@@ -134,7 +134,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			if not bar_id then
 				return nil
 			end
-			return rawget(GetLayoutDB(info[3]).bars, bar_id)
+			return rawget(GetLayoutDB(info[3]).elements, bar_id)
 		end
 	end
 	
@@ -153,7 +153,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		order = 1.5,
 		func = function(info, value)
 			local id = info[3]
-			local bars = GetLayoutDB(id).bars
+			local bars = GetLayoutDB(id).elements
 			local bar_id = CURRENT_BAR_PROVIDER_ID[id]
 			if bar_id then
 				bars[bar_id] = nil
@@ -179,7 +179,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		
 		local value_lower = value:lower()
 		
-		for name in pairs(GetLayoutDB(info[3]).bars) do
+		for name in pairs(GetLayoutDB(info[3]).elements) do
 		 	if value_lower == name:lower() then
 				return L["'%s' is already a text."]:format(value)
 			end
@@ -201,7 +201,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			local id = info[3]
 			local bar_id = CURRENT_BAR_PROVIDER_ID[id]
 			
-			local bars = GetLayoutDB(id).bars
+			local bars = GetLayoutDB(id).elements
 			
 			bars[value] = rawget(bars, bar_id)
 			if bar_id then
@@ -268,7 +268,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar_provider") do
 				local other_db = GetLayoutDB(other_id)
 				if other_db.enabled then
-					for name, bar_db in pairs(other_db.bars) do
+					for name, bar_db in pairs(other_db.elements) do
 						if side == bar_db.side then
 							local position = bar_db.position
 							while t[position] do
@@ -319,7 +319,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			end
 			
 			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar_provider", true) do
-				for name, bar_db in pairs(GetLayoutDB(other_id).bars) do
+				for name, bar_db in pairs(GetLayoutDB(other_id).elements) do
 					local other_position = bar_db.position
 					if other_id == id and name == CURRENT_BAR_PROVIDER_ID[id] then
 						other_position = new_position
@@ -342,7 +342,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			for position, bar_id in ipairs(bars) do
 				if bar_id:match(";") then
 					local module_id, name = (";"):split(bar_id, 2)
-					local bar_db = rawget(GetLayoutDB(module_id).bars, name)
+					local bar_db = rawget(GetLayoutDB(module_id).elements, name)
 					if bar_db then
 						bar_db.position = position
 					end
@@ -607,12 +607,12 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			type = 'select',
 			order = 2,
 			values = function(info)
-				local bars_db = GetLayoutDB(module).bars
+				local bars_db = GetLayoutDB(module).elements
 				local t = {}
 				if not rawget(bars_db, CURRENT_BAR_PROVIDER_ID[id]) then
 					CURRENT_BAR_PROVIDER_ID[id] = nil
 				end
-				for name in pairs(GetLayoutDB(module).bars) do
+				for name in pairs(GetLayoutDB(module).elements) do
 					if not CURRENT_BAR_PROVIDER_ID[id] then
 						CURRENT_BAR_PROVIDER_ID[id] = name
 					end
@@ -627,7 +627,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 				CURRENT_BAR_PROVIDER_ID[id] = value
 			end,
 			disabled = function(info)
-				return disabled(info) or next(GetLayoutDB(module).bars) == nil
+				return disabled(info) or next(GetLayoutDB(module).elements) == nil
 			end,
 		}
 		
@@ -638,7 +638,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			order = 3,
 			get = function(info) return "" end,
 			set = function(info, value)
-				local bars_db = GetLayoutDB(module).bars
+				local bars_db = GetLayoutDB(module).elements
 				
 				local bar_db = bars_db[value]
 				bar_db.exists = true

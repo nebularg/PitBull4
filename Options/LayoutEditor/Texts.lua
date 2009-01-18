@@ -15,7 +15,7 @@ function PitBull4.Options.GetTextLayoutDB()
 		return
 	end
 	
-	return PitBull4.Options.GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).texts[CURRENT_TEXT_PROVIDER_ID]
+	return PitBull4.Options.GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).elements[CURRENT_TEXT_PROVIDER_ID]
 end
 
 function PitBull4.Options.get_layout_editor_text_options()
@@ -54,7 +54,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 			local t = {}
 			local first, first_module, first_id
 			for id, module in PitBull4:IterateModulesOfType("text_provider") do
-				local texts_db = GetLayoutDB(module).texts
+				local texts_db = GetLayoutDB(module).elements
 				for name, text_db in pairs(texts_db) do
 					local key = id .. ";" .. name
 					t[key] = name
@@ -119,7 +119,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 		end
 		
 		for id, module in PitBull4:IterateModulesOfType("text_provider") do
-			local texts_db = GetLayoutDB(module).texts
+			local texts_db = GetLayoutDB(module).elements
 			
 			for name in pairs(texts_db) do
 				if value:lower() == name:lower() then
@@ -152,7 +152,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 				assert(module) -- the validate function should verify that at least one module exists
 			end
 			
-			local texts_db = GetLayoutDB(module).texts
+			local texts_db = GetLayoutDB(module).elements
 			local db = texts_db[value]
 			db.exists = true
 			
@@ -205,7 +205,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 		confirmText = L["Are you sure you want to remove this text?"],
 		order = 1,
 		func = function()
-			local texts_db = GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).texts
+			local texts_db = GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).elements
 			
 			texts_db[CURRENT_TEXT_PROVIDER_ID] = nil
 			
@@ -215,7 +215,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 				CURRENT_TEXT_PROVIDER_MODULE = nil
 				CURRENT_TEXT_PROVIDER_ID = nil
 				for id, module in PitBull4:IterateModulesOfType("text_provider") do
-					local texts_db = GetLayoutDB(module).texts
+					local texts_db = GetLayoutDB(module).elements
 					
 					CURRENT_TEXT_PROVIDER_ID = next(texts_db)
 					if CURRENT_TEXT_PROVIDER_ID then
@@ -269,7 +269,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 			return CURRENT_TEXT_PROVIDER_ID or L["<Unnamed>"]
 		end,
 		set = function(info, value)
-			local texts_db = GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).texts
+			local texts_db = GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).elements
 			local text_db = texts_db[CURRENT_TEXT_PROVIDER_ID]
 			texts_db[CURRENT_TEXT_PROVIDER_ID] = nil
 			CURRENT_TEXT_PROVIDER_ID = value
@@ -297,13 +297,13 @@ function PitBull4.Options.get_layout_editor_text_options()
 				return
 			end
 			
-			local texts_db = GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).texts
+			local texts_db = GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).elements
 			
 			local old_db = texts_db[CURRENT_TEXT_PROVIDER_ID]
 			texts_db[CURRENT_TEXT_PROVIDER_ID] = nil
 			
 			CURRENT_TEXT_PROVIDER_MODULE = PitBull4:GetModule(value)
-			texts_db = GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).texts
+			texts_db = GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).elements
 			
 			local new_db = texts_db[CURRENT_TEXT_PROVIDER_ID]
 			new_db.size = old_db.size

@@ -22,7 +22,7 @@ function PitBull4_BlankSpace:OnNewLayout(layout)
 	
 	if layout_db.first then
 		layout_db.first = false
-		local default_bar = layout_db.bars[L["Default"]]
+		local default_bar = layout_db.elements[L["Default"]]
 		default_bar.exists = true
 	end
 end

@@ -15,7 +15,7 @@ PitBull4_DogTagTexts:SetModuleType("text_provider")
 PitBull4_DogTagTexts:SetName(L["DogTag-3.0 texts"])
 PitBull4_DogTagTexts:SetDescription(L["Text provider for LibDogTag-3.0 texts."])
 PitBull4_DogTagTexts:SetDefaults({
-	texts = {
+	elements = {
 		['**'] = {
 			size = 1,
 			attach_to = "root",
@@ -36,7 +36,7 @@ function PitBull4_DogTagTexts:OnNewLayout(layout)
 	end
 	layout_db.first = false
 	
-	local texts = layout_db.texts
+	local texts = layout_db.elements
 	for k in pairs(texts) do
 		texts[k] = nil
 	end
