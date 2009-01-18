@@ -130,7 +130,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		else
 			assert(#info == 5)
 			if not CURRENT_BAR_PROVIDER_ID[info[3]] then
-				CURRENT_BAR_PROVIDER_ID[info[3]] = "Default"
+				CURRENT_BAR_PROVIDER_ID[info[3]] = L["Default"]
 			end
 			return GetLayoutDB(info[3]).bars[CURRENT_BAR_PROVIDER_ID[info[3]]]
 		end
@@ -542,8 +542,8 @@ function PitBull4.Options.get_layout_editor_bar_options()
 					t[name] = name
 				end
 				if not CURRENT_BAR_PROVIDER_ID[id] then
-					CURRENT_BAR_PROVIDER_ID[id] = "Default"
-					t["Default"] = "Default"
+					CURRENT_BAR_PROVIDER_ID[id] = L["Default"]
+					t[L["Default"]] = L["Default"]
 				end
 				return t
 			end,
