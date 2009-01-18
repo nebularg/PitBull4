@@ -35,12 +35,14 @@ do
 end
 
 local modules = PitBull4.modules
-local function get_bar_db(id, layout)
+local function get_element_db(id, layout)
 	if id:match(";") then
 		local module_id, bar_id = (";"):split(id, 2)
-		return rawget(modules[module_id]:GetLayoutDB(layout).elements, bar_id)
+		local module = modules[module_id]
+		return module and rawget(module:GetLayoutDB(layout).elements, bar_id)
 	else
-		return modules[id]:GetLayoutDB(layout)
+		local module = modules[id]
+		return module and module:GetLayoutDB(layout)
 	end
 end
 
@@ -55,7 +57,7 @@ do
 	function sort_positions(positions, frame)
 		local layout = frame.layout
 		for _, id in ipairs(positions) do
-			id_to_position[id] = get_bar_db(id, layout).position
+			id_to_position[id] = get_element_db(id, layout).position
 		end
 		
 		table.sort(positions, helper)
@@ -66,7 +68,7 @@ end
 local function filter_bars_for_side(layout, bars, side)
 	local side_bars = new()
 	for _, id in ipairs(bars) do
-		if get_bar_db(id, layout).side == side then
+		if get_element_db(id, layout).side == side then
 			side_bars[#side_bars+1] = id
 		end
 	end
@@ -107,7 +109,7 @@ local function calculate_width_height_points(layout, center_bars, left_bars, rig
 	local bar_width_points = 0
 	
 	for _, id in ipairs(center_bars) do
-		bar_height_points = bar_height_points + get_bar_db(id, layout).size
+		bar_height_points = bar_height_points + get_element_db(id, layout).size
 	end
 	
 	if #center_bars > 0 then
@@ -116,10 +118,10 @@ local function calculate_width_height_points(layout, center_bars, left_bars, rig
 	end
 	
 	for _, id in ipairs(left_bars) do
-		bar_width_points = bar_width_points + get_bar_db(id, layout).size
+		bar_width_points = bar_width_points + get_element_db(id, layout).size
 	end
 	for _, id in ipairs(right_bars) do
-		bar_width_points = bar_width_points + get_bar_db(id, layout).size
+		bar_width_points = bar_width_points + get_element_db(id, layout).size
 	end
 	
 	return bar_width_points, bar_height_points
@@ -175,7 +177,7 @@ local function update_bar_layout(self)
 		bar:ClearAllPoints()
 	
 		bar:SetPoint("TOPLEFT", self, "TOPLEFT", last_x, 0)
-		local bar_width = get_bar_db(id, layout).size * bar_width_per_point
+		local bar_width = get_element_db(id, layout).size * bar_width_per_point
 		last_x = last_x + bar_width
 		bar:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", last_x, 0)
 		last_x = last_x + bar_spacing
@@ -190,7 +192,7 @@ local function update_bar_layout(self)
 		bar:ClearAllPoints()
 	
 		bar:SetPoint("TOPRIGHT", self, "TOPRIGHT", last_x, 0)
-		local bar_width = get_bar_db(id, layout).size * bar_width_per_point
+		local bar_width = get_element_db(id, layout).size * bar_width_per_point
 		last_x = last_x - bar_width
 		bar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", last_x, 0)
 		last_x = last_x - bar_spacing
@@ -205,7 +207,7 @@ local function update_bar_layout(self)
 		bar:ClearAllPoints()
 	
 		bar:SetPoint("TOPLEFT", self, "TOPLEFT", left, last_y)
-		local bar_height = get_bar_db(id, layout).size * bar_height_per_point
+		local bar_height = get_element_db(id, layout).size * bar_height_per_point
 		last_y = last_y - bar_height
 		bar:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", right, last_y)
 		last_y = last_y - bar_spacing
@@ -215,7 +217,7 @@ local function update_bar_layout(self)
 
 	for _, id in ipairs(bars) do
 		local bar = self[id]
-		local bar_layout_db = get_bar_db(id, layout)
+		local bar_layout_db = get_element_db(id, layout)
 		local reverse = bar_layout_db.reverse
 		if bar_layout_db.side == "center" then
 			if horizontal_mirror then
@@ -238,38 +240,26 @@ local function update_bar_layout(self)
 	right_bars = del(right_bars)
 end
 
-local function get_all_indicators(frame)
-	local indicators = new()
+local function get_all_indicators_and_texts(frame)
+	local indicators_and_texts = new()
 	
-	for id, module in PitBull4:IterateModulesOfType('icon', 'custom_indicator') do
+	for id, module in PitBull4:IterateModulesOfType('icon', 'custom_indicator', 'custom_text') do
 		if frame[id] then
-			indicators[#indicators+1] = id
+			indicators_and_texts[#indicators_and_texts+1] = id
 		end
 	end
 	
-	sort_positions(indicators, frame)
-	
-	return indicators
-end
-
-local function get_all_texts(frame)
-	local texts = new()
-	
 	for id, module in PitBull4:IterateModulesOfType('text_provider') do
 		if frame[id] then
-			for _, text in pairs(frame[id]) do
-				texts[#texts+1] = text
+			for name in pairs(frame[id]) do
+				indicators_and_texts[#indicators_and_texts+1] = id .. ";" .. name
 			end
 		end
 	end
 	
-	for id, module in PitBull4:IterateModulesOfType('custom_text') do
-		if frame[id] then
-			texts[#texts+1] = frame[id]
-		end
-	end
+	sort_positions(indicators_and_texts, frame)
 	
-	return texts
+	return indicators_and_texts
 end
 
 local function get_half_width(frame, indicators_and_texts)
@@ -278,21 +268,15 @@ local function get_half_width(frame, indicators_and_texts)
 	local layout = frame.layout
 	local layout_db = frame.layout_db
 	
-	for _, indicator_or_text in ipairs(indicators_and_texts) do
-		if indicator_or_text.SetJustifyH then
+	for _, id in ipairs(indicators_and_texts) do
+		local element = frame[id]
+		local element_db = get_element_db(id, layout)
+		if element.SetJustifyH then
 			-- a text
-			if indicator_or_text.db then
-				num = num + ASSUMED_TEXT_WIDTH * indicator_or_text.db.size
-			else
-				local module = PitBull4.modules[indicator_or_text.id]
-				num = num + ASSUMED_TEXT_WIDTH * module:GetLayoutDB(layout).size
-			end
+			num = num + ASSUMED_TEXT_WIDTH * (element_db and element_db.size or 1)
 		else
 			-- an indicator
-			local module = PitBull4.modules[indicator_or_text.id]
-			local module_layout_size = module and module:GetLayoutDB(layout).size or 1
-			local height_multiplier = indicator_or_text.height or 1
-			num = num + module_layout_size * layout_db.indicator_size * indicator_or_text:GetWidth() / indicator_or_text:GetHeight() * height_multiplier
+			num = num + (element_db and element_db.size or 1) * layout_db.indicator_size * element:GetWidth() / element:GetHeight() * (element.height or 1)
 		end
 	end
 	
@@ -517,9 +501,9 @@ position_next_indicator_on_bar.out_left = position_next_indicator_on_bar.right
 position_next_indicator_on_bar.top_right = position_next_indicator_on_bar.right
 position_next_indicator_on_bar.bottom_right = position_next_indicator_on_bar.right
 
-local function position_indicator_or_text(root, indicator, attach_frame, last_indicator, location, location_indicators_and_texts)
+local function position_indicator_or_text(root, indicator_id, attach_frame, last_indicator_id, location, location_indicators_and_texts)
 	local func
-	if root == last_indicator then
+	if not last_indicator_id then
 		if root == attach_frame then
 			func = position_indicator_on_root[location]
 		else
@@ -533,31 +517,40 @@ local function position_indicator_or_text(root, indicator, attach_frame, last_in
 		end
 	end
 	if func then
-		func(root, indicator, attach_frame, last_indicator, location_indicators_and_texts)
+		func(root, root[indicator_id], attach_frame, root[last_indicator_id] or root, location_indicators_and_texts)
 	end
 end
 
-local function position_overlapping_texts_helper(attach_frame, left, center, right, inside_width, spacing)
+local function position_overlapping_texts_helper(root, attach_frame, left, center, right, inside_width, spacing)
 	if center then
 		-- clamp left to center
-		if left and left[#left].SetJustifyH then
-			left[#left]:SetJustifyH("LEFT")
-			left[#left]:SetPoint("RIGHT", center[1], "LEFT", -spacing, 0)
+		if left then
+			local text = root[left[#left]]
+		 	if text.SetJustifyH then
+				text:SetJustifyH("LEFT")
+				text:SetPoint("RIGHT", root[center[1]], "LEFT", -spacing, 0)
+			end
 		end
 	
 		-- clamp right to center
-		if right and right[#right].SetJustifyH then
-			right[#right]:SetJustifyH("RIGHT")
-			right[#right]:SetPoint("LEFT", center[#center], "RIGHT", spacing, 0)
-		end
-	elseif left and left[#left].SetJustifyH then	
-		left[#left]:SetJustifyH("LEFT")
 		if right then
-			-- clamp left to right
-			left[#left]:SetPoint("RIGHT", right[#right], "LEFT", -spacing, 0)
-		else
-			-- clamp left to attach_frame's right side
-			left[#left]:SetPoint("RIGHT", attach_frame, "RIGHT", -inside_width, 0)
+			local text = root[right[#right]]
+			if text.SetJustifyH then
+				text:SetJustifyH("RIGHT")
+				text:SetPoint("LEFT", root[center[#center]], "RIGHT", spacing, 0)
+			end
+		end
+	elseif left then
+		local text = root[left[#left]]
+		if text.SetJustifyH then	
+			text:SetJustifyH("LEFT")
+			if right then
+				-- clamp left to right
+				text:SetPoint("RIGHT", root[right[#right]], "LEFT", -spacing, 0)
+			else
+				-- clamp left to attach_frame's right side
+				text:SetPoint("RIGHT", attach_frame, "RIGHT", -inside_width, 0)
+			end
 		end
 	end
 end
@@ -566,35 +559,35 @@ local function position_overlapping_texts(root, attach_frame, location_to_indica
 	local spacing = root.layout_db.indicator_spacing
 	if root == attach_frame then
 		local padding = root.layout_db.bar_padding
-		position_overlapping_texts_helper(
+		position_overlapping_texts_helper(root,
 			attach_frame,
 			location_to_indicators_and_texts.in_left,
 			location_to_indicators_and_texts.in_center,
 			location_to_indicators_and_texts.in_right,
 			padding,
 			spacing)
-		position_overlapping_texts_helper(
+		position_overlapping_texts_helper(root,
 			attach_frame,
 			location_to_indicators_and_texts.in_bottom_left,
 			location_to_indicators_and_texts.in_bottom,
 			location_to_indicators_and_texts.in_bottom_right,
 			padding,
 			spacing)
-		position_overlapping_texts_helper(
+		position_overlapping_texts_helper(root,
 			attach_frame,
 			location_to_indicators_and_texts.in_top_left,
 			location_to_indicators_and_texts.in_top,
 			location_to_indicators_and_texts.in_top_right,
 			padding,
 			spacing)
-		position_overlapping_texts_helper(
+		position_overlapping_texts_helper(root,
 			attach_frame,
 			location_to_indicators_and_texts.out_bottom_left,
 			location_to_indicators_and_texts.out_bottom,
 			location_to_indicators_and_texts.out_bottom_right,
 			padding,
 			spacing)
-		position_overlapping_texts_helper(
+		position_overlapping_texts_helper(root,
 			attach_frame,
 			location_to_indicators_and_texts.out_top_left,
 			location_to_indicators_and_texts.out_top,
@@ -602,7 +595,7 @@ local function position_overlapping_texts(root, attach_frame, location_to_indica
 			padding,
 			spacing)
 	else
-		position_overlapping_texts_helper(
+		position_overlapping_texts_helper(root,
 			attach_frame,
 			location_to_indicators_and_texts.left,
 			location_to_indicators_and_texts.center,
@@ -634,11 +627,23 @@ local function update_indicator_and_text_layout(self)
 	
 	local indicator_size = self.layout_db.indicator_size
 	
-	for _, id in ipairs_with_del(get_all_indicators(self)) do
-		local indicator = self[id]
-		local indicator_layout_db = PitBull4.modules[id]:GetLayoutDB(layout)
+	for _, id in ipairs_with_del(get_all_indicators_and_texts(self)) do
+		local element = self[id]
+		local module_id = id
+		local element_id = nil
+		local module
+		local element_db
+		if module_id:match(";") then
+			module_id, element_id = (";"):split(module_id, 2)
+		end
+		
+		module = PitBull4.modules[module_id]
+		element_db = module:GetLayoutDB(layout)
+		if element_id then
+			element_db = element_db.elements[element_id]
+		end
 	
-		local attach_to = indicator_layout_db.attach_to
+		local attach_to = element_db.attach_to
 		local attach_frame
 		if attach_to == "root" then
 			attach_frame = self
@@ -647,7 +652,7 @@ local function update_indicator_and_text_layout(self)
 		end
 		
 		if attach_frame then
-			local location = indicator_layout_db.location
+			local location = element_db.location
 		
 			local flip_positions = false
 			if horizontal_mirror then
@@ -662,11 +667,14 @@ local function update_indicator_and_text_layout(self)
 				location = vertical_mirrored_location[location]
 			end
 			
-			local size = indicator_size * indicator_layout_db.size
-			local unscaled_height = indicator:GetHeight()
-			local height_multiplier = indicator.height or 1
-			indicator:SetScale(indicator_size / unscaled_height * indicator_layout_db.size * height_multiplier)
-			indicator:ClearAllPoints()
+			if module.module_type ~= "text_provider" and module.module_type ~= "custom_text" then
+				local size = indicator_size * element_db.size
+				local unscaled_height = element:GetHeight()
+				local height_multiplier = element.height or 1
+				element:SetScale(indicator_size / unscaled_height * element_db.size * height_multiplier)
+			end	
+			
+			element:ClearAllPoints()
 			
 			local attachments_attach_frame = attachments[attach_frame]
 			if not attachments_attach_frame then
@@ -681,70 +689,19 @@ local function update_indicator_and_text_layout(self)
 			end
 			
 			if flip_positions then
-				table.insert(attachments_attach_frame_location, 1, indicator)
+				table.insert(attachments_attach_frame_location, 1, id)
 			else
-				attachments_attach_frame_location[#attachments_attach_frame_location+1] = indicator
-			end
-		end
-	end
-	
-	for _, text in ipairs_with_del(get_all_texts(self)) do
-		local db = text.db
-		if not db then
-			db = PitBull4.modules[text.id]:GetLayoutDB(self)
-		end
-		local attach_to = db.attach_to
-		local attach_frame
-		if attach_to == "root" then
-			attach_frame = self
-		else
-			attach_frame = self[attach_to]
-		end
-		
-		if attach_frame then
-			local location = db.location
-		
-			local flip_positions = false
-			if horizontal_mirror then
-				local old_location = location
-				location = horizontal_mirrored_location[location]
-				if old_location == location then
-					flip_positions = true
-				end
-			end
-		
-			if vertical_mirror then
-				location = vertical_mirrored_location[location]
-			end
-			
-			text:ClearAllPoints()
-			
-			local attachments_attach_frame = attachments[attach_frame]
-			if not attachments_attach_frame then
-				attachments_attach_frame = new()
-				attachments[attach_frame] = attachments_attach_frame
-			end
-			
-			local attachments_attach_frame_location = attachments_attach_frame[location]
-			if not attachments_attach_frame_location then
-				attachments_attach_frame_location = new()
-				attachments_attach_frame[location] = attachments_attach_frame_location
-			end
-			
-			if flip_positions then
-				table.insert(attachments_attach_frame_location, 1, text)
-			else
-				attachments_attach_frame_location[#attachments_attach_frame_location+1] = text
+				attachments_attach_frame_location[#attachments_attach_frame_location+1] = id
 			end
 		end
 	end
 	
 	for attach_frame, attachments_attach_frame in pairs(attachments) do
 		for location, loc_indicators_and_texts in pairs(attachments_attach_frame) do
-			local last = self
-			for _, indicator_or_text in ipairs(loc_indicators_and_texts) do
-				position_indicator_or_text(self, indicator_or_text, attach_frame, last, location, loc_indicators_and_texts)
-				last = indicator_or_text
+			local last = nil
+			for _, id in ipairs(loc_indicators_and_texts) do
+				position_indicator_or_text(self, id, attach_frame, last, location, loc_indicators_and_texts)
+				last = id
 			end
 		end
 		
