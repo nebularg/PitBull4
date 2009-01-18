@@ -255,6 +255,7 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 			PitBull4.Options.UpdateFrames()
 		end,
 		multiline = true,
+		width = 'full',
 		disabled = function(info)
 			if run_first then
 				run_first()
