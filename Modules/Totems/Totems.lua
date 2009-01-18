@@ -17,9 +17,12 @@ local EARTH_TOTEM_SLOT = EARTH_TOTEM_SLOT or 2
 local WATER_TOTEM_SLOT = WATER_TOTEM_SLOT or 3
 local AIR_TOTEM_SLOT   = AIR_TOTEM_SLOT   or 4
 
-local TOTEMSIZE = 50
+local TOTEMSIZE = 50 -- fixed value used for internal frame creation, change the final size ingame only!
+
+local UPDATE_FREQ = 0.25 -- delay this many second between timer updates
 
 local CFGMODE_ICON = [[Interface\Icons\Spell_Fire_TotemOfWrath]]
+local BORDER_PATH  = [[Interface\AddOns\]] .. debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z]-%.lua") .. [[\border]]
 
 local _G = _G
 local GetTime = _G.GetTime
@@ -44,12 +47,6 @@ local self = PitBull4_Totems
 PBTDBG = PitBull4_Totems
 --@end-alpha@
 
-local border_path
-do
-	local path = "Interface\\AddOns\\" .. _G.debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z0-9]-%.lua")
-	border_path = path .. "\\border"
-end
-
 -- Load LibSharedMedia
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 if not LibSharedMedia then
@@ -63,7 +60,7 @@ LibSharedMedia:Register('sound','Drop',"Sound\\interface\\DropOnGround.wav")
 local L = PitBull4.L
 
 -- Register some metadata of ours with PB4
-PitBull4_Totems:SetModuleType("custom_indicator")
+PitBull4_Totems:SetModuleType('custom_indicator')
 PitBull4_Totems:SetName(L["Totems"])
 PitBull4_Totems:SetDescription(L["Show which Totems are dropped and the time left until they expire."])
 
@@ -110,7 +107,8 @@ end
 --------------------------------------------------------------
 --------------------------------------------------------------
 -- Configuration Proxyfunctions
---    lowercase g and l refer to Global and Layout Options
+--    lowercase g, l and c refer to Global, Layout and Color Options
+--    Note that Layout options require handing a frame, as layout options are individual per frame
 -------------------------------
 ---- General Purpose Proxies
 local function gOptGet(key)
@@ -221,9 +219,7 @@ local function setOrder(info, neworderposstring) -- global option
 			end
 		end
 	end
-	for frame in PitBull4:IterateFramesForUnitID('player') do
-		self:RealignTotems(frame)
-	end
+	PitBull4.Options.UpdateFrames()
 	return true
 end
 
@@ -275,7 +271,7 @@ end
 local function getSoundpathsDefault()
 	local dsf = {}
 	for i=1, MAX_TOTEMS do
-		dsf[i] = "Drop"
+		dsf[i] = 'Drop'
 	end
 	return dsf
 end
@@ -304,7 +300,6 @@ local function MyGetTotemInfo(slot, frame)
 		ceil(GetTime()),
 		119,
 		CFGMODE_ICON
-	
 end
 
 function PitBull4_Totems:OneOrMoreDown()
@@ -363,21 +358,19 @@ end
 
 
 function PitBull4_Totems:UpdateAllTimes()
-	local mf = nil
 	for frame in PitBull4:IterateFramesForUnitID('player') do
-		mf = frame
-		if (not mf) or (not mf.Totems) or (not mf.Totems.elements) then
+		if (not frame.Totems) or (not frame.Totems.elements) then
 			dbg("ERROR: Update time called but no Totemtimer Frame initialized.")
 			--self:StopTimer()
-			--return
+			return
 		else 
-			local elements = mf.Totems.elements
+			local elements = frame.Totems.elements
 			
 			local nowTime = floor(GetTime())
 			for slot=1, MAX_TOTEMS do
 				if (not elements) or (not elements[slot]) or (not elements[slot].frame) then return end
 				
-				local timeleft = MyGetTotemTimeLeft(slot,mf)
+				local timeleft = MyGetTotemTimeLeft(slot,frame)
 				
 				if timeleft > 0 then
 					-- need to update shown time
@@ -451,7 +444,7 @@ function PitBull4_Totems:ActivateTotem(slot)
 		tframe.totemIcon = icon
 		tframe:SetAlpha(1)
 		tframe:Show()
-		tframe.force_show = frame.force_show
+		tframe.force_show = frame.force_show -- set configmode as a property of the frame, so the buttonscripts know about it
 		
 		self:StopPulse(tframe)
 		
@@ -660,7 +653,7 @@ end
 
 function PitBull4_Totems:ButtonOnEnter()
 	if this.force_show then return end
-	if ( this.slot and gOptGet('totemtooltips') ) then
+	if ( this.slot and this.totemtooltips ) then
 		-- setting the tooltip
 		GameTooltip_SetDefaultAnchor(GameTooltip, this)
 		GameTooltip:SetTotem(this.slot)
@@ -669,7 +662,7 @@ end
 
 function PitBull4_Totems:ButtonOnLeave()
 	if this.force_show then return end
-	if ( gOptGet('totemtooltips') ) then
+	if ( this.totemtooltips ) then
 		-- hiding the tooltip
 		GameTooltip:Hide()
 	end
@@ -757,7 +750,7 @@ function PitBull4_Totems:PLAYER_TOTEM_UPDATE(event, slot)
 			
 			-- Sound functions
 			if gOptGet('deathsound') and getSoundNameForSlot(slot) and not (event == nil) then
-				--dbg(string.format('DEBUG: Playing Death sound for slot %s: %s', tos(slot), tos(getSoundPathForSlot(slot))))
+				--dbg(fmt('DEBUG: Playing Death sound for slot %s: %s', tos(slot), tos(getSoundPathForSlot(slot))))
 				PlaySoundFile(getSoundPathForSlot(slot))
 			end
 		end
@@ -830,7 +823,7 @@ function PitBull4_Totems:BuildFrames(frame)
 		border:SetAlpha(1)
 		border:ClearAllPoints()
 		border:SetAllPoints(frm)
-		border:SetTexture(border_path)
+		border:SetTexture(BORDER_PATH)
 		border:Show()
 		
 		----------------------------
@@ -918,13 +911,15 @@ function PitBull4_Totems:ApplyLayoutSettings(frame)
 		elements[i].frame:SetWidth(TOTEMSIZE)
 		elements[i].text:SetWidth(TOTEMSIZE)
 		elements[i].text:SetHeight(TOTEMSIZE/3)
-
+		
 		elements[i].frame.hideinactive = lOptGet(frame,'hideinactive')
+		
+		elements[i].frame.totemtooltips = gOptGet('totemtooltips')
 		
 		self:SpiralUpdate(frame, i, nil, nil)
 	end
-
-
+	
+	
 	self:ResizeMainFrame(frame)
 	
 	-- Background color of the main frame
@@ -1013,8 +1008,7 @@ function PitBull4_Totems:OnInitialize()
 		self.totemIsDown[i] = false
 	end
 	
-	self.timerhandle = nil
-	self.borderpath = border_path
+	self.timerhandle = nil	-- used for storing the reference to the ace3 timer
 	
 	-- Define new control type for our main element buttons
 	PitBull4.Controls.MakeNewControlType("TTButton", "Button", function(control) end, function(control) end, function(control) end)
@@ -1136,7 +1130,6 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 				desc = L["Shows the pie-like cooldown spiral on the icons."],
 				get = get,
 				set = set,
-				width = 'full',
 				disabled = is_pbt_disabled,
 				order = 1,
 			},
@@ -1167,7 +1160,6 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 				get = get,
 				set = set,
 				order = 1,
-				width = 'full',
 				disabled = is_pbt_disabled,
 			},
 			timertextside = {
@@ -1211,6 +1203,16 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 		type = 'description',
 		name = L["There are more options for this module in the Modules -> Totems section."],
 		order = 31,
+	},
+	'hdrplayeronly', {
+		type = 'header',
+		name = L["Note"],
+		order = 33,
+	},
+	'descplayeronly', {
+		type = 'description',
+		name = L["Totems only show for the Player. On all other units the frame will not be there, even when enabled in the layout of the frame."],
+		order = 34,
 	}
 end)
 
