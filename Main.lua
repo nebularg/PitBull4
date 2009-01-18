@@ -104,6 +104,9 @@ end
 for reaction, color in pairs(FACTION_BAR_COLORS) do
 	DATABASE_DEFAULTS.profile.colors.reaction[reaction] = { color.r, color.g, color.b }
 end
+
+local UNITFRAME_STRATA = "MEDIUM"
+local UNITFRAME_LEVEL = 1 -- minimum 1, since 0 needs to be available
 -----------------------------------------------------------------------------
 
 local _G = _G
@@ -652,6 +655,8 @@ function PitBull4:MakeSingletonFrame(unit)
 	
 	if not frame then
 		frame = CreateFrame("Button", frame_name, UIParent, "SecureUnitButtonTemplate")
+		frame:SetFrameStrata(UNITFRAME_STRATA)
+		frame:SetFrameLevel(UNITFRAME_LEVEL)
 		
 		frame.is_singleton = true
 		
@@ -715,6 +720,8 @@ function PitBull4:MakeGroupHeader(classification, group)
 		
 		header = CreateFrame("Frame", header_name, UIParent, template_names[party_based][pet_based])
 		header:Hide() -- it will be shown later and attributes being set won't cause lag
+		header:SetFrameStrata(UNITFRAME_STRATA)
+		header:SetFrameLevel(UNITFRAME_LEVEL - 1)
 		
 		if party_based then
 			header.super_classification = "party"
