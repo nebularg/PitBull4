@@ -15,77 +15,90 @@ PitBull4_DogTagTexts:SetModuleType("text_provider")
 PitBull4_DogTagTexts:SetName(L["DogTag-3.0 texts"])
 PitBull4_DogTagTexts:SetDescription(L["Text provider for LibDogTag-3.0 texts."])
 PitBull4_DogTagTexts:SetDefaults({
-	texts = {
+	elements = {
 		['**'] = {
 			size = 1,
 			attach_to = "root",
 			location = "edge_top_left",
 			position = 1,
+			exists = false,
 			code = "",
 		},
-		n = 10,
-		{
-			name = L["Name"],
+	},
+	first = true
+})
+
+function PitBull4_DogTagTexts:OnNewLayout(layout)
+	local layout_db = self.db.profile.layouts[layout]
+	
+	if not layout_db.first then
+		return
+	end
+	layout_db.first = false
+	
+	local texts = layout_db.elements
+	for k in pairs(texts) do
+		texts[k] = nil
+	end
+	for name, data in pairs {
+		[L["Name"]] = {
 			code = "[Name] [(AFK or DND):Angle]",
 			attach_to = "HealthBar",
 			location = "left"
 		},
-		{
-			name = L["Health"],
+		[L["Health"]] = {
 			code = "[Status or (if IsFriend then MissingHP:Hide(0):Short:Color('ff7f7f') else FractionalHP(known=true):Short or PercentHP:Percent)]",
 			attach_to = "HealthBar",
 			location = "right",
 		},
-		{
-			name = L["Class"],
+		[L["Class"]] = {
 			code = "[Classification] [Level:DifficultyColor] [(if (IsPlayer or (IsEnemy and not IsPet)) then Class):ClassColor] [DruidForm:Paren] [SmartRace]",
 			attach_to = "PowerBar",
 			location = "left",
 		},
-		{
-			name = L["Power"],
+		[L["Power"]] = {
 			code = "[if HasMP then FractionalMP]",
 			attach_to = "PowerBar",
 			location = "right",
 		},
-		{
-			name = L["Reputation"],
+		[L["Reputation"]] = {
 			code = "[if IsMouseOver then ReputationName else if ReputationName then FractionalReputation ' ' PercentReputation:Percent:Paren]",
 			attach_to = "ReputationBar",
 			location = "center",
 		},
-		{
-			name = L["Cast"],
+		[L["Cast"]] = {
 			code = "[Alpha((-CastStopDuration or 0) + 1) CastStopMessage or (CastName ' ' CastTarget:Paren)]",
 			attach_to = "CastBar",
 			location = "left",
 		},
-		{
-			name = L["Cast time"],
+		[L["Cast time"]] = {
 			code = "[if not CastStopDuration then Concatenate('+', CastDelay:Round(1):Hide(0)):Red ' ' [CastEndDuration >= 0 ? '%.1f':Format(CastEndDuration)]]",
 			attach_to = "CastBar",
 			location = "right",
 		},
-		{
-			name = L["Experience"],
+		[L["Experience"]] = {
 			code = "[FractionalXP] [PercentXP:Percent:Paren] [Concatenate('R: ', PercentRestXP:Hide(0):Percent)]",
 			attach_to = "ExperienceBar",
 			location = "center",
 		},
-		{
-			name = L["Threat"],
+		[L["Threat"]] = {
 			code = "[PercentThreat:Short:Hide(0):Percent]",
 			attach_to = "ThreatBar",
 			location = "center",
 		},
-		{
-			name = L["Druid mana"],
+		[L["Druid mana"]] = {
 			code = "[if not IsMana then FractionalDruidMP]",
 			attach_to = "DruidManaBar",
 			location = "right",
 		}
-	},
-})
+	} do
+		local text_db = texts[name]
+		text_db.exists = true
+		for k, v in pairs(data) do
+			text_db[k] = v
+		end
+	end
+end
 
 local PROVIDED_CODES = function() return {
 	[L["Class"]] = {
@@ -115,7 +128,8 @@ local PROVIDED_CODES = function() return {
 		[L["Absolute short"]] = "[if HasMP then FractionalMP:Short]",
 		[L["Difference"]]     = "[-MissingMP]",
 		[L["Percent"]]        = "[PercentMP:Percent]",
-		[L["Mini"]]           = "[if HasMP then CurMP:VeryShort]",
+		[L["Absolute and percent"]]  = "[if HasMP then FractionalMP] || [PercentMP:Percent]",
+		[L["Mini"]]           = "[if HasMP then MP:VeryShort]",
 		[L["Smart"]]          = "[MissingMP:Hide(0):Short:Color('7f7fff')]",
 	},
 	[L["Druid mana"]] = {
@@ -174,10 +188,10 @@ local unit_kwargs = setmetatable({}, {__mode='kv', __index=function(self, unit)
 end})
 
 -- this will replace the normal :AddFontString
-function PitBull4_DogTagTexts:_AddFontString(frame, font_string, data)
-	if frame.force_show and not frame.guid and (data.name ~= L["Name"] or not frame.unit) then
+function PitBull4_DogTagTexts:_AddFontString(frame, font_string, name, data)
+	if frame.force_show and not frame.guid and (name ~= L["Name"] or not frame.unit) then
 		LibDogTag:RemoveFontString(font_string)
-		font_string:SetText(("[%s]"):format(data.name))
+		font_string:SetText(("[%s]"):format(name))
 	else
 		LibDogTag:AddFontString(
 			font_string,
@@ -217,6 +231,7 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 		end
 	end
 	PROVIDED_CODES = nil
+	local provided_codes_cleaned = false
 	return 'code', {
 		type = 'input',
 		name = L["Code"],
@@ -229,10 +244,10 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 			end
 			
 			if LibDogTag then
-				return LibDogTag:CleanCode(PitBull4.Options.GetTextLayoutDB().code)
-			else
-				return code
+				code = LibDogTag:CleanCode(code)
 			end
+			
+			return code
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetTextLayoutDB().code = LibDogTag:CleanCode(value)
@@ -240,6 +255,7 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 			PitBull4.Options.UpdateFrames()
 		end,
 		multiline = true,
+		width = 'full',
 		disabled = function(info)
 			if run_first then
 				run_first()
@@ -252,6 +268,15 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 		desc = L["Some codes provided for you."],
 		get = function(info)
 			local code = PitBull4.Options.GetTextLayoutDB().code
+			if LibDogTag then
+				code = LibDogTag:CleanCode(code)
+			end
+			if not provided_codes_cleaned and LibDogTag then
+				provided_codes_cleaned = true
+				for k, v in pairs(value_key_to_code) do
+					value_key_to_code[k] = LibDogTag:CleanCode(v)
+				end
+			end
 			for k, v in pairs(value_key_to_code) do
 				if v == code then
 					return k
@@ -265,6 +290,12 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 			PitBull4.Options.UpdateFrames()
 		end,
 		values = values,
+		disabled = function(info)
+			if run_first then
+				run_first()
+			end
+			return not LibDogTag
+		end,
 	}, 'help', {
 		type = 'execute',
 		name = L["DogTag help"],

@@ -247,6 +247,50 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end
 	}
 	
+	local function disabled(info)
+		return not GetLayoutDB(info[#info-1]).enabled
+	end
+	
+	indicator_args.act_as_bar = {
+		type = 'toggle',
+		name = L["Position as bar"],
+		desc = L["Whether to position as a bar rather than a floating indicator."],
+		order = 1.5,
+		get = function(info)
+			return not not GetLayoutDB(info[#info-1]).side
+		end,
+		set = function(info, value)
+			GetLayoutDB(info[#info-1]).side = value and "left" or nil
+			
+			UpdateFrames()
+		end,
+		disabled = disabled,
+	}
+	
+	indicator_args.side = {
+		type = 'select',
+		name = L["Side"],
+		desc = L["Which side of the unit frame to place the indicator on."],
+		order = 2,
+		values = {
+			left = L["Left"],
+--			center = L["Center"],
+			right = L["Right"],
+		},
+		get = function(info)
+			return GetLayoutDB(info[#info-1]).side
+		end,
+		set = function(info, value)
+			GetLayoutDB(info[#info-1]).side = value
+			
+			UpdateFrames()
+		end,
+		disabled = disabled,
+		hidden = function(info)
+			return not GetLayoutDB(info[#info-1]).side
+		end,
+	}
+	
 	indicator_args.attach_to = {
 		type = 'select',
 		name = L["Attach to"],
@@ -266,10 +310,25 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			t["root"] = L["Unit frame"]
 			
 			for id, module in PitBull4:IterateModulesOfType("status_bar") do
-				t[id] = module.name
+				if GetLayoutDB(module).enabled then
+					t[id] = module.name
+				end
+			end
+			
+			for id, module in PitBull4:IterateModulesOfType("status_bar_provider") do
+				local db = GetLayoutDB(module)
+				if db.enabled then
+					for name in pairs(db.elements) do
+						t[id .. ";" .. name] = ("%s: %s"):format(module.name, name)
+					end
+				end
 			end
 			
 			return t
+		end,
+		disabled = disabled,
+		hidden = function(info)
+			return GetLayoutDB(info[#info-1]).side
 		end,
 	}
 	
@@ -294,22 +353,25 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 				return bar_locations
 			end
 		end,
+		disabled = disabled,
+		hidden = function(info)
+			return GetLayoutDB(info[#info-1]).side
+		end,
 	}
 	
-	indicator_args.position = {
+	indicator_args.bar_position = {
 		type = 'select',
 		name = L["Position"],
-		desc = L["Where to place the indicator compared to others in the same location."],
-		order = 4,
+		desc = L["Where to place the indicator in relation to other indicators on the frame."],
+		order = 3,
 		values = function(info)
 			local db = GetLayoutDB(info[#info-1])
-			local attach_to = db.attach_to
-			local location = db.location
+			local side = db.side
 			local t = {}
 			local sort = {}
-			for other_id, other_module in PitBull4:IterateModulesOfType("icon", "custom_indicator") do
+			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar", "icon", "custom_indicator") do
 				local other_db = GetLayoutDB(other_id)
-				if attach_to == other_db.attach_to and location == other_db.location then
+				if side == other_db.side and other_db.enabled then
 					local position = other_db.position
 					while t[position] do
 						position = position + 1e-5
@@ -317,6 +379,22 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 					end
 					t[position] = other_module.name
 					sort[#sort+1] = position
+				end
+			end
+			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar_provider") do
+				local other_db = GetLayoutDB(other_id)
+				if other_db.enabled then
+					for name, bar_db in pairs(other_db.elements) do
+						if side == bar_db.side then
+							local position = bar_db.position
+							while t[position] do
+								position = position + 1e-5
+								bar_db.position = position
+							end
+							t[position] = ("%s: %s"):format(other_module.name, name)
+							sort[#sort+1] = position
+						end
+					end
 				end
 			end
 			table.sort(sort)
@@ -337,35 +415,170 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			local db = GetLayoutDB(id)
 			
 			local id_to_position = {}
-			local indicators = {}
+			local bars = {}
 			
 			local old_position = db.position
 			
-			for other_id, other_module in PitBull4:IterateModulesOfType("icon", "custom_indicator", true) do
+			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar", "icon", "custom_indicator", true) do
 				local other_db = GetLayoutDB(other_id)
-				local other_position = other_db.position
-				if other_id == id then
-					other_position = new_position
-				elseif other_position >= old_position and other_position <= new_position then
-					other_position = other_position - 1
-				elseif other_position <= old_position and other_position >= new_position then
-					other_position = other_position + 1
+				if other_db.side then
+					id_to_position[other_id] = other_db.position
+					bars[#bars+1] = other_id
 				end
-				
-				id_to_position[other_id] = other_position
-				indicators[#indicators+1] = other_id
 			end
 			
-			table.sort(indicators, function(alpha, bravo)
+			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar_provider", true) do
+				for name, bar_db in pairs(GetLayoutDB(other_id).elements) do
+					local joined_id = other_id .. ";" .. name
+					id_to_position[joined_id] = bar_db.position
+					bars[#bars+1] = joined_id
+				end
+			end
+			
+			local current_id = id
+			if CURRENT_BAR_PROVIDER_ID[id] then
+				current_id = current_id .. ";" .. CURRENT_BAR_PROVIDER_ID[id]
+			end
+			for bar_id, other_position in pairs(id_to_position) do
+				if bar_id == current_id then
+					id_to_position[bar_id] = new_position
+				elseif other_position >= old_position and other_position <= new_position then
+					id_to_position[bar_id] = other_position - 1
+				elseif other_position <= old_position and other_position >= new_position then
+					id_to_position[bar_id] = other_position + 1
+				end
+			end
+			
+			table.sort(bars, function(alpha, bravo)
 				return id_to_position[alpha] < id_to_position[bravo]
 			end)
 			
-			for position, indicator_id in ipairs(indicators) do
-				GetLayoutDB(indicator_id).position = position
+			for position, bar_id in ipairs(bars) do
+				if bar_id:match(";") then
+					local module_id, name = (";"):split(bar_id, 2)
+					local bar_db = rawget(GetLayoutDB(module_id).elements, name)
+					if bar_db then
+						bar_db.position = position
+					end
+				else
+					GetLayoutDB(bar_id).position = position
+				end
 			end
 			
 			UpdateFrames()
-		end
+		end,
+		disabled = disabled,
+		hidden = function(info)
+			return not GetLayoutDB(info[#info-1]).side
+		end,
+	}
+	
+	indicator_args.position = {
+		type = 'select',
+		name = L["Position"],
+		desc = L["Where to place the indicator compared to others in the same location."],
+		order = 4,
+		values = function(info)
+			local db = GetLayoutDB(info[#info-1])
+			local attach_to = db.attach_to
+			local location = db.location
+			local t = {}
+			local sort = {}
+			for other_id, other_module in PitBull4:IterateModulesOfType("icon", "custom_indicator", "custom_text") do
+				local other_db = GetLayoutDB(other_id)
+				if attach_to == other_db.attach_to and location == other_db.location and not other_db.side then
+					local position = other_db.position
+					while t[position] do
+						position = position + 1e-5
+						other_db.position = position
+					end
+					t[position] = other_module.name
+					sort[#sort+1] = position
+				end
+			end
+			for other_id, other_module in PitBull4:IterateModulesOfType("text_provider") do
+				for element_id, element_db in pairs(GetLayoutDB(other_id).elements) do
+					if attach_to == element_db.attach_to and location == element_db.location then
+						local position = element_db.position
+						while t[position] do
+							position = position + 1e-5
+							element_db.position = position
+						end
+						t[position] = element_id
+						sort[#sort+1] = position
+					end
+				end
+			end
+			table.sort(sort)
+			local sort_reverse = {}
+			for k, v in pairs(sort) do
+				sort_reverse[v] = k
+			end
+			for position, name in pairs(t) do
+				t[position] = ("%d. %s"):format(sort_reverse[position], name)
+			end
+			return t
+		end,
+		get = function(info)
+			return GetLayoutDB(info[#info-1]).position
+		end,
+		set = function(info, new_position)
+			local id = info[#info-1]
+			local db = GetLayoutDB(id)
+			
+			local id_to_position = {}
+			local elements = {}
+			
+			local old_position = db.position
+			
+			for other_id, other_module in PitBull4:IterateModulesOfType("icon", "custom_indicator", "custom_text", true) do
+				local other_db = GetLayoutDB(other_id)
+				if not other_db.side then
+					id_to_position[other_id] = GetLayoutDB(other_id).position
+					elements[#elements+1] = other_id
+				end
+			end
+			
+			for other_id, other_module in PitBull4:IterateModulesOfType("text_provider", true) do
+				for element_id, element_db in pairs(GetLayoutDB(other_id).elements) do
+					local joined_id = other_id .. ";" .. element_id
+					id_to_position[joined_id] = element_db.position
+					elements[#elements+1] = joined_id
+				end
+			end
+			
+			for element_id, other_position in pairs(id_to_position) do
+				if element_id == id then
+					id_to_position[element_id] = new_position
+				elseif other_position >= old_position and other_position <= new_position then
+					id_to_position[element_id] = other_position - 1
+				elseif other_position <= old_position and other_position >= new_position then
+					id_to_position[element_id] = other_position + 1
+				end
+			end
+			
+			table.sort(elements, function(alpha, bravo)
+				return id_to_position[alpha] < id_to_position[bravo]
+			end)
+			
+			for position, element_id in ipairs(elements) do
+				if element_id:match(";") then
+					local module_id, name = (";"):split(element_id, 2)
+					local element_db = rawget(GetLayoutDB(module_id).elements, name)
+					if element_db then
+						element_db.position = position
+					end
+				else
+					GetLayoutDB(element_id).position = position
+				end
+			end
+			
+			UpdateFrames()
+		end,
+		disabled = disabled,
+		hidden = function(info)
+			return GetLayoutDB(info[#info-1]).side
+		end,
 	}
 	
 	indicator_args.size = {
@@ -386,6 +599,10 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		step = 0.01,
 		bigStep = 0.05,
 		isPercent = true,
+		disabled = disabled,
+		hidden = function(info)
+			return GetLayoutDB(info[#info-1]).side
+		end,
 	}
 	
 	local layout_functions = PitBull4.Options.layout_functions
@@ -402,6 +619,11 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 				
 				args[k] = v
 				v.order = 100 + i
+				
+				local v_disabled = v.disabled
+				function v.disabled(info)
+					return disabled(info) or (v_disabled and v_disabled(info))
+				end
 			end
 			layout_functions[module] = false
 		end

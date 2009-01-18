@@ -274,6 +274,9 @@ function PitBull4.Options.get_color_options()
 				desc = module.description,
 				args = {},
 				handler = module,
+				hidden = function(info)
+					return not module:IsEnabled()
+				end
 			}
 			color_options.args[id] = opt
 			

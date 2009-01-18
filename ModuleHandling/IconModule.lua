@@ -8,6 +8,7 @@ local IconModule = PitBull4:NewModuleType("icon", {
 	attach_to = "root",
 	location = "edge_top_left",
 	position = 1,
+	side = false,
 	enabled = true,
 })
 
@@ -50,6 +51,7 @@ function IconModule:UpdateFrame(frame)
 	local made_control = not control
 	if made_control then
 		control = PitBull4.Controls.MakeIcon(frame)
+		control:SetFrameLevel(frame:GetFrameLevel() + 3)
 		frame[id] = control
 		control.id = id
 		control:SetWidth(ICON_SIZE)

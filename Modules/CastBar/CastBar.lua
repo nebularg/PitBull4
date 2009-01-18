@@ -91,7 +91,7 @@ function PitBull4_CastBar:GetValue(frame)
 end
 
 function PitBull4_CastBar:GetExampleValue(frame)
-	return 0
+	return 0.4
 end
 
 function PitBull4_CastBar:GetColor(frame, value)

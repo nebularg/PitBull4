@@ -74,8 +74,13 @@ function PitBull4:RunFrameScriptHooks(script, frame, ...)
 end
 
 function PitBull4:OnModuleCreated(module)
-	module.id = module.moduleName
-	self[module.moduleName] = module
+	local id = module.moduleName
+	--@alpha@
+	expect(id, 'typeof', 'string')
+	expect(id, 'match', '^[A-Za-z_][A-Za-z0-9_]*$')
+	--@end-alpha@
+	module.id = id
+	self[id] = module
 end
 
 --- Add a script hook for the unit frames.

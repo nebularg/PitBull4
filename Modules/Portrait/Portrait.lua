@@ -32,6 +32,7 @@ PitBull4_Portrait:SetDefaults({
 	full_body = false,
 	style = "three_dimensional",
 	fallback_style = "three_dimensional",
+	side = "left",
 	enabled = false,
 })
 
@@ -120,6 +121,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 	if created then
 		portrait = PitBull4.Controls.MakeFrame(frame)
 		frame.Portrait = portrait
+		portrait:SetFrameLevel(frame:GetFrameLevel() + 3)
 		portrait:SetWidth(60)
 		portrait:SetHeight(60)
 		portrait.height = 4

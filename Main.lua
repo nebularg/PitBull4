@@ -1,4 +1,9 @@
 -- Constants ----------------------------------------------------------------
+--@debug@
+LibStub("AceLocale-3.0"):NewLocale("PitBull4", "enUS", true, true)
+--@end-debug@
+local L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
+
 local SINGLETON_CLASSIFICATIONS = {
 	"player",
 	"pet",
@@ -44,7 +49,7 @@ local DATABASE_DEFAULTS = {
 				size_x = 1, -- this is a multiplier
 				size_y = 1, -- this is a multiplier
 				scale = 1,
-				layout = "Normal",
+				layout = L["Normal"],
 				horizontal_mirror = false,
 				vertical_mirror = false,
 				horizontal_spacing = 30,
@@ -78,7 +83,6 @@ local DATABASE_DEFAULTS = {
 				indicator_root_inside_vertical_padding = 5,
 				indicator_root_outside_margin = 5,
 			},
-			Normal = {}
 		},
 		colors = {
 			class = {}, -- filled in by RAID_CLASS_COLORS
@@ -100,6 +104,9 @@ end
 for reaction, color in pairs(FACTION_BAR_COLORS) do
 	DATABASE_DEFAULTS.profile.colors.reaction[reaction] = { color.r, color.g, color.b }
 end
+
+local UNITFRAME_STRATA = "MEDIUM"
+local UNITFRAME_LEVEL = 1 -- minimum 1, since 0 needs to be available
 -----------------------------------------------------------------------------
 
 local _G = _G
@@ -107,11 +114,7 @@ local _G = _G
 local PitBull4 = LibStub("AceAddon-3.0"):NewAddon("PitBull4", "AceEvent-3.0", "AceTimer-3.0")
 _G.PitBull4 = PitBull4
 
---@debug@
-LibStub("AceLocale-3.0"):NewLocale("PitBull4", "enUS", true, true)
---@end-debug@
-
-PitBull4.L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
+PitBull4.L = L
 
 PitBull4.SINGLETON_CLASSIFICATIONS = SINGLETON_CLASSIFICATIONS
 PitBull4.PARTY_CLASSIFICATIONS = PARTY_CLASSIFICATIONS
@@ -652,6 +655,8 @@ function PitBull4:MakeSingletonFrame(unit)
 	
 	if not frame then
 		frame = CreateFrame("Button", frame_name, UIParent, "SecureUnitButtonTemplate")
+		frame:SetFrameStrata(UNITFRAME_STRATA)
+		frame:SetFrameLevel(UNITFRAME_LEVEL)
 		
 		frame.is_singleton = true
 		
@@ -715,6 +720,8 @@ function PitBull4:MakeGroupHeader(classification, group)
 		
 		header = CreateFrame("Frame", header_name, UIParent, template_names[party_based][pet_based])
 		header:Hide() -- it will be shown later and attributes being set won't cause lag
+		header:SetFrameStrata(UNITFRAME_STRATA)
+		header:SetFrameLevel(UNITFRAME_LEVEL - 1)
 		
 		if party_based then
 			header.super_classification = "party"
@@ -738,6 +745,18 @@ function PitBull4:MakeGroupHeader(classification, group)
 	header:Show()
 end
 PitBull4.MakeGroupHeader = PitBull4:OutOfCombatWrapper(PitBull4.MakeGroupHeader)
+
+--- Call a given method on all modules if those modules have the method.
+-- This will iterate over disabled modules.
+-- @param method_name name of the method
+-- @param ... arguments that will pass in to the module
+function PitBull4:CallMethodOnModules(method_name, ...)
+	for id, module in self:IterateModules() do
+		if module[method_name] then
+			module[method_name](module, ...)
+		end
+	end
+end
 
 function PitBull4:OnInitialize()
 	db = LibStub("AceDB-3.0"):New("PitBull4DB", DATABASE_DEFAULTS, 'global')

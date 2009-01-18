@@ -146,7 +146,7 @@ function FaderModule:CallOpacityFunction(frame)
 	local opacity_min = layout_db.opacity_min
 	local opacity_max = layout_db.opacity_max
 	
-	local value = self.guid and self:GetOpacity(frame)
+	local value = frame.guid and self:GetOpacity(frame)
 	if not value or value >= opacity_max or value ~= value then
 		return nil
 	elseif value < opacity_min then

@@ -15,7 +15,7 @@ function PitBull4.Options.GetTextLayoutDB()
 		return
 	end
 	
-	return PitBull4.Options.GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).texts[CURRENT_TEXT_PROVIDER_ID]
+	return PitBull4.Options.GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).elements[CURRENT_TEXT_PROVIDER_ID]
 end
 
 function PitBull4.Options.get_layout_editor_text_options()
@@ -38,7 +38,11 @@ function PitBull4.Options.get_layout_editor_text_options()
 	local bar_locations = PitBull4.Options.bar_locations
 	
 	local function disabled()
-		return not CURRENT_TEXT_PROVIDER_MODULE and not CURRENT_CUSTOM_TEXT_MODULE
+		if CURRENT_CUSTOM_TEXT_MODULE then
+			return not GetLayoutDB(CURRENT_CUSTOM_TEXT_MODULE).enabled
+		else
+			return not CURRENT_TEXT_PROVIDER_MODULE
+		end
 	end
 	
 	options.args.current_text = {
@@ -50,15 +54,10 @@ function PitBull4.Options.get_layout_editor_text_options()
 			local t = {}
 			local first, first_module, first_id
 			for id, module in PitBull4:IterateModulesOfType("text_provider") do
-				local texts_db = GetLayoutDB(module).texts
-				for i = 1, texts_db.n do
-					local v = texts_db[i]
-					local key = ("%s;%03d"):format(id, i)
-					if not first_module then
-						first_module = module
-						first_id = i
-					end
-					t[key] = v.name or L["<Unnamed>"]
+				local texts_db = GetLayoutDB(module).elements
+				for name, text_db in pairs(texts_db) do
+					local key = id .. ";" .. name
+					t[key] = name
 				end
 			end
 			for id, module in PitBull4:IterateModulesOfType("custom_text") do
@@ -68,7 +67,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 					first_id = nil
 				end
 			end
-			if (not CURRENT_TEXT_PROVIDER_MODULE or not t[("%s;%03d"):format(CURRENT_TEXT_PROVIDER_MODULE.id, CURRENT_TEXT_PROVIDER_ID)]) and (not CURRENT_CUSTOM_TEXT_MODULE or not t[CURRENT_CUSTOM_TEXT_MODULE.id]) then
+			if (not CURRENT_TEXT_PROVIDER_MODULE or not t[CURRENT_TEXT_PROVIDER_MODULE.id .. ";" .. CURRENT_TEXT_PROVIDER_ID]) and (not CURRENT_CUSTOM_TEXT_MODULE or not t[CURRENT_CUSTOM_TEXT_MODULE.id]) then
 				if first_id then
 					CURRENT_TEXT_PROVIDER_MODULE = first_module
 					CURRENT_TEXT_PROVIDER_ID = first_id
@@ -83,7 +82,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 		end,
 		get = function(info)
 			if CURRENT_TEXT_PROVIDER_MODULE then
-				return ("%s;%03d"):format(CURRENT_TEXT_PROVIDER_MODULE.id, CURRENT_TEXT_PROVIDER_ID)
+				return CURRENT_TEXT_PROVIDER_MODULE.id .. ";" .. CURRENT_TEXT_PROVIDER_ID
 			elseif CURRENT_CUSTOM_TEXT_MODULE then
 				return CURRENT_CUSTOM_TEXT_MODULE.id
 			else
@@ -91,13 +90,14 @@ function PitBull4.Options.get_layout_editor_text_options()
 			end
 		end,
 		set = function(info, value)
-			local module_name, id = (";"):split(value)
+			local module_name, id = (";"):split(value, 2)
 			if id then
 				for m_id, m in PitBull4:IterateModulesOfType("text_provider") do
 					if module_name == m_id then
 						CURRENT_TEXT_PROVIDER_MODULE = m
-						CURRENT_TEXT_PROVIDER_ID = id+0
+						CURRENT_TEXT_PROVIDER_ID = id
 						CURRENT_CUSTOM_TEXT_MODULE = nil
+						break
 					end
 				end
 			else
@@ -106,11 +106,11 @@ function PitBull4.Options.get_layout_editor_text_options()
 						CURRENT_TEXT_PROVIDER_MODULE = nil
 						CURRENT_TEXT_PROVIDER_ID = nil
 						CURRENT_CUSTOM_TEXT_MODULE = m
+						break
 					end
 				end
 			end
 		end,
-		disabled = disabled
 	}
 	
 	local function text_name_validate(info, value)
@@ -119,10 +119,10 @@ function PitBull4.Options.get_layout_editor_text_options()
 		end
 		
 		for id, module in PitBull4:IterateModulesOfType("text_provider") do
-			local texts_db = GetLayoutDB(module).texts
+			local texts_db = GetLayoutDB(module).elements
 			
-			for i = 1, texts_db.n do
-				if texts_db[i].name and value:lower() == texts_db[i].name:lower() then
+			for name in pairs(texts_db) do
+				if value:lower() == name:lower() then
 					return L["'%s' is already a text."]:format(value)
 				end
 			end
@@ -152,14 +152,12 @@ function PitBull4.Options.get_layout_editor_text_options()
 				assert(module) -- the validate function should verify that at least one module exists
 			end
 			
-			local texts_db = GetLayoutDB(module).texts
-			
-			texts_db.n = texts_db.n + 1
-			local db = texts_db[texts_db.n]
-			db.name = value
+			local texts_db = GetLayoutDB(module).elements
+			local db = texts_db[value]
+			db.exists = true
 			
 			CURRENT_TEXT_PROVIDER_MODULE = module
-			CURRENT_TEXT_PROVIDER_ID = texts_db.n
+			CURRENT_TEXT_PROVIDER_ID = value
 			
 			UpdateFrames()
 		end,
@@ -203,26 +201,32 @@ function PitBull4.Options.get_layout_editor_text_options()
 		type = 'execute',
 		name = L["Remove"],
 		desc = L["Remove this text."],
+		confirm = true,
+		confirmText = L["Are you sure you want to remove this text?"],
 		order = 1,
 		func = function()
-			local texts_db = GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).texts
+			local texts_db = GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).elements
 			
-			table.remove(texts_db, CURRENT_TEXT_PROVIDER_ID)
-			local n = texts_db.n - 1
-			texts_db.n = n
-			if n >= 1 then
-				if CURRENT_TEXT_PROVIDER_ID > n then
-					CURRENT_TEXT_PROVIDER_ID = n
-				end
-			else
+			texts_db[CURRENT_TEXT_PROVIDER_ID] = nil
+			
+			CURRENT_TEXT_PROVIDER_ID = next(texts_db)
+			
+			if not CURRENT_TEXT_PROVIDER_ID then
 				CURRENT_TEXT_PROVIDER_MODULE = nil
 				CURRENT_TEXT_PROVIDER_ID = nil
 				for id, module in PitBull4:IterateModulesOfType("text_provider") do
-					local texts_db = GetLayoutDB(module).texts
+					local texts_db = GetLayoutDB(module).elements
 					
-					if texts_db.n > 0 then
+					CURRENT_TEXT_PROVIDER_ID = next(texts_db)
+					if CURRENT_TEXT_PROVIDER_ID then
 						CURRENT_TEXT_PROVIDER_MODULE = module
-						CURRENT_TEXT_PROVIDER_ID = 1
+						break
+					end
+				end
+				
+				if not CURRENT_TEXT_PROVIDER_ID then
+					for id, module in PitBull4:IterateModulesOfType("custom_text") do
+						CURRENT_CUSTOM_TEXT_MODULE = module
 						break
 					end
 				end
@@ -258,16 +262,18 @@ function PitBull4.Options.get_layout_editor_text_options()
 		type = 'input',
 		name = L["Name"],
 		order = 2,
-		desc = function()
-			local db = GetTextLayoutDB()
-			return L["Rename the '%s' text."]:format(db and db.name or L["<Unnamed>"])
+		desc = function(info)
+			return L["Rename the '%s' text."]:format(CURRENT_TEXT_PROVIDER_ID or L["<Unnamed>"])
 		end,
 		get = function(info)
-			local db = GetTextLayoutDB()
-			return db and db.name or L["<Unnamed>"]
+			return CURRENT_TEXT_PROVIDER_ID or L["<Unnamed>"]
 		end,
 		set = function(info, value)
-			GetTextLayoutDB().name = value
+			local texts_db = GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).elements
+			local text_db = texts_db[CURRENT_TEXT_PROVIDER_ID]
+			texts_db[CURRENT_TEXT_PROVIDER_ID] = nil
+			CURRENT_TEXT_PROVIDER_ID = value
+			texts_db[CURRENT_TEXT_PROVIDER_ID] = text_db
 			
 			UpdateFrames()
 		end,
@@ -291,23 +297,20 @@ function PitBull4.Options.get_layout_editor_text_options()
 				return
 			end
 			
-			local texts_db = GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).texts
+			local texts_db = GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).elements
 			
-			local old_db = table.remove(texts_db, CURRENT_TEXT_PROVIDER_ID)
-			local n = texts_db.n - 1
-			texts_db.n = n
+			local old_db = texts_db[CURRENT_TEXT_PROVIDER_ID]
+			texts_db[CURRENT_TEXT_PROVIDER_ID] = nil
 			
 			CURRENT_TEXT_PROVIDER_MODULE = PitBull4:GetModule(value)
-			texts_db = GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).texts
-			n = texts_db.n + 1
-			texts_db.n = n
+			texts_db = GetLayoutDB(CURRENT_TEXT_PROVIDER_MODULE).elements
 			
-			local new_db = texts_db[n]
-			new_db.name = old_db.name
+			local new_db = texts_db[CURRENT_TEXT_PROVIDER_ID]
 			new_db.size = old_db.size
 			new_db.attach_to = old_db.attach_to
 			new_db.location = old_db.location
 			new_db.position = old_db.position
+			new_db.exists = true
 			
 			UpdateFrames()
 		end,
@@ -353,7 +356,18 @@ function PitBull4.Options.get_layout_editor_text_options()
 			t["root"] = L["Unit frame"]
 			
 			for id, module in PitBull4:IterateModulesOfType("status_bar") do
-				t[id] = module.name
+				if GetLayoutDB(module).enabled then
+					t[id] = module.name
+				end
+			end
+			
+			for id, module in PitBull4:IterateModulesOfType("status_bar_provider") do
+				local db = GetLayoutDB(module)
+				if db.enabled then
+					for name in pairs(db.elements) do
+						t[id .. ";" .. name] = ("%s: %s"):format(module.name, name)
+					end
+				end
 			end
 			
 			return t
@@ -402,11 +416,131 @@ function PitBull4.Options.get_layout_editor_text_options()
 		disabled = disabled,
 	}
 	
+	options.args.edit.args.position = {
+		type = 'select',
+		name = L["Position"],
+		desc = L["Where to place the text compared to others in the same location."],
+		order = 6,
+		values = function(info)
+			local db
+			if CURRENT_CUSTOM_TEXT_MODULE then
+				db = GetLayoutDB(CURRENT_CUSTOM_TEXT_MODULE)
+			elseif CURRENT_TEXT_PROVIDER_MODULE then
+				db = GetTextLayoutDB()
+			else
+				return {}
+			end
+			local attach_to = db.attach_to
+			local location = db.location
+			local t = {}
+			local sort = {}
+			for other_id, other_module in PitBull4:IterateModulesOfType("icon", "custom_indicator", "custom_text") do
+				local other_db = GetLayoutDB(other_id)
+				if attach_to == other_db.attach_to and location == other_db.location then
+					local position = other_db.position
+					while t[position] do
+						position = position + 1e-5
+						other_db.position = position
+					end
+					t[position] = other_module.name
+					sort[#sort+1] = position
+				end
+			end
+			for other_id, other_module in PitBull4:IterateModulesOfType("text_provider") do
+				for element_id, element_db in pairs(GetLayoutDB(other_id).elements) do
+					if attach_to == element_db.attach_to and location == element_db.location then
+						local position = element_db.position
+						while t[position] do
+							position = position + 1e-5
+							element_db.position = position
+						end
+						t[position] = element_id
+						sort[#sort+1] = position
+					end
+				end
+			end
+			table.sort(sort)
+			local sort_reverse = {}
+			for k, v in pairs(sort) do
+				sort_reverse[v] = k
+			end
+			for position, name in pairs(t) do
+				t[position] = ("%d. %s"):format(sort_reverse[position], name)
+			end
+			return t
+		end,
+		get = function(info)
+			if CURRENT_CUSTOM_TEXT_MODULE then
+				return GetLayoutDB(CURRENT_CUSTOM_TEXT_MODULE).position
+			elseif CURRENT_TEXT_PROVIDER_MODULE then
+				return GetTextLayoutDB().position
+			end
+		end,
+		set = function(info, new_position)
+			local db
+			local id
+			if CURRENT_CUSTOM_TEXT_MODULE then
+				id = CURRENT_CUSTOM_TEXT_MODULE.id
+				db = GetLayoutDB(CURRENT_CUSTOM_TEXT_MODULE)
+			elseif CURRENT_TEXT_PROVIDER_MODULE then
+				id = CURRENT_TEXT_PROVIDER_MODULE.id .. ";" .. CURRENT_TEXT_PROVIDER_ID
+				db = GetTextLayoutDB()
+			end
+			
+			local id_to_position = {}
+			local elements = {}
+			
+			local old_position = db.position
+			
+			for other_id, other_module in PitBull4:IterateModulesOfType("icon", "custom_indicator", "custom_text", true) do
+				id_to_position[other_id] = GetLayoutDB(other_id).position
+				elements[#elements+1] = other_id
+			end
+			
+			for other_id, other_module in PitBull4:IterateModulesOfType("text_provider", true) do
+				for element_id, element_db in pairs(GetLayoutDB(other_id).elements) do
+					local joined_id = other_id .. ";" .. element_id
+					id_to_position[joined_id] = element_db.position
+					elements[#elements+1] = joined_id
+				end
+			end
+			
+			for element_id, other_position in pairs(id_to_position) do
+				if element_id == id then
+					id_to_position[element_id] = new_position
+				elseif other_position >= old_position and other_position <= new_position then
+					id_to_position[element_id] = other_position - 1
+				elseif other_position <= old_position and other_position >= new_position then
+					id_to_position[element_id] = other_position + 1
+				end
+			end
+			
+			table.sort(elements, function(alpha, bravo)
+				return id_to_position[alpha] < id_to_position[bravo]
+			end)
+			
+			for position, element_id in ipairs(elements) do
+				if element_id:match(";") then
+					local module_id, name = (";"):split(element_id, 2)
+					local element_db = rawget(GetLayoutDB(module_id).elements, name)
+					if element_db then
+						element_db.position = position
+					end
+				else
+					GetLayoutDB(element_id).position = position
+				end
+			end
+			
+			UpdateFrames()
+		end,
+		disabled = disabled,
+	}
+	
 	options.args.edit.args.font = {
 		type = 'select',
 		name = L["Font"],
 		desc = L["Which font to use for this text."],
-		order = 4,
+		order = 7,
 		get = function(info)
 			local font
 			if CURRENT_CUSTOM_TEXT_MODULE then
@@ -453,7 +587,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 		type = 'range',
 		name = L["Size"],
 		desc = L["Size of the text."],
-		order = 7,
+		order = 8,
 		get = function(info)
 			if CURRENT_CUSTOM_TEXT_MODULE then
 				return GetLayoutDB(CURRENT_CUSTOM_TEXT_MODULE).size

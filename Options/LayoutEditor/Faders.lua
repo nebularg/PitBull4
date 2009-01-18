@@ -103,6 +103,10 @@ function PitBull4.Options.get_layout_editor_fader_options()
 				local v = t[i+1]
 				
 				v.order = i + 100
+				local v_disabled = v.disabled
+				function v.disabled(info)
+					return not GetLayoutDB(module).enabled or (v_disabled and v_disabled(info))
+				end
 				
 				args[k] = v
 			end
