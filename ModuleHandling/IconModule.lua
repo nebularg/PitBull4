@@ -8,6 +8,7 @@ local IconModule = PitBull4:NewModuleType("icon", {
 	attach_to = "root",
 	location = "edge_top_left",
 	position = 1,
+	side = nil,
 	enabled = true,
 })
 
