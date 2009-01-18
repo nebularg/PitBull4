@@ -146,10 +146,10 @@ local function get_aura_list(list, unit, is_buff)
 end
 
 -- Fills up to the maximum number of auras with sample auras
-local function get_aura_list_sample(list, unit, max, is_buff)
+local function get_aura_list_sample(list, unit, max, db, is_buff)
 	-- figure the slot to use for the mainhand and offhand slots
 	local mainhand, offhand
-	if is_buff and unit and UnitIsUnit(unit, "player") then
+	if is_buff and db.enabled_weapons and unit and UnitIsUnit(unit, "player") then
 		if not weapon_list[MAINHAND] then
 			mainhand = #list + 1
 		end
@@ -526,7 +526,7 @@ local function update_auras(frame, db, is_buff)
 		end
 
 		-- Fill extra auras if we're in config mode
-		get_aura_list_sample(list, unit, max, is_buff)
+		get_aura_list_sample(list, unit, max, db, is_buff)
 	end
 
 	local layout = is_buff and db.layout.buff or db.layout.debuff
