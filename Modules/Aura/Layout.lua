@@ -97,6 +97,14 @@ function layout_auras(frame, db, is_buff)
 		row_spacing, col_spacing = col_spacing, row_spacing
 	end
 
+	-- Size to fit
+	if cfg.size_to_fit then
+		local my_rowcount = math.floor(width/(my_size + col_spacing))
+		local other_rowcount = math.floor(width/(other_size + col_spacing))
+		my_size = my_size * width/((my_size + col_spacing) * my_rowcount)
+		other_size = other_size * width/((other_size + col_spacing) * other_rowcount)
+	end
+
 	-- Allow reversal of the load order
 	local start_list, end_list, step
 	if cfg.reverse then

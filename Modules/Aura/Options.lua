@@ -64,6 +64,7 @@ PitBull4_Aura:SetDefaults({
 		buff = {
 			size = 16,
 			my_size = 16,
+			size_to_fit = true,
 			anchor = "BOTTOMLEFT",
 			side = "BOTTOM",
 			offset_x = 0,
@@ -80,6 +81,7 @@ PitBull4_Aura:SetDefaults({
 		debuff = {
 			size = 16,
 			my_size = 16,
+			size_to_fit = true,
 			anchor = "BOTTOMRIGHT",
 			side = "BOTTOM",
 			offset_x = 0,
@@ -382,6 +384,15 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				max = 48,
 				step = 1,
 				order = 1,
+			},
+			size_to_fit = {
+				type = 'toggle',
+				name = L['Size to fit'],
+				desc = L['Size auras to use up as much of the space available as possible.'],
+				get = get_layout,
+				set = set_layout,
+				disabled = is_aura_disabled,
+				order = 2,
 			},
 			break_1 = {
 				type = 'header',
