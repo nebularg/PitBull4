@@ -15,7 +15,7 @@ local L = PitBull4.L
 
 local PitBull4_ComboPoints = PitBull4:NewModule("ComboPoints", "AceEvent-3.0")
 
-PitBull4_ComboPoints:SetModuleType("custom_indicator")
+PitBull4_ComboPoints:SetModuleType("icon")
 PitBull4_ComboPoints:SetName(L["Combo points"])
 PitBull4_ComboPoints:SetDescription(L["Show combo points on the unit frame if you are a Rogue or Druid in Cat form."])
 PitBull4_ComboPoints:SetDefaults({

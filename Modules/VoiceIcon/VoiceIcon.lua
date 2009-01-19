@@ -20,7 +20,7 @@ local L = PitBull4.L
 
 local PitBull4_VoiceIcon = PitBull4:NewModule("VoiceIcon", "AceEvent-3.0")
 
-PitBull4_VoiceIcon:SetModuleType("custom_indicator")
+PitBull4_VoiceIcon:SetModuleType("icon")
 PitBull4_VoiceIcon:SetName(L["Voice icon"])
 PitBull4_VoiceIcon:SetDescription(L["Show an icon based on whether or not the unit's voice status."])
 PitBull4_VoiceIcon:SetDefaults({
