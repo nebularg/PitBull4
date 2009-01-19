@@ -163,12 +163,7 @@ function BarModule:UpdateFrame(frame)
 		control.id = id
 	end
 	
-	local layout_db = self:GetLayoutDB(frame)
-	local texture
-	if LibSharedMedia then
-		texture = LibSharedMedia:Fetch("statusbar", layout_db.texture or frame.layout_db.bar_texture or "Blizzard")
-	end
-	control:SetTexture(texture or [[Interface\TargetingFrame\UI-StatusBar]])
+	control:SetTexture(self:GetTexture(frame))
 	
 	control:SetValue(value)
 	local r, g, b, a = call_color_function(self, frame, value, extra or 0)
@@ -186,4 +181,18 @@ function BarModule:UpdateFrame(frame)
 	end
 	
 	return made_control
+end
+
+--- Return the texture path to use for the given frame.
+-- @param frame the unit frame
+-- @return the texture path
+-- @usage local texture = MyModule:GetTexture(some_frame)
+-- some_frame.MyModule:SetTexture(texture)
+function BarModule:GetTexture(frame)
+	local layout_db = self:GetLayoutDB(frame)
+	local texture
+	if LibSharedMedia then
+		texture = LibSharedMedia:Fetch("statusbar", layout_db.texture or frame.layout_db.bar_texture or "Blizzard")
+	end
+	return texture or [[Interface\TargetingFrame\UI-StatusBar]]
 end

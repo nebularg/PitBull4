@@ -35,6 +35,12 @@ end
 
 local DEFAULT_FONT, DEFAULT_FONT_SIZE = ChatFontNormal:GetFont()
 
+--- Return the font and size to use for the given frame.
+-- @param frame the unit frame
+-- @return the font path
+-- @return the font size
+-- @usage local font, size = MyModule:GetFont(some_frame)
+-- some_frame.MyModule:SetFont(font, size)
 function CustomTextModule:GetFont(frame)
 	local db = self:GetLayoutDB(frame)
 	local font
