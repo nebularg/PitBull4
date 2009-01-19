@@ -38,17 +38,9 @@ if LibSharedMedia then
 	end
 end
 
-local LDB = LibStub("LibDataBroker-1.1", true)
-local LDBIcon = LDB and LibStub("LibDBIcon-1.0", true)
-
 local DATABASE_DEFAULTS = {
 	profile = {
 		lock_movement = false,
-		minimapicon = {
-				hide = false,
-				minimapPos = 200,
-				radius = 80,
-		},
 		classifications = {
 			['**'] = {
 				enabled = true,
@@ -774,16 +766,6 @@ function PitBull4:OnInitialize()
 	db.RegisterCallback(self, "OnProfileChanged")
 	
 	self:OnProfileChanged()
-	
-	-- used for run-once-only initialization
-	self:RegisterEvent("PLAYER_LOGIN")
-end
-
-function PitBull4:PLAYER_LOGIN()
-	if LDBIcon and not IsAddOnLoaded("Broker2FuBar") then
-		LDBIcon:Register("PitBull4", PitBull4.LDBLauncher, PitBull4.db.profile.minimapicon)
-		PitBull4.LDBIconRegistered = true -- needed to ensure OnProfileChanged doesn't do LDBI stuff before we register it
-	end
 end
 
 function PitBull4:OnProfileChanged()
@@ -806,10 +788,6 @@ function PitBull4:OnProfileChanged()
 	end
 	for header in PitBull4:IterateHeaders() do
 		header:RefreshLayout(true)
-	end
-	
-	if self.LDBIconRegistered and not IsAddOnLoaded("Broker2FuBar") then
-		LDBIcon:Refresh("PitBull4", db.profile.minimapicon)
 	end
 end
 
