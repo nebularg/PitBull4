@@ -796,8 +796,8 @@ function PitBull4:ADDON_LOADED()
 			end,
 			OnTooltipShow = function(tt)
 				tt:AddLine(L["PitBull Unit Frames 4.0"])
-				tt:AddLine("|cffffff00" .. L["%s|r to toggle frame lock"]:format(L["Click"]), 1, 1, 1)
-				tt:AddLine("|cffffff00" .. L["%s|r to open the options menu"]:format(L["Right-click"]), 1, 1, 1)
+				tt:AddLine("|cffffff00" .. L["%s|r to open the options menu"]:format(L["Click"]), 1, 1, 1)
+				tt:AddLine("|cffffff00" .. L["%s|r to toggle frame lock"]:format(L["Right-click"]), 1, 1, 1)
 			end,
 		})
 	end
