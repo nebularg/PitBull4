@@ -33,80 +33,166 @@ local new, del = PitBull4.new, PitBull4.del
 
 local ipairs_with_del
 do
-	local function iter(t, current)
+	local function ipairs_with_del__iter(list, current)
 		current = current + 1
 		
-		local value = t[current]
+		local value = list[current]
 		if value == nil then
-			del(t)
+			del(list)
 			return nil
 		end
 		
 		return current, value
 	end
-	function ipairs_with_del(t)
-		return iter, t, 0
+	
+	--- Iterate over a list until nil is hit.
+	-- @param list a list
+	-- @return an iterator which returns index, value
+	-- @usage for i, v in ipairs_with_del({"a", "b", "c"}) do
+	--     print(i, v)
+	-- end
+	-- @usage for i, v in ipairs_with_del({"a", "b", "c", nil, "e"}) do
+	--     -- same as above, since it stops at i == 4
+	--     print(i, v)
+	-- end
+	function ipairs_with_del(list)
+		--@alpha@
+		expect(list, 'typeof', 'table')
+		--@end-alpha@
+		
+		return ipairs_with_del__iter, list, 0
 	end
 end
 
 local modules = PitBull4.modules
+--- Return the element-specific layout db for the given id and layout.
+-- @param id either a module id or a module id, semicolon, and element id.
+-- @param layout the name of the layout
+-- @return the element db or nil
+-- @usage db = get_element_db("CombatText", "Normal")
+-- @usage db = get_element_db("DogTagTexts;Name", "Normal")
 local function get_element_db(id, layout)
+	--@alpha@
+	expect(id, 'typeof', 'string')
+	--@end-alpha@
+	
+	local module_id, element_id
 	if id:match(";") then
-		local module_id, bar_id = (";"):split(id, 2)
-		local module = modules[module_id]
-		return module and rawget(module:GetLayoutDB(layout).elements, bar_id)
+		module_id, element_id = (";"):split(id, 2)
 	else
-		local module = modules[id]
-		return module and module:GetLayoutDB(layout)
+		module_id = id
 	end
+	
+	--@alpha@
+	expect(module_id, 'inset', modules)
+	--@end-alpha@
+	
+	local module = modules[module_id]
+	
+	local db = module:GetLayoutDB(layout)
+	if element_id then
+		db = rawget(db.elements, element_id)
+	end
+	
+	--@alpha@
+	expect(db, 'typeof', 'nil;table')
+	--@end-alpha@
+	return db
 end
 
+--- A dictionary of element_id to module_type.
 local element_id_to_module_type = setmetatable({}, {
 	__index = function(self, id)
+		--@alpha@
+		expect(id, 'typeof', 'string')
+		--@end-alpha@
+		
 		local module_id = id
 		if module_id:match(";") then
 			module_id = (";"):split(id, 2)
 		end
-		local module = modules[module_id]
+		
 		--@alpha@
-		expect(module, 'typeof', 'table')
+		expect(module_id, 'inset', modules)
 		--@end-alpha@
-		self[id] = module.module_type
-		return self[id]
+		
+		local module = modules[module_id]
+		local module_type = module.module_type
+		
+		--@alpha@
+		expect(module_type, 'typeof', 'string')
+		--@end-alpha@
+		
+		self[id] = module_type
+		return module_type
 	end,
 })
 
--- sort the bars in the order specified by the layout
-local sort_positions
+local sort_elements_by_position
 do
-	local id_to_position = {}
-	local function helper(alpha, bravo)
-		return id_to_position[alpha] < id_to_position[bravo]
+	local element_id_to_position = {}
+	local function sort_elements_by_position__helper(alpha, bravo)
+		return element_id_to_position[alpha] < element_id_to_position[bravo]
 	end
-
-	function sort_positions(positions, frame)
-		local layout = frame.layout
-		for _, id in ipairs(positions) do
-			id_to_position[id] = get_element_db(id, layout).position
+	
+	--- Sort a list of elements by position for the given layout.
+	-- @param element_ids a list of element ids
+	-- @param layout name of the layout
+	-- @usage element_ids = { "HealthBar", "PowerBar" }
+	-- sort_elements_by_position(element_ids)
+	function sort_elements_by_position(element_ids, layout)
+		--@alpha@
+		expect(element_ids, 'typeof', 'table')
+		expect(layout, 'typeof', 'string')
+		--@end-alpha@
+		
+		for _, element_id in ipairs(element_ids) do
+			local db = get_element_db(element_id, layout)
+			element_id_to_position[element_id] = db and db.position or 0
 		end
 		
-		table.sort(positions, helper)
-		wipe(id_to_position)
+		table.sort(element_ids, sort_elements_by_position__helper)
+		
+		wipe(element_id_to_position)
 	end
 end
 
-local function filter_bars_for_side(layout, bars, side)
-	local side_bars = new()
-	for _, id in ipairs(bars) do
-		if get_element_db(id, layout).side == side then
-			side_bars[#side_bars+1] = id
+--- Return a list of element ids that are on a given side for a given layout.
+-- @param element_ids a list of element ids
+-- @param layout name of the layout
+-- @param side the side to filter on, one of "left", "center", or "right"
+-- @return a list of element ids
+-- @usage element_ids = filter_elements_for_side({ "HealthBar", "PowerBar" }, "Normal", "center")
+local function filter_elements_for_side(element_ids, layout, side)
+	--@alpha@
+	expect(element_ids, 'typeof', 'table')
+	expect(layout, 'typeof', 'string')
+	expect(side, 'inset', "left;center;right")
+	--@end-alpha@
+	
+	local filtered_element_ids = new()
+	for _, element_id in ipairs(element_ids) do
+		local db = get_element_db(element_id, layout)
+		if db and db.side == side then
+			filtered_element_ids[#filtered_element_ids+1] = element_id
 		end
 	end
-	return side_bars
+	return filtered_element_ids
 end
 
--- return a list of existing status bars on frame of the given side in the correct order
+--- Return lists of all element ids that represent bar-like objects.
+-- The resultant lists will be sorted by position.
+-- @param frame a unit frame
+-- @return a list of all element ids
+-- @return a list of element ids where side = 'center'
+-- @return a list of element ids where side = 'left'
+-- @return a list of element ids where side = 'right'
+-- @usage bars, center_bars, left_bars, right_bars = get_all_bars(frame)
 local function get_all_bars(frame)
+	--@alpha@
+	expect(frame, 'inset', PitBull4.all_frames)
+	--@end-alpha@
+	
 	local bars = new()
 	local layout = frame.layout
 	
@@ -130,16 +216,32 @@ local function get_all_bars(frame)
 		end
 	end
 	
-	sort_positions(bars, frame)
+	sort_elements_by_position(bars, layout)
 	
 	return bars,
-		filter_bars_for_side(layout, bars, 'center'),
-		filter_bars_for_side(layout, bars, 'left'),
-		filter_bars_for_side(layout, bars, 'right')
+		filter_elements_for_side(bars, layout, 'center'),
+		filter_elements_for_side(bars, layout, 'left'),
+		filter_elements_for_side(bars, layout, 'right')
 end
 
--- figure out the total width and height points for a frame based on its bars
+--- Calculate the sizing points for the various bars given.
+-- @param layout the name of the layout
+-- @param center_bars a list of bar-like elements where side = 'center'
+-- @param left_bars a list of bar-like elements where side = 'left'
+-- @param right_bars a list of bar-like elements where side = 'right'
+-- @return the number of total width points make up the layout (except for the square indicators on the sides) with the given bars
+-- @return the number of total height points make up the layout with the given bars
+-- @return the number of square indicators are on the left side
+-- @return the number of square indicators are on the right side
+-- @usage bar_width_points, bar_height_points, left_exempt_width, right_exempt_width = calculate_width_height_points("Normal", {"HealthBar", "PowerBar"}, {"Portrait"}, {})
 local function calculate_width_height_points(layout, center_bars, left_bars, right_bars)
+	--@alpha@
+	expect(layout, 'typeof', 'string')
+	expect(center_bars, 'typeof', 'table')
+	expect(left_bars, 'typeof', 'table')
+	expect(right_bars, 'typeof', 'table')
+	--@end-alpha@
+	
 	local bar_height_points = 0
 	local bar_width_points = 0
 	local left_exempt_width = 0
@@ -161,6 +263,7 @@ local function calculate_width_height_points(layout, center_bars, left_bars, rig
 			bar_width_points = bar_width_points + get_element_db(id, layout).size
 		end
 	end
+	
 	for _, id in ipairs(right_bars) do
 		if INDICATOR_MODULE_TYPES[element_id_to_module_type[id]] then
 			right_exempt_width = right_exempt_width + 1
@@ -174,7 +277,7 @@ end
 
 local reverse_ipairs
 do
-	local function iter(t, current)
+	local function reverse_ipairs__iter(t, current)
 		current = current - 1
 		if current == 0 then
 			return
@@ -182,114 +285,142 @@ do
 		
 		return current, t[current]
 	end
-	function reverse_ipairs(t)
-		return iter, t, #t+1
+	
+	--- Iterate backwards over a list.
+	-- @param list a list
+	-- @return an iterator which returns index, value
+	-- @usage for i, v in reverse_ipairs({"a", "b", "c"}) do
+	--     -- 3, "c" -- 2, "b", -- 1, "a"
+	-- end
+	function reverse_ipairs(list)
+		--@alpha@
+		expect(list, 'typeof', 'table')
+		--@end-alpha@
+		
+		return reverse_ipairs__iter, list, #list + 1
 	end
 end
 
-local function update_bar_layout(self)
-	local bars, center_bars, left_bars, right_bars = get_all_bars(self)
+--- Position all bar-like objects on the given frame.
+-- @param frame a unit frame
+-- @usage update_bar_layout(frame)
+local function update_bar_layout(frame)
+	--@alpha@
+	expect(frame, 'inset', PitBull4.all_frames)
+	--@end-alpha@
 	
-	local horizontal_mirror = self.classification_db.horizontal_mirror
-	local vertical_mirror = self.classification_db.vertical_mirror
+	local bars, center_bars, left_bars, right_bars = get_all_bars(frame)
+	
+	local horizontal_mirror = frame.classification_db.horizontal_mirror
+	local vertical_mirror = frame.classification_db.vertical_mirror
 	
 	if horizontal_mirror then
 		left_bars, right_bars = right_bars, left_bars
 	end
-
-	local width, height = self:GetWidth(), self:GetHeight()
 	
-	local layout = self.layout
+	local frame_width, frame_height = frame:GetWidth(), frame:GetHeight()
+	
+	local layout = frame.layout
 	
 	local bar_width_points, bar_height_points, left_exempt_width, right_exempt_width = calculate_width_height_points(layout, center_bars, left_bars, right_bars)
 	
-	local bar_spacing = self.layout_db.bar_spacing
-	local bar_padding = self.layout_db.bar_padding
+	local bar_spacing = frame.layout_db.bar_spacing
+	local bar_padding = frame.layout_db.bar_padding
 	
-	local bar_height = height - bar_padding * 2
+	local bar_height = frame_height - bar_padding * 2
 	
-	local leftover_width = width - (left_exempt_width + right_exempt_width) * (height + bar_spacing)
+	local total_height_of_bars = frame_height - bar_spacing * (#center_bars - 1) - bar_padding * 2
 	
-	local height_of_bars = height - bar_spacing * (#center_bars - 1) - bar_padding * 2
 	local num_vertical_bars = #left_bars + #right_bars
 	if #center_bars > 0 then
-		num_vertical_bars = num_vertical_bars + num_vertical_bars
+		-- treat the center bars as a single vertical bar
+		num_vertical_bars = num_vertical_bars + 1
 	end
-	local width_of_bars = leftover_width - bar_spacing * (num_vertical_bars - 1) - bar_padding * 2
 	
-	local bar_height_per_point = height_of_bars / bar_height_points
-	local bar_width_per_point = width_of_bars / bar_width_points
-
+	-- this is the width of the frame without the square indicators.
+	local frame_leftover_width = frame_width - (left_exempt_width + right_exempt_width) * (frame_height + bar_spacing)
+	
+	local total_width_of_bars = frame_leftover_width - bar_spacing * (num_vertical_bars - 1) - bar_padding * 2
+	
+	local bar_height_per_point = total_height_of_bars / bar_height_points
+	local bar_width_per_point = total_width_of_bars / bar_width_points
+	
+	-- position all bar-like elements on the left
 	local last_x = bar_padding
 	for _, id in ipairs(left_bars) do
-		local bar = self[id]
+		local bar = frame[id]
 		bar:ClearAllPoints()
 		
 		local bar_width
 		if INDICATOR_MODULE_TYPES[element_id_to_module_type[id]] then
+			-- this already has a defined height and width, so we just want to scale it into the right size and position its center
 			local bar_scale = bar_height / math.max(bar:GetHeight(), bar:GetWidth())
 			bar:SetScale(bar_scale)
 			bar_width = bar_height
-			bar:SetPoint("CENTER", self, "LEFT", (last_x + bar_width/2) / bar_scale, 0)
+			bar:SetPoint("CENTER", frame, "LEFT", (last_x + bar_width/2) / bar_scale, 0)
 		else
 			bar_width = get_element_db(id, layout).size * bar_width_per_point
 			bar:SetOrientation("VERTICAL")
-			bar:SetPoint("TOPLEFT", self, "TOPLEFT", last_x, 0)
-			bar:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", last_x + bar_width, 0)
+			bar:SetPoint("TOPLEFT", frame, "TOPLEFT", last_x, 0)
+			bar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMLEFT", last_x + bar_width, 0)
 		end	
 		last_x = last_x + bar_width + bar_spacing
 	end
 	local left = last_x
-
+	
+	-- position all bar-like elements on the right
 	last_x = -bar_padding
 	for _, id in ipairs(right_bars) do
-		local bar = self[id]
+		local bar = frame[id]
 		bar:ClearAllPoints()
 		
 		local bar_width
 		if INDICATOR_MODULE_TYPES[element_id_to_module_type[id]] then
+			-- this already has a defined height and width, so we just want to scale it into the right size and position its center
 			local bar_scale = bar_height / math.max(bar:GetHeight(), bar:GetWidth())
 			bar:SetScale(bar_scale)
 			bar_width = bar_height
-			bar:SetPoint("CENTER", self, "RIGHT", (last_x - bar_width/2) / bar_scale, 0)
+			bar:SetPoint("CENTER", frame, "RIGHT", (last_x - bar_width/2) / bar_scale, 0)
 		else
 			bar_width = get_element_db(id, layout).size * bar_width_per_point
 			bar:SetOrientation("VERTICAL")
-			bar:SetPoint("TOPLEFT", self, "TOPLEFT", last_x, 0)
-			bar:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", last_x - bar_width, 0)
+			bar:SetPoint("TOPLEFT", frame, "TOPLEFT", last_x, 0)
+			bar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMLEFT", last_x - bar_width, 0)
 		end	
 		last_x = last_x - bar_width - bar_spacing
 	end
 	local right = last_x
 	
+	-- now position all the center bars between the left and right bars
 	local last_y = -bar_padding
 	for i, id in (not vertical_mirror and ipairs or reverse_ipairs)(center_bars) do
-		local bar = self[id]
+		local bar = frame[id]
 		bar:ClearAllPoints()
 	
-		bar:SetPoint("TOPLEFT", self, "TOPLEFT", left, last_y)
+		bar:SetPoint("TOPLEFT", frame, "TOPLEFT", left, last_y)
 		local bar_height = get_element_db(id, layout).size * bar_height_per_point
 		last_y = last_y - bar_height
-		bar:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", right, last_y)
+		bar:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", right, last_y)
 		last_y = last_y - bar_spacing
 	
 		bar:SetOrientation("HORIZONTAL")
 	end
-
+	
+	-- set various information on the bars
 	for _, id in ipairs(bars) do
-		local bar = self[id]
-		local bar_layout_db = get_element_db(id, layout)
-		local reverse = bar_layout_db.reverse
-		if bar_layout_db.side == "center" then
-			if horizontal_mirror then
-				reverse = not reverse
-			end
-		else
-			if vertical_mirror then
-				reverse = not reverse
-			end
-		end
 		if not INDICATOR_MODULE_TYPES[element_id_to_module_type[id]] then
+			local bar = frame[id]
+			local bar_layout_db = get_element_db(id, layout)
+			local reverse = bar_layout_db.reverse
+			if bar_layout_db.side == "center" then
+				if horizontal_mirror then
+					reverse = not reverse
+				end
+			else
+				if vertical_mirror then
+					reverse = not reverse
+				end
+			end
 			bar:SetReverse(reverse)
 			bar:SetDeficit(bar_layout_db.deficit)
 			bar:SetNormalAlpha(bar_layout_db.alpha)
@@ -303,6 +434,12 @@ local function update_bar_layout(self)
 	right_bars = del(right_bars)
 end
 
+
+--- Return lists of all element ids that represent non-bar-like indicators and texts.
+-- The resultant list will be sorted by position.
+-- @param frame a unit frame
+-- @return a list of all element ids
+-- @usage elements = get_all_indicators_and_texts(frame)
 local function get_all_indicators_and_texts(frame)
 	local indicators_and_texts = new()
 	local layout = frame.layout
@@ -321,11 +458,16 @@ local function get_all_indicators_and_texts(frame)
 		end
 	end
 	
-	sort_positions(indicators_and_texts, frame)
+	sort_elements_by_position(indicators_and_texts, layout)
 	
 	return indicators_and_texts
 end
 
+--- Return an estimated half-width of elements in a given location on a frame.
+-- @param frame a unit frame
+-- @param indicators_and_texts a list of element ids to estimate the width of.
+-- @return the estimated number of pixels that make up half the width.
+-- @usage local width = get_half_width(frame, { "CombatText", "HappinessIcon" })
 local function get_half_width(frame, indicators_and_texts)
 	local num = 0
 	
@@ -349,6 +491,7 @@ local function get_half_width(frame, indicators_and_texts)
 	return num / 2
 end
 
+-- a dictionary of location to function for the initial indicator to be placed on the unit frame.
 local position_indicator_on_root = {}
 function position_indicator_on_root:out_top_left(indicator)
 	indicator:SetPoint("BOTTOMLEFT", self, "TOPLEFT", self.layout_db.bar_padding, self.layout_db.indicator_root_outside_margin)
@@ -466,6 +609,7 @@ function position_indicator_on_root:edge_bottom_right(indicator)
 	indicator:SetPoint("CENTER", self, "BOTTOMRIGHT", 0, 0)
 end
 
+-- a dictionary of location to function for the initial indicator to be placed on a bar on the unit frame.
 local position_indicator_on_bar = {}
 function position_indicator_on_bar:left(indicator, bar)
 	indicator:SetPoint("LEFT", bar, "LEFT", self.layout_db.indicator_bar_inside_horizontal_padding, 0)
@@ -513,6 +657,7 @@ function position_indicator_on_bar:out_left(indicator, bar)
 	indicator:SetPoint("RIGHT", bar, "LEFT", -self.layout_db.indicator_bar_outside_margin, 0)
 end
 
+-- a dictionary of location to function for a non-starting indicator to be placed on the unit frame
 local position_next_indicator_on_root = {}
 function position_next_indicator_on_root:out_top_left(indicator, _, last_indicator)
 	indicator:SetPoint("LEFT", last_indicator, "RIGHT", self.layout_db.indicator_spacing, 0)
@@ -548,6 +693,7 @@ position_next_indicator_on_root.edge_top_right = position_next_indicator_on_root
 position_next_indicator_on_root.edge_right = position_next_indicator_on_root.out_top_right
 position_next_indicator_on_root.edge_bottom_right = position_next_indicator_on_root.out_top_right
 
+-- a dictionary of location to function for a non-starting indicator to be placed on a bar on the unit frame
 local position_next_indicator_on_bar = {}
 function position_next_indicator_on_bar:left(indicator, bar, last_indicator)
 	indicator:SetPoint("LEFT", last_indicator, "RIGHT", self.layout_db.indicator_spacing, 0)
@@ -565,52 +711,70 @@ position_next_indicator_on_bar.out_left = position_next_indicator_on_bar.right
 position_next_indicator_on_bar.top_right = position_next_indicator_on_bar.right
 position_next_indicator_on_bar.bottom_right = position_next_indicator_on_bar.right
 
-local function position_indicator_or_text(root, indicator_id, attach_frame, last_indicator_id, location, location_indicators_and_texts)
+--- Position an indicator on the unit frame based on the given arguments.
+-- @param frame a unit frame
+-- @param indicator_id the id of the indicator to position on the unit frame
+-- @param attach_frame what frame we're currently attaching to. This can be the unit frame or a separate bar.
+-- @param last_indicator_id the id of the last indicator we placed down, or nil if we haven't placed one down yet.
+-- @param location the location we're placing the indicator in relation to attach_frame.
+-- @param indicators_and_texts a list of element ids in the same location.
+-- @usage position_indicator_or_text(frame, "PvPIcon", frame, nil, "edge_top_left", { "PvPIcon", "CombatIcon" })
+local function position_indicator_or_text(frame, indicator_id, attach_frame, last_indicator_id, location, indicators_and_texts)
 	local func
 	if not last_indicator_id then
-		if root == attach_frame then
+		if frame == attach_frame then
 			func = position_indicator_on_root[location]
 		else
 			func = position_indicator_on_bar[location]
 		end
 	else
-		if root == attach_frame then
+		if frame == attach_frame then
 			func = position_next_indicator_on_root[location]
 		else
 			func = position_next_indicator_on_bar[location]
 		end
 	end
 	if func then
-		func(root, root[indicator_id], attach_frame, root[last_indicator_id] or root, location_indicators_and_texts)
+		func(frame, frame[indicator_id], attach_frame, frame[last_indicator_id] or frame, indicators_and_texts)
 	end
 end
 
-local function position_overlapping_texts_helper(root, attach_frame, left, center, right, inside_width, spacing)
+--- Position texts to one another so that they don't overlap.
+-- Priority-wise, it goes center, then right, then left for what takes precedence.
+-- @param frame the unit frame
+-- @param attach_frame the attach frame that the texts reside on
+-- @param left the element ids of all indicators and texts on the left side
+-- @param center the element ids of all indicators and texts in the center
+-- @param right the element ids of all indicators and texts in the right side
+-- @param inside_width how far inside a left text would be attaching to attach_frame's right side
+-- @param spacing the spacing between texts
+-- @usage position_overlapping_texts__helper(frame, frame.HealthBar, { "DogTagTexts;Name" }, {}, { "DogTagTexts;Health" }, 3, 2)
+local function position_overlapping_texts__helper(frame, attach_frame, left, center, right, inside_width, spacing)
 	if center then
 		-- clamp left to center
 		if left then
-			local text = root[left[#left]]
+			local text = frame[left[#left]]
 		 	if text.SetJustifyH then
 				text:SetJustifyH("LEFT")
-				text:SetPoint("RIGHT", root[center[1]], "LEFT", -spacing, 0)
+				text:SetPoint("RIGHT", frame[center[1]], "LEFT", -spacing, 0)
 			end
 		end
 	
 		-- clamp right to center
 		if right then
-			local text = root[right[#right]]
+			local text = frame[right[#right]]
 			if text.SetJustifyH then
 				text:SetJustifyH("RIGHT")
-				text:SetPoint("LEFT", root[center[#center]], "RIGHT", spacing, 0)
+				text:SetPoint("LEFT", frame[center[#center]], "RIGHT", spacing, 0)
 			end
 		end
 	elseif left then
-		local text = root[left[#left]]
+		local text = frame[left[#left]]
 		if text.SetJustifyH then	
 			text:SetJustifyH("LEFT")
 			if right then
 				-- clamp left to right
-				text:SetPoint("RIGHT", root[right[#right]], "LEFT", -spacing, 0)
+				text:SetPoint("RIGHT", frame[right[#right]], "LEFT", -spacing, 0)
 			else
 				-- clamp left to attach_frame's right side
 				text:SetPoint("RIGHT", attach_frame, "RIGHT", -inside_width, 0)
@@ -619,39 +783,44 @@ local function position_overlapping_texts_helper(root, attach_frame, left, cente
 	end
 end
 
-local function position_overlapping_texts(root, attach_frame, location_to_indicators_and_texts)
-	local spacing = root.layout_db.indicator_spacing
-	if root == attach_frame then
-		local padding = root.layout_db.bar_padding
-		position_overlapping_texts_helper(root,
+--- Position texts on a given attach frame to not overlap one another.
+-- @param frame a unit frame
+-- @param attach_frame the frame the texts attach to, or frame for the unit frame itself
+-- @param location_to_indicators_and_texts a dictionary of location to indicators and texts
+-- @usage position_overlapping_texts(frame, frame.HealthBar, { left = {"DogTagTexts;Name"}, right = {"DogTagTexts;Health"}})
+local function position_overlapping_texts(frame, attach_frame, location_to_indicators_and_texts)
+	local spacing = frame.layout_db.indicator_spacing
+	if frame == attach_frame then
+		local padding = frame.layout_db.bar_padding
+		position_overlapping_texts__helper(frame,
 			attach_frame,
 			location_to_indicators_and_texts.in_left,
 			location_to_indicators_and_texts.in_center,
 			location_to_indicators_and_texts.in_right,
 			padding,
 			spacing)
-		position_overlapping_texts_helper(root,
+		position_overlapping_texts__helper(frame,
 			attach_frame,
 			location_to_indicators_and_texts.in_bottom_left,
 			location_to_indicators_and_texts.in_bottom,
 			location_to_indicators_and_texts.in_bottom_right,
 			padding,
 			spacing)
-		position_overlapping_texts_helper(root,
+		position_overlapping_texts__helper(frame,
 			attach_frame,
 			location_to_indicators_and_texts.in_top_left,
 			location_to_indicators_and_texts.in_top,
 			location_to_indicators_and_texts.in_top_right,
 			padding,
 			spacing)
-		position_overlapping_texts_helper(root,
+		position_overlapping_texts__helper(frame,
 			attach_frame,
 			location_to_indicators_and_texts.out_bottom_left,
 			location_to_indicators_and_texts.out_bottom,
 			location_to_indicators_and_texts.out_bottom_right,
 			padding,
 			spacing)
-		position_overlapping_texts_helper(root,
+		position_overlapping_texts__helper(frame,
 			attach_frame,
 			location_to_indicators_and_texts.out_top_left,
 			location_to_indicators_and_texts.out_top,
@@ -659,40 +828,45 @@ local function position_overlapping_texts(root, attach_frame, location_to_indica
 			padding,
 			spacing)
 	else
-		position_overlapping_texts_helper(root,
+		position_overlapping_texts__helper(frame,
 			attach_frame,
 			location_to_indicators_and_texts.left,
 			location_to_indicators_and_texts.center,
 			location_to_indicators_and_texts.right,
-			root.layout_db.indicator_bar_inside_horizontal_padding,
+			frame.layout_db.indicator_bar_inside_horizontal_padding,
 			spacing)
 	end
 end
 
+-- a dictionary of location to what the location would be if it were mirrored horizontally
 local horizontal_mirrored_location = setmetatable({}, {__index = function(self, key)
 	local value = key:gsub("left", "temp"):gsub("right", "left"):gsub("temp", "right")
 	self[key] = value
 	return value
 end})
 
+-- a dictionary of location to what the location would be if it were mirrored vertically
 local vertical_mirrored_location = setmetatable({}, {__index = function(self, key)
 	local value = key:gsub("bottom", "temp"):gsub("top", "bottom"):gsub("temp", "top")
 	self[key] = value
 	return value
 end})
 
-local function update_indicator_and_text_layout(self)
+--- Position all non-bar-like indicators and texts on the given frame.
+-- @param frame a unit frame
+-- @usage update_indicator_and_text_layout(frame)
+local function update_indicator_and_text_layout(frame)
 	local attachments = new()
 	
-	local layout = self.layout
+	local layout = frame.layout
 	
-	local horizontal_mirror = self.classification_db.horizontal_mirror
-	local vertical_mirror = self.classification_db.vertical_mirror
+	local horizontal_mirror = frame.classification_db.horizontal_mirror
+	local vertical_mirror = frame.classification_db.vertical_mirror
 	
-	local indicator_size = self.layout_db.indicator_size
+	local indicator_size = frame.layout_db.indicator_size
 	
-	for _, id in ipairs_with_del(get_all_indicators_and_texts(self)) do
-		local element = self[id]
+	for _, id in ipairs_with_del(get_all_indicators_and_texts(frame)) do
+		local element = frame[id]
 		local module_id = id
 		local element_id = nil
 		local module
@@ -710,9 +884,9 @@ local function update_indicator_and_text_layout(self)
 		local attach_to = element_db.attach_to
 		local attach_frame
 		if attach_to == "root" then
-			attach_frame = self
+			attach_frame = frame
 		else
-			attach_frame = self[attach_to]
+			attach_frame = frame[attach_to]
 		end
 		
 		if attach_frame then
@@ -764,12 +938,12 @@ local function update_indicator_and_text_layout(self)
 		for location, loc_indicators_and_texts in pairs(attachments_attach_frame) do
 			local last = nil
 			for _, id in ipairs(loc_indicators_and_texts) do
-				position_indicator_or_text(self, id, attach_frame, last, location, loc_indicators_and_texts)
+				position_indicator_or_text(frame, id, attach_frame, last, location, loc_indicators_and_texts)
 				last = id
 			end
 		end
 		
-		position_overlapping_texts(self, attach_frame, attachments_attach_frame)
+		position_overlapping_texts(frame, attach_frame, attachments_attach_frame)
 		
 		for location, loc_indicators_and_texts in pairs(attachments_attach_frame) do
 			attachments_attach_frame[location] = del(loc_indicators_and_texts)
