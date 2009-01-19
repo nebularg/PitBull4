@@ -147,8 +147,8 @@ end
 
 --- Set the module type of the module.
 -- This should be called right after creating the module.
--- @param type one of "custom", "status_bar", or "icon"
--- @usage MyModule:SetModuleType("status_bar")
+-- @param type one of "custom", "bar", or "icon"
+-- @usage MyModule:SetModuleType("bar")
 function Module:SetModuleType(type)
 	--@alpha@
 	expect(type, 'typeof', 'string')
@@ -398,11 +398,11 @@ end
 
 --- Iterate over all modules of a given type.
 -- Only enabled modules will be returned unless true is provided as the last argument
--- @param ... a tuple of module types, e.g. "status_bar", "icon". If the last argument is true, then iterate over disabled modules also
--- @usage for id, module in PitBull4:IterateModulesOfType("status_bar") do
+-- @param ... a tuple of module types, e.g. "bar", "icon". If the last argument is true, then iterate over disabled modules also
+-- @usage for id, module in PitBull4:IterateModulesOfType("bar") do
 --     doSomethingWith(module)
 -- end
--- @usage for id, module in PitBull4:IterateModulesOfType("status_bar", "icon", true) do
+-- @usage for id, module in PitBull4:IterateModulesOfType("bar", "icon", true) do
 --     doSomethingWith(module)
 -- end
 -- @return iterator which returns the id and module

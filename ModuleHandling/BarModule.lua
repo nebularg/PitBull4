@@ -1,24 +1,17 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
-local StatusBarProviderModule = PitBull4:NewModuleType("status_bar_provider", {
+local StatusBarModule = PitBull4:NewModuleType("bar", {
+	size = 2,
+	reverse = false,
+	deficit = false,
+	alpha = 1,
+	background_alpha = 1,
+	position = 1,
+	side = 'center',
 	enabled = true,
-	elements = {
-		['**'] = {
-			size = 2,
-			reverse = false,
-			deficit = false,
-			alpha = 1,
-			background_alpha = 1,
-			position = 10,
-			side = 'center',
-			custom_color = nil,
-			exists = false,
-		}
-	}
+	custom_color = nil,
 })
-
-local new, del = PitBull4.new, PitBull4.del
 
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 if not LibSharedMedia then
@@ -30,24 +23,19 @@ end
 -- @param frame the Unit Frame to clear
 -- @usage local update_layout = MyModule:ClearFrame(frame)
 -- @return whether the update requires :UpdateLayout to be called
-function StatusBarProviderModule:ClearFrame(frame)
+function StatusBarModule:ClearFrame(frame)
 	--@alpha@
 	expect(frame, 'typeof', 'frame')
 	--@end-alpha@
 	
 	local id = self.id
-	local bars = frame[id]
-	if not bars then
+	local control = frame[id]
+	if not control then
 		return false
 	end
-	
-	for name, bar in pairs(bars) do
-		bar.db = nil
-		bar:Delete()
-		frame[id .. ";" .. name] = nil
-	end
-	frame[id] = del(bars)
-	
+
+	control.id = nil
+	frame[id] = control:Delete()
 	return true
 end
 
@@ -55,103 +43,66 @@ end
 -- @param frame the Unit Frame to update
 -- @usage local update_layout = MyModule:UpdateStatusBar(frame)
 -- @return whether the update requires :UpdateLayout to be called
-function StatusBarProviderModule:UpdateFrame(frame)
+function StatusBarModule:UpdateFrame(frame)
 	--@alpha@
 	expect(frame, 'typeof', 'frame')
 	--@end-alpha@
 	
-	local layout_db = self:GetLayoutDB(frame)
-	if not next(layout_db.elements) then
+	local value, extra = self:CallValueFunction(frame)
+	if not value then
 		return self:ClearFrame(frame)
 	end
 	
-	local bars = frame[self.id]
-	if not bars then
-		bars = new()
-		frame[self.id] = bars
+	local id = self.id
+	local control = frame[id]
+	local made_control = not control
+	if made_control then
+		control = PitBull4.Controls.MakeBetterStatusBar(frame)
+		frame[id] = control
+		control.id = id
 	end
 	
-	local changed = false
-	
-	-- get rid of any bars not in the db
-	for name, bar in pairs(bars) do
-		if not rawget(layout_db.elements, name) then
-			bar.db = nil
-			bars[name] = bar:Delete()
-			frame[self.id .. ";" .. name] = nil
-			changed = true
-		end
+	local layout_db = self:GetLayoutDB(frame)
+	local texture
+	if LibSharedMedia then
+		texture = LibSharedMedia:Fetch("statusbar", layout_db.texture or frame.layout_db.bar_texture or "Blizzard")
 	end
+	control:SetTexture(texture or [[Interface\TargetingFrame\UI-StatusBar]])
 	
-	-- create or update bars
-	for name, bar_db in pairs(layout_db.elements) do
-		local bar = bars[name]
-		
-		local value, extra = self:CallValueFunction(frame, bar_db)
-		if not value then
-			if bar then
-				bar.db = nil
-				bars[name] = bar:Delete()
-				frame[self.id .. ";" .. name] = nil
-				changed = true
-			end
-		else
-			if not bar then
-				bar = PitBull4.Controls.MakeBetterStatusBar(frame)
-				bars[name] = bar
-				frame[self.id .. ";" .. name] = bar
-				bar.db = bar_db
-				changed = true
-			end
-			
-			local texture
-			if LibSharedMedia then
-				texture = LibSharedMedia:Fetch("statusbar", bar_db.texture or frame.layout_db.bar_texture or "Blizzard")
-			end
-			bar:SetTexture(texture or [[Interface\TargetingFrame\UI-StatusBar]])
-			bar:SetValue(value)
-			
-			local r, g, b, a = self:CallColorFunction(frame, bar_db, value, extra or 0)
-			bar:SetColor(r, g, b)
-			bar:SetAlpha(a)
-			
-			if extra then
-				bar:SetExtraValue(extra)
+	control:SetValue(value)
+	local r, g, b, a = self:CallColorFunction(frame, value, extra or 0)
+	control:SetColor(r, g, b)
+	control:SetAlpha(a)
 
-				local r, g, b, a = self:CallExtraColorFunction(frame, bar_db, value, extra)
-				bar:SetExtraColor(r, g, b)
-				bar:SetExtraAlpha(a)
-			else
-				bar:SetExtraValue(0)
-			end
-		end
+	if extra then
+		control:SetExtraValue(extra)
+		
+		local r, g, b, a = self:CallExtraColorFunction(frame, value, extra)
+		control:SetExtraColor(r, g, b)
+		control:SetExtraAlpha(a)
+	else
+		control:SetExtraValue(0)
 	end
 	
-	if next(bars) == nil then
-		frame[self.id] = del(bars)
-		bars = nil
-	end
-	
-	return changed
+	return made_control
 end
 
 --- Call the :GetValue function on the status bar module regarding the given frame.
 -- @param frame the frame to get the value of
--- @param bar_db the layout db for the specific bar
 -- @usage local value, extra = MyModule:CallValueFunction(someFrame)
 -- @return nil or a number within [0, 1]
 -- @return nil or a number within (0, 1 - value]
-function StatusBarProviderModule:CallValueFunction(frame, bar_db)
+function StatusBarModule:CallValueFunction(frame)
 	if not self.GetValue then
 		return nil, nil
 	end
 	local value, extra
 	if frame.guid then
-		value, extra = self:GetValue(frame, bar_db)
+		value, extra = self:GetValue(frame)
 	end
 	
 	if not value and PitBull4.config_mode and self.GetExampleValue then
-		value, extra = self:GetExampleValue(frame, bar_db)
+		value, extra = self:GetExampleValue(frame)
 	end
 	if not value then
 		return nil, nil
@@ -176,7 +127,6 @@ end
 --- Call the :GetColor function on the status bar module regarding the given frame.
 --- Call the color function which the current status bar module has registered regarding the given frame.
 -- @param frame the frame to get the color of
--- @param bar_db the layout db for the specific bar
 -- @param value the value as returned by :CallValueFunction
 -- @param extra the extra value as returned by :CallValueFunction
 -- @usage local r, g, b, a = MyModule:CallColorFunction(someFrame)
@@ -184,8 +134,9 @@ end
 -- @return green value within [0, 1]
 -- @return blue value within [0, 1]
 -- @return alpha value within [0, 1]
-function StatusBarProviderModule:CallColorFunction(frame, bar_db, value, extra)
-	local custom_color = bar_db.custom_color
+function StatusBarModule:CallColorFunction(frame, value, extra)
+	local layout_db = self:GetLayoutDB(frame)
+	local custom_color = layout_db.custom_color
 	if custom_color then
 		return unpack(custom_color)
 	end
@@ -193,9 +144,9 @@ function StatusBarProviderModule:CallColorFunction(frame, bar_db, value, extra)
 	if not self.GetColor then
 		return 0.7, 0.7, 0.7, 1
 	end
-	local r, g, b, a = self:GetColor(frame, bar_db, value, extra)
+	local r, g, b, a = self:GetColor(frame, value, extra)
 	if (not r or not g or not b) and PitBull4.config_mode and self.GetExampleColor then
-		r, g, b, a = self:GetExampleColor(frame, bar_db, value, extra)
+		r, g, b, a = self:GetExampleColor(frame, value, extra)
 	end
 	if not r or not g or not b then
 		return 0.7, 0.7, 0.7, a or 1
@@ -206,7 +157,6 @@ end
 --- Call the :GetExtraColor function on the status bar module regarding the given frame.
 --- Call the color function which the current status bar module has registered regarding the given frame.
 -- @param frame the frame to get the color of
--- @param bar_db the layout db for the specific bar
 -- @param value the value as returned by :CallValueFunction
 -- @param extra the extra value as returned by :CallValueFunction
 -- @usage local r, g, b, a = MyModule:CallColorFunction(someFrame)
@@ -214,8 +164,9 @@ end
 -- @return green value within [0, 1]
 -- @return blue value within [0, 1]
 -- @return alpha value within [0, 1] or nil
-function StatusBarProviderModule:CallExtraColorFunction(frame, bar_db, value, extra)
-	local custom_color = bar_db.custom_color
+function StatusBarModule:CallExtraColorFunction(frame, value, extra)
+	local layout_db = self:GetLayoutDB(frame)
+	local custom_color = layout_db.custom_color
 	if custom_color then
 		local r, g, b, a = custom_color
 		return (1 + 2*r) / 3, (1 + 2*g) / 3, (1 + 2*b) / 3, a

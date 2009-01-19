@@ -355,13 +355,13 @@ function PitBull4.Options.get_layout_editor_text_options()
 			
 			t["root"] = L["Unit frame"]
 			
-			for id, module in PitBull4:IterateModulesOfType("status_bar") do
+			for id, module in PitBull4:IterateModulesOfType("bar") do
 				if GetLayoutDB(module).enabled then
 					t[id] = module.name
 				end
 			end
 			
-			for id, module in PitBull4:IterateModulesOfType("status_bar_provider") do
+			for id, module in PitBull4:IterateModulesOfType("bar_provider") do
 				local db = GetLayoutDB(module)
 				if db.enabled then
 					for name in pairs(db.elements) do

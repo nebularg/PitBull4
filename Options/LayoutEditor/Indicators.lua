@@ -309,13 +309,13 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			
 			t["root"] = L["Unit frame"]
 			
-			for id, module in PitBull4:IterateModulesOfType("status_bar") do
+			for id, module in PitBull4:IterateModulesOfType("bar") do
 				if GetLayoutDB(module).enabled then
 					t[id] = module.name
 				end
 			end
 			
-			for id, module in PitBull4:IterateModulesOfType("status_bar_provider") do
+			for id, module in PitBull4:IterateModulesOfType("bar_provider") do
 				local db = GetLayoutDB(module)
 				if db.enabled then
 					for name in pairs(db.elements) do
@@ -369,7 +369,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			local side = db.side
 			local t = {}
 			local sort = {}
-			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar", "icon", "custom_indicator") do
+			for other_id, other_module in PitBull4:IterateModulesOfType("bar", "icon", "custom_indicator") do
 				local other_db = GetLayoutDB(other_id)
 				if side == other_db.side and other_db.enabled then
 					local position = other_db.position
@@ -381,7 +381,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 					sort[#sort+1] = position
 				end
 			end
-			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar_provider") do
+			for other_id, other_module in PitBull4:IterateModulesOfType("bar_provider") do
 				local other_db = GetLayoutDB(other_id)
 				if other_db.enabled then
 					for name, bar_db in pairs(other_db.elements) do
@@ -419,7 +419,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			
 			local old_position = db.position
 			
-			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar", "icon", "custom_indicator", true) do
+			for other_id, other_module in PitBull4:IterateModulesOfType("bar", "icon", "custom_indicator", true) do
 				local other_db = GetLayoutDB(other_id)
 				if other_db.side then
 					id_to_position[other_id] = other_db.position
@@ -427,7 +427,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 				end
 			end
 			
-			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar_provider", true) do
+			for other_id, other_module in PitBull4:IterateModulesOfType("bar_provider", true) do
 				for name, bar_db in pairs(GetLayoutDB(other_id).elements) do
 					local joined_id = other_id .. ";" .. name
 					id_to_position[joined_id] = bar_db.position

@@ -9,7 +9,7 @@ local L = PitBull4.L
 
 local PitBull4_ThreatBar = PitBull4:NewModule("ThreatBar", "AceEvent-3.0")
 
-PitBull4_ThreatBar:SetModuleType("status_bar")
+PitBull4_ThreatBar:SetModuleType("bar")
 PitBull4_ThreatBar:SetName(L["Threat bar"])
 PitBull4_ThreatBar:SetDescription(L["Show a threat bar."])
 PitBull4_ThreatBar:SetDefaults({

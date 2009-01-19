@@ -9,7 +9,7 @@ local L = PitBull4.L
 
 local PitBull4_BlankSpace = PitBull4:NewModule("BlankSpace")
 
-PitBull4_BlankSpace:SetModuleType("status_bar_provider")
+PitBull4_BlankSpace:SetModuleType("bar_provider")
 PitBull4_BlankSpace:SetName(L["Blank space"])
 PitBull4_BlankSpace:SetDescription(L["Provide empty bars for spacing."])
 PitBull4_BlankSpace:SetDefaults({
