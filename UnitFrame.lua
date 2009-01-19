@@ -5,6 +5,7 @@ local PitBull4 = _G.PitBull4
 
 local MODULE_UPDATE_ORDER = {
 	"bar",
+	"custom_bar",
 	"bar_provider",
 	"icon",
 	"custom_indicator",
