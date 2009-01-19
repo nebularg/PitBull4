@@ -77,6 +77,7 @@ PitBull4_Aura:SetDefaults({
 			reverse = false,
 			row_spacing = 0,
 			col_spacing = 0,
+			new_row_size = false,
 		},
 		debuff = {
 			size = 16,
@@ -94,6 +95,7 @@ PitBull4_Aura:SetDefaults({
 			reverse = false,
 			col_spacing = 0,
 			row_spacing = 0,
+			new_row_size = false,
 		},
 	},
 },
@@ -599,6 +601,14 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				max = 10,
 				step = 1,
 				order = 52,
+			},
+			new_row_size = {
+				type = 'toggle',
+				name = L['New row on resize'],
+				desc = L['Start a new row whenever the size of the aura changes.'],
+				get = get_layout,
+				set = set_layout,
+				order = 53,
 			},
 		},
 	}

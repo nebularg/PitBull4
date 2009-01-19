@@ -80,6 +80,9 @@ function layout_auras(frame, db, is_buff)
 	-- Current height of the row
 	local row = 0
 
+	-- Previous width on this row
+	local prev_width
+
 	-- Convert the percent based width to a fixed width
 	if width_type == 'percent' then
 		local side_width
@@ -139,12 +142,19 @@ function layout_auras(frame, db, is_buff)
 				x = 0
 				y = y + row
 				row = new_height
+				prev_width = nil -- no prev_width on this row
 			else
 				-- We were already on the first
 				-- aura of the row.  So don't display
 				-- anything for this aura.
 				display = false
 			end
+		elseif cfg.new_row_size and prev_width and new_width ~= prev_width then
+			-- Size changed so jump to new row
+			x = 0
+			y = y + row
+			row = new_height
+			prev_width = nil
 		end
 
 		if display then
@@ -159,6 +169,9 @@ function layout_auras(frame, db, is_buff)
 
 			-- spacing for the next aura
 			x = x + new_width
+
+			-- Save the last width
+			prev_width = new_width
 
 			-- Set the row height
 			if row < new_height then
