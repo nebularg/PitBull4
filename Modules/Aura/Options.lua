@@ -10,11 +10,11 @@ local L = PitBull4.L
 local color_defaults = {
 	friend = {
 		my = {0, 1, 0, 1},
-		other = {1, 0, 0, 1}
+		other = {1, 0, 0, 1},
 	},
 	weapon = {
 		weapon = {1, 0, 0, 1},
-		quality_color = true
+		quality_color = true,
 	},
 	enemy = {
 		Poison = {0, 1, 0, 1},
@@ -23,7 +23,7 @@ local color_defaults = {
 		Curse = {5, 0, 5, 1},
 		Enrage = {1, .55, 0, 1},
 		["nil"] = {1, 0, 0, 1},
-	}
+	},
 }
 
 PitBull4_Aura:SetDefaults({
@@ -44,21 +44,21 @@ PitBull4_Aura:SetDefaults({
 		my_debuffs = true,
 		other_buffs = true,
 		other_debuffs = true,
-		weapon_buffs = true
+		weapon_buffs = true,
 	},
 	cooldown_text = {
 		my_buffs = false,
 		my_debuffs = false,
 		other_buffs = false,
 		other_debuffs = false,
-		weapon_buffs = false
+		weapon_buffs = false,
 	},
 	border = {
 		my_buffs = true,
 		my_debuffs = true,
 		other_buffs = true,
 		other_debuffs = true,
-		weapon_buffs = true
+		weapon_buffs = true,
 	},
 	layout = {
 		buff = {
@@ -111,7 +111,7 @@ local anchor_values = {
 	BOTTOMLEFT_BOTTOM  = L['Bottom-left on bottom'],
 	BOTTOMRIGHT_BOTTOM = L['Bottom-right on bottom'],
 	BOTTOMLEFT_LEFT    = L['Bottom-left on left'],
-	BOTTOMRIGHT_RIGHT  = L['Bottom-right on right']
+	BOTTOMRIGHT_RIGHT  = L['Bottom-right on right'],
 }
 
 local growth_values = {
@@ -122,12 +122,12 @@ local growth_values = {
 	up_left    = L["Up then left"],
 	up_right   = L["Up then right"],
 	down_left  = L["Down then left"],
-	down_right = L["Down then right"]
+	down_right = L["Down then right"],
 }
 
 local width_type_values = {
 	percent = L['Percentage of side'],
-	fixed   = L['Fixed size']
+	fixed   = L['Fixed size'],
 }
 
 local show_when_values = {
@@ -135,7 +135,7 @@ local show_when_values = {
 	my_debuffs = L['My own debuffs'],
 	other_buffs = L["Others' buffs"],
 	other_debuffs = L["Others' debuffs"],
-	weapon_buffs = L["Weapon buffs"]
+	weapon_buffs = L["Weapon buffs"],
 }
 
 -- table to decide if the width option is actuually
@@ -144,7 +144,7 @@ local is_height = {
 	down_right = true,
 	down_left  = true,
 	up_right   = true,
-	up_left    = true
+	up_left    = true,
 }
 
 PitBull4_Aura:SetColorOptionsFunction(function(self)
@@ -170,7 +170,7 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 				desc = L['Color for own buffs.'],
 				get = get,
 				set = set,
-				order = 0
+				order = 0,
 			},
 			other = {
 				type = 'color',
@@ -178,9 +178,9 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 				desc = L["Color of others' buffs."],
 				get = get,
 				set = set,
-				order = 1
-			}
-		}
+				order = 1,
+			},
+		},
 	},
 	'weapon', {
 		type = 'group',
@@ -196,7 +196,7 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 				disabled = function(info)
 					return self.db.profile.global.colors.weapon.quality_color
 				end,
-				order = 3
+				order = 3,
 			},
 			quality_color = {
 				type = 'toggle',
@@ -210,7 +210,7 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 					self:UpdateAll()
 				end,
 			},
-		}
+		},
 
 	},
 	'enemy', {
@@ -224,7 +224,7 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 				desc = L["Color for poison."],
 				get = get,
 				set = set,
-				order = 0
+				order = 0,
 			},
 			Magic = {
 				type = 'color',
@@ -232,7 +232,7 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 				desc = L["Color for magic."],
 				get = get,
 				set = set,
-				order = 1
+				order = 1,
 			},
 			Disease = {
 				type = 'color',
@@ -240,7 +240,7 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 				desc = L["Color for disease."],
 				get = get,
 				set = set,
-				order = 2
+				order = 2,
 			},
 			Curse = {
 				type = 'color',
@@ -248,7 +248,7 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 				desc = L["Color for curse."],
 				get = get,
 				set = set,
-				order = 3
+				order = 3,
 			},
 			Enrage = {
 				type = 'color',
@@ -256,7 +256,7 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 				desc = L["Color for enrage."],
 				get = get,
 				set = set,
-				order = 4
+				order = 4,
 			},
 			["nil"] = {
 				type = 'color',
@@ -264,9 +264,9 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 				desc = L["Color for other auras without a type."],
 				get = get,
 				set = sett,
-				order = 5
-			}
-		}
+				order = 5,
+			},
+		},
 	}, function(info)
 		-- reset_default_colors
 		local db = self.db.profile.global.colors
@@ -369,7 +369,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				min = 4,
 				max = 48,
 				step = 1,
-				order = 0
+				order = 0,
 			},
 			my_size = {
 				type = 'range',
@@ -381,7 +381,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				min = 4,
 				max = 48,
 				step = 1,
-				order = 1
+				order = 1,
 			},
 			break_1 = {
 				type = 'header',
@@ -452,7 +452,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get_layout,
 				set = set_layout,
 				disabled = is_aura_disabled,
-				order = 31
+				order = 31,
 			},
 			reverse = {
 				type = 'toggle',
@@ -588,8 +588,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				max = 10,
 				step = 1,
 				order = 52,
-			}
-		}
+			},
+		},
 	}
 	return 	true, 'display', {
 		type = 'group',
@@ -602,7 +602,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get,
 				set = set,
 				disabled = is_aura_disabled,
-				order = 0
+				order = 0,
 			},
 			enabled_weapons = {
 				type = 'toggle',
@@ -616,7 +616,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				disabled = function(info)
 					return is_aura_disabled(info) or not PitBull4.Options.GetLayoutDB(self).enabled_buffs
 				end,
-				order = 1
+				order = 1,
 			},
 			enabled_debuffs = {
 				type = 'toggle',
@@ -625,7 +625,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get,
 				set = set,
 				disabled = is_aura_disabled,
-				order = 2
+				order = 2,
 			},
 			max = {
 				type = 'group',
@@ -643,7 +643,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 						min = 1,
 						max = 80,
 						step = 1,
-						order = 0
+						order = 0,
 					},
 					max_debuffs = {
 						type = 'range',
@@ -655,9 +655,9 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 						min = 1,
 						max = 80,
 						step = 1,
-						order = 1
+						order = 1,
 					},
-				}
+				},
 			},
 			border = {
 				type = 'multiselect',
@@ -667,7 +667,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get_multi,
 				set = set_multi,
 				disabled = is_aura_disabled,
-				order = 5
+				order = 5,
 			},
 			cooldown = {
 				type = 'multiselect',
@@ -677,7 +677,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get_multi,
 				set = set_multi,
 				disabled = is_aura_disabled,
-				order = 6
+				order = 6,
 			},
 			cooldown_text = {
 				type = 'multiselect',
@@ -687,7 +687,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get_multi,
 				set = set_multi,
 				disabled = is_aura_disabled,
-				order = 7
+				order = 7,
 			},
 			zoom_aura = {
 				type = 'toggle',
@@ -696,9 +696,9 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get,
 				set = set,
 				disabled = is_aura_disabled,
-				order = 8
+				order = 8,
 			},
-		}
+		},
 	},
 	'buff', layout,
 	'debuff', layout

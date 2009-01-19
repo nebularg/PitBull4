@@ -31,7 +31,7 @@ local set_direction_point = {
 	end,
 	down_right = function(ctrl, pnt, frame, anchor, x, y, o_x, o_y)
 		ctrl:SetPoint(pnt, frame, anchor, y + o_x, -x + o_y)
-	end
+	end,
 }
 
 local get_control_point = {
@@ -42,7 +42,7 @@ local get_control_point = {
 	BOTTOMLEFT_BOTTOM  = 'TOPLEFT',
 	BOTTOMRIGHT_BOTTOM = 'TOPRIGHT',
 	BOTTOMLEFT_LEFT    = 'BOTTOMRIGHT',
-	BOTTOMRIGHT_RIGHT  = 'BOTTOMLEFT'
+	BOTTOMRIGHT_RIGHT  = 'BOTTOMLEFT',
 }
 
 local grow_vert_first = {
