@@ -63,6 +63,7 @@ PitBull4_Aura:SetDefaults({
 	layout = {
 		buff = {
 			size = 16,
+			my_size = 16,
 			anchor = "BOTTOMLEFT",
 			side = "BOTTOM",
 			offset_x = 0,
@@ -78,6 +79,7 @@ PitBull4_Aura:SetDefaults({
 		},
 		debuff = {
 			size = 16,
+			my_size = 16,
 			anchor = "BOTTOMRIGHT",
 			side = "BOTTOM",
 			offset_x = 0,
@@ -369,6 +371,23 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				step = 1,
 				order = 0 
 			},
+			my_size = {
+				type = 'range',
+				name = L['Icon size for my auras'],
+				desc = L['Set size of icons of auras cast by me.'],
+				get = get_layout,
+				set = set_layout,
+				disabled = is_aura_disabled, 
+				min = 4,
+				max = 48,
+				step = 1,
+				order = 1 
+			},
+			break_1 = {
+				type = 'header',
+				name = '', 
+				order = 10,
+			},
 			anchor = {
 				-- Anchor option actually sets 2 values, we do the split here so we don't have to do it in a more time sensitive place
 				type = 'select',
@@ -378,7 +397,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				set = set_layout_anchor,
 				disabled = is_aura_disabled, 
 				values = anchor_values,
-				order = 1,
+				order = 11,
 			},
 			growth = {
 				type = 'select',
@@ -388,7 +407,12 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				set = set_layout, 
 				disabled = is_aura_disabled,
 				values = growth_values,
-				order = 2
+				order = 12, 
+			},
+			break_2 = {
+				type = 'header',
+				name = '', 
+				order = 20,
 			},
 			offset_x = {
 				type = 'range',
@@ -401,7 +425,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				max = 200,
 				step = 1,
 				bigStep = 5,
-				order = 3,
+				order = 21,
 			},
 			offset_y = {
 				type = 'range',
@@ -414,7 +438,12 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				max = 200,
 				step = 1,
 				bigStep = 5,
-				order = 4,
+				order = 22,
+			},
+			break_3 = {
+				type = 'header',
+				name = '', 
+				order = 30,
 			},
 			sort = {
 				type = 'toggle',
@@ -423,7 +452,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get_layout,
 				set = set_layout,
 				disabled = is_aura_disabled,
-				order = 5
+				order = 31 
 			},
 			reverse = {
 				type = 'toggle',
@@ -432,7 +461,12 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get_layout, 
 				set = set_layout, 
 				disabled = is_aura_disabled,
-				order = 6,
+				order = 32,
+			},
+			break_4 = {
+				type = 'header',
+				name = '', 
+				order = 40,
 			},
 			width_type = {
 				type = 'select',
@@ -458,7 +492,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				set = set_layout, 
 				disabled = is_aura_disabled,
 				values = width_type_values,
-				order = 7,
+				order = 41,
 			},
 			width = {
 				type = 'range',
@@ -491,7 +525,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				max = 400,
 				step = 1,
 				bigStep = 5,
-				order = 8,
+				order = 42,
 			},
 			width_percent = {
 				type = 'range',
@@ -524,7 +558,12 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				max = 1.0,
 				step = 0.01,
 				isPercent = true,
-				order = 9,
+				order = 42,
+			},
+			break_5 = {
+				type = 'header',
+				name = '', 
+				order = 50,
 			},
 			row_spacing = {
 				type = 'range',
@@ -536,7 +575,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				min = 0,
 				max = 10,
 				step = 1,
-				order = 10,
+				order = 51,
 			},
 			col_spacing = {
 				type = 'range',
@@ -548,7 +587,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				min = 0,
 				max = 10,
 				step = 1,
-				order = 11,
+				order = 52,
 			}
 		}
 	}

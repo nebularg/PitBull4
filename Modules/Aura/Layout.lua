@@ -65,7 +65,8 @@ function layout_auras(frame, db, is_buff)
 
 	-- Grab our config vars to avoid repeated table lookups
 	local offset_x, offset_y = cfg.offset_x, cfg.offset_y
-	local size = cfg.size
+	local other_size = cfg.size
+	local my_size = cfg.my_size
 	local anchor = cfg.anchor
 	local side = cfg.side
 	local point = get_control_point[anchor..'_'..side]
@@ -76,7 +77,7 @@ function layout_auras(frame, db, is_buff)
 	-- Our current position to place the control
 	local x, y = 0, 0 
 
-	-- Current width of the row
+	-- Current height of the row
 	local row = 0
 
 	-- Convert the percent based width to a fixed width
@@ -112,40 +113,49 @@ function layout_auras(frame, db, is_buff)
 		local control = list[i]
 		local display = true 
 
+		local size = control.is_mine and my_size or other_size
 
 		-- Calculate the width and height of this aura
 		local new_width = size + col_spacing
 		local new_height = size + row_spacing
 
 		-- Calculate if we need to go to the next column
-		local width_left = width - row
-		if width_left < new_width then
+		-- width - x is the room left
+		-- new_width is how much room we need
+		-- We don't test for less than because they are
+		-- floats and there is likely to be a certain amount
+		-- of error when we do arithemtic on a float
+		if (width - x - new_width) < -.0000001 then
 			if x ~= 0 then
 				-- Jump to the next column
 				x = 0
-				row = 0
-				y = y + new_height
+				y = y + row
+				row = new_height
 			else
 				-- We were already on the first
 				-- aura of the row.  So don't display 
 				-- anything for this aura.
 				display = false	
 			end
-		elseif i~= start_list then
-			x = x + new_width
 		end
 
 		if display then
 			control:SetWidth(size)
 			control:SetHeight(size)
 
-			-- Set the row size
-			row = row + new_width
 
 			control:ClearAllPoints()
 			set_direction_point[growth](control, point, frame, anchor, x, y, offset_x, offset_y)
 
 			control:Show()
+			
+			-- spacing for the next aura
+			x = x + new_width
+
+			-- Set the row height 
+			if row < new_height then
+				row = new_height 
+			end
 		else
 			control:Hide()
 		end
