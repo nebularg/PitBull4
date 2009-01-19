@@ -775,6 +775,9 @@ function PitBull4:OnInitialize()
 	-- used for run-once-only initialization
 	self:RegisterEvent("ADDON_LOADED")
 	self:ADDON_LOADED()
+	
+	LoadAddOn("LibDataBroker-1.1")
+	LoadAddOn("LibDBIcon-1.0")
 end
 
 function PitBull4:ADDON_LOADED()
@@ -782,19 +785,19 @@ function PitBull4:ADDON_LOADED()
 	if LibDataBroker and not PitBull4.LibDataBrokerLauncher then
 		PitBull4.LibDataBrokerLauncher = LibDataBroker:NewDataObject("PitBull4", {
 			type = "launcher",
-			icon = [[Interface\Icons\Ability_Hunter_BeastTraining]],
+			icon = [[Interface\AddOns\PitBull4\pitbull]],
 			OnClick = function(clickedframe, button)
 				if button == "RightButton" then 
-					return PitBull4.Options.OpenConfig() 
-				else 
 					PitBull4.db.profile.lock_movement = not PitBull4.db.profile.lock_movement
 					LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
+				else 
+					return PitBull4.Options.OpenConfig() 
 				end
 			end,
 			OnTooltipShow = function(tt)
 				tt:AddLine(L["PitBull Unit Frames 4.0"])
-				tt:AddLine(L["Click|r to toggle frame lock"], 1, 1, 1)
-				tt:AddLine(L["Right-click|r to open the options menu"], 1, 1, 1)
+				tt:AddLine("|cffffff00" .. L["%s|r to toggle frame lock"]:format(L["Click"]), 1, 1, 1)
+				tt:AddLine("|cffffff00" .. L["%s|r to open the options menu"]:format(L["Right-click"]), 1, 1, 1)
 			end,
 		})
 	end
