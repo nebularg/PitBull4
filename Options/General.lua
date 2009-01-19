@@ -22,7 +22,7 @@ function PitBull4.Options.get_general_options()
 		'minimap_icon', {
 			type = 'toggle',
 			name = L["Minimap icon"],
-			desc = L["Show a minimap icon"],
+			desc = L["Show an icon on the minimap to open the PitBull config."],
 			get = function(info)
 				return not PitBull4.db.profile.minimap_icon.hide
 			end,
