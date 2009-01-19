@@ -1,7 +1,7 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
-local StatusBarModule = PitBull4:NewModuleType("bar", {
+local BarModule = PitBull4:NewModuleType("bar", {
 	size = 2,
 	reverse = false,
 	deficit = false,
@@ -23,7 +23,7 @@ end
 -- @param frame the Unit Frame to clear
 -- @usage local update_layout = MyModule:ClearFrame(frame)
 -- @return whether the update requires :UpdateLayout to be called
-function StatusBarModule:ClearFrame(frame)
+function BarModule:ClearFrame(frame)
 	--@alpha@
 	expect(frame, 'typeof', 'frame')
 	--@end-alpha@
@@ -43,7 +43,7 @@ end
 -- @param frame the Unit Frame to update
 -- @usage local update_layout = MyModule:UpdateStatusBar(frame)
 -- @return whether the update requires :UpdateLayout to be called
-function StatusBarModule:UpdateFrame(frame)
+function BarModule:UpdateFrame(frame)
 	--@alpha@
 	expect(frame, 'typeof', 'frame')
 	--@end-alpha@
@@ -92,7 +92,7 @@ end
 -- @usage local value, extra = MyModule:CallValueFunction(someFrame)
 -- @return nil or a number within [0, 1]
 -- @return nil or a number within (0, 1 - value]
-function StatusBarModule:CallValueFunction(frame)
+function BarModule:CallValueFunction(frame)
 	if not self.GetValue then
 		return nil, nil
 	end
@@ -134,7 +134,7 @@ end
 -- @return green value within [0, 1]
 -- @return blue value within [0, 1]
 -- @return alpha value within [0, 1]
-function StatusBarModule:CallColorFunction(frame, value, extra)
+function BarModule:CallColorFunction(frame, value, extra)
 	local layout_db = self:GetLayoutDB(frame)
 	local custom_color = layout_db.custom_color
 	if custom_color then
@@ -164,7 +164,7 @@ end
 -- @return green value within [0, 1]
 -- @return blue value within [0, 1]
 -- @return alpha value within [0, 1] or nil
-function StatusBarModule:CallExtraColorFunction(frame, value, extra)
+function BarModule:CallExtraColorFunction(frame, value, extra)
 	local layout_db = self:GetLayoutDB(frame)
 	local custom_color = layout_db.custom_color
 	if custom_color then

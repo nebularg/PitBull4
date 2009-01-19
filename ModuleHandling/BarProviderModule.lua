@@ -1,7 +1,7 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
-local StatusBarProviderModule = PitBull4:NewModuleType("bar_provider", {
+local BarProviderModule = PitBull4:NewModuleType("bar_provider", {
 	enabled = true,
 	elements = {
 		['**'] = {
@@ -30,7 +30,7 @@ end
 -- @param frame the Unit Frame to clear
 -- @usage local update_layout = MyModule:ClearFrame(frame)
 -- @return whether the update requires :UpdateLayout to be called
-function StatusBarProviderModule:ClearFrame(frame)
+function BarProviderModule:ClearFrame(frame)
 	--@alpha@
 	expect(frame, 'typeof', 'frame')
 	--@end-alpha@
@@ -55,7 +55,7 @@ end
 -- @param frame the Unit Frame to update
 -- @usage local update_layout = MyModule:UpdateStatusBar(frame)
 -- @return whether the update requires :UpdateLayout to be called
-function StatusBarProviderModule:UpdateFrame(frame)
+function BarProviderModule:UpdateFrame(frame)
 	--@alpha@
 	expect(frame, 'typeof', 'frame')
 	--@end-alpha@
@@ -141,7 +141,7 @@ end
 -- @usage local value, extra = MyModule:CallValueFunction(someFrame)
 -- @return nil or a number within [0, 1]
 -- @return nil or a number within (0, 1 - value]
-function StatusBarProviderModule:CallValueFunction(frame, bar_db)
+function BarProviderModule:CallValueFunction(frame, bar_db)
 	if not self.GetValue then
 		return nil, nil
 	end
@@ -184,7 +184,7 @@ end
 -- @return green value within [0, 1]
 -- @return blue value within [0, 1]
 -- @return alpha value within [0, 1]
-function StatusBarProviderModule:CallColorFunction(frame, bar_db, value, extra)
+function BarProviderModule:CallColorFunction(frame, bar_db, value, extra)
 	local custom_color = bar_db.custom_color
 	if custom_color then
 		return unpack(custom_color)
@@ -214,7 +214,7 @@ end
 -- @return green value within [0, 1]
 -- @return blue value within [0, 1]
 -- @return alpha value within [0, 1] or nil
-function StatusBarProviderModule:CallExtraColorFunction(frame, bar_db, value, extra)
+function BarProviderModule:CallExtraColorFunction(frame, bar_db, value, extra)
 	local custom_color = bar_db.custom_color
 	if custom_color then
 		local r, g, b, a = custom_color
