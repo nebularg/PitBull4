@@ -9,7 +9,7 @@ local L = PitBull4.L
 
 local PitBull4_LeaderIcon = PitBull4:NewModule("LeaderIcon", "AceEvent-3.0", "AceTimer-3.0")
 
-PitBull4_LeaderIcon:SetModuleType("icon")
+PitBull4_LeaderIcon:SetModuleType("indicator")
 PitBull4_LeaderIcon:SetName(L["Leader icon"])
 PitBull4_LeaderIcon:SetDescription(L["Show an icon on the unit frame when the unit is the group leader."])
 PitBull4_LeaderIcon:SetDefaults({

@@ -9,7 +9,7 @@ local L = PitBull4.L
 
 local PitBull4_CombatIcon = PitBull4:NewModule("CombatIcon", "AceTimer-3.0")
 
-PitBull4_CombatIcon:SetModuleType("icon")
+PitBull4_CombatIcon:SetModuleType("indicator")
 PitBull4_CombatIcon:SetName(L["Combat icon"])
 PitBull4_CombatIcon:SetDescription(L["Show an icon based on whether or not the unit is in combat."])
 PitBull4_CombatIcon:SetDefaults({

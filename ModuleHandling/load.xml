@@ -6,10 +6,9 @@
 <Script file="BarModule.lua"/>
 <Script file="BarProviderModule.lua"/>
 <Script file="CustomModule.lua"/>
-<Script file="CustomIndicatorModule.lua"/>
 <Script file="CustomTextModule.lua"/>
 <Script file="FaderModule.lua"/>
-<Script file="IconModule.lua"/>
+<Script file="IndicatorModule.lua"/>
 <Script file="TextProviderModule.lua"/>
 
 </Ui>

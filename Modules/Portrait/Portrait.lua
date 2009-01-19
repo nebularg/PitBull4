@@ -22,7 +22,7 @@ local L = PitBull4.L
 
 local PitBull4_Portrait = PitBull4:NewModule("Portrait", "AceEvent-3.0")
 
-PitBull4_Portrait:SetModuleType("icon")
+PitBull4_Portrait:SetModuleType("indicator")
 PitBull4_Portrait:SetName(L["Portrait"])
 PitBull4_Portrait:SetDescription(L["Show a portrait of the unit."])
 PitBull4_Portrait:SetDefaults({

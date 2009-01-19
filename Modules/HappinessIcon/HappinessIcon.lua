@@ -9,7 +9,7 @@ local L = PitBull4.L
 
 local PitBull4_HappinessIcon = PitBull4:NewModule("HappinessIcon", "AceEvent-3.0")
 
-PitBull4_HappinessIcon:SetModuleType("icon")
+PitBull4_HappinessIcon:SetModuleType("indicator")
 PitBull4_HappinessIcon:SetName(L["Happiness icon"])
 PitBull4_HappinessIcon:SetDescription(L["Show an icon on the pet frame to indicate its happiness."])
 PitBull4_HappinessIcon:SetDefaults({

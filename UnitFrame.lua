@@ -6,7 +6,7 @@ local PitBull4 = _G.PitBull4
 local MODULE_UPDATE_ORDER = {
 	"bar",
 	"bar_provider",
-	"icon",
+	"indicator",
 	"text_provider",
 	"custom_text",
 	"custom",
@@ -427,7 +427,7 @@ local iters = setmetatable({}, {__index=function(iters, module_type)
 end})
 
 --- Iterate over all controls on this frame of the given type
--- @param module_type one of "bar", "icon", "custom"
+-- @param module_type one of "bar", "indicator", "custom"
 -- @usage for id, control, module in PitBull4.IterateControlsOfType("bar") do
 --     doSomethingWith(control)
 -- end

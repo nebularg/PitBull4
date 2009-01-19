@@ -434,7 +434,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 			local location = db.location
 			local t = {}
 			local sort = {}
-			for other_id, other_module in PitBull4:IterateModulesOfType("icon", "custom_text") do
+			for other_id, other_module in PitBull4:IterateModulesOfType("indicator", "custom_text") do
 				local other_db = GetLayoutDB(other_id)
 				if attach_to == other_db.attach_to and location == other_db.location then
 					local position = other_db.position
@@ -492,7 +492,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 			
 			local old_position = db.position
 			
-			for other_id, other_module in PitBull4:IterateModulesOfType("icon", "custom_text", true) do
+			for other_id, other_module in PitBull4:IterateModulesOfType("indicator", "custom_text", true) do
 				id_to_position[other_id] = GetLayoutDB(other_id).position
 				elements[#elements+1] = other_id
 			end

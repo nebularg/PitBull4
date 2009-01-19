@@ -9,7 +9,7 @@ local L = PitBull4.L
 
 local PitBull4_RaidTargetIcon = PitBull4:NewModule("RaidTargetIcon", "AceEvent-3.0", "AceTimer-3.0")
 
-PitBull4_RaidTargetIcon:SetModuleType("icon")
+PitBull4_RaidTargetIcon:SetModuleType("indicator")
 PitBull4_RaidTargetIcon:SetName(L["Raid target icon"])
 PitBull4_RaidTargetIcon:SetDescription(L["Show an icon on the unit frame based on which Raid Target it is."])
 PitBull4_RaidTargetIcon:SetDefaults({

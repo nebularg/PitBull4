@@ -369,7 +369,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			local side = db.side
 			local t = {}
 			local sort = {}
-			for other_id, other_module in PitBull4:IterateModulesOfType("bar", "icon") do
+			for other_id, other_module in PitBull4:IterateModulesOfType("bar", "indicator") do
 				local other_db = GetLayoutDB(other_id)
 				if side == other_db.side and other_db.enabled then
 					local position = other_db.position
@@ -419,7 +419,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			
 			local old_position = db.position
 			
-			for other_id, other_module in PitBull4:IterateModulesOfType("bar", "icon", true) do
+			for other_id, other_module in PitBull4:IterateModulesOfType("bar", "indicator", true) do
 				local other_db = GetLayoutDB(other_id)
 				if other_db.side then
 					id_to_position[other_id] = other_db.position
@@ -484,7 +484,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			local location = db.location
 			local t = {}
 			local sort = {}
-			for other_id, other_module in PitBull4:IterateModulesOfType("icon", "custom_text") do
+			for other_id, other_module in PitBull4:IterateModulesOfType("indicator", "custom_text") do
 				local other_db = GetLayoutDB(other_id)
 				if attach_to == other_db.attach_to and location == other_db.location and not other_db.side then
 					local position = other_db.position
@@ -531,7 +531,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			
 			local old_position = db.position
 			
-			for other_id, other_module in PitBull4:IterateModulesOfType("icon", "custom_text", true) do
+			for other_id, other_module in PitBull4:IterateModulesOfType("indicator", "custom_text", true) do
 				local other_db = GetLayoutDB(other_id)
 				if not other_db.side then
 					id_to_position[other_id] = GetLayoutDB(other_id).position
@@ -607,7 +607,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 	
 	local layout_functions = PitBull4.Options.layout_functions
 	
-	for id, module in PitBull4:IterateModulesOfType("icon", true) do
+	for id, module in PitBull4:IterateModulesOfType("indicator", true) do
 		local args = {}
 		for k, v in pairs(indicator_args) do
 			args[k] = v

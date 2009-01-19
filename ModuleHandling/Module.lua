@@ -147,7 +147,7 @@ end
 
 --- Set the module type of the module.
 -- This should be called right after creating the module.
--- @param type one of "custom", "bar", or "icon"
+-- @param type one of "custom", "bar", or "indicator"
 -- @usage MyModule:SetModuleType("bar")
 function Module:SetModuleType(type)
 	--@alpha@
@@ -398,11 +398,11 @@ end
 
 --- Iterate over all modules of a given type.
 -- Only enabled modules will be returned unless true is provided as the last argument
--- @param ... a tuple of module types, e.g. "bar", "icon". If the last argument is true, then iterate over disabled modules also
+-- @param ... a tuple of module types, e.g. "bar", "indicator". If the last argument is true, then iterate over disabled modules also
 -- @usage for id, module in PitBull4:IterateModulesOfType("bar") do
 --     doSomethingWith(module)
 -- end
--- @usage for id, module in PitBull4:IterateModulesOfType("bar", "icon", true) do
+-- @usage for id, module in PitBull4:IterateModulesOfType("bar", "indicator", true) do
 --     doSomethingWith(module)
 -- end
 -- @return iterator which returns the id and module
