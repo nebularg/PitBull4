@@ -75,7 +75,7 @@ function layout_auras(frame, db, is_buff)
 	local row_spacing, col_spacing = cfg.row_spacing, cfg.col_spacing
 
 	-- Our current position to place the control
-	local x, y = 0, 0 
+	local x, y = 0, 0
 
 	-- Current height of the row
 	local row = 0
@@ -92,7 +92,7 @@ function layout_auras(frame, db, is_buff)
 		width_type = 'fixed'
 	end
 
-	-- Swap row and col spacing if we're growing up or down first. 
+	-- Swap row and col spacing if we're growing up or down first.
 	if grow_vert_first[growth] then
 		row_spacing, col_spacing = col_spacing, row_spacing
 	end
@@ -111,7 +111,7 @@ function layout_auras(frame, db, is_buff)
 
 	for i = start_list, end_list, step do
 		local control = list[i]
-		local display = true 
+		local display = true
 
 		local size = control.is_mine and my_size or other_size
 
@@ -133,9 +133,9 @@ function layout_auras(frame, db, is_buff)
 				row = new_height
 			else
 				-- We were already on the first
-				-- aura of the row.  So don't display 
+				-- aura of the row.  So don't display
 				-- anything for this aura.
-				display = false	
+				display = false
 			end
 		end
 
@@ -148,13 +148,13 @@ function layout_auras(frame, db, is_buff)
 			set_direction_point[growth](control, point, frame, anchor, x, y, offset_x, offset_y)
 
 			control:Show()
-			
+
 			-- spacing for the next aura
 			x = x + new_width
 
-			-- Set the row height 
+			-- Set the row height
 			if row < new_height then
-				row = new_height 
+				row = new_height
 			end
 		else
 			control:Hide()

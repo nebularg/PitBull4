@@ -118,11 +118,11 @@ local growth_values = {
 	left_up    = L["Left then up"],
 	left_down  = L["Left then down"],
 	right_up   = L["Right then up"],
-	right_down = L["Right then down"], 
-	up_left    = L["Up then left"], 
-	up_right   = L["Up then right"], 
-	down_left  = L["Down then left"], 
-	down_right = L["Down then right"] 
+	right_down = L["Right then down"],
+	up_left    = L["Up then left"],
+	up_right   = L["Up then right"],
+	down_left  = L["Down then left"],
+	down_right = L["Down then right"]
 }
 
 local width_type_values = {
@@ -156,8 +156,8 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 	local function set(info, r, g, b, a)
 		local group = info[#info - 1]
 		local id = info[#info]
-		self.db.profile.global.colors[group][id] = {r, g, b, a} 
-		self:UpdateAll()	
+		self.db.profile.global.colors[group][id] = {r, g, b, a}
+		self:UpdateAll()
 	end
 	return 'friend', {
 		type = 'group',
@@ -211,7 +211,7 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 				end,
 			},
 		}
-		
+
 	},
 	'enemy', {
 		type = 'group',
@@ -222,8 +222,8 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 				type = 'color',
 				name = L['Poison'],
 				desc = L["Color for poison."],
-				get = get, 
-				set = set, 
+				get = get,
+				set = set,
 				order = 0
 			},
 			Magic = {
@@ -246,16 +246,16 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 				type = 'color',
 				name = L['Curse'],
 				desc = L["Color for curse."],
-				get = get, 
-				set = set, 
+				get = get,
+				set = set,
 				order = 3
 			},
 			Enrage = {
 				type = 'color',
 				name = L['Enrage'],
 				desc = L["Color for enrage."],
-				get = get, 
-				set = set, 
+				get = get,
+				set = set,
 				order = 4
 			},
 			["nil"] = {
@@ -274,7 +274,7 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 			for color,color_value in pairs(group_table) do
 				if type(color_value) == "table" then
 					for i = 1, #color_value do
-						db[group][color][i] = color_value[i] 	
+						db[group][color][i] = color_value[i]
 					end
 				else
 					db[group][color] = color_value
@@ -365,11 +365,11 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				desc = L['Set size of the aura icons.'],
 				get = get_layout,
 				set = set_layout,
-				disabled = is_aura_disabled, 
+				disabled = is_aura_disabled,
 				min = 4,
 				max = 48,
 				step = 1,
-				order = 0 
+				order = 0
 			},
 			my_size = {
 				type = 'range',
@@ -377,15 +377,15 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				desc = L['Set size of icons of auras cast by me.'],
 				get = get_layout,
 				set = set_layout,
-				disabled = is_aura_disabled, 
+				disabled = is_aura_disabled,
 				min = 4,
 				max = 48,
 				step = 1,
-				order = 1 
+				order = 1
 			},
 			break_1 = {
 				type = 'header',
-				name = '', 
+				name = '',
 				order = 10,
 			},
 			anchor = {
@@ -395,7 +395,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				desc = L['Set the corner and side to start auras from.'],
 				get = get_layout_anchor,
 				set = set_layout_anchor,
-				disabled = is_aura_disabled, 
+				disabled = is_aura_disabled,
 				values = anchor_values,
 				order = 11,
 			},
@@ -404,14 +404,14 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				name = L['Growth direction'],
 				desc = L['Direction that the auras will grow.'],
 				get = get_layout,
-				set = set_layout, 
+				set = set_layout,
 				disabled = is_aura_disabled,
 				values = growth_values,
-				order = 12, 
+				order = 12,
 			},
 			break_2 = {
 				type = 'header',
-				name = '', 
+				name = '',
 				order = 20,
 			},
 			offset_x = {
@@ -419,8 +419,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				name = L['Horizontal offset'],
 				desc = L['Number of pixels to offset the auras from the start point horizontally.'],
 				get = get_layout,
-				set = set_layout, 
-				disabled = is_aura_disabled, 
+				set = set_layout,
+				disabled = is_aura_disabled,
 				min = -200,
 				max = 200,
 				step = 1,
@@ -431,9 +431,9 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				type = 'range',
 				name = L['Vertical offset'],
 				desc = L['Number of pixels to offset the auras from the start point vertically.'],
-				get = get_layout, 
-				set = set_layout, 
-				disabled = is_aura_disabled, 
+				get = get_layout,
+				set = set_layout,
+				disabled = is_aura_disabled,
 				min = -200,
 				max = 200,
 				step = 1,
@@ -442,7 +442,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			break_3 = {
 				type = 'header',
-				name = '', 
+				name = '',
 				order = 30,
 			},
 			sort = {
@@ -452,20 +452,20 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get_layout,
 				set = set_layout,
 				disabled = is_aura_disabled,
-				order = 31 
+				order = 31
 			},
 			reverse = {
 				type = 'toggle',
 				name = L['Reverse'],
 				desc = L['Reverse order in which auras are displayed.'],
-				get = get_layout, 
-				set = set_layout, 
+				get = get_layout,
+				set = set_layout,
 				disabled = is_aura_disabled,
 				order = 32,
 			},
 			break_4 = {
 				type = 'header',
-				name = '', 
+				name = '',
 				order = 40,
 			},
 			width_type = {
@@ -489,7 +489,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 					end
 				end,
 				get = get_layout,
-				set = set_layout, 
+				set = set_layout,
 				disabled = is_aura_disabled,
 				values = width_type_values,
 				order = 41,
@@ -515,8 +515,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 					end
 				end,
 				get = get_layout,
-				set = set_layout, 
-				disabled = is_aura_disabled, 
+				set = set_layout,
+				disabled = is_aura_disabled,
 				hidden = function(info)
 					local group = info[#info - 1]
 					return PitBull4.Options.GetLayoutDB(self).layout[group].width_type ~= "fixed"
@@ -562,15 +562,15 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			break_5 = {
 				type = 'header',
-				name = '', 
+				name = '',
 				order = 50,
 			},
 			row_spacing = {
 				type = 'range',
 				name = L['Row spacing'],
 				desc = L['Set the number of pixels between each row of auras.'],
-				get = get_layout, 
-				set = set_layout, 
+				get = get_layout,
+				set = set_layout,
 				disabled = is_arua_disabled,
 				min = 0,
 				max = 10,
@@ -581,7 +581,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				type = 'range',
 				name = L['Column spacing'],
 				desc = L['Set the number of pixels between each column of auras.'],
-				get = get_layout, 
+				get = get_layout,
 				set = set_layout,
 				disabled = is_aura_disabled,
 				min = 0,
@@ -601,7 +601,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				desc = L['Enable display of buffs.'],
 				get = get,
 				set = set,
-				disabled = is_aura_disabled, 
+				disabled = is_aura_disabled,
 				order = 0
 			},
 			enabled_weapons = {
@@ -637,13 +637,13 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 						type = 'range',
 						name = L['Buffs'],
 						desc = L['Set the maximum number of buffs to display.'],
-						get = get, 
-						set = set, 
+						get = get,
+						set = set,
 						disabled = is_aura_disabled,
 						min = 1,
 						max = 80,
 						step = 1,
-						order = 0 
+						order = 0
 					},
 					max_debuffs = {
 						type = 'range',
@@ -655,7 +655,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 						min = 1,
 						max = 80,
 						step = 1,
-						order = 1 
+						order = 1
 					},
 				}
 			},
@@ -667,7 +667,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get_multi,
 				set = set_multi,
 				disabled = is_aura_disabled,
-				order = 5 
+				order = 5
 			},
 			cooldown = {
 				type = 'multiselect',
@@ -677,17 +677,17 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get_multi,
 				set = set_multi,
 				disabled = is_aura_disabled,
-				order = 6 
+				order = 6
 			},
 			cooldown_text = {
 				type = 'multiselect',
 				name = L['Time remaining text'],
 				desc = L['Set when the time remaining text shows.'],
-				values = show_when_values, 
+				values = show_when_values,
 				get = get_multi,
 				set = set_multi,
 				disabled = is_aura_disabled,
-				order = 7 
+				order = 7
 			},
 			zoom_aura = {
 				type = 'toggle',
@@ -695,11 +695,11 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				desc = L['Zoom in on aura icons slightly.'],
 				get = get,
 				set = set,
-				disabled = is_aura_disabled, 
+				disabled = is_aura_disabled,
 				order = 8
 			},
 		}
-	}, 
+	},
 	'buff', layout,
 	'debuff', layout
 end)
