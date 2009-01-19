@@ -13,8 +13,6 @@ if not AceConfig then
 end
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 
-local OpenConfig
-
 AceConfig:RegisterOptionsTable("PitBull4_Bliz", {
 	name = L["PitBull Unit Frames 4.0"],
 	handler = PitBull4,
@@ -25,7 +23,7 @@ AceConfig:RegisterOptionsTable("PitBull4_Bliz", {
 			desc = L["Open a standlone config window, allowing you to actually configure PitBull Unit Frames 4.0."],
 			type = 'execute',
 			func = function()
-				OpenConfig()
+				PitBull4.Options.OpenConfig()
 			end
 		}
 	},
@@ -40,15 +38,15 @@ do
 
 	_G.hash_SlashCmdList["PITBULLFOUR"] = nil
 	_G.SlashCmdList["PITBULLFOUR"] = function()
-		return OpenConfig()
+		return PitBull4.Options.OpenConfig()
 	end
 end
 
 PitBull4.Options = {}
 
-function OpenConfig()
+function PitBull4.Options.OpenConfig()
 	-- redefine it so that we just open up the pane next time
-	function OpenConfig()
+	function PitBull4.Options.OpenConfig()
 		AceConfigDialog:Open("PitBull4")
 	end
 	
@@ -113,5 +111,5 @@ function OpenConfig()
 		LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
 	end)
 	
-	return OpenConfig()
+	return PitBull4.Options.OpenConfig()
 end
