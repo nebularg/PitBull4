@@ -338,6 +338,23 @@ function UnitFrame:UnforceShow()
 end
 UnitFrame.UnforceShow = PitBull4:OutOfCombatWrapper(UnitFrame.UnforceShow)
 
+local DEFAULT_FONT, DEFAULT_FONT_SIZE = ChatFontNormal:GetFont()
+
+--- Get the font of the unit frame.
+-- @param font_override nil or the LibSharedMedia name of a font
+-- @param size_multiplier how much to multiply the default font size by. Defaults to 1.
+-- @return path to the font
+-- @return size of the font
+-- @usage local font, size = frame:GetFont(db.font, db.size)
+-- frame.MyModule:SetFont(font, size)
+function UnitFrame:GetFont(font_override, size_multiplier)
+	local font
+	if LibSharedMedia then
+		font = LibSharedMedia:Fetch("font", font_override or frame.layout_db.font or "")
+	end
+	return font or DEFAULT_FONT, DEFAULT_FONT_SIZE * (size_multiplier or 1)
+end
+
 --- Update all details about the UnitFrame, possibly after a GUID change
 -- @param same_guid whether the previous GUID is the same as the current, at which point is less crucial to update
 -- @param update_layout whether to update the layout no matter what

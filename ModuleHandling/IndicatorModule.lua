@@ -118,8 +118,6 @@ if not LibSharedMedia then
 	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 end
 
-local DEFAULT_FONT, DEFAULT_FONT_SIZE = ChatFontNormal:GetFont()
-
 --- Return the font and size to use for the given frame.
 -- @param frame the unit frame
 -- @return the font path
@@ -128,9 +126,5 @@ local DEFAULT_FONT, DEFAULT_FONT_SIZE = ChatFontNormal:GetFont()
 -- some_frame.MyModule:SetFont(font, size)
 function IndicatorModule:GetFont(frame)
 	local db = self:GetLayoutDB(frame)
-	local font
-	if LibSharedMedia then
-		font = LibSharedMedia:Fetch("font", db.text_font or frame.layout_db.font or "")
-	end
-	return font or DEFAULT_FONT, DEFAULT_FONT_SIZE * db.text_size
+	return frame:GetFont(db.text_font, db.text_size)
 end
