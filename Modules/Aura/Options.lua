@@ -604,8 +604,24 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			new_row_size = {
 				type = 'toggle',
-				name = L['New row on resize'],
-				desc = L['Start a new row whenever the size of the aura changes.'],
+				name = function(info)
+					local group = info[#info - 1]
+					local db = PitBull4.Options.GetLayoutDB(self).layout[group]
+					if is_height[db.growth] then
+						return L['New column on resize']
+					else
+						return L['New row on resize']
+					end
+				end,
+				desc = function(info)
+					local group = info[#info - 1]
+					local db = PitBull4.Options.GetLayoutDB(self).layout[group]
+					if is_height[db.growth] then
+						return L['Start a new column whenever the size of the aura changes.']
+					else
+						return L['Start a new row whenever the size of the aura changes.']
+					end
+				end,
 				get = get_layout,
 				set = set_layout,
 				order = 53,
