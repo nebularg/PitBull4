@@ -68,11 +68,11 @@ function layout_auras(frame, db, is_buff)
 	local other_size = cfg.size
 	local my_size = cfg.my_size
 	local anchor = cfg.anchor
-	local side = cfg.side
-	local point = get_control_point[anchor..'_'..side]
+	local point = get_control_point[anchor..'_'..cfg.side]
 	local growth = cfg.growth
 	local width, width_type = cfg.width, cfg.width_type
 	local row_spacing, col_spacing = cfg.row_spacing, cfg.col_spacing
+	local new_row_size = cfg.new_row_size 
 
 	-- Our current position to place the control
 	local x, y = 0, 0
@@ -149,7 +149,7 @@ function layout_auras(frame, db, is_buff)
 				-- anything for this aura.
 				display = false
 			end
-		elseif cfg.new_row_size and prev_width and new_width ~= prev_width then
+		elseif new_row_size and prev_width and new_width ~= prev_width then
 			-- Size changed so jump to new row
 			x = 0
 			y = y + row
