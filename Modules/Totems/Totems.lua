@@ -66,9 +66,11 @@ local AceGUI = LibStub("AceGUI-3.0")
 local L = PitBull4.L
 
 -- Register some metadata of ours with PB4
-PitBull4_Totems:SetModuleType('custom_indicator')
+PitBull4_Totems:SetModuleType('indicator')
 PitBull4_Totems:SetName(L["Totems"])
 PitBull4_Totems:SetDescription(L["Show which Totems are dropped and the time left until they expire."])
+PitBull4_Totems.show_font_option = true
+PitBull4_Totems.show_font_size_option = true
 
 local function dbg(...)
 --@alpha@
@@ -450,18 +452,6 @@ end
 --------------------------------------------------------------
 -- Frame functions
 
--- This function is a hack and wants to be replaced by a proper solution to ticket:
--- http://www.wowace.com/projects/pitbull4/tickets/14-make-get-font-available-to-custom_frame-modules/
-local DEFAULT_FONT, DEFAULT_FONT_SIZE = ChatFontNormal:GetFont()
-function PitBull4_Totems:myGetFont(frame)
-	local db = self:GetLayoutDB(frame)
-	local font
-	if LSM then
-		font = LSM:Fetch("font", db.font or PitBull4.db.profile.layouts[frame.layout].font or "")
-	end
-	
-	return font or DEFAULT_FONT, DEFAULT_FONT_SIZE * db.size
-end
 
 function PitBull4_Totems:ResizeMainFrame(frame)
 	if not frame.Totems then
@@ -567,8 +557,8 @@ function PitBull4_Totems:RealignTimerTexts(frame)
 	for i=1, MAX_TOTEMS do
 		if (elements[i].text) then
 			TimerTextAlignmentLogic(elements[i].text, elements[i].textFrame, lOptGet(frame, 'timertextside'), 0, 0)
-			local font, fontsize = self:myGetFont(frame)
-			elements[i].text:SetFont(font, fontsize * lOptGet(frame,'timertextscale'), "OUTLINE")
+			local font, fontsize = self:GetFont(frame)
+			elements[i].text:SetFont(font, fontsize, "OUTLINE")
 
 			if gOptGet('textcolorperelement') then
 				elements[i].text:SetTextColor(cOptGet('slot'..tos(i), {1,1,1,1}))
@@ -728,7 +718,7 @@ function PitBull4_Totems:BuildFrames(frame)
 	if not frame then return end -- not enough legit parameters
 	if frame.Totems then return end -- Can't create the frames when they already exist..
 
-	local font, fontsize = self:myGetFont(frame)
+	local font, fontsize = self:GetFont(frame)
 	local tSpacing = lOptGet(frame,'totemspacing')
 	
 	-- Main frame
@@ -815,7 +805,7 @@ function PitBull4_Totems:BuildFrames(frame)
 		local text = elements[i].text
 		text:ClearAllPoints()
 		text:SetPoint("BOTTOM", textFrame, "BOTTOM", 0, 0)
-		text:SetFont(font, fontsize * lOptGet(frame,'timertextscale'), "OUTLINE")
+		text:SetFont(font, fontsize, "OUTLINE")
 		text:SetShadowColor(0,0,0,1)
 		text:SetShadowOffset(0.8, -0.8)
 		text:SetTextColor(cOptGet('timertext'))
@@ -995,7 +985,6 @@ local layout_defaults = {
 	suppressocc = true,
 	timertext = true,
 	timertextside = "bottominside",
-	timertextscale = 0.45,
 	linebreak = MAX_TOTEMS,
 	hideinactive = false,
 }
@@ -1145,18 +1134,6 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 				set = set,
 				disabled = function() return not get({'timertext'}) or is_pbt_disabled()  end,
 				order = 3,
-			},
-			timertextscale = {
-				type = 'range',
-				name = L["Scale"],
-				desc = L["Change the scaling of the text timer. Note: It's relative to PitBull's font size."],
-				min = 0.1,
-				max = 2,
-				step = 0.01,
-				get = get,
-				set = set,
-				disabled = function() return not get({'timertext'}) or is_pbt_disabled()  end,
-				order = 4,
 			},
 		}
 	},
