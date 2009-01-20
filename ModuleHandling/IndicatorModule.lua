@@ -10,6 +10,8 @@ local IndicatorModule = PitBull4:NewModuleType("indicator", {
 	position = 1,
 	side = false,
 	enabled = true,
+	text_font = nil,
+	text_size = 1,
 })
 
 --- Call the :GetTexture function on the indicator module regarding the given frame.
@@ -108,4 +110,27 @@ function IndicatorModule:UpdateFrame(frame)
 	control:SetTexCoord(call_tex_coord_function(self, frame, tex))
 	
 	return made_control
+end
+
+local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+if not LibSharedMedia then
+	LoadAddOn("LibSharedMedia-3.0")
+	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+end
+
+local DEFAULT_FONT, DEFAULT_FONT_SIZE = ChatFontNormal:GetFont()
+
+--- Return the font and size to use for the given frame.
+-- @param frame the unit frame
+-- @return the font path
+-- @return the font size
+-- @usage local font, size = MyModule:GetFont(some_frame)
+-- some_frame.MyModule:SetFont(font, size)
+function IndicatorModule:GetFont(frame)
+	local db = self:GetLayoutDB(frame)
+	local font
+	if LibSharedMedia then
+		font = LibSharedMedia:Fetch("font", db.text_font or frame.layout_db.font or "")
+	end
+	return font or DEFAULT_FONT, DEFAULT_FONT_SIZE * db.text_size
 end
