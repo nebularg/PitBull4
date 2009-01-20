@@ -134,8 +134,7 @@ function BarModule:ClearFrame(frame)
 	if not control then
 		return false
 	end
-
-	control.id = nil
+	
 	frame[id] = control:Delete()
 	return true
 end
@@ -160,7 +159,6 @@ function BarModule:UpdateFrame(frame)
 	if made_control then
 		control = PitBull4.Controls.MakeBetterStatusBar(frame)
 		frame[id] = control
-		control.id = id
 	end
 	
 	control:SetTexture(self:GetTexture(frame))

@@ -74,7 +74,6 @@ function IndicatorModule:ClearFrame(frame)
 		return false
 	end
 	
-	control.id = nil
 	frame[id] = control:Delete()
 	return true
 end
@@ -100,7 +99,6 @@ function IndicatorModule:UpdateFrame(frame)
 		control = PitBull4.Controls.MakeIcon(frame)
 		control:SetFrameLevel(frame:GetFrameLevel() + 3)
 		frame[id] = control
-		control.id = id
 		control:SetWidth(INDICATOR_SIZE)
 		control:SetHeight(INDICATOR_SIZE)
 	end
