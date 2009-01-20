@@ -6,7 +6,7 @@ local CURRENT_BAR_PROVIDER_ID = {}
 
 --- Return the DB dictionary for the current text for the current layout selected in the options frame.
 -- BarProvider modules should be calling this and manipulating data within it.
--- @param module the status_bar_provider module
+-- @param module the bar_provider module
 -- @usage local db = PitBull.Options.GetTextLayoutDB(MyModule); db.some_option = "something"
 -- @return the DB dictionary for the current text
 function PitBull4.Options.GetBarLayoutDB(module)
@@ -253,7 +253,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			local side = db.side
 			local t = {}
 			local sort = {}
-			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar", "icon", "custom_indicator") do
+			for other_id, other_module in PitBull4:IterateModulesOfType("bar", "indicator") do
 				local other_db = GetLayoutDB(other_id)
 				if side == other_db.side and other_db.enabled then
 					local position = other_db.position
@@ -265,7 +265,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 					sort[#sort+1] = position
 				end
 			end
-			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar_provider") do
+			for other_id, other_module in PitBull4:IterateModulesOfType("bar_provider") do
 				local other_db = GetLayoutDB(other_id)
 				if other_db.enabled then
 					for name, bar_db in pairs(other_db.elements) do
@@ -304,7 +304,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			
 			local old_position = db.position
 			
-			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar", "icon", "custom_indicator", true) do
+			for other_id, other_module in PitBull4:IterateModulesOfType("bar", "indicator", true) do
 				local other_db = GetLayoutDB(other_id)
 				if other_db.side then
 					id_to_position[other_id] = other_db.position
@@ -312,7 +312,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 				end
 			end
 			
-			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar_provider", true) do
+			for other_id, other_module in PitBull4:IterateModulesOfType("bar_provider", true) do
 				for name, bar_db in pairs(GetLayoutDB(other_id).elements) do
 					local joined_id = other_id .. ";" .. name
 					id_to_position[joined_id] = bar_db.position
@@ -553,7 +553,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		return { ... }, select('#', ...)
 	end
 	
-	for id, module in PitBull4:IterateModulesOfType("status_bar", true) do
+	for id, module in PitBull4:IterateModulesOfType("bar", true) do
 		local args = {}
 		args.enable = enable_option
 		for k, v in pairs(bar_args) do
@@ -587,7 +587,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		}
 	end
 	
-	for id, module in PitBull4:IterateModulesOfType("status_bar_provider", true) do
+	for id, module in PitBull4:IterateModulesOfType("bar_provider", true) do
 		options.args[id] = {
 			name = module.name,
 			desc = module.description,

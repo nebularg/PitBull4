@@ -50,6 +50,10 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 	local GetLayoutDB = PitBull4.Options.GetLayoutDB
 	local UpdateFrames = PitBull4.Options.UpdateFrames
 	
+	local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+	LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
+	local AceGUI = LibStub("AceGUI-3.0")
+	
 	local options = {
 		name = L["Indicators"],
 		desc = L["Indicators are icons or other graphical displays that convey a specific, usually temporary, status."],
@@ -309,13 +313,13 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			
 			t["root"] = L["Unit frame"]
 			
-			for id, module in PitBull4:IterateModulesOfType("status_bar") do
+			for id, module in PitBull4:IterateModulesOfType("bar") do
 				if GetLayoutDB(module).enabled then
 					t[id] = module.name
 				end
 			end
 			
-			for id, module in PitBull4:IterateModulesOfType("status_bar_provider") do
+			for id, module in PitBull4:IterateModulesOfType("bar_provider") do
 				local db = GetLayoutDB(module)
 				if db.enabled then
 					for name in pairs(db.elements) do
@@ -369,7 +373,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			local side = db.side
 			local t = {}
 			local sort = {}
-			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar", "icon", "custom_indicator") do
+			for other_id, other_module in PitBull4:IterateModulesOfType("bar", "indicator") do
 				local other_db = GetLayoutDB(other_id)
 				if side == other_db.side and other_db.enabled then
 					local position = other_db.position
@@ -381,7 +385,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 					sort[#sort+1] = position
 				end
 			end
-			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar_provider") do
+			for other_id, other_module in PitBull4:IterateModulesOfType("bar_provider") do
 				local other_db = GetLayoutDB(other_id)
 				if other_db.enabled then
 					for name, bar_db in pairs(other_db.elements) do
@@ -419,7 +423,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			
 			local old_position = db.position
 			
-			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar", "icon", "custom_indicator", true) do
+			for other_id, other_module in PitBull4:IterateModulesOfType("bar", "indicator", true) do
 				local other_db = GetLayoutDB(other_id)
 				if other_db.side then
 					id_to_position[other_id] = other_db.position
@@ -427,7 +431,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 				end
 			end
 			
-			for other_id, other_module in PitBull4:IterateModulesOfType("status_bar_provider", true) do
+			for other_id, other_module in PitBull4:IterateModulesOfType("bar_provider", true) do
 				for name, bar_db in pairs(GetLayoutDB(other_id).elements) do
 					local joined_id = other_id .. ";" .. name
 					id_to_position[joined_id] = bar_db.position
@@ -484,7 +488,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			local location = db.location
 			local t = {}
 			local sort = {}
-			for other_id, other_module in PitBull4:IterateModulesOfType("icon", "custom_indicator", "custom_text") do
+			for other_id, other_module in PitBull4:IterateModulesOfType("indicator", "custom_text") do
 				local other_db = GetLayoutDB(other_id)
 				if attach_to == other_db.attach_to and location == other_db.location and not other_db.side then
 					local position = other_db.position
@@ -531,7 +535,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			
 			local old_position = db.position
 			
-			for other_id, other_module in PitBull4:IterateModulesOfType("icon", "custom_indicator", "custom_text", true) do
+			for other_id, other_module in PitBull4:IterateModulesOfType("indicator", "custom_text", true) do
 				local other_db = GetLayoutDB(other_id)
 				if not other_db.side then
 					id_to_position[other_id] = GetLayoutDB(other_id).position
@@ -605,9 +609,72 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end,
 	}
 	
+	indicator_args.font = {
+		type = 'select',
+		name = L["Font"],
+		desc = L["Which font to use for this indicator."],
+		order = 6,
+		get = function(info)
+			return GetLayoutDB(info[#info-1]).text_font or GetLayoutDB(false).font
+		end,
+		set = function(info, value)
+			local default = GetLayoutDB(false).font
+			if value == default then
+				value = nil
+			end
+			
+			GetLayoutDB(info[#info-1]).text_font = value
+			
+			UpdateFrames()
+		end,
+		values = function(info)
+			local t = {}
+			local default = GetLayoutDB(false).font
+			for k in pairs(LibSharedMedia:HashTable("font")) do
+				if k == default then
+					t[k] = ("%s (Default)"):format(k)
+				else
+					t[k] = k
+				end
+			end
+			return t
+		end,
+		disabled = disabled,
+		hidden = function(info)
+			local module = PitBull4.modules[info[#info-1]]
+			return not module.show_font_option or not LibSharedMedia or #LibSharedMedia:List("font") <= 1
+		end,
+		dialogControl = AceGUI.WidgetRegistry["LSM30_Font"] and "LSM30_Font" or nil,
+	}
+	
+	indicator_args.size = {
+		type = 'range',
+		name = L["Font size"],
+		desc = L["Font size to use on this indicator."],
+		order = 7,
+		get = function(info)
+			return GetLayoutDB(info[#info-1]).text_size
+		end,
+		set = function(info, value)
+			GetLayoutDB(info[#info-1]).text_size = value
+			
+			UpdateFrames()
+		end,
+		min = 0.5,
+		max = 3,
+		step = 0.01,
+		bigStep = 0.05,
+		isPercent = true,
+		disabled = disabled,
+		hidden = function(info)
+			local module = PitBull4.modules[info[#info-1]]
+			return not module.show_font_size_option
+		end,
+	}
+	
 	local layout_functions = PitBull4.Options.layout_functions
 	
-	for id, module in PitBull4:IterateModulesOfType("icon", "custom_indicator", true) do
+	for id, module in PitBull4:IterateModulesOfType("indicator", true) do
 		local args = {}
 		for k, v in pairs(indicator_args) do
 			args[k] = v

@@ -104,39 +104,12 @@ function FaderModule:ClearFrame(frame)
 	return false
 end
 
---- Update the opacity value for the current module
--- @param frame the Unit Frame to update
--- @usage MyModule:UpdateStatusBar(frame)
--- @return false, since :UpdateLayout isn't required for this type of module
-function FaderModule:UpdateFrame(frame)
-	--@alpha@
-	expect(frame, 'typeof', 'frame')
-	--@end-alpha@
-	
-	local frame_to_opacity = module_to_frame_to_opacity[self]
-	if not frame_to_opacity then
-		frame_to_opacity = {}
-		module_to_frame_to_opacity[self] = frame_to_opacity
-	end
-	
-	local opacity = self:CallOpacityFunction(frame)
-	if not opacity then
-		return self:ClearFrame(frame)
-	end
-	
-	if frame_to_opacity[frame] ~= opacity then
-		frame_to_opacity[frame] = opacity
-		changing_frames[frame] = true
-	end
-	
-	return false
-end
-
 --- Call the :GetValue function on the status bar module regarding the given frame.
+-- @param the module
 -- @param frame the frame to get the value of
--- @usage local value, extra = MyModule:CallValueFunction(someFrame)
+-- @usage local value, extra = call_opacity_function(MyModule, someFrame)
 -- @return nil or a number within [0, 1)
-function FaderModule:CallOpacityFunction(frame)
+local function call_opacity_function(self, frame)
 	if not self.GetOpacity then
 		return nil, nil
 	end
@@ -154,4 +127,32 @@ function FaderModule:CallOpacityFunction(frame)
 	else
 		return value
 	end
+end
+
+--- Update the opacity value for the current module
+-- @param frame the Unit Frame to update
+-- @usage MyModule:UpdateStatusBar(frame)
+-- @return false, since :UpdateLayout isn't required for this type of module
+function FaderModule:UpdateFrame(frame)
+	--@alpha@
+	expect(frame, 'typeof', 'frame')
+	--@end-alpha@
+	
+	local frame_to_opacity = module_to_frame_to_opacity[self]
+	if not frame_to_opacity then
+		frame_to_opacity = {}
+		module_to_frame_to_opacity[self] = frame_to_opacity
+	end
+	
+	local opacity = call_opacity_function(self, frame)
+	if not opacity then
+		return self:ClearFrame(frame)
+	end
+	
+	if frame_to_opacity[frame] ~= opacity then
+		frame_to_opacity[frame] = opacity
+		changing_frames[frame] = true
+	end
+	
+	return false
 end

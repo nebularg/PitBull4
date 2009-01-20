@@ -9,7 +9,7 @@ local L = PitBull4.L
 
 local PitBull4_MasterLooterIcon = PitBull4:NewModule("MasterLooterIcon", "AceEvent-3.0", "AceTimer-3.0")
 
-PitBull4_MasterLooterIcon:SetModuleType("icon")
+PitBull4_MasterLooterIcon:SetModuleType("indicator")
 PitBull4_MasterLooterIcon:SetName(L["Master looter icon"])
 PitBull4_MasterLooterIcon:SetDescription(L["Show an icon on the unit frame when the unit is the master looter."])
 PitBull4_MasterLooterIcon:SetDefaults({

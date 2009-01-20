@@ -11,7 +11,7 @@ local L = PitBull4.L
 
 local PitBull4_DruidManaBar = PitBull4:NewModule("DruidManaBar", "AceEvent-3.0", "AceTimer-3.0")
 
-PitBull4_DruidManaBar:SetModuleType("status_bar")
+PitBull4_DruidManaBar:SetModuleType("bar")
 PitBull4_DruidManaBar:SetName(L["Druid mana bar"])
 PitBull4_DruidManaBar:SetDescription(L["Show the mana bar when a druid is in cat or bear form."])
 PitBull4_DruidManaBar:SetDefaults({

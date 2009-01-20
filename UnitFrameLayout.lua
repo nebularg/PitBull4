@@ -8,13 +8,12 @@ local CENTER_WIDTH_POINTS = 10
 local ASSUMED_TEXT_WIDTH = 40
 
 local BAR_MODULE_TYPES = {
-	status_bar = true,
-	status_bar_provider = true,
+	bar = true,
+	bar_provider = true,
 }
 
 local INDICATOR_MODULE_TYPES = {
-	icon = true,
-	custom_indicator = true,
+	indicator = true,
 }
 
 local TEXT_MODULE_TYPES = {
@@ -196,19 +195,19 @@ local function get_all_bars(frame)
 	local bars = new()
 	local layout = frame.layout
 	
-	for id, module in PitBull4:IterateModulesOfType('status_bar') do
+	for id, module in PitBull4:IterateModulesOfType('bar') do
 		if frame[id] then
 			bars[#bars+1] = id
 		end
 	end
 	
-	for id, module in PitBull4:IterateModulesOfType('icon', 'custom_indicator') do
+	for id, module in PitBull4:IterateModulesOfType('indicator') do
 		if frame[id] and module:GetLayoutDB(layout).side then
 			bars[#bars+1] = id
 		end
 	end
 	
-	for id, module in PitBull4:IterateModulesOfType('status_bar_provider') do
+	for id, module in PitBull4:IterateModulesOfType('bar_provider') do
 		if frame[id] then
 			for name in pairs(frame[id]) do
 				bars[#bars+1] = id .. ";" .. name
@@ -444,7 +443,7 @@ local function get_all_indicators_and_texts(frame)
 	local indicators_and_texts = new()
 	local layout = frame.layout
 	
-	for id, module in PitBull4:IterateModulesOfType('icon', 'custom_indicator', 'custom_text') do
+	for id, module in PitBull4:IterateModulesOfType('indicator', 'custom_text') do
 		if frame[id] and not module:GetLayoutDB(layout).side then
 			indicators_and_texts[#indicators_and_texts+1] = id
 		end
