@@ -50,6 +50,10 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 	local GetLayoutDB = PitBull4.Options.GetLayoutDB
 	local UpdateFrames = PitBull4.Options.UpdateFrames
 	
+	local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+	LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
+	local AceGUI = LibStub("AceGUI-3.0")
+	
 	local options = {
 		name = L["Indicators"],
 		desc = L["Indicators are icons or other graphical displays that convey a specific, usually temporary, status."],
@@ -602,6 +606,69 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		disabled = disabled,
 		hidden = function(info)
 			return GetLayoutDB(info[#info-1]).side
+		end,
+	}
+	
+	indicator_args.font = {
+		type = 'select',
+		name = L["Font"],
+		desc = L["Which font to use for this indicator."],
+		order = 6,
+		get = function(info)
+			return GetLayoutDB(info[#info-1]).text_font or GetLayoutDB(false).font
+		end,
+		set = function(info, value)
+			local default = GetLayoutDB(false).font
+			if value == default then
+				value = nil
+			end
+			
+			GetLayoutDB(info[#info-1]).text_font = value
+			
+			UpdateFrames()
+		end,
+		values = function(info)
+			local t = {}
+			local default = GetLayoutDB(false).font
+			for k in pairs(LibSharedMedia:HashTable("font")) do
+				if k == default then
+					t[k] = ("%s (Default)"):format(k)
+				else
+					t[k] = k
+				end
+			end
+			return t
+		end,
+		disabled = disabled,
+		hidden = function(info)
+			local module = PitBull4.modules[info[#info-1]]
+			return not module.show_font_option or not LibSharedMedia or #LibSharedMedia:List("font") <= 1
+		end,
+		dialogControl = AceGUI.WidgetRegistry["LSM30_Font"] and "LSM30_Font" or nil,
+	}
+	
+	indicator_args.size = {
+		type = 'range',
+		name = L["Font size"],
+		desc = L["Font size to use on this indicator."],
+		order = 7,
+		get = function(info)
+			return GetLayoutDB(info[#info-1]).text_size
+		end,
+		set = function(info, value)
+			GetLayoutDB(info[#info-1]).text_size = value
+			
+			UpdateFrames()
+		end,
+		min = 0.5,
+		max = 3,
+		step = 0.01,
+		bigStep = 0.05,
+		isPercent = true,
+		disabled = disabled,
+		hidden = function(info)
+			local module = PitBull4.modules[info[#info-1]]
+			return not module.show_font_size_option
 		end,
 	}
 	
