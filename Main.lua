@@ -903,10 +903,12 @@ function PitBull4:UNIT_PET(_, unit) self:CheckGUIDForUnitID(unit .. "pet") end
 
 do
 	local in_combat = false
+	local in_lockdown = false
 	local actions_to_perform = {}
 	local pool = {}
 	function PitBull4:PLAYER_REGEN_ENABLED()
 		in_combat = false
+		in_lockdown = false
 		for i, t in ipairs(actions_to_perform) do
 			t[1](unpack(t, 2, t.n+1))
 			for k in pairs(t) do
@@ -942,6 +944,13 @@ do
 			-- out of combat, call right away and return
 			func(...)
 			return
+		end
+		if not in_lockdown then
+			in_lockdown = InCombatLockdown() -- still in PLAYER_REGEN_DISABLED
+			if not in_lockdown then
+				func(...)
+				return
+			end
 		end
 		local t = next(pool) or {}
 		pool[t] = nil
