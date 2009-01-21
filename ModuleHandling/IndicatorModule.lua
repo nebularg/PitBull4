@@ -112,12 +112,6 @@ function IndicatorModule:UpdateFrame(frame)
 	return made_control
 end
 
-local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
-if not LibSharedMedia then
-	LoadAddOn("LibSharedMedia-3.0")
-	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
-end
-
 --- Return the font and size to use for the given frame.
 -- @param frame the unit frame
 -- @return the font path

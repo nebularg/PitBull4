@@ -14,12 +14,6 @@ local TextProviderModule = PitBull4:NewModuleType("text_provider", {
 	enabled = true,
 })
 
-local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
-if not LibSharedMedia then
-	LoadAddOn("LibSharedMedia-3.0")
-	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
-end
-
 local new, del = PitBull4.new, PitBull4.del
 
 --- Clear the texts for the current module if it exists.

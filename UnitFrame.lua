@@ -338,6 +338,11 @@ function UnitFrame:UnforceShow()
 end
 UnitFrame.UnforceShow = PitBull4:OutOfCombatWrapper(UnitFrame.UnforceShow)
 
+local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+if not LibSharedMedia then
+	LoadAddOn("LibSharedMedia-3.0")
+	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+end
 local DEFAULT_FONT, DEFAULT_FONT_SIZE = ChatFontNormal:GetFont()
 
 --- Get the font of the unit frame.
@@ -350,7 +355,7 @@ local DEFAULT_FONT, DEFAULT_FONT_SIZE = ChatFontNormal:GetFont()
 function UnitFrame:GetFont(font_override, size_multiplier)
 	local font
 	if LibSharedMedia then
-		font = LibSharedMedia:Fetch("font", font_override or frame.layout_db.font or "")
+		font = LibSharedMedia:Fetch("font", font_override or self.layout_db.font or "")
 	end
 	return font or DEFAULT_FONT, DEFAULT_FONT_SIZE * (size_multiplier or 1)
 end
