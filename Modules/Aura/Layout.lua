@@ -72,7 +72,7 @@ function layout_auras(frame, db, is_buff)
 	local growth = cfg.growth
 	local width, width_type = cfg.width, cfg.width_type
 	local row_spacing, col_spacing = cfg.row_spacing, cfg.col_spacing
-	local new_row_size = cfg.new_row_size 
+	local new_row_size = cfg.new_row_size
 
 	-- Our current position to place the control
 	local x, y = 0, 0
