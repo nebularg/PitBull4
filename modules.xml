@@ -1,7 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 
+<Include file="Modules\Aura\load.xml"/>
 <Include file="Modules\Background\load.xml"/>
+<Include file="Modules\BlankSpace\load.xml"/>
 <Include file="Modules\CastBar\load.xml"/>
 <Include file="Modules\CombatFader\load.xml"/>
 <Include file="Modules\CombatIcon\load.xml"/>
@@ -25,9 +27,8 @@
 <Include file="Modules\ReadyCheckIcon\load.xml"/>
 <Include file="Modules\ReputationBar\load.xml"/>
 <Include file="Modules\RestIcon\load.xml"/>
+<Include file="Modules\Sounds\load.xml"/>
 <Include file="Modules\ThreatBar\load.xml"/>
 <Include file="Modules\VoiceIcon\load.xml"/>
-<Include file="Modules\Aura\load.xml"/>
-<Include file="Modules\BlankSpace\load.xml"/>
 
 </Ui>
