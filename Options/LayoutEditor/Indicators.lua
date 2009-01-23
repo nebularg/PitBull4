@@ -439,12 +439,8 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 				end
 			end
 			
-			local current_id = id
-			if CURRENT_BAR_PROVIDER_ID[id] then
-				current_id = current_id .. ";" .. CURRENT_BAR_PROVIDER_ID[id]
-			end
 			for bar_id, other_position in pairs(id_to_position) do
-				if bar_id == current_id then
+				if bar_id == id then
 					id_to_position[bar_id] = new_position
 				elseif other_position >= old_position and other_position <= new_position then
 					id_to_position[bar_id] = other_position - 1

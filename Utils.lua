@@ -58,6 +58,9 @@ do
 		better_unit_ids["raidpet" .. i] = "raidpet" .. i
 		better_unit_ids["raid" .. i .. "pet"] = "raidpet" .. i
 	end
+	for i = 1, MAX_ARENA_TEAM_MEMBERS do
+		better_unit_ids["arena" .. i] = "arena" .. i
+	end
 	setmetatable(better_unit_ids, target_same_with_target_mt)
 	
 	--- Return the best UnitID for the UnitID provided

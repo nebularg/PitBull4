@@ -43,8 +43,13 @@ end
 function PitBull4_Portrait:OnDisable()
 end
 
+local guid_demanding_update = nil
+
 function PitBull4_Portrait:UNIT_PORTRAIT_UPDATE(event, unit)
-	self:UpdateForUnitID(unit)
+	local guid = UnitGUID(unit)
+	guid_demanding_update = guid
+	self:UpdateForGUID(guid)
+	guid_demanding_update = nil
 end
 
 function PitBull4_Portrait:ClearFrame(frame)
@@ -144,7 +149,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 		bg:SetTexture(0, 0, 0, 0.25)
 	end
 	
-	if portrait.guid == frame.guid then
+	if portrait.guid == frame.guid and guid_demanding_update ~= frame.guid then
 		return false
 	end
 	

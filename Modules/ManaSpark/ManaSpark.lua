@@ -45,17 +45,24 @@ function PitBull4_ManaSpark:OnDisable()
 end
 
 function PitBull4_ManaSpark:UpdateFrame(frame)
-	if frame.unit ~= "player" or not frame.PowerBar or UnitPowerType("player") ~= MANA_TYPE or UnitPower("player", MANA_TYPE) == UnitPowerMax("player", MANA_TYPE) then
+	if frame.unit ~= "player" then
+		return self:ClearFrame(frame)
+	end
+	
+	local bar = frame.DruidManaBar
+	if not bar then
+		bar = frame.PowerBar
+		if not bar or UnitPowerType("player") ~= MANA_TYPE then
+			return self:ClearFrame(frame)
+		end
+	end
+	
+	if UnitPower("player", MANA_TYPE) == UnitPowerMax("player", MANA_TYPE) then
 		return self:ClearFrame(frame)
 	end
 	
 	local time_since_spellcast = GetTime() - spellcast_finish_time
 	if time_since_spellcast > MANA_REGEN_TIME then
-		return self:ClearFrame(frame)
-	end
-	
-	local bar = frame.PowerBar
-	if not bar then
 		return self:ClearFrame(frame)
 	end
 	

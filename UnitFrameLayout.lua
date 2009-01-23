@@ -553,7 +553,7 @@ function position_indicator_on_root:in_top(indicator, _, _, indicators_and_texts
 		indicator:SetPoint("TOPLEFT", self, "TOP", -get_half_width(self, indicators_and_texts), -self.layout_db.indicator_root_inside_vertical_padding)
 	end
 end
-function position_indicator_on_root:in_top_left(indicator)
+function position_indicator_on_root:in_top_right(indicator)
 	indicator:SetPoint("TOPRIGHT", self, "TOPRIGHT", -self.layout_db.indicator_root_inside_horizontal_padding, -self.layout_db.indicator_root_inside_vertical_padding)
 end
 function position_indicator_on_root:in_bottom_left(indicator)
@@ -566,7 +566,7 @@ function position_indicator_on_root:in_bottom(indicator, _, _, indicators_and_te
 		indicator:SetPoint("BOTTOMLEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts), -self.layout_db.indicator_root_inside_vertical_padding)
 	end
 end
-function position_indicator_on_root:in_bottom_left(indicator)
+function position_indicator_on_root:in_bottom_right(indicator)
 	indicator:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -self.layout_db.indicator_root_inside_horizontal_padding, -self.layout_db.indicator_root_inside_vertical_padding)
 end
 function position_indicator_on_root:in_left(indicator)

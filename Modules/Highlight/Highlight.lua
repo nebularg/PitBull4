@@ -7,30 +7,35 @@ end
 
 local L = PitBull4.L
 
-local PitBull4_Highlight = PitBull4:NewModule("Highlight")
+local PitBull4_Highlight = PitBull4:NewModule("Highlight", "AceEvent-3.0")
 
 PitBull4_Highlight:SetModuleType("custom")
 PitBull4_Highlight:SetName(L["Highlight"])
 PitBull4_Highlight:SetDescription(L["Show a highlight when hovering or targeting."])
 PitBull4_Highlight:SetDefaults({
-	color = { 1, 1, 1, 1 }
+	color = { 1, 1, 1, 1 },
+	show_target = true,
 })
 
+local EXEMPT_UNITS = {}
+for i = 1, 5 do
+	EXEMPT_UNITS[("target"):rep(i)] = true
+end
+
+local target_guid = nil
+local mouse_focus = nil
 function PitBull4_Highlight:OnEnable()
 	self:AddFrameScriptHook("OnEnter")
 	self:AddFrameScriptHook("OnLeave")
 	
-	local mouseFocus = GetMouseFocus()
-	for frame in PitBull4:IterateFrames() do
-		if mouseFocus == frame then
-			self:OnEnter(frame)
-		end
-	end
+	self:RegisterEvent("PLAYER_TARGET_CHANGED")
+	
+	self:PLAYER_TARGET_CHANGED()
 end
 
 function PitBull4_Highlight:OnDisable()
-        self:RemoveFrameScriptHook("OnEnter")
-        self:RemoveFrameScriptHook("OnLeave")
+	self:RemoveFrameScriptHook("OnEnter")
+	self:RemoveFrameScriptHook("OnLeave")
 end
 
 function PitBull4_Highlight:UpdateFrame(frame)
@@ -53,6 +58,10 @@ function PitBull4_Highlight:UpdateFrame(frame)
 	texture:SetAllPoints(highlight)
 	texture:SetVertexColor(unpack(self:GetLayoutDB(frame).color))
 	
+	if self:ShouldShow(frame) then
+		highlight:Show()
+	end
+	
 	return false
 end
 
@@ -68,6 +77,7 @@ function PitBull4_Highlight:ClearFrame(frame)
 end
 
 function PitBull4_Highlight:OnEnter(frame)
+	mouse_focus = frame
 	if not frame.Highlight then
 		return
 	end
@@ -75,10 +85,46 @@ function PitBull4_Highlight:OnEnter(frame)
 end
 
 function PitBull4_Highlight:OnLeave(frame)
+	mouse_focus = nil
 	if not frame.Highlight then
 		return
 	end
-	frame.Highlight:Hide()
+	if not self:ShouldShow(frame) then
+		frame.Highlight:Hide()
+	end
+end
+
+function PitBull4_Highlight:ShouldShow(frame)
+	if mouse_focus == frame then
+		return true
+	end
+	
+	if frame.guid ~= target_guid or EXEMPT_UNITS[frame.unit] then
+		return false
+	end
+	
+	local db = self:GetLayoutDB(frame)
+	
+	if not db.show_target then
+		return false
+	end
+	
+	return true
+end
+
+function PitBull4_Highlight:PLAYER_TARGET_CHANGED()
+	mouse_focus = GetMouseFocus()
+	target_guid = UnitGUID("target")
+	
+	for frame in PitBull4:IterateFrames() do
+		if frame.Highlight then
+		 	if self:ShouldShow(frame) then
+				frame.Highlight:Show()
+			else
+				frame.Highlight:Hide()
+			end
+		end
+	end
 end
 
 PitBull4_Highlight:SetLayoutOptionsFunction(function(self)
@@ -95,6 +141,18 @@ PitBull4_Highlight:SetLayoutOptionsFunction(function(self)
 			color[1], color[2], color[3], color[4] = r, g, b, a
 			
 			PitBull4.Options.UpdateFrames()
+		end,
+	}, 'show_target', {
+		type = 'toggle',
+		name = L["When targetted"],
+		desc = L["Highlight this unit frame when it is the same as your current target."],
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).show_target
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).show_target = value
+			
+			self:PLAYER_TARGET_CHANGED()
 		end,
 	}
 end)

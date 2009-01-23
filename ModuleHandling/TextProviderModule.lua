@@ -14,14 +14,6 @@ local TextProviderModule = PitBull4:NewModuleType("text_provider", {
 	enabled = true,
 })
 
-local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
-if not LibSharedMedia then
-	LoadAddOn("LibSharedMedia-3.0")
-	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
-end
-
-local DEFAULT_FONT, DEFAULT_FONT_SIZE = ChatFontNormal:GetFont()
-
 local new, del = PitBull4.new, PitBull4.del
 
 --- Clear the texts for the current module if it exists.
@@ -108,12 +100,9 @@ function TextProviderModule:UpdateFrame(frame)
 				font_string:SetNonSpaceWrap(false)
 			end
 			
-			local font
-			if LibSharedMedia then
-				font = LibSharedMedia:Fetch("font", text_db.font or frame.layout_db.font or "")
-			end
+			local font, size = frame:GetFont(text_db.font, text_db.size)
 			local _, _, modifier = font_string:GetFont()
-			font_string:SetFont(font or DEFAULT_FONT, DEFAULT_FONT_SIZE * text_db.size, modifier)
+			font_string:SetFont(font, size, modifier)
 			font_string.db = text_db
 			if not self:AddFontString(frame, font_string, name, text_db) then
 				self:RemoveFontString(font_string)
