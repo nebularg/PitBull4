@@ -682,7 +682,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end,
 	}
 	
-	indicator_args.font = {
+	indicator_args.text_font = {
 		type = 'select',
 		name = L["Font"],
 		desc = L["Which font to use for this indicator."],
@@ -720,7 +720,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		dialogControl = AceGUI.WidgetRegistry["LSM30_Font"] and "LSM30_Font" or nil,
 	}
 	
-	indicator_args.size = {
+	indicator_args.text_size = {
 		type = 'range',
 		name = L["Font size"],
 		desc = L["Font size to use on this indicator."],
