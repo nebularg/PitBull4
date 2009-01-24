@@ -52,6 +52,42 @@ local grow_vert_first = {
 	up_left    = true,
 }
 
+local use_new_row_height = {
+	left_down = {
+		BOTTOMLEFT = true,
+		BOTTOMRIGHT = true,
+	},
+	right_down = {
+		BOTTOMLEFT = true,
+		BOTTOMRIGHT = true,
+	},
+	left_up = {
+		TOPLEFT = true,
+		TOPRIGHT = true,
+	},
+	right_up = {
+		TOPLEFT = true,
+		TOPRIGHT = true,
+	},
+	up_left = {
+		TOPLEFT = true,
+		BOTTOMLEFT = true,
+	},
+	down_left = {
+		TOPLEFT = true,
+		BOTTOMLEFT = true,
+	},
+	up_right = {
+		TOPRIGHT = true,
+		BOTTOMRIGHT = true,
+	},
+	down_right = {
+		TOPRIGHT = true,
+		BOTTOMRIGHT = true,
+	},
+}
+
+
 function layout_auras(frame, db, is_buff)
 	local list, cfg
 	if is_buff then
@@ -130,7 +166,7 @@ function layout_auras(frame, db, is_buff)
 		local new_width = size + col_spacing
 		local new_height = size + row_spacing
 
-		-- Calculate if we need to go to the next column
+		-- Calculate if we need to go to start a new row 
 		-- width - x is the room left
 		-- new_width is how much room we need
 		-- We don't test for less than because they are
@@ -140,7 +176,11 @@ function layout_auras(frame, db, is_buff)
 			if x ~= 0 then
 				-- Jump to the next column
 				x = 0
-				y = y + row
+				if use_new_row_height[growth][point] then
+					y = y + new_height 
+				else
+					y = y + row 
+				end
 				row = new_height
 				prev_width = nil -- no prev_width on this row
 			else
@@ -152,7 +192,11 @@ function layout_auras(frame, db, is_buff)
 		elseif new_row_size and prev_width and new_width ~= prev_width then
 			-- Size changed so jump to new row
 			x = 0
-			y = y + row
+			if use_new_row_height[growth][point] then
+				y = y + new_height 
+			else
+				y = y + row
+			end
 			row = new_height
 			prev_width = nil
 		end
@@ -160,7 +204,6 @@ function layout_auras(frame, db, is_buff)
 		if display then
 			control:SetWidth(size)
 			control:SetHeight(size)
-
 
 			control:ClearAllPoints()
 			set_direction_point[growth](control, point, frame, anchor, x, y, offset_x, offset_y)
