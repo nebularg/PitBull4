@@ -7,11 +7,15 @@ end
 
 -- CONSTANTS ----------------------------------------------------------------
 
-local TEXTURE_PATH = [[Interface\AddOns\]] .. debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z]-%.lua") .. [[\combo]]
-
------------------------------------------------------------------------------
+local BASE_TEXTURE_PATH = [[Interface\AddOns\]] .. debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z]-%.lua") .. [[\]]
 
 local L = PitBull4.L
+
+local TEXTURES = {
+	default = L["Default"],
+}
+
+-----------------------------------------------------------------------------
 
 local PitBull4_ComboPoints = PitBull4:NewModule("ComboPoints", "AceEvent-3.0")
 
@@ -26,6 +30,7 @@ PitBull4_ComboPoints:SetDefaults({
 	size = 0.75,
 	color = { 0.7, 0.7, 0 },
 	spacing = 5,
+	texture = "default",
 })
 
 function PitBull4_ComboPoints:OnEnable()
@@ -103,7 +108,7 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 		local combo = PitBull4.Controls.MakeTexture(combos, "ARTWORK")
 		combos[i] = combo
 		
-		combo:SetTexture(TEXTURE_PATH)
+		combo:SetTexture(BASE_TEXTURE_PATH .. db.texture)
 		combo:SetVertexColor(unpack(db.color))
 		combo:SetWidth(15)
 		combo:SetHeight(15)
@@ -151,6 +156,32 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 		min = 0,
 		max = 15,
 		step = 1,
+	}, 'texture', {
+		type = 'select',
+		name = L["Texture"],
+		desc = L["What texture to use for combo points."],
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).texture
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).texture = value
+			
+			for frame in PitBull4:IterateFramesForUnitID("target") do
+				self:Clear(frame)
+				self:Update(frame)
+			end
+		end,
+		values = TEXTURES,
+		hidden = function(info)
+			local i = 0
+			for k in pairs(TEXTURES) do
+				i = i + 1
+				if i > 1 then
+					return false
+				end
+			end
+			return true
+		end,
 	}, 'color', {
 		type = 'color',
 		name = L["Color"],
