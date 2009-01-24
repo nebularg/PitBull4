@@ -264,7 +264,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			return not not GetLayoutDB(info[#info-1]).side
 		end,
 		set = function(info, value)
-			GetLayoutDB(info[#info-1]).side = value and "left" or nil
+			GetLayoutDB(info[#info-1]).side = value and "left" or false
 			
 			UpdateFrames()
 		end,
