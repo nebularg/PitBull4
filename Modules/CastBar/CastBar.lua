@@ -44,6 +44,7 @@ function PitBull4_CastBar:OnDisable()
 end
 
 function PitBull4_CastBar:FixCastDataAndUpdateAll()
+	self:UpdateInfo(nil, "player")
 	self:FixCastData()
 	self:UpdateAll()
 end
