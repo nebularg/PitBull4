@@ -271,16 +271,29 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		disabled = disabled,
 	}
 	
+	local side_values = {
+		left = L["Left"],
+		right = L["Right"],
+	}
+	
+	local side_values_with_center = {
+		left = L["Left"],
+		center = L["Center"],
+		right = L["Right"],
+	}
+	
 	indicator_args.side = {
 		type = 'select',
 		name = L["Side"],
 		desc = L["Which side of the unit frame to place the indicator on."],
 		order = 2,
-		values = {
-			left = L["Left"],
---			center = L["Center"],
-			right = L["Right"],
-		},
+		values = function(info)
+			if PitBull4.modules[info[#info-1]].can_set_side_to_center then
+				return side_values_with_center
+			else
+				return side_values
+			end
+		end,
 		get = function(info)
 			return GetLayoutDB(info[#info-1]).side
 		end,
@@ -292,6 +305,28 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		disabled = disabled,
 		hidden = function(info)
 			return not GetLayoutDB(info[#info-1]).side
+		end,
+	}
+	
+	indicator_args.bar_size = {
+		type = 'range',
+		name = L["Height"],
+		desc = L["How tall the indicator should be in relation to other bars."],
+		order = 5,
+		get = function(info)
+			return GetLayoutDB(info[#info-1]).bar_size
+		end,
+		set = function(info, value)
+			GetLayoutDB(info[#info-1]).bar_size = value
+
+			UpdateFrames()
+		end,
+		min = 1,
+		max = 12,
+		step = 1,
+		disabled = disabled,
+		hidden = function(info)
+			return GetLayoutDB(info[#info-1]).side ~= "center"
 		end,
 	}
 	
@@ -367,7 +402,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		type = 'select',
 		name = L["Position"],
 		desc = L["Where to place the indicator in relation to other indicators on the frame."],
-		order = 3,
+		order = 4,
 		values = function(info)
 			local db = GetLayoutDB(info[#info-1])
 			local side = db.side

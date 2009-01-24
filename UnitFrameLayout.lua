@@ -247,7 +247,11 @@ local function calculate_width_height_points(layout, center_bars, left_bars, rig
 	local right_exempt_width = 0
 	
 	for _, id in ipairs(center_bars) do
-		bar_height_points = bar_height_points + get_element_db(id, layout).size
+		if INDICATOR_MODULE_TYPES[element_id_to_module_type[id]] then
+			bar_height_points = bar_height_points + get_element_db(id, layout).bar_size
+		else
+			bar_height_points = bar_height_points + get_element_db(id, layout).size
+		end
 	end
 	
 	if #center_bars > 0 then
@@ -395,14 +399,21 @@ local function update_bar_layout(frame)
 	for i, id in (not vertical_mirror and ipairs or reverse_ipairs)(center_bars) do
 		local bar = frame[id]
 		bar:ClearAllPoints()
-	
+		
+		local bar_size
+		if INDICATOR_MODULE_TYPES[element_id_to_module_type[id]] then
+			bar:SetScale(1)
+			bar_size = get_element_db(id, layout).bar_size
+		else
+			bar:SetOrientation("HORIZONTAL")
+			bar_size = get_element_db(id, layout).size
+		end
+		
 		bar:SetPoint("TOPLEFT", frame, "TOPLEFT", left, last_y)
-		local bar_height = get_element_db(id, layout).size * bar_height_per_point
+		local bar_height = bar_size * bar_height_per_point
 		last_y = last_y - bar_height
 		bar:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", right, last_y)
 		last_y = last_y - bar_spacing
-	
-		bar:SetOrientation("HORIZONTAL")
 	end
 	
 	-- set various information on the bars
