@@ -33,8 +33,10 @@ PitBull4_Portrait:SetDefaults({
 	style = "three_dimensional",
 	fallback_style = "three_dimensional",
 	side = "left",
+	bar_size = 4,
 	enabled = false,
 })
+PitBull4_Portrait.can_set_side_to_center = true
 
 function PitBull4_Portrait:OnEnable()
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE")

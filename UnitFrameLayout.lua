@@ -247,7 +247,11 @@ local function calculate_width_height_points(layout, center_bars, left_bars, rig
 	local right_exempt_width = 0
 	
 	for _, id in ipairs(center_bars) do
-		bar_height_points = bar_height_points + get_element_db(id, layout).size
+		if INDICATOR_MODULE_TYPES[element_id_to_module_type[id]] then
+			bar_height_points = bar_height_points + get_element_db(id, layout).bar_size
+		else
+			bar_height_points = bar_height_points + get_element_db(id, layout).size
+		end
 	end
 	
 	if #center_bars > 0 then
@@ -383,8 +387,8 @@ local function update_bar_layout(frame)
 		else
 			bar_width = get_element_db(id, layout).size * bar_width_per_point
 			bar:SetOrientation("VERTICAL")
-			bar:SetPoint("TOPLEFT", frame, "TOPLEFT", last_x, 0)
-			bar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMLEFT", last_x - bar_width, 0)
+			bar:SetPoint("TOPRIGHT", frame, "TOPRIGHT", last_x, 0)
+			bar:SetPoint("BOTTOMLEFT", frame, "BOTTOMRIGHT", last_x - bar_width, 0)
 		end	
 		last_x = last_x - bar_width - bar_spacing
 	end
@@ -395,14 +399,21 @@ local function update_bar_layout(frame)
 	for i, id in (not vertical_mirror and ipairs or reverse_ipairs)(center_bars) do
 		local bar = frame[id]
 		bar:ClearAllPoints()
-	
+		
+		local bar_size
+		if INDICATOR_MODULE_TYPES[element_id_to_module_type[id]] then
+			bar:SetScale(1)
+			bar_size = get_element_db(id, layout).bar_size
+		else
+			bar:SetOrientation("HORIZONTAL")
+			bar_size = get_element_db(id, layout).size
+		end
+		
 		bar:SetPoint("TOPLEFT", frame, "TOPLEFT", left, last_y)
-		local bar_height = get_element_db(id, layout).size * bar_height_per_point
+		local bar_height = bar_size * bar_height_per_point
 		last_y = last_y - bar_height
 		bar:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", right, last_y)
 		last_y = last_y - bar_spacing
-	
-		bar:SetOrientation("HORIZONTAL")
 	end
 	
 	-- set various information on the bars
@@ -655,6 +666,12 @@ end
 function position_indicator_on_bar:out_left(indicator, bar)
 	indicator:SetPoint("RIGHT", bar, "LEFT", -self.layout_db.indicator_bar_outside_margin, 0)
 end
+function position_indicator_on_bar:out_top(indicator, bar)
+	indicator:SetPoint("BOTTOM", bar, "TOP", self.layout_db.indicator_bar_outside_margin)
+end
+function position_indicator_on_bar:out_bottom(indicator, bar)
+	indicator:SetPoint("TOP", bar, "BOTTOM", 0, -self.layout_db.indicator_bar_outside_margin)
+end
 
 -- a dictionary of location to function for a non-starting indicator to be placed on the unit frame
 local position_next_indicator_on_root = {}
@@ -827,12 +844,27 @@ local function position_overlapping_texts(frame, attach_frame, location_to_indic
 			padding,
 			spacing)
 	else
+		local padding = frame.layout_db.indicator_bar_inside_horizontal_padding
 		position_overlapping_texts__helper(frame,
 			attach_frame,
 			location_to_indicators_and_texts.left,
 			location_to_indicators_and_texts.center,
 			location_to_indicators_and_texts.right,
-			frame.layout_db.indicator_bar_inside_horizontal_padding,
+			padding,
+			spacing)
+		position_overlapping_texts__helper(frame,
+			attach_frame,
+			location_to_indicators_and_texts.top_left,
+			location_to_indicators_and_texts.top,
+			location_to_indicators_and_texts.top_right,
+			padding,
+			spacing)
+		position_overlapping_texts__helper(frame,
+			attach_frame,
+			location_to_indicators_and_texts.bottom_left,
+			location_to_indicators_and_texts.bottom,
+			location_to_indicators_and_texts.bottom_right,
+			padding,
 			spacing)
 	end
 end

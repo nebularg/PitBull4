@@ -37,14 +37,36 @@ local root_locations = {
 }
 PitBull4.Options.root_locations = root_locations
 
-local bar_locations = {
+local horizontal_bar_locations = {
 	out_left = ("%s, %s"):format(L["Outside"], L["Left"]),
 	left = L["Left"],
 	center = L["Middle"],
 	right = L["Right"],
 	out_right = ("%s, %s"):format(L["Outside"], L["Right"]),
 }
-PitBull4.Options.bar_locations = bar_locations
+PitBull4.Options.horizontal_bar_locations = horizontal_bar_locations
+
+local vertical_bar_locations = {
+	out_top = ("%s, %s"):format(L["Outside"], L["Left"]),
+	top = L["Top"],
+	center = L["Middle"],
+	bottom = L["Bottom"],
+	out_bottom = ("%s, %s"):format(L["Outside"], L["Bottom"]),
+}
+PitBull4.Options.vertical_bar_locations = vertical_bar_locations
+
+local indicator_locations = {
+	left = L["Left"],
+	center = L["Middle"],
+	right = L["Right"],
+	top = L["Top"],
+	bottom = L["Bottom"],
+	top_left = L["Top-left"],
+	top_right = L["Top-right"],
+	bottom_left = L["Bottom-left"],
+	bottom_right = L["Bottom-right"],
+}
+PitBull4.Options.indicator_locations = indicator_locations
 
 function PitBull4.Options.get_layout_editor_indicator_options()
 	local GetLayoutDB = PitBull4.Options.GetLayoutDB
@@ -264,11 +286,22 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			return not not GetLayoutDB(info[#info-1]).side
 		end,
 		set = function(info, value)
-			GetLayoutDB(info[#info-1]).side = value and "left" or nil
+			GetLayoutDB(info[#info-1]).side = value and "left" or false
 			
 			UpdateFrames()
 		end,
 		disabled = disabled,
+	}
+	
+	local side_values = {
+		left = L["Left"],
+		right = L["Right"],
+	}
+	
+	local side_values_with_center = {
+		left = L["Left"],
+		center = L["Center"],
+		right = L["Right"],
 	}
 	
 	indicator_args.side = {
@@ -276,11 +309,13 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		name = L["Side"],
 		desc = L["Which side of the unit frame to place the indicator on."],
 		order = 2,
-		values = {
-			left = L["Left"],
---			center = L["Center"],
-			right = L["Right"],
-		},
+		values = function(info)
+			if PitBull4.modules[info[#info-1]].can_set_side_to_center then
+				return side_values_with_center
+			else
+				return side_values
+			end
+		end,
 		get = function(info)
 			return GetLayoutDB(info[#info-1]).side
 		end,
@@ -292,6 +327,28 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		disabled = disabled,
 		hidden = function(info)
 			return not GetLayoutDB(info[#info-1]).side
+		end,
+	}
+	
+	indicator_args.bar_size = {
+		type = 'range',
+		name = L["Height"],
+		desc = L["How tall the indicator should be in relation to other bars."],
+		order = 5,
+		get = function(info)
+			return GetLayoutDB(info[#info-1]).bar_size
+		end,
+		set = function(info, value)
+			GetLayoutDB(info[#info-1]).bar_size = value
+
+			UpdateFrames()
+		end,
+		min = 1,
+		max = 12,
+		step = 1,
+		disabled = disabled,
+		hidden = function(info)
+			return GetLayoutDB(info[#info-1]).side ~= "center"
 		end,
 	}
 	
@@ -313,8 +370,9 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			
 			t["root"] = L["Unit frame"]
 			
-			for id, module in PitBull4:IterateModulesOfType("bar") do
-				if GetLayoutDB(module).enabled then
+			for id, module in PitBull4:IterateModulesOfType("bar", "indicator") do
+				local db = GetLayoutDB(module)
+				if db.enabled and db.side then
 					t[id] = module.name
 				end
 			end
@@ -354,7 +412,26 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			if attach_to == "root" then
 				return root_locations
 			else
-				return bar_locations
+				local element_id
+				attach_to, element_id = (";"):split(attach_to, 2)
+				local module = PitBull4.modules[attach_to]
+				if module then
+					if module.module_type == "indicator" then
+						return indicator_locations
+					end
+					
+					local db = GetLayoutDB(module)
+					if element_id then
+						db = rawget(db.elements, element_id)
+					end
+					local side = db and db.side
+					if not side or side == "center" then
+						return horizontal_bar_locations
+					else
+						return vertical_bar_locations
+					end
+				end
+				return horizontal_bar_locations
 			end
 		end,
 		disabled = disabled,
@@ -367,7 +444,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		type = 'select',
 		name = L["Position"],
 		desc = L["Where to place the indicator in relation to other indicators on the frame."],
-		order = 3,
+		order = 4,
 		values = function(info)
 			local db = GetLayoutDB(info[#info-1])
 			local side = db.side
@@ -605,7 +682,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end,
 	}
 	
-	indicator_args.font = {
+	indicator_args.text_font = {
 		type = 'select',
 		name = L["Font"],
 		desc = L["Which font to use for this indicator."],
@@ -643,7 +720,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		dialogControl = AceGUI.WidgetRegistry["LSM30_Font"] and "LSM30_Font" or nil,
 	}
 	
-	indicator_args.size = {
+	indicator_args.text_size = {
 		type = 'range',
 		name = L["Font size"],
 		desc = L["Font size to use on this indicator."],

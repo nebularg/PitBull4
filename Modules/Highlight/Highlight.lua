@@ -99,7 +99,7 @@ function PitBull4_Highlight:ShouldShow(frame)
 		return true
 	end
 	
-	if frame.guid ~= target_guid or EXEMPT_UNITS[frame.unit] then
+	if not target_guid or frame.guid ~= target_guid or EXEMPT_UNITS[frame.unit] then
 		return false
 	end
 	

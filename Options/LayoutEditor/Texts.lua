@@ -35,7 +35,9 @@ function PitBull4.Options.get_layout_editor_text_options()
 	}
 	
 	local root_locations = PitBull4.Options.root_locations
-	local bar_locations = PitBull4.Options.bar_locations
+	local horizontal_bar_locations = PitBull4.Options.horizontal_bar_locations
+	local vertical_bar_locations = PitBull4.Options.vertical_bar_locations
+	local indicator_locations = PitBull4.Options.indicator_locations
 	
 	local function disabled()
 		if CURRENT_CUSTOM_TEXT_MODULE then
@@ -355,8 +357,9 @@ function PitBull4.Options.get_layout_editor_text_options()
 			
 			t["root"] = L["Unit frame"]
 			
-			for id, module in PitBull4:IterateModulesOfType("bar") do
-				if GetLayoutDB(module).enabled then
+			for id, module in PitBull4:IterateModulesOfType("bar", "indicator") do
+				local db = GetLayoutDB(module)
+				if db.enabled and db.side then
 					t[id] = module.name
 				end
 			end
@@ -410,7 +413,26 @@ function PitBull4.Options.get_layout_editor_text_options()
 			if attach_to == "root" then
 				return root_locations
 			else
-				return bar_locations
+				local element_id
+				attach_to, element_id = (";"):split(attach_to, 2)
+				local module = PitBull4.modules[attach_to]
+				if module then
+					if module.module_type == "indicator" then
+						return indicator_locations
+					end
+					
+					local db = GetLayoutDB(module)
+					if element_id then
+						db = rawget(db.elements, element_id)
+					end
+					local side = db and db.side
+					if not side or side == "center" then
+						return horizontal_bar_locations
+					else
+						return vertical_bar_locations
+					end
+				end
+				return horizontal_bar_locations
 			end
 		end,
 		disabled = disabled,

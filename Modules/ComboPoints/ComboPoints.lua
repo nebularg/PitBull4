@@ -7,11 +7,15 @@ end
 
 -- CONSTANTS ----------------------------------------------------------------
 
-local TEXTURE_PATH = [[Interface\AddOns\]] .. debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z]-%.lua") .. [[\combo]]
-
------------------------------------------------------------------------------
+local BASE_TEXTURE_PATH = [[Interface\AddOns\]] .. debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z]-%.lua") .. [[\]]
 
 local L = PitBull4.L
+
+local TEXTURES = {
+	default = L["Default"],
+}
+
+-----------------------------------------------------------------------------
 
 local PitBull4_ComboPoints = PitBull4:NewModule("ComboPoints", "AceEvent-3.0")
 
@@ -23,6 +27,10 @@ PitBull4_ComboPoints:SetDefaults({
 	location = "edge_bottom_right",
 	position = 1,
 	vertical = false,
+	size = 0.75,
+	color = { 0.7, 0.7, 0 },
+	spacing = 5,
+	texture = "default",
 })
 
 function PitBull4_ComboPoints:OnEnable()
@@ -39,7 +47,6 @@ function PitBull4_ComboPoints:ClearFrame(frame)
 	end
 	
 	local combos = frame.ComboPoints
-	combos.vertical = nil
 	combos.height = nil
 	
 	for i, combo in ipairs(combos) do
@@ -68,14 +75,6 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 	local combos = frame.ComboPoints
 	local db = self:GetLayoutDB(frame)
 	
-	local vertical = db.vertical
-	
-	if combos and combos.vertical ~= vertical then
-		self:ClearFrame(frame)
-		combos = nil
-		-- still continue, though
-	end
-	
 	if combos and #combos == num_combos then
 		return false
 	end
@@ -84,15 +83,17 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 		combos = PitBull4.Controls.MakeFrame(frame)
 		frame.ComboPoints = combos
 		combos:SetFrameLevel(frame:GetFrameLevel() + 3)
-		combos.vertical = vertical
 	end
+	
+	local spacing = db.spacing
+	local vertical = db.vertical
 	
 	if not vertical then
 		combos:SetHeight(15)
-		combos:SetWidth(15 * num_combos)
+		combos:SetWidth(15 + (15 + spacing) * (num_combos - 1))
 		combos.height = 1
 	else
-		combos:SetHeight(15 * num_combos)
+		combos:SetHeight(15 + (15 + spacing) * (num_combos - 1))
 		combos:SetWidth(15)
 		combos.height = num_combos
 	end
@@ -107,13 +108,14 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 		local combo = PitBull4.Controls.MakeTexture(combos, "ARTWORK")
 		combos[i] = combo
 		
-		combo:SetTexture(TEXTURE_PATH)
+		combo:SetTexture(BASE_TEXTURE_PATH .. db.texture)
+		combo:SetVertexColor(unpack(db.color))
 		combo:SetWidth(15)
 		combo:SetHeight(15)
 		if not vertical then
-			combo:SetPoint("LEFT", combos, "LEFT", (i - 1) * 15, 0)
+			combo:SetPoint("LEFT", combos, "LEFT", (i - 1) * (15 + spacing), 0)
 		else
-			combo:SetPoint("BOTTOM", combos, "BOTTOM", 0, (i - 1) * 15)
+			combo:SetPoint("BOTTOM", combos, "BOTTOM", 0, (i - 1) * (15 + spacing))
 		end
 	end
 	
@@ -131,7 +133,70 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).vertical = value
 			
-			PitBull4.Options.UpdateFrames()
+			for frame in PitBull4:IterateFramesForUnitID("target") do
+				self:Clear(frame)
+				self:Update(frame)
+			end
+		end,
+	}, 'spacing', {
+		type = 'range',
+		name = L["Spacing"],
+		desc = L["How much spacing to show between combo points."],
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).spacing
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).spacing = value
+			
+			for frame in PitBull4:IterateFramesForUnitID("target") do
+				self:Clear(frame)
+				self:Update(frame)
+			end
+		end,
+		min = 0,
+		max = 15,
+		step = 1,
+	}, 'texture', {
+		type = 'select',
+		name = L["Texture"],
+		desc = L["What texture to use for combo points."],
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).texture
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).texture = value
+			
+			for frame in PitBull4:IterateFramesForUnitID("target") do
+				self:Clear(frame)
+				self:Update(frame)
+			end
+		end,
+		values = TEXTURES,
+		hidden = function(info)
+			local i = 0
+			for k in pairs(TEXTURES) do
+				i = i + 1
+				if i > 1 then
+					return false
+				end
+			end
+			return true
+		end,
+	}, 'color', {
+		type = 'color',
+		name = L["Color"],
+		desc = L["What color the combo points should be."],
+		get = function(info)
+			return unpack(PitBull4.Options.GetLayoutDB(self).color)
+		end,
+		set = function(info, r, g, b)
+			local color = PitBull4.Options.GetLayoutDB(self).color
+			color[1], color[2], color[3] = r, g, b
+			
+			for frame in PitBull4:IterateFramesForUnitID("target") do
+				self:Clear(frame)
+				self:Update(frame)
+			end
 		end,
 	}
 end)
