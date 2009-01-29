@@ -52,7 +52,7 @@ local grow_vert_first = {
 	up_left    = true,
 }
 
-local use_new_row_height = {
+local first_row_behind_anchor = {
 	left_down = {
 		BOTTOMLEFT = true,
 		BOTTOMRIGHT = true,
@@ -87,6 +87,41 @@ local use_new_row_height = {
 	},
 }
 
+local first_col_behind_anchor = {
+	left_down = {
+		TOPLEFT = true,
+		BOTTOMLEFT = true,
+	},
+	right_down = {
+		TOPRIGHT = true,
+		BOTTOMRIGHT = true,
+	},
+	left_up = {
+		TOPLEFT = true,
+		BOTTOMLEFT = true,
+	},
+	right_up = {
+		TOPRIGHT = true,
+		BOTTOMRIGHT = true,
+	},
+	up_left = {
+		TOPRIGHT = true,
+		TOPLEFT = true,
+	},
+	down_left = {
+		BOTTOMRIGHT = true,
+		BOTTOMLEFT = true,
+	},
+	up_right = {
+		TOPRIGHT = true,
+		TOPLEFT = true,
+	},
+	down_right = {
+		BOTTOMRIGHT = true,
+		BOTTOMLEFT = true,
+	},
+}
+
 
 function layout_auras(frame, db, is_buff)
 	local list, cfg
@@ -109,15 +144,33 @@ function layout_auras(frame, db, is_buff)
 	local width, width_type = cfg.width, cfg.width_type
 	local row_spacing, col_spacing = cfg.row_spacing, cfg.col_spacing
 	local new_row_size = cfg.new_row_size
+	local sorted = cfg.sort
 
 	-- Our current position to place the control
 	local x, y = 0, 0
 
 	-- Current height of the row
 	local row = 0
-
-	-- Previous width on this row
+	-- Previous width/height on this row
 	local prev_width
+	local prev_height
+
+	-- Variables for tracking sub-rows.  Subrows let
+	-- smaller icons stack up next to larger icons
+	-- for a normal fit.
+	local sub_row_origin_x -- the x position we started at
+	local sub_row_origin_y -- the y position we started at
+	local origin_row_end -- the y position we can't grow past
+
+	-- Determine when to increase the y position
+	local use_new_row_height = first_row_behind_anchor[growth][point]
+
+	-- Determine if the anchor requires us to offset the row start
+	local use_alt_row_start = first_col_behind_anchor[growth][point]
+
+	-- Offset from the zero point that we use to allow differing
+	-- sized auras to align
+	local row_start = 0
 
 	-- Convert the percent based width to a fixed width
 	if width_type == 'percent' then
@@ -166,39 +219,101 @@ function layout_auras(frame, db, is_buff)
 		local new_width = size + col_spacing
 		local new_height = size + row_spacing
 
-		-- Calculate if we need to go to start a new row 
-		-- width - x is the room left
+		-- Calculate if we need to go to start a new row
+		-- row_start + width - x is the room left
 		-- new_width is how much room we need
 		-- We don't test for less than because they are
 		-- floats and there is likely to be a certain amount
 		-- of error when we do arithemtic on a float
-		if (width - x - new_width) < -.0000001 then
-			if x ~= 0 then
+		if (row_start + width - x - new_width) < -.0000001 then
+			if x ~= row_start then
 				-- Jump to the next column
-				x = 0
-				if use_new_row_height[growth][point] then
-					y = y + new_height 
+				if use_new_row_height then
+					y = y + new_height
 				else
-					y = y + row 
+					y = y + row
 				end
+				x = sub_row_origin_x or row_start
 				row = new_height
-				prev_width = nil -- no prev_width on this row
 			else
 				-- We were already on the first
 				-- aura of the row.  So don't display
 				-- anything for this aura.
 				display = false
 			end
-		elseif new_row_size and prev_width and new_width ~= prev_width then
-			-- Size changed so jump to new row
-			x = 0
-			if use_new_row_height[growth][point] then
-				y = y + new_height 
+		end
+
+		-- Handle size changes
+		if prev_width and new_width ~= prev_width then
+			-- configured to start a new row on size change
+			if new_row_size and x ~= row_start then
+				-- Not already at the start of a row so start a new one
+			  if use_new_row_height then
+				  y = y + new_height
+			  else
+				  y = y + row
+			  end
+			  row = new_height
+				if use_alt_row_start then
+					row_start = row_start + (new_width - prev_width)
+				end
+				x = row_start
 			else
-				y = y + row
+				-- Handle making the auras align properly when
+				-- a size change happens and the anchor would
+				-- normally leave a gap.
+				if use_alt_row_start then
+					local offset = new_width - prev_width
+					row_start = row_start + offset
+					x = x + offset
+				end
+
+				-- When moving from a shorter aura to a taller one sometimes we
+				-- need to shift the y up to leave room when the anchors are ahead
+				-- of the auras.
+				if new_height > prev_height and use_new_row_height and x~= row_start then
+					y = y + (new_height - prev_height)
+				end
+
+				-- Start sub row processing
+				if sorted and x ~= row_start then
+					if row < new_height then
+						row = new_height
+					end
+					sub_row_origin_x = x
+					sub_row_origin_y = y
+					if use_new_row_height then
+						origin_row_end = y
+						y = y - (row - new_height)
+					else
+						origin_row_end = row + y
+					end
+					row = new_height
+				end
 			end
-			row = new_height
-			prev_width = nil
+		end
+
+
+		if origin_row_end then
+			-- Subrow Processing - Look for the end
+			local sub_row_end
+			if use_new_row_height then
+				sub_row_end = y
+			else
+				sub_row_end = y + new_height
+			end
+			if origin_row_end - sub_row_end < -.0000001 then
+				-- Subrow no longer fits so resume normal layout
+				x = row_start
+				if use_new_row_height then
+					y = origin_row_end + new_height
+				else
+					y = origin_row_end
+				end
+				sub_row_origin_x = nil
+				sub_row_origin_y = nil
+				origin_row_end = nil
+			end
 		end
 
 		if display then
@@ -215,6 +330,7 @@ function layout_auras(frame, db, is_buff)
 
 			-- Save the last width
 			prev_width = new_width
+			prev_height = new_height
 
 			-- Set the row height
 			if row < new_height then
