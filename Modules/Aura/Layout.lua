@@ -172,6 +172,9 @@ function layout_auras(frame, db, is_buff)
 	-- sized auras to align
 	local row_start = 0
 
+	-- Get function to set the point for the auras
+	local set_point = set_direction_point[growth]
+
 	-- Convert the percent based width to a fixed width
 	if width_type == 'percent' then
 		local side_width
@@ -321,7 +324,7 @@ function layout_auras(frame, db, is_buff)
 			control:SetHeight(size)
 
 			control:ClearAllPoints()
-			set_direction_point[growth](control, point, frame, anchor, x, y, offset_x, offset_y)
+			set_point(control, point, frame, anchor, x, y, offset_x, offset_y)
 
 			control:Show()
 
