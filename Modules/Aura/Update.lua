@@ -433,13 +433,6 @@ local function set_aura(frame, db, aura_controls, aura, i, is_buff, is_friend)
 	control.debuff_type = debuff_type
 	control.slot = slot
 
-	local is_cancelable =  false
-	if is_buff and UnitIsUnit(unit,"player") then
-		if is_mine then is_cancelable = true end
-		if slot then is_cancelable = true end
-	end
-	control:SetCancelable(is_cancelable)
-
 	local texture = control.texture
 	texture:SetTexture(icon)
 	if db.zoom_aura then

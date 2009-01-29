@@ -78,7 +78,6 @@ end
 -- buff aura controls.
 local function OnClick(self)
 	local slot = self.slot
-	if not self.is_buff or (not self.is_mine and not slot) then return end
 	if slot then
 		if slot == MAINHAND then
 			CancelItemTempEnchantment(1)
@@ -87,14 +86,6 @@ local function OnClick(self)
 		end
 	else
 		CancelUnitBuff("player", self.id)
-	end
-end
-
-function Aura:SetCancelable(is_cancelable)
-	if is_cancelable then
-		self:SetScript("OnClick", OnClick)
-	else
-		self:SetScript("OnClick", nil)
 	end
 end
 
@@ -114,6 +105,7 @@ end
 PitBull4.Controls.MakeNewControlType("Aura", "Button", function(control)
 	-- onCreate
 	control:RegisterForClicks("RightButtonUp")
+	control:SetScript("OnClick", OnClick)
 
 	local texture = PitBull4.Controls.MakeTexture(control, "BACKGROUND")
 	control.texture = texture
@@ -164,7 +156,6 @@ end, function(control)
 	control:SetFrameLevel(control:GetParent():GetFrameLevel() + 2)
 end, function(control)
 	-- onDelete
-	control:SetScript("OnClick", nil)
 	control:SetScript("OnUpdate", nil)
 end)
 
