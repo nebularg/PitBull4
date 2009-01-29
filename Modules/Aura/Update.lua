@@ -1,4 +1,4 @@
--- Update.lua : Code to collect the auras on a unit, create the 
+-- Update.lua : Code to collect the auras on a unit, create the
 -- aura frames and set the data to display the auras.
 
 if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
@@ -42,7 +42,7 @@ local wipe = _G.table.wipe
 -- [12] = is_stealable
 local list = {}
 
--- pool of available entries to be used in list 
+-- pool of available entries to be used in list
 local pool = {}
 
 -- The final index of the entries.  We need this so we can always
@@ -68,7 +68,7 @@ local OFFHAND = PitBull4_Aura.OFFHAND
 -- constants for building sample auras
 local sample_buff_icon   = [[Interface\Icons\Spell_ChargePositive]]
 local sample_debuff_icon = [[Interface\Icons\Spell_ChargeNegative]]
-local sample_debuff_types = { 'Poison', 'Magic', 'Disease', 'Curse', 'Enrage', 'nil' }
+local sample_debuff_types = { 'Poison', 'Magic', 'Disease', 'Curse', 'Enrage', 'nil', }
 
 -- constants for formating time
 local HOUR_ONELETTER_ABBR = _G.HOUR_ONELETTER_ABBR:gsub("%s", "") -- "%dh"
@@ -82,7 +82,7 @@ local function new_entry()
 	local t = next(pool)
 	if t then
 		pool[t] = nil
-	else	
+	else
 		t = {}
 	end
 	return t
@@ -104,7 +104,7 @@ local function get_aura_list(list, unit, is_buff)
 	while true do
 		local entry = list[index]
 		if not entry then
-			entry = new_entry() 
+			entry = new_entry()
 			list[index] = entry
 		end
 
@@ -121,12 +121,12 @@ local function get_aura_list(list, unit, is_buff)
 			entry[8] = "Enrage"
 		end
 
-		if not entry[4] then 
+		if not entry[4] then
 			-- No more auras, break the outer loop
 			break
 		end
 
-		-- Filter the list if true 
+		-- Filter the list if true
 		if not filter_aura_entry(entry) then
 			-- Reuse this index position if the aura was
 			-- filtered.
@@ -161,11 +161,11 @@ local function get_aura_list_sample(list, unit, max, db, is_buff)
 	for i = #list + 1, max do
 		local entry = list[i]
 		if not entry then
-			entry = new_entry() 
+			entry = new_entry()
 			list[i] = entry
 		end
 
-		
+
 		-- Create our bogus aura entry
 		entry[1]  = 0 -- index 0 means PitBull generated aura
 		if i == mainhand then
@@ -174,14 +174,14 @@ local function get_aura_list_sample(list, unit, max, db, is_buff)
 			entry[3] = link and select(3,GetItemInfo(link)) or 4 -- quality or epic if no item
 			entry[4] = L["Sample Weapon Buff"] -- name
 			entry[8] = nil -- no debuff type
-			entry[11] =  nil -- not mine
+			entry[11] =  true -- treat weapon enchants as yours 
 		elseif i == offhand then
 			entry[2] = OFFHAND
 			local link = GetInventoryItemLink("player", OFFHAND)
 			entry[3] = link and select(3,GetItemInfo(link)) or 4 -- quality or epic if no item
 			entry[4] = L["Sample Weapon Buff"] -- name
 			entry[8] = nil -- no debuff type
-			entry[11] = nil -- not mine
+			entry[11] = true -- treat weapon enchants as yours 
 		else
 			entry[2]  = nil -- not a weapon enchant
 			entry[3]  = nil -- no quality color
@@ -264,9 +264,9 @@ local function set_weapon_entry(list, is_enchant, time_left, expiration_time, co
 		list[slot] = entry
 	end
 
-	-- No such enchant, clear the table 
+	-- No such enchant, clear the table
 	if is_enchant ~= 1 then
-		wipe(entry)	
+		wipe(entry)
 		return
 	end
 
@@ -279,7 +279,7 @@ local function set_weapon_entry(list, is_enchant, time_left, expiration_time, co
 	end
 
 	-- Figure the duration by keeping track of the longest
-	-- time_left we've seen.  
+	-- time_left we've seen.
 	local duration = weapon_durations[name]
 	time_left = ceil(time_left / 1000)
 	if not duration or duration < time_left then
@@ -293,12 +293,12 @@ local function set_weapon_entry(list, is_enchant, time_left, expiration_time, co
 	entry[3] = quality
 	entry[4] = name
 	entry[5] = "" -- rank
-	entry[6] = texture 
+	entry[6] = texture
 	entry[7] = count
 	entry[8] = nil
-	entry[9] = duration 
+	entry[9] = duration
 	entry[10] = expiration_time
-	entry[11] = nil -- is_mine
+	entry[11] = true -- treat weapon enchants as always yours 
 	entry[12] = nil -- is_stealable
 end
 
@@ -312,7 +312,7 @@ local function copy_weapon_entry(src, dst, slot)
 	local i = #dst + 1
 	local dst_entry = dst[i]
 	if not dst_entry then
-		dst_entry = new_entry() 
+		dst_entry = new_entry()
 		dst[i] = dst_entry
 	end
 
@@ -321,7 +321,7 @@ local function copy_weapon_entry(src, dst, slot)
 	end
 end
 
-local aura_sort__is_friend 
+local aura_sort__is_friend
 local aura_sort__is_buff
 
 local function aura_sort(a, b)
@@ -340,7 +340,7 @@ local function aura_sort(a, b)
 	elseif a_slot and b_slot then
 		return a_slot < b_slot
 	end
-		
+
 	-- show your own auras first
 	local a_mine, b_mine =  a[11], b[11]
 	if a_mine ~= b_mine then
@@ -368,18 +368,18 @@ local function aura_sort(a, b)
 	-- sort real auras before samples
 	local a_id, b_id = a[1], b[1]
 	if a_id ~= 0 and b_id == 0 then
-		return true 
+		return true
 	elseif a_id == 0 and b_id ~= 0 then
-		return false 
+		return false
 	end
 
 	-- sort by name
 	local a_name, b_name = a[4], b[4]
 	if a_name ~= b_name then
 		if not a_name then
-			return true 
+			return true
 		elseif not b_name then
-			return false 
+			return false
 		end
 		-- TODO: Add sort by ones we can cast
 		return a_name < b_name
@@ -488,7 +488,7 @@ local function set_aura(frame, db, aura_controls, aura, i, is_buff, is_friend)
 		control.border:Hide()
 	end
 end
-	
+
 local function update_auras(frame, db, is_buff)
 	-- Get the controls table
 	local controls
@@ -506,7 +506,7 @@ local function update_auras(frame, db, is_buff)
 		end
 	end
 	local unit = frame.unit
-	local is_friend = UnitIsFriend("player", unit) 
+	local is_friend = UnitIsFriend("player", unit)
 
 	local max = is_buff and db.max_buffs or db.max_debuffs
 
@@ -518,7 +518,7 @@ local function update_auras(frame, db, is_buff)
 	if is_buff and db.enabled_weapons and UnitIsUnit(unit,"player") then
 		copy_weapon_entry(weapon_list, list, MAINHAND)
 		copy_weapon_entry(weapon_list, list, OFFHAND)
-	end		
+	end
 
 	if frame.force_show then
 		-- config mode so treat sample frames as friendly
@@ -691,15 +691,15 @@ function PitBull4_Aura:UpdateWeaponEnchants(force)
 	if mh_time_left == 0 then
 		mh, mh_time_left, mh_count = nil, nil, nil
 	end
-	if oh_time_left == 0 then 
+	if oh_time_left == 0 then
 		oh, oh_time_left, oh_count = nil, nil, nil
 	end
 
 	-- Calculate the expiration time from the time left.  We use
 	-- expiration time since the normal Aura system uses it instead
 	-- of time_left.
-	local mh_expiration_time = mh_time_left and mh_time_left / 1000 + current_time 
-	local oh_expiration_time = oh_time_left and oh_time_left / 1000 + current_time 
+	local mh_expiration_time = mh_time_left and mh_time_left / 1000 + current_time
+	local oh_expiration_time = oh_time_left and oh_time_left / 1000 + current_time
 
 	-- Test to see if the enchant has changed and if so set the entry for it
 	-- We check that the expiration time is at least 0.2 seconds further
@@ -715,7 +715,7 @@ function PitBull4_Aura:UpdateWeaponEnchants(force)
 
 	-- An enchant changed so find all the relevent frames and update
 	-- their auras.
-	if updated then 
+	if updated then
 		for frame in PitBull4:IterateFrames() do
 			if UnitIsUnit(frame.unit, "player") then
 				local db = self:GetLayoutDB(frame)
@@ -725,6 +725,6 @@ function PitBull4_Aura:UpdateWeaponEnchants(force)
 				end
 			end
 		end
-	end	
+	end
 end
 

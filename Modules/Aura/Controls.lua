@@ -47,7 +47,7 @@ local function OnUpdate(self)
 			GameTooltip:SetUnitDebuff(self:GetUnit(), self.id)
 		end
 	elseif self.slot then
-		local has_item = GameTooltip:SetInventoryItem("player", self.slot)	
+		local has_item = GameTooltip:SetInventoryItem("player", self.slot)
 		if not has_item then
 			GameTooltip:ClearLines()
 			GameTooltip:AddLine(self.name, 1, 0.82, 0)

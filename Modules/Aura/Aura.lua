@@ -33,7 +33,7 @@ function PitBull4_Aura:UNIT_AURA(event, unit)
 	-- the relevent frames once every 0.2 seconds.  We capture
 	-- the GUID at the event time because the unit ids can change
 	-- between when we receive the event and do the throttled update
-	guids_to_update[UnitGUID(unit)] = true	
+	guids_to_update[UnitGUID(unit)] = true
 end
 
 -- Function to execute the throttled updates
