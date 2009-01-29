@@ -805,6 +805,8 @@ function PitBull4_Totems:BuildFrames(frame)
 		local text = elements[i].text
 		text:ClearAllPoints()
 		text:SetPoint("BOTTOM", textFrame, "BOTTOM", 0, 0)
+		text:SetWidth(TOTEMSIZE)
+		text:SetHeight(TOTEMSIZE/3)
 		text:SetFont(font, fontsize, "OUTLINE")
 		text:SetShadowColor(0,0,0,1)
 		text:SetShadowOffset(0.8, -0.8)
@@ -854,11 +856,6 @@ function PitBull4_Totems:ApplyLayoutSettings(frame)
 	local elements = frame.Totems.elements
 
 	for i=1, MAX_TOTEMS do
-		elements[i].frame:SetHeight(TOTEMSIZE)
-		elements[i].frame:SetWidth(TOTEMSIZE)
-		elements[i].text:SetWidth(TOTEMSIZE)
-		elements[i].text:SetHeight(TOTEMSIZE/3)
-		
 		elements[i].frame.hideinactive = lOptGet(frame,'hideinactive')
 		
 		elements[i].frame.totemtooltips = gOptGet('totemtooltips')
