@@ -23,6 +23,13 @@ PitBull4_Aura.OFFHAND = GetInventorySlotInfo("SecondaryHandSlot")
 function PitBull4_Aura:OnEnable()
 	self:RegisterEvent("UNIT_AURA")
 	self:ScheduleRepeatingTimer("OnUpdate", 0.2)
+
+	-- Need to track talents for Shaman since it can change what they
+	-- can dispel.
+	local _,player_class = UnitClass('player')
+	if player_class == 'SHAMAN' then
+		self:RegisterEvent("CHARACTER_POINTS_CHANGED")
+	end
 end
 
 local guids_to_update = {}
