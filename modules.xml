@@ -32,4 +32,7 @@
 <Include file="Modules\Totems\load.xml"/>
 <Include file="Modules\VoiceIcon\load.xml"/>
 
+<!-- Banzai MUST be loaded after HealthBar, easiest to just make it last. -->
+<Include file="Modules\Banzai\load.xml"/>
+
 </Ui>

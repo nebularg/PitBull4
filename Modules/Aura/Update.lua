@@ -74,6 +74,9 @@ local sample_debuff_types = { 'Poison', 'Magic', 'Disease', 'Curse', 'Enrage', '
 local HOUR_ONELETTER_ABBR = _G.HOUR_ONELETTER_ABBR:gsub("%s", "") -- "%dh"
 local MINUTE_ONELETTER_ABBR = _G.MINUTE_ONELETTER_ABBR:gsub("%s", "") -- "%dm"
 
+-- table of dispel types we can dispel
+local can_dispel = PitBull4_Aura.can_dispel
+
 local function filter_aura_entry()
 	-- TODO implement filtering
 end
@@ -174,14 +177,14 @@ local function get_aura_list_sample(list, unit, max, db, is_buff)
 			entry[3] = link and select(3,GetItemInfo(link)) or 4 -- quality or epic if no item
 			entry[4] = L["Sample Weapon Buff"] -- name
 			entry[8] = nil -- no debuff type
-			entry[11] =  true -- treat weapon enchants as yours 
+			entry[11] =  true -- treat weapon enchants as yours
 		elseif i == offhand then
 			entry[2] = OFFHAND
 			local link = GetInventoryItemLink("player", OFFHAND)
 			entry[3] = link and select(3,GetItemInfo(link)) or 4 -- quality or epic if no item
 			entry[4] = L["Sample Weapon Buff"] -- name
 			entry[8] = nil -- no debuff type
-			entry[11] = true -- treat weapon enchants as yours 
+			entry[11] = true -- treat weapon enchants as yours
 		else
 			entry[2]  = nil -- not a weapon enchant
 			entry[3]  = nil -- no quality color
@@ -298,7 +301,7 @@ local function set_weapon_entry(list, is_enchant, time_left, expiration_time, co
 	entry[8] = nil
 	entry[9] = duration
 	entry[10] = expiration_time
-	entry[11] = true -- treat weapon enchants as always yours 
+	entry[11] = true -- treat weapon enchants as always yours
 	entry[12] = nil -- is_stealable
 end
 
@@ -360,7 +363,15 @@ local function aura_sort(a, b)
 			elseif not b_debuff_type then
 				return true
 			end
-			-- TODO: Add sort by ones we can remove
+			local a_can_dispel = can_dispel[a_debuff_type]
+			if not a_can_dispel ~= not can_dispel[b_debuff_type] then
+				-- show debuffs you can dispel first
+				if a_can_dispel then
+					return true
+				else
+					return false
+				end
+			end
 			return a_debuff_type < b_debuff_type
 		end
 	end
