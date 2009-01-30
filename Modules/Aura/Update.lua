@@ -174,14 +174,14 @@ local function get_aura_list_sample(list, unit, max, db, is_buff)
 			entry[3] = link and select(3,GetItemInfo(link)) or 4 -- quality or epic if no item
 			entry[4] = L["Sample Weapon Buff"] -- name
 			entry[8] = nil -- no debuff type
-			entry[11] =  true -- treat weapon enchants as yours 
+			entry[11] =  true -- treat weapon enchants as yours
 		elseif i == offhand then
 			entry[2] = OFFHAND
 			local link = GetInventoryItemLink("player", OFFHAND)
 			entry[3] = link and select(3,GetItemInfo(link)) or 4 -- quality or epic if no item
 			entry[4] = L["Sample Weapon Buff"] -- name
 			entry[8] = nil -- no debuff type
-			entry[11] = true -- treat weapon enchants as yours 
+			entry[11] = true -- treat weapon enchants as yours
 		else
 			entry[2]  = nil -- not a weapon enchant
 			entry[3]  = nil -- no quality color
@@ -298,7 +298,7 @@ local function set_weapon_entry(list, is_enchant, time_left, expiration_time, co
 	entry[8] = nil
 	entry[9] = duration
 	entry[10] = expiration_time
-	entry[11] = true -- treat weapon enchants as always yours 
+	entry[11] = true -- treat weapon enchants as always yours
 	entry[12] = nil -- is_stealable
 end
 
