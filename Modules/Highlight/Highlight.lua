@@ -102,7 +102,7 @@ end
 function PitBull4_Highlight:ShouldShow(frame)
 	local db = self:GetLayoutDB(frame)
 	
-	if mouse_focus == frame and db.while_hover == true then
+	if mouse_focus == frame and db.while_hover then
 		return true
 	end
 	
