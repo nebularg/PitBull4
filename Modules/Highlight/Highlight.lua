@@ -15,6 +15,7 @@ PitBull4_Highlight:SetDescription(L["Show a highlight when hovering or targeting
 PitBull4_Highlight:SetDefaults({
 	color = { 1, 1, 1, 1 },
 	show_target = true,
+	while_hover = true,
 })
 
 local EXEMPT_UNITS = {}
@@ -81,6 +82,10 @@ function PitBull4_Highlight:OnEnter(frame)
 	if not frame.Highlight then
 		return
 	end
+	if not self:ShouldShow(frame) then
+		frame.Highlight:Hide()
+		return
+	end
 	frame.Highlight:Show()
 end
 
@@ -95,15 +100,15 @@ function PitBull4_Highlight:OnLeave(frame)
 end
 
 function PitBull4_Highlight:ShouldShow(frame)
-	if mouse_focus == frame then
+	local db = self:GetLayoutDB(frame)
+	
+	if mouse_focus == frame and db.while_hover == true then
 		return true
 	end
 	
 	if not target_guid or frame.guid ~= target_guid or EXEMPT_UNITS[frame.unit] then
 		return false
 	end
-	
-	local db = self:GetLayoutDB(frame)
 	
 	if not db.show_target then
 		return false
@@ -153,6 +158,16 @@ PitBull4_Highlight:SetLayoutOptionsFunction(function(self)
 			PitBull4.Options.GetLayoutDB(self).show_target = value
 			
 			self:PLAYER_TARGET_CHANGED()
+		end,
+	}, 'while_hover', {
+		type = 'toggle',
+		name = L["On mouse hover"],
+		desc = L["Highlight this unit frame while the mouse hovers over it."],
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).while_hover
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).while_hover = value
 		end,
 	}
 end)
