@@ -267,7 +267,7 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 				name = L['Other'],
 				desc = L["Color for other auras without a type."],
 				get = get,
-				set = sett,
+				set = set,
 				order = 5,
 			},
 		},
