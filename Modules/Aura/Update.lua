@@ -34,7 +34,7 @@ local wipe = _G.table.wipe
 -- [4] = is_buff
 -- [5] = name
 -- [6] = rank
--- [7] = icon 
+-- [7] = icon
 -- [8] = count
 -- [9] = debuff_type
 -- [10] = duration
@@ -129,7 +129,7 @@ local function get_aura_list(list, unit, db, is_buff, frame)
 			break
 		end
 
-		-- Filter the list if not true 
+		-- Filter the list if not true
 		local pb4_filter_name = is_buff and db.layout.buff.filter or db.layout.debuff.filter
 		if PitBull4_Aura:FilterEntry(pb4_filter_name, entry, frame) then
 			-- Reuse this index position if the aura was

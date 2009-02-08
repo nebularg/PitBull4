@@ -114,7 +114,7 @@ PitBull4_Aura:SetDefaults({
 	colors = color_defaults,
 	guess_weapon_enchant_icon = true,
 	filters = {
-		-- default filters are indexed by two character codes.  
+		-- default filters are indexed by two character codes.
 		-- The first character follows the following format:
 		-- ! Master Filters
 		-- # Intermediate Filters
@@ -341,7 +341,7 @@ PitBull4_Aura:SetDefaults({
 			display_name = L['Shaman self buffs'],
 			filter_type = 'Name',
 			whitelist = true,
-			name_list = self_buffs.SHAMAN, 
+			name_list = self_buffs.SHAMAN,
 			built_in = true,
 		},
 		['30'] = {
@@ -432,7 +432,7 @@ PitBull4_Aura:SetDefaults({
 			display_name = L['Shaman friend buffs'],
 			filter_type = 'Name',
 			whitelist = true,
-			name_list = friend_buffs.SHAMAN, 
+			name_list = friend_buffs.SHAMAN,
 			built_in = true,
 		},
 		['32'] = {
@@ -446,7 +446,7 @@ PitBull4_Aura:SetDefaults({
 			display_name = L['Warrior friend buffs'],
 			filter_type = 'Name',
 			whitelist = true,
-			name_list = friend_buffs.WARRIOR, 
+			name_list = friend_buffs.WARRIOR,
 			built_in = true,
 		},
 		['+6'] = {

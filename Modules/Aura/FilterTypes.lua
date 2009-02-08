@@ -64,7 +64,7 @@ function PitBull4_Aura:RegisterFilterType(name, display_name, filter_func, confi
 	expect(filter_func, 'typeof', 'function')
 	expect(config, 'typeof', 'function')
 	--@end-alpha@
-	
+
 	local entry = {}
 	entry.name = name
 	entry.display_name = display_name
@@ -76,10 +76,10 @@ end
 
 --- Determines if a filter is referenced by another filter.
 -- @param filter_name the filter to look for a given reference on
--- @param reference the referenced filter to look for 
+-- @param reference the referenced filter to look for
 -- @usage PitBull4_Aura:FilterReferences("myfilter","someotherfilter")
--- @return true or false depending on if filter_name references reference 
-function PitBull4_Aura:FilterReferences(filter_name, reference) 
+-- @return true or false depending on if filter_name references reference
+function PitBull4_Aura:FilterReferences(filter_name, reference)
 	if not filter_name or filter_name == "" then return false end
 	local filter = self:GetFilterDB(filter_name)
 	local filter_ref_func = filter_types[filter.filter_type].references
@@ -224,7 +224,7 @@ local function meta_filter_option(self, options)
 		filters = {}
 		db.filters = filters
 	end
-	db.operators = db.operators or {} 
+	db.operators = db.operators or {}
 
 	local order = 1
 	for i=1,#filters+1 do
@@ -333,7 +333,7 @@ PitBull4_Aura:RegisterFilterType('Name',L["Name"],name_filter, function(self, op
 		get = function(info) return "" end,
 		set = function(info, value)
 			local name_list = PitBull4_Aura:GetFilterDB(self).name_list
-			name_list[value] = nil 
+			name_list[value] = nil
 			PitBull4_Aura:UpdateAll()
 		end,
 	}
@@ -437,7 +437,7 @@ PitBull4_Aura:RegisterFilterType('Rank',L["Rank"],rank_filter, function(self,opt
 			if not db.operator then
 				db.operator = '>'
 			end
-			return db.operator 
+			return db.operator
 		end,
 		set = function(info, value)
 			PitBull4_Aura:GetFilterDB(self).operator = value
@@ -477,7 +477,7 @@ local function count_filter(self, entry)
 	local cfg = PitBull4_Aura:GetFilterDB(self)
 	local operator = cfg.operator
 	local value = cfg.value
-	local count = entry[8] 
+	local count = entry[8]
 	if operator == '>' then
 		return count > value
 	elseif operator == '<' then
@@ -502,7 +502,7 @@ PitBull4_Aura:RegisterFilterType('Count',L["Count"],count_filter, function(self,
 			if not db.operator then
 				db.operator = '>'
 			end
-			return db.operator 
+			return db.operator
 		end,
 		set = function(info, value)
 			PitBull4_Aura:GetFilterDB(self).operator = value
@@ -543,7 +543,7 @@ local function duration_filter(self, entry)
 	local operator = cfg.operator
 	local value = cfg.value
 	local units = cfg.time_unit
-	local duration = entry[10] 
+	local duration = entry[10]
 	if time_unit == 'h' then
 		value = value * 3600
 	elseif time_unit == 'm' then
@@ -573,7 +573,7 @@ PitBull4_Aura:RegisterFilterType('Duration',L["Duration"],duration_filter, funct
 			if not db.operator then
 				db.operator = '>'
 			end
-			return db.operator 
+			return db.operator
 		end,
 		set = function(info, value)
 			PitBull4_Aura:GetFilterDB(self).operator = value
@@ -639,7 +639,7 @@ local function time_left_filter(self, entry, frame)
 	-- so it has an infinite amount of time left.  Can't really
 	-- compare to infinite time so we consider that it's never
 	-- less than value and always greater than value and never
-	-- equal to a value and always not equal to any value 
+	-- equal to a value and always not equal to any value
 	if duration == 0 and expiration_time == 0 then
 		if operator == '>' then
 			return true
@@ -693,7 +693,7 @@ PitBull4_Aura:RegisterFilterType('Time Left',L["Time Left"],time_left_filter, fu
 			if not db.operator then
 				db.operator = '>'
 			end
-			return db.operator 
+			return db.operator
 		end,
 		set = function(info, value)
 			PitBull4_Aura:GetFilterDB(self).operator = value
@@ -761,7 +761,7 @@ PitBull4_Aura:RegisterFilterType('Mine',L['Mine'],mine_filter, function(self,opt
 		desc = L['Filter by if the debuff is yours or not.'],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
-			return db.mine and "yes" or "no" 
+			return db.mine and "yes" or "no"
 		end,
 		set = function(info, value)
 			local db = PitBull4_Aura:GetFilterDB(self)
@@ -792,7 +792,7 @@ PitBull4_Aura:RegisterFilterType('Stealable',L['Stealable'],stealable_filter, fu
 		desc = L['Filter by if the debuff is stealable or not.'],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
-			return db.stealable and "yes" or "no" 
+			return db.stealable and "yes" or "no"
 		end,
 		set = function(info, value)
 			local db = PitBull4_Aura:GetFilterDB(self)
@@ -847,7 +847,7 @@ PitBull4_Aura:RegisterFilterType('Weapon Enchant',L['Weapon Enchant'],weapon_fil
 	}
 end)
 
--- Buff 
+-- Buff
 local function buff_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).buff then
 		return entry[4]
@@ -859,7 +859,7 @@ PitBull4_Aura:RegisterFilterType('Buff',L['Buff'],buff_filter, function(self,opt
 	options.buff = {
 		type = 'select',
 		name = L['Is buff'],
-		desc = L['Filter by if the aura is a buff or not.'], 
+		desc = L['Filter by if the aura is a buff or not.'],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			return db.buff and "yes" or "no"
@@ -884,7 +884,7 @@ local function unit_filter(self, entry, frame)
 	if db.unit_operator == "==" then
 		return frame.unit == db.unit
 	elseif db.unit_operator == "~=" then
-		return frame.unit ~= db.unit 
+		return frame.unit ~= db.unit
 	elseif db.unit_operator == "friend" then
 		if not frame.unit then return false end
 		return UnitIsFriend(frame.unit,'player')
@@ -924,7 +924,7 @@ PitBull4_Aura:RegisterFilterType('Unit',L["Unit"],unit_filter,function(self,opti
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			if not db.unit then
-				db.unit = "player" 
+				db.unit = "player"
 			end
 			return db.unit
 		end,
@@ -1002,7 +1002,7 @@ local race_names = {
 }
 local function map_filter(self, entry, frame)
 	local filters = PitBull4_Aura.db.profile.global.filters
-	local db = filters[self] 
+	local db = filters[self]
 	local map = db.map
 	local map_type = db.map_type
 	local filter
@@ -1013,7 +1013,7 @@ local function map_filter(self, entry, frame)
 	end
 
 	if not filter or filter == "" then
-		return false 
+		return false
 	end
 	return filter_types[filters[filter].filter_type].filter_func(filter, entry, frame)
 end
@@ -1092,7 +1092,7 @@ local function map_filter_options(self,options)
 		end
 		options[k] = copy(option_entry)
 		options[k].order = order
-		options[k].name = n[i] 
+		options[k].name = n[i]
 		options[k].desc = desc
 		order = order + 1
 	end

@@ -21,7 +21,7 @@ end
 
 -- Return true if the talent matching the name of the spell given by
 -- spellid has at least one point spent in it or false otherwise
-local function scan_for_known_talent(spellid) 
+local function scan_for_known_talent(spellid)
 	local wanted_name = GetSpellInfo(spellid)
 	if not wanted_name then return nil end
 	local num_tabs = GetNumTalentTabs()
@@ -33,12 +33,12 @@ local function scan_for_known_talent(spellid)
 				if current_rank and (current_rank > 0) then
 					return true
 				else
-					return false 
+					return false
 				end
 			end
 		end
 	end
-	return false 
+	return false
 end
 
 -- Handle CHARACTER_POINTS_CHANGED events.  If the points aren't changed
@@ -844,7 +844,7 @@ local function turn(t, shallow)
 	for k in pairs(t) do
 		local entry = t[k]
 		wipe(tmp)
-		turn(entry)	
+		turn(entry)
 	end
 end
 turn(friend_buffs)

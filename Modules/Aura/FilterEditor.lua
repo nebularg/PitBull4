@@ -61,7 +61,7 @@ function PitBull4_Aura:SetFilterOptions(filter, options)
 		name = L['Filter type'],
 		desc = L['Set the type of filter.'],
 		get = function(info)
-			return PitBull4_Aura:GetFilterDB(filter).filter_type 
+			return PitBull4_Aura:GetFilterDB(filter).filter_type
 		end,
 		set = function(info, value)
 			local db = PitBull4_Aura:GetFilterDB(filter)
@@ -148,11 +148,11 @@ local function get_values_from_filter(name,t)
 	end
 end
 
--- Generates the options for the filter editor.  
+-- Generates the options for the filter editor.
 function PitBull4_Aura:GetFilterEditor()
 	if not CURRENT_FILTER then
 		-- No filter so setup a default
-		CURRENT_FILTER = '!B' 
+		CURRENT_FILTER = '!B'
 		self:SetFilterOptions(CURRENT_FILTER,CURRENT_FILTER_OPTIONS)
 	end
 
@@ -323,7 +323,7 @@ function PitBull4_Aura:GetFilterEditor()
 						return CURRENT_FILTER
 					end,
 					set = function(info, value)
-						CURRENT_FILTER = value 
+						CURRENT_FILTER = value
 						self:SetFilterOptions(CURRENT_FILTER,CURRENT_FILTER_OPTIONS)
 					end,
 					values = function(info)
@@ -363,7 +363,7 @@ function PitBull4_Aura:GetFilterEditor()
 						local filters = self.db.profile.global.filters
 						local new_filter = deep_copy(filters[CURRENT_FILTER])
 						new_filter.built_in = nil
-						new_filter.display_name = nil	
+						new_filter.display_name = nil
 						filters[value] = new_filter
 						CURRENT_FILTER = value
 						self:SetFilterOptions(CURRENT_FILTER,CURRENT_FILTER_OPTIONS)
@@ -384,7 +384,7 @@ function PitBull4_Aura:GetFilterEditor()
 					name = '',
 					desc = '',
 					inline = true,
-					args = CURRENT_FILTER_OPTIONS, 
+					args = CURRENT_FILTER_OPTIONS,
 					order = 4,
 				},
 			},
