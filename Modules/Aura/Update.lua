@@ -31,23 +31,27 @@ local wipe = _G.table.wipe
 -- [1] = index used to get the Aura with UnitAura or 0 for non UnitAura entries
 -- [2] = slot of the weapon enchant or nil if not a weapon enchant
 -- [3] = quality of the weapon or nil if not a weapon enchant
--- [4] = name
--- [5] = rank
--- [6] = is_buff
--- [7] = count
--- [8] = debuff_type
--- [9] = duration
--- [10] = expiration_time
--- [11] = is_mine
--- [12] = is_stealable
+-- [4] = is_buff
+-- [5] = name
+-- [6] = rank
+-- [7] = icon 
+-- [8] = count
+-- [9] = debuff_type
+-- [10] = duration
+-- [11] = expiration_time
+-- [12] = is_mine
+-- [13] = is_stealable
 local list = {}
+
+-- unit table
+local unit
 
 -- pool of available entries to be used in list
 local pool = {}
 
 -- The final index of the entries.  We need this so we can always
 -- get all values when copying or using unpack.
-local ENTRY_END = 12
+local ENTRY_END = 13
 
 -- Table we store the weapon enchant info in.
 -- This table is never cleared and entries are reused.
@@ -75,11 +79,7 @@ local HOUR_ONELETTER_ABBR = _G.HOUR_ONELETTER_ABBR:gsub("%s", "") -- "%dh"
 local MINUTE_ONELETTER_ABBR = _G.MINUTE_ONELETTER_ABBR:gsub("%s", "") -- "%dm"
 
 -- table of dispel types we can dispel
-local can_dispel = PitBull4_Aura.can_dispel
-
-local function filter_aura_entry()
-	-- TODO implement filtering
-end
+local can_dispel = PitBull4_Aura.can_dispel.player
 
 local function new_entry()
 	local t = next(pool)
@@ -98,7 +98,7 @@ local function del_entry(t)
 end
 
 -- Fills an array of arrays with the information about the auras
-local function get_aura_list(list, unit, is_buff)
+local function get_aura_list(list, unit, db, is_buff, frame)
 	local filter = is_buff and "HELPFUL" or "HARMFUL"
 	local id = 1
 	local index = 1
@@ -114,23 +114,24 @@ local function get_aura_list(list, unit, is_buff)
 		-- Note entry[2] says if the aura is a weapon enchant
 		entry[1], entry[2], entry[3], entry[4], entry[5], entry[6],
 			entry[7], entry[8], entry[9], entry[10], entry[11],
-			entry[12] =
-			id, nil, nil, UnitAura(unit, id, filter)
+			entry[12], entry[13] =
+			id, nil, nil, is_buff, UnitAura(unit, id, filter)
 
 		-- Hack to get around a Blizzard bug.  The Enrage debuff_type
 		-- gets set to "" instead of "Enrage" like it should.
 		-- Once this is fixed this code should be removed.
-		if entry[8] == "" then
-			entry[8] = "Enrage"
+		if entry[9] == "" then
+			entry[9] = "Enrage"
 		end
 
-		if not entry[4] then
+		if not entry[5] then
 			-- No more auras, break the outer loop
 			break
 		end
 
-		-- Filter the list if true
-		if not filter_aura_entry(entry) then
+		-- Filter the list if not true 
+		local pb4_filter_name = is_buff and db.layout.buff.filter or db.layout.debuff.filter
+		if PitBull4_Aura:FilterEntry(pb4_filter_name, entry, frame) then
 			-- Reuse this index position if the aura was
 			-- filtered.
 			index = index + 1
@@ -175,29 +176,30 @@ local function get_aura_list_sample(list, unit, max, db, is_buff)
 			entry[2] = MAINHAND
 			local link = GetInventoryItemLink("player", OFFHAND)
 			entry[3] = link and select(3,GetItemInfo(link)) or 4 -- quality or epic if no item
-			entry[4] = L["Sample Weapon Buff"] -- name
-			entry[8] = nil -- no debuff type
-			entry[11] =  true -- treat weapon enchants as yours
+			entry[5] = L["Sample Weapon Buff"] -- name
+			entry[9] = nil -- no debuff type
+			entry[12] =  true -- treat weapon enchants as yours
 		elseif i == offhand then
 			entry[2] = OFFHAND
 			local link = GetInventoryItemLink("player", OFFHAND)
 			entry[3] = link and select(3,GetItemInfo(link)) or 4 -- quality or epic if no item
-			entry[4] = L["Sample Weapon Buff"] -- name
-			entry[8] = nil -- no debuff type
-			entry[11] = true -- treat weapon enchants as yours
+			entry[5] = L["Sample Weapon Buff"] -- name
+			entry[9] = nil -- no debuff type
+			entry[12] = true -- treat weapon enchants as yours
 		else
 			entry[2]  = nil -- not a weapon enchant
 			entry[3]  = nil -- no quality color
-			entry[4]  = is_buff and L["Sample Buff"] or L["Sample Debuff"] -- name
-			entry[8]  = sample_debuff_types[(i-1)% #sample_debuff_types]
-			entry[11]  = ((random(2) % 2) == 1) and 1 or nil -- is_mine
+			entry[5]  = is_buff and L["Sample Buff"] or L["Sample Debuff"] -- name
+			entry[9]  = sample_debuff_types[(i-1)% #sample_debuff_types]
+			entry[12]  = ((random(2) % 2) == 1) and 1 or nil -- is_mine
 		end
-		entry[5]  = "" -- rank
-		entry[6]  = is_buff and sample_buff_icon or sample_debuff_icon
-		entry[7]  = i -- count set to index to make order show
-		entry[9]  = 0 -- duration
-		entry[10]  = 0 -- expiration_time
-		entry[12] = nil -- is_stealable
+		entry[4]  = is_buff
+		entry[6]  = "" -- rank
+		entry[7]  = is_buff and sample_buff_icon or sample_debuff_icon
+		entry[8]  = i -- count set to index to make order show
+		entry[10]  = 0 -- duration
+		entry[11]  = 0 -- expiration_time
+		entry[13] = nil -- is_stealable
 	end
 end
 
@@ -294,15 +296,16 @@ local function set_weapon_entry(list, is_enchant, time_left, expiration_time, co
 	-- If there's no enchant set we set entry[2] to nil
 	entry[2] = slot -- a weapon enchant
 	entry[3] = quality
-	entry[4] = name
-	entry[5] = "" -- rank
-	entry[6] = texture
-	entry[7] = count
-	entry[8] = nil
-	entry[9] = duration
-	entry[10] = expiration_time
-	entry[11] = true -- treat weapon enchants as always yours
-	entry[12] = nil -- is_stealable
+	entry[4] = true -- is_buff
+	entry[5] = name
+	entry[6] = "" -- rank
+	entry[7] = texture
+	entry[8] = count
+	entry[9] = nil
+	entry[10] = duration
+	entry[11] = expiration_time
+	entry[12] = true -- treat weapon enchants as always yours
+	entry[13] = nil -- is_stealable
 end
 
 -- If the src table has a valid weapon enchant entry for the slot
@@ -345,7 +348,7 @@ local function aura_sort(a, b)
 	end
 
 	-- show your own auras first
-	local a_mine, b_mine =  a[11], b[11]
+	local a_mine, b_mine =  a[12], b[12]
 	if a_mine ~= b_mine then
 		if a_mine then
 			return true
@@ -356,7 +359,7 @@ local function aura_sort(a, b)
 
 	--  sort by debuff type
 	if (aura_sort__is_buff and not aura_sort__is_friend) or (not aura_sort__is_buff and aura_sort__is_friend) then
-		local a_debuff_type, b_debuff_type = a[8], b[8]
+		local a_debuff_type, b_debuff_type = a[9], b[9]
 		if a_debuff_type ~= b_debuff_type then
 			if not a_debuff_type then
 				return false
@@ -385,7 +388,7 @@ local function aura_sort(a, b)
 	end
 
 	-- sort by name
-	local a_name, b_name = a[4], b[4]
+	local a_name, b_name = a[5], b[5]
 	if a_name ~= b_name then
 		if not a_name then
 			return true
@@ -398,7 +401,7 @@ local function aura_sort(a, b)
 
 	-- Use count for sample ids to preserve ID order.
 	if a_id == 0 and b_id == 0 then
-		local a_count, b_count = a[7], b[7]
+		local a_count, b_count = a[8], b[8]
 		if not a_count then
 			return false
 		elseif not b_count then
@@ -418,11 +421,11 @@ end
 
 -- Setups up the aura frame and fill it with the proper data
 -- to display the proper aura.
-local function set_aura(frame, db, aura_controls, aura, i, is_buff, is_friend)
+local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	local control = aura_controls[i]
 	local unit = frame.unit
 
-	local id, slot, quality, name, rank, icon, count, debuff_type, duration, expiration_time, is_mine, is_stealable = unpack(aura, 1, ENTRY_END)
+	local id, slot, quality, is_buff, name, rank, icon, count, debuff_type, duration, expiration_time, is_mine, is_stealable = unpack(aura, 1, ENTRY_END)
 
 	local who = is_mine and "my" or "other"
 	-- No way to know who applied a weapon buff so we have a separate
@@ -514,14 +517,21 @@ local function update_auras(frame, db, is_buff)
 
 	local max = is_buff and db.max_buffs or db.max_debuffs
 
-	get_aura_list(list, unit, is_buff)
+	get_aura_list(list, unit, db, is_buff, frame)
 
 
 	-- If weapons are enabled and the unit is the player
 	-- copy the weapon entries into the aura list
 	if is_buff and db.enabled_weapons and UnitIsUnit(unit,"player") then
+		local filter = db.layout.buff.filter
 		copy_weapon_entry(weapon_list, list, MAINHAND)
+		if list[#list] and not PitBull4_Aura:FilterEntry(filter, list[#list], frame) then
+			list[#list] = del_entry(list[#list])
+		end
 		copy_weapon_entry(weapon_list, list, OFFHAND)
+		if list[#list] and not PitBull4_Aura:FilterEntry(filter, list[#list], frame) then
+			list[#list] = del_entry(list[#list])
+		end
 	end
 
 	if frame.force_show then
@@ -548,7 +558,7 @@ local function update_auras(frame, db, is_buff)
 	local buff_count = (#list > max) and max or #list
 
 	for i = 1, buff_count do
-		set_aura(frame, db, controls, list[i], i, is_buff, is_friend)
+		set_aura(frame, db, controls, list[i], i, is_friend)
 	end
 
 	-- Remove unnecessary aura frames
@@ -677,15 +687,15 @@ function PitBull4_Aura:UpdateWeaponEnchants(force)
 	local old_mh, old_mh_count, old_mh_expiration_time
 	if mh_entry then
 		old_mh = mh_entry[2] ~= nil and 1 or nil
-		old_mh_count = mh_entry[7]
-		old_mh_expiration_time = mh_entry[10]
+		old_mh_count = mh_entry[8]
+		old_mh_expiration_time = mh_entry[11]
 	end
 
 	local old_oh, old_oh_count, old_oh_expiration_time
 	if oh_entry then
 		old_oh = oh_entry[2] ~= nil and 1 or nil
-		old_mh_count = oh_entry[7]
-		old_mh_expiration_time = oh_entry[10]
+		old_mh_count = oh_entry[8]
+		old_mh_expiration_time = oh_entry[11]
 	end
 
 	-- GetWeaponEnchantInfo() briefly returns that there is
@@ -732,3 +742,24 @@ function PitBull4_Aura:UpdateWeaponEnchants(force)
 	end
 end
 
+-- table of frames to be updated on next filter update
+local timed_filter_update = {}
+
+--- Request that a frame is updated on the next timed update
+-- The frame will only be updated once.  This is useful for
+-- filters to request they be rerun on a frame for data that
+-- changes with time.
+-- @param frame the frame to update
+-- @usage PitBull4_aura:RequestTimeFilterUpdate(my_frame)
+-- @return nil
+function PitBull4_Aura:RequestTimedFilterUpdate(frame)
+	timed_filter_update[frame] = true
+end
+
+function PitBull4_Aura:UpdateFilters()
+	for frame in pairs(timed_filter_update) do
+		timed_filter_update[frame] = nil
+		self:UpdateAuras(frame)
+		self:LayoutAuras(frame)
+	end
+end
