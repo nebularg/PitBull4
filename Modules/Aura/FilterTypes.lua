@@ -301,7 +301,12 @@ PitBull4_Aura:RegisterFilterType('Name',L["Name"],name_filter, function(self, op
 		end,
 		values = function(info)
 			local t = {}
-			local name_list = PitBull4_Aura:GetFilterDB(self).name_list
+			local db = PitBull4_Aura:GetFilterDB(self)
+			local name_list = db.name_list
+			if not name_list then
+				name_list = {}
+				db.name_list = name_list
+			end
 			for k in pairs(name_list) do
 				t[k] = k
 			end
