@@ -138,14 +138,36 @@ local function filter_from_map(map)
 	end
 end
 
+local function code(s)
+	s = string.gsub(s, "\\", function(x)
+		return string.format("\\%03d", string.byte(x))
+	end)
+	return (string.gsub(s, "(%.)", function(x)
+		return string.format("\\%03d", string.byte(x))
+	end))
+end
+
 local function get_values_from_filter(name,t)
 	if not name then return end
 	local filters = PitBull4_Aura.db.profile.global.filters
 	local filter = filters[name]
 	if not filter or filter.filter_type ~= 'Name' then return end
+	name = code(name)
 	for k in pairs(filter.name_list) do
-		t[name..'.'..k] = k or filter.display_name
+		k = code(k)
+		t[name..'.'..k] = k
 	end
+end
+
+local function decode(s)
+	return (string.gsub(s, "\\(%d%d%d)", function(d)
+		return string.char(d)
+	end))
+end
+
+local function extract_filter_entry_from_key(key)
+	local filter_name,entry = string.match(key,"^([^%.]+)%.(.+)$")
+	return decode(filter_name),decode(entry)
 end
 
 -- Generates the options for the filter editor.
@@ -170,12 +192,12 @@ function PitBull4_Aura:GetFilterEditor()
 					desc = L['Select buffs to show on your friends.'],
 					get = function(info,key)
 						local filters = PitBull4_Aura.db.profile.global.filters
-						local filter_name,entry = string.match(key,"([^%.]+)%.(.+)")
+						local filter_name,entry = extract_filter_entry_from_key(key)
 						return filters[filter_name].name_list[entry]
 					end,
 					set = function(info,key,value)
 						local filters = PitBull4_Aura.db.profile.global.filters
-						local filter_name,entry = string.match(key,"([^%.]+)%.(.+)")
+						local filter_name,entry = extract_filter_entry_from_key(key)
 						filters[filter_name].name_list[entry] = value
 						PitBull4_Aura:UpdateAll()
 					end,
@@ -222,12 +244,12 @@ function PitBull4_Aura:GetFilterEditor()
 					desc = L['Select debuffs to show on your friends.'],
 					get = function(info,key)
 						local filters = PitBull4_Aura.db.profile.global.filters
-						local filter_name,entry = string.match(key,"([^%.]+)%.(.+)")
+						local filter_name,entry = extract_filter_entry_from_key(key)
 						return filters[filter_name].name_list[entry]
 					end,
 					set = function(info,key,value)
 						local filters = PitBull4_Aura.db.profile.global.filters
-						local filter_name,entry = string.match(key,"([^%.]+)%.(.+)")
+						local filter_name,entry = extract_filter_entry_from_key(key)
 						filters[filter_name].name_list[entry] = value
 					end,
 					values = function(info)
@@ -271,12 +293,12 @@ function PitBull4_Aura:GetFilterEditor()
 					desc = L['Select debuffs to show on your enemies.'],
 					get = function(info,key)
 						local filters = PitBull4_Aura.db.profile.global.filters
-						local filter_name,entry = string.match(key,"([^%.]+)%.(.+)")
+						local filter_name,entry = extract_filter_entry_from_key(key)
 						return filters[filter_name].name_list[entry]
 					end,
 					set = function(info,key,value)
 						local filters = PitBull4_Aura.db.profile.global.filters
-						local filter_name,entry = string.match(key,"([^%.]+)%.(.+)")
+						local filter_name,entry = extract_filter_entry_from_key(key)
 						filters[filter_name].name_list[entry] = value
 					end,
 					values = function(info)
