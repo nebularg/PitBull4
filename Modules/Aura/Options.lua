@@ -976,8 +976,8 @@ PitBull4_Aura:SetDefaults({
 		['!E'] = {
 			display_name = L['Default debuffs, mine'],
 			filter_type = 'Meta',
-			filters = {'@H','!D'},
-			operators = {'&'},
+			filters = {'@H','!D','&D'},
+			operators = {'&','|'},
 			built_in = true,
 			display_when = "debuff",
 		},
