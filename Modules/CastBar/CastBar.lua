@@ -16,16 +16,16 @@ PitBull4_CastBar:SetDefaults({
 	position = 10,
 })
 
-local castData = {}
-PitBull4_CastBar.castData = castData
+local cast_data = {}
+PitBull4_CastBar.cast_data = cast_data
 
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
 timerFrame:SetScript("OnUpdate", function() PitBull4_CastBar:FixCastDataAndUpdateAll() end)
 
-local playerGUID
+local player_guid
 function PitBull4_CastBar:OnEnable()
-	playerGUID = UnitGUID("player")
+	player_guid = UnitGUID("player")
 	
 	timerFrame:Show()
 	
@@ -73,7 +73,7 @@ function PitBull4_CastBar:GetValue(frame)
 	end
 	
 	local guid = frame.guid
-	local data = castData[guid]
+	local data = cast_data[guid]
 	if not data then
 		return 0
 	end
@@ -96,7 +96,7 @@ end
 
 function PitBull4_CastBar:GetColor(frame, value)
 	local guid = frame.guid
-	local data = castData[guid]
+	local data = cast_data[guid]
 	if not data then
 		return 0, 0, 0, 0
 	end
@@ -117,13 +117,13 @@ function PitBull4_CastBar:GetColor(frame, value)
 			alpha = 1
 		end
 		if alpha <= 0 then
-			castData[guid] = del(data)
+			cast_data[guid] = del(data)
 			return 0, 0, 0, 0
 		else
 			return 0, 1, 0, alpha
 		end
 	else
-		castData[guid] = del(data)
+		cast_data[guid] = del(data)
 	end
 	return 0, 0, 0, 0
 end
@@ -133,10 +133,10 @@ function PitBull4_CastBar:UpdateInfo(event, unit)
 	if not guid then
 		return
 	end
-	local data = castData[guid]
+	local data = cast_data[guid]
 	if not data then
 		data = new()
-		castData[guid] = data
+		cast_data[guid] = data
 	end
 	
 	local spell, rank, displayName, icon, startTime, endTime = UnitCastingInfo(unit)
@@ -157,7 +157,7 @@ function PitBull4_CastBar:UpdateInfo(event, unit)
 	end
 	
 	if not data.icon then
-		castData[guid] = del(data)
+		cast_data[guid] = del(data)
 		return
 	end
 	
@@ -172,14 +172,14 @@ end
 function PitBull4_CastBar:FixCastData()
 	local frame
 	local currentTime = GetTime()
-	for guid, data in pairs(castData) do
+	for guid, data in pairs(cast_data) do
 		local found = false
 		for frame in PitBull4:IterateFramesForGUID(guid) do
 			local castBar = frame.CastBar
 			if castBar then
 				found = true
 				if data.casting then
-					if currentTime > data.endTime and playerGUID ~= guid then
+					if currentTime > data.endTime and player_guid ~= guid then
 						data.casting = false
 						data.fadeOut = true
 						data.stopTime = currentTime
@@ -198,16 +198,16 @@ function PitBull4_CastBar:FixCastData()
 					end
 					
 					if alpha <= 0 then
-						castData[guid] = del(data)
+						cast_data[guid] = del(data)
 					end
 				else
-					castData[guid] = del(data)
+					cast_data[guid] = del(data)
 				end
 				break
 			end	
 		end
 		if not found then
-			castData[guid] = del(data)
+			cast_data[guid] = del(data)
 		end
 	end
 end
