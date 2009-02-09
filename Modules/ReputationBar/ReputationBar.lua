@@ -54,5 +54,11 @@ hooksecurefunc("ReputationWatchBar_Update", function()
 	if not PitBull4_ReputationBar:IsEnabled() then
 		return
 	end
-	PitBull4_ReputationBar:UpdateForUnitID("player")
+	for frame in PitBull4:IterateFramesForUnitID("player") do
+		if not frame.ReputationBar then
+			frame:Update()
+		else
+			PitBull4_ReputationBar:Update(frame)
+		end
+	end
 end)
