@@ -524,7 +524,7 @@ friend_buffs.SHAMAN = {
 	[8178]  = true, -- Grounding Totem Effect
 	[5672]  = true, -- Healing Stream
 	[29202] = true, -- Healing Way
-	[23682] = playerRace == "Draenei", -- Heroism
+	[23682] = player_race == "Draenei", -- Heroism
 	[5677]  = true, -- Mana Spring
 	[16191] = true, -- Mana Tide
 	[4081]  = true, -- Nature Resistance
@@ -538,7 +538,8 @@ friend_buffs.SHAMAN = {
 	[2895]  = true, -- Wrath of Air Totem
 }
 friend_debuffs.SHAMAN = {
-	[57723] = true, -- Exhaustion
+	[57723] = player_race == "Draenei", -- Exhaustion
+	[57724] = player_race == "Troll" or player_race == "Tauren" or player_race == "Orc", -- Sated
 }
 self_buffs.SHAMAN = {
 	[52179] = true, -- Astral Shift
