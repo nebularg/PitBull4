@@ -29,6 +29,8 @@ function PitBull4_Aura:OnEnable()
 	local _,player_class = UnitClass('player')
 	if player_class == 'SHAMAN' then
 		self:RegisterEvent("CHARACTER_POINTS_CHANGED")
+		-- Update the Shaman can dispel filter
+		PitBull4_Aura:GetFilterDB('23').aura_type_list.Curse = PitBull4_Aura.can_dispel.SHAMAN.Curse
 	end
 end
 
@@ -59,6 +61,8 @@ function PitBull4_Aura:OnUpdate()
 	self:UpdateCooldownTexts()
 
 	self:UpdateWeaponEnchants()
+
+	self:UpdateFilters()
 end
 
 function PitBull4_Aura:ClearFrame(frame)

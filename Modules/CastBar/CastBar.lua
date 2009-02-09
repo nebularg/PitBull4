@@ -223,8 +223,8 @@ function PitBull4_CastBar:FixCastData()
 				else
 					castData[guid] = del(data)
 				end
+				break
 			end	
-			break
 		end
 		if not found then
 			castData[guid] = del(data)

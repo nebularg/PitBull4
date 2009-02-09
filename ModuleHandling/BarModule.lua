@@ -103,7 +103,7 @@ local function call_extra_color_function(self, frame, value, extra)
 	local layout_db = self:GetLayoutDB(frame)
 	local custom_color = layout_db.custom_color
 	if custom_color then
-		local r, g, b, a = custom_color
+		local r, g, b, a = unpack(custom_color)
 		return (1 + 2*r) / 3, (1 + 2*g) / 3, (1 + 2*b) / 3, a
 	end
 	

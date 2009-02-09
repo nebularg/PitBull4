@@ -6,6 +6,14 @@ local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
 local PitBull4_Aura= PitBull4:GetModule("Aura")
 local L = PitBull4.L
+local can_dispel = PitBull4_Aura.can_dispel
+local friend_buffs = PitBull4_Aura.friend_buffs
+local friend_debuffs = PitBull4_Aura.friend_debuffs
+local self_buffs = PitBull4_Aura.self_buffs
+local self_debuffs = PitBull4_Aura.self_debuffs
+local pet_buffs = PitBull4_Aura.pet_buffs
+local enemy_debuffs = PitBull4_Aura.enemy_debuffs
+local extra_buffs = PitBull4_Aura.extra_buffs
 
 local color_defaults = {
 	friend = {
@@ -78,6 +86,7 @@ PitBull4_Aura:SetDefaults({
 			row_spacing = 0,
 			col_spacing = 0,
 			new_row_size = false,
+			filter = "",
 		},
 		debuff = {
 			size = 16,
@@ -96,6 +105,7 @@ PitBull4_Aura:SetDefaults({
 			col_spacing = 0,
 			row_spacing = 0,
 			new_row_size = false,
+			filter = "",
 		},
 	},
 },
@@ -103,6 +113,875 @@ PitBull4_Aura:SetDefaults({
 	-- Global defaults
 	colors = color_defaults,
 	guess_weapon_enchant_icon = true,
+	filters = {
+		-- default filters are indexed by two character codes.
+		-- The first character follows the following format:
+		-- ! Master Filters
+		-- # Intermediate Filters
+		-- % Race map filters
+		-- & Class map filters
+		-- + DeathKnight
+		-- , Druid
+		-- - Hunter
+		-- . Mage
+		-- / Paladin
+		-- 0 Priest
+		-- 1 Rogue
+		-- 2 Shaman
+		-- 3 Warlock
+		-- 4 Warrior
+		-- 5 Human
+		-- 6 Dwarf
+		-- 7 Night Elf
+		-- 8 Gnome
+		-- 9 Draenei
+		-- : Orc
+		-- ; Undead
+		-- < Taruen
+		-- = Troll
+		-- > Blood Elf
+		-- @ Simple filters
+		--
+		-- The 2nd character places it within the proper order
+		-- under those major categories.  That said the follow
+		-- are generally true
+		-- 0 self buffs
+		-- 1 pet buffs
+		-- 2 friend buffs
+		-- 3 can dispel
+		-- 4 self buffs
+		-- 5 friend debuffs
+		-- 6 enemy debuffs
+		--
+		-- This is necessary to get the sort order proper for the
+		-- drop down boxes while using a value that is not localized
+		['@I'] = {
+			display_name = L['True'],
+			filter_type = 'True',
+			disabled = true,
+			built_in = true,
+		},
+		['@J'] = {
+			display_name = L['False'],
+			filter_type = 'False',
+			disabled = true,
+			built_in = true,
+		},
+		['@A'] = {
+			display_name = L['Buff'],
+			filter_type = 'Buff',
+			buff = true,
+			disabled = true,
+			built_in = true,
+		},
+		['@B'] = {
+			display_name = L['Debuff'],
+			filter_type = 'Buff',
+			buff = false,
+			disabled = true,
+			built_in = true,
+		},
+		['@C'] = {
+			display_name = L['Weapon buff'],
+			filter_type = 'Weapon Enchant',
+			weapon = true,
+			disabled = true,
+			built_in = true,
+		},
+		['@D'] = {
+			display_name = L['Friend'],
+			filter_type = 'Unit',
+			unit_operator = 'friend',
+			disabled = true,
+			built_in = true,
+		},
+		['@E'] = {
+			display_name = L['Enemy'],
+			filter_type = 'Unit',
+			unit_operator = 'enemy',
+			disabled = true,
+			built_in = true,
+		},
+		['@F'] = {
+			display_name = L['Pet'],
+			filter_type = 'Unit',
+			unit_operator = '==',
+			unit = 'pet',
+			disabled = true,
+			built_in = true,
+		},
+		['@G'] = {
+			display_name = L['Player'],
+			filter_type = 'Unit',
+			unit_operator = '==',
+			unit = 'player',
+			disabled = true,
+			built_in = true,
+		},
+		['@H'] = {
+			display_name = L['Mine'],
+			filter_type = 'Mine',
+			mine = true,
+			disabled = true,
+			built_in = true,
+		},
+		[',3'] = {
+			display_name = L['Druid can dispel'],
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_dispel['DRUID'],
+			built_in = true,
+		},
+		['-3'] = {
+			display_name = L['Hunter can dispel'],
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_dispel['HUNTER'],
+			built_in = true,
+		},
+		['.3'] = {
+			display_name = L['Mage can dispel'],
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_dispel['MAGE'],
+			built_in = true,
+		},
+		['/3'] = {
+			display_name = L['Paladin can dispel'],
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_dispel['PALADIN'],
+			built_in = true,
+		},
+		['03'] = {
+			display_name = L['Priest can dispel'],
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_dispel['PRIEST'],
+			built_in = true,
+		},
+		['13'] = {
+			display_name = L['Rogue can dispel'],
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_dispel['ROGUE'],
+			built_in = true,
+		},
+		['23'] = {
+			display_name = L['Shaman can dispel'],
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_dispel['SHAMAN'],
+			built_in = true,
+		},
+		['33'] = {
+			display_name = L['Warlock can dispel'],
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_dispel['WARLOCK'],
+			built_in = true,
+		},
+		['43'] = {
+			display_name = L['Warrior can dispel'],
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_dispel['WARRIOR'],
+			built_in = true,
+		},
+		['+0'] = {
+			display_name = L['Death Knight self buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.DEATHKNIGHT,
+			built_in = true,
+		},
+		[',0'] = {
+			display_name = L['Druid self buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.DRUID,
+			built_in = true,
+		},
+		['-0'] = {
+			display_name = L['Hunter self buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.HUNTER,
+			built_in = true,
+		},
+		['.0'] = {
+			display_name = L['Mage self buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.MAGE,
+			built_in = true,
+		},
+		['/0'] = {
+			display_name = L['Paladin self buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.PALADIN,
+			built_in = true,
+		},
+		['00'] = {
+			display_name = L['Priest self buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.PRIEST,
+			built_in = true,
+		},
+		['10'] = {
+			display_name = L['Rogue self buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.ROGUE,
+			built_in = true,
+		},
+		['20'] = {
+			display_name = L['Shaman self buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.SHAMAN,
+			built_in = true,
+		},
+		['30'] = {
+			display_name = L['Warlock self buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.WARLOCK,
+			built_in = true,
+		},
+		['40'] = {
+			display_name = L['Warrior self buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.WARRIOR,
+			built_in = true,
+		},
+		['+1'] = {
+			display_name = L['Death Knight pet buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = pet_buffs.DEATHKNIGHT,
+			built_in = true,
+		},
+		['-1'] = {
+			display_name = L['Hunter pet buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = pet_buffs.HUNTER,
+			built_in = true,
+		},
+		['31'] = {
+			display_name = L['Warlock pet buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = pet_buffs.WARLOCK,
+			built_in = true,
+		},
+		['+2'] = {
+			display_name = L['Death Knight friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.DEATHKNIGHT,
+			built_in = true,
+		},
+		[',2'] = {
+			display_name = L['Druid friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.DRUID,
+			built_in = true,
+		},
+		['-2'] = {
+			display_name = L['Hunter friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.HUNTER,
+			built_in = true,
+		},
+		['.2'] = {
+			display_name = L['Mage friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.MAGE,
+			built_in = true,
+		},
+		['/2'] = {
+			display_name = L['Paladin friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.PALADIN,
+			built_in = true,
+		},
+		['02'] = {
+			display_name = L['Priest friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.PRIEST,
+			built_in = true,
+		},
+		['12'] = {
+			display_name = L['Rogue friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.ROGUE,
+			built_in = true,
+		},
+		['22'] = {
+			display_name = L['Shaman friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.SHAMAN,
+			built_in = true,
+		},
+		['32'] = {
+			display_name = L['Warlock friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.WARLOCK,
+			built_in = true,
+		},
+		['42'] = {
+			display_name = L['Warrior friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.WARRIOR,
+			built_in = true,
+		},
+		['+6'] = {
+			display_name = L['Death Knight enemy debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = enemy_debuffs.DEATHKNIGHT,
+			built_in = true,
+		},
+		[',6'] = {
+			display_name = L['Druid enemy debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = enemy_debuffs.DRUID,
+			built_in = true,
+		},
+		['-6'] = {
+			display_name = L['Hunter enemy debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = enemy_debuffs.HUNTER,
+			built_in = true,
+		},
+		['.6'] = {
+			display_name = L['Mage enemey debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = enemy_debuffs.MAGE,
+			built_in = true,
+		},
+		['/6'] = {
+			display_name = L['Paladin enemy debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = enemy_debuffs.PALADIN,
+			built_in = true,
+		},
+		['06'] = {
+			display_name = L['Priest enemy debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = enemy_debuffs.PRIEST,
+			built_in = true,
+		},
+		['16'] = {
+			display_name = L['Rogue enemy debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = enemy_debuffs.ROGUE,
+			built_in = true,
+		},
+		['26'] = {
+			display_name = L['Shaman enemy debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = enemy_debuffs.SHAMAN,
+			built_in = true,
+		},
+		['36'] = {
+			display_name = L['Warlock enemy debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = enemy_debuffs.WARLOCK,
+			built_in = true,
+		},
+		['46'] = {
+			display_name = L['Warrior enemy debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = enemy_debuffs.WARRIOR,
+			built_in = true,
+		},
+		['/5'] = {
+			display_name = L['Paladin friend debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_debuffs.PALADIN,
+			built_in = true,
+		},
+		['05'] = {
+			display_name = L['Priest friend debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_debuffs.PRIEST,
+			built_in = true,
+		},
+		['25'] = {
+			display_name = L['Shaman friend debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_debuffs.SHAMAN,
+			built_in = true,
+		},
+		['60'] = {
+			display_name = L['Dwarf self buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.Dwarf,
+			built_in = true,
+		},
+		['70'] = {
+			display_name = L['Night Elf self buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.NightElf,
+			built_in = true,
+		},
+		[':0'] = {
+			display_name = L['Orc self buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.Orc,
+			built_in = true,
+		},
+		[';0'] = {
+			display_name = L['Undead self buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.Scourge,
+			built_in = true,
+		},
+		['=0'] = {
+			display_name = L['Troll self buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.Troll,
+			built_in = true,
+		},
+		['>0'] = {
+			display_name = L['Blood Elf self buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.BloodElf,
+			built_in = true,
+		},
+		['52'] = {
+			display_name = L['Human friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.Human,
+			built_in = true,
+		},
+		['62'] = {
+			display_name = L['Dwarf friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.Dwarf,
+			built_in = true,
+		},
+		['72'] = {
+			display_name = L['Night Elf friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.NightElf,
+			built_in = true,
+		},
+		['82'] = {
+			display_name = L['Gnome friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.Gnome,
+			built_in = true,
+		},
+		['92'] = {
+			display_name = L['Draenei friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.Draenei,
+			built_in = true,
+		},
+		[':2'] = {
+			display_name = L['Orc friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.Orc,
+			built_in = true,
+		},
+		[';2'] = {
+			display_name = L['Undead friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.Scourge,
+			built_in = true,
+		},
+		['<2'] = {
+			display_name = L['Tauren friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.Tauren,
+			built_in = true,
+		},
+		['=2'] = {
+			display_name = L['Troll friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.Troll,
+			built_in = true,
+		},
+		['>2'] = {
+			display_name = L['Blood Elf friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.BloodElf,
+			built_in = true,
+		},
+		['<6'] = {
+			display_name = L['Taruen enemy debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = enemy_debuffs.Tauren,
+			built_in = true,
+		},
+		['>6'] = {
+			display_name = L['Blood Elf enemy debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = enemy_debuffs.BloodElf,
+			built_in = true,
+		},
+		[':4'] = {
+			display_name = L['Orc self debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_debuffs.Orc,
+			built_in = true,
+		},
+		['.4'] = {
+			display_name = L['Mage self debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_debuffs.MAGE,
+			built_in = true,
+		},
+		['04'] = {
+			display_name = L['Priest self debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_debuffs.PRIEST,
+			built_in = true,
+		},
+		['44'] = {
+			display_name = L['Warrior self debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_debuffs.WARRIOR,
+			built_in = true,
+		},
+		['&D'] = {
+			display_name = L['My class can dispel'],
+			filter_type = 'Map',
+			map_type = 'class',
+			map = {
+				['DEATHKNIGHT'] = '@J',
+				['DRUID'] = ',3',
+				['HUNTER'] = '-3',
+				['MAGE'] = '.3',
+				['PALADIN'] = '/3',
+				['PRIEST'] = '03',
+				['ROGUE'] = '13',
+				['SHAMAN'] = '23',
+				['WARLOCK'] = '33',
+				['WARRIOR'] = '43',
+			},
+			built_in = true,
+		},
+		['&A'] = {
+			display_name = L['My class self buffs'],
+			filter_type = 'Map',
+			map_type = 'class',
+			map = {
+				['DEATHKNIGHT'] = '+0',
+				['DRUID'] = ',0',
+				['HUNTER'] = '-0',
+				['MAGE'] = '.0',
+				['PALADIN'] = '/0',
+				['PRIEST'] = '00',
+				['ROGUE'] = '10',
+				['SHAMAN'] = '20',
+				['WARLOCK'] = '30',
+				['WARRIOR'] = '40',
+			},
+			built_in = true,
+		},
+		['&B'] = {
+			display_name = L['My class pet buffs'],
+			filter_type = 'Map',
+			map_type = 'class',
+			map = {
+				['DEATHKNIGHT'] = '+1',
+				['DRUID'] = '@J',
+				['HUNTER'] = '-1',
+				['MAGE'] = '@J',
+				['PALADIN'] = '@J',
+				['PRIEST'] = '@J',
+				['ROGUE'] = '@J',
+				['SHAMAN'] = '@J',
+				['WARLOCK'] = '31',
+				['WARRIOR'] = '@J',
+			},
+			built_in = true,
+		},
+		['&C'] = {
+			display_name = L['My class friend buffs'],
+			filter_type = 'Map',
+			map_type = 'class',
+			map = {
+				['DEATHKNIGHT'] = '+2',
+				['DRUID'] = ',2',
+				['HUNTER'] = '-2',
+				['MAGE'] = '.2',
+				['PALADIN'] = '/2',
+				['PRIEST'] = '02',
+				['ROGUE'] = '12',
+				['SHAMAN'] = '22',
+				['WARLOCK'] = '32',
+				['WARRIOR'] = '42',
+			},
+			built_in = true,
+		},
+		['&G'] = {
+			display_name = L['My class enemy debuffs'],
+			filter_type = 'Map',
+			map_type = 'class',
+			map = {
+				['DEATHKNIGHT'] = '+6',
+				['DRUID'] = ',6',
+				['HUNTER'] = '-6',
+				['MAGE'] = '.6',
+				['PALADIN'] = '/6',
+				['PRIEST'] = '06',
+				['ROGUE'] = '16',
+				['SHAMAN'] = '26',
+				['WARLOCK'] = '36',
+				['WARRIOR'] = '46',
+			},
+			built_in = true,
+		},
+		['&F'] = {
+			display_name = L['My class friend debuffs'],
+			filter_type = 'Map',
+			map_type = 'class',
+			map = {
+				['DEATHKNIGHT'] = '@J',
+				['DRUID'] = '@J',
+				['HUNTER'] = '@J',
+				['MAGE'] = '@J',
+				['PALADIN'] = '/5',
+				['PRIEST'] = '05',
+				['ROGUE'] = '@J',
+				['SHAMAN'] = '25',
+				['WARLOCK'] = '@J',
+				['WARRIOR'] = '@J',
+			},
+			built_in = true,
+		},
+		['&E'] = {
+			display_name = L['My class self debuffs'],
+			filter_type = 'Map',
+			map_type == 'class',
+			map = {
+				['DEATHKNIGHT'] = '@J',
+				['DRUID'] = '@J',
+				['HUNTER'] = '@J',
+				['MAGE'] = '.4',
+				['PALADIN'] = '@J',
+				['PRIEST'] = '04',
+				['ROGUE'] = '@J',
+				['SHAMAN'] = '@J',
+				['WARLOCK'] = '@J',
+				['WARRIOR'] = '44',
+
+			},
+			built_in = true,
+		},
+		['%A'] = {
+			display_name = L['My race self buffs'],
+			filter_type = 'Map',
+			map_type = 'race',
+			map = {
+				['Human'] = '@J',
+				['Dwarf'] = '60',
+				['NightElf'] = '70',
+				['Gnome'] = '@J',
+				['Draenei'] = '@J',
+				['Orc'] = ':0',
+				['Scourge'] = ';0',
+				['Tauren'] = '@J',
+				['Troll'] = '=0',
+				['BloodElf'] = '>0',
+			},
+			built_in = true,
+		},
+		['%B'] = {
+			display_name = L['My race friend buffs'],
+			filter_type = 'Map',
+			map_type = 'race',
+			map = {
+				['Human'] = '52',
+				['Dwarf'] = '62',
+				['NightElf'] = '72',
+				['Gnome'] = '82',
+				['Draenei'] = '92',
+				['Orc'] = ':2',
+				['Scourge'] = ';2',
+				['Tauren'] = '<2',
+				['Troll'] = '=2',
+				['BloodElf'] = '>2',
+			},
+			built_in = true,
+		},
+		['%D'] = {
+			display_name = L['My race enemy debuffs'],
+			filter_type = 'Map',
+			map_type = 'race',
+			map = {
+				['Human'] = '@J',
+				['Dwarf'] = '@J',
+				['NightElf'] = '@J',
+				['Gnome'] = '@J',
+				['Draenei'] = '@J',
+				['Orc'] = '@J',
+				['Scourge'] = '@J',
+				['Tauren'] = '<6',
+				['Troll'] = '@J',
+				['BloodElf'] = '>6',
+			},
+			built_in = true,
+		},
+		['%C'] = {
+			display_name = L['My race self debuffs'],
+			filter_type = 'Map',
+			map_type = 'race',
+			map = {
+				['Human'] = '@J',
+				['Dwarf'] = '@J',
+				['NightElf'] = '@J',
+				['Gnome'] = '@J',
+				['Draenei'] = '@J',
+				['Orc'] = ':4',
+				['Scourge'] = '@J',
+				['Tauren'] = '@J',
+				['Troll'] = '@J',
+				['BloodElf'] = '@J',
+			},
+			built_in = true,
+		},
+		['*A'] = {
+			display_name = L['Extra buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = extra_buffs,
+			built_in = true,
+		},
+		['*B'] = {
+			display_name = L['Extra friend debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = {},
+			built_in = true,
+		},
+		['*C'] = {
+			display_name = L['Extra enemy debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = {},
+			built_in = true,
+		},
+		['#A'] = {
+			display_name = L['All self buffs'],
+			filter_type = 'Meta',
+			filters = {'&A','%A','@C'},
+			operators = {'|','|'},
+			built_in = true,
+		},
+		['#C'] = {
+			display_name = L['All self debuffs'],
+			filter_type = 'Meta',
+			filters = {'&E','%C'},
+			operators = {'|'},
+			built_in = true,
+		},
+		['#B'] = {
+			display_name = L['All friend buffs'],
+			filter_type = 'Meta',
+			filters =  {'&C','%B','*A'},
+			operators = {'|','|'},
+			built_in = true,
+		},
+		['#D'] = {
+			display_name = L['All friend debuffs'],
+			filter_type = 'Meta',
+			filters = {'&F','&D','*B'},
+			operators = {'|','|'},
+			built_in = true,
+		},
+		['#E'] = {
+			display_name = L['All enemy debuffs'],
+			filter_type = 'Meta',
+			filters = {'&G','%D','*C'},
+			operators = {'|','|'},
+			built_in = true,
+		},
+		['!B'] = {
+			display_name = L['Default buffs'],
+			filter_type = 'Meta',
+			filters = {'@G','#A','@F','&B','@D','#B','@E'},
+			operators = {'&','|','&','|','&','|'},
+			built_in = true,
+			display_when = "buff",
+		},
+		['!C'] = {
+			display_name = L['Default buffs, mine'],
+			filter_type = 'Meta',
+			filters = {'@H','!B','@E'},
+			operators = {'&','|'},
+			built_in = true,
+			display_when = "buff",
+		},
+		['!D'] = {
+			display_name = L['Default debuffs'],
+			filter_type = 'Meta',
+			filters = {'@G','#C','@D','#D','#E'},
+			operators = {'&','|','&','|'},
+			built_in = true,
+			display_when = "debuff",
+		},
+		['!E'] = {
+			display_name = L['Default debuffs, mine'],
+			filter_type = 'Meta',
+			filters = {'@H','!D','&D'},
+			operators = {'&','|'},
+			built_in = true,
+			display_when = "debuff",
+		},
+	},
 })
 
 -- tables of options for the selection options
@@ -301,6 +1180,12 @@ PitBull4_Aura:SetGlobalOptionsFunction(function(self)
 			self.db.profile.global.guess_weapon_enchant_icon = value
 			self:UpdateWeaponEnchants(true)
 		end,
+	}, 'filter_editor', {
+		type = 'group',
+		childGroups = 'tab',
+		name = L['Aura filter editor'],
+		desc = L['Configure the filters for the aura modules.'],
+		args = PitBull4_Aura:GetFilterEditor(),
 	}
 end)
 
@@ -335,6 +1220,28 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 		local group = info[#info - 1]
 		PitBull4.Options.GetLayoutDB(self).layout[group][id] = value
 		PitBull4.Options.UpdateFrames()
+	end
+	local function get_layout_filter(info)
+		local id = info[#info]
+		return PitBull4.Options.GetLayoutDB(self).layout[id].filter
+	end
+	local function set_layout_filter(info, value)
+		local id = info[#info]
+		PitBull4.Options.GetLayoutDB(self).layout[id].filter = value
+		PitBull4.Options.UpdateFrames()
+	end
+	local function get_layout_filter_values(info)
+		local t = {}
+		local filters = PitBull4_Aura.db.profile.global.filters
+		t[""] = L["None"]
+		for k,v in pairs(filters) do
+			local display_when = v.display_when
+			local group = info[#info]
+			if display_when == "both" or display_when == group then
+				t[k] = v.display_name or k
+			end
+		end
+		return t
 	end
 	local function get_layout_anchor(info)
 		local group = info[#info - 1]
@@ -738,5 +1645,32 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 		},
 	},
 	'buff', layout,
-	'debuff', layout
+	'debuff', layout,
+	'filters', {
+		type = 'group',
+		name = L['Filters'],
+		desc = L['Select the filters to be used to limit the auras that are displayed.'],
+		args = {
+			buff = {
+				type = 'select',
+				name = L['Buff'],
+				desc = L['Set the aura filter to filter the buff auras.'],
+				get = get_layout_filter,
+				set = set_layout_filter,
+				values = get_layout_filter_values,
+				disabled = is_aura_disabled,
+				order = 1,
+			},
+			debuff = {
+				type = 'select',
+				name = L['Debuff'],
+				desc = L['Set the aura filter to filter the debuff auras.'],
+				get = get_layout_filter,
+				set = set_layout_filter,
+				values = get_layout_filter_values,
+				disabled = is_aura_disabled,
+				order = 2,
+			},
+		},
+	}
 end)
