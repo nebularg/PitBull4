@@ -20,10 +20,10 @@ PitBull4_Banzai:SetDescription(L["Adds aggro coloring to PitBull4"])
 PitBull4_Banzai:SetDefaults({},{aggro_color = {1, 0, 0, 1}})
 PitBull4_Banzai:SetLayoutOptionsFunction(function(self) end)
 
-local function callback(aggro, name, ...)
-	for frame in PitBull4:IterateFramesForUnitIDs(...) do
+local function callback(aggro, name, unit)
+	for frame in PitBull4:IterateFramesForGUID(UnitGUID(unit)) do
 		if frame and PitBull4_Banzai:GetLayoutDB(frame).enabled then
-			PitBull4_Banzai:GetColor(PitBull4_HealthBar, frame)
+			PitBull4_HealthBar:UpdateFrame(frame)
 		end
 	end
 end
