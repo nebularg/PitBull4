@@ -332,16 +332,6 @@ function UnitFrame:ForceShow()
 	end
 	self.force_show = true
 	self.Hide = force_show_hide
-	if self.unit ~= 'focus' then
-		-- Always stay watching the focus.  Since the focus can actually
-		-- remain set even though UnitExists('focus') is returning nil.
-		-- E.G. /focus a member of your party, remove the member and the
-		-- focus frame will hide.  Reinvite the player and the frame will
-		-- come back becuase the focus was actually still set.  When this
-		-- happens PLAYER_FOCUS_CHANGED is not called so we won't know
-		-- we need to put the focus frame in forced show mode otherwise.
-		UnregisterUnitWatch(self)
-	end
 	self:Show()
 	self.Show = force_show_show
 end
@@ -354,7 +344,6 @@ function UnitFrame:UnforceShow()
 	self.Hide = nil
 	self.Show = nil
 	self.force_show = nil
-	RegisterUnitWatch(self)
 end
 UnitFrame.UnforceShow = PitBull4:OutOfCombatWrapper(UnitFrame.UnforceShow)
 
