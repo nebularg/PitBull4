@@ -276,6 +276,7 @@ function MemberUnitFrame__scripts:OnDragStart()
 end
 
 function MemberUnitFrame__scripts:OnDragStop()
+	if not moving_frame then return end
 	moving_frame = nil
 	local header = self.header
 	LibStub("LibSimpleSticky-1.0"):StopMoving(header)
