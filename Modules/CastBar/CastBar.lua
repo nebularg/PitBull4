@@ -16,21 +16,19 @@ PitBull4_CastBar:SetDefaults({
 	position = 10,
 })
 
-local castData = {}
-PitBull4_CastBar.castData = castData
+local cast_data = {}
+PitBull4_CastBar.cast_data = cast_data
 
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
 timerFrame:SetScript("OnUpdate", function() PitBull4_CastBar:FixCastDataAndUpdateAll() end)
 
-local player_guid, target_guid, pet_guid
+local player_guid
 function PitBull4_CastBar:OnEnable()
 	player_guid = UnitGUID("player")
 	
 	timerFrame:Show()
 	
-	self:RegisterEvent("PLAYER_PET_CHANGED")
-	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterEvent("UNIT_SPELLCAST_START")
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
 	self:RegisterEvent("UNIT_SPELLCAST_STOP")
@@ -39,28 +37,13 @@ function PitBull4_CastBar:OnEnable()
 	self:RegisterEvent("UNIT_SPELLCAST_DELAYED")
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
-	
-	self:PLAYER_PET_CHANGED()
-	self:PLAYER_TARGET_CHANGED()
 end
 
 function PitBull4_CastBar:OnDisable()
 	timerFrame:Hide()
 end
 
-function PitBull4_CastBar:PLAYER_TARGET_CHANGED()
-	target_guid = UnitGUID("target")
-end
-
-function PitBull4_CastBar:PLAYER_PET_CHANGED()
-	pet_guid = UnitGUID("pet")
-end
-
 function PitBull4_CastBar:FixCastDataAndUpdateAll()
-	self:UpdateInfoForGUID("player", player_guid)
-	self:UpdateInfoForGUID("pet", pet_guid)
-	self:UpdateInfoForGUID("target", target_guid)
-	
 	self:FixCastData()
 	self:UpdateAll()
 end
@@ -90,7 +73,7 @@ function PitBull4_CastBar:GetValue(frame)
 	end
 	
 	local guid = frame.guid
-	local data = castData[guid]
+	local data = cast_data[guid]
 	if not data then
 		return 0
 	end
@@ -113,7 +96,7 @@ end
 
 function PitBull4_CastBar:GetColor(frame, value)
 	local guid = frame.guid
-	local data = castData[guid]
+	local data = cast_data[guid]
 	if not data then
 		return 0, 0, 0, 0
 	end
@@ -134,27 +117,28 @@ function PitBull4_CastBar:GetColor(frame, value)
 			alpha = 1
 		end
 		if alpha <= 0 then
-			castData[guid] = del(data)
+			cast_data[guid] = del(data)
 			return 0, 0, 0, 0
 		else
 			return 0, 1, 0, alpha
 		end
 	else
-		castData[guid] = del(data)
+		cast_data[guid] = del(data)
 	end
 	return 0, 0, 0, 0
 end
 
-function PitBull4_CastBar:UpdateInfoForGUID(unit, guid)
+function PitBull4_CastBar:UpdateInfo(event, unit)
+	local guid = UnitGUID(unit)
 	if not guid then
 		return
 	end
-	local data = castData[guid]
+	local data = cast_data[guid]
 	if not data then
 		data = new()
-		castData[guid] = data
+		cast_data[guid] = data
 	end
-
+	
 	local spell, rank, displayName, icon, startTime, endTime = UnitCastingInfo(unit)
 	local channeling = false
 	if not spell then
@@ -171,12 +155,12 @@ function PitBull4_CastBar:UpdateInfoForGUID(unit, guid)
 		data.stopTime = nil
 		return
 	end
-
+	
 	if not data.icon then
-		castData[guid] = del(data)
+		cast_data[guid] = del(data)
 		return
 	end
-
+	
 	data.casting = false
 	data.channeling = false
 	data.fadeOut = true
@@ -185,14 +169,10 @@ function PitBull4_CastBar:UpdateInfoForGUID(unit, guid)
 	end
 end
 
-function PitBull4_CastBar:UpdateInfo(event, unit)
-	self:UpdateInfoForGUID(unit, UnitGUID(unit))
-end
-
 function PitBull4_CastBar:FixCastData()
 	local frame
 	local currentTime = GetTime()
-	for guid, data in pairs(castData) do
+	for guid, data in pairs(cast_data) do
 		local found = false
 		for frame in PitBull4:IterateFramesForGUID(guid) do
 			local castBar = frame.CastBar
@@ -218,16 +198,16 @@ function PitBull4_CastBar:FixCastData()
 					end
 					
 					if alpha <= 0 then
-						castData[guid] = del(data)
+						cast_data[guid] = del(data)
 					end
 				else
-					castData[guid] = del(data)
+					cast_data[guid] = del(data)
 				end
 				break
 			end	
 		end
 		if not found then
-			castData[guid] = del(data)
+			cast_data[guid] = del(data)
 		end
 	end
 end

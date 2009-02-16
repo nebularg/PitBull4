@@ -105,6 +105,7 @@ function SingletonUnitFrame__scripts:OnDragStart()
 end
 
 function SingletonUnitFrame__scripts:OnDragStop()
+	if not moving_frame then return end
 	moving_frame = nil
 	LibStub("LibSimpleSticky-1.0"):StopMoving(self)
 	
@@ -315,16 +316,34 @@ function SingletonUnitFrame:Deactivate()
 end
 SingletonUnitFrame.Deactivate = PitBull4:OutOfCombatWrapper(SingletonUnitFrame.Deactivate)
 
-local do_nothing = function() end
+local function force_show_hide(self)
+	self:UpdateGUID(nil)
+end
+
+local function force_show_show(self)
+	if self.unit then
+		self:UpdateGUID(UnitGUID(self.unit))
+	end
+end
 
 function UnitFrame:ForceShow()
 	if self.force_show then
 		return
 	end
 	self.force_show = true
-	self.Hide = do_nothing
-	UnregisterUnitWatch(self)
+	self.Hide = force_show_hide
+	if self.unit ~= 'focus' then
+		-- Always stay watching the focus.  Since the focus can actually
+		-- remain set even though UnitExists('focus') is returning nil.
+		-- E.G. /focus a member of your party, remove the member and the
+		-- focus frame will hide.  Reinvite the player and the frame will
+		-- come back becuase the focus was actually still set.  When this
+		-- happens PLAYER_FOCUS_CHANGED is not called so we won't know
+		-- we need to put the focus frame in forced show mode otherwise.
+		UnregisterUnitWatch(self)
+	end
 	self:Show()
+	self.Show = force_show_show
 end
 UnitFrame.ForceShow = PitBull4:OutOfCombatWrapper(UnitFrame.ForceShow)
 
@@ -333,6 +352,7 @@ function UnitFrame:UnforceShow()
 		return
 	end
 	self.Hide = nil
+	self.Show = nil
 	self.force_show = nil
 	RegisterUnitWatch(self)
 end

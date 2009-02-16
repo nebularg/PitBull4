@@ -119,7 +119,7 @@ function GroupHeader:RefreshLayout(dont_refresh_children)
 	elseif point == "RIGHT" then
 		x_diff = self[1]:GetWidth() / 2
 	end
-	self:SetPoint(point, UIParent, "CENTER", classification_db.position_x / scale + x_diff, (classification_db.position_y + y_diff) / scale)
+	self:SetPoint(point, UIParent, "CENTER", classification_db.position_x / scale + x_diff, classification_db.position_y / scale + y_diff)
 	
 	if not dont_refresh_children then
 		for i, frame in ipairs(self) do
@@ -207,7 +207,11 @@ function GroupHeader:AssignFakeUnitIDs()
 	if not self.force_show then
 		return
 	end
-	
+
+	local classification = self.classification
+	local n = classification:find("target") or (classification:len() + 1)
+	local prefix, suffix = classification:sub(0, n - 1), classification:sub(n, -1)
+
 	local current_group_num = 0
 	
 	local start, finish, step = 1, #self, 1
@@ -220,11 +224,14 @@ function GroupHeader:AssignFakeUnitIDs()
 		local frame = self[i]
 		
 		if not frame.guid then
+			local unit
 			repeat
 				current_group_num = current_group_num + 1
-			until not UnitExists("party" .. current_group_num)
-			
-			frame:SetAttribute("unit", "party" .. current_group_num)
+				unit = prefix .. current_group_num .. suffix
+			until not UnitExists(unit)
+
+			frame:SetAttribute("unit", unit)
+			frame.unit = unit
 		end
 	end
 end
@@ -269,6 +276,7 @@ function MemberUnitFrame__scripts:OnDragStart()
 end
 
 function MemberUnitFrame__scripts:OnDragStop()
+	if not moving_frame then return end
 	moving_frame = nil
 	local header = self.header
 	LibStub("LibSimpleSticky-1.0"):StopMoving(header)
