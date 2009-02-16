@@ -7,6 +7,13 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
+-- The type of control to use for multiselect options in the Filter Editor.
+-- If you're having error 132's with the filter editor commenting out the line
+-- below and uncommenting the line below it will avoid them.  This appears to
+-- be a bug in Blizzard's code and there's nothing I can really do to fix it.
+local MULTISELECT_CONTROL = "Dropdown"
+-- local MULTISELECT_CONTROL
+
 local function deep_copy(data)
 	local t = {}
 	for k, v in pairs(data) do
@@ -187,7 +194,7 @@ function PitBull4_Aura:GetFilterEditor()
 			args = {
 				friend_buffs = {
 					type = 'multiselect',
-					dialogControl = 'Dropdown',
+					dialogControl = MULTISELECT_CONTROL, 
 					name = L['Friend buffs'],
 					desc = L['Select buffs to show on your friends.'],
 					get = function(info,key)
@@ -239,7 +246,7 @@ function PitBull4_Aura:GetFilterEditor()
 				},
 				friend_debuffs = {
 					type = 'multiselect',
-					dialogControl = 'Dropdown',
+					dialogControl = MULTISELECT_CONTROL, 
 					name = L['Friend debuffs'],
 					desc = L['Select debuffs to show on your friends.'],
 					get = function(info,key)
@@ -288,7 +295,7 @@ function PitBull4_Aura:GetFilterEditor()
 				},
 				enemy_debuffs = {
 					type = 'multiselect',
-					dialogControl = 'Dropdown',
+					dialogControl = MULTISELECT_CONTROL, 
 					name = L['Enemy debuffs'],
 					desc = L['Select debuffs to show on your enemies.'],
 					get = function(info,key)
