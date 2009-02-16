@@ -209,7 +209,7 @@ function GroupHeader:AssignFakeUnitIDs()
 	end
 
 	local classification = self.classification
-  local n = classification:find("target") or (classification:len() + 1)
+	local n = classification:find("target") or (classification:len() + 1)
 	local prefix, suffix = classification:sub(0, n - 1), classification:sub(n, -1)
 
 	local current_group_num = 0
@@ -229,7 +229,7 @@ function GroupHeader:AssignFakeUnitIDs()
 				current_group_num = current_group_num + 1
 				unit = prefix .. current_group_num .. suffix
 			until not UnitExists(unit)
-		
+
 			frame:SetAttribute("unit", unit)
 			frame.unit = unit
 		end
