@@ -207,7 +207,11 @@ function GroupHeader:AssignFakeUnitIDs()
 	if not self.force_show then
 		return
 	end
-	
+
+	local classification = self.classification
+  local n = classification:find("target") or (classification:len() + 1)
+	local prefix, suffix = classification:sub(0, n - 1), classification:sub(n, -1)
+
 	local current_group_num = 0
 	
 	local start, finish, step = 1, #self, 1
@@ -220,11 +224,14 @@ function GroupHeader:AssignFakeUnitIDs()
 		local frame = self[i]
 		
 		if not frame.guid then
+			local unit
 			repeat
 				current_group_num = current_group_num + 1
-			until not UnitExists("party" .. current_group_num)
-			
-			frame:SetAttribute("unit", "party" .. current_group_num)
+				unit = prefix .. current_group_num .. suffix
+			until not UnitExists(unit)
+		
+			frame:SetAttribute("unit", unit)
+			frame.unit = unit
 		end
 	end
 end

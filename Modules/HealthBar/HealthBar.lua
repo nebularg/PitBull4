@@ -68,6 +68,9 @@ end
 function PitBull4_HealthBar:GetColor(frame, value)
 	local db = self:GetLayoutDB(frame)
 	local unit = frame.unit
+	if not unit then
+		print(frame:GetName())
+	end
 	if not UnitIsConnected(unit) then
 		return unpack(self.db.profile.global.colors.disconnected)
 	elseif UnitIsDeadOrGhost(unit) then
