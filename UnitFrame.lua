@@ -315,16 +315,25 @@ function SingletonUnitFrame:Deactivate()
 end
 SingletonUnitFrame.Deactivate = PitBull4:OutOfCombatWrapper(SingletonUnitFrame.Deactivate)
 
-local do_nothing = function() end
+local function force_show_hide(self)
+	self:UpdateGUID(nil)
+end
+
+local function force_show_show(self)
+	if self.unit then
+		self:UpdateGUID(UnitGUID(self.unit))
+	end
+end
 
 function UnitFrame:ForceShow()
 	if self.force_show then
 		return
 	end
 	self.force_show = true
-	self.Hide = do_nothing
+	self.Hide = force_show_hide
 	UnregisterUnitWatch(self)
 	self:Show()
+	self.Show = force_show_show
 end
 UnitFrame.ForceShow = PitBull4:OutOfCombatWrapper(UnitFrame.ForceShow)
 
@@ -333,6 +342,7 @@ function UnitFrame:UnforceShow()
 		return
 	end
 	self.Hide = nil
+	self.Show = nil
 	self.force_show = nil
 	RegisterUnitWatch(self)
 end
