@@ -119,7 +119,7 @@ function GroupHeader:RefreshLayout(dont_refresh_children)
 	elseif point == "RIGHT" then
 		x_diff = self[1]:GetWidth() / 2
 	end
-	self:SetPoint(point, UIParent, "CENTER", classification_db.position_x / scale + x_diff, (classification_db.position_y + y_diff) / scale)
+	self:SetPoint(point, UIParent, "CENTER", classification_db.position_x / scale + x_diff, classification_db.position_y / scale + y_diff)
 	
 	if not dont_refresh_children then
 		for i, frame in ipairs(self) do
