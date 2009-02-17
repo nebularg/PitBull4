@@ -189,6 +189,7 @@ function GroupHeader:ForceUnitFrameCreation(num)
 	-- this is done because the previous hack can mess up some unit references
 	for i, frame in ipairs(self) do
 		frame.unit = SecureButton_GetUnit(frame)
+		frame:Update()
 	end
 end
 GroupHeader.ForceUnitFrameCreation = PitBull4:OutOfCombatWrapper(GroupHeader.ForceUnitFrameCreation)
