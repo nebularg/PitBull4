@@ -41,16 +41,6 @@ local function scan_for_known_talent(spellid)
 	return false
 end
 
--- Handle CHARACTER_POINTS_CHANGED events.  If the points aren't changed
--- due to leveling, rescan the talents for the relevent talents that change
--- what we can dispel.
-function PitBull4_Aura:CHARACTER_POINTS_CHANGED(event, count, levels)
-	if levels > 0 then return end -- Not interested in gained points from leveling
-	local curse = scan_for_known_talent(51886)
-	can_dispel.SHAMAN.Curse = curse -- can_dispel table
-	self:GetFilterDB('23').aura_type_list.Curse = curse -- Shaman can dispel filter
-end
-
 -- Setup the data for who can dispel what types of auras.
 local can_dispel = {
 	DEATHKNIGHT = {},
@@ -91,6 +81,16 @@ local can_dispel = {
 }
 can_dispel.player = can_dispel[player_class]
 PitBull4_Aura.can_dispel = can_dispel
+
+-- Handle CHARACTER_POINTS_CHANGED events.  If the points aren't changed
+-- due to leveling, rescan the talents for the relevent talents that change
+-- what we can dispel.
+function PitBull4_Aura:CHARACTER_POINTS_CHANGED(event, count, levels)
+	if levels > 0 then return end -- Not interested in gained points from leveling
+	local curse = scan_for_known_talent(51886)
+	can_dispel.SHAMAN.Curse = curse -- can_dispel table
+	self:GetFilterDB('23').aura_type_list.Curse = curse -- Shaman can dispel filter
+end
 
 -- Setup the data for which auras belong to whom
 local friend_buffs,friend_debuffs,self_buffs,self_debuffs,pet_buffs,enemy_debuffs = {},{},{},{},{},{}
