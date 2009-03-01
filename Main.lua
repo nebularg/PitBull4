@@ -686,17 +686,6 @@ function PitBull4:MakeSingletonFrame(unit)
 end
 PitBull4.MakeSingletonFrame = PitBull4:OutOfCombatWrapper(PitBull4.MakeSingletonFrame)
 
-local template_names = {
-	[true] = { -- party-based
-		[true] = "SecurePartyPetHeaderTemplate",
-		[false] = "SecurePartyHeaderTemplate",
-	},
-	[false] = { -- raid-based
-		[true] = "SecureRaidPetHeaderTemplate",
-		[false] = "SecureRaidGroupHeaderTemplate",
-	},
-}
-
 --- Make a group header.
 -- @param classification the classification for the group.
 -- @param group the identifier for the group. This can be nil if inapplicable, e.g. "party" classification.
@@ -720,10 +709,14 @@ function PitBull4:MakeGroupHeader(classification, group)
 	local header = _G[header_name]
 	if not header then
 		local party_based = classification:sub(1, 5) == "party"
-	
-		local pet_based = not not classification:match("pet") -- this feels dirty
+		local template
+		if party_based then
+			template = "SecurePartyHeaderTemplate"
+		else
+			template = "SecureRaidGroupHeaderTemplate"
+		end
 		
-		header = CreateFrame("Frame", header_name, UIParent, template_names[party_based][pet_based])
+		header = CreateFrame("Frame", header_name, UIParent, template)
 		header:Hide() -- it will be shown later and attributes being set won't cause lag
 		header:SetFrameStrata(UNITFRAME_STRATA)
 		header:SetFrameLevel(UNITFRAME_LEVEL - 1)
