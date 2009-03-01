@@ -6,6 +6,7 @@ local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
+local wrath_310 = select(4,GetBuildInfo()) >= 30100
 
 local _,player_class = UnitClass('player')
 local _,player_race = UnitRace('player')
@@ -39,16 +40,6 @@ local function scan_for_known_talent(spellid)
 		end
 	end
 	return false
-end
-
--- Handle CHARACTER_POINTS_CHANGED events.  If the points aren't changed
--- due to leveling, rescan the talents for the relevent talents that change
--- what we can dispel.
-function PitBull4_Aura:CHARACTER_POINTS_CHANGED(event, count, levels)
-	if levels > 0 then return end -- Not interested in gained points from leveling
-	local curse = scan_for_known_talent(51886)
-	can_dispel.SHAMAN.Curse = curse -- can_dispel table
-	self:GetFilterDB('23').aura_type_list.Curse = curse -- Shaman can dispel filter
 end
 
 -- Setup the data for who can dispel what types of auras.
@@ -92,6 +83,16 @@ local can_dispel = {
 can_dispel.player = can_dispel[player_class]
 PitBull4_Aura.can_dispel = can_dispel
 
+-- Handle CHARACTER_POINTS_CHANGED events.  If the points aren't changed
+-- due to leveling, rescan the talents for the relevent talents that change
+-- what we can dispel.
+function PitBull4_Aura:CHARACTER_POINTS_CHANGED(event, count, levels)
+	if levels > 0 then return end -- Not interested in gained points from leveling
+	local curse = scan_for_known_talent(51886)
+	can_dispel.SHAMAN.Curse = curse -- can_dispel table
+	self:GetFilterDB('23').aura_type_list.Curse = curse -- Shaman can dispel filter
+end
+
 -- Setup the data for which auras belong to whom
 local friend_buffs,friend_debuffs,self_buffs,self_debuffs,pet_buffs,enemy_debuffs = {},{},{},{},{},{}
 
@@ -108,7 +109,7 @@ self_buffs.DEATHKNIGHT = {
 	[55226] = true, -- Blade Barrier
 	[49028] = true, -- Dancing Rune Weapon
 	[49796] = true, -- Deathchill
-	[50466] = true, -- Death Trance! (Sudden Doom)
+	[50466] = not wrath_310 or nil, -- Death Trance! (Sudden Doom)
 	[59052] = true, -- Freezing Fog (Rime)
 	[51124] = true, -- Killing Machine
 	[49039] = true, -- Lichborne
@@ -131,7 +132,7 @@ enemy_debuffs.DEATHKNIGHT = {
 	[55095] = true, -- Frost Fever
 	[49203] = true, -- Hungering Cold
 	[49005] = true, -- Mark of Blood
-	[49916] = true, -- Strangulate
+	[47476] = true, -- Strangulate
 }
 
 -- DRUID
@@ -268,7 +269,7 @@ enemy_debuffs.HUNTER = {
 	[1853]  = true, -- Growl
 	[1130]  = true, -- Hunter's Mark
 	[19407] = true, -- Improved Concussive Shot
-	[19228] = true, -- Improved Wing Clip
+	[19228] = not wrath_310 or nil, -- Improved Wing Clip
 	[7093]  = true, -- Intimidation
 	[5760]  = true, -- Mind-numbing Poison
 	[32093] = true, -- Poison Spit
@@ -422,7 +423,7 @@ friend_buffs.PRIEST = {
 	[552]   = true, -- Abolish Disease
 	[14752] = true, -- Divine Spirit
 	[6346]  = true, -- Fear Ward
-	[60931] = true, -- Hymn of Hope
+	[60931] = not wrath_310 or nil, -- Hymn of Hope
 	[14892] = true, -- Inspiration
 	[1706]  = true, -- Levitate
 	[10060] = true, -- Power Infusion
@@ -612,7 +613,7 @@ enemy_debuffs.WARLOCK = {
 	[980]   = true, -- Curse of Agony
 	[603]   = true, -- Curse of Doom
 	[18223] = true, -- Curse of Exhaustion
-	[704]   = true, -- Curse of Recklessness
+	[704]   = not wrath_310 or nil, -- Curse of Recklessness
 	[1714]  = true, -- Curse of Tongues
 	[702]   = true, -- Curse of Weakness
 	[1490]  = true, -- Curse of the Elements
@@ -634,7 +635,7 @@ enemy_debuffs.WARLOCK = {
 	[17877] = true, -- Shadowburn
 	[30283] = true, -- Shadowfury
 	[6726]  = true, -- Silence
-	[18265] = true, -- Siphon Life
+	[18265] = not wrath_310 or nil, -- Siphon Life
 	[6360]  = true, -- Soothing Kiss
 	[19244] = true, -- Spell Lock
 	[17735] = true, -- Suffering

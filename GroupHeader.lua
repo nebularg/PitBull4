@@ -189,6 +189,7 @@ function GroupHeader:ForceUnitFrameCreation(num)
 	-- this is done because the previous hack can mess up some unit references
 	for i, frame in ipairs(self) do
 		frame.unit = SecureButton_GetUnit(frame)
+		frame:Update()
 	end
 end
 GroupHeader.ForceUnitFrameCreation = PitBull4:OutOfCombatWrapper(GroupHeader.ForceUnitFrameCreation)
@@ -208,9 +209,11 @@ function GroupHeader:AssignFakeUnitIDs()
 		return
 	end
 
-	local classification = self.classification
-	local n = classification:find("target") or (classification:len() + 1)
-	local prefix, suffix = classification:sub(0, n - 1), classification:sub(n, -1)
+	local super_classification = self.super_classification
+	local super_header
+	if super_classification ~= self.classification then
+		super_header = next(PitBull4.classification_to_headers[super_classification])
+	end
 
 	local current_group_num = 0
 	
@@ -224,14 +227,18 @@ function GroupHeader:AssignFakeUnitIDs()
 		local frame = self[i]
 		
 		if not frame.guid then
-			local unit
-			repeat
-				current_group_num = current_group_num + 1
-				unit = prefix .. current_group_num .. suffix
-			until not UnitExists(unit)
-
-			frame:SetAttribute("unit", unit)
-			frame.unit = unit
+			local old_unit = frame:GetAttribute("unit")
+			if not super_header then
+				repeat
+					current_group_num = current_group_num + 1
+					frame:SetAttribute("unit", super_classification .. current_group_num)
+				until not UnitExists(SecureButton_GetUnit(frame))
+			else
+				frame:SetAttribute("unit", super_header[i]:GetAttribute("unit"))
+			end
+			if old_unit ~= frame:GetAttribute("unit") then
+				frame:Update()
+			end
 		end
 	end
 end
