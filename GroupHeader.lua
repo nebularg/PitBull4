@@ -209,6 +209,12 @@ function GroupHeader:AssignFakeUnitIDs()
 		return
 	end
 
+	local super_classification = self.super_classification
+	local super_header
+	if super_classification ~= self.classification then
+		super_header = next(PitBull4.classification_to_headers[super_classification])
+	end
+
 	local current_group_num = 0
 	
 	local start, finish, step = 1, #self, 1
@@ -221,11 +227,18 @@ function GroupHeader:AssignFakeUnitIDs()
 		local frame = self[i]
 		
 		if not frame.guid then
-			local unit
-			repeat
-				current_group_num = current_group_num + 1
-				frame:SetAttribute("unit", self.super_classification .. current_group_num)
-			until not UnitExists(SecureButton_GetUnit(frame))
+			local old_unit = frame:GetAttribute("unit")
+			if not super_header then
+				repeat
+					current_group_num = current_group_num + 1
+					frame:SetAttribute("unit", super_classification .. current_group_num)
+				until not UnitExists(SecureButton_GetUnit(frame))
+			else
+				frame:SetAttribute("unit", super_header[i]:GetAttribute("unit"))
+			end
+			if old_unit ~= frame:GetAttribute("unit") then
+				frame:Update()
+			end
 		end
 	end
 end
