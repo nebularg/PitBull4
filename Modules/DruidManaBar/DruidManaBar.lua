@@ -50,7 +50,13 @@ function PitBull4_DruidManaBar:UNIT_MANA(event, unit)
 		return
 	end
 	
-	self:UpdateForUnitID("player")
+	for frame in PitBull4:IterateFramesForUnitID("player") do
+		if not frame.DruidManaBar then
+			frame:Update()
+		else
+			self:Update(frame)	
+		end
+	end
 end
 
 PitBull4_DruidManaBar.UNIT_MAXMANA = PitBull4_DruidManaBar.UNIT_MANA
