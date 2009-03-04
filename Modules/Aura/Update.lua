@@ -39,7 +39,7 @@ local wipe = _G.table.wipe
 -- [9] = debuff_type
 -- [10] = duration
 -- [11] = expiration_time
--- [12] = is_mine
+-- [12] = caster 
 -- [13] = is_stealable
 local list = {}
 
@@ -77,6 +77,14 @@ local sample_debuff_types = { 'Poison', 'Magic', 'Disease', 'Curse', 'Enrage', '
 -- constants for formating time
 local HOUR_ONELETTER_ABBR = _G.HOUR_ONELETTER_ABBR:gsub("%s", "") -- "%dh"
 local MINUTE_ONELETTER_ABBR = _G.MINUTE_ONELETTER_ABBR:gsub("%s", "") -- "%dm"
+
+-- units to consider mine
+local my_units = {
+	player = true,
+	pet = true,
+	vehicle = true,
+}
+
 
 -- table of dispel types we can dispel
 local can_dispel = PitBull4_Aura.can_dispel.player
@@ -122,6 +130,13 @@ local function get_aura_list(list, unit, db, is_buff, frame)
 		-- Once this is fixed this code should be removed.
 		if entry[9] == "" then
 			entry[9] = "Enrage"
+		end
+
+		-- Make pre 3.1.0 clients emulate the return of the caster
+		-- argument in the new 3.1.0 clients.  Once 3.1.0 is
+		-- live for everyone this can be removed
+		if entry[12] == 1 then
+			entry[12] = "player"
 		end
 
 		if not entry[5] then
@@ -178,20 +193,20 @@ local function get_aura_list_sample(list, unit, max, db, is_buff)
 			entry[3] = link and select(3,GetItemInfo(link)) or 4 -- quality or epic if no item
 			entry[5] = L["Sample Weapon Buff"] -- name
 			entry[9] = nil -- no debuff type
-			entry[12] =  true -- treat weapon enchants as yours
+			entry[12] = "player" -- treat weapon enchants as yours
 		elseif i == offhand then
 			entry[2] = OFFHAND
 			local link = GetInventoryItemLink("player", OFFHAND)
 			entry[3] = link and select(3,GetItemInfo(link)) or 4 -- quality or epic if no item
 			entry[5] = L["Sample Weapon Buff"] -- name
 			entry[9] = nil -- no debuff type
-			entry[12] = true -- treat weapon enchants as yours
+			entry[12] = "player" -- treat weapon enchants as yours
 		else
 			entry[2]  = nil -- not a weapon enchant
 			entry[3]  = nil -- no quality color
 			entry[5]  = is_buff and L["Sample Buff"] or L["Sample Debuff"] -- name
 			entry[9]  = sample_debuff_types[(i-1)% #sample_debuff_types]
-			entry[12]  = ((random(2) % 2) == 1) and 1 or nil -- is_mine
+			entry[12]  = ((random(2) % 2) == 1) and "player" or nil -- caster 
 		end
 		entry[4]  = is_buff
 		entry[6]  = "" -- rank
@@ -304,7 +319,7 @@ local function set_weapon_entry(list, is_enchant, time_left, expiration_time, co
 	entry[9] = nil
 	entry[10] = duration
 	entry[11] = expiration_time
-	entry[12] = true -- treat weapon enchants as always yours
+	entry[12] = "player" -- treat weapon enchants as always yours
 	entry[13] = nil -- is_stealable
 end
 
@@ -348,8 +363,8 @@ local function aura_sort(a, b)
 	end
 
 	-- show your own auras first
-	local a_mine, b_mine =  a[12], b[12]
-	if a_mine ~= b_mine then
+	local a_mine, b_mine=  my_units[a[12]], my_units[b[12]]
+	if a_mine~= b_mine then
 		if a_mine then
 			return true
 		elseif b_mine then
@@ -425,8 +440,9 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	local control = aura_controls[i]
 	local unit = frame.unit
 
-	local id, slot, quality, is_buff, name, rank, icon, count, debuff_type, duration, expiration_time, is_mine, is_stealable = unpack(aura, 1, ENTRY_END)
+	local id, slot, quality, is_buff, name, rank, icon, count, debuff_type, duration, expiration_time, caster, is_stealable = unpack(aura, 1, ENTRY_END)
 
+	local is_mine = my_units[caster]
 	local who = is_mine and "my" or "other"
 	-- No way to know who applied a weapon buff so we have a separate
 	-- category for them.

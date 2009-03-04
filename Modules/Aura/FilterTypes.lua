@@ -751,12 +751,18 @@ PitBull4_Aura:RegisterFilterType('Time Left',L["Time Left"],time_left_filter, fu
 	}
 end)
 
+local my_units = {
+	player = true,
+	pet = true,
+	vehicle = true,
+}
+
 -- Mine, Filter by if you cast it or not.
 local function mine_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).mine then
-		return entry[12]
+		return my_units[entry[12]]
 	else
-		return not entry[12]
+		return not my_units[entry[12]]
 	end
 end
 PitBull4_Aura:RegisterFilterType('Mine',L['Mine'],mine_filter, function(self,options)
