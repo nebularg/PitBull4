@@ -19,8 +19,10 @@ local SINGLETON_CLASSIFICATIONS = {
 local PARTY_CLASSIFICATIONS = {
 	"party",
 	"partytarget",
+	"partytargettarget",
 	"partypet",
 	"partypettarget",
+	"partypettargettarget",
 }
 
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
