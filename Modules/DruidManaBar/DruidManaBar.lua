@@ -17,6 +17,7 @@ PitBull4_DruidManaBar:SetDescription(L["Show the mana bar when a druid is in cat
 PitBull4_DruidManaBar:SetDefaults({
 	size = 1,
 	position = 6,
+	hide_if_full = false,
 })
 
 -- constants
@@ -37,7 +38,13 @@ function PitBull4_DruidManaBar:GetValue(frame)
 		return nil
 	end
 	
-	return UnitPower("player", MANA_TYPE) / UnitPowerMax("player", MANA_TYPE)
+	local percent = UnitPower("player", MANA_TYPE) / UnitPowerMax("player", MANA_TYPE)
+
+	if percent == 1 and self:GetLayoutDB(frame).hide_if_full then
+		return nil
+	end
+
+	return percent
 end
 
 function PitBull4_DruidManaBar:GetColor(frame, value)
@@ -61,3 +68,19 @@ end
 
 PitBull4_DruidManaBar.UNIT_MAXMANA = PitBull4_DruidManaBar.UNIT_MANA
 PitBull4_DruidManaBar.UNIT_DISPLAYPOWER = PitBull4_DruidManaBar.UNIT_MANA
+
+PitBull4_DruidManaBar:SetLayoutOptionsFunction(function(self)
+	return 'hide_if_full', {
+		name = L["Hide if full"],
+		desc = L["Hide when at 100% mana."],
+		type = 'toggle',
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).hide_if_full
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).hide_if_full = value
+			
+			PitBull4.Options.UpdateFrames()
+		end,
+	}
+end)
