@@ -25,6 +25,9 @@ externals:
     libs/AceGUI-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
         tag: latest
+    libs/AceHook-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceHook-3.0
+        tag: latest
     libs/AceLocale-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceLocale-3.0
         tag: latest
@@ -48,6 +51,9 @@ externals:
         tag: v1.1.4
     libs/LibDBIcon-1.0:
         url: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/trunk/LibDBIcon-1.0
+        tag: latest
+    libs/LibBanzai-2.0:
+        url: svn://svn.wowace.com/wow/libbanzai-2-0/mainline/trunk 
         tag: latest
 
 ignore:

@@ -119,7 +119,7 @@ function GroupHeader:RefreshLayout(dont_refresh_children)
 	elseif point == "RIGHT" then
 		x_diff = self[1]:GetWidth() / 2
 	end
-	self:SetPoint(point, UIParent, "CENTER", classification_db.position_x / scale + x_diff, (classification_db.position_y + y_diff) / scale)
+	self:SetPoint(point, UIParent, "CENTER", classification_db.position_x / scale + x_diff, classification_db.position_y / scale + y_diff)
 	
 	if not dont_refresh_children then
 		for i, frame in ipairs(self) do
@@ -189,6 +189,7 @@ function GroupHeader:ForceUnitFrameCreation(num)
 	-- this is done because the previous hack can mess up some unit references
 	for i, frame in ipairs(self) do
 		frame.unit = SecureButton_GetUnit(frame)
+		frame:Update()
 	end
 end
 GroupHeader.ForceUnitFrameCreation = PitBull4:OutOfCombatWrapper(GroupHeader.ForceUnitFrameCreation)
@@ -207,7 +208,13 @@ function GroupHeader:AssignFakeUnitIDs()
 	if not self.force_show then
 		return
 	end
-	
+
+	local super_classification = self.super_classification
+	local super_header
+	if super_classification ~= self.classification then
+		super_header = next(PitBull4.classification_to_headers[super_classification])
+	end
+
 	local current_group_num = 0
 	
 	local start, finish, step = 1, #self, 1
@@ -220,11 +227,18 @@ function GroupHeader:AssignFakeUnitIDs()
 		local frame = self[i]
 		
 		if not frame.guid then
-			repeat
-				current_group_num = current_group_num + 1
-			until not UnitExists("party" .. current_group_num)
-			
-			frame:SetAttribute("unit", "party" .. current_group_num)
+			local old_unit = frame:GetAttribute("unit")
+			if not super_header then
+				repeat
+					current_group_num = current_group_num + 1
+					frame:SetAttribute("unit", super_classification .. current_group_num)
+				until not UnitExists(SecureButton_GetUnit(frame))
+			else
+				frame:SetAttribute("unit", super_header[i]:GetAttribute("unit"))
+			end
+			if old_unit ~= frame:GetAttribute("unit") then
+				frame:Update()
+			end
 		end
 	end
 end
@@ -269,6 +283,7 @@ function MemberUnitFrame__scripts:OnDragStart()
 end
 
 function MemberUnitFrame__scripts:OnDragStop()
+	if not moving_frame then return end
 	moving_frame = nil
 	local header = self.header
 	LibStub("LibSimpleSticky-1.0"):StopMoving(header)

@@ -28,7 +28,7 @@ local function call_texture_function(self, frame)
 	if frame.guid then
 		tex = self:GetTexture(frame)
 	end
-	if not tex and PitBull4.config_mode and self.GetExampleTexture then
+	if not tex and frame.force_show and self.GetExampleTexture then
 		tex = self:GetExampleTexture(frame)
 	end
 	if not tex then

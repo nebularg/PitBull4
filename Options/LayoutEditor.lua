@@ -97,6 +97,7 @@ function PitBull4.Options.get_layout_editor_options()
 				t[k] = v
 			end
 		end
+		setmetatable(t,getmetatable(data))
 		return t
 	end
 	

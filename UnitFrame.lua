@@ -105,6 +105,7 @@ function SingletonUnitFrame__scripts:OnDragStart()
 end
 
 function SingletonUnitFrame__scripts:OnDragStop()
+	if not moving_frame then return end
 	moving_frame = nil
 	LibStub("LibSimpleSticky-1.0"):StopMoving(self)
 	
@@ -315,16 +316,24 @@ function SingletonUnitFrame:Deactivate()
 end
 SingletonUnitFrame.Deactivate = PitBull4:OutOfCombatWrapper(SingletonUnitFrame.Deactivate)
 
-local do_nothing = function() end
+local function force_show_hide(self)
+	self:UpdateGUID(nil)
+end
+
+local function force_show_show(self)
+	if self.unit then
+		self:UpdateGUID(UnitGUID(self.unit))
+	end
+end
 
 function UnitFrame:ForceShow()
 	if self.force_show then
 		return
 	end
 	self.force_show = true
-	self.Hide = do_nothing
-	UnregisterUnitWatch(self)
+	self.Hide = force_show_hide
 	self:Show()
+	self.Show = force_show_show
 end
 UnitFrame.ForceShow = PitBull4:OutOfCombatWrapper(UnitFrame.ForceShow)
 
@@ -333,8 +342,8 @@ function UnitFrame:UnforceShow()
 		return
 	end
 	self.Hide = nil
+	self.Show = nil
 	self.force_show = nil
-	RegisterUnitWatch(self)
 end
 UnitFrame.UnforceShow = PitBull4:OutOfCombatWrapper(UnitFrame.UnforceShow)
 
