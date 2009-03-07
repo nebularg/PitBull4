@@ -6,7 +6,7 @@ function PitBull4.Options.get_unit_options()
 	local unit_options = {
 		type = 'group',
 		name = L["Units"],
-		desc = L["Change individual settings for units and unit groups."],
+		desc = L["Change settings for units."],
 		args = {},
 		childGroups = "tree",
 	}

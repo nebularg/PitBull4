@@ -12,6 +12,7 @@
 <Script file="LayoutEditor\Faders.lua"/>
 <Script file="LayoutEditor\Other.lua"/>
 <Script file="Units.lua"/>
+<Script file="Groups.lua"/>
 <Script file="Modules.lua"/>
 <Script file="Colors.lua"/>
 

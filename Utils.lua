@@ -114,7 +114,6 @@ do
 		return valid_classifications[unit]
 	end
 	
-	
 	local non_wacky_unit_ids = {
 		player = true,
 		pet = true,

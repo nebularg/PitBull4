@@ -42,13 +42,13 @@ local DATABASE_DEFAULTS = {
 	profile = {
 		lock_movement = false,
 		minimap_icon = {
-				hide = false,
-				minimapPos = 200,
-				radius = 80,
+			hide = false,
+			minimapPos = 200,
+			radius = 80,
 		},
-		classifications = {
+		units = {
 			['**'] = {
-				enabled = true,
+				enabled = false,
 				position_x = 0,
 				position_y = 0,
 				size_x = 1, -- this is a multiplier
@@ -57,16 +57,38 @@ local DATABASE_DEFAULTS = {
 				layout = L["Normal"],
 				horizontal_mirror = false,
 				vertical_mirror = false,
+				click_through = false,
+			},
+			player = { enabled = true },
+			pet = { enabled = true },
+			pettarget = { enabled = true },
+			target = { enabled = true },
+			targettarget = { enabled = true },
+			targettargettarget = { enabled = true },
+			focus = { enabled = true },
+			focustarget = { enabled = true },
+			focustargettarget = { enabled = true },
+		},
+		groups = {
+			['**'] = {
+				enabled = true,
+				sort_method = "INDEX",
+				sort_direction = "ASC",
 				horizontal_spacing = 30,
 				vertical_spacing = 30,
 				direction = "down_right",
 				units_per_column = MAX_RAID_MEMBERS,
+				
+				position_x = 0,
+				position_y = 0,
+				size_x = 1, -- this is a multiplier
+				size_y = 1, -- this is a multiplier
+				scale = 1,
+				layout = L["Normal"],
+				horizontal_mirror = false,
+				vertical_mirror = false,
 				click_through = false,
-			},
-			party = {
-				sort_method = "INDEX",
-				sort_direction = "ASC",
-			},
+			}
 		},
 		layouts = {
 			['**'] = {
@@ -224,6 +246,9 @@ PitBull4.classification_to_headers = classification_to_headers
 -- A dictionary of super-classification to a set of all group headers of that super-classification
 local super_classification_to_headers = setmetatable({}, auto_table__mt)
 PitBull4.super_classification_to_headers = super_classification_to_headers
+
+local classifications = {}
+PitBull4.classifications = classifications
 
 --- Wrap the given function so that any call to it will be piped through PitBull4:RunOnLeaveCombat.
 -- @param func function to call
@@ -616,6 +641,28 @@ function PitBull4:IterateHeadersForSuperClassification(super_classification)
 	return not also_hidden and iterate_shown_frames or half_next, headers
 end
 
+local function return_same(object, key)
+	if key then
+		return nil
+	else
+		return object
+	end
+end
+
+--- Iterate over all headers with the given name.
+-- @param name the name to check
+-- @usage for header in PitBull4:IterateHeadersForName("Party pets")
+--     doSomethingWith(header)
+-- end
+-- @return iterator which returns zero or one header
+function PitBull4:IterateHeadersForName(name)
+	--@alpha@
+	expect(name, 'typeof', 'string')
+	--@end-alpha@
+	
+	return return_same, classifications[name]
+end
+
 local function header_layout_iter(layout, header)
 	header = next(all_headers, header)
 	if not header then
@@ -668,7 +715,7 @@ function PitBull4:MakeSingletonFrame(unit)
 		-- for singletons, its classification is its UnitID
 		local classification = unit
 		frame.classification = classification
-		frame.classification_db = db.profile.classifications[classification]
+		frame.classification_db = db.profile.units[classification]
 		
 		local is_wacky = PitBull4.Utils.IsWackyClassification(classification)
 		frame.is_wacky = is_wacky
@@ -687,14 +734,8 @@ end
 PitBull4.MakeSingletonFrame = PitBull4:OutOfCombatWrapper(PitBull4.MakeSingletonFrame)
 
 local template_names = {
-	[true] = { -- party-based
-		[true] = "SecurePartyPetHeaderTemplate",
-		[false] = "SecurePartyHeaderTemplate",
-	},
-	[false] = { -- raid-based
-		[true] = "SecureRaidPetHeaderTemplate",
-		[false] = "SecureRaidGroupHeaderTemplate",
-	},
+	[false] = "SecureGroupHeaderTemplate",
+	[true] = "SecureGroupPetHeaderTemplate",
 }
 
 --- Make a group header.
@@ -723,21 +764,24 @@ function PitBull4:MakeGroupHeader(classification, group)
 	
 		local pet_based = not not classification:match("pet") -- this feels dirty
 		
-		header = CreateFrame("Frame", header_name, UIParent, template_names[party_based][pet_based])
+		header = CreateFrame("Frame", header_name, UIParent, template_names[pet_based])
 		header:Hide() -- it will be shown later and attributes being set won't cause lag
 		header:SetFrameStrata(UNITFRAME_STRATA)
 		header:SetFrameLevel(UNITFRAME_LEVEL - 1)
 		
 		if party_based then
 			header.super_classification = "party"
-			header.super_classification_db = db.profile.classifications["party"]
+			header.super_classification_db = db.profile.groups["party"]
 			header.unitsuffix = classification:sub(6)
 			if header.unitsuffix == "" then
 				header.unitsuffix = nil
 			end
+			header:SetAttribute("showParty", true)
+		else	
+			header:SetAttribute("showRaid", true)
 		end
 		header.classification = classification
-		header.classification_db = db.profile.classifications[classification]
+		header.classification_db = db.profile.groups[classification]
 		header.group = group
 		
 		local is_wacky = PitBull4.Utils.IsWackyClassification(classification)
@@ -821,11 +865,14 @@ function PitBull4:OnProfileChanged()
 	local db = self.db
 	
 	for header in PitBull4:IterateHeaders() do
-		header.super_classification_db = db.profile.classifications[header.super_classification]
-		header.classification_db = db.profile.classifications[header.classification]
+		header.super_classification_db = db.profile.groups[header.super_classification]
+		header.classification_db = db.profile.groups[header.classification]
+		for _, frame in ipairs(header) do
+			frame.classification_db = header.classification_db
+		end
 	end
-	for frame in PitBull4:IterateFrames(true) do
-		frame.classification_db = db.profile.classifications[frame.classification]
+	for frame in PitBull4:IterateSingletonFrames(true) do
+		frame.classification_db = db.profile.units[frame.classification]
 	end
 	
 	for frame in PitBull4:IterateFrames(true) do
@@ -856,15 +903,14 @@ function PitBull4:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	
 	-- show initial frames
-	local db_classifications = db.profile.classifications
-	for _, classification in ipairs(SINGLETON_CLASSIFICATIONS) do
-		if db_classifications[classification].enabled then
-			self:MakeSingletonFrame(classification)
+	for unit, unit_db in pairs(db.profile.units) do
+		if unit_db.enabled then
+			self:MakeSingletonFrame(unit)
 		end
 	end
 	
 	for _, classification in ipairs(PARTY_CLASSIFICATIONS) do
-		if db_classifications[classification].enabled then
+		if db.profile.groups[classification].enabled then
 			self:MakeGroupHeader(classification)
 		end
 	end
