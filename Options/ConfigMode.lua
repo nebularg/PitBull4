@@ -63,26 +63,12 @@ function PitBull4:RecheckConfigMode()
 		end
 		frame:Update(true, true)
 	end
-
-	-- It's important that we ForceShow the headers in order so that super_classifications
-	-- are done first.  This allows the unit ids to be assigned in the same order to
-	-- all frames that share the super classification.
-	-- TODO: Probably is a better way to do this.  Would be cleaner to have an Iterate
-	-- function that did this for us.  It also may run ForceShow more than once if there
-	-- is more than one GroupHeader for a given classification.
-	local sort_table = {}
+	
 	for header in self:IterateHeaders() do
-		sort_table[#sort_table+1] = header.classification
-	end
-	table.sort(sort_table)
-
-	for _,classification in pairs(sort_table) do
-		for header in self:IterateHeadersForClassification(classification) do
-			if should_show_header(kind, header) and header.classification_db.enabled then
-				header:ForceShow()
-			else
-				header:UnforceShow()
-			end
+		if should_show_header(kind, header) and header.group_db.enabled then
+			header:ForceShow()
+		else
+			header:UnforceShow()
 		end
 	end
 end

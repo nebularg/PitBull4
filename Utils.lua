@@ -127,10 +127,11 @@ do
 	
 	--- Return whether the classification provided is considered "wacky"
 	-- @param classification the classification in question
-	-- @usage assert(not PitBull4.Utils.IsWackyClassification("player"))
-	-- @usage assert(PitBull4.Utils.IsWackyClassification("targettarget"))
+	-- @usage assert(not PitBull4.Utils.IsWackyUnitGroup("player"))
+	-- @usage assert(PitBull4.Utils.IsWackyUnitGroup("targettarget"))
+	-- @usage assert(PitBull4.Utils.IsWackyUnitGroup("partytarget"))
 	-- @return whether it is wacky
-	function PitBull4.Utils.IsWackyClassification(classification)
+	function PitBull4.Utils.IsWackyUnitGroup(classification)
 		return not non_wacky_unit_ids[classification]
 	end
 end

@@ -11,6 +11,14 @@ function PitBull4.Options.get_unit_options()
 		childGroups = "tree",
 	}
 	
+	local group_options = {
+		type = 'group',
+		name = L["Groups"],
+		desc = L["Change settings for unit groups."],
+		args = {},
+		childGroups = "tree",
+	}
+	
 	local next_order
 	do
 		local current = 0
@@ -20,46 +28,109 @@ function PitBull4.Options.get_unit_options()
 		end
 	end
 	
-	local shared_args = {}
+	local update, refresh
+	do
+		local update_funcs, refresh_funcs = {}, {}
+		
+		function update(type, unit)
+			return update_funcs[type](unit)
+		end
+		
+		function refresh(type, unit)
+			return refresh_funcs[type](unit)
+		end
+		
+		function update_funcs.groups(unit)
+			for header in PitBull4:IterateHeadersForName(unit) do
+				header:UpdateMembers(true, true)
+			end
+		end
+		
+		function update_funcs.units(unit)
+			for frame in PitBull4:IterateFramesForClassification(unit, true) do
+				frame:Update(true, true)
+			end
+		end
+		
+		function refresh_funcs.groups(unit)
+			for header in PitBull4:IterateHeadersForName(unit) do
+				header:RefreshLayout()
+			end
+		end
+		
+		function refresh_funcs.units(unit)
+			for frame in PitBull4:IterateFramesForClassification(unit, true) do
+				frame:RefreshLayout()
+			end
+		end
+	end
 	
-	shared_args.enable = {
+	local function round(value)
+		return math.floor(value + 0.5)
+	end
+	
+	local function disabled(info)
+		return InCombatLockdown()
+	end
+	
+	local shared_args = {}
+	local unit_args = {}
+	local group_args = {}
+	
+	unit_args.enable = {
 		name = L["Enable"],
 		desc = L["Enable this unit."],
 		type = 'toggle',
 		order = next_order(),
 		get = function(info)
-			local classification = info[2]
+			local unit = info[2]
 			
-			return PitBull4.db.profile.classifications[classification].enabled
+			return PitBull4.db.profile.units[unit].enabled
 		end,
 		set = function(info, value)
-			local classification = info[2]
+			local unit = info[2]
 			
-			PitBull4.db.profile.classifications[classification].enabled = value
+			PitBull4.db.profile.units[unit].enabled = value
 			
-			if PitBull4.Utils.IsSingletonUnitID(classification) then
-				if value then
-					PitBull4:MakeSingletonFrame(classification)
-				else
-					for frame in PitBull4:IterateFramesForClassification(classification, true) do
-						frame:Deactivate()
-					end
-				end
+			if value then
+				PitBull4:MakeSingletonFrame(unit)
 			else
-				if value then
-					PitBull4:MakeGroupHeader(classification, nil)
-				else
-					for header in PitBull4:IterateHeadersForClassification(classification) do
-						header:Hide()
-					end
+				for frame in PitBull4:IterateFramesForClassification(unit, true) do
+					frame:Deactivate()
 				end
 			end
 			
 			PitBull4:RecheckConfigMode()
 		end,
-		disabled = function(info)
-			return InCombatLockdown()
+		disabled = disabled,
+	}
+	
+	group_args.enable = {
+		name = L["Enable"],
+		desc = L["Enable this unit group."],
+		type = 'toggle',
+		order = next_order(),
+		get = function(info)
+			local group = info[2]
+			
+			return PitBull4.db.profile.groups[group].enabled
 		end,
+		set = function(info, value)
+			local group = info[2]
+			
+			PitBull4.db.profile.groups[group].enabled = value
+			
+			if value then
+				PitBull4:MakeGroupHeader(group, nil)
+			else
+				for header in PitBull4:IterateHeadersForName(group) do
+					header:Hide()
+				end
+			end
+			
+			PitBull4:RecheckConfigMode()
+		end,
+		disabled = disabled,
 	}
 	
 	shared_args.layout = {
@@ -75,25 +146,20 @@ function PitBull4.Options.get_unit_options()
 			return t
 		end,
 		get = function(info)
-			local classification = info[2]
+			local type = info[1]
+			local unit = info[2]
 			
-			return PitBull4.db.profile.classifications[classification].layout
+			return PitBull4.db.profile[type][unit].layout
 		end,
 		set = function(info, value)
-			local classification = info[2]
+			local type = info[1]
+			local unit = info[2]
 			
-			PitBull4.db.profile.classifications[classification].layout = value
+			PitBull4.db.profile[type][unit].layout = value
 			
-			for header in PitBull4:IterateHeadersForClassification(classification) do
-				header:RefreshLayout(true)
-			end
-			for frame in PitBull4:IterateFramesForClassification(classification, true) do
-				frame:RefreshLayout()
-			end
+			refresh(type, unit)
 		end,
-		disabled = function(info)
-			return InCombatLockdown()
-		end,
+		disabled = disabled,
 	}
 	
 	shared_args.horizontal_mirror = {
@@ -102,22 +168,20 @@ function PitBull4.Options.get_unit_options()
 		order = next_order(),
 		type = 'toggle',
 		get = function(info)
-			local classification = info[2]
+			local type = info[1]
+			local unit = info[2]
 			
-			return PitBull4.db.profile.classifications[classification].horizontal_mirror
+			return PitBull4.db.profile[type][unit].horizontal_mirror
 		end,
 		set = function(info, value)
-			local classification = info[2]
+			local type = info[1]
+			local unit = info[2]
 			
-			PitBull4.db.profile.classifications[classification].horizontal_mirror = value
+			PitBull4.db.profile[type][unit].horizontal_mirror = value
 			
-			for frame in PitBull4:IterateFramesForClassification(classification, true) do
-				frame:Update(true, true)
-			end
+			update(type, unit)
 		end,
-		disabled = function(info)
-			return InCombatLockdown()
-		end,
+		disabled = disabled,
 	}
 	
 	shared_args.vertical_mirror = {
@@ -126,22 +190,20 @@ function PitBull4.Options.get_unit_options()
 		order = next_order(),
 		type = 'toggle',
 		get = function(info)
-			local classification = info[2]
+			local type = info[1]
+			local unit = info[2]
 			
-			return PitBull4.db.profile.classifications[classification].vertical_mirror
+			return PitBull4.db.profile[type][unit].vertical_mirror
 		end,
 		set = function(info, value)
-			local classification = info[2]
+			local type = info[1]
+			local unit = info[2]
 			
-			PitBull4.db.profile.classifications[classification].vertical_mirror = value
+			PitBull4.db.profile[type][unit].vertical_mirror = value
 			
-			for frame in PitBull4:IterateFramesForClassification(classification, true) do
-				frame:Update(true, true)
-			end
+			update(type, unit)
 		end,
-		disabled = function(info)
-			return InCombatLockdown()
-		end,
+		disabled = disabled,
 	}
 	
 	shared_args.scale = {
@@ -155,25 +217,20 @@ function PitBull4.Options.get_unit_options()
 		step = 0.01,
 		bigStep = 0.05,
 		get = function(info)
-			local classification = info[2]
+			local type = info[1]
+			local unit = info[2]
 			
-			return PitBull4.db.profile.classifications[classification].scale
+			return PitBull4.db.profile[type][unit].scale
 		end,
 		set = function(info, value)
-			local classification = info[2]
+			local type = info[1]
+			local unit = info[2]
 			
-			PitBull4.db.profile.classifications[classification].scale = value
+			PitBull4.db.profile[type][unit].scale = value
 			
-			for header in PitBull4:IterateHeadersForClassification(classification) do
-				header:RefreshLayout(true)
-			end
-			for frame in PitBull4:IterateFramesForClassification(classification, true) do
-				frame:RefreshLayout()
-			end
+			refresh(type, unit)
 		end,
-		disabled = function(info)
-			return InCombatLockdown()
-		end,
+		disabled = disabled,
 	}
 	
 	shared_args.width_multiplier = {
@@ -187,22 +244,20 @@ function PitBull4.Options.get_unit_options()
 		step = 0.01,
 		bigStep = 0.05,
 		get = function(info)
-			local classification = info[2]
+			local type = info[1]
+			local unit = info[2]
 			
-			return PitBull4.db.profile.classifications[classification].size_x
+			return PitBull4.db.profile[type][unit].size_x
 		end,
 		set = function(info, value)
-			local classification = info[2]
+			local type = info[1]
+			local unit = info[2]
 			
-			PitBull4.db.profile.classifications[classification].size_x = value
+			PitBull4.db.profile[type][unit].size_x = value
 			
-			for frame in PitBull4:IterateFramesForClassification(classification, true) do
-				frame:RefreshLayout()
-			end
+			refresh(type, unit)
 		end,
-		disabled = function(info)
-			return InCombatLockdown()
-		end,
+		disabled = disabled,
 	}
 	
 	shared_args.height_multiplier = {
@@ -216,22 +271,20 @@ function PitBull4.Options.get_unit_options()
 		step = 0.01,
 		bigStep = 0.05,
 		get = function(info)
-			local classification = info[2]
+			local type = info[1]
+			local unit = info[2]
 			
-			return PitBull4.db.profile.classifications[classification].size_y
+			return PitBull4.db.profile[type][unit].size_y
 		end,
 		set = function(info, value)
-			local classification = info[2]
+			local type = info[1]
+			local unit = info[2]
 			
-			PitBull4.db.profile.classifications[classification].size_y = value
+			PitBull4.db.profile[type][unit].size_y = value
 			
-			for frame in PitBull4:IterateFramesForClassification(classification, true) do
-				frame:RefreshLayout()
-			end
+			refresh(type, unit)
 		end,
-		disabled = function(info)
-			return InCombatLockdown()
-		end,
+		disabled = disabled,
 	}
 	
 	shared_args.click_through = {
@@ -240,27 +293,23 @@ function PitBull4.Options.get_unit_options()
 		order = next_order(),
 		type = 'toggle',
 		get = function(info)
-			local classification = info[2]
+			local type = info[1]
+			local unit = info[2]
 			
-			return PitBull4.db.profile.classifications[classification].click_through
+			return PitBull4.db.profile[type][unit].click_through
 		end,
 		set = function(info, value)
-			local classification = info[2]
+			local type = info[1]
+			local unit = info[2]
 			
-			PitBull4.db.profile.classifications[classification].click_through = value
+			PitBull4.db.profile[type][unit].click_through = value
 			
-			for frame in PitBull4:IterateFramesForClassification(classification, true) do
-				frame:RefreshLayout()
-			end
+			refresh(type, unit)
 		end,
-		disabled = function(info)
-			return InCombatLockdown()
-		end,
+		disabled = disabled,
 	}
 	
-	local singleton_args = {}
-	
-	singleton_args.position_x = {
+	unit_args.position_x = {
 		name = L["Horizontal position"],
 		desc = L["Horizontal position on the x-axis of the screen."],
 		order = next_order(),
@@ -268,27 +317,23 @@ function PitBull4.Options.get_unit_options()
 		min = -math.floor(GetScreenWidth() / 10) * 5,
 		max = math.floor(GetScreenWidth() / 10) * 5,
 		get = function(info)
-			local classification = info[2]
+			local unit = info[2]
 			
-			return math.floor(PitBull4.db.profile.classifications[classification].position_x + 0.5)
+			return round(PitBull4.db.profile.units[unit].position_x)
 		end,
 		set = function(info, value)
-			local classification = info[2]
+			local unit = info[2]
 			
-			PitBull4.db.profile.classifications[classification].position_x = value
+			PitBull4.db.profile.units[unit].position_x = value
 			
-			for frame in PitBull4:IterateFramesForClassification(classification, true) do
-				frame:RefreshLayout()
-			end
+			refresh("units", unit)
 		end,
 		step = 1,
 		bigStep = 5,
-		disabled = function(info)
-			return InCombatLockdown()
-		end,
+		disabled = disabled,
 	}
 	
-	singleton_args.position_y = {
+	unit_args.position_y = {
 		name = L["Vertical position"],
 		desc = L["Vertical position on the y-axis of the screen."],
 		order = next_order(),
@@ -296,29 +341,24 @@ function PitBull4.Options.get_unit_options()
 		min = -math.floor(GetScreenHeight() / 10) * 5,
 		max = math.floor(GetScreenHeight() / 10) * 5,
 		get = function(info)
-			local classification = info[2]
+			local unit = info[2]
 			
-			return math.floor(PitBull4.db.profile.classifications[classification].position_y + 0.5)
+			return round(PitBull4.db.profile.units[unit].position_y)
 		end,
 		set = function(info, value)
-			local classification = info[2]
+			local unit = info[2]
 			
-			PitBull4.db.profile.classifications[classification].position_y = value
+			PitBull4.db.profile.units[unit].position_y = value
 			
-			for frame in PitBull4:IterateFramesForClassification(classification, true) do
-				frame:RefreshLayout()
-			end
+			refresh("units", unit)
 		end,
 		step = 1,
 		bigStep = 5,
-		disabled = function(info)
-			return InCombatLockdown()
-		end,
+		disabled = disabled,
 	}
 	
-	local party_only_args = {}
-	
-	party_only_args.sort_method = {
+	group_args.sort_method = {
+		-- TODO: check to see if party-only or not
 		name = L["Sort method"],
 		desc = L["How to sort the frames within the group."],
 		type = 'select',
@@ -328,25 +368,22 @@ function PitBull4.Options.get_unit_options()
 			NAME = L["By name"],
 		},
 		get = function(info)
-			local classification = info[2]
+			local group = info[2]
 			
-			return PitBull4.db.profile.classifications[classification].sort_method
+			return PitBull4.db.profile.groups[group].sort_method
 		end,
 		set = function(info, value)
-			local classification = info[2]
+			local group = info[2]
 			
-			PitBull4.db.profile.classifications[classification].sort_method = value
+			PitBull4.db.profile.groups[group].sort_method = value
 			
-			for header in PitBull4:IterateHeadersForSuperClassification(classification) do
-				header:RefreshLayout()
-			end
+			refresh("groups", group)
 		end,
-		disabled = function(info)
-			return InCombatLockdown()
-		end,
+		disabled = disabled,
 	}
 	
-	party_only_args.sort_direction = {
+	group_args.sort_direction = {
+		-- TODO: check to see if party-only or not
 		name = L["Sort direction"],
 		desc = L["Which direction to sort the frames within a group."],
 		type = 'select',
@@ -356,22 +393,18 @@ function PitBull4.Options.get_unit_options()
 			DESC = L["Descending"],
 		},
 		get = function(info)
-			local classification = info[2]
+			local group = info[2]
 			
-			return PitBull4.db.profile.classifications[classification].sort_direction
+			return PitBull4.db.profile.groups[group].sort_direction
 		end,
 		set = function(info, value)
-			local classification = info[2]
+			local group = info[2]
 			
-			PitBull4.db.profile.classifications[classification].sort_direction = value
+			PitBull4.db.profile.groups[group].sort_direction = value
 			
-			for header in PitBull4:IterateHeadersForSuperClassification(classification) do
-				header:RefreshLayout()
-			end
+			refresh("groups", group)
 		end,
-		disabled = function(info)
-			return InCombatLockdown()
-		end,
+		disabled = disabled,
 	}
 	
 	local VERTICAL_FIRST = {
@@ -380,8 +413,6 @@ function PitBull4.Options.get_unit_options()
 		up_right = true,
 		up_left = true,
 	}
-	
-	local group_args = {}
 	
 	group_args.vertical_spacing = {
 		name = L["Vertical spacing"],
@@ -393,22 +424,18 @@ function PitBull4.Options.get_unit_options()
 		step = 1,
 		bigStep = 5,
 		get = function(info)
-			local classification = info[2]
+			local group = info[2]
 			
-			return PitBull4.db.profile.classifications[classification].vertical_spacing
+			return PitBull4.db.profile.groups[group].vertical_spacing
 		end,
 		set = function(info, value)
-			local classification = info[2]
+			local group = info[2]
 			
-			PitBull4.db.profile.classifications[classification].vertical_spacing = value
+			PitBull4.db.profile.groups[group].vertical_spacing = value
 			
-			for header in PitBull4:IterateHeadersForClassification(classification) do
-				header:RefreshLayout()
-			end
+			refresh("groups", group)
 		end,
-		disabled = function(info)
-			return InCombatLockdown()
-		end,
+		disabled = disabled,
 	}
 	
 	group_args.horizontal_spacing = {
@@ -421,22 +448,18 @@ function PitBull4.Options.get_unit_options()
 		step = 1,
 		bigStep = 5,
 		get = function(info)
-			local classification = info[2]
+			local group = info[2]
 			
-			return PitBull4.db.profile.classifications[classification].horizontal_spacing
+			return PitBull4.db.profile.groups[group].horizontal_spacing
 		end,
 		set = function(info, value)
-			local classification = info[2]
+			local group = info[2]
 			
-			PitBull4.db.profile.classifications[classification].horizontal_spacing = value
+			PitBull4.db.profile.groups[group].horizontal_spacing = value
 			
-			for header in PitBull4:IterateHeadersForClassification(classification) do
-				header:RefreshLayout()
-			end
+			refresh("groups", group)
 		end,
-		disabled = function(info)
-			return InCombatLockdown()
-		end,
+		disabled = disabled,
 	}
 	
 	group_args.direction = {
@@ -455,38 +478,34 @@ function PitBull4.Options.get_unit_options()
 			left_up = ("%s, %s"):format(L["Columns left"], L["Rows up"]),
 		},
 		get = function(info)
-			local classification = info[2]
+			local group = info[2]
 			
-			return PitBull4.db.profile.classifications[classification].direction
+			return PitBull4.db.profile.groups[group].direction
 		end,
 		set = function(info, value)
-			local classification = info[2]
+			local group = info[2]
 			
-			PitBull4.db.profile.classifications[classification].direction = value
+			PitBull4.db.profile.groups[group].direction = value
 			
-			for header in PitBull4:IterateHeadersForClassification(classification) do
-				header:RefreshLayout()
-			end
+			refresh("groups", group)
 		end,
-		disabled = function(info)
-			return InCombatLockdown()
-		end,
+		disabled = disabled,
 	}
 	
 	group_args.units_per_column = {
 		name = function(info)
-			local classification = info[2]
+			local group = info[2]
 			
-			if VERTICAL_FIRST[PitBull4.db.profile.classifications[classification].direction] then
+			if VERTICAL_FIRST[PitBull4.db.profile.groups[group].direction] then
 				return L["Units per column"]
 			else
 				return L["Units per row"]
 			end
 		end,
 		desc = function(info)
-			local classification = info[2]
+			local group = info[2]
 			
-			if VERTICAL_FIRST[PitBull4.db.profile.classifications[classification].direction] then
+			if VERTICAL_FIRST[PitBull4.db.profile.groups[group].direction] then
 				return L["The maximum amount of units per column before making a new column."]
 			else
 				return L["The maximum amount of units per row before making a new row."]
@@ -497,23 +516,19 @@ function PitBull4.Options.get_unit_options()
 		min = 1,
 		max = MAX_RAID_MEMBERS,
 		get = function(info)
-			local classification = info[2]
+			local group = info[2]
 			
-			return PitBull4.db.profile.classifications[classification].units_per_column
+			return PitBull4.db.profile.groups[group].units_per_column
 		end,
 		set = function(info, value)
-			local classification = info[2]
+			local group = info[2]
 			
-			PitBull4.db.profile.classifications[classification].units_per_column = value
+			PitBull4.db.profile.groups[group].units_per_column = value
 			
-			for header in PitBull4:IterateHeadersForClassification("party") do
-				header:RefreshLayout()
-			end
+			refresh("groups", group)
 		end,
 		step = 1,
-		disabled = function(info)
-			return InCombatLockdown()
-		end,
+		disabled = disabled,
 	}
 	
 	local current_order = 0
@@ -524,7 +539,7 @@ function PitBull4.Options.get_unit_options()
 		for k, v in pairs(shared_args) do
 			args[k] = v
 		end
-		for k, v in pairs(singleton_args) do
+		for k, v in pairs(unit_args) do
 			args[k] = v
 		end
 		
@@ -542,16 +557,11 @@ function PitBull4.Options.get_unit_options()
 		for k, v in pairs(shared_args) do
 			args[k] = v
 		end
-		if classification == "party" then
-			for k, v in pairs(party_only_args) do
-				args[k] = v
-			end
-		end
 		for k, v in pairs(group_args) do
 			args[k] = v
 		end
 		
-		unit_options.args[classification] = {
+		group_options.args[classification] = {
 			type = 'group',
 			name = PitBull4.Utils.GetLocalizedClassification(classification),
 			order = current_order,
@@ -559,5 +569,5 @@ function PitBull4.Options.get_unit_options()
 		}
 	end
 	
-	return unit_options
+	return unit_options, group_options
 end

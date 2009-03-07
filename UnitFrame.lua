@@ -15,6 +15,51 @@ local MODULE_UPDATE_ORDER = {
 
 -----------------------------------------------------------------------------
 
+--- Make a singleton unit frame.
+-- @param unit the UnitID of the frame in question
+-- @usage local frame = PitBull4:MakeSingletonFrame("player")
+function PitBull4:MakeSingletonFrame(unit)
+	--@alpha@
+	expect(unit, 'typeof', 'string')
+	--@end-alpha@
+	
+	local id = PitBull4.Utils.GetBestUnitID(unit)
+	if not PitBull4.Utils.IsSingletonUnitID(id) then
+		error(("Bad argument #1 to `MakeSingletonFrame'. %q is not a singleton UnitID"):format(tostring(unit)), 2)
+	end
+	unit = id
+	
+	local frame_name = "PitBull4_Frames_" .. unit
+	local frame = _G[frame_name]
+	
+	if not frame then
+		frame = CreateFrame("Button", frame_name, UIParent, "SecureUnitButtonTemplate")
+		frame:SetFrameStrata(PitBull4.UNITFRAME_STRATA)
+		frame:SetFrameLevel(PitBull4.UNITFRAME_LEVEL)
+		
+		frame.is_singleton = true
+		
+		-- for singletons, its classification is its UnitID
+		local classification = unit
+		frame.classification = classification
+		frame.classification_db = PitBull4.db.profile.units[classification]
+		
+		local is_wacky = PitBull4.Utils.IsWackyUnitGroup(classification)
+		frame.is_wacky = is_wacky
+		
+		self:ConvertIntoUnitFrame(frame)
+		
+		frame:SetAttribute("unit", unit)
+	end
+	
+	frame:Activate()
+	
+	frame:RefreshLayout()
+	
+	frame:UpdateGUID(UnitGUID(unit))
+end
+PitBull4.MakeSingletonFrame = PitBull4:OutOfCombatWrapper(PitBull4.MakeSingletonFrame)
+
 --- A Unit Frame created by PitBull4
 -- @class table
 -- @name UnitFrame
