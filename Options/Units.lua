@@ -336,6 +336,31 @@ function PitBull4.Options.get_unit_options()
 		disabled = disabled,
 	}
 	
+	group_args.include_player = {
+		name = function(info)
+			local unit_group = get_group_db().unit_group:sub(6)
+			if unit_group == "" then
+				unit_group = "player"
+			end
+			return L["Include %s"]:format(PitBull4.Utils.GetLocalizedClassification(unit_group))
+		end,
+		desc = function(info)
+			local unit_group = get_group_db().unit_group:sub(6)
+			if unit_group == "" then
+				unit_group = "player"
+			end
+			return L["Include %s as part of the unit group."]:format(PitBull4.Utils.GetLocalizedClassification(unit_group))
+		end,
+		type = 'toggle',
+		order = next_order(),
+		get = get,
+		set = set_with_refresh_group,
+		disabled = disabled,
+		hidden = function(info)
+			return get_group_db().unit_group:sub(1, 5) ~= "party"
+		end
+	}
+	
 	shared_args.layout = {
 		name = L["Layout"],
 		desc = L["Which layout the unit should use. Note: Use the layout editor to change any layout settings."],

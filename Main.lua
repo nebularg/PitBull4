@@ -87,6 +87,7 @@ local DATABASE_DEFAULTS = {
 				direction = "down_right",
 				units_per_column = MAX_RAID_MEMBERS,
 				unit_group = "party",
+				include_player = false,
 				
 				position_x = 0,
 				position_y = 0,

@@ -136,11 +136,13 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	local force_show
 	
 	local unit_group = group_db.unit_group
-	if self.unit_group ~= unit_group then
+	local party_based = unit_group:sub(1, 5) == "party"
+	local include_player = party_based and group_db.include_player
+	if self.unit_group ~= unit_group or self.include_player ~= include_player then
 		local old_unit_group = self.unit_group
 		local old_super_unit_group = self.super_unit_group
 		self.unit_group = unit_group
-		local party_based = unit_group:sub(1, 5) == "party"
+		self.include_player = include_player
 		--@alpha@
 		if not party_based then
 			expect(unit_group:sub(1, 4), '==', "raid")
@@ -152,10 +154,12 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 			self.unitsuffix = unit_group:sub(6)
 			self:ProxySetAttribute("showRaid", nil)
 			self:ProxySetAttribute("showParty", true)
+			self:ProxySetAttribute("showPlayer", include_player and true or nil)
 		else
 			self.super_unit_group = "raid"
 			self.unitsuffix = unit_group:sub(5)
 			self:ProxySetAttribute("showParty", nil)
+			self:ProxySetAttribute("showPlayer", nil)
 			self:ProxySetAttribute("showRaid", true)
 		end
 		if self.unitsuffix == "" then
@@ -366,10 +370,14 @@ function GroupHeader:AssignFakeUnitIDs()
 			local old_unit = frame:GetAttribute("unit")
 			local unit
 			
-			repeat
-				current_group_num = current_group_num + 1
-				unit = super_unit_group .. current_group_num
-			until not UnitExists(unit)	
+			if self.include_player and i == start then
+				unit = "player"
+			else
+				repeat
+					current_group_num = current_group_num + 1
+					unit = super_unit_group .. current_group_num
+				until not UnitExists(unit)
+			end
 			
 			if old_unit ~= unit then
 				frame:SetAttribute("unit", unit)
@@ -408,7 +416,11 @@ function GroupHeader:GetMaxUnits()
 	if self.super_unit_group == "raid" then
 		return MAX_RAID_MEMBERS
 	else
-		return MAX_PARTY_MEMBERS
+		if self.include_player then
+			return MAX_PARTY_MEMBERS + 1
+		else
+			return MAX_PARTY_MEMBERS
+		end
 	end
 end
 
