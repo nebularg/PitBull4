@@ -50,7 +50,7 @@ GroupHeader.Update = PitBull4:OutOfCombatWrapper(GroupHeader.Update)
 -- @args ... the arguments to send along with :Update
 -- @usage header:UpdateMembers(true, true)
 function GroupHeader:UpdateMembers(...)
-	for i, frame in ipairs(self) do
+	for _, frame in self:IterateMembers() do
 		frame:Update(...)
 	end
 end
@@ -117,6 +117,9 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	local layout_db = PitBull4.db.profile.layouts[layout]
 	self.layout_db = layout_db
 	
+	local is_shown = self:IsShown()
+	self:Hide()
+	
 	local unit_group = group_db.unit_group
 	if self.unit_group ~= unit_group then
 		local old_unit_group = self.unit_group
@@ -151,8 +154,15 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 			PitBull4.unit_group_to_headers[old_unit_group][self] = nil
 			PitBull4.super_unit_group_to_headers[old_super_unit_group][self] = nil
 			
-			for i, frame in ipairs(self) do
+			local force_show = self.force_show
+			self:UnforceShow()
+			
+			for _, frame in self:IterateMembers() do
 				frame:ProxySetAttribute("unitsuffix", self.unitsuffix)
+			end
+			
+			if force_show then
+				self:ForceShow()
 			end
 		end
 		PitBull4.unit_group_to_headers[unit_group][self] = true
@@ -182,7 +192,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	self:ProxySetAttribute("groupBy", nil) -- or "GROUP", "CLASS", "ROLE"
 	self:ProxySetAttribute("groupingOrder", "1,2,3,4,5,6,7,8")
 	self:ProxySetAttribute("unitsPerColumn", group_db.units_per_column)
-	self:ProxySetAttribute("maxColumns", MAX_RAID_MEMBERS)
+	self:ProxySetAttribute("maxColumns", self:GetMaxUnits())
 	self:ProxySetAttribute("startingIndex", 1)
 	self:ProxySetAttribute("columnAnchorPoint", DIRECTION_TO_COLUMN_ANCHOR_POINT[direction])
 	self:ProxySetAttribute("useOwnerUnit", 1)
@@ -193,19 +203,26 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	self:ClearAllPoints()
 	
 	local x_diff, y_diff = 0, 0
-	if point == "TOP" then
-		y_diff = self[1]:GetHeight() / 2
-	elseif point == "BOTTOM" then
-		y_diff = -self[1]:GetHeight() / 2
-	elseif point == "LEFT" then
-		x_diff = -self[1]:GetWidth() / 2
-	elseif point == "RIGHT" then
-		x_diff = self[1]:GetWidth() / 2
+	local frame = self[1]
+	if frame then
+		if point == "TOP" then
+			y_diff = frame:GetHeight() / 2
+		elseif point == "BOTTOM" then
+			y_diff = -frame:GetHeight() / 2
+		elseif point == "LEFT" then
+			x_diff = -frame:GetWidth() / 2
+		elseif point == "RIGHT" then
+			x_diff = frame:GetWidth() / 2
+		end
 	end
 	self:SetPoint(point, UIParent, "CENTER", group_db.position_x / scale + x_diff, group_db.position_y / scale + y_diff)
+	if is_shown then
+		self:Show()
+		SecureGroupHeader_Update(self)
+	end
 	
 	if not dont_refresh_children then
-		for i, frame in ipairs(self) do
+		for _, frame in self:IterateMembers() do
 			frame:RefreshLayout()
 		end
 	end
@@ -227,7 +244,7 @@ function GroupHeader:RefreshLayout(dont_refresh_children)
 	self:SetScale(layout_db.scale * group_db.scale)
 	
 	if not dont_refresh_children then
-		for i, frame in ipairs(self) do
+		for _, frame in self:IterateMembers() do
 			frame:RefreshLayout()
 		end
 	end
@@ -267,8 +284,8 @@ end
 -- Note: this is a hack to get around a Blizzard bug preventing frames from being initialized properly while in combat.
 -- @usage header:ForceUnitFrameCreation()
 function GroupHeader:ForceUnitFrameCreation()
-	local num = self.super_unit_group == "raid" and MAX_RAID_MEMBERS or MAX_PARTY_MEMBERS
-	for _, frame in ipairs(self) do
+	local num = self:GetMaxUnits()
+	for _, frame in self:IterateMembers() do
 		if frame:GetAttribute("unit") and UnitExists(frame:GetAttribute("unit")) then
 			num = num - 1
 		end
@@ -292,7 +309,7 @@ function GroupHeader:ForceUnitFrameCreation()
 	SecureGroupHeader_Update(self)
 	
 	-- this is done because the previous hack can mess up some unit references
-	for i, frame in ipairs(self) do
+	for _, frame in self:IterateMembers() do
 		local unit = SecureButton_GetUnit(frame)
 		if unit ~= frame.unit then
 			frame.unit = unit
@@ -348,6 +365,42 @@ function GroupHeader:AssignFakeUnitIDs()
 end
 GroupHeader.AssignFakeUnitIDs = PitBull4:OutOfCombatWrapper(GroupHeader.AssignFakeUnitIDs)
 
+local ipairs_upto_num
+do
+	local ipairs_helpers = setmetatable({}, {__index=function(self, num)
+		local f = function(t, i)
+			i = i + 1
+			if i > num then
+				return nil
+			end
+			
+			local v = t[i]
+			if v == nil then
+				return nil
+			end
+			
+			return i, v
+		end
+		self[num] = f
+		return f
+	end})
+	function ipairs_upto_num(t, num)
+		return ipairs_helpers[num], t, 0
+	end
+end
+
+function GroupHeader:GetMaxUnits()
+	if self.super_unit_group == "raid" then
+		return MAX_RAID_MEMBERS
+	else
+		return MAX_PARTY_MEMBERS
+	end
+end
+
+function GroupHeader:IterateMembers()
+	return ipairs_upto_num(self, self:GetMaxUnits())
+end
+
 function GroupHeader:ForceShow()
 	if self.force_show then
 		return
@@ -357,7 +410,7 @@ function GroupHeader:ForceShow()
 	end
 	self.force_show = true
 	self:AssignFakeUnitIDs()
-	for _, frame in ipairs(self) do
+	for _, frame in self:IterateMembers() do
 		frame:ForceShow()
 		frame:Update(true, true)
 	end
