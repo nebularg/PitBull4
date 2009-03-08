@@ -6,6 +6,9 @@ local values = {
 	disabled = L["Disable"],
 	solo = L["Solo"],
 	party = L["Party"],
+	raid10 = L["10-man raid"],
+	raid25 = L["25-man raid"],
+	raid40 = L["40-man raid"],
 }
 --- Return the select values dictionary used by PitBull4 to choose config mode.
 -- @usage local values = PitBull4:GetConfigModeValues()
@@ -23,6 +26,10 @@ end
 
 local function should_show_header(config_mode, header)
 	if not config_mode or config_mode == "solo" then
+		return false
+	end
+	
+	if config_mode == "party" and header.super_unit_group ~= "party" then
 		return false
 	end
 	
@@ -47,6 +54,12 @@ function PitBull4:SetConfigMode(kind)
 	if PitBull4.config_mode == kind then
 		return
 	end
+	if kind and PitBull4.config_mode then -- swapping between two different types
+		PitBull4.config_mode = nil
+	
+		self:RecheckConfigMode()
+	end
+	
 	PitBull4.config_mode = kind
 	
 	self:RecheckConfigMode()

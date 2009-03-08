@@ -397,8 +397,8 @@ function GroupHeader:GetMaxUnits()
 	end
 end
 
-function GroupHeader:IterateMembers()
-	return ipairs_upto_num(self, self:GetMaxUnits())
+function GroupHeader:IterateMembers(num)
+	return ipairs_upto_num(self, num or self:GetMaxUnits())
 end
 
 function GroupHeader:ForceShow()
@@ -410,7 +410,11 @@ function GroupHeader:ForceShow()
 	end
 	self.force_show = true
 	self:AssignFakeUnitIDs()
-	for _, frame in self:IterateMembers() do
+	
+	local config_mode = PitBull4.config_mode
+	local num = tonumber(config_mode:match("(%d+)")) or 5
+	
+	for _, frame in self:IterateMembers(num) do
 		frame:ForceShow()
 		frame:Update(true, true)
 	end
