@@ -177,6 +177,12 @@ function SingletonUnitFrame__scripts:OnDragStop()
 	self:RefreshLayout()
 end
 
+function SingletonUnitFrame__scripts:OnMouseUp(button)
+	if button == "LeftButton" then
+		return SingletonUnitFrame__scripts.OnDragStop(self)
+	end
+end
+
 LibStub("AceEvent-3.0").RegisterEvent("PitBull4-SingletonUnitFrame:OnDragStop", "PLAYER_REGEN_DISABLED", function()
 	if moving_frame then
 		SingletonUnitFrame__scripts.OnDragStop(moving_frame)

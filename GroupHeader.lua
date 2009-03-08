@@ -504,6 +504,12 @@ function MemberUnitFrame__scripts:OnDragStop()
 	header:RefreshLayout(true)
 end
 
+function MemberUnitFrame__scripts:OnMouseUp(button)
+	if button == "LeftButton" then
+		return MemberUnitFrame__scripts.OnDragStop(self)
+	end
+end
+
 LibStub("AceEvent-3.0").RegisterEvent("PitBull4-MemberUnitFrame:OnDragStop", "PLAYER_REGEN_DISABLED", function()
 	if moving_frame then
 		MemberUnitFrame__scripts.OnDragStop(moving_frame)
