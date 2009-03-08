@@ -114,7 +114,6 @@ do
 		return valid_classifications[unit]
 	end
 	
-	
 	local non_wacky_unit_ids = {
 		player = true,
 		pet = true,
@@ -128,10 +127,11 @@ do
 	
 	--- Return whether the classification provided is considered "wacky"
 	-- @param classification the classification in question
-	-- @usage assert(not PitBull4.Utils.IsWackyClassification("player"))
-	-- @usage assert(PitBull4.Utils.IsWackyClassification("targettarget"))
+	-- @usage assert(not PitBull4.Utils.IsWackyUnitGroup("player"))
+	-- @usage assert(PitBull4.Utils.IsWackyUnitGroup("targettarget"))
+	-- @usage assert(PitBull4.Utils.IsWackyUnitGroup("partytarget"))
 	-- @return whether it is wacky
-	function PitBull4.Utils.IsWackyClassification(classification)
+	function PitBull4.Utils.IsWackyUnitGroup(classification)
 		return not non_wacky_unit_ids[classification]
 	end
 end
@@ -187,6 +187,11 @@ do
 	-- @usage PitBull4.Utils.GetLocalizedClassification("partypettarget") == "Party pet targets"
 	-- @return a localized string of the unit classification
 	function PitBull4.Utils.GetLocalizedClassification(classification)
+		--@alpha@
+		expect(classification, 'typeof', 'string')
+		expect(classification, 'inset', classifications)
+		--@end-alpha@
+		
 		return classifications[classification]
 	end
 end

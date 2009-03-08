@@ -151,6 +151,9 @@ function PitBull4.Options.get_layout_editor_options()
 			if value:len() < 3 then
 				return L["Must be at least 3 characters long."]
 			end
+			if rawget(PitBull4.db.profile.layouts, value) then
+				return L["Must be unique."]
+			end
 			return true
 		end,
 	}

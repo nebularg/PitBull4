@@ -81,9 +81,10 @@ function PitBull4.Options.OpenConfig()
 	PitBull4.Options.get_layout_editor_options = nil
 	options.args.layout_editor.order = new_order()
 	
-	options.args.units = PitBull4.Options.get_unit_options()
+	options.args.units, options.args.groups = PitBull4.Options.get_unit_options()
 	PitBull4.Options.get_unit_options = nil
 	options.args.units.order = new_order()
+	options.args.groups.order = new_order()
 	
 	options.args.modules = PitBull4.Options.get_module_options()
 	PitBull4.Options.get_module_options = nil

@@ -6,6 +6,9 @@ local values = {
 	disabled = L["Disable"],
 	solo = L["Solo"],
 	party = L["Party"],
+	raid10 = L["10-man raid"],
+	raid25 = L["25-man raid"],
+	raid40 = L["40-man raid"],
 }
 --- Return the select values dictionary used by PitBull4 to choose config mode.
 -- @usage local values = PitBull4:GetConfigModeValues()
@@ -23,6 +26,10 @@ end
 
 local function should_show_header(config_mode, header)
 	if not config_mode or config_mode == "solo" then
+		return false
+	end
+	
+	if config_mode == "party" and header.super_unit_group ~= "party" then
 		return false
 	end
 	
@@ -47,7 +54,15 @@ function PitBull4:SetConfigMode(kind)
 	if PitBull4.config_mode == kind then
 		return
 	end
+	if kind and PitBull4.config_mode then -- swapping between two different types
+		PitBull4.config_mode = nil
+	
+		self:RecheckConfigMode()
+	end
+	
 	PitBull4.config_mode = kind
+	
+	PitBull4:RAID_ROSTER_UPDATE()
 	
 	self:RecheckConfigMode()
 end
@@ -63,26 +78,12 @@ function PitBull4:RecheckConfigMode()
 		end
 		frame:Update(true, true)
 	end
-
-	-- It's important that we ForceShow the headers in order so that super_classifications
-	-- are done first.  This allows the unit ids to be assigned in the same order to
-	-- all frames that share the super classification.
-	-- TODO: Probably is a better way to do this.  Would be cleaner to have an Iterate
-	-- function that did this for us.  It also may run ForceShow more than once if there
-	-- is more than one GroupHeader for a given classification.
-	local sort_table = {}
+	
 	for header in self:IterateHeaders() do
-		sort_table[#sort_table+1] = header.classification
-	end
-	table.sort(sort_table)
-
-	for _,classification in pairs(sort_table) do
-		for header in self:IterateHeadersForClassification(classification) do
-			if should_show_header(kind, header) and header.classification_db.enabled then
-				header:ForceShow()
-			else
-				header:UnforceShow()
-			end
+		if should_show_header(kind, header) and header.group_db.enabled then
+			header:ForceShow()
+		else
+			header:UnforceShow()
 		end
 	end
 end

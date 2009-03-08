@@ -15,6 +15,51 @@ local MODULE_UPDATE_ORDER = {
 
 -----------------------------------------------------------------------------
 
+--- Make a singleton unit frame.
+-- @param unit the UnitID of the frame in question
+-- @usage local frame = PitBull4:MakeSingletonFrame("player")
+function PitBull4:MakeSingletonFrame(unit)
+	--@alpha@
+	expect(unit, 'typeof', 'string')
+	--@end-alpha@
+	
+	local id = PitBull4.Utils.GetBestUnitID(unit)
+	if not PitBull4.Utils.IsSingletonUnitID(id) then
+		error(("Bad argument #1 to `MakeSingletonFrame'. %q is not a singleton UnitID"):format(tostring(unit)), 2)
+	end
+	unit = id
+	
+	local frame_name = "PitBull4_Frames_" .. unit
+	local frame = _G[frame_name]
+	
+	if not frame then
+		frame = CreateFrame("Button", frame_name, UIParent, "SecureUnitButtonTemplate")
+		frame:SetFrameStrata(PitBull4.UNITFRAME_STRATA)
+		frame:SetFrameLevel(PitBull4.UNITFRAME_LEVEL)
+		
+		frame.is_singleton = true
+		
+		-- for singletons, its classification is its UnitID
+		local classification = unit
+		frame.classification = classification
+		frame.classification_db = PitBull4.db.profile.units[classification]
+		
+		local is_wacky = PitBull4.Utils.IsWackyUnitGroup(classification)
+		frame.is_wacky = is_wacky
+		
+		self:ConvertIntoUnitFrame(frame)
+		
+		frame:SetAttribute("unit", unit)
+	end
+	
+	frame:Activate()
+	
+	frame:RefreshLayout()
+	
+	frame:UpdateGUID(UnitGUID(unit))
+end
+PitBull4.MakeSingletonFrame = PitBull4:OutOfCombatWrapper(PitBull4.MakeSingletonFrame)
+
 --- A Unit Frame created by PitBull4
 -- @class table
 -- @name UnitFrame
@@ -88,6 +133,12 @@ UIDropDownMenu_Initialize(PitBull4_UnitFrame_DropDown, f, "MENU", nil)
 function UnitFrame:menu(unit)
 	PitBull4_UnitFrame_DropDown.unit = unit
 	ToggleDropDownMenu(1, nil, PitBull4_UnitFrame_DropDown, "cursor")
+end
+
+function UnitFrame:ProxySetAttribute(key, value)
+	if self:GetAttribute(key) ~= value then
+		self:SetAttribute(key, value)
+	end
 end
 
 local moving_frame = nil
@@ -316,14 +367,23 @@ function SingletonUnitFrame:Deactivate()
 end
 SingletonUnitFrame.Deactivate = PitBull4:OutOfCombatWrapper(SingletonUnitFrame.Deactivate)
 
-local function force_show_hide(self)
+local function force_show__Hide(self)
 	self:UpdateGUID(nil)
 end
 
-local function force_show_show(self)
+local function force_show__Show(self)
 	if self.unit then
 		self:UpdateGUID(UnitGUID(self.unit))
 	end
+end
+
+local real__SetAttribute
+local function force_show__SetAttribute(self, key, value)
+	if key == "unit" and value == nil then
+		return
+	end
+	
+	return real__SetAttribute(self, key, value)
 end
 
 function UnitFrame:ForceShow()
@@ -331,9 +391,11 @@ function UnitFrame:ForceShow()
 		return
 	end
 	self.force_show = true
-	self.Hide = force_show_hide
+	self.Hide = force_show__Hide
 	self:Show()
-	self.Show = force_show_show
+	self.Show = force_show__Show
+	real__SetAttribute = self.SetAttribute
+	self.SetAttribute = force_show__SetAttribute
 end
 UnitFrame.ForceShow = PitBull4:OutOfCombatWrapper(UnitFrame.ForceShow)
 
@@ -343,6 +405,7 @@ function UnitFrame:UnforceShow()
 	end
 	self.Hide = nil
 	self.Show = nil
+	self.SetAttribute = nil
 	self.force_show = nil
 end
 UnitFrame.UnforceShow = PitBull4:OutOfCombatWrapper(UnitFrame.UnforceShow)

@@ -16,13 +16,19 @@ local SINGLETON_CLASSIFICATIONS = {
 	"focustargettarget",
 }
 
-local PARTY_CLASSIFICATIONS = {
+local UNIT_GROUPS = {
 	"party",
 	"partytarget",
 	"partytargettarget",
 	"partypet",
 	"partypettarget",
 	"partypettargettarget",
+	"raid",
+	"raidtarget",
+	"raidtargettarget",
+	"raidpet",
+	"raidpettarget",
+	"raidpettargettarget",
 }
 
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
@@ -44,13 +50,13 @@ local DATABASE_DEFAULTS = {
 	profile = {
 		lock_movement = false,
 		minimap_icon = {
-				hide = false,
-				minimapPos = 200,
-				radius = 80,
+			hide = false,
+			minimapPos = 200,
+			radius = 80,
 		},
-		classifications = {
+		units = {
 			['**'] = {
-				enabled = true,
+				enabled = false,
 				position_x = 0,
 				position_y = 0,
 				size_x = 1, -- this is a multiplier
@@ -59,17 +65,48 @@ local DATABASE_DEFAULTS = {
 				layout = L["Normal"],
 				horizontal_mirror = false,
 				vertical_mirror = false,
+				click_through = false,
+			},
+			player = { enabled = true },
+			pet = { enabled = true },
+			pettarget = { enabled = true },
+			target = { enabled = true },
+			targettarget = { enabled = true },
+			targettargettarget = { enabled = true },
+			focus = { enabled = true },
+			focustarget = { enabled = true },
+			focustargettarget = { enabled = true },
+		},
+		groups = {
+			['**'] = {
+				enabled = false,
+				sort_method = "INDEX",
+				sort_direction = "ASC",
 				horizontal_spacing = 30,
 				vertical_spacing = 30,
 				direction = "down_right",
 				units_per_column = MAX_RAID_MEMBERS,
+				unit_group = "party",
+				
+				position_x = 0,
+				position_y = 0,
+				size_x = 1, -- this is a multiplier
+				size_y = 1, -- this is a multiplier
+				scale = 1,
+				layout = L["Normal"],
+				horizontal_mirror = false,
+				vertical_mirror = false,
 				click_through = false,
-			},
-			party = {
-				sort_method = "INDEX",
-				sort_direction = "ASC",
-			},
+				
+				show_when = {
+					party = true,
+					raid10 = false,
+					raid25 = false,
+					raid40 = false,
+				},
+			}
 		},
+		made_groups = false,
 		layouts = {
 			['**'] = {
 				size_x = 200,
@@ -114,6 +151,17 @@ end
 
 local UNITFRAME_STRATA = "MEDIUM"
 local UNITFRAME_LEVEL = 1 -- minimum 1, since 0 needs to be available
+
+local DEFAULT_GROUPS = {
+	[L["Party"]] = {
+		enabled = true,
+		unit_group = "party",
+	},
+	[L["Party pets"]] = {
+		enabled = true,
+		unit_group = "partypet",
+	},
+}
 -----------------------------------------------------------------------------
 
 local _G = _G
@@ -124,7 +172,9 @@ _G.PitBull4 = PitBull4
 PitBull4.L = L
 
 PitBull4.SINGLETON_CLASSIFICATIONS = SINGLETON_CLASSIFICATIONS
-PitBull4.PARTY_CLASSIFICATIONS = PARTY_CLASSIFICATIONS
+PitBull4.UNIT_GROUPS = UNIT_GROUPS
+PitBull4.UNITFRAME_STRATA = UNITFRAME_STRATA
+PitBull4.UNITFRAME_LEVEL = UNITFRAME_LEVEL
 
 local db
 
@@ -219,13 +269,16 @@ PitBull4.unit_id_to_frames = unit_id_to_frames
 local classification_to_frames = setmetatable({}, auto_table__mt)
 PitBull4.classification_to_frames = classification_to_frames
 
--- A dictionary of classification to a set of all group headers of that classification
-local classification_to_headers = setmetatable({}, auto_table__mt)
-PitBull4.classification_to_headers = classification_to_headers
+-- A dictionary of unit group to a set of all group headers of that unit group
+local unit_group_to_headers = setmetatable({}, auto_table__mt)
+PitBull4.unit_group_to_headers = unit_group_to_headers
 
--- A dictionary of super-classification to a set of all group headers of that super-classification
-local super_classification_to_headers = setmetatable({}, auto_table__mt)
-PitBull4.super_classification_to_headers = super_classification_to_headers
+-- A dictionary of super-unit group to a set of all group headers of that super-unit group
+local super_unit_group_to_headers = setmetatable({}, auto_table__mt)
+PitBull4.super_unit_group_to_headers = super_unit_group_to_headers
+
+local name_to_header = {}
+PitBull4.name_to_header = name_to_header
 
 --- Wrap the given function so that any call to it will be piped through PitBull4:RunOnLeaveCombat.
 -- @param func function to call
@@ -581,17 +634,17 @@ function PitBull4:IterateHeaders()
 end
 
 --- Iterate over all headers with the given classification.
--- @param classification the classification to check
--- @usage for header in PitBull4:IterateHeadersForClassification("party")
+-- @param unit_group the unit group to check
+-- @usage for header in PitBull4:IterateHeadersForUnitGroup("party")
 --     doSomethingWith(header)
 -- end
 -- @return iterator which returns headers
-function PitBull4:IterateHeadersForClassification(classification)
+function PitBull4:IterateHeadersForUnitGroup(unit_group)
 	--@alpha@
-	expect(classification, 'typeof', 'string')
+	expect(unit_group, 'typeof', 'string')
 	--@end-alpha@
 	
-	local headers = rawget(classification_to_headers, classification)
+	local headers = rawget(unit_group_to_headers, unit_group)
 	if not headers then
 		return do_nothing
 	end
@@ -600,22 +653,45 @@ function PitBull4:IterateHeadersForClassification(classification)
 end
 
 --- Iterate over all headers with the given super-classification.
--- @param super_classification the super-classification to check
--- @usage for header in PitBull4:IterateHeadersForSuperClassification("party")
+-- @param super_unit_group the super-unit group to check. This can be "party" or "raid"
+-- @usage for header in PitBull4:IterateHeadersForSuperUnitGroup("party")
 --     doSomethingWith(header)
 -- end
 -- @return iterator which returns headers
-function PitBull4:IterateHeadersForSuperClassification(super_classification)
+function PitBull4:IterateHeadersForSuperUnitGroup(super_unit_group)
 	--@alpha@
-	expect(super_classification, 'typeof', 'string')
+	expect(super_unit_group, 'typeof', 'string')
+	expect(super_unit_group, 'inset', 'party;raid')
 	--@end-alpha@
 	
-	local headers = rawget(super_classification_to_headers, super_classification)
+	local headers = rawget(super_unit_group_to_headers, super_unit_group)
 	if not headers then
 		return do_nothing
 	end
 	
 	return not also_hidden and iterate_shown_frames or half_next, headers
+end
+
+local function return_same(object, key)
+	if key then
+		return nil
+	else
+		return object
+	end
+end
+
+--- Iterate over all headers with the given name.
+-- @param name the name to check
+-- @usage for header in PitBull4:IterateHeadersForName("Party pets")
+--     doSomethingWith(header)
+-- end
+-- @return iterator which returns zero or one header
+function PitBull4:IterateHeadersForName(name)
+	--@alpha@
+	expect(name, 'typeof', 'string')
+	--@end-alpha@
+	
+	return return_same, name_to_header[name]
 end
 
 local function header_layout_iter(layout, header)
@@ -642,109 +718,6 @@ function PitBull4:IterateHeadersForLayout(layout, also_hidden)
 	
 	return header_layout_iter, layout
 end
-
---- Make a singleton unit frame.
--- @param unit the UnitID of the frame in question
--- @usage local frame = PitBull4:MakeSingletonFrame("player")
-function PitBull4:MakeSingletonFrame(unit)
-	--@alpha@
-	expect(unit, 'typeof', 'string')
-	--@end-alpha@
-	
-	local id = PitBull4.Utils.GetBestUnitID(unit)
-	if not PitBull4.Utils.IsSingletonUnitID(id) then
-		error(("Bad argument #1 to `MakeSingletonFrame'. %q is not a singleton UnitID"):format(tostring(unit)), 2)
-	end
-	unit = id
-	
-	local frame_name = "PitBull4_Frames_" .. unit
-	local frame = _G[frame_name]
-	
-	if not frame then
-		frame = CreateFrame("Button", frame_name, UIParent, "SecureUnitButtonTemplate")
-		frame:SetFrameStrata(UNITFRAME_STRATA)
-		frame:SetFrameLevel(UNITFRAME_LEVEL)
-		
-		frame.is_singleton = true
-		
-		-- for singletons, its classification is its UnitID
-		local classification = unit
-		frame.classification = classification
-		frame.classification_db = db.profile.classifications[classification]
-		
-		local is_wacky = PitBull4.Utils.IsWackyClassification(classification)
-		frame.is_wacky = is_wacky
-		
-		self:ConvertIntoUnitFrame(frame)
-		
-		frame:SetAttribute("unit", unit)
-	end
-	
-	frame:Activate()
-	
-	frame:RefreshLayout()
-	
-	frame:UpdateGUID(UnitGUID(unit))
-end
-PitBull4.MakeSingletonFrame = PitBull4:OutOfCombatWrapper(PitBull4.MakeSingletonFrame)
-
---- Make a group header.
--- @param classification the classification for the group.
--- @param group the identifier for the group. This can be nil if inapplicable, e.g. "party" classification.
--- @usage local header = PitBull4:MakeGroupHeader("party", nil)
-function PitBull4:MakeGroupHeader(classification, group)
-	--@alpha@
-	expect(classification, 'typeof', 'string')
-	expect(PitBull4.Utils.IsValidClassification(classification), '==', true)
-	if classification:sub(1, 5) == "party" then
-		expect(group, 'typeof', 'nil')
-	else
-		expect(group, 'typeof', 'string;number')
-	end
-	--@end-alpha@
-	
-	local header_name = "PitBull4_Groups_" .. classification
-	if group then
-		header_name = header_name .. "_" .. group
-	end
-	
-	local header = _G[header_name]
-	if not header then
-		local party_based = classification:sub(1, 5) == "party"
-		local template
-		if party_based then
-			template = "SecurePartyHeaderTemplate"
-		else
-			template = "SecureRaidGroupHeaderTemplate"
-		end
-		
-		header = CreateFrame("Frame", header_name, UIParent, template)
-		header:Hide() -- it will be shown later and attributes being set won't cause lag
-		header:SetFrameStrata(UNITFRAME_STRATA)
-		header:SetFrameLevel(UNITFRAME_LEVEL - 1)
-		
-		if party_based then
-			header.super_classification = "party"
-			header.super_classification_db = db.profile.classifications["party"]
-			header.unitsuffix = classification:sub(6)
-			if header.unitsuffix == "" then
-				header.unitsuffix = nil
-			end
-		end
-		header.classification = classification
-		header.classification_db = db.profile.classifications[classification]
-		header.group = group
-		
-		local is_wacky = PitBull4.Utils.IsWackyClassification(classification)
-		header.is_wacky = is_wacky
-		
-		self:ConvertIntoGroupHeader(header)
-		header:ForceUnitFrameCreation(party_based and MAX_PARTY_MEMBERS or MAX_RAID_MEMBERS)
-	end
-	
-	header:Show()
-end
-PitBull4.MakeGroupHeader = PitBull4:OutOfCombatWrapper(PitBull4.MakeGroupHeader)
 
 --- Call a given method on all modules if those modules have the method.
 -- This will iterate over disabled modules.
@@ -808,6 +781,16 @@ function PitBull4:ADDON_LOADED()
 	end
 end
 
+local function merge_onto(base, addition)
+	for k, v in pairs(addition) do
+		if type(v) == "table" then
+			merge_onto(base[k], v)
+		else
+			base[k] = v
+		end
+	end
+end
+
 function PitBull4:OnProfileChanged()
 	self.ClassColors = PitBull4.db.profile.colors.class
 	self.PowerColors = PitBull4.db.profile.colors.power
@@ -815,19 +798,30 @@ function PitBull4:OnProfileChanged()
 	
 	local db = self.db
 	
-	for header in PitBull4:IterateHeaders() do
-		header.super_classification_db = db.profile.classifications[header.super_classification]
-		header.classification_db = db.profile.classifications[header.classification]
+	if not db.made_groups then
+		db.made_groups = true
+		for name, data in pairs(DEFAULT_GROUPS) do
+			local group_db = db.profile.groups[name]
+			merge_onto(group_db, data)
+		end
 	end
-	for frame in PitBull4:IterateFrames(true) do
-		frame.classification_db = db.profile.classifications[frame.classification]
+	
+	for header in PitBull4:IterateHeaders() do
+		local group_db = rawget(db.profile.groups, header.name)
+		header.group_db = group_db
+		for _, frame in ipairs(header) do
+			frame.classification_db = header.group_db
+		end
+	end
+	for frame in PitBull4:IterateSingletonFrames(true) do
+		frame.classification_db = db.profile.units[frame.classification]
 	end
 	
 	for frame in PitBull4:IterateFrames(true) do
 		frame:RefreshLayout()
 	end
 	for header in PitBull4:IterateHeaders() do
-		header:RefreshLayout(true)
+		header:RefreshGroup(true)
 	end
 	
 	if self.ldb_icon_registered and not IsAddOnLoaded("Broker2FuBar") then
@@ -850,17 +844,20 @@ function PitBull4:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	
+	self:RegisterEvent("RAID_ROSTER_UPDATE")
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED")
+	self:RAID_ROSTER_UPDATE()
+	
 	-- show initial frames
-	local db_classifications = db.profile.classifications
-	for _, classification in ipairs(SINGLETON_CLASSIFICATIONS) do
-		if db_classifications[classification].enabled then
-			self:MakeSingletonFrame(classification)
+	for unit, unit_db in pairs(db.profile.units) do
+		if unit_db.enabled then
+			self:MakeSingletonFrame(unit)
 		end
 	end
 	
-	for _, classification in ipairs(PARTY_CLASSIFICATIONS) do
-		if db_classifications[classification].enabled then
-			self:MakeGroupHeader(classification)
+	for group, group_db in pairs(db.profile.groups) do
+		if group_db.enabled then
+			self:MakeGroupHeader(group)
 		end
 	end
 end
@@ -895,6 +892,44 @@ function PitBull4:UPDATE_MOUSEOVER_UNIT() self:CheckGUIDForUnitID("mouseover") e
 function PitBull4:PLAYER_PET_CHANGED() self:CheckGUIDForUnitID("pet") end
 function PitBull4:UNIT_TARGET(_, unit) self:CheckGUIDForUnitID(unit .. "target") end
 function PitBull4:UNIT_PET(_, unit) self:CheckGUIDForUnitID(unit .. "pet") end
+
+local STATE
+function PitBull4:GetState()
+	local config_mode = PitBull4.config_mode
+	if config_mode then
+		STATE = config_mode == "solo" and "party" or config_mode
+	end
+	return STATE
+end
+
+local last_state = nil
+function PitBull4:RAID_ROSTER_UPDATE()
+	local raid = GetNumRaidMembers()
+	if raid > 0 then
+		if raid > 25 then
+			STATE = "raid40"
+		elseif raid > 10 then
+			STATE = "raid25"
+		-- elseif raid <= 5 and GetNumPartyMembers() == raid - 1 then
+		-- 	STATE = "party"
+		else
+			STATE = "raid10"
+		end
+	else
+		-- also can occur for solo
+		STATE = "party"
+	end
+	
+	local state = PitBull4:GetState()
+	if last_state ~= state then
+		last_state = state
+		for header in PitBull4:IterateHeaders() do
+			header:UpdateShownState(state)
+		end
+	end
+end
+PitBull4.RAID_ROSTER_UPDATE = PitBull4:OutOfCombatWrapper(PitBull4.RAID_ROSTER_UPDATE)
+PitBull4.PARTY_MEMBERS_CHANGED = PitBull4.RAID_ROSTER_UPDATE
 
 do
 	local in_combat = false
@@ -957,4 +992,4 @@ do
 			t[i+1] = select(i, ...)
 		end
 	end
-end	
+end
