@@ -244,9 +244,9 @@ PitBull4.unit_id_to_frames = unit_id_to_frames
 local classification_to_frames = setmetatable({}, auto_table__mt)
 PitBull4.classification_to_frames = classification_to_frames
 
--- A dictionary of classification to a set of all group headers of that classification
-local classification_to_headers = setmetatable({}, auto_table__mt)
-PitBull4.classification_to_headers = classification_to_headers
+-- A dictionary of unit group to a set of all group headers of that unit group
+local unit_group_to_headers = setmetatable({}, auto_table__mt)
+PitBull4.unit_group_to_headers = unit_group_to_headers
 
 -- A dictionary of super-unit group to a set of all group headers of that super-unit group
 local super_unit_group_to_headers = setmetatable({}, auto_table__mt)
@@ -609,17 +609,17 @@ function PitBull4:IterateHeaders()
 end
 
 --- Iterate over all headers with the given classification.
--- @param classification the classification to check
--- @usage for header in PitBull4:IterateHeadersForClassification("party")
+-- @param unit_group the unit group to check
+-- @usage for header in PitBull4:IterateHeadersForUnitGroup("party")
 --     doSomethingWith(header)
 -- end
 -- @return iterator which returns headers
-function PitBull4:IterateHeadersForClassification(classification)
+function PitBull4:IterateHeadersForUnitGroup(unit_group)
 	--@alpha@
-	expect(classification, 'typeof', 'string')
+	expect(unit_group, 'typeof', 'string')
 	--@end-alpha@
 	
-	local headers = rawget(classification_to_headers, classification)
+	local headers = rawget(unit_group_to_headers, unit_group)
 	if not headers then
 		return do_nothing
 	end
@@ -807,9 +807,9 @@ function PitBull4:OnEnable()
 		end
 	end
 	
-	for _, classification in ipairs(PARTY_CLASSIFICATIONS) do
-		if db.profile.groups[classification].enabled then
-			self:MakeGroupHeader(classification)
+	for group, group_db in pairs(db.profile.groups) do
+		if group_db.enabled then
+			self:MakeGroupHeader(group)
 		end
 	end
 end

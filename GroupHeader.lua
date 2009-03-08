@@ -13,7 +13,8 @@ function PitBull4:MakeGroupHeader(group)
 	
 	local header = _G[header_name]
 	if not header then
-		local unit_group = PitBull4.db.unit_group -- this should be handled in the db
+		local group_db = PitBull4.db.profile.groups[group]
+		local unit_group = group_db.unit_group
 		local party_based = unit_group:sub(1, 5) == "party"
 		if not party_based then
 			assert(unit_group:sub(1, 4) == "raid")
@@ -38,9 +39,9 @@ function PitBull4:MakeGroupHeader(group)
 		if header.unitsuffix == "" then
 			header.unitsuffix = nil
 		end
-		header.unit_group = unit_group
-		header.group_db = db.profile.groups[group]
 		
+		header.group_db = group_db
+		header.unit_group = unit_group
 		local is_wacky = PitBull4.Utils.IsWackyUnitGroup(unit_group)
 		header.is_wacky = is_wacky
 		
@@ -387,7 +388,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 	--@end-alpha@
 	
 	self.all_headers[header] = true
-	self.classification_to_headers[header.classification][header] = true
+	self.unit_group_to_headers[header.unit_group][header] = true
 	self.super_unit_group_to_headers[header.super_unit_group][header] = true
 	self.name_to_header[header.name] = header
 	

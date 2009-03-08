@@ -187,6 +187,11 @@ do
 	-- @usage PitBull4.Utils.GetLocalizedClassification("partypettarget") == "Party pet targets"
 	-- @return a localized string of the unit classification
 	function PitBull4.Utils.GetLocalizedClassification(classification)
+		--@alpha@
+		expect(classification, 'typeof', 'string')
+		expect(classification, 'inset', classifications)
+		--@end-alpha@
+		
 		return classifications[classification]
 	end
 end
