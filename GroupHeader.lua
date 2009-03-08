@@ -455,7 +455,7 @@ function GroupHeader:ForceShow()
 	elseif config_mode == "party" then
 		num = self.include_player and MAX_PARTY_MEMBERS_WITH_PLAYER or MAX_PARTY_MEMBERS
 	else
-		num = config_mode:sub(4)+0 -- raid10, raid25, raid40 => 10, 25, 40
+		num = config_mode:sub(5)+0 -- raid10, raid25, raid40 => 10, 25, 40
 	end
 	
 	for _, frame in self:IterateMembers(num) do
