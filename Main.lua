@@ -798,8 +798,8 @@ function PitBull4:OnProfileChanged()
 	
 	local db = self.db
 	
-	if not db.made_groups then
-		db.made_groups = true
+	if not db.profile.made_groups then
+		db.profile.made_groups = true
 		for name, data in pairs(DEFAULT_GROUPS) do
 			local group_db = db.profile.groups[name]
 			merge_onto(group_db, data)
