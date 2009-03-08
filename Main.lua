@@ -99,6 +99,7 @@ local DATABASE_DEFAULTS = {
 				click_through = false,
 			}
 		},
+		made_groups = false,
 		layouts = {
 			['**'] = {
 				size_x = 200,
@@ -143,6 +144,17 @@ end
 
 local UNITFRAME_STRATA = "MEDIUM"
 local UNITFRAME_LEVEL = 1 -- minimum 1, since 0 needs to be available
+
+local DEFAULT_GROUPS = {
+	[L["Party"]] = {
+		enabled = true,
+		unit_group = "party",
+	},
+	[L["Party pets"]] = {
+		enabled = true,
+		unit_group = "partypet"
+	},
+}
 -----------------------------------------------------------------------------
 
 local _G = _G
@@ -769,8 +781,19 @@ function PitBull4:OnProfileChanged()
 	
 	local db = self.db
 	
+	if not db.made_groups then
+		db.made_groups = true
+		for name, data in pairs(DEFAULT_GROUPS) do
+			local group_db = db.profile.groups[name]
+			for k, v in pairs(data) do
+				group_db[k] = v
+			end
+		end
+	end
+	
 	for header in PitBull4:IterateHeaders() do
-		header.group_db = db.profile.groups[header.name]
+		local group_db = rawget(db.profile.groups, header.name)
+		header.group_db = group_db
 		for _, frame in ipairs(header) do
 			frame.classification_db = header.group_db
 		end

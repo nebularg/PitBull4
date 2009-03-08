@@ -261,14 +261,14 @@ function GroupHeader:InitialConfigFunction(frame)
 	frame.classification_db = self.group_db
 	frame.is_wacky = self.is_wacky
 	
-	if self.unitsuffix then
-		frame:ProxySetAttribute("unitsuffix", self.unitsuffix)
-	end
-	
 	local layout = self.group_db.layout
 	frame.layout = layout
 	
 	PitBull4:ConvertIntoUnitFrame(frame)
+	
+	if self.unitsuffix then
+		frame:ProxySetAttribute("unitsuffix", self.unitsuffix)
+	end
 	
 	local layout_db = PitBull4.db.profile.layouts[layout]
 	frame.layout_db = layout_db
