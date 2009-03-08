@@ -1,6 +1,8 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
+local MAX_PARTY_MEMBERS_WITH_PLAYER = MAX_PARTY_MEMBERS + 1
+
 --- Make a group header.
 -- @param group the name for the group. Also acts as a unique identifier.
 -- @usage local header = PitBull4:MakeGroupHeader("Monkey")
@@ -138,11 +140,13 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	local unit_group = group_db.unit_group
 	local party_based = unit_group:sub(1, 5) == "party"
 	local include_player = party_based and group_db.include_player
-	if self.unit_group ~= unit_group or self.include_player ~= include_player then
+	local show_solo = include_player and group_db.show_when.solo
+	if self.unit_group ~= unit_group or self.include_player ~= include_player or self.show_solo ~= show_solo then
 		local old_unit_group = self.unit_group
 		local old_super_unit_group = self.super_unit_group
 		self.unit_group = unit_group
 		self.include_player = include_player
+		self.show_solo = show_solo
 		--@alpha@
 		if not party_based then
 			expect(unit_group:sub(1, 4), '==', "raid")
@@ -155,11 +159,13 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 			self:ProxySetAttribute("showRaid", nil)
 			self:ProxySetAttribute("showParty", true)
 			self:ProxySetAttribute("showPlayer", include_player and true or nil)
+			self:ProxySetAttribute("showSolo", show_solo and true or nil)
 		else
 			self.super_unit_group = "raid"
 			self.unitsuffix = unit_group:sub(5)
 			self:ProxySetAttribute("showParty", nil)
 			self:ProxySetAttribute("showPlayer", nil)
+			self:ProxySetAttribute("showSolo", nil)
 			self:ProxySetAttribute("showRaid", true)
 		end
 		if self.unitsuffix == "" then
@@ -417,7 +423,7 @@ function GroupHeader:GetMaxUnits()
 		return MAX_RAID_MEMBERS
 	else
 		if self.include_player then
-			return MAX_PARTY_MEMBERS + 1
+			return MAX_PARTY_MEMBERS_WITH_PLAYER
 		else
 			return MAX_PARTY_MEMBERS
 		end
@@ -443,7 +449,14 @@ function GroupHeader:ForceShow()
 	self:AssignFakeUnitIDs()
 	
 	local config_mode = PitBull4.config_mode
-	local num = tonumber(config_mode:match("(%d+)")) or 5
+	local num
+	if config_mode == "solo" then
+		num = self.include_player and 1 or 0
+	elseif config_mode == "party" then
+		num = self.include_player and MAX_PARTY_MEMBERS_WITH_PLAYER or MAX_PARTY_MEMBERS
+	else
+		num = config_mode:sub(4)+0 -- raid10, raid25, raid40 => 10, 25, 40
+	end
 	
 	for _, frame in self:IterateMembers(num) do
 		frame:ForceShow()

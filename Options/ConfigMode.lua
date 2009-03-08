@@ -25,8 +25,12 @@ function PitBull4:IsInConfigMode()
 end
 
 local function should_show_header(config_mode, header)
-	if not config_mode or config_mode == "solo" then
+	if not config_mode then
 		return false
+	end
+	
+	if config_mode == "solo" then
+		return header.show_solo
 	end
 	
 	if config_mode == "party" and header.super_unit_group ~= "party" then

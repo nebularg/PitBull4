@@ -100,6 +100,7 @@ local DATABASE_DEFAULTS = {
 				click_through = false,
 				
 				show_when = {
+					solo = false,
 					party = true,
 					raid10 = false,
 					raid25 = false,

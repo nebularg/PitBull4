@@ -600,12 +600,26 @@ function PitBull4.Options.get_unit_options()
 		desc = L["Which situations to show the unit group in."],
 		order = next_order(),
 		type = 'multiselect',
-		values = {
-			party = L["Party"],
-			raid10 = L["10-man raid"],
-			raid25 = L["25-man raid"],
-			raid40 = L["40-man raid"],
-		},
+		values = function(info)
+			local unit_group = get_group_db().unit_group
+			
+			local party_based = unit_group:sub(1, 5) == "party"
+			
+			local t = {}
+			
+			if party_based then
+				if get_group_db().include_player then
+					t.solo = L["Solo"]
+				end
+				t.party = L["Party"]
+			end
+			
+			t.raid10 = L["10-man raid"]
+			t.raid25 = L["25-man raid"]
+			t.raid40 = L["40-man raid"]
+			
+			return t
+		end,
 		get = function(info, key)
 			local db = get_group_db()
 			
