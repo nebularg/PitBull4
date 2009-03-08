@@ -13,13 +13,6 @@ function PitBull4:MakeGroupHeader(group)
 	
 	local header = _G[header_name]
 	if not header then
-		local group_db = PitBull4.db.profile.groups[group]
-		local unit_group = group_db.unit_group
-		local party_based = unit_group:sub(1, 5) == "party"
-		if not party_based then
-			assert(unit_group:sub(1, 4) == "raid")
-		end
-		
 		header = CreateFrame("Frame", header_name, UIParent, "SecureGroupHeaderTemplate")
 		header:Hide() -- it will be shown later and attributes being set won't cause lag
 		header:SetFrameStrata(PitBull4.UNITFRAME_STRATA)
@@ -27,26 +20,10 @@ function PitBull4:MakeGroupHeader(group)
 		
 		header.name = group
 		
-		if party_based then
-			header.super_unit_group = "party"
-			header.unitsuffix = unit_group:sub(6)
-			header:SetAttribute("showParty", true)
-		else
-			header.super_unit_group = "raid"
-			header.unitsuffix = unit_group:sub(5)
-			header:SetAttribute("showRaid", true)
-		end
-		if header.unitsuffix == "" then
-			header.unitsuffix = nil
-		end
-		
+		local group_db = PitBull4.db.profile.groups[group]
 		header.group_db = group_db
-		header.unit_group = unit_group
-		local is_wacky = PitBull4.Utils.IsWackyUnitGroup(unit_group)
-		header.is_wacky = is_wacky
 		
 		self:ConvertIntoGroupHeader(header)
-		header:ForceUnitFrameCreation(party_based and MAX_PARTY_MEMBERS or MAX_RAID_MEMBERS)
 	end
 	
 	header:Show()
@@ -75,6 +52,12 @@ GroupHeader.Update = PitBull4:OutOfCombatWrapper(GroupHeader.Update)
 function GroupHeader:UpdateMembers(...)
 	for i, frame in ipairs(self) do
 		frame:Update(...)
+	end
+end
+
+function GroupHeader:ProxySetAttribute(key, value)
+	if self:GetAttribute(key) ~= value then
+		self:SetAttribute(key, value)
 	end
 end
 
@@ -122,19 +105,59 @@ local DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER = {
 	left_up = 1,
 }
 
-UNITS_PER_COLUMN = 2
-MAX_COLUMNS = 2
---- Recheck the layout of the group header, including sorting, position, what units are shown, and refreshing the layout of all members.
+--- Recheck the group-based settings of the group header, including sorting, position, what units are shown.
 -- @param dont_refresh_children don't call :RefreshLayout on the child frames
--- @usage header:RefreshLayout()
-function GroupHeader:RefreshLayout(dont_refresh_children)
+-- @usage header:RefreshGroup()
+function GroupHeader:RefreshGroup(dont_refresh_children)
 	local group_db = self.group_db
-
+	
 	local layout = group_db.layout
 	self.layout = layout
 	
 	local layout_db = PitBull4.db.profile.layouts[layout]
 	self.layout_db = layout_db
+	
+	local unit_group = group_db.unit_group
+	if self.unit_group ~= unit_group then
+		local old_unit_group = self.unit_group
+		local old_super_unit_group = self.super_unit_group
+		self.unit_group = unit_group
+		local party_based = unit_group:sub(1, 5) == "party"
+		--@alpha@
+		if not party_based then
+			expect(unit_group:sub(1, 4), '==', "raid")
+		end
+		--@end-alpha@
+	
+		if party_based then
+			self.super_unit_group = "party"
+			self.unitsuffix = unit_group:sub(6)
+			self:ProxySetAttribute("showRaid", nil)
+			self:ProxySetAttribute("showParty", true)
+		else
+			self.super_unit_group = "raid"
+			self.unitsuffix = unit_group:sub(5)
+			self:ProxySetAttribute("showParty", nil)
+			self:ProxySetAttribute("showRaid", true)
+		end
+		if self.unitsuffix == "" then
+			self.unitsuffix = nil
+		end
+	
+		local is_wacky = PitBull4.Utils.IsWackyUnitGroup(unit_group)
+		self.is_wacky = is_wacky
+		
+		if old_unit_group then
+			PitBull4.unit_group_to_headers[old_unit_group][self] = nil
+			PitBull4.super_unit_group_to_headers[old_super_unit_group][self] = nil
+			
+			for i, frame in ipairs(self) do
+				frame:ProxySetAttribute("unitsuffix", self.unitsuffix)
+			end
+		end
+		PitBull4.unit_group_to_headers[unit_group][self] = true
+		PitBull4.super_unit_group_to_headers[self.super_unit_group][self] = true
+	end
 	
 	self:SetScale(layout_db.scale * group_db.scale)
 	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
@@ -142,29 +165,29 @@ function GroupHeader:RefreshLayout(dont_refresh_children)
 	local direction = group_db.direction
 	local point = DIRECTION_TO_POINT[direction]
 	
-	self:SetAttribute("point", point)
+	self:ProxySetAttribute("point", point)
 	if point == "LEFT" or point == "RIGHT" then
-		self:SetAttribute("xOffset", group_db.horizontal_spacing * DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction])
-		self:SetAttribute("yOffset", 0)
-		self:SetAttribute("columnSpacing", group_db.vertical_spacing)
+		self:ProxySetAttribute("xOffset", group_db.horizontal_spacing * DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction])
+		self:ProxySetAttribute("yOffset", 0)
+		self:ProxySetAttribute("columnSpacing", group_db.vertical_spacing)
 	else
-		self:SetAttribute("xOffset", 0)
-		self:SetAttribute("yOffset", group_db.vertical_spacing * DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction])
-		self:SetAttribute("columnSpacing", group_db.horizontal_spacing)
+		self:ProxySetAttribute("xOffset", 0)
+		self:ProxySetAttribute("yOffset", group_db.vertical_spacing * DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction])
+		self:ProxySetAttribute("columnSpacing", group_db.horizontal_spacing)
 	end
-	self:SetAttribute("sortMethod", group_db.sort_method)
-	self:SetAttribute("sortDir", group_db.sort_direction)
-	self:SetAttribute("template", "SecureUnitButtonTemplate")
-	self:SetAttribute("templateType", "Button")
-	self:SetAttribute("groupBy", nil) -- or "GROUP", "CLASS", "ROLE"
-	self:SetAttribute("groupingOrder", "1,2,3,4,5,6,7,8")
-	self:SetAttribute("unitsPerColumn", group_db.units_per_column)
-	self:SetAttribute("maxColumns", MAX_RAID_MEMBERS)
-	self:SetAttribute("startingIndex", 1)
-	self:SetAttribute("columnAnchorPoint", DIRECTION_TO_COLUMN_ANCHOR_POINT[direction])
-	self:SetAttribute("useOwnerUnit", 1)
+	self:ProxySetAttribute("sortMethod", group_db.sort_method)
+	self:ProxySetAttribute("sortDir", group_db.sort_direction)
+	self:ProxySetAttribute("template", "SecureUnitButtonTemplate")
+	self:ProxySetAttribute("templateType", "Button")
+	self:ProxySetAttribute("groupBy", nil) -- or "GROUP", "CLASS", "ROLE"
+	self:ProxySetAttribute("groupingOrder", "1,2,3,4,5,6,7,8")
+	self:ProxySetAttribute("unitsPerColumn", group_db.units_per_column)
+	self:ProxySetAttribute("maxColumns", MAX_RAID_MEMBERS)
+	self:ProxySetAttribute("startingIndex", 1)
+	self:ProxySetAttribute("columnAnchorPoint", DIRECTION_TO_COLUMN_ANCHOR_POINT[direction])
+	self:ProxySetAttribute("useOwnerUnit", 1)
 	
-	self:ForceUnitFrameCreation(#self)
+	self:ForceUnitFrameCreation()
 	self:AssignFakeUnitIDs()
 	
 	self:ClearAllPoints()
@@ -187,6 +210,28 @@ function GroupHeader:RefreshLayout(dont_refresh_children)
 		end
 	end
 end
+GroupHeader.RefreshGroup = PitBull4:OutOfCombatWrapper(GroupHeader.RefreshGroup)
+
+--- Recheck the layout of the group header, refreshing the layout of all members.
+-- @param dont_refresh_children don't call :RefreshLayout on the child frames
+-- @usage header:RefreshLayout()
+function GroupHeader:RefreshLayout(dont_refresh_children)
+	local group_db = self.group_db
+
+	local layout = group_db.layout
+	self.layout = layout
+	
+	local layout_db = PitBull4.db.profile.layouts[layout]
+	self.layout_db = layout_db
+	
+	self:SetScale(layout_db.scale * group_db.scale)
+	
+	if not dont_refresh_children then
+		for i, frame in ipairs(self) do
+			frame:RefreshLayout()
+		end
+	end
+end
 GroupHeader.RefreshLayout = PitBull4:OutOfCombatWrapper(GroupHeader.RefreshLayout)
 
 --- Initialize a member frame. This should be called once per member frame immediately following the frame's creation.
@@ -200,7 +245,7 @@ function GroupHeader:InitialConfigFunction(frame)
 	frame.is_wacky = self.is_wacky
 	
 	if self.unitsuffix then
-		frame:SetAttribute("unitsuffix", self.unitsuffix)
+		frame:ProxySetAttribute("unitsuffix", self.unitsuffix)
 	end
 	
 	local layout = self.group_db.layout
@@ -211,18 +256,18 @@ function GroupHeader:InitialConfigFunction(frame)
 	local layout_db = PitBull4.db.profile.layouts[layout]
 	frame.layout_db = layout_db
 	
-	frame:SetAttribute("initial-width", layout_db.size_x * self.group_db.size_x)
-	frame:SetAttribute("initial-height", layout_db.size_y * self.group_db.size_y)
-	frame:SetAttribute("initial-unitWatch", true)
+	frame:ProxySetAttribute("initial-width", layout_db.size_x * self.group_db.size_x)
+	frame:ProxySetAttribute("initial-height", layout_db.size_y * self.group_db.size_y)
+	frame:ProxySetAttribute("initial-unitWatch", true)
 	
 	frame:RefreshLayout()
 end
 
 --- Force num unit frames to be created on the group header, even if those units don't exist.
 -- Note: this is a hack to get around a Blizzard bug preventing frames from being initialized properly while in combat.
--- @param num the total amount of unit frames that should exist after calling.
--- @usage header:ForceUnitFrameCreation(4)
-function GroupHeader:ForceUnitFrameCreation(num)
+-- @usage header:ForceUnitFrameCreation()
+function GroupHeader:ForceUnitFrameCreation()
+	local num = self.super_unit_group == "raid" and MAX_RAID_MEMBERS or MAX_PARTY_MEMBERS
 	for _, frame in ipairs(self) do
 		if frame:GetAttribute("unit") and UnitExists(frame:GetAttribute("unit")) then
 			num = num - 1
@@ -233,23 +278,26 @@ function GroupHeader:ForceUnitFrameCreation(num)
 	local unitsPerColumn = self:GetAttribute("unitsPerColumn")
 	local startingIndex = self:GetAttribute("startingIndex")
 	if maxColumns == nil then
-		self:SetAttribute("maxColumns", 1)
-		self:SetAttribute("unitsPerColumn", num)
+		self:ProxySetAttribute("maxColumns", 1)
+		self:ProxySetAttribute("unitsPerColumn", num)
 	end
-	self:SetAttribute("startingIndex", -num + 1)
+	self:ProxySetAttribute("startingIndex", -num + 1)
 	
 	SecureGroupHeader_Update(self)
 	
-	self:SetAttribute("maxColumns", maxColumns)
-	self:SetAttribute("unitsPerColumn", unitsPerColumn)
-	self:SetAttribute("startingIndex", startingIndex)
+	self:ProxySetAttribute("maxColumns", maxColumns)
+	self:ProxySetAttribute("unitsPerColumn", unitsPerColumn)
+	self:ProxySetAttribute("startingIndex", startingIndex)
 	
 	SecureGroupHeader_Update(self)
 	
 	-- this is done because the previous hack can mess up some unit references
 	for i, frame in ipairs(self) do
-		frame.unit = SecureButton_GetUnit(frame)
-		frame:Update()
+		local unit = SecureButton_GetUnit(frame)
+		if unit ~= frame.unit then
+			frame.unit = unit
+			frame:Update()
+		end
 	end
 end
 GroupHeader.ForceUnitFrameCreation = PitBull4:OutOfCombatWrapper(GroupHeader.ForceUnitFrameCreation)
@@ -289,10 +337,10 @@ function GroupHeader:AssignFakeUnitIDs()
 			repeat
 				current_group_num = current_group_num + 1
 				unit = super_unit_group .. current_group_num
-				frame:SetAttribute("unit", unit)
-			until not UnitExists(unit)
+			until not UnitExists(unit)	
 			
 			if old_unit ~= unit then
+				frame:SetAttribute("unit", unit)
 				frame:Update()
 			end
 		end
@@ -327,6 +375,25 @@ function GroupHeader:UnforceShow()
 	end
 end
 GroupHeader.UnforceShow = PitBull4:OutOfCombatWrapper(GroupHeader.UnforceShow)
+
+function GroupHeader:Rename(name)
+	if self.name == name then
+		return
+	end
+	
+	local old_header_name = "PitBull4_Groups_" .. self.name
+	local new_header_name = "PitBull4_Groups_" .. name
+	
+	PitBull4.name_to_header[self.name] = nil
+	PitBull4.name_to_header[name] = self
+	_G[old_header_name] = nil
+	_G[new_header_name] = self
+	self.name = name
+	
+	for i, frame in ipairs(self) do
+		frame.classification = name
+	end
+end
 
 local moving_frame = nil
 function MemberUnitFrame__scripts:OnDragStart()
@@ -388,8 +455,6 @@ function PitBull4:ConvertIntoGroupHeader(header)
 	--@end-alpha@
 	
 	self.all_headers[header] = true
-	self.unit_group_to_headers[header.unit_group][header] = true
-	self.super_unit_group_to_headers[header.super_unit_group][header] = true
 	self.name_to_header[header.name] = header
 	
 	for k, v in pairs(GroupHeader__scripts) do
@@ -405,7 +470,9 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		return header:InitialConfigFunction(...)
 	end
 	
-	header:RefreshLayout()
+	header:RefreshGroup()
 	
 	header:SetMovable(true)
+	
+	header:ForceUnitFrameCreation()
 end

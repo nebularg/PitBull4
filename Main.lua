@@ -16,13 +16,19 @@ local SINGLETON_CLASSIFICATIONS = {
 	"focustargettarget",
 }
 
-local PARTY_CLASSIFICATIONS = {
+local UNIT_GROUPS = {
 	"party",
 	"partytarget",
 	"partytargettarget",
 	"partypet",
 	"partypettarget",
 	"partypettargettarget",
+	"raid",
+	"raidtarget",
+	"raidtargettarget",
+	"raidpet",
+	"raidpettarget",
+	"raidpettargettarget",
 }
 
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
@@ -147,7 +153,7 @@ _G.PitBull4 = PitBull4
 PitBull4.L = L
 
 PitBull4.SINGLETON_CLASSIFICATIONS = SINGLETON_CLASSIFICATIONS
-PitBull4.PARTY_CLASSIFICATIONS = PARTY_CLASSIFICATIONS
+PitBull4.UNIT_GROUPS = UNIT_GROUPS
 PitBull4.UNITFRAME_STRATA = UNITFRAME_STRATA
 PitBull4.UNITFRAME_LEVEL = UNITFRAME_LEVEL
 
@@ -777,7 +783,7 @@ function PitBull4:OnProfileChanged()
 		frame:RefreshLayout()
 	end
 	for header in PitBull4:IterateHeaders() do
-		header:RefreshLayout(true)
+		header:RefreshGroup(true)
 	end
 	
 	if self.ldb_icon_registered and not IsAddOnLoaded("Broker2FuBar") then

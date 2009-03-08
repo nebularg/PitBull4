@@ -97,6 +97,16 @@ function PitBull4.Options.get_unit_options()
 		end
 	}
 	
+	local function validate_group(info, value)
+		if value:len() < 3 then
+			return L["Must be at least 3 characters long."]
+		end
+		if rawget(PitBull4.db.profile.groups, value) then
+			return L["Must be unique."]
+		end
+		return true
+	end
+	
 	group_options.args.new_group = {
 		name = L["New group"],
 		desc = L["Create a new group. This will copy the data of the currently-selected group."],
@@ -108,15 +118,7 @@ function PitBull4.Options.get_unit_options()
 			
 			CURRENT_GROUP = value
 		end,
-		validate = function(info, value)
-			if value:len() < 3 then
-				return L["Must be at least 3 characters long."]
-			end
-			if rawget(PitBull4.db.profile.groups, value) then
-				return L["Must be unique."]
-			end
-			return true
-		end,
+		validate = validate_group,
 	}
 	
 	local next_order
@@ -128,16 +130,20 @@ function PitBull4.Options.get_unit_options()
 		end
 	end
 	
-	local update, refresh
+	local update, refresh_group, refresh_layout
 	do
-		local update_funcs, refresh_funcs = {}, {}
+		local update_funcs, refresh_group_funcs, refresh_layout_funcs = {}, {}, {}
 		
 		function update(type)
 			return update_funcs[type]()
 		end
 		
-		function refresh(type)
-			return refresh_funcs[type]()
+		function refresh_group(type)
+			return refresh_group_funcs[type]()
+		end
+		
+		function refresh_layout(type)
+			return refresh_layout_funcs[type]()
 		end
 		
 		function update_funcs.groups()
@@ -152,17 +158,24 @@ function PitBull4.Options.get_unit_options()
 			end
 		end
 		
-		function refresh_funcs.groups()
+		function refresh_group_funcs.groups()
+			for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do
+				header:RefreshGroup(true)
+			end
+		end
+		
+		function refresh_layout_funcs.groups()
 			for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do
 				header:RefreshLayout()
 			end
 		end
 		
-		function refresh_funcs.units()
+		function refresh_group_funcs.units()
 			for frame in PitBull4:IterateFramesForClassification(CURRENT_UNIT, true) do
 				frame:RefreshLayout()
 			end
 		end
+		refresh_layout_funcs.units = refresh_group_funcs.units
 	end
 	
 	local function round(value)
@@ -255,20 +268,73 @@ function PitBull4.Options.get_unit_options()
 		return get_db(type)[info[#info]]
 	end
 	
-	local function set_with_refresh(info)
+	local function set(info, value)
 		local type = info[1]
+		local key = info[#info]
 		
-		get_db(type)[info[#info]] = value
+		local db = get_db(type)
+		if db[key] == value then
+			return false
+		end
 		
-		refresh(type)
+		db[key] = value
+		
+		return true
+	end
+	local function set_with_refresh_group(info, value)
+		if set(info, value) then
+			refresh_group(info[1])
+		end
+	end
+	local function set_with_refresh_layout(info, value)
+		if set(info, value) then
+			refresh_layout(info[1])
+		end
 	end
 	local function set_with_update(info)
-		local type = info[1]
-		
-		get_db(type)[info[#info]] = value
-		
-		update(type)
+		if set(info, value) then
+			update(info[1])
+		end
 	end
+	
+	group_args.name = {
+		name = L["Name"],
+		desc = function(info)
+			return L["Rename the '%s' unit group."]:format(CURRENT_GROUP)
+		end,
+		type = 'input',
+		order = next_order(),
+		get = function(info)
+			return CURRENT_GROUP
+		end,
+		set = function(info, value)
+			PitBull4.db.profile.groups[value], PitBull4.db.profile.groups[CURRENT_GROUP] = PitBull4.db.profile.groups[CURRENT_GROUP], nil
+			local old_group = CURRENT_GROUP
+			CURRENT_GROUP = value
+			
+			for header in PitBull4:IterateHeadersForName(old_group) do
+				header:Rename(CURRENT_GROUP)
+			end
+		end,
+		validate = validate_group,
+	}
+	
+	group_args.unit_group = {
+		name = L["Unit group"],
+		desc = L["Which units this group should show."],
+		type = 'select',
+		order = next_order(),
+		values = function(info)
+			local t = {}
+			for _, name in ipairs(PitBull4.UNIT_GROUPS) do
+				t[name] = PitBull4.Utils.GetLocalizedClassification(name)
+			end
+			return t
+		end,
+		get = get,
+		set = set_with_refresh_group,
+		disabled = disabled,
+	}
 	
 	shared_args.layout = {
 		name = L["Layout"],
@@ -283,7 +349,7 @@ function PitBull4.Options.get_unit_options()
 			return t
 		end,
 		get = get,
-		set = set_with_refresh,
+		set = set_with_refresh_layout,
 		disabled = disabled,
 	}
 	
@@ -293,7 +359,7 @@ function PitBull4.Options.get_unit_options()
 		order = next_order(),
 		type = 'toggle',
 		get = get,
-		set = set_with_update,
+		set = set_with_refresh_layout,
 		disabled = disabled,
 	}
 	
@@ -303,7 +369,7 @@ function PitBull4.Options.get_unit_options()
 		order = next_order(),
 		type = 'toggle',
 		get = get,
-		set = set_with_update,
+		set = set_with_refresh_layout,
 		disabled = disabled,
 	}
 	
@@ -318,11 +384,11 @@ function PitBull4.Options.get_unit_options()
 		step = 0.01,
 		bigStep = 0.05,
 		get = get,
-		set = set_with_refresh,
+		set = set_with_refresh_layout,
 		disabled = disabled,
 	}
 	
-	shared_args.width_multiplier = {
+	shared_args.size_x = {
 		name = L["Width multiplier"],
 		desc = L["A width multiplier applied to the unit. Your layout's width will be multiplied against this value."],
 		order = next_order(),
@@ -333,11 +399,11 @@ function PitBull4.Options.get_unit_options()
 		step = 0.01,
 		bigStep = 0.05,
 		get = get,
-		set = set_with_refresh,
+		set = set_with_refresh_layout,
 		disabled = disabled,
 	}
 	
-	shared_args.height_multiplier = {
+	shared_args.size_y = {
 		name = L["Height multiplier"],
 		desc = L["A height multiplier applied to the unit. Your layout's height will be multiplied against this value."],
 		order = next_order(),
@@ -348,7 +414,7 @@ function PitBull4.Options.get_unit_options()
 		step = 0.01,
 		bigStep = 0.05,
 		get = get,
-		set = set_with_refresh,
+		set = set_with_refresh_layout,
 		disabled = disabled,
 	}
 	
@@ -358,7 +424,7 @@ function PitBull4.Options.get_unit_options()
 		order = next_order(),
 		type = 'toggle',
 		get = get,
-		set = set_with_refresh,
+		set = set_with_refresh_layout,
 		disabled = disabled,
 	}
 	
@@ -372,11 +438,7 @@ function PitBull4.Options.get_unit_options()
 		get = function(info)
 			return round(get_unit_db().position_x)
 		end,
-		set = function(info, value)
-			get_unit_db().position_x = value
-			
-			refresh("units", unit)
-		end,
+		set = set_with_refresh_layout,
 		step = 1,
 		bigStep = 5,
 		disabled = disabled,
@@ -392,13 +454,7 @@ function PitBull4.Options.get_unit_options()
 		get = function(info)
 			return round(get_unit_db().position_y)
 		end,
-		set = function(info, value)
-			local unit = info[2]
-			
-			get_unit_db().position_y = value
-			
-			refresh("units", unit)
-		end,
+		set = set_with_refresh_layout,
 		step = 1,
 		bigStep = 5,
 		disabled = disabled,
@@ -415,7 +471,7 @@ function PitBull4.Options.get_unit_options()
 			NAME = L["By name"],
 		},
 		get = get,
-		set = set_with_refresh,
+		set = set_with_refresh_group,
 		disabled = disabled,
 	}
 	
@@ -430,7 +486,7 @@ function PitBull4.Options.get_unit_options()
 			DESC = L["Descending"],
 		},
 		get = get,
-		set = set_with_refresh,
+		set = set_with_refresh_group,
 		disabled = disabled,
 	}
 	
@@ -451,7 +507,7 @@ function PitBull4.Options.get_unit_options()
 		step = 1,
 		bigStep = 5,
 		get = get,
-		set = set_with_refresh,
+		set = set_with_refresh_group,
 		disabled = disabled,
 	}
 	
@@ -465,7 +521,7 @@ function PitBull4.Options.get_unit_options()
 		step = 1,
 		bigStep = 5,
 		get = get,
-		set = set_with_refresh,
+		set = set_with_refresh_group,
 		disabled = disabled,
 	}
 	
@@ -485,7 +541,7 @@ function PitBull4.Options.get_unit_options()
 			left_up = ("%s, %s"):format(L["Columns left"], L["Rows up"]),
 		},
 		get = get,
-		set = set_with_refresh,
+		set = set_with_refresh_group,
 		disabled = disabled,
 	}
 	
@@ -509,7 +565,7 @@ function PitBull4.Options.get_unit_options()
 		min = 1,
 		max = MAX_RAID_MEMBERS,
 		get = get,
-		set = set_with_refresh,
+		set = set_with_refresh_group,
 		step = 1,
 		disabled = disabled,
 	}
