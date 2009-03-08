@@ -133,6 +133,8 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	local is_shown = self:IsShown()
 	self:Hide()
 	
+	local force_show
+	
 	local unit_group = group_db.unit_group
 	if self.unit_group ~= unit_group then
 		local old_unit_group = self.unit_group
@@ -167,15 +169,11 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 			PitBull4.unit_group_to_headers[old_unit_group][self] = nil
 			PitBull4.super_unit_group_to_headers[old_super_unit_group][self] = nil
 			
-			local force_show = self.force_show
+			force_show = self.force_show
 			self:UnforceShow()
 			
 			for _, frame in self:IterateMembers() do
 				frame:ProxySetAttribute("unitsuffix", self.unitsuffix)
-			end
-			
-			if force_show then
-				self:ForceShow()
 			end
 		end
 		PitBull4.unit_group_to_headers[unit_group][self] = true
@@ -229,9 +227,13 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		end
 	end
 	self:SetPoint(point, UIParent, "CENTER", group_db.position_x / scale + x_diff, group_db.position_y / scale + y_diff)
+	
+	if force_show then
+		self:ForceShow()
+	end
+	
 	if is_shown then
 		self:Show()
-		SecureGroupHeader_Update(self)
 	end
 	
 	if not dont_refresh_children then
@@ -411,7 +413,11 @@ function GroupHeader:GetMaxUnits()
 end
 
 function GroupHeader:IterateMembers(num)
-	return ipairs_upto_num(self, num or self:GetMaxUnits())
+	local max_units = self:GetMaxUnits()
+	if not num or num > max_units then
+		num = max_units
+	end
+	return ipairs_upto_num(self, num)
 end
 
 function GroupHeader:ForceShow()
