@@ -26,7 +26,7 @@ function PitBull4:MakeGroupHeader(group)
 		self:ConvertIntoGroupHeader(header)
 	end
 	
-	header:Show()
+	header:UpdateShownState(self:GetState())
 end
 PitBull4.MakeGroupHeader = PitBull4:OutOfCombatWrapper(PitBull4.MakeGroupHeader)
 
@@ -58,6 +58,19 @@ end
 function GroupHeader:ProxySetAttribute(key, value)
 	if self:GetAttribute(key) ~= value then
 		self:SetAttribute(key, value)
+	end
+end
+
+function GroupHeader:UpdateShownState(state)
+	local group_db = self.group_db
+	if not group_db then
+		return
+	end
+	
+	if group_db and group_db.enabled and group_db.show_when[state] then
+		self:Show()
+	else
+		self:Hide()
 	end
 end
 

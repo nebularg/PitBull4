@@ -570,6 +570,33 @@ function PitBull4.Options.get_unit_options()
 		disabled = disabled,
 	}
 	
+	group_args.shown_when = {
+		name = L["Show when in"],
+		desc = L["Which situations to show the unit group in."],
+		order = next_order(),
+		type = 'multiselect',
+		values = {
+			party = L["Party"],
+			raid10 = L["10-man raid"],
+			raid25 = L["25-man raid"],
+			raid40 = L["40-man raid"],
+		},
+		get = function(info, key)
+			local db = get_group_db()
+			
+			return db.show_when[key]
+		end,
+		set = function(info, key, value)
+			local db = get_group_db()
+			
+			db.show_when[key] = value
+			
+			for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do
+				header:UpdateShownState(PitBull4:GetState())
+			end
+		end,
+	}
+	
 	local current_order = 0
 	
 	local args = {}

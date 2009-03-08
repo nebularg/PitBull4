@@ -97,6 +97,13 @@ local DATABASE_DEFAULTS = {
 				horizontal_mirror = false,
 				vertical_mirror = false,
 				click_through = false,
+				
+				show_when = {
+					party = true,
+					raid10 = false,
+					raid25 = false,
+					raid40 = false,
+				},
 			}
 		},
 		made_groups = false,
@@ -152,7 +159,7 @@ local DEFAULT_GROUPS = {
 	},
 	[L["Party pets"]] = {
 		enabled = true,
-		unit_group = "partypet"
+		unit_group = "partypet",
 	},
 }
 -----------------------------------------------------------------------------
@@ -774,6 +781,16 @@ function PitBull4:ADDON_LOADED()
 	end
 end
 
+local function merge_onto(base, addition)
+	for k, v in pairs(addition) do
+		if type(v) == "table" then
+			merge_onto(base[k], v)
+		else
+			base[k] = v
+		end
+	end
+end
+
 function PitBull4:OnProfileChanged()
 	self.ClassColors = PitBull4.db.profile.colors.class
 	self.PowerColors = PitBull4.db.profile.colors.power
@@ -785,9 +802,7 @@ function PitBull4:OnProfileChanged()
 		db.made_groups = true
 		for name, data in pairs(DEFAULT_GROUPS) do
 			local group_db = db.profile.groups[name]
-			for k, v in pairs(data) do
-				group_db[k] = v
-			end
+			merge_onto(group_db, data)
 		end
 	end
 	
@@ -828,6 +843,10 @@ function PitBull4:OnEnable()
 	-- enter/leave combat for :RunOnLeaveCombat
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
+	
+	self:RegisterEvent("RAID_ROSTER_UPDATE")
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED")
+	self:RAID_ROSTER_UPDATE()
 	
 	-- show initial frames
 	for unit, unit_db in pairs(db.profile.units) do
@@ -873,6 +892,44 @@ function PitBull4:UPDATE_MOUSEOVER_UNIT() self:CheckGUIDForUnitID("mouseover") e
 function PitBull4:PLAYER_PET_CHANGED() self:CheckGUIDForUnitID("pet") end
 function PitBull4:UNIT_TARGET(_, unit) self:CheckGUIDForUnitID(unit .. "target") end
 function PitBull4:UNIT_PET(_, unit) self:CheckGUIDForUnitID(unit .. "pet") end
+
+local STATE
+function PitBull4:GetState()
+	local config_mode = PitBull4.config_mode
+	if config_mode then
+		STATE = config_mode == "solo" and "party" or config_mode
+	end
+	return STATE
+end
+
+local last_state = nil
+function PitBull4:RAID_ROSTER_UPDATE()
+	local raid = GetNumRaidMembers()
+	if raid > 0 then
+		if raid > 25 then
+			STATE = "raid40"
+		elseif raid > 10 then
+			STATE = "raid25"
+		-- elseif raid <= 5 and GetNumPartyMembers() == raid - 1 then
+		-- 	STATE = "party"
+		else
+			STATE = "raid10"
+		end
+	else
+		-- also can occur for solo
+		STATE = "party"
+	end
+	
+	local state = PitBull4:GetState()
+	if last_state ~= state then
+		last_state = state
+		for header in PitBull4:IterateHeaders() do
+			header:UpdateShownState(state)
+		end
+	end
+end
+PitBull4.RAID_ROSTER_UPDATE = PitBull4:OutOfCombatWrapper(PitBull4.RAID_ROSTER_UPDATE)
+PitBull4.PARTY_MEMBERS_CHANGED = PitBull4.RAID_ROSTER_UPDATE
 
 do
 	local in_combat = false
@@ -935,4 +992,4 @@ do
 			t[i+1] = select(i, ...)
 		end
 	end
-end	
+end
