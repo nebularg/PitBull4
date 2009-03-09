@@ -912,8 +912,8 @@ function PitBull4:RAID_ROSTER_UPDATE()
 			STATE = "raid40"
 		elseif raid > 10 then
 			STATE = "raid25"
-		-- elseif raid <= 5 and GetNumPartyMembers() == raid - 1 then
-		-- 	STATE = "party"
+		elseif raid <= 5 and GetNumPartyMembers() == raid - 1 then -- TODO: make it an option to have 5-man raids act as parties.
+			STATE = "party"
 		else
 			STATE = "raid10"
 		end
