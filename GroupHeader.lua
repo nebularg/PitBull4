@@ -3,6 +3,23 @@ local PitBull4 = _G.PitBull4
 
 local MAX_PARTY_MEMBERS_WITH_PLAYER = MAX_PARTY_MEMBERS + 1
 
+local ACCEPTABLE_STATES = {
+	party = {
+		solo = true,
+		party = true,
+		raid10 = true,
+		raid25 = true,
+		raid40 = true,
+	},
+	raid = {
+		solo = false,
+		party = false,
+		raid10 = true,
+		raid25 = true,
+		raid40 = true,
+	}
+}
+
 --- Make a group header.
 -- @param group the name for the group. Also acts as a unique identifier.
 -- @usage local header = PitBull4:MakeGroupHeader("Monkey")
@@ -69,7 +86,7 @@ function GroupHeader:UpdateShownState(state)
 		return
 	end
 	
-	if group_db and group_db.enabled and group_db.show_when[state] then
+	if group_db and group_db.enabled and group_db.show_when[state] and ACCEPTABLE_STATES[self.super_unit_group][state] then
 		self:Show()
 	else
 		self:Hide()
