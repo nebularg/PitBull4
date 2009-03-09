@@ -117,6 +117,10 @@ function PitBull4.Options.get_unit_options()
 			PitBull4.db.profile.groups[value] = deep_copy(PitBull4.db.profile.groups[CURRENT_GROUP])
 			
 			CURRENT_GROUP = value
+			
+			if get_group_db().enabled then
+				PitBull4:MakeGroupHeader(CURRENT_GROUP)
+			end
 		end,
 		validate = validate_group,
 	}
