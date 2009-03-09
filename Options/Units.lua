@@ -638,7 +638,207 @@ function PitBull4.Options.get_unit_options()
 				header:UpdateShownState(PitBull4:GetState())
 			end
 		end,
+		disabled = disabled,
 	}
+	
+	group_args.filter_type = {
+		name = L["Filter type"],
+		desc = L["What type of filter to run on the unit group."],
+		order = next_order(),
+		type = 'select',
+		values = {
+			ALL = L["Show all"],
+			NUMBER = L["By raid group"],
+			CLASS = L["By class"],
+			MAINTANK = L["Main tanks"],
+			MAINASSIST = L["Main assists"],
+		},
+		get = function(info)
+			local db = get_group_db()
+			
+			local group_filter = db.group_filter
+			
+			if not group_filter then
+				return 'ALL'
+			end
+			
+			if group_filter == "" then
+				return 'NUMBER'
+			end
+			
+			local start = ((","):split(group_filter))
+			
+			if tonumber(start) then
+				return 'NUMBER'
+			end
+			
+			if RAID_CLASS_COLORS[start] then
+				return 'CLASS'
+			end
+			
+			if start == 'MAINTANK' or start == 'MAINASSIST' then
+				return start
+			end
+			
+			-- WTF here, should never happen
+			db.group_filter = nil
+			return 'ALL'
+		end,
+		set = function(info, value)
+			local db = get_group_db()
+			
+			if value == 'ALL' then
+				db.group_filter = nil
+			elseif value == 'NUMBER' then
+				local t = {}
+				for i = 1, NUM_RAID_GROUPS do
+					t[#t+1] = i..""
+				end
+				db.group_filter = table.concat(t, ",")
+			elseif value == 'CLASS' then
+				local t = {}
+				for class in pairs(RAID_CLASS_COLORS) do
+					t[#t+1] = class
+				end
+				db.group_filter = table.concat(t, ",")
+			else--if value == 'MAINTANK' or value == 'MAINASSIST' then
+				db.group_filter = value
+			end
+			
+			refresh_group('groups')
+		end,
+		disabled = disabled,
+		hidden = function(info)
+			local db = get_group_db()
+			
+			local unit_group = db.unit_group
+			local party_based = unit_group:sub(1, 5) == "party"
+			
+		 	return party_based -- only show in raid
+		end
+	}
+	
+	local function new_set(...)
+		local set = {}
+		for i = 1, select('#', ...) do
+			set[(select(i, ...))] = true
+		end
+		set[""] = nil
+		return set
+	end
+	
+	local function concat_set_by_comma(set)
+		local t = {}
+		for k in pairs(set) do
+			t[#t+1] = k
+		end
+		return table.concat(t, ",")
+	end
+	
+	local function get_filter(info, key)
+		local db = get_group_db()
+		return not not db.group_filter:match(key)
+	end
+	
+	local function set_filter(info, key, value)
+		local db = get_group_db()
+		
+		local set = new_set((","):split(db.group_filter))
+		
+		set[key] = value or nil
+		
+		db.group_filter = concat_set_by_comma(set)
+		
+		refresh_group('groups')
+	end
+	
+	group_args.group_filter_number = {
+		name = L["Filter groups"],
+		desc = L["Which raid groups should show in this unit group"],
+		order = next_order(),
+		type = 'multiselect',
+		values = {
+		},
+		get = get_filter,
+		set = set_filter,
+		disabled = disabled,
+		hidden = function(info)
+			local db = get_group_db()
+
+			local unit_group = db.unit_group
+			local party_based = unit_group:sub(1, 5) == "party"
+
+		 	if party_based then
+				-- only show in raid
+				return true
+			end
+			
+			local group_filter = db.group_filter
+			
+			if not group_filter then
+				return true
+			end
+			
+			if group_filter == "" then
+				return false
+			end
+			
+			local start = ((","):split(group_filter))
+			
+			return not tonumber(start)
+		end
+	}
+	for i = 1, NUM_RAID_GROUPS do
+		group_args.group_filter_number.values[i..""] = L["Group #%d"]:format(i)
+	end
+	
+	group_args.group_filter_class = {
+		name = L["Filter classes"],
+		desc = L["Which classes should show in this unit group"],
+		order = next_order(),
+		type = 'multiselect',
+		values = {
+		},
+		get = get_filter,
+		set = set_filter,
+		disabled = disabled,
+		hidden = function(info)
+			local db = get_group_db()
+
+			local unit_group = db.unit_group
+			local party_based = unit_group:sub(1, 5) == "party"
+
+		 	if party_based then
+				-- only show in raid
+				return true
+			end
+			
+			local group_filter = db.group_filter
+			
+			if not group_filter or group_filter == "" then
+				return true
+			end
+			
+			local start = ((","):split(group_filter))
+			
+			return not RAID_CLASS_COLORS[start]
+		end
+	}
+	local class_translations = {
+		WARRIOR = L["Warriors"],
+		DRUID = L["Druids"],
+		ROGUE = L["Rogues"],
+		PRIEST = L["Priests"],
+		DEATHKNIGHT = L["Death Knights"],
+		SHAMAN = L["Shamans"],
+		PALADIN = L["Paladins"],
+		MAGE = L["Mages"],
+		WARLOCK = L["Warlocks"],
+		HUNTER = L["Hunters"],
+	}
+	for class in pairs(RAID_CLASS_COLORS) do
+		group_args.group_filter_class.values[class] = class_translations[class] or class
+	end
 	
 	local current_order = 0
 	

@@ -2,6 +2,11 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 
 local MAX_PARTY_MEMBERS_WITH_PLAYER = MAX_PARTY_MEMBERS + 1
+local NUM_CLASSES = 0
+for _ in pairs(RAID_CLASS_COLORS) do
+	NUM_CLASSES = NUM_CLASSES + 1
+end
+local MINIMUM_EXAMPLE_GROUP = 2
 
 local ACCEPTABLE_STATES = {
 	party = {
@@ -158,12 +163,14 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	local party_based = unit_group:sub(1, 5) == "party"
 	local include_player = party_based and group_db.include_player
 	local show_solo = include_player and group_db.show_when.solo
-	if self.unit_group ~= unit_group or self.include_player ~= include_player or self.show_solo ~= show_solo then
+	local group_filter = not party_based and group_db.group_filter or nil
+	if self.unit_group ~= unit_group or self.include_player ~= include_player or self.show_solo ~= show_solo or self.group_filter ~= group_filter then
 		local old_unit_group = self.unit_group
 		local old_super_unit_group = self.super_unit_group
 		self.unit_group = unit_group
 		self.include_player = include_player
 		self.show_solo = show_solo
+		self.group_filter = group_filter
 		--@alpha@
 		if not party_based then
 			expect(unit_group:sub(1, 4), '==', "raid")
@@ -177,6 +184,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 			self:ProxySetAttribute("showParty", true)
 			self:ProxySetAttribute("showPlayer", include_player and true or nil)
 			self:ProxySetAttribute("showSolo", show_solo and true or nil)
+			self:ProxySetAttribute("groupFilter", nil)
 		else
 			self.super_unit_group = "raid"
 			self.unitsuffix = unit_group:sub(5)
@@ -184,6 +192,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 			self:ProxySetAttribute("showPlayer", nil)
 			self:ProxySetAttribute("showSolo", nil)
 			self:ProxySetAttribute("showRaid", true)
+			self:ProxySetAttribute("groupFilter", group_filter)
 		end
 		if self.unitsuffix == "" then
 			self.unitsuffix = nil
@@ -447,8 +456,62 @@ function GroupHeader:GetMaxUnits()
 	end
 end
 
-function GroupHeader:IterateMembers(num)
+local make_set
+do
+	local set = {}
+	function make_set(...)
+		wipe(set)
+		local n = select('#', ...)
+		for i = 1, n do
+			set[select(i, ...)] = true
+		end
+		
+		return set, n
+	end
+end
+
+function GroupHeader:IterateMembers(guess_num)
 	local max_units = self:GetMaxUnits()
+	local num
+	if guess_num then
+		local config_mode = PitBull4.config_mode
+		if config_mode == "solo" then
+			num = self.include_player and 1 or 0
+		elseif config_mode == "party" then
+			num = self.include_player and MAX_PARTY_MEMBERS_WITH_PLAYER or MAX_PARTY_MEMBERS
+		else
+			num = config_mode:sub(5)+0 -- raid10, raid25, raid40 => 10, 25, 40
+			-- check filters
+			
+			local filter = self.group_filter
+			if not filter then
+				-- do nothing, all is shown
+			elseif filter == "" then
+				-- all is hidden for some reason
+				num = 0
+			else
+				local set, count = make_set((","):split(filter))
+				local start = next(set)
+				if start == "MAINTANK" or start == "MAINASSIST" then
+					num = MINIMUM_EXAMPLE_GROUP
+				elseif RAID_CLASS_COLORS[start] then
+					num = math.ceil(num * count / NUM_CLASSES)
+					if num < MINIMUM_EXAMPLE_GROUP then
+						num = MINIMUM_EXAMPLE_GROUP
+					end
+				elseif tonumber(start) then
+					local count = 0
+					for i = 1, num / MEMBERS_PER_RAID_GROUP do
+						if set[i..""] then
+							count = count + 1
+						end
+					end
+					num = count * MEMBERS_PER_RAID_GROUP
+				end
+			end
+		end
+	end
+	
 	if not num or num > max_units then
 		num = max_units
 	end
@@ -465,17 +528,7 @@ function GroupHeader:ForceShow()
 	self.force_show = true
 	self:AssignFakeUnitIDs()
 	
-	local config_mode = PitBull4.config_mode
-	local num
-	if config_mode == "solo" then
-		num = self.include_player and 1 or 0
-	elseif config_mode == "party" then
-		num = self.include_player and MAX_PARTY_MEMBERS_WITH_PLAYER or MAX_PARTY_MEMBERS
-	else
-		num = config_mode:sub(5)+0 -- raid10, raid25, raid40 => 10, 25, 40
-	end
-	
-	for _, frame in self:IterateMembers(num) do
+	for _, frame in self:IterateMembers(true) do
 		frame:ForceShow()
 		frame:Update(true, true)
 	end

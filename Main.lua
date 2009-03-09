@@ -88,6 +88,7 @@ local DATABASE_DEFAULTS = {
 				units_per_column = MAX_RAID_MEMBERS,
 				unit_group = "party",
 				include_player = false,
+				group_filter = nil,
 				
 				position_x = 0,
 				position_y = 0,
