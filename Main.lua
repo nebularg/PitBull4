@@ -896,6 +896,11 @@ function PitBull4:UNIT_TARGET(_, unit) self:CheckGUIDForUnitID(unit .. "target")
 function PitBull4:UNIT_PET(_, unit) self:CheckGUIDForUnitID(unit .. "pet") end
 
 local STATE
+--- Get the current state that the player is in.
+-- This will return one of "party" (even for solo), "raid10", "raid25", or "raid40".
+-- Setting config mode does override this.
+-- @usage local state = PitBull4:GetState()
+-- @return the state of the player.
 function PitBull4:GetState()
 	local config_mode = PitBull4.config_mode
 	if config_mode then
