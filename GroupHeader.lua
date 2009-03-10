@@ -527,6 +527,15 @@ function GroupHeader:ForceShow()
 	end
 	self.force_show = true
 	self:AssignFakeUnitIDs()
+	if not self.label then
+		local label = self:CreateFontString(self:GetName() .. "_Label", "OVERLAY", "ChatFontNormal")
+		self.label = label
+		local font, size, modifier = label:GetFont()
+		label:SetFont(font, size * 1.5, modifier)
+		label:SetText(self.name)
+		label:SetPoint("BOTTOM", self, "TOP")
+	end
+	self.label:Show()
 	
 	for _, frame in self:IterateMembers(true) do
 		frame:ForceShow()
@@ -540,6 +549,7 @@ function GroupHeader:UnforceShow()
 		return
 	end
 	self.force_show = nil
+	self.label:Hide()
 	for _, frame in ipairs(self) do
 		frame:UnforceShow()
 		frame:Update(true, true)
@@ -560,6 +570,9 @@ function GroupHeader:Rename(name)
 	_G[old_header_name] = nil
 	_G[new_header_name] = self
 	self.name = name
+	if self.label then
+		self.label:SetText(name)
+	end
 	
 	for i, frame in ipairs(self) do
 		frame.classification = name
