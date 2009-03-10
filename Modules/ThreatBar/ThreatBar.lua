@@ -63,7 +63,6 @@ function PitBull4_ThreatBar:GetValue(frame)
     
 	return threatpct / 100
 end
-
 function PitBull4_ThreatBar:GetExampleValue(frame)
 	if frame and not ACCEPTABLE_CLASSIFICATIONS[frame.classification] then
 		return nil
@@ -81,6 +80,9 @@ function PitBull4_ThreatBar:GetColor(frame, value)
 	end
 	
 	return GetThreatStatusColor(status)
+end
+function PitBull4_ThreatBar:GetExampleColor(frame, value)
+	return GetThreatStatusColor(0)
 end
 
 function PitBull4_ThreatBar:PLAYER_TARGET_CHANGED()

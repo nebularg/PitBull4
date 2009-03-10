@@ -60,6 +60,10 @@ function PitBull4_HappinessIcon:GetTexCoord(frame, texture)
 	
 	return tex_coord[1], tex_coord[2], tex_coord[3], tex_coord[4]
 end
+function PitBull4_HappinessIcon:GetExampleTexCoord()
+	local tex_coord = tex_coords[3] -- happy
+	return tex_coord[1], tex_coord[2], tex_coord[3], tex_coord[4]
+end
 
 function PitBull4_HappinessIcon:UNIT_HAPPINESS()
 	self:UpdateForUnitID("pet")

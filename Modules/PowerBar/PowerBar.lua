@@ -62,6 +62,9 @@ function PitBull4_PowerBar:GetColor(frame, value)
 		return color[1], color[2], color[3]
 	end
 end
+function PitBull4_PowerBar:GetExampleColor(frame)
+	return unpack(PitBull4.PowerColors.MANA)
+end
 
 function PitBull4_PowerBar:UNIT_MANA(event, unit)
 	PitBull4_PowerBar:UpdateForUnitID(unit)

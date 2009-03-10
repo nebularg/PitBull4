@@ -29,6 +29,12 @@ function PitBull4_ReputationBar:GetValue(frame)
 	
 	return (value - min) / (max - min)
 end
+function PitBull4_ReputationBar:GetExampleValue(frame)
+	if frame and frame.unit ~= "player" then
+		return nil
+	end
+	return 0.3
+end
 
 function PitBull4_ReputationBar:GetColor(frame, value)
 	local _, reaction = GetWatchedFactionInfo()
@@ -37,14 +43,6 @@ function PitBull4_ReputationBar:GetColor(frame, value)
 		return color[1], color[2], color[3]
 	end
 end
-
-function PitBull4_ReputationBar:GetExampleValue(frame)
-	if frame and frame.unit ~= "player" then
-		return nil
-	end
-	return 0.3
-end
-
 function PitBull4_ReputationBar:GetExampleColor(frame)
 	local color = PitBull4.ReactionColors[5]
 	return color[1], color[2], color[3]

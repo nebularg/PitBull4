@@ -46,6 +46,7 @@ end
 function PitBull4_RestIcon:GetTexCoord(frame, texture)
 	return 0.09, 0.43, 0.08, 0.42
 end
+PitBull4_RestIcon.GetExampleTexCoord = PitBull4_RestIcon.GetTexCoord
 
 function PitBull4_RestIcon:PLAYER_UPDATE_RESTING()
 	self:UpdateForUnitID("player")

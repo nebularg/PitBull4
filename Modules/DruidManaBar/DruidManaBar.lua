@@ -46,11 +46,19 @@ function PitBull4_DruidManaBar:GetValue(frame)
 
 	return percent
 end
+function PitBull4_DruidManaBar:GetExampleValue(frame)
+	if frame.unit ~= "player" then
+		return nil
+	end
+	
+	return 0.3
+end
 
 function PitBull4_DruidManaBar:GetColor(frame, value)
 	local color = PitBull4.PowerColors["MANA"]
 	return color[1], color[2], color[3]
 end
+PitBull4_DruidManaBar.GetExampleColor = PitBull4_DruidManaBar.GetColor
 
 function PitBull4_DruidManaBar:UNIT_MANA(event, unit)
 	if unit ~= "player" then

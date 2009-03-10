@@ -37,3 +37,4 @@ end
 function PitBull4_CombatIcon:GetTexCoord(frame, texture)
 	return 0.57, 0.90, 0.08, 0.41
 end
+PitBull4_CombatIcon.GetExampleTexCoord = PitBull4_CombatIcon.GetTexCoord

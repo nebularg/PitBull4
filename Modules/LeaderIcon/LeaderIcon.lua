@@ -66,6 +66,7 @@ end
 function PitBull4_LeaderIcon:GetTexCoord(frame, texture)
 	return 0.1, 0.84, 0.14, 0.88
 end
+PitBull4_LeaderIcon.GetExampleTexCoord = PitBull4_LeaderIcon.GetTexCoord
 
 function PitBull4_LeaderIcon:PARTY_LEADER_CHANGED()
 	self:ScheduleTimer("UpdateAll", 0.1)

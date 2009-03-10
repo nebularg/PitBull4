@@ -86,7 +86,10 @@ local function call_color_function(self, frame, bar_db, value, extra)
 	if not self.GetColor then
 		return 0.7, 0.7, 0.7, 1
 	end
-	local r, g, b, a = self:GetColor(frame, bar_db, value, extra)
+	local r, g, b, a
+	if frame.guid then
+		r, g, b, a = self:GetColor(frame, bar_db, value, extra)
+	end
 	if (not r or not g or not b) and frame.force_show and self.GetExampleColor then
 		r, g, b, a = self:GetExampleColor(frame, bar_db, value, extra)
 	end
@@ -118,7 +121,10 @@ local function call_extra_color_function(self, frame, bar_db, value, extra)
 	if not self.GetExtraColor then
 		return 0.5, 0.5, 0.5, nil
 	end
-	local r, g, b, a = self:GetExtraColor(frame, value, extra)
+	local r, g, b, a
+	if frame.guid then
+		r, g, b, a = self:GetExtraColor(frame, value, extra)
+	end
 	if (not r or not g or not b) and frame.force_show and self.GetExampleExtraColor then
 		r, g, b, a = self:GetExampleExtraColor(frame, value, extra)
 	end

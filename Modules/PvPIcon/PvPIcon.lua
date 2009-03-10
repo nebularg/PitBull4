@@ -76,6 +76,7 @@ function PitBull4_PvPIcon:GetTexCoord(frame, texture)
 	local tex_coord = tex_coords[texture]
 	return tex_coord[1], tex_coord[2], tex_coord[3], tex_coord[4]
 end
+PitBull4_PvPIcon.GetExampleTexCoord = PitBull4_PvPIcon.GetTexCoord
 
 function PitBull4_PvPIcon:UPDATE_FACTION(event, unit)
 	if not unit then

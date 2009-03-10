@@ -127,6 +127,9 @@ function PitBull4_CastBar:GetColor(frame, value)
 	end
 	return 0, 0, 0, 0
 end
+function PitBull4_CastBar:GetExampleColor(frame, value)
+	return 0, 1, 0, 1
+end
 
 function PitBull4_CastBar:UpdateInfo(event, unit)
 	local guid = UnitGUID(unit)

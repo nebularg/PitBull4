@@ -58,14 +58,19 @@ function PitBull4_ExperienceBar:GetValue(frame)
 	
 	return current / max, rest / max
 end
+function PitBull4_ExperienceBar:GetExampleValue(frame)
+	return 0.25
+end
 
 function PitBull4_ExperienceBar:GetColor(frame, value)
 	return 0, 0, 1
 end
+PitBull4_ExperienceBar.GetExampleColor = PitBull4_ExperienceBar.GetColor
 
 function PitBull4_ExperienceBar:GetExtraColor(frame, value)
 	return 1, 0, 1
 end
+PitBull4_ExperienceBar.GetExampleExtraColor = PitBull4_ExperienceBar.GetExtraColor
 
 function PitBull4_ExperienceBar:PLAYER_XP_UPDATE()
 	self:UpdateForUnitID("player")

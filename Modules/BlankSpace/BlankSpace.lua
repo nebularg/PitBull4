@@ -30,14 +30,12 @@ end
 function PitBull4_BlankSpace:GetValue(frame, bar_db)
 	return 1
 end
-
-function PitBull4_BlankSpace:GetExampleValue(frame, bar_db)
-	return 1
-end
+PitBull4_BlankSpace.GetExampleValue = PitBull4_BlankSpace.GetValue
 
 function PitBull4_BlankSpace:GetColor(frame, bar_db, value)
 	return 0, 0, 0
 end
+PitBull4_BlankSpace.GetExampleColor = PitBull4_BlankSpace.GetColor
 
 PitBull4_BlankSpace:SetLayoutOptionsFunction(function(self)
 	return

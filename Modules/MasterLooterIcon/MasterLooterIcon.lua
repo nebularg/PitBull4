@@ -72,6 +72,7 @@ end
 function PitBull4_MasterLooterIcon:GetTexCoord(frame, texture)
 	return 0.15, 0.9, 0.15, 0.9
 end
+PitBull4_MasterLooterIcon.GetExampleTexCoord = PitBull4_MasterLooterIcon.GetTexCoord
 
 function PitBull4_MasterLooterIcon:PARTY_LOOT_METHOD_CHANGED()
 	self:ScheduleTimer("UpdateAll", 0.1)
