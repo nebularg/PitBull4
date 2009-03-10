@@ -376,23 +376,12 @@ function SingletonUnitFrame:Deactivate()
 end
 SingletonUnitFrame.Deactivate = PitBull4:OutOfCombatWrapper(SingletonUnitFrame.Deactivate)
 
-local real__SetAttribute
-local function force_show__SetAttribute(self, key, value)
-	if key == "unit" and value == nil then
-		return
-	end
-	
-	return real__SetAttribute(self, key, value)
-end
-
 function UnitFrame:ForceShow()
 	if self.force_show then
 		return
 	end
 	self.force_show = true
 	self:Show()
-	real__SetAttribute = self.SetAttribute
-	self.SetAttribute = force_show__SetAttribute
 end
 UnitFrame.ForceShow = PitBull4:OutOfCombatWrapper(UnitFrame.ForceShow)
 
@@ -400,7 +389,6 @@ function UnitFrame:UnforceShow()
 	if not self.force_show then
 		return
 	end
-	self.SetAttribute = nil
 	self.force_show = nil
 end
 UnitFrame.UnforceShow = PitBull4:OutOfCombatWrapper(UnitFrame.UnforceShow)
