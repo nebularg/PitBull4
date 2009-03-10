@@ -529,14 +529,13 @@ function PitBull4.Options.get_unit_options()
 			
 			if value == "INDEX" or value == "NAME" then
 				db.sort_method = value
+				db.group_by = nil
+			elseif value == "CLASS" then
+				db.sort_method = "NAME"
+				db.group_by = "CLASS"
 			else
-				if value == "CLASS" then
-					db.sort_method = "NAME"
-					db.group_by = "CLASS"
-				else
-					db.sort_method = "INDEX"
-					db.group_by = "GROUP"
-				end
+				db.sort_method = "INDEX"
+				db.group_by = "GROUP"
 			end
 			
 			refresh_group('groups')
