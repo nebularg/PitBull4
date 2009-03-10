@@ -241,6 +241,9 @@ end
 
 function UnitFrame__scripts:OnHide()
 	self:UpdateGUID(nil)
+	if self.force_show then
+		self:Show()
+	end
 end
 
 --- Add the proper functions and scripts to a SecureUnitButton, as well as some various initialization.
@@ -373,16 +376,6 @@ function SingletonUnitFrame:Deactivate()
 end
 SingletonUnitFrame.Deactivate = PitBull4:OutOfCombatWrapper(SingletonUnitFrame.Deactivate)
 
-local function force_show__Hide(self)
-	self:UpdateGUID(nil)
-end
-
-local function force_show__Show(self)
-	if self.unit then
-		self:UpdateGUID(UnitGUID(self.unit))
-	end
-end
-
 local real__SetAttribute
 local function force_show__SetAttribute(self, key, value)
 	if key == "unit" and value == nil then
@@ -397,9 +390,7 @@ function UnitFrame:ForceShow()
 		return
 	end
 	self.force_show = true
-	self.Hide = force_show__Hide
 	self:Show()
-	self.Show = force_show__Show
 	real__SetAttribute = self.SetAttribute
 	self.SetAttribute = force_show__SetAttribute
 end
@@ -409,8 +400,6 @@ function UnitFrame:UnforceShow()
 	if not self.force_show then
 		return
 	end
-	self.Hide = nil
-	self.Show = nil
 	self.SetAttribute = nil
 	self.force_show = nil
 end
