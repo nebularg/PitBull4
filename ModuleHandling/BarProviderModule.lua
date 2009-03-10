@@ -42,7 +42,7 @@ local function call_value_function(self, frame, bar_db)
 		value, extra = self:GetValue(frame, bar_db)
 	end
 	
-	if not value and PitBull4.config_mode and self.GetExampleValue then
+	if not value and frame.force_show and self.GetExampleValue then
 		value, extra = self:GetExampleValue(frame, bar_db)
 	end
 	if not value then
@@ -87,7 +87,7 @@ local function call_color_function(self, frame, bar_db, value, extra)
 		return 0.7, 0.7, 0.7, 1
 	end
 	local r, g, b, a = self:GetColor(frame, bar_db, value, extra)
-	if (not r or not g or not b) and PitBull4.config_mode and self.GetExampleColor then
+	if (not r or not g or not b) and frame.force_show and self.GetExampleColor then
 		r, g, b, a = self:GetExampleColor(frame, bar_db, value, extra)
 	end
 	if not r or not g or not b then
@@ -119,7 +119,7 @@ local function call_extra_color_function(self, frame, bar_db, value, extra)
 		return 0.5, 0.5, 0.5, nil
 	end
 	local r, g, b, a = self:GetExtraColor(frame, value, extra)
-	if (not r or not g or not b) and PitBull4.config_mode and self.GetExampleExtraColor then
+	if (not r or not g or not b) and frame.force_show and self.GetExampleExtraColor then
 		r, g, b, a = self:GetExampleExtraColor(frame, value, extra)
 	end
 	if not r or not g or not b then

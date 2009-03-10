@@ -52,7 +52,7 @@ local function call_tex_coord_function(self, frame, texture)
 		return 0, 1, 0, 1
 	end
 	local c1, c2, c3, c4 = self:GetTexCoord(frame, texture)
-	if not c4 and PitBull4.config_mode and self.GetExampleTexCoord then
+	if not c4 and frame.force_show and self.GetExampleTexCoord then
 		c1, c2, c3, c4 = self:GetExampleTexCoord(frame, texture)
 	end
 	if not c4 then
