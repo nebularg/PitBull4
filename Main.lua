@@ -89,6 +89,7 @@ local DATABASE_DEFAULTS = {
 				unit_group = "party",
 				include_player = false,
 				group_filter = nil,
+				group_by = nil,
 				
 				position_x = 0,
 				position_y = 0,

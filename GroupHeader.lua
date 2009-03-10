@@ -25,6 +25,31 @@ local ACCEPTABLE_STATES = {
 	}
 }
 
+local CLASS_ORDER = { -- TODO: make this configurable
+	"WARRIOR",
+	"HUNTER",
+	"ROGUE",
+	"PALADIN",
+	"SHAMAN",
+	"PRIEST",
+	"MAGE",
+	"WARLOCK",
+	"DRUID",
+	"DEATHKNIGHT"
+}
+for class in pairs(RAID_CLASS_COLORS) do
+	local found = false
+	for i, v in ipairs(CLASS_ORDER) do
+		if v == class then
+			found = true
+			break
+		end
+	end
+	if not found then
+		CLASS_ORDER[#CLASS_ORDER+1] = class
+	end
+end
+
 --- Make a group header.
 -- @param group the name for the group. Also acts as a unique identifier.
 -- @usage local header = PitBull4:MakeGroupHeader("Monkey")
@@ -142,6 +167,16 @@ local DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER = {
 	left_up = 1,
 }
 
+local GROUPING_ORDER = {}
+do
+	local t = {}
+	for i = 1, NUM_RAID_GROUPS do
+		t[i] = i..""
+	end
+	GROUPING_ORDER.GROUP = table.concat(t, ',')
+end
+GROUPING_ORDER.CLASS = table.concat(CLASS_ORDER, ",")
+
 local function position_label(self, label)
 	label:ClearAllPoints()
 	local group_db = self.group_db
@@ -249,8 +284,8 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	self:ProxySetAttribute("sortDir", group_db.sort_direction)
 	self:ProxySetAttribute("template", "SecureUnitButtonTemplate")
 	self:ProxySetAttribute("templateType", "Button")
-	self:ProxySetAttribute("groupBy", nil) -- or "GROUP", "CLASS", "ROLE"
-	self:ProxySetAttribute("groupingOrder", "1,2,3,4,5,6,7,8")
+	self:ProxySetAttribute("groupBy", group_db.group_by)
+	self:ProxySetAttribute("groupingOrder", GROUPING_ORDER[group_db.group_by])
 	self:ProxySetAttribute("unitsPerColumn", group_db.units_per_column)
 	self:ProxySetAttribute("maxColumns", self:GetMaxUnits())
 	self:ProxySetAttribute("startingIndex", 1)

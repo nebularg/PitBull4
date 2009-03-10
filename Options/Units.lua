@@ -489,23 +489,62 @@ function PitBull4.Options.get_unit_options()
 		disabled = disabled,
 	}
 	
+	local party_values = {
+		INDEX = L["By index"],
+		NAME = L["By name"],
+	}
+	
+	local raid_values = {
+		INDEX = L["By index"],
+		NAME = L["By name"],
+		CLASS = L["By class"],
+		GROUP = L["By group"],
+	}
+	
 	group_args.sort_method = {
-		-- TODO: check to see if party-only or not
 		name = L["Sort method"],
 		desc = L["How to sort the frames within the group."],
 		type = 'select',
 		order = next_order(),
-		values = {
-			INDEX = L["By index"],
-			NAME = L["By name"],
-		},
-		get = get,
-		set = set_with_refresh_group,
+		values = function(info)
+			local unit_group = get_group_db().unit_group
+			if unit_group:sub(1, 5) == "party" then
+				return party_values
+			else
+				return raid_values
+			end
+		end,
+		get = function(info)
+			local db = get_group_db()
+			if db.unit_group:sub(1, 5) ~= "party" then
+				local group_by = db.group_by
+				if group_by == "CLASS" or group_by == "GROUP" then
+					return group_by
+				end
+			end
+			return db.sort_method
+		end,
+		set = function(info, value)
+			local db = get_group_db()
+			
+			if value == "INDEX" or value == "NAME" then
+				db.sort_method = value
+			else
+				if value == "CLASS" then
+					db.sort_method = "NAME"
+					db.group_by = "CLASS"
+				else
+					db.sort_method = "INDEX"
+					db.group_by = "GROUP"
+				end
+			end
+			
+			refresh_group('groups')
+		end,
 		disabled = disabled,
 	}
 	
 	group_args.sort_direction = {
-		-- TODO: check to see if party-only or not
 		name = L["Sort direction"],
 		desc = L["Which direction to sort the frames within a group."],
 		type = 'select',
