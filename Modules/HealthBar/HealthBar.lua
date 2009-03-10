@@ -144,8 +144,6 @@ function PitBull4_HealthBar:GetColor(frame, value)
 		low_b * inverse_value + high_b * normalized_value
 end
 function PitBull4_HealthBar:GetExampleColor(frame, value)
-	local unit = frame.unit
-	
 	return unpack(self.db.profile.global.colors.disconnected)
 end
 
