@@ -47,11 +47,8 @@ function PitBull4_DruidManaBar:GetValue(frame)
 	return percent
 end
 function PitBull4_DruidManaBar:GetExampleValue(frame)
-	if frame.unit ~= "player" then
-		return nil
-	end
-	
-	return 0.3
+	-- just go with what :GetValue gave
+	return nil
 end
 
 function PitBull4_DruidManaBar:GetColor(frame, value)
