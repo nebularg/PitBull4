@@ -142,6 +142,16 @@ local DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER = {
 	left_up = 1,
 }
 
+local function position_label(self, label)
+	label:ClearAllPoints()
+	local group_db = self.group_db
+	if group_db.direction:match("down") then
+		label:SetPoint("BOTTOM", self, "TOP", 0, group_db.vertical_spacing)
+	else
+		label:SetPoint("TOP", self, "BOTTOM", 0, -group_db.vertical_spacing)
+	end
+end
+
 --- Recheck the group-based settings of the group header, including sorting, position, what units are shown.
 -- @param dont_refresh_children don't call :RefreshLayout on the child frames
 -- @usage header:RefreshGroup()
@@ -231,6 +241,9 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		self:ProxySetAttribute("xOffset", 0)
 		self:ProxySetAttribute("yOffset", group_db.vertical_spacing * DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction])
 		self:ProxySetAttribute("columnSpacing", group_db.horizontal_spacing)
+	end
+	if self.label then
+		position_label(self, self.label)
 	end
 	self:ProxySetAttribute("sortMethod", group_db.sort_method)
 	self:ProxySetAttribute("sortDir", group_db.sort_direction)
@@ -533,7 +546,7 @@ function GroupHeader:ForceShow()
 		local font, size, modifier = label:GetFont()
 		label:SetFont(font, size * 1.5, modifier)
 		label:SetText(self.name)
-		label:SetPoint("BOTTOM", self, "TOP")
+		position_label(self, label)
 	end
 	self.label:Show()
 	
