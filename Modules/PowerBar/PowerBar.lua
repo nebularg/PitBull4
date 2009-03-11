@@ -58,7 +58,7 @@ function PitBull4_PowerBar:GetValue(frame)
 	elseif layout_db.hide_no_power and UnitPowerMax(unit) <= 0 then
 		return nil
 	end
-	return UnitMana(unit) / UnitManaMax(unit)
+	return UnitPower(unit) / UnitPower(unit)
 end
 
 function PitBull4_PowerBar:GetExampleValue(frame)
