@@ -43,9 +43,6 @@ local wipe = _G.table.wipe
 -- [13] = is_stealable
 local list = {}
 
--- unit table
-local unit
-
 -- pool of available entries to be used in list
 local pool = {}
 
@@ -107,6 +104,7 @@ end
 
 -- Fills an array of arrays with the information about the auras
 local function get_aura_list(list, unit, db, is_buff, frame)
+	if not unit then return end
 	local filter = is_buff and "HELPFUL" or "HARMFUL"
 	local id = 1
 	local index = 1
@@ -438,7 +436,6 @@ end
 -- to display the proper aura.
 local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	local control = aura_controls[i]
-	local unit = frame.unit
 
 	local id, slot, quality, is_buff, name, rank, icon, count, debuff_type, duration, expiration_time, caster, is_stealable = unpack(aura, 1, ENTRY_END)
 
@@ -529,7 +526,7 @@ local function update_auras(frame, db, is_buff)
 		end
 	end
 	local unit = frame.unit
-	local is_friend = UnitIsFriend("player", unit)
+	local is_friend = unit and UnitIsFriend("player", unit)
 
 	local max = is_buff and db.max_buffs or db.max_debuffs
 
@@ -552,7 +549,7 @@ local function update_auras(frame, db, is_buff)
 
 	if frame.force_show then
 		-- config mode so treat sample frames as friendly
-		if not UnitExists(unit) then
+		if not unit or not UnitExists(unit) then
 			is_friend = true
 		end
 
@@ -747,7 +744,8 @@ function PitBull4_Aura:UpdateWeaponEnchants(force)
 	-- their auras.
 	if updated then
 		for frame in PitBull4:IterateFrames() do
-			if UnitIsUnit(frame.unit, "player") then
+			local unit = frame.unit
+			if unit and UnitIsUnit(unit, "player") then
 				local db = self:GetLayoutDB(frame)
 				if db.enabled and db.enabled_weapons then
 					self:UpdateAuras(frame)
