@@ -14,6 +14,8 @@ PitBull4_PowerBar:SetName(L["Power bar"])
 PitBull4_PowerBar:SetDescription(L["Show a mana, rage, energy, or runic power bar."])
 PitBull4_PowerBar:SetDefaults({
 	position = 2,
+	hide_no_mana = false,
+	hide_no_power = false,
 })
 
 local timerFrame = CreateFrame("Frame")
@@ -47,8 +49,16 @@ timerFrame:SetScript("OnUpdate", function()
 	end
 end)
 
-function PitBull4_PowerBar:GetValue(frame)
-	return UnitMana(frame.unit) / UnitManaMax(frame.unit)
+function PitBull4_PowerBar:GetValue(frame)	
+	local unit = frame.unit
+	local layout_db = self:GetLayoutDB(frame)
+
+	if layout_db.hide_no_mana and UnitPowerType(unit) ~= 0 then
+		return nil
+	elseif layout_db.hide_no_power and UnitPowerMax(unit) <= 0 then
+		return nil
+	end
+	return UnitMana(unit) / UnitManaMax(unit)
 end
 
 function PitBull4_PowerBar:GetExampleValue(frame)
@@ -69,3 +79,31 @@ end
 function PitBull4_PowerBar:UNIT_MANA(event, unit)
 	PitBull4_PowerBar:UpdateForUnitID(unit)
 end
+
+PitBull4_PowerBar:SetLayoutOptionsFunction(function(self)
+	return 'hide_no_mana', {
+		name = L['Hide non-mana'],
+		desc = L["Hides the power bar if the unit's current power is not mana."],
+		type = 'toggle',
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).hide_no_mana
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).hide_no_mana = value
+
+			PitBull4.Options.UpdateFrames()
+		end,
+	}, 'hide_no_power', {
+		name = L['Hide non-power'],
+		desc = L['Hides the power bar if the unit has no power.'],
+		type = 'toggle',
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).hide_no_power
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).hide_no_power = value
+
+			PitBull4.Options.UpdateFrames()
+		end,
+	}
+end)
