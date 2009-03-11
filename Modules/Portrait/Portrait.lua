@@ -26,6 +26,7 @@ PitBull4_Portrait:SetModuleType("indicator")
 PitBull4_Portrait:SetName(L["Portrait"])
 PitBull4_Portrait:SetDescription(L["Show a portrait of the unit."])
 PitBull4_Portrait:SetDefaults({
+	color = { 0, 0, 0, 0.25 },
 	attach_to = "root",
 	location = "out_left",
 	position = 1,
@@ -148,7 +149,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 		local bg = PitBull4.Controls.MakeTexture(frame, "BACKGROUND")
 		portrait.bg = bg
 		bg:SetAllPoints(portrait)
-		bg:SetTexture(0, 0, 0, 0.25)
+		bg:SetTexture(unpack(layout_db.color))
 	end
 	
 	if portrait.guid == frame.guid and guid_demanding_update ~= frame.guid then
@@ -241,5 +242,22 @@ PitBull4_Portrait:SetLayoutOptionsFunction(function(self)
 			["three_dimensional"] = L["3D question mark"],
 			["class"] = L["Class"],
 		},
+	}, 'color', {
+		type = 'color',
+		name = L["Background color"],
+		desc = L["Color that the background behind the portrait should be."],
+		hasAlpha = true,
+		get = function(info)
+			return unpack(PitBull4.Options.GetLayoutDB(self).color)
+		end,
+		set = function(info, r, g, b, a)
+			local color = PitBull4.Options.GetLayoutDB(self).color
+			color[1], color[2], color[3], color[4] = r, g, b, a
+
+			for frame in PitBull4:IterateFrames() do
+				self:Clear(frame)
+			end
+			self:UpdateAll() 
+		end,
 	}
 end)
