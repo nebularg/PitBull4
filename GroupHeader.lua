@@ -199,17 +199,25 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	local layout_db = PitBull4.db.profile.layouts[layout]
 	self.layout_db = layout_db
 	
+	for _, frame in self:IterateMembers() do
+		frame.dont_update = true
+	end
+	
 	local is_shown = self:IsShown()
 	self:Hide()
 	
-	local force_show
+	local force_show = self.force_show
+	self:UnforceShow()
 	
 	local unit_group = group_db.unit_group
 	local party_based = unit_group:sub(1, 5) == "party"
 	local include_player = party_based and group_db.include_player
 	local show_solo = include_player and group_db.show_when.solo
 	local group_filter = not party_based and group_db.group_filter or nil
-	if self.unit_group ~= unit_group or self.include_player ~= include_player or self.show_solo ~= show_solo or self.group_filter ~= group_filter then
+	
+	local changed_units = self.unit_group ~= unit_group or self.include_player ~= include_player or self.show_solo ~= show_solo or self.group_filter ~= group_filter
+	
+	if changed_units then
 		local old_unit_group = self.unit_group
 		local old_super_unit_group = self.super_unit_group
 		self.unit_group = unit_group
@@ -243,19 +251,15 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 			self.unitsuffix = nil
 		end
 	
-		local is_wacky = PitBull4.Utils.IsWackyUnitGroup(unit_group)
-		self.is_wacky = is_wacky
+		self.is_wacky = PitBull4.Utils.IsWackyUnitGroup(unit_group)
 		
 		if old_unit_group then
 			PitBull4.unit_group_to_headers[old_unit_group][self] = nil
 			PitBull4.super_unit_group_to_headers[old_super_unit_group][self] = nil
-			
-			force_show = self.force_show
-			self:UnforceShow()
-			
-			for _, frame in self:IterateMembers() do
-				frame:ProxySetAttribute("unitsuffix", self.unitsuffix)
-			end
+		end
+		
+		for _, frame in self:IterateMembers() do
+			frame:ProxySetAttribute("unitsuffix", self.unitsuffix)
 		end
 		PitBull4.unit_group_to_headers[unit_group][self] = true
 		PitBull4.super_unit_group_to_headers[self.super_unit_group][self] = true
@@ -320,7 +324,11 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		self:Show()
 	end
 	
-	if not dont_refresh_children then
+	for _, frame in self:IterateMembers() do
+		frame.dont_update = nil
+	end
+	
+	if changed_units and not dont_refresh_children then
 		for _, frame in self:IterateMembers() do
 			frame:RefreshLayout()
 		end

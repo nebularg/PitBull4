@@ -164,7 +164,7 @@ function PitBull4.Options.get_unit_options()
 		
 		function refresh_group_funcs.groups()
 			for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do
-				header:RefreshGroup(true)
+				header:RefreshGroup()
 			end
 		end
 		
