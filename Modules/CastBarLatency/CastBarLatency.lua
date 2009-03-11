@@ -27,7 +27,12 @@ PitBull4_CastBarLatency:SetLayoutOptionsFunction(function(self) end)
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
 timerFrame:SetScript("OnUpdate", function()
-	PitBull4_CastBarLatency:UpdateForUnitID("player")
+	for frame in PitBull4:IterateFrames() do
+		local unit = frame.unit
+		if unit and UnitIsUnit(unit,"player") then
+			PitBull4_CastBarLatency:Update(frame)
+		end
+	end
 end)
 
 
@@ -72,7 +77,8 @@ function PitBull4_CastBarLatency:OnDisable()
 end
 
 function PitBull4_CastBarLatency:UpdateFrame(frame)
-	if frame.unit ~= "player" then
+	local unit = frame.unit
+	if not unit or not UnitIsUnit(unit,"player") then
 		return self:ClearFrame(frame)
 	end
 	
