@@ -51,6 +51,7 @@ local LAYOUT_DEFAULTS = {
 	timer_text_side = "bottominside",
 	line_break = MAX_TOTEMS,
 	hide_inactive = false,
+	bar_size = 1,
 }
 
 local ORDER_DEFAULTS = {}
@@ -118,6 +119,7 @@ PitBull4_Totems:SetName(L["Totems"])
 PitBull4_Totems:SetDescription(L["Show which Totems are dropped and the time left until they expire."])
 PitBull4_Totems.show_font_option = true
 PitBull4_Totems.show_font_size_option = true
+PitBull4_Totems.can_set_side_to_center = false -- Intentionally deactivated until I find out how to scale the resulting pseudo-bar
 
 local function dbg(...)
 --@alpha@
