@@ -293,7 +293,7 @@ friend_buffs.MAGE = {
 	[1459]  = true, -- Arcane Intellect
 	[61316] = true, -- Dalaran Brilliance
 	[61024] = true, -- Dalaran Intellect
-	[54658] = true, -- Focus Magic
+	[54648] = true, -- Focus Magic
 	[604]   = true, -- Dampen Magic
 	[130]   = true, -- Slow Fall
 }
