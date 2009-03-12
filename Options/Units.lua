@@ -205,15 +205,20 @@ function PitBull4.Options.get_unit_options()
 		set = function(info, value)
 			get_unit_db().enabled = value
 			
+			-- Note RecheckConfigMode() must be called after the frame is made
+			-- if we're turning on the frame so it can be ForceShown() and before
+			-- the frame is deactivated if we are hiding it so that the Hide() in 
+			-- Deactivate() will actually hide the frame, since Hide() is disabled
+			-- when the frame is force_shown. 
 			if value then
 				PitBull4:MakeSingletonFrame(CURRENT_UNIT)
+				PitBull4:RecheckConfigMode()
 			else
+				PitBull4:RecheckConfigMode()
 				for frame in PitBull4:IterateFramesForClassification(CURRENT_UNIT, true) do
 					frame:Deactivate()
 				end
 			end
-			
-			PitBull4:RecheckConfigMode()
 		end,
 		disabled = disabled,
 	}
