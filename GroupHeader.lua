@@ -433,6 +433,7 @@ local function hook_SecureGroupHeader_Update()
 			return
 		end
 		self:AssignFakeUnitIDs()
+		PitBull4:RecheckConfigMode()
 	end)
 end
 
