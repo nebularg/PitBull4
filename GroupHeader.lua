@@ -449,7 +449,7 @@ function GroupHeader:AssignFakeUnitIDs()
 	
 	local current_group_num = 0
 	
-	local start, finish, step = 1, #self, 1
+	local start, finish, step = 1, self:GetMaxUnits(), 1
 	
 	if self:GetAttribute("sortDir") == "DESC" then
 		start, finish, step = finish, start, -1
