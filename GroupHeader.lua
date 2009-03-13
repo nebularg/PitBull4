@@ -575,21 +575,24 @@ function GroupHeader:IterateMembers(guess_num)
 end
 
 function GroupHeader:ForceShow()
-	if hook_SecureGroupHeader_Update then
-		hook_SecureGroupHeader_Update()
+	if not self.force_show then
+		if hook_SecureGroupHeader_Update then
+			hook_SecureGroupHeader_Update()
+		end
+		self.force_show = true
+		self:AssignFakeUnitIDs()
+		if not self.label then
+			local label = self:CreateFontString(self:GetName() .. "_Label", "OVERLAY", "ChatFontNormal")
+			self.label = label
+			local font, size, modifier = label:GetFont()
+			label:SetFont(font, size * 1.5, modifier)
+			label:SetText(self.name)
+			position_label(self, label)
+		end
+		self.label:Show()
 	end
-	self.force_show = true
-	self:AssignFakeUnitIDs()
-	if not self.label then
-		local label = self:CreateFontString(self:GetName() .. "_Label", "OVERLAY", "ChatFontNormal")
-		self.label = label
-		local font, size, modifier = label:GetFont()
-		label:SetFont(font, size * 1.5, modifier)
-		label:SetText(self.name)
-		position_label(self, label)
-	end
-	self.label:Show()
-	
+
+	-- Always make sure that the members ForceShow() is called
 	for _, frame in self:IterateMembers(true) do
 		frame:ForceShow()
 		frame:Update(true, true)
