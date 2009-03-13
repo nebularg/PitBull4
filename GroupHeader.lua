@@ -214,8 +214,9 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	local include_player = party_based and group_db.include_player
 	local show_solo = include_player and group_db.show_when.solo
 	local group_filter = not party_based and group_db.group_filter or nil
+	local sort_direction = group_db.sort_direction
 	
-	local changed_units = self.unit_group ~= unit_group or self.include_player ~= include_player or self.show_solo ~= show_solo or self.group_filter ~= group_filter
+	local changed_units = self.unit_group ~= unit_group or self.include_player ~= include_player or self.show_solo ~= show_solo or self.group_filter ~= group_filter or self.sort_direction ~= sort_direction
 	
 	if changed_units then
 		local old_unit_group = self.unit_group
@@ -224,6 +225,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		self.include_player = include_player
 		self.show_solo = show_solo
 		self.group_filter = group_filter
+		self.sort_direction = sort_direction
 		--@alpha@
 		if not party_based then
 			expect(unit_group:sub(1, 4), '==', "raid")
@@ -285,7 +287,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		position_label(self, self.label)
 	end
 	self:ProxySetAttribute("sortMethod", group_db.sort_method)
-	self:ProxySetAttribute("sortDir", group_db.sort_direction)
+	self:ProxySetAttribute("sortDir", sort_direction)
 	self:ProxySetAttribute("template", "SecureUnitButtonTemplate")
 	self:ProxySetAttribute("templateType", "Button")
 	self:ProxySetAttribute("groupBy", group_db.group_by)
