@@ -394,19 +394,17 @@ end
 -- @usage header:ForceUnitFrameCreation()
 function GroupHeader:ForceUnitFrameCreation()
 	local num = self:GetMaxUnits()
-	for _, frame in self:IterateMembers() do
-		if frame:GetAttribute("unit") and UnitExists(frame:GetAttribute("unit")) then
-			num = num - 1
-		end
-	end
 	
 	local maxColumns = self:GetAttribute("maxColumns")
 	local unitsPerColumn = self:GetAttribute("unitsPerColumn")
 	local startingIndex = self:GetAttribute("startingIndex")
-	if maxColumns == nil then
+	if unitsPerColumn == nil or unitsPerColumn == 0 then
 		self:ProxySetAttribute("maxColumns", 1)
 		self:ProxySetAttribute("unitsPerColumn", num)
+	else
+		self:ProxySetAttribute("maxColumns", num / unitsPerColumn)
 	end
+
 	self:ProxySetAttribute("startingIndex", -num + 1)
 	
 	SecureGroupHeader_Update(self)
