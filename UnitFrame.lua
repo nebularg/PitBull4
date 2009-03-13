@@ -207,24 +207,28 @@ function UnitFrame__scripts:OnLeave()
 end
 
 function UnitFrame__scripts:OnAttributeChanged(key, value)
-	if key ~= "unit" and key ~= "unitsuffix" then
-		return
-	end
+	if key == "unit" or key == "unitsuffix" then
+		local new_unit = PitBull4.Utils.GetBestUnitID(SecureButton_GetUnit(self)) or nil
 	
-	local new_unit = PitBull4.Utils.GetBestUnitID(SecureButton_GetUnit(self)) or nil
+		local old_unit = self.unit
+		if old_unit == new_unit then
+			return
+		end
 	
-	local old_unit = self.unit
-	if old_unit == new_unit then
-		return
-	end
+		if old_unit then
+			PitBull4.unit_id_to_frames[old_unit][self] = nil
+		end
 	
-	if old_unit then
-		PitBull4.unit_id_to_frames[old_unit][self] = nil
-	end
-	
-	self.unit = new_unit
-	if new_unit then
-		PitBull4.unit_id_to_frames[new_unit][self] = true
+		self.unit = new_unit
+		if new_unit then
+			PitBull4.unit_id_to_frames[new_unit][self] = true
+		end
+	elseif key == "state-unitexists" then
+		if value then
+			UnitFrame__scripts.OnShow(self)
+		else
+			UnitFrame__scripts.OnHide(self)
+		end
 	end
 end
 
@@ -241,9 +245,6 @@ end
 
 function UnitFrame__scripts:OnHide()
 	self:UpdateGUID(nil)
-	if self.force_show then
-		self:Show()
-	end
 end
 
 --- Add the proper functions and scripts to a SecureUnitButton, as well as some various initialization.
@@ -381,6 +382,11 @@ function UnitFrame:ForceShow()
 		return
 	end
 	self.force_show = true
+	
+	-- Continue to watch the frame but do the hiding and showing ourself
+	UnregisterUnitWatch(self)
+	RegisterUnitWatch(self, true)
+
 	self:Show()
 end
 UnitFrame.ForceShow = PitBull4:OutOfCombatWrapper(UnitFrame.ForceShow)
@@ -390,6 +396,10 @@ function UnitFrame:UnforceShow()
 		return
 	end
 	self.force_show = nil
+	
+	-- Ask the SecureStateDriver to show/hide the frame for us
+	UnregisterUnitWatch(self)
+	RegisterUnitWatch(self)
 end
 UnitFrame.UnforceShow = PitBull4:OutOfCombatWrapper(UnitFrame.UnforceShow)
 
