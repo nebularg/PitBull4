@@ -475,11 +475,11 @@ function GroupHeader:AssignFakeUnitIDs()
 				repeat
 					current_group_num = current_group_num + 1
 					unit = super_unit_group .. current_group_num
-				until not UnitExists(unit)
+					frame:SetAttribute("unit", unit)
+				until not UnitExists(SecureButton_GetUnit(frame))
 			end
 			
 			if old_unit ~= unit then
-				frame:SetAttribute("unit", unit)
 				frame:Update()
 			end
 		end
