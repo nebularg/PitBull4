@@ -432,6 +432,9 @@ local function hook_SecureGroupHeader_Update()
 		if not PitBull4.all_headers[self] then
 			return
 		end
+		if not self.force_show then
+			return
+		end
 		self:AssignFakeUnitIDs()
 		PitBull4:RecheckConfigMode()
 	end)
