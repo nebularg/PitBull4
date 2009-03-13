@@ -378,9 +378,6 @@ end
 SingletonUnitFrame.Deactivate = PitBull4:OutOfCombatWrapper(SingletonUnitFrame.Deactivate)
 
 function UnitFrame:ForceShow()
-	if self.force_show then
-		return
-	end
 	self.force_show = true
 	
 	-- Continue to watch the frame but do the hiding and showing ourself

@@ -316,12 +316,12 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	end
 	self:SetPoint(point, UIParent, "CENTER", group_db.position_x / scale + x_diff, group_db.position_y / scale + y_diff)
 	
-	if force_show then
-		self:ForceShow()
-	end
-	
 	if is_shown then
 		self:Show()
+	end
+
+	if force_show then
+		self:ForceShow()
 	end
 	
 	for _, frame in self:IterateMembers() do
@@ -575,9 +575,6 @@ function GroupHeader:IterateMembers(guess_num)
 end
 
 function GroupHeader:ForceShow()
-	if self.force_show then
-		return
-	end
 	if hook_SecureGroupHeader_Update then
 		hook_SecureGroupHeader_Update()
 	end
