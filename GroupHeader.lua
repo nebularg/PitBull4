@@ -514,8 +514,27 @@ do
 	end
 end
 
+local function get_filter_type_count(...) 
+	local start = select(1, ...)
+	return tonumber(start) and true or false, select('#', ...)
+end
+
 function GroupHeader:GetMaxUnits()
 	if self.super_unit_group == "raid" then
+		local group_filter = self.group_db.group_filter
+		if group_filter == "" then
+			-- Everything filtered, but always have at least one unit
+			return 1 
+		end
+
+		-- If we're filtering by raid group we may not need all 40
+		-- units for this group header.
+		local by_raid_group,count = get_filter_type_count(strsplit(",",group_filter))
+		if by_raid_group then
+			return MEMBERS_PER_RAID_GROUP * count
+		end
+
+		-- Everything else we're gonna have to go by max.
 		return MAX_RAID_MEMBERS
 	else
 		if self.include_player then
