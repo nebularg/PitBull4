@@ -448,12 +448,15 @@ function GroupHeader:AssignFakeUnitIDs()
 	local super_unit_group = self.super_unit_group
 	
 	local current_group_num = 0
+	local player_tried = false
 	
 	local start, finish, step = 1, self:GetMaxUnits(), 1
 	
 	if self:GetAttribute("sortDir") == "DESC" then
 		start, finish, step = finish, start, -1
 	end
+
+	local in_party = GetNumPartyMembers() > 0
 	
 	for i = start, finish, step do
 		local frame = self[i]
@@ -469,16 +472,16 @@ function GroupHeader:AssignFakeUnitIDs()
 			-- If we're in a partial party then we end up with 2 
 			-- player frames and this extra player frame will stick
 			-- around even when we leave config mode.
-			if self.include_player and i == 1 then
-				unit = "player"
-			else
-				repeat
+			repeat
+				if self.include_player and not player_tried and i == start then
+					unit = "player"
+					player_tried = true
+				else
 					current_group_num = current_group_num + 1
 					unit = super_unit_group .. current_group_num
-					frame:SetAttribute("unit", unit)
-				until not UnitExists(SecureButton_GetUnit(frame))
-			end
-			
+				end
+				frame:SetAttribute("unit", unit)
+			until unit == "player" and not in_party or not UnitExists(SecureButton_GetUnit(frame))
 			if old_unit ~= unit then
 				frame:Update()
 			end
