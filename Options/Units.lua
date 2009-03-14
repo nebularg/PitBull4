@@ -120,6 +120,7 @@ function PitBull4.Options.get_unit_options()
 			
 			if get_group_db().enabled then
 				PitBull4:MakeGroupHeader(CURRENT_GROUP)
+				PitBull4:RecheckConfigMode()
 			end
 		end,
 		validate = validate_group,
