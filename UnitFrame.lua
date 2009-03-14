@@ -244,6 +244,7 @@ function UnitFrame__scripts:OnShow()
 end
 
 function UnitFrame__scripts:OnHide()
+	self:GetScript("OnDragStop")(self)
 	self:UpdateGUID(nil)
 end
 
