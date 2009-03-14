@@ -389,7 +389,7 @@ function GroupHeader:InitialConfigFunction(frame)
 	frame:RefreshLayout()
 end
 
---- Force num unit frames to be created on the group header, even if those units don't exist.
+--- Force unit frames to be created on the group header, even if those units don't exist.
 -- Note: this is a hack to get around a Blizzard bug preventing frames from being initialized properly while in combat.
 -- @usage header:ForceUnitFrameCreation()
 function GroupHeader:ForceUnitFrameCreation()
@@ -398,13 +398,13 @@ function GroupHeader:ForceUnitFrameCreation()
 	local maxColumns = self:GetAttribute("maxColumns")
 	local unitsPerColumn = self:GetAttribute("unitsPerColumn")
 	local startingIndex = self:GetAttribute("startingIndex")
-	if unitsPerColumn == nil or unitsPerColumn == 0 then
+
+	if unitsPerColumn and num > unitsPerColumn then
+		self:ProxySetAttribute("maxColumns", num / unitsPerColumn)
+	else
 		self:ProxySetAttribute("maxColumns", 1)
 		self:ProxySetAttribute("unitsPerColumn", num)
-	else
-		self:ProxySetAttribute("maxColumns", num / unitsPerColumn)
 	end
-
 	self:ProxySetAttribute("startingIndex", -num + 1)
 	
 	SecureGroupHeader_Update(self)
