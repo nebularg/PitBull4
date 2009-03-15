@@ -525,7 +525,7 @@ function GroupHeader:GetMaxUnits()
 		if group_filter then
 			if group_filter == "" then
 			-- Everything filtered, but always have at least one unit
-			return 1 
+				return 1 
 			end
 
 			-- If we're filtering by raid group we may not need all 40
