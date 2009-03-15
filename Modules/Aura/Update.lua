@@ -535,7 +535,7 @@ local function update_auras(frame, db, is_buff)
 
 	-- If weapons are enabled and the unit is the player
 	-- copy the weapon entries into the aura list
-	if is_buff and db.enabled_weapons and UnitIsUnit(unit,"player") then
+	if is_buff and db.enabled_weapons and unit and UnitIsUnit(unit,"player") then
 		local filter = db.layout.buff.filter
 		copy_weapon_entry(weapon_list, list, MAINHAND)
 		if list[#list] and not PitBull4_Aura:FilterEntry(filter, list[#list], frame) then
