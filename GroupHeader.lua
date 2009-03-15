@@ -465,13 +465,6 @@ function GroupHeader:AssignFakeUnitIDs()
 			local old_unit = frame:GetAttribute("unit")
 			local unit
 			
-			-- technically i == start would be right but...
-			-- setting the unit to player makes it a real frame
-			-- and real frames generally get sorted first because
-			-- the group header never sorts our force shown frames.
-			-- If we're in a partial party then we end up with 2 
-			-- player frames and this extra player frame will stick
-			-- around even when we leave config mode.
 			repeat
 				if self.include_player and not player_tried and i == start then
 					unit = "player"
