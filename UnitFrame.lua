@@ -436,7 +436,7 @@ function UnitFrame:Update(same_guid, update_layout)
 	if self.dont_update then
 		return
 	end
-	if not self.guid and (not self.force_show or not PitBull4.Utils.GetBestUnitID(self.unit)) then
+	if not self.guid and not self.force_show then
 	 	if self.populated then
 			self.populated = nil
 		
