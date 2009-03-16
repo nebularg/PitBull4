@@ -134,6 +134,17 @@ local DIRECTION_TO_POINT = {
 	left_up = "RIGHT",
 }
 
+local DIRECTION_TO_GROUP_ANCHOR_POINT = {
+	down_right = "TOPLEFT",
+	down_left = "TOPRIGHT",
+	up_right = "BOTTOMLEFT",
+	up_left = "BOTTOMRIGHT",
+	right_down = "TOPLEFT",
+	right_up = "BOTTOMLEFT",
+	left_down = "TOPRIGHT",
+	left_up = "BOTTOMRIGHT",
+}
+
 local DIRECTION_TO_COLUMN_ANCHOR_POINT = {
 	down_right = "LEFT",
 	down_left = "RIGHT",
@@ -309,18 +320,12 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	
 	local x_diff, y_diff = 0, 0
 	local frame = self[1]
+	local anchor = DIRECTION_TO_GROUP_ANCHOR_POINT[direction]
 	if frame then
-		if point == "TOP" then
-			y_diff = frame:GetHeight() / 2
-		elseif point == "BOTTOM" then
-			y_diff = -frame:GetHeight() / 2
-		elseif point == "LEFT" then
-			x_diff = -frame:GetWidth() / 2
-		elseif point == "RIGHT" then
-			x_diff = frame:GetWidth() / 2
-		end
+		x_diff = frame:GetWidth() / 2 * -DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction]
+		y_diff = frame:GetHeight() / 2 * -DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction]
 	end
-	self:SetPoint(point, UIParent, "CENTER", group_db.position_x / scale + x_diff, group_db.position_y / scale + y_diff)
+	self:SetPoint(anchor, UIParent, "CENTER", group_db.position_x / scale + x_diff, group_db.position_y / scale + y_diff)
 	
 	if is_shown then
 		self:Show()
