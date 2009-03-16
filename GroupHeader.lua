@@ -440,44 +440,266 @@ local function hook_SecureGroupHeader_Update()
 	end)
 end
 
+-- utility function for AssignFakeUnitIDs
+local function fill_table(tbl, ...)
+	wipe(tbl)
+	for i = 1, select('#', ...), 1 do
+		local key = select(i, ...)
+		key = tonumber(key) or key
+		tbl[key] = true
+	end
+end
+
+-- utility function for AssignFakeUnitIDs
+local function double_fill_table(tbl, ...)
+	fill_table(tbl, ...)
+	for i = 1, select('#', ...), 1 do
+		tbl[i] = select(i, ...)
+	end
+end
+
+-- utility function for AssignFakeUnitIDs, it doctors
+-- up some data so don't reuse this elsewhere
+local function get_group_roster_info(super_unit_group, index, sort_dir, group_by)
+	local unit, name, subgroup, class_name, role
+	if super_unit_group == "raid" then
+		unit = "raid"..index
+		name, _, subgroup, _, _, class_name, _, _, _, role = GetRaidRosterInfo(index)
+	else
+		if index > 0 then
+			unit = "party"..index
+		else
+			unit = "player"
+		end
+		if UnitExists(unit) then
+			name = UnitName(unit)
+			_, class_name = UnitClass(unit)
+			if GetPartyAssignment("MAINTANK", unit) then
+				role = "MAINTANK"
+			elseif  GetPartyAssignment("MAINASSIST", unit) then
+				role = "MAINASSIST"
+			end
+			subgroup = 1
+		end
+	end
+
+	-- return some bogus data to get our fake unit ids to sort where we want.
+	if not name then
+		name = (sort_dir == "DESC" and "!" or "~")..string.format("%02d",index)
+		subgroup = '!' 
+		class_name = '!' 
+	end
+
+	return unit, name, subgroup, class_name, role
+end
+
+-- AssigneFakeUnitIDs generates a bunch of fake unit ids for 
+-- frames being show in config mode.  It's largely a rework
+-- of SecureGroupHeader_Update for our purposes.  We need
+-- to generate unit ids in roughly the same order that the
+-- group header would for real frames but we want the fake
+-- units to always be after the real units.  Sadly that makes
+-- this code pretty downright ugly.
+
+local sorting_table = {}
+local token_table = {}
+local grouping_table = {}
+local temp_table = {}
 function GroupHeader:AssignFakeUnitIDs()
 	if not self.force_show then
 		return
 	end
 
+	wipe(sorting_table)
+	
 	local super_unit_group = self.super_unit_group
-	
-	local current_group_num = 0
-	local player_tried = false
-	
+	local config_mode = PitBull4.config_mode
 	local start, finish, step = 1, self:GetMaxUnits(), 1
-	
-	if self:GetAttribute("sortDir") == "DESC" then
+
+	if self.include_player then
+		-- start at 0 for the player
+		start = 0
+		finish = finish - 1 -- GetMaxUnits already accounts for include_player
+	end
+
+	-- Limit the number of frames to the config mode for raid
+	if config_mode and super_unit_group == "raid" then
+		local num = config_mode:sub(5)+0 -- raid10, raid25, raid40 => 10, 25, 40
+		if num < finish then
+			finish = num
+		end
+	end
+
+	local name_list = self:GetAttribute("nameList")
+	local group_filter = self:GetAttribute("groupFilter")
+	local sort_method = self:GetAttribute("sortMethod")
+	local group_by = self:GetAttribute("groupBy")
+	local sort_dir = self:GetAttribute("sortDir")
+
+	if not group_filter and not name_list then
+		group_filter = "1,2,3,4,5,6,7,8"
+	end
+
+	-- Add in our bogus group to the appropriate
+	-- place on the group_filter.
+	if sort_dir == 'DESC' then
+		group_filter = "!,"..group_filter
+	else
+		group_filter = group_filter..",!"
+	end
+
+	if group_filter then
+		-- filter by a list of group numbers and/or classes
+		fill_table(token_table, strsplit(",", group_filter))
+		local strict_filter = self:GetAttribute("strictFiltering")
+
+		for i = start, finish, 1 do
+			local unit, name, subgroup, class_name, role = get_group_roster_info(super_unit_group, i, sort_dir, group_by)
+
+			if name and (not strict_filtering 
+				and (token_table[subgroup] or token_table[class_name] or (role and token_table[role]))) -- non-strict filtering
+				or (token_table[subgroup] and token_table[class_name]) -- strict filtering
+				then
+				tinsert(sorting_table, name)	
+				sorting_table[name] = unit
+				if group_by == "GROUP" then
+					grouping_table[name] = subgroup
+				elseif group_by == "CLASS" then
+					grouping_table[name] = class_name
+				elseif group_by == "ROLE" then
+					grouping_table[name] = role
+				end
+			end
+		end
+
+		if group_by then
+			local grouping_order = self:GetAttribute("groupingOrder")
+
+			-- Add in our bogus group token onto the grouping_order
+			-- in the right place to achieve the sorting we want
+			if sort_dir == 'DESC' then
+				grouping_order = "!,"..grouping_order
+			else	
+				grouping_order = grouping_order..',!'
+			end
+
+			double_fill_table(token_table, strsplit(",", grouping_order))
+			wipe(temp_table)
+			for _, grouping in ipairs(token_table) do
+				grouping = tonumber(grouping) or grouping
+				for k in ipairs(grouping_table) do
+					grouping_table[k] = nil
+				end
+				for index, name in ipairs(sorting_table) do
+					if grouping_table[name] == grouping then
+						tinsert(grouping_table, name)	
+						temp_table[name] = true
+					end
+				end
+				if sort_method == "NAME" then -- sort by ID by default
+					table.sort(grouping_table)
+				end
+				for _, name in ipairs(grouping_table) do
+					tinsert(temp_table, name)	
+				end
+			end
+			-- hande units whose group didn't appear in groupingOrder
+			for k in pairs(grouping_table) do
+				grouping_table[k] = nil
+			end
+			for index, name in ipairs(sorting_table) do
+				if not temp_table[name] then
+					tinsert(grouping_table, name)	
+				end
+			end
+			if sort_method == "NAME" then -- sort by ID by default
+				table.sort(grouping_table)
+			end
+			for _, name in ipairs(grouping_table) do
+				tinsert(temp_table, name)	
+			end
+
+			-- copy the names back to sorting_table
+			for index, name in ipairs(temp_table) do
+				sorting_table[index] = name
+			end
+		elseif sort_method == "NAME" then -- sort by ID by default
+			table.sort(sorting_table)
+		else
+			-- Have to do some reordering on ID DESC sort order
+			-- since normally the fake ids would come first.
+			wipe(temp_table)
+			-- add in the fake units first so they end up at the end 
+			for _, name in ipairs(sorting_table) do
+				if name:sub(1,1) == "!" then
+					tinsert(temp_table, name)
+				end
+			end
+			-- now the real units
+			for _, name in ipairs(sorting_table) do
+				if name:sub(1,1) ~= "!" then
+					tinsert(temp_table, name)
+				end
+			end
+			-- copy back to sorting_table
+			for index, name in ipairs(temp_table) do
+				sorting_table[index] = name
+			end
+		end
+	else
+		-- filtering via a list of names
+		double_fill_table(sorting_table, strsplit(",", name_list))
+		for i = start, finish, 1 do
+			local unit, name = get_group_roster_info(super_unit_group, i)
+			if sorting_table[name] then
+				sorting_table[name] = unit
+			end
+		end
+		for i = #sorting_table, 1, -1 do
+			local name = sorting_table[i]
+			if sorting_table[name] == true then
+				tremove(sorting_table, i)
+			end
+		end
+		if sort_method == "NAME" then
+			table.sort(sorting_table)
+		end
+	end
+
+	-- setup to actually set the units on the frames.
+	-- From here on out the code is roughly borrowed
+	-- from configureChildren.  However, we shortcut
+	-- startingIndex to always be 1.  If we ever
+	-- configure the startingIndex to be something else
+	-- this code will have to be adjusted.
+	start, finish = 1, #sorting_table
+	if sort_dir == "DESC" then
 		start, finish, step = finish, start, -1
 	end
 
-	local in_party = GetNumPartyMembers() > 0
-	
+	local frame_num = 0
 	for i = start, finish, step do
-		local frame = self[i]
-		
+		frame_num = frame_num + 1
+		local frame = self[frame_num]
+
 		if not frame.guid then
 			local old_unit = frame:GetAttribute("unit")
-			local unit
-			
-			repeat
-				if self.include_player and not player_tried and i == start then
-					unit = "player"
-					player_tried = true
-				else
-					current_group_num = current_group_num + 1
-					unit = super_unit_group .. current_group_num
-				end
-				frame:SetAttribute("unit", unit)
-			until unit == "player" and not in_party or not UnitExists(SecureButton_GetUnit(frame))
+			local unit = sorting_table[sorting_table[i]]
+			frame:SetAttribute("unit", unit)
 			if old_unit ~= unit then
 				frame:Update()
 			end
+		--@alpha@
+		-- Spit out errors to chat if our code didn't
+		-- come up with the same unit ids for the real frames
+		-- that the group header did.
+		else
+			local unit = frame:GetAttribute("unit")
+			local expected_unit = sorting_table[sorting_table[i]]
+			if unit ~= expected_unit then
+				print("PitBull4 expected "..expected_unit.." but found "..unit.." for "..frame:GetName())
+			end
+		--@end-alpha@
 		end
 	end
 end
