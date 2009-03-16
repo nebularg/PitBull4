@@ -40,12 +40,13 @@ local send_time  = 0
 local start_time = 0
 local lag_time   = 0
 local max_time   = 0
+local is_channel = nil
 
-local function StartCast(event, unit, spell, spellrank)
+function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, spell, spellrank)
 	if unit ~= 'player' then
 		return
 	end
-
+	
 	local name, _, _, _, new_start, new_end, _, _ = UnitCastingInfo(unit)
 	if not name then
 		return
@@ -55,7 +56,26 @@ local function StartCast(event, unit, spell, spellrank)
 	start_time = (new_start / 1e3)
 	max_time = end_time - start_time
 	lag_time = start_time - send_time
+	is_channel = nil
 end
+
+function PitBull4_CastBarLatency:UNIT_SPELLCAST_CHANNEL_START(event, unit, spell, spellrank)
+	if unit ~= 'player' then
+		return
+	end
+	
+	local name, _, _, _, new_start, new_end, _, _ = UnitChannelInfo(unit)
+	if not name then
+		return
+	end
+	
+	end_time = (new_end / 1e3)
+	start_time = (new_start / 1e3)
+	max_time = end_time - start_time
+	lag_time = start_time - send_time
+	is_channel = true
+end
+
 
 function PitBull4_CastBarLatency:UNIT_SPELLCAST_SENT(event, unit, spell, spellrank) 
 	if unit ~= 'player' then
@@ -68,8 +88,8 @@ function PitBull4_CastBarLatency:OnEnable()
 	timerFrame:Show()
 	
 	self:RegisterEvent("UNIT_SPELLCAST_SENT")
-	self:RegisterEvent("UNIT_SPELLCAST_START", StartCast)
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", StartCast)
+	self:RegisterEvent("UNIT_SPELLCAST_START")
+	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
 end
 
 function PitBull4_CastBarLatency:OnDisable()
@@ -116,8 +136,11 @@ function PitBull4_CastBarLatency:UpdateFrame(frame)
 	if bar:GetDeficit() then
 		safe_zone:SetReverse( bar:GetReverse() )
 	end
+	if is_channel then -- channels are flipped... again...
+		safe_zone:SetReverse( (not safe_zone:GetReverse()) )
+	end
 	safe_zone:Show()
-
+	
 	safe_zone:SetValue(safe_zone_percent)
 	
 	return false
