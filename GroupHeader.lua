@@ -560,7 +560,7 @@ function GroupHeader:AssignFakeUnitIDs()
 				and (token_table[subgroup] or token_table[class_name] or (role and token_table[role]))) -- non-strict filtering
 				or (token_table[subgroup] and token_table[class_name]) -- strict filtering
 				then
-				tinsert(sorting_table, name)	
+				sorting_table[#sorting_table+1] = name
 				sorting_table[name] = unit
 				if group_by == "GROUP" then
 					grouping_table[name] = subgroup
@@ -592,31 +592,29 @@ function GroupHeader:AssignFakeUnitIDs()
 				end
 				for index, name in ipairs(sorting_table) do
 					if grouping_table[name] == grouping then
-						tinsert(grouping_table, name)	
+						grouping_table[#grouping_table+1] = name
 						temp_table[name] = true
 					end
 				end
 				if sort_method == "NAME" then -- sort by ID by default
-					table.sort(grouping_table)
+					sort(grouping_table)
 				end
 				for _, name in ipairs(grouping_table) do
-					tinsert(temp_table, name)	
+					temp_table[#temp_table+1] = name
 				end
 			end
 			-- hande units whose group didn't appear in groupingOrder
-			for k in pairs(grouping_table) do
-				grouping_table[k] = nil
-			end
+			wipe(grouping_table)
 			for index, name in ipairs(sorting_table) do
 				if not temp_table[name] then
-					tinsert(grouping_table, name)	
+					grouping_table[#grouping_table+1] = name
 				end
 			end
 			if sort_method == "NAME" then -- sort by ID by default
-				table.sort(grouping_table)
+				sort(grouping_table)
 			end
 			for _, name in ipairs(grouping_table) do
-				tinsert(temp_table, name)	
+				temp_table[#temp_table+1] = name
 			end
 
 			-- copy the names back to sorting_table
@@ -624,7 +622,7 @@ function GroupHeader:AssignFakeUnitIDs()
 				sorting_table[index] = name
 			end
 		elseif sort_method == "NAME" then -- sort by ID by default
-			table.sort(sorting_table)
+			sort(sorting_table)
 		else
 			-- Have to do some reordering on ID DESC sort order
 			-- since normally the fake ids would come first.
@@ -632,13 +630,13 @@ function GroupHeader:AssignFakeUnitIDs()
 			-- add in the fake units first so they end up at the end 
 			for _, name in ipairs(sorting_table) do
 				if name:sub(1,1) == "!" then
-					tinsert(temp_table, name)
+					temp_table[#temp_table+1] = name
 				end
 			end
 			-- now the real units
 			for _, name in ipairs(sorting_table) do
 				if name:sub(1,1) ~= "!" then
-					tinsert(temp_table, name)
+					temp_table[#temp_table+1] = name
 				end
 			end
 			-- copy back to sorting_table
@@ -662,7 +660,7 @@ function GroupHeader:AssignFakeUnitIDs()
 			end
 		end
 		if sort_method == "NAME" then
-			table.sort(sorting_table)
+			sort(sorting_table)
 		end
 	end
 
