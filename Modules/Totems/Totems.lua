@@ -51,7 +51,7 @@ local LAYOUT_DEFAULTS = {
 	timer_text_side = "bottominside",
 	line_break = MAX_TOTEMS,
 	hide_inactive = false,
-	bar_size = 1,
+	bar_size = 1, -- needs to exist for "show as bar" option, unused for now
 }
 
 local ORDER_DEFAULTS = {}
@@ -356,48 +356,42 @@ end
 function PitBull4_Totems:UpdateAllTimes()
 	for frame in PitBull4:IterateFrames() do
 		local unit = frame.unit
-		if unit and UnitIsUnit(unit,"player") then
-			if (not frame.Totems) or (not frame.Totems.elements) then
-				dbg("ERROR: Update time called but no Totemtimer Frame initialized.")
-				--self:StopTimer()
-				return
-			else 
-				local elements = frame.Totems.elements
+		if unit and UnitIsUnit(unit,"player") and frame.Totems and frame.Totems.elements then
+			local elements = frame.Totems.elements
+			
+			local nowTime = floor(GetTime())
+			for slot=1, MAX_TOTEMS do
+				if (not elements) or (not elements[slot]) or (not elements[slot].frame) then return end
 				
-				local nowTime = floor(GetTime())
-				for slot=1, MAX_TOTEMS do
-					if (not elements) or (not elements[slot]) or (not elements[slot].frame) then return end
-					
-					local timeleft = MyGetTotemTimeLeft(slot,frame)
-					
-					if timeleft > 0 then
-						-- need to update shown time
-						if ( layout_option_get(frame,'timer_text') ) then
-							elements[slot].text:SetText(self:SecondsToTimeAbbrev(timeleft))
-						else
-							elements[slot].text:SetText("")
-						end
-						-- Hide the cooldown frame if it's shown and the user changed preference
-						if ( not layout_option_get(frame,'timer_spiral') and elements[slot].spiral:IsShown() ) then
-							elements[slot].spiral:Hide()
-						end
-						
-						if global_option_get('expiry_pulse') and (timeleft < global_option_get('expiry_pulse_time')) and (timeleft > 0) then
-							self:StartPulse(elements[slot].frame)
-						else
-							self:StopPulse(elements[slot].frame)
-						end
+				local timeleft = MyGetTotemTimeLeft(slot,frame)
+				
+				if timeleft > 0 then
+					-- need to update shown time
+					if ( layout_option_get(frame,'timer_text') ) then
+						elements[slot].text:SetText(self:SecondsToTimeAbbrev(timeleft))
 					else
-						-- Totem expired
-						
-						self:StopPulse(elements[slot].frame)
-						elements[slot].frame:SetAlpha(0.5)
-						if layout_option_get(frame,'hide_inactive') then
-							elements[slot].frame:Hide()
-						end
 						elements[slot].text:SetText("")
+					end
+					-- Hide the cooldown frame if it's shown and the user changed preference
+					if ( not layout_option_get(frame,'timer_spiral') and elements[slot].spiral:IsShown() ) then
 						elements[slot].spiral:Hide()
 					end
+					
+					if global_option_get('expiry_pulse') and (timeleft < global_option_get('expiry_pulse_time')) and (timeleft > 0) then
+						self:StartPulse(elements[slot].frame)
+					else
+						self:StopPulse(elements[slot].frame)
+					end
+				else
+					-- Totem expired
+					
+					self:StopPulse(elements[slot].frame)
+					elements[slot].frame:SetAlpha(0.5)
+					if layout_option_get(frame,'hide_inactive') then
+						elements[slot].frame:Hide()
+					end
+					elements[slot].text:SetText("")
+					elements[slot].spiral:Hide()
 				end
 			end
 		end
@@ -965,7 +959,8 @@ function PitBull4_Totems:ClearFrame(frame)
 		return false
 	end
 	
-	self:StopTimer()
+	--self:StopTimer() 
+	-- we're not stopping the timer anymore because we're not the only possible frame active
 	
 	--cleanup the element frames
 	for i = 1, MAX_TOTEMS do
