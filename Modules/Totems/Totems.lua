@@ -354,47 +354,50 @@ end
 
 
 function PitBull4_Totems:UpdateAllTimes()
-	for frame in PitBull4:IterateFramesForUnitID('player') do
-		if (not frame.Totems) or (not frame.Totems.elements) then
-			dbg("ERROR: Update time called but no Totemtimer Frame initialized.")
-			--self:StopTimer()
-			return
-		else 
-			local elements = frame.Totems.elements
-			
-			local nowTime = floor(GetTime())
-			for slot=1, MAX_TOTEMS do
-				if (not elements) or (not elements[slot]) or (not elements[slot].frame) then return end
+	for frame in PitBull4:IterateFrames() do
+		local unit = frame.unit
+		if unit and UnitIsUnit(unit,"player") then
+			if (not frame.Totems) or (not frame.Totems.elements) then
+				dbg("ERROR: Update time called but no Totemtimer Frame initialized.")
+				--self:StopTimer()
+				return
+			else 
+				local elements = frame.Totems.elements
 				
-				local timeleft = MyGetTotemTimeLeft(slot,frame)
-				
-				if timeleft > 0 then
-					-- need to update shown time
-					if ( layout_option_get(frame,'timer_text') ) then
-						elements[slot].text:SetText(self:SecondsToTimeAbbrev(timeleft))
+				local nowTime = floor(GetTime())
+				for slot=1, MAX_TOTEMS do
+					if (not elements) or (not elements[slot]) or (not elements[slot].frame) then return end
+					
+					local timeleft = MyGetTotemTimeLeft(slot,frame)
+					
+					if timeleft > 0 then
+						-- need to update shown time
+						if ( layout_option_get(frame,'timer_text') ) then
+							elements[slot].text:SetText(self:SecondsToTimeAbbrev(timeleft))
+						else
+							elements[slot].text:SetText("")
+						end
+						-- Hide the cooldown frame if it's shown and the user changed preference
+						if ( not layout_option_get(frame,'timer_spiral') and elements[slot].spiral:IsShown() ) then
+							elements[slot].spiral:Hide()
+						end
+						
+						if global_option_get('expiry_pulse') and (timeleft < global_option_get('expiry_pulse_time')) and (timeleft > 0) then
+							self:StartPulse(elements[slot].frame)
+						else
+							self:StopPulse(elements[slot].frame)
+						end
 					else
+						-- Totem expired
+						
+						self:StopPulse(elements[slot].frame)
+						elements[slot].frame:SetAlpha(0.5)
+						if layout_option_get(frame,'hide_inactive') then
+							elements[slot].frame:Hide()
+						end
 						elements[slot].text:SetText("")
-					end
-					-- Hide the cooldown frame if it's shown and the user changed preference
-					if ( not layout_option_get(frame,'timer_spiral') and elements[slot].spiral:IsShown() ) then
 						elements[slot].spiral:Hide()
 					end
-					
-					if global_option_get('expiry_pulse') and (timeleft < global_option_get('expiry_pulse_time')) and (timeleft > 0) then
-						self:StartPulse(elements[slot].frame)
-					else
-						self:StopPulse(elements[slot].frame)
-					end
-				else
-					-- Totem expired
-					
-					self:StopPulse(elements[slot].frame)
-					elements[slot].frame:SetAlpha(0.5)
-					if layout_option_get(frame,'hide_inactive') then
-						elements[slot].frame:Hide()
-					end
-					elements[slot].text:SetText("")
-					elements[slot].spiral:Hide()
 				end
 			end
 		end
@@ -406,7 +409,7 @@ function PitBull4_Totems:SpiralUpdate(frame,slot,start,left)
 	local tspiral = frame.Totems.elements[slot].spiral
 	local startTime = start or select(3, MyGetTotemInfo(slot,frame))
 	local timeLeft = left or MyGetTotemTimeLeft(slot,frame)
-
+	
 	tspiral:SetCooldown(startTime, timeLeft)
 	if self.totem_is_down[slot] == true and layout_option_get(frame,'timer_spiral') then
 		tspiral:Show()
@@ -417,75 +420,81 @@ end
 
 
 function PitBull4_Totems:ActivateTotem(slot)
-	for frame in PitBull4:IterateFramesForUnitID('player') do
-		if not frame.Totems then
-			return
+	for frame in PitBull4:IterateFrames() do
+		local unit = frame.unit
+		if unit and UnitIsUnit(unit,"player") then
+			if not frame.Totems then
+				return
+			end
+			
+			local haveTotem, name, startTime, duration, icon = MyGetTotemInfo(slot, frame)
+			-- queried seperately because GetTotemInfo apprears to give less reliable results (wtf?!)
+			local timeleft = MyGetTotemTimeLeft(slot, frame)
+			
+			if ( name == "" ) then
+				dbg("WARNING: Can't activate a nondropped totem")
+				return
+			end
+			
+			self.totem_is_down[slot] = true
+			
+			local tframe = frame.Totems.elements[slot].frame
+			local ttext = frame.Totems.elements[slot].text
+			
+			tframe:SetNormalTexture(icon)
+			tframe.totem_icon = icon
+			tframe:SetAlpha(1)
+			tframe:Show()
+			tframe.force_show = frame.force_show -- set configmode as a property of the frame, so the buttonscripts know about it
+			
+			self:StopPulse(tframe)
+			
+			tframe.border:Show()
+			if ( layout_option_get(frame,'timer_text') ) then
+				ttext:SetText(self:SecondsToTimeAbbrev(timeleft))
+			end
+			self:SpiralUpdate(frame, slot, startTime, timeLeft)
+			
+			self:StartTimer()
 		end
-		
-		local haveTotem, name, startTime, duration, icon = MyGetTotemInfo(slot, frame)
-		-- queried seperately because GetTotemInfo apprears to give less reliable results (wtf?!)
-		local timeleft = MyGetTotemTimeLeft(slot, frame)
-	
-		if ( name == "" ) then
-			dbg("WARNING: Can't activate a nondropped totem")
-			return
-		end
-	
-		self.totem_is_down[slot] = true
-
-		local tframe = frame.Totems.elements[slot].frame
-		local ttext = frame.Totems.elements[slot].text
-		
-		tframe:SetNormalTexture(icon)
-		tframe.totem_icon = icon
-		tframe:SetAlpha(1)
-		tframe:Show()
-		tframe.force_show = frame.force_show -- set configmode as a property of the frame, so the buttonscripts know about it
-		
-		self:StopPulse(tframe)
-		
-		tframe.border:Show()
-		if ( layout_option_get(frame,'timer_text') ) then
-			ttext:SetText(self:SecondsToTimeAbbrev(timeleft))
-		end
-		self:SpiralUpdate(frame, slot, startTime, timeLeft)
-		
-		self:StartTimer()
 	end
 end
 
 function PitBull4_Totems:DeactivateTotem(slot)
-	for frame in PitBull4:IterateFramesForUnitID('player') do
-		if not frame.Totems then
-			return
+	for frame in PitBull4:IterateFrames() do
+		local unit = frame.unit
+		if unit and UnitIsUnit(unit,"player") then
+			if not frame.Totems then
+				return
+			end
+			
+			local haveTotem, name, startTime, duration, icon = MyGetTotemInfo(slot, frame)
+			
+			if ( name ~= "" ) then
+				dbg("WARNING: Can't deactivate a dropped totem")
+				return
+			end
+			
+			self.totem_is_down[slot] = false
+			
+			local tframe = frame.Totems.elements[slot].frame
+			local ttext = frame.Totems.elements[slot].text
+			local tspiral = frame.Totems.elements[slot].spiral
+			
+			-- cleanup timer event if no totems are down
+			if not self:OneOrMoreDown() then
+				self:StopTimer()
+			end
+			tspiral:Hide()
+			
+			self:StopPulse(tframe)
+			
+			tframe:SetAlpha(0.5)
+			if layout_option_get(frame,'hide_inactive') then
+				tframe:Hide()
+			end
+			ttext:SetText("")
 		end
-
-		local haveTotem, name, startTime, duration, icon = MyGetTotemInfo(slot, frame)
-	
-		if ( name ~= "" ) then
-			dbg("WARNING: Can't deactivate a dropped totem")
-			return
-		end
-	
-		self.totem_is_down[slot] = false
-		
-		local tframe = frame.Totems.elements[slot].frame
-		local ttext = frame.Totems.elements[slot].text
-		local tspiral = frame.Totems.elements[slot].spiral
-		
-		-- cleanup timer event if no totems are down
-		if not self:OneOrMoreDown() then
-			self:StopTimer()
-		end
-		tspiral:Hide()
-		
-		self:StopPulse(tframe)
-		
-		tframe:SetAlpha(0.5)
-		if layout_option_get(frame,'hide_inactive') then
-			tframe:Hide()
-		end
-		ttext:SetText("")
 	end
 end
 
@@ -725,23 +734,26 @@ end
 function PitBull4_Totems:PLAYER_TOTEM_UPDATE(event, slot)
 	local sSlot = tostring(slot)
 
-	for frame in PitBull4:IterateFramesForUnitID('player') do
-		local haveTotem, name, startTime, duration, icon = MyGetTotemInfo(slot,frame)
-		if ( haveTotem and name ~= "") then
-			-- New totem created
-			self:ActivateTotem(slot)
-		elseif ( haveTotem ) then
-			-- Totem just got removed or killed.
-			self:DeactivateTotem(slot)
-			
-			-- Sound functions
-			if global_option_get('death_sound') and not (event == nil) then
-				local soundpath = DEFAULT_SOUND_PATH 
-				if LSM then
-					soundpath = LSM:Fetch('sound', global_option_get('sound_slot'..tostring(slot)))
+	for frame in PitBull4:IterateFrames() do
+		local unit = frame.unit
+		if unit and UnitIsUnit(unit,"player") then
+			local haveTotem, name, startTime, duration, icon = MyGetTotemInfo(slot,frame)
+			if ( haveTotem and name ~= "") then
+				-- New totem created
+				self:ActivateTotem(slot)
+			elseif ( haveTotem ) then
+				-- Totem just got removed or killed.
+				self:DeactivateTotem(slot)
+				
+				-- Sound functions
+				if global_option_get('death_sound') and not (event == nil) then
+					local soundpath = DEFAULT_SOUND_PATH 
+					if LSM then
+						soundpath = LSM:Fetch('sound', global_option_get('sound_slot'..tostring(slot)))
+					end
+					--dbg('Playing Death sound for slot %s: %s', tostring(slot), tostring(soundpath))
+					PlaySoundFile(soundpath)
 				end
-				--dbg('Playing Death sound for slot %s: %s', tostring(slot), tostring(soundpath))
-				PlaySoundFile(soundpath)
 			end
 		end
 	end
@@ -921,9 +933,10 @@ function PitBull4_Totems:ApplyLayoutSettings(frame)
 end
 
 function PitBull4_Totems:UpdateFrame(frame)
-	if frame.unit ~= 'player' then return end -- we only work for the player unit itself
-	
-	--dbg('DBG: UpdateFrame called.')
+	local unit = frame.unit
+	if not unit or not UnitIsUnit(unit,"player") then -- we only work for the player unit itself
+		return self:ClearFrame(frame)
+	end
 	
 	if (layout_option_get(frame,'enabled') ~= true) and frame.Totems then
 		return self:ClearFrame(frame)
