@@ -67,6 +67,13 @@ function PitBull4_DruidManaBar:UNIT_MANA(event, unit)
 			frame:Update()
 		else
 			self:Update(frame)	
+			-- The DruidManaBar existed before we updated just
+			-- for our own module, but it no longer exists now
+			-- so we need to force the entire frame to Update()
+			-- so that any texts attached are removed.
+			if not frame.DruidManaBar then
+				frame:Update()
+			end
 		end
 	end
 end
