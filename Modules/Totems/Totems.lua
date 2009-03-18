@@ -416,7 +416,7 @@ end
 function PitBull4_Totems:ActivateTotem(slot)
 	for frame in PitBull4:IterateFrames() do
 		local unit = frame.unit
-		if unit and UnitIsUnit(unit,"player") then
+		if unit and UnitIsUnit(unit,"player") and self:GetLayoutDB(frame).enabled then
 			if not frame.Totems then
 				return
 			end
@@ -457,7 +457,7 @@ end
 function PitBull4_Totems:DeactivateTotem(slot)
 	for frame in PitBull4:IterateFrames() do
 		local unit = frame.unit
-		if unit and UnitIsUnit(unit,"player") then
+		if unit and UnitIsUnit(unit,"player") and self:GetLayoutDB(frame).enabled then
 			if not frame.Totems then
 				return
 			end
@@ -484,6 +484,7 @@ function PitBull4_Totems:DeactivateTotem(slot)
 			self:StopPulse(tframe)
 			
 			tframe:SetAlpha(0.5)
+			tframe.totem_icon = nil
 			if layout_option_get(frame,'hide_inactive') then
 				tframe:Hide()
 			end
@@ -730,7 +731,7 @@ function PitBull4_Totems:PLAYER_TOTEM_UPDATE(event, slot)
 
 	for frame in PitBull4:IterateFrames() do
 		local unit = frame.unit
-		if unit and UnitIsUnit(unit,"player") then
+		if unit and UnitIsUnit(unit,"player") and self:GetLayoutDB(frame).enabled then
 			local haveTotem, name, startTime, duration, icon = MyGetTotemInfo(slot,frame)
 			if ( haveTotem and name ~= "") then
 				-- New totem created
@@ -810,6 +811,14 @@ function PitBull4_Totems:BuildFrames(frame)
 		frm:Hide()
 		frm.slot = i
 		frm.hide_inactive = layout_option_get(frame,'hide_inactive')
+		
+		if frm.totem_icon then -- we're already supposed to show something!
+			frm:SetNormalTexture(frm.totem_icon)
+			frm:SetAlpha(1)
+			frm:Show()
+		else
+			frm:SetNormalTexture(CONFIG_MODE_ICON)
+		end
 		
 		-------------------------------
 		-- totem slot border frame
