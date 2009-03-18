@@ -439,6 +439,7 @@ friend_buffs.PRIEST = {
 	[47753]	= true, -- Divine Aegis
 	[14752] = true, -- Divine Spirit
 	[6346]  = true, -- Fear Ward
+	[56161] = true, -- Glyph of Prayer of Healing
 	[47930]	= true, -- Grace
 	[47788]	= true, -- Guardian Spirit
 	[60931] = not wrath_310 or nil, -- Hymn of Hope
@@ -454,6 +455,7 @@ friend_buffs.PRIEST = {
 	[27683] = true, -- Prayer of Shadow Protection
 	[27681] = true, -- Prayer of Spirit
 	[139]   = true, -- Renew
+	[63944] = wrath_310 or nil, -- Renewed Hope
 	[976]   = true, -- Shadow Protection
 	[57669] = true, -- Replenishment
 }
@@ -476,6 +478,7 @@ self_buffs.PRIEST = {
 	[63731]	= wrath_310 or nil, -- Serendipity
 	[15258] = true, -- Shadow Weaving
 	[15473] = true, -- Shadowform
+	[27827] = true, -- Spirit of Redemption
 	[33151]	= true, -- Surge of Light
 }
 self_debuffs.PRIEST = {
@@ -491,7 +494,8 @@ enemy_debuffs.PRIEST = {
 	[453]   = true, -- Mind Soothe
 	[2096]  = true, -- Mind Vision
 	[33196]	= true, -- Misery
-	[59980]	= true, -- Psychic Horror
+	[59980]	= not wrath_310 or nil, -- Psychic Horror 3.0.x
+	[64058] = wrath_310 or nil, -- Psychic Horror 3.1.x+
 	[8122]  = true, -- Psychic Scream
 	[9484]  = true, -- Shackle Undead
 	[589]   = true, -- Shadow Word: Pain
@@ -847,9 +851,7 @@ friend_buffs.BloodElf = {
 	[23335] = true, -- Silverwing Flag
 }
 friend_debuffs.BloodElf = {}
-self_buffs.BloodElf = {
-	[28734] = true, -- Mana Tap
-}
+self_buffs.BloodElf = {}
 self_debuffs.BloodElf = {}
 pet_buffs.BloodElf = {}
 enemy_debuffs.BloodElf = {
