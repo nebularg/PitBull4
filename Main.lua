@@ -899,34 +899,32 @@ function PitBull4:UNIT_PET(_, unit) self:CheckGUIDForUnitID(unit .. "pet") end
 
 local STATE
 --- Get the current state that the player is in.
--- This will return one of "party" (even for solo), "raid10", "raid25", or "raid40".
+-- This will return one of "solo", "party", "raid10", "raid25", or "raid40".
 -- Setting config mode does override this.
 -- @usage local state = PitBull4:GetState()
 -- @return the state of the player.
 function PitBull4:GetState()
-	local config_mode = PitBull4.config_mode
-	if config_mode then
-		STATE = config_mode == "solo" and "party" or config_mode
-	end
-	return STATE
+	return PitBull4.config_mode or STATE
 end
 
 local last_state = nil
 function PitBull4:RAID_ROSTER_UPDATE()
 	local raid = GetNumRaidMembers()
+	local party = GetNumPartyMembers()
 	if raid > 0 then
 		if raid > 25 then
 			STATE = "raid40"
 		elseif raid > 10 then
 			STATE = "raid25"
-		elseif raid <= 5 and GetNumPartyMembers() == raid - 1 then -- TODO: make it an option to have 5-man raids act as parties.
+		elseif raid <= 5 and party == raid - 1 then -- TODO: make it an option to have 5-man raids act as parties.
 			STATE = "party"
 		else
 			STATE = "raid10"
 		end
-	else
-		-- also can occur for solo
+	elseif party > 0 then
 		STATE = "party"
+	else
+		STATE = "solo"
 	end
 	
 	local state = PitBull4:GetState()
