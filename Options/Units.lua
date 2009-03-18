@@ -681,6 +681,7 @@ function PitBull4.Options.get_unit_options()
 			for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do
 				header:UpdateShownState(PitBull4:GetState())
 			end
+			refresh_group('groups')
 		end,
 		disabled = disabled,
 	}
