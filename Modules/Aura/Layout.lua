@@ -122,6 +122,32 @@ local first_col_behind_anchor = {
 	},
 }
 
+-- Lookup tables to allow frames that are configured to mirror horizontally
+-- or vertically to position Auras with these configurations.
+local horizontal_mirrored_growth = setmetatable({}, {__index = function(self, key)
+  local value = key:gsub("left", "temp"):gsub("right", "left"):gsub("temp", "right")
+  self[key] = value
+  return value
+end})
+
+local vertical_mirrored_growth = setmetatable({}, {__index = function(self, key)
+  local value = key:gsub("down", "temp"):gsub("up", "down"):gsub("temp", "up")
+  self[key] = value
+  return value
+end})
+
+local horizontal_mirrored_point = setmetatable({}, {__index = function(self, key)
+  local value = key:gsub("LEFT", "temp"):gsub("RIGHT", "LEFT"):gsub("temp", "RIGHT")
+  self[key] = value
+  return value
+end})
+
+local vertical_mirrored_point = setmetatable({}, {__index = function(self, key)
+  local value = key:gsub("BOTTOM", "temp"):gsub("TOP", "BOTTOM"):gsub("temp", "TOP")
+  self[key] = value
+  return value
+end})
+
 
 function layout_auras(frame, db, is_buff)
 	local list, cfg
@@ -133,18 +159,34 @@ function layout_auras(frame, db, is_buff)
 		cfg = db.layout.debuff
 	end
 	if not list then return end
+	local class_db = frame.classification_db
 
 	-- Grab our config vars to avoid repeated table lookups
 	local offset_x, offset_y = cfg.offset_x, cfg.offset_y
 	local other_size = cfg.size
 	local my_size = cfg.my_size
 	local anchor = cfg.anchor
-	local point = get_control_point[anchor..'_'..cfg.side]
+	local side = cfg.side
 	local growth = cfg.growth
 	local width, width_type = cfg.width, cfg.width_type
 	local row_spacing, col_spacing = cfg.row_spacing, cfg.col_spacing
 	local new_row_size = cfg.new_row_size
 	local sorted = cfg.sort
+
+	-- Deal with mirror options
+	if class_db.horizontal_mirror then
+		anchor = horizontal_mirrored_point[anchor]
+		side = horizontal_mirrored_point[side]
+		growth = horizontal_mirrored_growth[growth]
+	end
+	if class_db.vertical_mirror then
+		anchor = vertical_mirrored_point[anchor]
+		side = vertical_mirrored_point[side]
+		growth = vertical_mirrored_growth[growth]
+	end
+
+	-- Find the anchor point on the control
+	local point = get_control_point[anchor..'_'..side]
 
 	-- Our current position to place the control
 	local x, y = 0, 0
