@@ -704,7 +704,7 @@ function GroupHeader:AssignFakeUnitIDs()
 			local unit = frame:GetAttribute("unit")
 			local expected_unit = sorting_table[sorting_table[i]]
 			if unit ~= expected_unit then
-				print("PitBull4 expected "..expected_unit.." but found "..unit.." for "..frame:GetName())
+				print("PitBull4 expected "..tostring(expected_unit).." but found "..tostring(unit).." for "..frame:GetName())
 			end
 		--@end-alpha@
 		end
