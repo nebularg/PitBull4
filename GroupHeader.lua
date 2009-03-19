@@ -116,7 +116,7 @@ function GroupHeader:UpdateShownState(state)
 		return
 	end
 	
-	if group_db and group_db.enabled and group_db.show_when[state] and ACCEPTABLE_STATES[self.super_unit_group][state] then
+	if group_db and group_db.enabled and group_db.show_when[state] and ACCEPTABLE_STATES[self.super_unit_group][state] and (state ~= "solo" or group_db.include_player) then
 		self:Show()
 	else
 		self:Hide()
