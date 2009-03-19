@@ -301,6 +301,14 @@ function PitBull4.Options.get_unit_options()
 			refresh_layout(info[1])
 		end
 	end
+	local function set_with_refresh_group_shown(info, value)
+		if set(info, value) then
+			refresh_group(info[1])
+			for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do
+				header:UpdateShownState(PitBull4:GetState())
+			end
+		end
+	end
 	local function set_with_update(info)
 		if set(info, value) then
 			update(info[1])
@@ -342,7 +350,7 @@ function PitBull4.Options.get_unit_options()
 			return t
 		end,
 		get = get,
-		set = set_with_refresh_group,
+		set = set_with_refresh_group_shown,
 		disabled = disabled,
 	}
 	
@@ -364,7 +372,7 @@ function PitBull4.Options.get_unit_options()
 		type = 'toggle',
 		order = next_order(),
 		get = get,
-		set = set_with_refresh_group,
+		set = set_with_refresh_group_shown,
 		disabled = disabled,
 		hidden = function(info)
 			return get_group_db().unit_group:sub(1, 5) ~= "party"
