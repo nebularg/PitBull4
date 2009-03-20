@@ -79,7 +79,7 @@ function PitBull4_ExperienceBar:PLAYER_XP_UPDATE()
 	-- and if the bar does exist we can just update our own frame, but
 	-- if we end up removing it from our update we then have to force
 	-- a full frame update.
-	for frame in PitBull4:IterateFramesForUnitID("player", "pet") do
+	for frame in PitBull4:IterateFramesForUnitIDs("player", "pet") do
 		if not frame.ExperienceBar then
 			frame:Update()
 		else
