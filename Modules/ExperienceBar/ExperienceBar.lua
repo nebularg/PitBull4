@@ -73,8 +73,22 @@ end
 PitBull4_ExperienceBar.GetExampleExtraColor = PitBull4_ExperienceBar.GetExtraColor
 
 function PitBull4_ExperienceBar:PLAYER_XP_UPDATE()
-	self:UpdateForUnitID("player")
-	self:UpdateForUnitID("pet")
+	-- Funky update mechanism to deal with the creation and removal
+	-- of the bar depending on circumstances.  If the bar doesn't already
+	-- exist we need to force the entire frame to be updated to create it
+	-- and if the bar does exist we can just update our own frame, but
+	-- if we end up removing it from our update we then have to force
+	-- a full frame update.
+	for frame in PitBull4:IterateFramesForUnitID("player", "pet") do
+		if not frame.ExperienceBar then
+			frame:Update()
+		else
+			self:Update(frame)
+			if not frame.ExperienceBar then
+				frame:Update()
+			end
+		end
+	end
 end
 
 PitBull4_ExperienceBar.UPDATE_EXHAUSTION = PitBull4_ExperienceBar.PLAYER_XP_UPDATE
