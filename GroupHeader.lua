@@ -199,6 +199,31 @@ local function position_label(self, label)
 	end
 end
 
+--- Reset the size and position of the group header.  More accurately,
+-- the scale and the position since size is set dynamically.
+-- @usage header:RefixSizeAndPosition()
+function GroupHeader:RefixSizeAndPosition()
+	local group_db = self.group_db
+	local layout = group_db.layout
+	local layout_db = PitBull4.db.profile.layouts[layout]
+	
+	self:SetScale(layout_db.scale * group_db.scale)
+
+	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
+	local x_diff, y_diff = 0, 0
+	local direction = group_db.direction
+	local anchor = DIRECTION_TO_GROUP_ANCHOR_POINT[direction]
+	local frame = self[1]
+
+	if frame then
+		x_diff = frame:GetWidth() / 2 * -DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction]
+		y_diff = frame:GetHeight() / 2 * -DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction]
+	end
+
+	self:ClearAllPoints()
+	self:SetPoint(anchor, UIParent, "CENTER", group_db.position_x / scale + x_diff, group_db.position_y / scale + y_diff)
+end
+
 --- Recheck the group-based settings of the group header, including sorting, position, what units are shown.
 -- @param dont_refresh_children don't call :RefreshLayout on the child frames
 -- @usage header:RefreshGroup()
@@ -283,9 +308,6 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		PitBull4.super_unit_group_to_headers[self.super_unit_group][self] = true
 	end
 	
-	self:SetScale(layout_db.scale * group_db.scale)
-	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
-	
 	local direction = group_db.direction
 	local point = DIRECTION_TO_POINT[direction]
 	
@@ -316,17 +338,8 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	
 	self:ForceUnitFrameCreation()
 	self:AssignFakeUnitIDs()
-	
-	self:ClearAllPoints()
-	
-	local x_diff, y_diff = 0, 0
-	local frame = self[1]
-	local anchor = DIRECTION_TO_GROUP_ANCHOR_POINT[direction]
-	if frame then
-		x_diff = frame:GetWidth() / 2 * -DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction]
-		y_diff = frame:GetHeight() / 2 * -DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction]
-	end
-	self:SetPoint(anchor, UIParent, "CENTER", group_db.position_x / scale + x_diff, group_db.position_y / scale + y_diff)
+
+	self:RefixSizeAndPosition()
 	
 	if is_shown then
 		self:Show()
@@ -352,16 +365,8 @@ GroupHeader.RefreshGroup = PitBull4:OutOfCombatWrapper(GroupHeader.RefreshGroup)
 -- @param dont_refresh_children don't call :RefreshLayout on the child frames
 -- @usage header:RefreshLayout()
 function GroupHeader:RefreshLayout(dont_refresh_children)
-	local group_db = self.group_db
+	self:RefixSizeAndPosition()
 
-	local layout = group_db.layout
-	self.layout = layout
-	
-	local layout_db = PitBull4.db.profile.layouts[layout]
-	self.layout_db = layout_db
-	
-	self:SetScale(layout_db.scale * group_db.scale)
-	
 	if not dont_refresh_children then
 		for _, frame in self:IterateMembers() do
 			frame:RefreshLayout()
