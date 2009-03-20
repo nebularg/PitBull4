@@ -173,6 +173,7 @@ self_buffs.DRUID = {
 	[16864] = true, -- Omen of Clarity
 	[48389] = true, -- Owlkin Frenzy
 	[5215]  = true, -- Prowl
+	[52610]	= true, -- Savage Roar
 	[48505] = true, -- Starfall
 	[61336] = true, -- Survival Instincts
 	[40120] = true, -- Swift Flight Form
@@ -216,6 +217,7 @@ friend_buffs.HUNTER = {
 	[19578] = true, -- Spirit Bond
 	[19506] = true, -- Trueshot Aura
 	[57669] = true, -- Replenishment
+	[54216] = wrath_310 or nil, -- Master's Call
 }
 friend_debuffs.HUNTER = {}
 self_buffs.HUNTER = {
@@ -254,6 +256,7 @@ enemy_debuffs.HUNTER = {
 	[19434] = true, -- Aimed Shot
 	[1462]  = true, -- Beast Lore
 	[3385]  = true, -- Boar Charge
+	[53359]	= true, -- Chimera Shot - Scorpid
 	[35100] = true, -- Concussive Barrage
 	[5116]  = true, -- Concussive Shot
 	[19306] = true, -- Counterattack
@@ -296,6 +299,7 @@ friend_buffs.MAGE = {
 	[54648] = true, -- Focus Magic
 	[604]   = true, -- Dampen Magic
 	[130]   = true, -- Slow Fall
+	[57669] = wrath_310 or nil, -- Replenishment
 }
 friend_debuffs.MAGE = {}
 self_buffs.MAGE = {
@@ -330,11 +334,10 @@ self_debuffs.MAGE = {
 }
 pet_buffs.MAGE = {}
 enemy_debuffs.MAGE = {
-	[1831]  = true, -- Blast Wave
+	[11113]	= true, -- Blast Wave
 	[10]    = true, -- Blizzard
 	[6136]  = true, -- Chilled
 	[120]   = true, -- Cone of Cold
-	[2855]  = true, -- Detect Magic
 	[29964] = true, -- Dragon's Breath
 	[22959] = true, -- Fire Vulnerability
 	[133]   = true, -- Fireball
@@ -460,6 +463,7 @@ friend_buffs.PRIEST = {
 	[57669] = true, -- Replenishment
 }
 friend_debuffs.PRIEST = {
+	[2096]  = true, -- Mind Vision
 	[6788]  = true, -- Weakened Soul
 }
 self_buffs.PRIEST = {
@@ -475,15 +479,14 @@ self_buffs.PRIEST = {
 	[47894]	= not wrath_310 or nil, -- Improved Holy Concentration
 	[588]   = true, -- Inner Fire
 	[14751] = true, -- Inner Focus
+	[2096]  = true, -- Mind Vision
 	[63731]	= wrath_310 or nil, -- Serendipity
 	[15258] = true, -- Shadow Weaving
 	[15473] = true, -- Shadowform
 	[27827] = true, -- Spirit of Redemption
 	[33151]	= true, -- Surge of Light
 }
-self_debuffs.PRIEST = {
-	[2096]  = true, -- Mind Vision
-}
+self_debuffs.PRIEST = {}
 pet_buffs.PRIEST = {}
 enemy_debuffs.PRIEST = {
 	[2944]  = true, -- Devouring Plague
@@ -593,9 +596,13 @@ self_buffs.SHAMAN = {
 	[55166] = true, -- Tidal Force
 	[53390] = true, -- Tidal Waves
 	[23575] = true, -- Water Shield
+	[16257]	= true, -- Flurry
+	[58875]	= true, -- Spirit Walk
 }
 self_debuffs.SHAMAN = {}
-pet_buffs.SHAMAN = {}
+pet_buffs.SHAMAN = {
+	[58875]	= true, -- Spirit Walk
+}
 enemy_debuffs.SHAMAN = {
 	[3600]  = true, -- Earthbind
 	[8050]  = true, -- Flame Shock
@@ -603,6 +610,9 @@ enemy_debuffs.SHAMAN = {
 	[8034]  = true, -- Frostbrand Attack
 	[39796] = true, -- Stoneclaw Stun
 	[17364] = true, -- Stormstrike
+	[30708]	= true, -- Totem of Wrath
+	[51514]	= true, -- Hex
+	[58861]	= true, -- Bash
 }
 
 -- WARLOCK
@@ -613,10 +623,10 @@ friend_buffs.WARLOCK = {
 	[54424] = true, -- Fel Intelligence
 	[20707] = true, -- Soulstone Resurrection
 	[5697]  = true, -- Unending Breath
+	[57669] = wrath_310 or nil, -- Replenishment
 }
 friend_debuffs.WARLOCK = {}
 self_buffs.WARLOCK = {
-	[18288] = true, -- Amplify Curse
 	[34935] = true, -- Backlash
 	[706]   = true, -- Demon Armor
 	[687]   = true, -- Demon Skin
@@ -633,6 +643,7 @@ self_buffs.WARLOCK = {
 	[19028] = true, -- Soul Link
 	[23161] = true, -- Summon Dreadsteed
 	[1710]  = true, -- Summon Felsteed
+	[47241]	= true, -- Metamorphosis
 }
 self_debuffs.WARLOCK = {}
 pet_buffs.WARLOCK = {
@@ -674,6 +685,7 @@ enemy_debuffs.WARLOCK = {
 	[19244] = true, -- Spell Lock
 	[17735] = true, -- Suffering
 	[54049] = true, -- Shadow Bite
+	[61291] = true, -- Shadowflame
 	[30108] = true, -- Unstable Affliction
 }
 
@@ -691,6 +703,7 @@ self_buffs.WARRIOR = {
 	[2687]  = true, -- Bloodrage
 	[23880] = true, -- Bloodthirst
 	[3019]  = true, -- Enrage
+	[55694]	= true, -- Enraged Regeneration
 	[12319] = true, -- Flurry
 	[12975] = true, -- Last Stand
 	[8285]  = true, -- Rampage
