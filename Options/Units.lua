@@ -471,7 +471,7 @@ function PitBull4.Options.get_unit_options()
 		disabled = disabled,
 	}
 	
-	unit_args.position_x = {
+	shared_args.position_x = {
 		name = L["Horizontal position"],
 		desc = L["Horizontal position on the x-axis of the screen."],
 		order = next_order(),
@@ -479,7 +479,7 @@ function PitBull4.Options.get_unit_options()
 		min = -math.floor(GetScreenWidth() / 10) * 5,
 		max = math.floor(GetScreenWidth() / 10) * 5,
 		get = function(info)
-			return round(get_unit_db().position_x)
+			return round(get_db(info[1]).position_x)
 		end,
 		set = set_with_refresh_layout,
 		step = 1,
@@ -487,7 +487,7 @@ function PitBull4.Options.get_unit_options()
 		disabled = disabled,
 	}
 	
-	unit_args.position_y = {
+	shared_args.position_y = {
 		name = L["Vertical position"],
 		desc = L["Vertical position on the y-axis of the screen."],
 		order = next_order(),
@@ -495,7 +495,7 @@ function PitBull4.Options.get_unit_options()
 		min = -math.floor(GetScreenHeight() / 10) * 5,
 		max = math.floor(GetScreenHeight() / 10) * 5,
 		get = function(info)
-			return round(get_unit_db().position_y)
+			return round(get_db(info[1]).position_y)
 		end,
 		set = set_with_refresh_layout,
 		step = 1,
