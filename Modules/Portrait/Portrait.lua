@@ -141,7 +141,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 			portrait.model = model
 			model:SetAllPoints(portrait)
 		else -- two_dimensional or class
-			local texture = PitBull4.Controls.MakeTexture(frame, "ARTWORK")
+			local texture = PitBull4.Controls.MakeTexture(portrait, "ARTWORK")
 			portrait.texture = texture
 			texture:SetAllPoints(portrait)
 		end
