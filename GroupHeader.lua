@@ -122,6 +122,7 @@ function GroupHeader:UpdateShownState(state)
 		self:Hide()
 	end
 end
+GroupHeader.UpdateShownState = PitBull4:OutOfCombatWrapper(GroupHeader.UpdateShownState)
 
 local DIRECTION_TO_POINT = {
 	down_right = "TOP",
