@@ -15,6 +15,7 @@ PitBull4_CastBar:SetDefaults({
 	size = 1,
 	position = 10,
 	show_icon = true,
+	auto_hide = false,
 })
 
 local cast_data = {}
@@ -75,12 +76,15 @@ function PitBull4_CastBar:GetValue(frame)
 	
 	local guid = frame.guid
 	local data = cast_data[guid]
-	local show_icon = self:GetLayoutDB(frame).show_icon
+	local db = self:GetLayoutDB(frame)
 	if not data then
-		return 0, nil, show_icon and "" or nil
+		if db.auto_hide then
+			return nil
+		end
+		return 0, nil, db.show_icon and "" or nil
 	end
 	
-	local icon = show_icon and (data.icon or "") or nil
+	local icon = db.show_icon and (data.icon or "") or nil
 	
 	if data.casting then
 		local startTime = data.startTime
@@ -92,6 +96,9 @@ function PitBull4_CastBar:GetValue(frame)
 		return frame.CastBar and frame.CastBar:GetValue() or 0, nil, icon
 	end
 	
+	if db.auto_hide then
+		return nil
+	end
 	return 0, nil, icon
 end
 
@@ -183,8 +190,7 @@ function PitBull4_CastBar:FixCastData()
 	for guid, data in pairs(cast_data) do
 		local found = false
 		for frame in PitBull4:IterateFramesForGUID(guid) do
-			local castBar = frame.CastBar
-			if castBar then
+			if self:GetLayoutDB(frame).enabled then
 				found = true
 				if data.casting then
 					if currentTime > data.endTime and player_guid ~= guid then
@@ -230,7 +236,19 @@ PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_UPDATE = PitBull4_CastBar.UpdateInfo
 PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_STOP = PitBull4_CastBar.UpdateInfo
 
 PitBull4_CastBar:SetLayoutOptionsFunction(function(self)
-	return 'show_icon', {
+	return 'auto_hide', {
+		name = L["Auto-hide"],
+		desc = L["Automatically hide the cast bar when not casting."],
+		type = 'toggle',
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).auto_hide
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).auto_hide = value
+
+			PitBull4.Options.UpdateFrames()
+		end,
+	}, 'show_icon', {
 		name = L["Show icon"],
 		desc = L["Whether to show the icon that is being cast."],
 		type = 'toggle',
