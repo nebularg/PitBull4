@@ -161,6 +161,9 @@ function PitBull4_CastBar:UpdateInfo(event, unit)
 		channeling = true
 	end
 	if spell then
+		if icon == [[Interface\Icons\Temp]] then
+			icon = nil
+		end
 		data.icon = icon
 		data.startTime = startTime * 0.001
 		data.endTime = endTime * 0.001
