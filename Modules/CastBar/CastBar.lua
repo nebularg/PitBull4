@@ -6,6 +6,10 @@ if not PitBull4 then
 end
 local L = PitBull4.L
 
+local EXAMPLE_VALUE = 0.4
+local EXAMPLE_ICON = [[Interface\Icons\Spell_Shadow_Teleport]]
+local CREEPY_HEAD = [[Interface\Icons\Temp]]
+
 local PitBull4_CastBar = PitBull4:NewModule("CastBar", "AceEvent-3.0")
 
 PitBull4_CastBar:SetModuleType("bar")
@@ -103,7 +107,7 @@ function PitBull4_CastBar:GetValue(frame)
 end
 
 function PitBull4_CastBar:GetExampleValue(frame)
-	return 0.4, nil, ""
+	return EXAMPLE_VALUE, nil, EXAMPLE_ICON
 end
 
 function PitBull4_CastBar:GetColor(frame, value)
@@ -161,7 +165,7 @@ function PitBull4_CastBar:UpdateInfo(event, unit)
 		channeling = true
 	end
 	if spell then
-		if icon == [[Interface\Icons\Temp]] then
+		if icon == CREEPY_HEAD then
 			icon = nil
 		end
 		data.icon = icon
