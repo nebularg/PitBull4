@@ -11,6 +11,7 @@ local BarModule = PitBull4:NewModuleType("bar", {
 	side = 'center',
 	enabled = true,
 	custom_color = nil,
+	icon_on_left = true,
 })
 
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
@@ -31,14 +32,14 @@ local function call_value_function(self, frame)
 	end
 	local value, extra
 	if frame.guid then
-		value, extra = self:GetValue(frame)
+		value, extra, icon = self:GetValue(frame)
 	end
 	
 	if not value and frame.force_show and self.GetExampleValue then
-		value, extra = self:GetExampleValue(frame)
+		value, extra, icon = self:GetExampleValue(frame)
 	end
 	if not value then
-		return nil, nil
+		return nil, nil, nil
 	end
 	if value < 0 or value ~= value then -- NaN
 		value = 0
@@ -46,7 +47,7 @@ local function call_value_function(self, frame)
 		value = 1
 	end
 	if not extra or extra <= 0 or extra ~= extra then -- NaN
-		return value, nil
+		return value, nil, icon
 	end
 	
 	local max = 1 - value
@@ -54,7 +55,7 @@ local function call_value_function(self, frame)
 		extra = max
 	end
 	
-	return value, extra
+	return value, extra, icon
 end
 
 --- Call the :GetColor function on the status bar module regarding the given frame.
@@ -63,12 +64,13 @@ end
 -- @param frame the frame to get the color of
 -- @param value the value as returned by call_value_function
 -- @param extra the extra value as returned by call_value_function
+-- @param icon the icon path as returned by call_value_function
 -- @usage local r, g, b, a = call_color_function(MyModule, someFrame)
 -- @return red value within [0, 1]
 -- @return green value within [0, 1]
 -- @return blue value within [0, 1]
 -- @return alpha value within [0, 1]
-local function call_color_function(self, frame, value, extra)
+local function call_color_function(self, frame, value, extra, icon)
 	local layout_db = self:GetLayoutDB(frame)
 	local custom_color = layout_db.custom_color
 	if custom_color then
@@ -80,10 +82,10 @@ local function call_color_function(self, frame, value, extra)
 	end
 	local r, g, b, a
 	if frame.guid then
-		r, g, b, a = self:GetColor(frame, value, extra)
+		r, g, b, a = self:GetColor(frame, value, extra, icon)
 	end
 	if (not r or not g or not b) and frame.force_show and self.GetExampleColor then
-		r, g, b, a = self:GetExampleColor(frame, value, extra)
+		r, g, b, a = self:GetExampleColor(frame, value, extra, icon)
 	end
 	if not r or not g or not b then
 		return 0.7, 0.7, 0.7, a or 1
@@ -97,12 +99,13 @@ end
 -- @param frame the frame to get the color of
 -- @param value the value as returned by call_value_function
 -- @param extra the extra value as returned by call_value_function
+-- @param icon the icon path as returned by call_value_function
 -- @usage local r, g, b, a = call_extra_color_function(MyModule, someFrame)
 -- @return red value within [0, 1]
 -- @return green value within [0, 1]
 -- @return blue value within [0, 1]
 -- @return alpha value within [0, 1] or nil
-local function call_extra_color_function(self, frame, value, extra)
+local function call_extra_color_function(self, frame, value, extra, icon)
 	local layout_db = self:GetLayoutDB(frame)
 	local custom_color = layout_db.custom_color
 	if custom_color then
@@ -154,7 +157,7 @@ function BarModule:UpdateFrame(frame)
 	expect(frame, 'typeof', 'frame')
 	--@end-alpha@
 	
-	local value, extra = call_value_function(self, frame)
+	local value, extra, icon = call_value_function(self, frame)
 	if not value then
 		return self:ClearFrame(frame)
 	end
@@ -170,19 +173,22 @@ function BarModule:UpdateFrame(frame)
 	control:SetTexture(self:GetTexture(frame))
 	
 	control:SetValue(value)
-	local r, g, b, a = call_color_function(self, frame, value, extra or 0)
+	local r, g, b, a = call_color_function(self, frame, value, extra or 0, icon)
 	control:SetColor(r, g, b)
 	control:SetAlpha(a)
 
 	if extra then
 		control:SetExtraValue(extra)
 		
-		local r, g, b, a = call_extra_color_function(self, frame, value, extra)
+		local r, g, b, a = call_extra_color_function(self, frame, value, extra, icon)
 		control:SetExtraColor(r, g, b)
 		control:SetExtraAlpha(a)
 	else
 		control:SetExtraValue(0)
 	end
+	
+	control:SetIcon(icon)
+	control:SetIconPosition(self:GetLayoutDB(frame).icon_on_left)
 	
 	return made_control
 end

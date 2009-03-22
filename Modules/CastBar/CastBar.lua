@@ -14,6 +14,7 @@ PitBull4_CastBar:SetDescription(L["Show a cast bar."])
 PitBull4_CastBar:SetDefaults({
 	size = 1,
 	position = 10,
+	show_icon = true,
 })
 
 local cast_data = {}
@@ -74,24 +75,28 @@ function PitBull4_CastBar:GetValue(frame)
 	
 	local guid = frame.guid
 	local data = cast_data[guid]
+	local show_icon = self:GetLayoutDB(frame).show_icon
 	if not data then
-		return 0
+		return 0, nil, show_icon and "" or nil
 	end
+	
+	local icon = show_icon and (data.icon or "") or nil
 	
 	if data.casting then
 		local startTime = data.startTime
-		return (GetTime() - startTime) / (data.endTime - startTime)
+		return (GetTime() - startTime) / (data.endTime - startTime), nil, icon
 	elseif data.channeling then	
 		local endTime = data.endTime
-		return (endTime - GetTime()) / (endTime - data.startTime)
+		return (endTime - GetTime()) / (endTime - data.startTime), nil, icon
 	elseif data.fadeOut then
-		return frame.CastBar and frame.CastBar:GetValue() or 0
+		return frame.CastBar and frame.CastBar:GetValue() or 0, nil, icon
 	end
-	return 0
+	
+	return 0, nil, icon
 end
 
 function PitBull4_CastBar:GetExampleValue(frame)
-	return 0.4
+	return 0.4, nil, ""
 end
 
 function PitBull4_CastBar:GetColor(frame, value)
@@ -223,3 +228,66 @@ PitBull4_CastBar.UNIT_SPELLCAST_INTERRUPTED = PitBull4_CastBar.UpdateInfo
 PitBull4_CastBar.UNIT_SPELLCAST_DELAYED = PitBull4_CastBar.UpdateInfo
 PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_UPDATE = PitBull4_CastBar.UpdateInfo
 PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_STOP = PitBull4_CastBar.UpdateInfo
+
+PitBull4_CastBar:SetLayoutOptionsFunction(function(self)
+	return 'show_icon', {
+		name = L["Show icon"],
+		desc = L["Whether to show the icon that is being cast."],
+		type = 'toggle',
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).show_icon
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).show_icon = value
+			
+			PitBull4.Options.RefreshFrameLayouts()
+		end,
+	}, 'icon_on_left', {
+		name = L["Icon position"],
+		desc = L["What side of the bar to show the icon on."],
+		type = 'select',
+		values = function(info)
+			local db = PitBull4.Options.GetLayoutDB(self)
+			local icon_on_left = db.icon_on_left
+			local side = db.side
+			local reverse = db.reverse
+			
+			if not reverse then
+				if side == "center" then
+					return {
+						left = L["Left"],
+						right = L["Right"],
+					}
+				else
+					return {
+						left = L["Bottom"],
+						right = L["Top"],
+					}
+				end
+			else
+				if side == "center" then
+					return {
+						left = L["Right"],
+						right = L["Left"],
+					}
+				else
+					return {
+						left = L["Top"],
+						right = L["Bottom"],
+					}
+				end
+			end
+		end,
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).icon_on_left and "left" or "right"
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).icon_on_left = (value == "left")
+
+			PitBull4.Options.RefreshFrameLayouts()
+		end,
+		hidden = function(info)
+			return not PitBull4.Options.GetLayoutDB(self).show_icon
+		end
+	}
+end)

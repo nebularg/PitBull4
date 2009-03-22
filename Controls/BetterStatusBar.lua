@@ -13,15 +13,29 @@ local BetterStatusBar = {
 	extraG = false,
 	extraB = false,
 	extraA = false,
+	icon_path = nil,
+	icon_position = true,
 }
 -- every script in here will be added to the control through :SetScript
 local BetterStatusBar_scripts = {}
 
 local EPSILON = 1e-5 -- small positive number close to 0.
 
+local function fix_icon_size(self)
+	local icon = self.icon
+	if not icon then
+		return
+	end
+	
+	local size = self.orientation == "VERTICAL" and self:GetWidth() or self:GetHeight()
+	icon:SetWidth(size)
+	icon:SetHeight(size)
+end
+
 local function OnUpdate(self)
 	self:SetScript("OnUpdate", nil)
 	self:SetValue(self.value)
+	fix_icon_size(self)
 end
 
 -- clamp value between [min, max]
@@ -46,11 +60,16 @@ local function set_vertical_coord(bar, reverse, alpha, bravo)
 end
 -- set the proper heights for the vertical orientation based on the values provided
 function SetValue_orientation:VERTICAL(value, extraValue)
-	if self:GetHeight() == 0 then
+	local height = self:GetHeight()
+	if height == 0 then
 		self:SetScript("OnUpdate", OnUpdate)
+		return
 	end
-	self.fg:SetHeight(self:GetHeight() * value)
-	self.extra:SetHeight(self:GetHeight() * extraValue)
+	if self.icon then
+		height = height - self:GetWidth()
+	end
+	self.fg:SetHeight(height * value)
+	self.extra:SetHeight(height * extraValue)
 	
 	set_vertical_coord(self.fg, self.reverse, 0, value)
 	set_vertical_coord(self.extra, self.reverse, value, value+extraValue)
@@ -66,11 +85,16 @@ local function set_horizontal_coord(bar, reverse, alpha, bravo)
 end
 -- set the proper heights for the horizontal orientation based on the values provided
 function SetValue_orientation:HORIZONTAL(value, extraValue)
-	if self:GetWidth() == 0 then
+	local width = self:GetWidth()
+	if width == 0 then
 		self:SetScript("OnUpdate", OnUpdate)
+		return
 	end
-	self.fg:SetWidth(self:GetWidth() * value)
-	self.extra:SetWidth(self:GetWidth() * extraValue)
+	if self.icon then
+		width = width - self:GetHeight()
+	end
+	self.fg:SetWidth(width * value)
+	self.extra:SetWidth(width * extraValue)
 	
 	set_horizontal_coord(self.fg, self.reverse, 0, value)
 	set_horizontal_coord(self.extra, self.reverse, value, value+extraValue)
@@ -131,21 +155,41 @@ local function set_bar_points(self, side_point_a, side_point_b, moving_point_a, 
 		moving_point_a, moving_point_b = moving_point_b, moving_point_a
 	end
 	
-	-- fg is fixed to the edge
+	if self.icon and self.icon_position then
+		-- icon is fixed to the edge
+		self.icon:SetPoint(side_point_a)
+		self.icon:SetPoint(side_point_b)
+		self.icon:SetPoint(moving_point_a)
+		
+		-- fg attaches to the icon
+		self.fg:SetPoint(moving_point_a, self.icon, moving_point_b)
+	else
+		-- fg is fixed to the edge
+		self.fg:SetPoint(moving_point_a)
+	end
 	self.fg:SetPoint(side_point_a)
 	self.fg:SetPoint(side_point_b)
-	self.fg:SetPoint(moving_point_a)
 	
 	-- extra moves with and is attached to the fg.
 	self.extra:SetPoint(side_point_a)
 	self.extra:SetPoint(side_point_b)
 	self.extra:SetPoint(moving_point_a, self.fg, moving_point_b)
 	
-	-- bg merely fills up the rest of the space
+	if self.icon and not self.icon_position then
+		-- bg attaches to the icon
+		self.bg:SetPoint(moving_point_b, self.icon, moving_point_a)
+		
+		-- icon then fills up the rest of the space
+		self.icon:SetPoint(side_point_a)
+		self.icon:SetPoint(side_point_b)
+		self.icon:SetPoint(moving_point_b)
+	else
+		-- bg merely fills up the rest of the space
+		self.bg:SetPoint(moving_point_b)
+	end	
+	self.bg:SetPoint(moving_point_a, self.extra, moving_point_b)
 	self.bg:SetPoint(side_point_a)
 	self.bg:SetPoint(side_point_b)
-	self.bg:SetPoint(moving_point_a, self.extra, moving_point_b)
-	self.bg:SetPoint(moving_point_b)
 end
 
 local fix_orientation_helper = {}
@@ -173,6 +217,10 @@ local function fix_orientation(self)
 	self.fg:SetHeight(0)
 	self.extra:SetWidth(0)
 	self.extra:SetHeight(0)
+	if self.icon then
+		self.icon:ClearAllPoints()
+		fix_icon_size(self)
+	end
 	fix_orientation_helper[self.orientation](self)
 	self:SetValue(self.value)
 end
@@ -510,6 +558,69 @@ end
 -- when the size changes, make sure to readjust the sizes of the inner textures
 function BetterStatusBar_scripts:OnSizeChanged()
 	self:SetValue(self.value)
+	fix_icon_size(self)
+end
+
+--- Return the icon's texture path of the bar
+-- @usage local icon = bar:GetIcon()
+-- @return the texture path or nil
+function BetterStatusBar:GetIcon()
+	return self.icon_path
+end
+
+--- Set the icon's texture path of the bar, or remove it.
+-- @param path the texture path or nil
+-- @usage bar:SetIcon([[Interface\Icons\Ability_Parry]])
+-- @usage bar:SetIcon(nil)
+function BetterStatusBar:SetIcon(path)
+	--@alpha@
+	expect(path, 'typeof', 'string;nil')
+	--@end-alpha@
+	
+	local old_icon_path = self.icon_path
+	if old_icon_path == path then
+		return
+	end
+	
+	self.icon_path = path
+	if path then
+		if not self.icon then
+			self.icon = PitBull4.Controls.MakeTexture(self, "ARTWORK")
+			fix_orientation(self)
+		end
+		self.icon:SetTexture(path)
+	else
+		if self.icon then
+			self.icon = self.icon:Delete()
+			fix_orientation(self)
+		end
+	end
+end
+
+--- Return whether the icon is on the left or bottom.
+-- If the bar is reversed, then the icon will be on the right or top instead.
+-- @usage local left = bar:GetIconPosition()
+-- @return true if the icon is on left or top, otherwise, false.
+function BetterStatusBar:GetIconPosition()
+	return self.icon_position
+end
+
+--- Set whether the icon is on the left or bottom.
+-- If the bar is reversed, then the icon will be on the right or top instead.
+-- @param value a boolean
+-- @usage bar:SetIconPosition(true)
+-- @usage bar:SetIconPosition(false)
+function BetterStatusBar:SetIconPosition(value)
+	--@alpha@
+	expect(value, 'typeof', 'boolean')
+	--@end-alpha@
+	
+	if value == self.icon_position then
+		return
+	end
+	
+	self.icon_position = value
+	fix_orientation(self)
 end
 
 --- Make a better status bar than what Blizzard provides
@@ -552,6 +663,8 @@ end, function(control)
 	fix_orientation(control)
 	control:SetColor(1, 1, 1)
 	control:SetNormalAlpha(1)
+	control:SetIcon(nil)
+	control:SetIconPosition(true)
 end, function(control)
 	-- onDelete
 	control:SetScript("OnUpdate", nil)

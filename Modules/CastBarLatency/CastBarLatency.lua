@@ -131,17 +131,27 @@ function PitBull4_CastBarLatency:UpdateFrame(frame)
 	end
 	safe_zone:SetColor(unpack(self.db.profile.global.latency_color))
 	safe_zone:SetFrameLevel( (bar:GetFrameLevel()+1) )
+	local reverse = not bar:GetReverse()
 	safe_zone:SetReverse( (not bar:GetReverse()) )
 	safe_zone:SetOrientation( bar:GetOrientation() )
 	if bar:GetDeficit() then
-		safe_zone:SetReverse( bar:GetReverse() )
+		reverse = not reverse
 	end
+	
 	if is_channel then -- channels are flipped... again...
-		safe_zone:SetReverse( (not safe_zone:GetReverse()) )
+		reverse = not reverse
 	end
+	safe_zone:SetReverse(reverse)
 	safe_zone:Show()
 	
 	safe_zone:SetValue(safe_zone_percent)
+	
+	if bar.icon and bar:GetDeficit() ~= is_channel then
+		safe_zone:SetIcon("")
+		safe_zone:SetIconPosition(not bar:GetIconPosition())
+	else
+		safe_zone:SetIcon(nil)
+	end
 	
 	return false
 end

@@ -503,6 +503,13 @@ end
 
 -- a dictionary of location to function for the initial indicator to be placed on the unit frame.
 local position_indicator_on_root = {}
+-- a dictionary of location to function for the initial indicator to be placed on a bar on the unit frame.
+local position_indicator_on_bar = {}
+-- a dictionary of location to function for a non-starting indicator to be placed on the unit frame
+local position_next_indicator_on_root = {}
+-- a dictionary of location to function for a non-starting indicator to be placed on a bar on the unit frame
+local position_next_indicator_on_bar = {}
+
 function position_indicator_on_root:out_top_left(indicator)
 	indicator:SetPoint("BOTTOMLEFT", self, "TOPLEFT", self.layout_db.bar_padding, self.layout_db.indicator_root_outside_margin)
 end
@@ -619,10 +626,17 @@ function position_indicator_on_root:edge_bottom_right(indicator)
 	indicator:SetPoint("CENTER", self, "BOTTOMRIGHT", 0, 0)
 end
 
--- a dictionary of location to function for the initial indicator to be placed on a bar on the unit frame.
-local position_indicator_on_bar = {}
 function position_indicator_on_bar:left(indicator, bar)
-	indicator:SetPoint("LEFT", bar, "LEFT", self.layout_db.indicator_bar_inside_horizontal_padding, 0)
+	local attach, attach_point
+	if bar.icon and bar.reverse ~= bar.icon_position then
+		attach = bar.icon
+		attach_point = "RIGHT"
+	else
+		attach = bar
+		attach_point = "LEFT"
+	end
+	
+	indicator:SetPoint("LEFT", attach, attach_point, self.layout_db.indicator_bar_inside_horizontal_padding, 0)
 end
 function position_indicator_on_bar:center(indicator, bar, _, indicators_and_texts)
 	if #indicators_and_texts == 1 then
@@ -632,20 +646,47 @@ function position_indicator_on_bar:center(indicator, bar, _, indicators_and_text
 	end
 end
 function position_indicator_on_bar:right(indicator, bar)
-	indicator:SetPoint("RIGHT", bar, "RIGHT", -self.layout_db.indicator_bar_inside_horizontal_padding, 0)
+	local attach, attach_point
+	if bar.icon and bar.reverse == bar.icon_position then
+		attach = bar.icon
+		attach_point = "LEFT"
+	else
+		attach = bar
+		attach_point = "RIGHT"
+	end
+	
+	indicator:SetPoint("RIGHT", attach, attach_point, -self.layout_db.indicator_bar_inside_horizontal_padding, 0)
 end
 function position_indicator_on_bar:top(indicator, bar, _, indicators_and_texts)
-	if #indicators_and_texts == 1 then
-		indicator:SetPoint("TOP", bar, "TOP", 0, 0)
+	local attach, attach_point
+	if bar.icon and bar.reverse ~= bar.icon_position then
+		attach = bar.icon
+		attach_point = "BOTTOM"
 	else
-		indicator:SetPoint("TOPLEFT", bar, "TOP", -get_half_width(self, indicators_and_texts), -self.layout_db.indicator_bar_inside_vertical_padding)
+		attach = bar
+		attach_point = "TOP"
+	end
+	
+	if #indicators_and_texts == 1 then
+		indicator:SetPoint("TOP", attach, attach_point, 0, 0)
+	else
+		indicator:SetPoint("TOPLEFT", attach, attach_point, -get_half_width(self, indicators_and_texts), -self.layout_db.indicator_bar_inside_vertical_padding)
 	end
 end
 function position_indicator_on_bar:bottom(indicator, bar, _, indicators_and_texts)
-	if #indicators_and_texts == 1 then
-		indicator:SetPoint("BOTTOM", bar, "BOTTOM", 0, 0)
+	local attach, attach_point
+	if bar.icon and bar.reverse == bar.icon_position then
+		attach = bar.icon
+		attach_point = "TOP"
 	else
-		indicator:SetPoint("BOTTOMLEFT", bar, "BOTTOM", -get_half_width(self, indicators_and_texts), self.layout_db.indicator_bar_inside_vertical_padding)
+		attach = bar
+		attach_point = "BOTTOM"
+	end
+	
+	if #indicators_and_texts == 1 then
+		indicator:SetPoint("BOTTOM", attach, attach_point, 0, 0)
+	else
+		indicator:SetPoint("BOTTOMLEFT", attach, attach_point, -get_half_width(self, indicators_and_texts), self.layout_db.indicator_bar_inside_vertical_padding)
 	end
 end
 function position_indicator_on_bar:top_left(indicator, bar)
@@ -673,8 +714,6 @@ function position_indicator_on_bar:out_bottom(indicator, bar)
 	indicator:SetPoint("TOP", bar, "BOTTOM", 0, -self.layout_db.indicator_bar_outside_margin)
 end
 
--- a dictionary of location to function for a non-starting indicator to be placed on the unit frame
-local position_next_indicator_on_root = {}
 function position_next_indicator_on_root:out_top_left(indicator, _, last_indicator)
 	indicator:SetPoint("LEFT", last_indicator, "RIGHT", self.layout_db.indicator_spacing, 0)
 end
@@ -709,8 +748,6 @@ position_next_indicator_on_root.edge_top_right = position_next_indicator_on_root
 position_next_indicator_on_root.edge_right = position_next_indicator_on_root.out_top_right
 position_next_indicator_on_root.edge_bottom_right = position_next_indicator_on_root.out_top_right
 
--- a dictionary of location to function for a non-starting indicator to be placed on a bar on the unit frame
-local position_next_indicator_on_bar = {}
 function position_next_indicator_on_bar:left(indicator, bar, last_indicator)
 	indicator:SetPoint("LEFT", last_indicator, "RIGHT", self.layout_db.indicator_spacing, 0)
 end
