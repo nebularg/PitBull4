@@ -5,6 +5,8 @@ if not PitBull4 then
 	error("PitBull4_HealthBar requires PitBull4")
 end
 
+local EXAMPLE_VALUE = 0.8
+
 local unpack = _G.unpack
 local L = PitBull4.L
 
@@ -62,7 +64,7 @@ function PitBull4_HealthBar:GetValue(frame)
 end
 
 function PitBull4_HealthBar:GetExampleValue(frame)
-	return 0.8
+	return EXAMPLE_VALUE
 end
 
 function PitBull4_HealthBar:GetColor(frame, value)

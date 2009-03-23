@@ -5,6 +5,8 @@ if not PitBull4 then
 	error("PitBull4_PowerBar requires PitBull4")
 end
 
+local EXAMPLE_VALUE = 0.6
+
 local L = PitBull4.L
 
 local PitBull4_PowerBar = PitBull4:NewModule("PowerBar", "AceEvent-3.0")
@@ -62,7 +64,7 @@ function PitBull4_PowerBar:GetValue(frame)
 end
 
 function PitBull4_PowerBar:GetExampleValue(frame)
-	return 0.6
+	return EXAMPLE_VALUE
 end
 
 function PitBull4_PowerBar:GetColor(frame, value)

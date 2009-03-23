@@ -5,6 +5,8 @@ if not PitBull4 then
 	error("PitBull4_ReputationBar requires PitBull4")
 end
 
+local EXAMPLE_VALUE = 0.3
+
 local L = PitBull4.L
 
 local PitBull4_ReputationBar = PitBull4:NewModule("ReputationBar")
@@ -33,7 +35,7 @@ function PitBull4_ReputationBar:GetExampleValue(frame)
 	if frame and frame.unit ~= "player" then
 		return nil
 	end
-	return 0.3
+	return EXAMPLE_VALUE
 end
 
 function PitBull4_ReputationBar:GetColor(frame, value)

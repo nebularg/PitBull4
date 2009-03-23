@@ -5,6 +5,8 @@ if not PitBull4 then
 	error("PitBull4_ThreatBar requires PitBull4")
 end
 
+local EXAMPLE_VALUE = 0.5
+
 local L = PitBull4.L
 
 local PitBull4_ThreatBar = PitBull4:NewModule("ThreatBar", "AceEvent-3.0")
@@ -67,7 +69,7 @@ function PitBull4_ThreatBar:GetExampleValue(frame)
 	if frame and not ACCEPTABLE_CLASSIFICATIONS[frame.classification] then
 		return nil
 	end
-	return 0.5
+	return EXAMPLE_VALUE
 end
 
 function PitBull4_ThreatBar:GetColor(frame, value)

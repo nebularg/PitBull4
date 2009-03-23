@@ -7,6 +7,8 @@ end
 
 local L = PitBull4.L
 
+local EXAMPLE_VALUE = 0.25
+
 local PitBull4_ExperienceBar = PitBull4:NewModule("ExperienceBar", "AceEvent-3.0")
 
 PitBull4_ExperienceBar:SetModuleType("bar")
@@ -59,7 +61,7 @@ function PitBull4_ExperienceBar:GetValue(frame)
 	return current / max, rest / max
 end
 function PitBull4_ExperienceBar:GetExampleValue(frame)
-	return 0.25
+	return EXAMPLE_VALUE
 end
 
 function PitBull4_ExperienceBar:GetColor(frame, value)
