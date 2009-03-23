@@ -1,7 +1,16 @@
 if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 -- CONSTANTS
-local ALPHA_MODIFIER = 0.6		-- Multiplied to the main CastBar's alpha at any point of time.
+local ALPHA_MODIFIER = 0.6 -- Multiplied to the main CastBar's alpha at any point of time.
+local DEFAULT_COLOR = {1, 0, 0, 1}
+local ADJUSTMENT_DIVISOR_FOR_EVENTS = 1e3 -- Events return different timestamps than GetTime. GetTime's is more useful.
+
+-- Pseudo global initialization
+local send_time  = 0
+local start_time = 0
+local lag_time   = 0
+local max_time   = 0
+local is_channel = nil
 
 local PitBull4 = _G.PitBull4
 if not PitBull4 then
@@ -21,26 +30,23 @@ local PitBull4_CastBarLatency = PitBull4:NewModule("CastBarLatency", "AceEvent-3
 PitBull4_CastBarLatency:SetModuleType("custom")
 PitBull4_CastBarLatency:SetName(L["Cast bar latency"])
 PitBull4_CastBarLatency:SetDescription(L["Show a guessed safe zone at the end of the player castbar."])
-PitBull4_CastBarLatency:SetDefaults({},{latency_color = {1, 0, 0, 1}})
+PitBull4_CastBarLatency:SetDefaults({},{latency_color = DEFAULT_COLOR})
 PitBull4_CastBarLatency:SetLayoutOptionsFunction(function(self) end)
 
+-- Create a timer frame with an onupdate to ensure updates of our bar..
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
 timerFrame:SetScript("OnUpdate", function()
+	-- Loop thru ALL PitBull Frames...
 	for frame in PitBull4:IterateFrames() do
 		local unit = frame.unit
-		if unit and UnitIsUnit(unit,"player") then
+		if unit and UnitIsUnit(unit,"player") then 
+			-- ... but only force updates for frames representing the player
 			PitBull4_CastBarLatency:Update(frame)
 		end
 	end
-end)
 
-
-local send_time  = 0
-local start_time = 0
-local lag_time   = 0
-local max_time   = 0
-local is_channel = nil
+	end)
 
 function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, spell, spellrank)
 	if unit ~= 'player' then
@@ -52,8 +58,8 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, spell, spellr
 		return
 	end
 	
-	end_time = (new_end / 1e3)
-	start_time = (new_start / 1e3)
+	end_time = new_end / ADJUSTMENT_DIVISOR_FOR_EVENTS
+	start_time = new_start / ADJUSTMENT_DIVISOR_FOR_EVENTS
 	max_time = end_time - start_time
 	lag_time = start_time - send_time
 	is_channel = nil
@@ -69,8 +75,8 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_CHANNEL_START(event, unit, spell
 		return
 	end
 	
-	end_time = (new_end / 1e3)
-	start_time = (new_start / 1e3)
+	end_time = new_end / ADJUSTMENT_DIVISOR_FOR_EVENTS
+	start_time = new_start / ADJUSTMENT_DIVISOR_FOR_EVENTS
 	max_time = end_time - start_time
 	lag_time = start_time - send_time
 	is_channel = true
@@ -99,17 +105,23 @@ end
 function PitBull4_CastBarLatency:UpdateFrame(frame)
 	local unit = frame.unit
 	if not unit or not UnitIsUnit(unit,"player") then
-		return self:ClearFrame(frame)
+		-- this frame does not represent the player so we remove ourselves
+		return self:ClearFrame(frame) 
 	end
 	
 	local bar = frame.CastBar
 	if not bar then
+		-- no cast bar on this frame so we remove ourselves..
 		return self:ClearFrame(frame)
 	end
 	
 	local safe_zone = frame.CastBarLatency
-	if not safe_zone then -- Our own Bar doesn't exist yet, create it
+	
+	if not safe_zone then 
+		-- Our own Bar doesn't exist yet, create it
 		safe_zone = PitBull4.Controls.MakeBetterStatusBar(frame)
+		
+		-- Populate the new bar with default look attributes..
 		safe_zone:SetTexture(bar:GetTexture()) -- Might need to be moved down to update properly
 		safe_zone:SetValue(1)
 		safe_zone:SetColor(unpack(self.db.profile.global.latency_color))
@@ -117,38 +129,48 @@ function PitBull4_CastBarLatency:UpdateFrame(frame)
 		
 		frame.CastBarLatency = safe_zone
 	end
+	
+	-- Calculate the how much of the entire casttime will be lost to lag
 	local safe_zone_percent = 0
 	if max_time > 0 then
-		safe_zone_percent = (lag_time / max_time)
+		safe_zone_percent = lag_time / max_time
 	end
-	if (safe_zone_percent > 1) then safe_zone_percent = 1 end
+	if safe_zone_percent > 1 then safe_zone_percent = 1 end
 	
 	safe_zone:ClearAllPoints()
 	safe_zone:SetAllPoints(bar)
+	
+	-- Find and apply the main castbar's alpha and apply it with a modifier. Must be dynamic for fadouts.
 	local bar_alpha = select(4,PitBull4_CastBar:GetColor(frame, 'player'))
 	if bar_alpha then
 		safe_zone:SetAlpha(bar_alpha*ALPHA_MODIFIER)
 	end
+	
+	-- Find and apply user settings to our bar
 	safe_zone:SetColor(unpack(self.db.profile.global.latency_color))
-	safe_zone:SetFrameLevel( (bar:GetFrameLevel()+1) )
+	safe_zone:SetFrameLevel( bar:GetFrameLevel()+1 )
 	local reverse = not bar:GetReverse()
-	safe_zone:SetReverse( (not bar:GetReverse()) )
+	local icon_position = not bar:GetIconPosition()
 	safe_zone:SetOrientation( bar:GetOrientation() )
 	if bar:GetDeficit() then
 		reverse = not reverse
+		icon_position = not icon_position
 	end
 	
-	if is_channel then -- channels are flipped... again...
+	if is_channel then 
+		-- channelling casts are flipped... again...
 		reverse = not reverse
+		icon_position = not icon_position
 	end
 	safe_zone:SetReverse(reverse)
+	
+	-- Apply our calculated size
+	safe_zone:SetValue(safe_zone_percent)
 	safe_zone:Show()
 	
-	safe_zone:SetValue(safe_zone_percent)
-	
-	if bar.icon and bar:GetDeficit() ~= is_channel then
+	if bar.icon then
 		safe_zone:SetIcon("")
-		safe_zone:SetIconPosition(not bar:GetIconPosition())
+		safe_zone:SetIconPosition(icon_position)
 	else
 		safe_zone:SetIcon(nil)
 	end
@@ -174,11 +196,11 @@ PitBull4_CastBarLatency:SetColorOptionsFunction(function(self)
 			return unpack(self.db.profile.global.latency_color)
 		end,
 		set = function(info, r, g, b, a)
-			self.db.profile.global.latency_color = {r, g, b, 1}
+			self.db.profile.global.latency_color = {r, g, b, 1} -- alpha is hardcoded for now because it must be calculated dynamically from the castbar in UpdateFrame()
 			self:UpdateAll()
 		end,
 	},
 	function(info)
-		self.db.profile.global.latency_color = {1, 0, 0, 1}
+		self.db.profile.global.latency_color = DEFAULT_COLOR
 	end
 end)
