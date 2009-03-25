@@ -586,6 +586,7 @@ function BetterStatusBar:SetIcon(path)
 	if path then
 		if not self.icon then
 			self.icon = PitBull4.Controls.MakeTexture(self, "ARTWORK")
+			self.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
 			fix_orientation(self)
 		end
 		self.icon:SetTexture(path)
