@@ -628,6 +628,35 @@ function PitBull4:IterateFramesForGUIDs(...)
 	return guids_iter, guids, nil
 end
 
+local function name_iter(name, frame)
+	frame = next(all_frames, frame)
+	if not frame then
+		return nil
+	end
+	if frame.guid and frame.unit and UnitName(frame.unit) == name then
+		return frame
+	end
+	return name_iter(name, frame)
+end
+
+--- Iterate over all frames with the given name
+-- @param name the name to check. can be nil, which will cause no frames to return.
+-- @usage for frame in PitBull4:IterateFramesForName("Someguy") do
+--     doSomethingWith(frame)
+-- end
+-- @return iterator which returns frames
+function PitBull4:IterateFramesForName(name)
+	--@alpha@
+	expect(name, 'typeof', 'string;nil')
+	--@end-alpha@
+
+	if not name then
+		return do_nothing
+	end
+
+	return name_iter, name, nil
+end
+
 --- Iterate over all headers.
 -- @usage for header in PitBull4:IterateHeaders()
 --     doSomethingWith(header)
