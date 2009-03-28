@@ -29,7 +29,7 @@ PitBull4_VisualHeal:SetDefaults({}, {
 function PitBull4_VisualHeal:OnEnable()
 	LibHealComm = LibStub("LibHealComm-3.0", true)
 	if not LibHealComm then
-		error(L["PitBull4_VisualHeal requires the library LibBanzai-2.0 to be available."])
+		error(L["PitBull4_VisualHeal requires the library LibHealComm-3.0 to be available."])
 	end
 	
 	LibHealComm.RegisterCallback(self, "HealComm_DirectHealStart")

@@ -6,12 +6,7 @@ if not PitBull4 then
 end
 local L = PitBull4.L
 
-local PitBull4_HealthBar = PitBull4:GetModule("HealthBar", true)
-if not PitBull4_HealthBar then
-	error(L["PitBull4_Banzai requires the HealthBar module"])
-end
-
-local banzai
+local LibBanzai
 
 local PitBull4_Banzai = PitBull4:NewModule("Banzai", "AceEvent-3.0", "AceHook-3.0")
 PitBull4_Banzai:SetModuleType("custom")
@@ -19,6 +14,8 @@ PitBull4_Banzai:SetName(L["Banzai"])
 PitBull4_Banzai:SetDescription(L["Adds aggro coloring to PitBull4"])
 PitBull4_Banzai:SetDefaults({},{aggro_color = {1, 0, 0, 1}})
 PitBull4_Banzai:SetLayoutOptionsFunction(function(self) end)
+
+local PitBull4_HealthBar
 
 local function callback(aggro, name, unit)
 	for frame in PitBull4:IterateFramesForGUID(UnitGUID(unit)) do
@@ -29,38 +26,30 @@ local function callback(aggro, name, unit)
 end
 
 function PitBull4_Banzai:OnEnable()
-	banzai = LibStub("LibBanzai-2.0")
-	if not banzai then
-		error(L["PitBull4_Banzai requires the library LIbBanzai-2.0 to be available."])
+	PitBull4_HealthBar = PitBull4:GetModule("HealthBar", true)
+	if not PitBull4_HealthBar then
+		error(L["PitBull4_Banzai requires the HealthBar module"])
+	end
+	
+	LibBanzai = LibStub("LibBanzai-2.0", true)
+	if not LibBanzai then
+		error(L["PitBull4_Banzai requires the library LibBanzai-2.0 to be available."])
 	end
 
-	banzai:RegisterCallback(callback)
+	LibBanzai:RegisterCallback(callback)
 	self:RawHook(PitBull4_HealthBar, "GetColor")
 end
 
 function PitBull4_Banzai:OnDisable()
-	banzai:UnregisterCallback(callback)
+	LibBanzai:UnregisterCallback(callback)
 end
 
 function PitBull4_Banzai:GetColor(module, frame, value)
 	local unit = frame.unit
-	local HealthBar = frame.HealthBar
-	if not HealthBar or (unit and not UnitIsFriend("player",unit)) then
-		if not value then
-			value = HealthBar and HealthBar.value or 0
-		end
-		return self.hooks[module].GetColor(module, frame, value)
+	if unit and self:GetLayoutDB(frame).enabled and UnitIsFriend("player", unit) and LibBanzai:GetUnitAggroByUnitId(unit) then
+		return unpack(self.db.profile.global.aggro_color)
 	end
-	local db = self:GetLayoutDB(frame)
-	if db.enabled then
-		local aggro = banzai:GetUnitAggroByUnitId(unit)
-		if aggro then
-			return unpack(self.db.profile.global.aggro_color)
-		end
-	end
-	if not value then
-		value = HealthBar and HealthBar.value or 0
-	end
+	
 	return self.hooks[module].GetColor(module, frame, value)
 end
 

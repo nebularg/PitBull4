@@ -3,6 +3,7 @@
 
 <Include file="Modules\Aura\load.xml"/>
 <Include file="Modules\Background\load.xml"/>
+<Include file="Modules\Banzai\load.xml"/>
 <Include file="Modules\BlankSpace\load.xml"/>
 <Include file="Modules\CastBar\load.xml"/>
 <Include file="Modules\CastBarLatency\load.xml"/>
@@ -33,8 +34,5 @@
 <Include file="Modules\Totems\load.xml"/>
 <Include file="Modules\VisualHeal\load.xml"/>
 <Include file="Modules\VoiceIcon\load.xml"/>
-
-<!-- Banzai MUST be loaded after HealthBar, easiest to just make it last. -->
-<Include file="Modules\Banzai\load.xml"/>
 
 </Ui>
