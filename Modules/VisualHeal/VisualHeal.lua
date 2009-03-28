@@ -107,7 +107,7 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 		frame.VisualHeal = bar
 		bar:SetBackgroundAlpha(0)
 	end
-	bar:SetValue(incoming_percent)
+	bar:SetValue(math.min(incoming_percent, 1))
 	bar:SetExtraValue(player_percent)
 	bar:SetWidth(health_bar:GetWidth())
 	bar:SetHeight(health_bar:GetHeight())
