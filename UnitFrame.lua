@@ -208,7 +208,7 @@ end
 
 function UnitFrame__scripts:OnAttributeChanged(key, value)
 	if key == "unit" or key == "unitsuffix" then
-		local new_unit = PitBull4.Utils.GetBestUnitID(SecureButton_GetUnit(self)) or nil
+		local new_unit = PitBull4.Utils.GetBestUnitID(SecureButton_GetModifiedUnit(self, "LeftButton")) or nil
 	
 		local old_unit = self.unit
 		if old_unit == new_unit then
@@ -306,6 +306,7 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 		frame:SetAttribute("*type1", "target")
 		frame:SetAttribute("*type2", "menu")
 	end
+	frame:SetAttribute("toggleForVehicle", true)
 	
 	UnitFrame__scripts:OnAttributeChanged(frame, "unit", frame:GetAttribute("unit"))
 	

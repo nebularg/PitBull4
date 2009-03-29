@@ -874,6 +874,9 @@ function PitBull4:OnEnable()
 	self:RegisterEvent("UNIT_TARGET")
 	self:RegisterEvent("UNIT_PET")
 	
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE")
+	self:RegisterEvent("UNIT_EXITED_VEHICLE")
+	
 	-- enter/leave combat for :RunOnLeaveCombat
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
@@ -926,6 +929,33 @@ function PitBull4:UPDATE_MOUSEOVER_UNIT() self:CheckGUIDForUnitID("mouseover") e
 function PitBull4:PLAYER_PET_CHANGED() self:CheckGUIDForUnitID("pet") end
 function PitBull4:UNIT_TARGET(_, unit) self:CheckGUIDForUnitID(unit .. "target") end
 function PitBull4:UNIT_PET(_, unit) self:CheckGUIDForUnitID(unit .. "pet") end
+
+local tmp = {}
+function PitBull4:UNIT_ENTERED_VEHICLE(_, unit)
+	tmp[unit] = true
+	tmp[PitBull4.Utils.GetBestUnitID(unit)] = true
+	local pet = PitBull4.Utils.GetBestUnitID(unit .. "pet")
+	tmp[unit .. "pet"] = true
+	if pet then
+		tmp[pet] = true
+	end
+	local non_pet = unit:gsub("pet", "")
+	if non_pet == "" then
+		non_pet = "player"
+	end
+	tmp[non_pet] = true
+	for frame in self:IterateFrames(true) do
+		if tmp[frame:GetAttribute("unit")] then
+			local u = SecureButton_GetModifiedUnit(frame, "LeftButton")
+			if u ~= frame.unit then
+				frame.unit = u
+				frame:Update()
+			end
+		end
+	end
+	wipe(tmp)
+end
+PitBull4.UNIT_EXITED_VEHICLE = PitBull4.UNIT_ENTERED_VEHICLE
 
 local STATE
 --- Get the current state that the player is in.

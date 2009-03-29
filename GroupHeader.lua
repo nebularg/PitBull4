@@ -432,7 +432,7 @@ function GroupHeader:ForceUnitFrameCreation()
 	
 	-- this is done because the previous hack can mess up some unit references
 	for _, frame in self:IterateMembers() do
-		local unit = SecureButton_GetUnit(frame)
+		local unit = SecureButton_GetModifiedUnit(frame, "LeftButton")
 		if unit ~= frame.unit then
 			frame.unit = unit
 			frame:Update()
