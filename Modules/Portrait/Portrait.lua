@@ -118,6 +118,10 @@ function PitBull4_Portrait:UpdateFrame(frame)
 		end
 	end
 	
+	if style == "hide" then
+		return self:ClearFrame(frame)
+	end
+	
 	local portrait = frame.Portrait
 	
 	if portrait and (portrait.style ~= style or portrait.falling_back ~= falling_back) then
@@ -170,6 +174,8 @@ function PitBull4_Portrait:UpdateFrame(frame)
 	elseif style == "two_dimensional" then
 		portrait.texture:SetTexCoord(0.14644660941, 0.85355339059, 0.14644660941, 0.85355339059)
 		SetPortraitTexture(portrait.texture, unit)
+	elseif style == "blank" then
+		portrait.texture:SetTexture("")
 	else -- class	
 		local _, class = UnitClass(unit)
 		if class then
@@ -241,6 +247,8 @@ PitBull4_Portrait:SetLayoutOptionsFunction(function(self)
 			["two_dimensional"] = L["2D"],
 			["three_dimensional"] = L["3D question mark"],
 			["class"] = L["Class"],
+			["blank"] = L["Blank"],
+			["hide"] = L["Hide completely"],
 		},
 	}, 'color', {
 		type = 'color',
