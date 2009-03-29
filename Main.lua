@@ -946,9 +946,16 @@ function PitBull4:UNIT_ENTERED_VEHICLE(_, unit)
 	tmp[non_pet] = true
 	for frame in self:IterateFrames(true) do
 		if tmp[frame:GetAttribute("unit")] then
-			local u = SecureButton_GetModifiedUnit(frame, "LeftButton")
-			if u ~= frame.unit then
-				frame.unit = u
+			local new_unit = SecureButton_GetModifiedUnit(frame, "LeftButton")
+			local old_unit = frame.unit
+			if old_unit ~= new_unit then
+				frame.unit = new_unit
+				if old_unit then
+					PitBull4.unit_id_to_frames[old_unit][frame] = nil
+				end
+				if new_unit then
+					PitBull4.unit_id_to_frames[new_unit][frame] = true
+				end
 				frame:Update()
 			end
 		end
