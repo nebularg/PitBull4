@@ -19,6 +19,7 @@ PitBull4_HideBlizzard:SetDefaults({}, {
 	focus = true,
 	castbar = true,
 	aura = false,
+	runebar = true,
 })
 
 function PitBull4_HideBlizzard:OnEnable()
@@ -34,16 +35,16 @@ local hiders = {}
 local currently_hidden = {}
 
 function PitBull4_HideBlizzard:UpdateFrames()
-	for _, v in ipairs { "player", "party", "target", "focus", "castbar", "aura" } do
-		if not self:IsEnabled() or self.db.profile.global[v] then
-			if not currently_hidden[v] then
-				currently_hidden[v] = true
-				hiders[v](self)
+	for name in pairs(showers) do
+		if not self:IsEnabled() or self.db.profile.global[name] then
+			if not currently_hidden[name] then
+				currently_hidden[name] = true
+				hiders[name](self)
 			end
 		else
-			if currently_hidden[v] then
-				currently_hidden[v] = nil
-				showers[v](self)
+			if currently_hidden[name] then
+				currently_hidden[name] = nil
+				showers[name](self)
 			end
 		end
 	end
@@ -189,6 +190,21 @@ function showers:castbar()
 	PetCastingBarFrame:RegisterEvent("UNIT_PET")
 end
 
+function hiders:runebar()
+	RuneFrame:Hide()
+	RuneFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	RuneFrame:UnregisterEvent("RUNE_POWER_UPDATE")
+	RuneFrame:UnregisterEvent("RUNE_TYPE_UPDATE")
+end
+
+function showers:runebar()
+	RuneFrame:Show()
+	RuneFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+	RuneFrame:RegisterEvent("RUNE_POWER_UPDATE")
+	RuneFrame:RegisterEvent("RUNE_TYPE_UPDATE")
+	RuneFrame_OnEvent(RuneFrame, "PLAYER_ENTERING_WORLD")
+end
+
 function hiders:aura()
 	BuffFrame:Hide()
 	TemporaryEnchantFrame:Hide()
@@ -255,6 +271,12 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		type = 'toggle',
 		name = L["Buffs/debuffs"],
 		desc = L["Hides the standard buff/debuff frame in the top-right corner of the screen."],
+		get = get,
+		set = set,
+	}, 'runebar', {
+		type = 'toggle',
+		name = L["Rune bar"],
+		desc = L["Hides the standard rune bar in the top-left corner of the screen."],
 		get = get,
 		set = set,
 	}
