@@ -15,6 +15,11 @@ PitBull4_Background:SetDefaults({
 	color = { 0, 0, 0, 0.5 }
 })
 
+-- this is here to allow it to be overridden, by say an aggro module
+function PitBull4_Background:GetColor(frame)
+	return unpack(PitBull4_Background:GetLayoutDB(frame).color)
+end
+
 function PitBull4_Background:UpdateFrame(frame)
 	local background = frame.Background
 	if not background then
@@ -23,7 +28,7 @@ function PitBull4_Background:UpdateFrame(frame)
 		background:SetAllPoints(frame)
 	end
 	
-	background:SetTexture(unpack(PitBull4_Background:GetLayoutDB(frame).color))
+	background:SetTexture(self:GetColor(frame))
 	return false
 end
 
