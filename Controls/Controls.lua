@@ -203,16 +203,40 @@ function PitBull4.Controls.MakeFontString(parent, layer)
 	return fetch_control("FontString", parent, false, layer)
 end
 
---- Make a frame
+--- Make a PlayerModel
 -- @param parent frame the frame is parented to
--- @usage local frame = PitBull4.Controls.MakeFrame(someFrame)
--- @return a Frame object
+-- @usage local frame = PitBull4.Controls.MakePlayerModel(someFrame)
+-- @return a PlayerModel object
 function PitBull4.Controls.MakePlayerModel(parent)
 	--@alpha@
 	expect(parent, 'typeof', 'frame')
 	--@end-alpha@
 	
 	return fetch_control("PlayerModel", parent)
+end
+
+--- Make a Cooldown
+-- @param parent frame the frame is parented to
+-- @usage local frame = PitBull4.Controls.MakeCooldown(someFrame)
+-- @return a Cooldown object
+function PitBull4.Controls.MakeCooldown(parent)
+	--@alpha@
+	expect(parent, 'typeof', 'frame')
+	--@end-alpha@
+	
+	return fetch_control("Cooldown", parent)
+end
+
+--- Make a Button
+-- @param parent frame the frame is parented to
+-- @usage local frame = PitBull4.Controls.MakeButton(someFrame)
+-- @return a Button object
+function PitBull4.Controls.MakeButton(parent)
+	--@alpha@
+	expect(parent, 'typeof', 'frame')
+	--@end-alpha@
+	
+	return fetch_control("Button", parent)
 end
 
 --- Make a new control type

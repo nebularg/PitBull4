@@ -159,11 +159,3 @@ end, function(control)
 	-- onDelete
 	control:SetScript("OnUpdate", nil)
 end)
-
--- Control for the cooldown spinner
-PitBull4.Controls.MakeNewControlType("Cooldown", "Cooldown", function(control)
-	-- onCreate
-end, function(control)
-	-- onRetrieve
-end, function(control)
-end)
