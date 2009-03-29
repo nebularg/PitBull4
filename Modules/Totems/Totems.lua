@@ -801,7 +801,7 @@ function PitBull4_Totems:BuildFrames(frame)
 		-- Main totem slot frame
 		elements[i] = {}
 		if not elements[i].frame then
-			elements[i].frame = PitBull4.Controls.MakeTTButton(ttf)
+			elements[i].frame = PitBull4.Controls.MakeButton(ttf)
 		end
 		local frm = elements[i].frame
 		
@@ -835,7 +835,7 @@ function PitBull4_Totems:BuildFrames(frame)
 		----------------------------
 		-- Spiral cooldown frame
 		if not elements[i].spiral then
-			elements[i].spiral = PitBull4.Controls.MakeTTCooldown(frm)
+			elements[i].spiral = PitBull4.Controls.MakeCooldown(frm)
 		end
 		local spiral = elements[i].spiral
 		spiral:SetReverse(true)
@@ -1014,11 +1014,6 @@ function PitBull4_Totems:OnInitialize()
 	end
 	
 	self.timer_handle = nil	-- used for storing the reference to the ace3 timer
-	
-	-- Define new control type for our main element buttons
-	PitBull4.Controls.MakeNewControlType("TTButton", "Button", function(control) end, function(control) end, function(control) end)
-	PitBull4.Controls.MakeNewControlType("TTCooldown", "Cooldown", function(control) end, function(control) end, function(control) end)
-	
 end
 
 
