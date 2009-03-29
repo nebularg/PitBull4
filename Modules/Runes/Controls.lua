@@ -68,7 +68,7 @@ function Rune:UpdateCooldown()
 	local start, duration, ready = GetRuneCooldown(self.id)
 	
 	local cooldown = self.cooldown
-	if ready then
+	if ready or not start then
 		if cooldown:IsShown() then
 			cooldown:Hide()
 			self:Shine()
