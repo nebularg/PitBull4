@@ -16,6 +16,7 @@ PitBull4_HappinessIcon:SetDefaults({
 	attach_to = "root",
 	location = "edge_bottom_right",
 	position = 1,
+	size = 1.2,
 })
 
 function PitBull4_HappinessIcon:OnEnable()
