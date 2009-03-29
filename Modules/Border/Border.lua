@@ -35,14 +35,11 @@ function PitBull4_Border:OnEnable()
 	LibSharedMedia_border_None = LibSharedMedia:Fetch("border", "None")
 end
 
-function PitBull4_Border:UpdateFrame(frame)
-	if not LibSharedMedia then
-		return self:ClearFrame(frame)
-	end
-	
+-- this is here to allow it to be overridden, by say an aggro module
+function PitBull4_Border:GetTextureAndColor(frame)
 	local unit = frame.unit
 	local classification = unit and UnitClassification(unit)
-	
+
 	if classification == "worldboss" or classification == "elite" then
 		classification = "elite"
 	elseif classification == "rare" or classification == "rareelite" then
@@ -50,9 +47,20 @@ function PitBull4_Border:UpdateFrame(frame)
 	else
 		classification = "normal"
 	end
-	
+
 	local db = self:GetLayoutDB(frame)
 	local texture = db[classification .. "_texture"]
+	local color = db[classification .. "_color"]
+	
+	return texture, color[1], color[2], color[3], color[4]
+end
+
+function PitBull4_Border:UpdateFrame(frame)
+	if not LibSharedMedia then
+		return self:ClearFrame(frame)
+	end
+	
+	local texture, r, g, b, a = self:GetTextureAndColor(frame)
 	texture = LibSharedMedia:Fetch("border", texture) or LibSharedMedia_border_None
 	
 	local border = frame.Border
@@ -62,6 +70,7 @@ function PitBull4_Border:UpdateFrame(frame)
 	end
 	
 	if not border then
+		local db = self:GetLayoutDB(frame)
 		local size = db.size
 		local padding = db.padding
 		border = PitBull4.Controls.MakeFrame(frame)
@@ -123,8 +132,6 @@ function PitBull4_Border:UpdateFrame(frame)
 		tex:SetTexCoord(0.875, 0, 0.875, 1, 1, 0, 1, 1)
 	end
 	
-	local color = db[classification .. "_color"]
-	local r, g, b, a = unpack(color)
 	for _, tex in ipairs(border) do
 		tex:SetTexture(texture)
 		tex:SetVertexColor(r, g, b, a)
