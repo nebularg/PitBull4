@@ -33,9 +33,9 @@ function PitBull4.Options.UpdateFrames()
 	PitBull4:UpdateForLayout(CURRENT_LAYOUT)
 end
 
---- Update frames for the currently selected layout.
+--- Refresh layouts for the currently selected layout.
 -- This should be called by modules after changing an option in the DB.
--- @usage PitBull.Options.UpdateFrames()
+-- @usage PitBull.Options.RefreshFrameLayouts()
 function PitBull4.Options.RefreshFrameLayouts()
 	for header in PitBull4:IterateHeadersForLayout(CURRENT_LAYOUT) do
 		header:RefreshLayout(true)
