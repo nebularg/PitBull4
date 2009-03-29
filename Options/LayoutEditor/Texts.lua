@@ -169,7 +169,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 	options.args.font = {
 		type = 'select',
 		name = L["Default font"],
-		desc = L["The font of texts, unless overridden."],
+		desc = L["The font of texts, unless overridden."] .. "\n" .. L["If you want more fonts, you should install the addon 'SharedMedia'."],
 		order = 3,
 		get = function(info)
 			return GetLayoutDB(false).font
@@ -187,7 +187,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 			return t
 		end,
 		hidden = function(info)
-			return not LibSharedMedia or #LibSharedMedia:List("font") <= 1
+			return not LibSharedMedia
 		end,
 		dialogControl = AceGUI.WidgetRegistry["LSM30_Font"] and "LSM30_Font" or nil,
 	}
@@ -561,7 +561,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 	options.args.edit.args.font = {
 		type = 'select',
 		name = L["Font"],
-		desc = L["Which font to use for this text."],
+		desc = L["Which font to use for this text."] .. "\n" .. L["If you want more fonts, you should install the addon 'SharedMedia'."],
 		order = 7,
 		get = function(info)
 			local font
@@ -600,7 +600,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 		end,
 		disabled = disabled,
 		hidden = function(info)
-			return not LibSharedMedia or #LibSharedMedia:List("font") <= 1
+			return not LibSharedMedia
 		end,
 		dialogControl = AceGUI.WidgetRegistry["LSM30_Font"] and "LSM30_Font" or nil,
 	}

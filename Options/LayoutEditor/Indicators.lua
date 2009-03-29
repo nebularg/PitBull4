@@ -685,7 +685,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 	indicator_args.text_font = {
 		type = 'select',
 		name = L["Font"],
-		desc = L["Which font to use for this indicator."],
+		desc = L["Which font to use for this indicator."] .. "\n" .. L["If you want more fonts, you should install the addon 'SharedMedia'."],
 		order = 6,
 		get = function(info)
 			return GetLayoutDB(info[#info-1]).text_font or GetLayoutDB(false).font
@@ -715,7 +715,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		disabled = disabled,
 		hidden = function(info)
 			local module = PitBull4.modules[info[#info-1]]
-			return not module.show_font_option or not LibSharedMedia or #LibSharedMedia:List("font") <= 1
+			return not module.show_font_option or not LibSharedMedia
 		end,
 		dialogControl = AceGUI.WidgetRegistry["LSM30_Font"] and "LSM30_Font" or nil,
 	}

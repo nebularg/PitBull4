@@ -45,7 +45,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 	options.args.general.args.texture = {
 		type = 'select',
 		name = L["Default texture"],
-		desc = L["The texture of status bars, unless overridden."],
+		desc = L["The texture of status bars, unless overridden."] .. "\n" .. L["If you want more textures, you should install the addon 'SharedMedia'."],
 		order = 1,
 		get = function(info)
 			return GetLayoutDB(false).bar_texture
@@ -63,7 +63,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			return t
 		end,
 		hidden = function(info)
-			return not LibSharedMedia or #LibSharedMedia:List("statusbar") <= 1
+			return not LibSharedMedia
 		end,
 		dialogControl = AceGUI.WidgetRegistry["LSM30_Statusbar"] and "LSM30_Statusbar" or nil,
 	}
@@ -358,7 +358,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 	bar_args.texture = {
 		type = 'select',
 		name = L["Texture"],
-		desc = L["What texture the status bar should use."],
+		desc = L["What texture the status bar should use."] .. "\n" .. L["If you want more textures, you should install the addon 'SharedMedia'."],
 		order = 4,
 		get = function(info)
 			local db = get_current_layout_db(info)
@@ -387,7 +387,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		end,
 		disabled = disabled,
 		hidden = function(info)
-			return not LibSharedMedia or #LibSharedMedia:List("statusbar") <= 1
+			return not LibSharedMedia
 		end,
 		dialogControl = AceGUI.WidgetRegistry["LSM30_Statusbar"] and "LSM30_Statusbar" or nil,
 	}
