@@ -119,6 +119,7 @@ local DATABASE_DEFAULTS = {
 				opacity_max = 1,
 				scale = 1,
 				font = DEFAULT_LSM_FONT,
+				font_size = 1,
 				bar_texture = LibSharedMedia and LibSharedMedia:GetDefault("statusbar") or "Blizzard",
 				bar_spacing = 2,
 				bar_padding = 2,

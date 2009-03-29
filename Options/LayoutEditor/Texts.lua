@@ -192,6 +192,26 @@ function PitBull4.Options.get_layout_editor_text_options()
 		dialogControl = AceGUI.WidgetRegistry["LSM30_Font"] and "LSM30_Font" or nil,
 	}
 	
+	options.args.font_size = {
+		type = 'range',
+		name = L["Default size"],
+		desc = L["Default size of the text, acts as a multiplier to all other texts."],
+		order = 4,
+		get = function(info)
+			return GetLayoutDB(false).font_size
+		end,
+		set = function(info, value)
+			GetLayoutDB(false).font_size = value
+			
+			UpdateFrames()
+		end,
+		min = 0.5,
+		max = 3,
+		step = 0.01,
+		bigStep = 0.05,
+		isPercent = true,
+	}
+	
 	options.args.edit = {
 		type = 'group',
 		name = L["Edit text"],

@@ -419,11 +419,12 @@ local DEFAULT_FONT, DEFAULT_FONT_SIZE = ChatFontNormal:GetFont()
 -- @usage local font, size = frame:GetFont(db.font, db.size)
 -- frame.MyModule:SetFont(font, size)
 function UnitFrame:GetFont(font_override, size_multiplier)
+	local layout_db = self.layout_db
 	local font
 	if LibSharedMedia then
-		font = LibSharedMedia:Fetch("font", font_override or self.layout_db.font or "")
+		font = LibSharedMedia:Fetch("font", font_override or layout_db.font or "")
 	end
-	return font or DEFAULT_FONT, DEFAULT_FONT_SIZE * (size_multiplier or 1)
+	return font or DEFAULT_FONT, DEFAULT_FONT_SIZE * layout_db.font_size * (size_multiplier or 1)
 end
 
 --- Update all details about the UnitFrame, possibly after a GUID change
