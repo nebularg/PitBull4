@@ -59,7 +59,7 @@ function PitBull4.Options.get_unit_options()
 		values = function(info)
 			local t = {}
 			for _, name in ipairs(PitBull4.SINGLETON_CLASSIFICATIONS) do
-				t[name] = PitBull4.Utils.GetLocalizedClassification(name)
+				t[name] = PitBull4.Utils.GetLocalizedClassification(name) .. (PitBull4.Utils.IsWackyUnitGroup(name) and "*" or "")
 			end
 			return t
 		end,
@@ -345,7 +345,7 @@ function PitBull4.Options.get_unit_options()
 		values = function(info)
 			local t = {}
 			for _, name in ipairs(PitBull4.UNIT_GROUPS) do
-				t[name] = PitBull4.Utils.GetLocalizedClassification(name)
+				t[name] = PitBull4.Utils.GetLocalizedClassification(name) .. (PitBull4.Utils.IsWackyUnitGroup(name) and "*" or "")
 			end
 			return t
 		end,
