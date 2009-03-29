@@ -18,6 +18,7 @@ PitBull4_PowerBar:SetDefaults({
 	position = 2,
 	hide_no_mana = false,
 	hide_no_power = false,
+	color_by_class = false,
 })
 
 local timerFrame = CreateFrame("Frame")
@@ -68,14 +69,32 @@ function PitBull4_PowerBar:GetExampleValue(frame)
 end
 
 function PitBull4_PowerBar:GetColor(frame, value)
-	local power_token = frame.guid and select(2, UnitPowerType(frame.unit)) or "MANA"
-	local color = PitBull4.PowerColors[power_token]
+	local db = self:GetLayoutDB(frame)
+	
+	local color
+	if db.color_by_class then
+		local _, class = UnitClass(frame.unit)
+		color = PitBull4.ClassColors[class]
+	else
+		local _, power_token = UnitPowerType(frame.unit)
+		if not power_token then
+			power_token = "MANA"
+		end
+		color = PitBull4.PowerColors[power_token]
+	end
+	
 	if color then
 		return color[1], color[2], color[3]
 	end
 end
 function PitBull4_PowerBar:GetExampleColor(frame)
-	return unpack(PitBull4.PowerColors.MANA)
+	local db = self:GetLayoutDB(frame)
+	
+	if db.color_by_class then
+		return unpack(PitBull4.ClassColors.MAGE)
+	else
+		return unpack(PitBull4.PowerColors.MANA)
+	end
 end
 
 function PitBull4_PowerBar:UNIT_MANA(event, unit)
@@ -107,5 +126,17 @@ PitBull4_PowerBar:SetLayoutOptionsFunction(function(self)
 
 			PitBull4.Options.UpdateFrames()
 		end,
+	}, 'color_by_class', {
+		name = L["Color by class"],
+		desc = L["Color the power bar by unit class"],
+		type = 'toggle',
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).color_by_class
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).color_by_class = value
+			
+			PitBull4.Options.UpdateFrames()
+		end
 	}
 end)
