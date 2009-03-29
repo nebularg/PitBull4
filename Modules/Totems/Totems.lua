@@ -364,6 +364,7 @@ function PitBull4_Totems:UpdateAllTimes()
 				if (not elements) or (not elements[slot]) or (not elements[slot].frame) then return end
 				
 				local timeleft = MyGetTotemTimeLeft(slot,frame)
+				local _, _, _, _, icon = MyGetTotemInfo(slot, frame)
 				
 				if timeleft > 0 then
 					-- need to update shown time
@@ -372,6 +373,16 @@ function PitBull4_Totems:UpdateAllTimes()
 					else
 						elements[slot].text:SetText("")
 					end
+					
+					-- check if we need to update the shown icon
+					if icon ~= elements[slot].frame.totem_icon then
+						--dbg("Timer is fixing icon in slot %s", tostring(slot))
+						elements[slot].frame:SetNormalTexture(icon)
+						elements[slot].frame.totem_icon = icon
+						--elements[slot].frame:SetAlpha(1)
+						elements[slot].frame:Show()
+					end
+					
 					-- Hide the cooldown frame if it's shown and the user changed preference
 					if ( not layout_option_get(frame,'timer_spiral') and elements[slot].spiral:IsShown() ) then
 						elements[slot].spiral:Hide()
@@ -416,17 +427,14 @@ end
 function PitBull4_Totems:ActivateTotem(slot)
 	for frame in PitBull4:IterateFrames() do
 		local unit = frame.unit
-		if unit and UnitIsUnit(unit,"player") and self:GetLayoutDB(frame).enabled then
-			if not frame.Totems then
-				return
-			end
+		if unit and UnitIsUnit(unit,"player") and self:GetLayoutDB(frame).enabled and frame.Totems then
 			
 			local haveTotem, name, startTime, duration, icon = MyGetTotemInfo(slot, frame)
 			-- queried seperately because GetTotemInfo apprears to give less reliable results (wtf?!)
 			local timeleft = MyGetTotemTimeLeft(slot, frame)
 			
 			if ( name == "" ) then
-				dbg("WARNING: Can't activate a nondropped totem")
+				--dbg("WARNING: Can't activate a nondropped totem")
 				return
 			end
 			
@@ -457,15 +465,12 @@ end
 function PitBull4_Totems:DeactivateTotem(slot)
 	for frame in PitBull4:IterateFrames() do
 		local unit = frame.unit
-		if unit and UnitIsUnit(unit,"player") and self:GetLayoutDB(frame).enabled then
-			if not frame.Totems then
-				return
-			end
+		if unit and UnitIsUnit(unit,"player") and self:GetLayoutDB(frame).enabled and frame.Totems then
 			
 			local haveTotem, name, startTime, duration, icon = MyGetTotemInfo(slot, frame)
 			
 			if ( name ~= "" ) then
-				dbg("WARNING: Can't deactivate a dropped totem")
+				--dbg("WARNING: Can't deactivate a dropped totem")
 				return
 			end
 			
@@ -684,7 +689,7 @@ function PitBull4_Totems.button_scripts:OnUpdate(elapsed)
 					pulse.scale = 1
 					pulse.icon:SetTexture(self.totem_icon)
 					self.pulse_active = true
-					--PitBull:Print(("DEBUG: Starting pulse on slot %i, elapsed is: %s"):format(self.slot, tostring(elapsed)))
+					--dbg("DEBUG: Starting pulse on slot %i, elapsed is: %s", self.slot, tostring(elapsed))
 				end
 			end
 		else
@@ -731,7 +736,7 @@ function PitBull4_Totems:PLAYER_TOTEM_UPDATE(event, slot)
 
 	for frame in PitBull4:IterateFrames() do
 		local unit = frame.unit
-		if unit and UnitIsUnit(unit,"player") and self:GetLayoutDB(frame).enabled then
+		if unit and UnitIsUnit(unit,"player") and self:GetLayoutDB(frame).enabled and frame.Totems then
 			local haveTotem, name, startTime, duration, icon = MyGetTotemInfo(slot,frame)
 			if ( haveTotem and name ~= "") then
 				-- New totem created
@@ -855,6 +860,7 @@ function PitBull4_Totems:BuildFrames(frame)
 			elements[i].textFrame = PitBull4.Controls.MakeFrame(frame)
 		end
 		local textFrame = elements[i].textFrame
+		textFrame:SetScale(frm:GetScale())
 		textFrame:SetAllPoints(frm)
 		textFrame:SetFrameLevel(spiral:GetFrameLevel() + 7)
 		
@@ -880,7 +886,9 @@ function PitBull4_Totems:BuildFrames(frame)
 		local pulse = frm.pulse
 		pulse:SetAllPoints(frm)
 		pulse:SetToplevel(true)
-		pulse.icon = PitBull4.Controls.MakeTexture(frm, "OVERLAY")
+		if not pulse.icon then
+			pulse.icon = PitBull4.Controls.MakeTexture(frm, "OVERLAY")
+		end
 		pulse.icon:SetPoint("CENTER")
 		pulse.icon:SetBlendMode("ADD")
 		pulse.icon:SetVertexColor(0.5,0.5,0.5,0.7)
@@ -940,6 +948,10 @@ function PitBull4_Totems:UpdateFrame(frame)
 	if not unit or not UnitIsUnit(unit,"player") then -- we only work for the player unit itself
 		return self:ClearFrame(frame)
 	end
+	if frame.is_wacky then
+		-- Disable for wacky frames, because something... wacky is going on with their updates.
+		return self:ClearFrame(frame)
+	end
 	
 	if (layout_option_get(frame,'enabled') ~= true) and frame.Totems then
 		return self:ClearFrame(frame)
@@ -975,6 +987,9 @@ function PitBull4_Totems:ClearFrame(frame)
 	for i = 1, MAX_TOTEMS do
 		local element = frame.Totems.elements[i]
 		
+		if element.pulse and element.pulse.icon then
+			element.pulse.icon = element.pulse.icon:Delete()
+		end
 		if element.pulse then
 			element.pulse = element.pulse:Delete()
 		end
