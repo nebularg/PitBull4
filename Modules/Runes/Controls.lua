@@ -42,6 +42,9 @@ local INVERSE_SHINE_HALF_TIME = 1 / SHINE_HALF_TIME
 
 local SHINE_TEXTURE = [[Interface\AddOns\]] .. module_path .. [[\Shine]]
 
+local UNREADY_ALPHA = 0.6
+local READY_ALPHA = 1
+
 -----------------------------------------------------------------------------
 
 local Rune = {}
@@ -70,9 +73,11 @@ function Rune:UpdateCooldown()
 			cooldown:Hide()
 			self:Shine()
 		end
+		self:GetNormalTexture():SetAlpha(READY_ALPHA)
 	else
 		cooldown:Show()
 		cooldown:SetCooldown(start, duration)
+		self:GetNormalTexture():SetAlpha(UNREADY_ALPHA)
 	end
 end
 
