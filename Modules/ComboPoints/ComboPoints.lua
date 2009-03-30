@@ -39,7 +39,6 @@ end
 
 function PitBull4_ComboPoints:UNIT_COMBO_POINTS(event, unit)
 	self:UpdateForUnitID("target")
-	self:UpdateForUnitID("pet")
 end
 
 function PitBull4_ComboPoints:ClearFrame(frame)
@@ -59,20 +58,11 @@ function PitBull4_ComboPoints:ClearFrame(frame)
 end
 
 function PitBull4_ComboPoints:UpdateFrame(frame)
-	if frame.unit ~= "target" and frame.unit ~= "pet" then
+	if frame.unit ~= "target" then
 		return self:ClearFrame(frame)
 	end
 	
 	local has_vehicle = UnitHasVehicleUI("player")
-	if has_vehicle then
-		if frame.unit == "target" then
-			return self:ClearFrame(frame)
-		end
-	else
-		if frame.unit == "pet" then
-			return self:ClearFrame(frame)
-		end
-	end
 	
 	local num_combos = GetComboPoints(has_vehicle and "vehicle" or "player", "target")
 	
