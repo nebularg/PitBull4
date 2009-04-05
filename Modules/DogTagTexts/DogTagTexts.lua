@@ -232,37 +232,7 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 	end
 	PROVIDED_CODES = nil
 	local provided_codes_cleaned = false
-	return 'code', {
-		type = 'input',
-		name = L["Code"],
-		desc = L["Enter a LibDogTag-3.0 code tag. You can type /dog into your chat for help."],
-		get = function(info)
-			local code = PitBull4.Options.GetTextLayoutDB().code
-			
-			if run_first then
-				run_first()
-			end
-			
-			if LibDogTag then
-				code = LibDogTag:CleanCode(code)
-			end
-			
-			return code
-		end,
-		set = function(info, value)
-			PitBull4.Options.GetTextLayoutDB().code = LibDogTag:CleanCode(value)
-			
-			PitBull4.Options.UpdateFrames()
-		end,
-		multiline = true,
-		width = 'full',
-		disabled = function(info)
-			if run_first then
-				run_first()
-			end
-			return not LibDogTag
-		end,
-	}, 'default_codes', {
+	return 'default_codes', {
 		type = 'select',
 		name = L["Code"],
 		desc = L["Some codes provided for you."],
@@ -290,6 +260,36 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 			PitBull4.Options.UpdateFrames()
 		end,
 		values = values,
+		disabled = function(info)
+			if run_first then
+				run_first()
+			end
+			return not LibDogTag
+		end,
+	}, 'code', {
+		type = 'input',
+		name = L["Code"],
+		desc = L["Enter a LibDogTag-3.0 code tag. You can type /dog into your chat for help."],
+		get = function(info)
+			local code = PitBull4.Options.GetTextLayoutDB().code
+			
+			if run_first then
+				run_first()
+			end
+			
+			if LibDogTag then
+				code = LibDogTag:CleanCode(code)
+			end
+			
+			return code
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetTextLayoutDB().code = LibDogTag:CleanCode(value)
+			
+			PitBull4.Options.UpdateFrames()
+		end,
+		multiline = true,
+		width = 'full',
 		disabled = function(info)
 			if run_first then
 				run_first()
