@@ -221,6 +221,29 @@ function GroupHeader:RefixSizeAndPosition()
 	self:SetPoint(anchor, UIParent, "CENTER", group_db.position_x / scale + x_diff, group_db.position_y / scale + y_diff)
 end
 
+local tank_list = {}
+local function get_main_tank_name_list()
+	local main_tanks
+	if oRA then
+		main_tanks = oRA.maintanktable
+	else
+		main_tanks = CT_RA_MainTanks
+	end
+	if main_tanks then
+		wipe(tank_list)
+		for i = 1, 10 do
+			local v = main_tanks[i]
+			if v then
+				tank_list[#tank_list+1] = v
+			end
+		end
+		local s = table.concat(tank_list, ',')
+		if s ~= "" then
+			return s
+		end
+	end
+end
+
 --- Recheck the group-based settings of the group header, including sorting, position, what units are shown.
 -- @param dont_refresh_children don't call :RefreshLayout on the child frames
 -- @usage header:RefreshGroup()
@@ -251,8 +274,13 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	local sort_direction = group_db.sort_direction
 	local sort_method = group_db.sort_method
 	local group_by = group_db.group_by
+	local name_list
+
+	if group_filter == "MAINTANK" then
+		name_list = get_main_tank_name_list()
+	end
 	
-	local changed_units = self.unit_group ~= unit_group or self.include_player ~= include_player or self.show_solo ~= show_solo or self.group_filter ~= group_filter or self.sort_direction ~= sort_direction or self.sort_method ~= sort_method or self.group_by ~= group_by
+	local changed_units = self.unit_group ~= unit_group or self.include_player ~= include_player or self.show_solo ~= show_solo or self.group_filter ~= group_filter or self.sort_direction ~= sort_direction or self.sort_method ~= sort_method or self.group_by ~= group_by or self.name_list ~= name_list
 	
 	if changed_units then
 		local old_unit_group = self.unit_group
@@ -264,6 +292,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		self.sort_direction = sort_direction
 		self.sort_method = sort_method
 		self.group_by = group_db.group_by
+		self.name_list = name_list
 		--@alpha@
 		if not party_based then
 			expect(unit_group:sub(1, 4), '==', "raid")
@@ -285,7 +314,13 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 			self:ProxySetAttribute("showPlayer", nil)
 			self:ProxySetAttribute("showSolo", nil)
 			self:ProxySetAttribute("showRaid", true)
-			self:ProxySetAttribute("groupFilter", group_filter)
+			if name_list then
+				self:ProxySetAttribute("groupFilter", nil) 
+				self:ProxySetAttribute("nameList", name_list)
+			else
+				self:ProxySetAttribute("groupFilter", group_filter)
+				self:ProxySetAttribute("nameList", nil)
+			end
 		end
 		if self.unitsuffix == "" then
 			self.unitsuffix = nil
@@ -552,15 +587,16 @@ function GroupHeader:AssignFakeUnitIDs()
 		group_filter = "1,2,3,4,5,6,7,8"
 	end
 
-	-- Add in our bogus group to the appropriate
-	-- place on the group_filter.
-	if sort_dir == 'DESC' then
-		group_filter = "!,"..group_filter
-	else
-		group_filter = group_filter..",!"
-	end
 
 	if group_filter then
+		-- Add in our bogus group to the appropriate
+		-- place on the group_filter.
+		if sort_dir == 'DESC' then
+			group_filter = "!,"..group_filter
+		else
+			group_filter = group_filter..",!"
+		end
+
 		-- filter by a list of group numbers and/or classes
 		fill_table(token_table, strsplit(",", group_filter))
 		local strict_filter = self:GetAttribute("strictFiltering")
