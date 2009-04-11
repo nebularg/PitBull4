@@ -898,6 +898,10 @@ function PitBull4:OnProfileChanged()
 	for unit, unit_db in pairs(db.profile.units) do
 		if unit_db.enabled then
 			self:MakeSingletonFrame(unit)
+		else
+			for frame in PitBull4:IterateFramesForClassification(unit, true) do
+				frame:Deactivate()
+			end
 		end
 	end
 	for group, group_db in pairs(db.profile.groups) do
