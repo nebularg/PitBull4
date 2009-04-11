@@ -460,6 +460,13 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	control.debuff_type = debuff_type
 	control.slot = slot
 
+	local class_db = frame.classification_db
+	if class_db and not class_db.click_through then
+		control:EnableMouse(true)
+	else
+		control:EnableMouse(false)
+	end
+
 	local texture = control.texture
 	texture:SetTexture(icon)
 	if db.zoom_aura then
