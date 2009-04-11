@@ -47,8 +47,8 @@ end
 -- Let's make the module
 local PitBull4_HelloKittyIcon = PitBull4:NewModule("HelloKittyIcon") -- you can specify any embeds you want to use here, e.g. "AceTimer-3.0", "AceEvent-3.0"
 
--- This is important, you have to specify your module type. Since we're making an icon, this is "icon"
-PitBull4_HelloKittyIcon:SetModuleType("icon")
+-- This is important, you have to specify your module type. Since we're making an icon, this is "indicator"
+PitBull4_HelloKittyIcon:SetModuleType("indicator")
 
 -- This is the localized name of your module. It should be in "Title Case". TODO: localization
 PitBull4_HelloKittyIcon:SetName("Hello Kitty Icon")
