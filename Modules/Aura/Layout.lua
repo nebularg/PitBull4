@@ -174,15 +174,17 @@ function layout_auras(frame, db, is_buff)
 	local sorted = cfg.sort
 
 	-- Deal with mirror options
-	if class_db.horizontal_mirror then
-		anchor = horizontal_mirrored_point[anchor]
-		side = horizontal_mirrored_point[side]
-		growth = horizontal_mirrored_growth[growth]
-	end
-	if class_db.vertical_mirror then
-		anchor = vertical_mirrored_point[anchor]
-		side = vertical_mirrored_point[side]
-		growth = vertical_mirrored_growth[growth]
+	if class_db then
+		if class_db.horizontal_mirror then
+			anchor = horizontal_mirrored_point[anchor]
+			side = horizontal_mirrored_point[side]
+			growth = horizontal_mirrored_growth[growth]
+		end
+		if class_db.vertical_mirror then
+			anchor = vertical_mirrored_point[anchor]
+			side = vertical_mirrored_point[side]
+			growth = vertical_mirrored_growth[growth]
+		end
 	end
 
 	-- Find the anchor point on the control
