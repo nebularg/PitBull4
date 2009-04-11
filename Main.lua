@@ -789,7 +789,7 @@ local function main_tank_update()
 end
 
 function PitBull4:OnInitialize()
-	db = LibStub("AceDB-3.0"):New("PitBull4DB", DATABASE_DEFAULTS, 'global')
+	db = LibStub("AceDB-3.0"):New("PitBull4DB", DATABASE_DEFAULTS, 'Default')
 	DATABASE_DEFAULTS = nil
 	self.db = db
 	
