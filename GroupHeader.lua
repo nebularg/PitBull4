@@ -795,7 +795,7 @@ function GroupHeader:IterateMembers(guess_num)
 			num = self.include_player and 1 or 0
 		elseif config_mode == "party" then
 			num = self.include_player and MAX_PARTY_MEMBERS_WITH_PLAYER or MAX_PARTY_MEMBERS
-		else
+		elseif config_mode then
 			num = config_mode:sub(5)+0 -- raid10, raid25, raid40 => 10, 25, 40
 			-- check filters
 			
