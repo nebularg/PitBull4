@@ -117,6 +117,12 @@ local meta_operators = {
 	['|'] = 'OR',
 }
 local meta_filter_funcs = {}
+
+function PitBull4_Aura:OnProfileChanged() 
+	-- Must invalidate the cached filter functions on a profile change
+	wipe(meta_filter_funcs)
+end
+
 local function meta_filter(self, entry, frame)
   -- See if the meta_func is already made and if so run it and
 	-- return the value

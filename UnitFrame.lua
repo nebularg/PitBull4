@@ -323,6 +323,9 @@ function UnitFrame:RefreshLayout()
 	local old_layout = self.layout
 	
 	local classification_db = self.classification_db
+	if not classification_db then
+		return
+	end
 	
 	local layout = classification_db.layout
 	self.layout = layout
@@ -447,6 +450,9 @@ function UnitFrame:Update(same_guid, update_layout)
 			end
 		end
 		return
+	elseif not self.classification_db or not self.layout_db then
+		-- Possibly unused frame made for another profile
+		return	
 	end
 	self.populated = true
 	

@@ -287,7 +287,7 @@ function Module:Clear(frame, return_changed)
 	if return_changed then
 		return changed
 	end
-	if changed then
+	if changed and frame.classification_db and frame.layout_db then
 		frame:UpdateLayout()
 	end
 end

@@ -1076,6 +1076,10 @@ end
 --- Reposition all controls on the Unit Frame
 -- @usage frame:UpdateLayout()
 function UnitFrame:UpdateLayout()
+	if not self.classification_db or not self.layout_db then
+		-- Possibly unused frame made for another profile
+		return
+	end
 	update_bar_layout(self)
 	update_indicator_and_text_layout(self)
 end

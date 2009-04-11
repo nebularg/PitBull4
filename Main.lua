@@ -312,6 +312,18 @@ local function iterate_shown_frames(set, frame)
 	return iterate_shown_frames(set, frame)
 end
 
+-- iterate through a set of headers and return those that have a group_db set
+local function iterate_used_headers(set, header)
+	header = next(set, header)
+	if header == nil then
+		return
+	end
+	if header.group_db then
+		return header
+	end
+	return iterate_used_headers(set, header)
+end
+
 -- iterate through and return only the keys of a table
 local function half_next(set, key)
 	key = next(set, key)
@@ -659,12 +671,13 @@ function PitBull4:IterateFramesForName(name)
 end
 
 --- Iterate over all headers.
+-- @param also_unused also return headers unused by the current profile.
 -- @usage for header in PitBull4:IterateHeaders()
 --     doSomethingWith(header)
 -- end
 -- @return iterator which returns headers
-function PitBull4:IterateHeaders()
-	return half_next, all_headers
+function PitBull4:IterateHeaders(also_unused)
+	return not also_unused and iterate_used_headers or half_next, all_headers
 end
 
 --- Iterate over all headers with the given classification.
@@ -772,8 +785,6 @@ function PitBull4:OnInitialize()
 	
 	db.RegisterCallback(self, "OnProfileChanged")
 	
-	self:OnProfileChanged()
-	
 	-- used for run-once-only initialization
 	self:RegisterEvent("ADDON_LOADED")
 	self:ADDON_LOADED()
@@ -811,7 +822,6 @@ function PitBull4:ADDON_LOADED()
 	
 	if LibDBIcon and not IsAddOnLoaded("Broker2FuBar") then
 		LibDBIcon:Register("PitBull4", PitBull4.LibDataBrokerLauncher, PitBull4.db.profile.minimap_icon)
-		PitBull4.ldb_icon_registered = true -- needed to ensure OnProfileChanged doesn't do LDBI stuff before we register it
 	end
 end
 
@@ -830,6 +840,13 @@ function PitBull4:OnProfileChanged()
 	self.PowerColors = PitBull4.db.profile.colors.power
 	self.ReactionColors = PitBull4.db.profile.colors.reaction
 	
+	-- Notify modules that the profile has changed.
+	for _, module in PitBull4:IterateEnabledModules() do
+		if module.OnProfileChanged then
+			module:OnProfileChanged()
+		end
+	end
+
 	local db = self.db
 	
 	if not db.profile.made_groups then
@@ -840,7 +857,7 @@ function PitBull4:OnProfileChanged()
 		end
 	end
 	
-	for header in PitBull4:IterateHeaders() do
+	for header in PitBull4:IterateHeaders(true) do
 		local group_db = rawget(db.profile.groups, header.name)
 		header.group_db = group_db
 		for _, frame in ipairs(header) do
@@ -854,11 +871,30 @@ function PitBull4:OnProfileChanged()
 	for frame in PitBull4:IterateFrames(true) do
 		frame:RefreshLayout()
 	end
-	for header in PitBull4:IterateHeaders() do
-		header:RefreshGroup(true)
+
+	local state = self:GetState()
+	for header in PitBull4:IterateHeaders(true) do
+		if header.group_db then
+			header:RefreshGroup(true)
+		end
+		header:UpdateShownState(state)
+	end
+
+	-- Make sure all frames and groups are made
+	for unit, unit_db in pairs(db.profile.units) do
+		if unit_db.enabled then
+			self:MakeSingletonFrame(unit)
+		end
+	end
+	for group, group_db in pairs(db.profile.groups) do
+		if group_db.enabled then
+			self:MakeGroupHeader(group)
+		end
 	end
 	
-	if self.ldb_icon_registered and not IsAddOnLoaded("Broker2FuBar") then
+	self:RecheckConfigMode()
+	
+	if not IsAddOnLoaded("Broker2FuBar") then
 		LibStub("LibDBIcon-1.0"):Refresh("PitBull4", db.profile.minimap_icon)
 	end
 end
@@ -883,20 +919,10 @@ function PitBull4:OnEnable()
 	
 	self:RegisterEvent("RAID_ROSTER_UPDATE")
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED")
-	self:RAID_ROSTER_UPDATE()
 	
 	-- show initial frames
-	for unit, unit_db in pairs(db.profile.units) do
-		if unit_db.enabled then
-			self:MakeSingletonFrame(unit)
-		end
-	end
-	
-	for group, group_db in pairs(db.profile.groups) do
-		if group_db.enabled then
-			self:MakeGroupHeader(group)
-		end
-	end
+	self:OnProfileChanged()
+	self:RAID_ROSTER_UPDATE()
 end
 
 --- Iterate over all wacky frames, and call their respective :UpdateGUID methods.
