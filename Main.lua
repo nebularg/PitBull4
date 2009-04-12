@@ -1008,7 +1008,7 @@ function PitBull4:UNIT_ENTERED_VEHICLE(_, unit)
 				if new_unit then
 					PitBull4.unit_id_to_frames[new_unit][frame] = true
 				end
-				frame:Update()
+				frame:UpdateGUID(UnitGUID(new_unit), true)
 			end
 		end
 	end
