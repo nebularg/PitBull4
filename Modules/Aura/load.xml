@@ -6,6 +6,7 @@
 	<Script file="FilterEditor.lua"/>
 	<Script file="FilterTypes.lua"/>
 	<Script file="Filter.lua"/>
+	<Script file="Highlight.lua"/>
 	<Script file="Update.lua"/>
 	<Script file="Layout.lua"/>
 	<Script file="Options.lua"/>

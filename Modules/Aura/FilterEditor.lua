@@ -57,6 +57,7 @@ function PitBull4_Aura:SetFilterOptions(filter, options)
 			[""] = L["Never"],
 			["buff"] = L["Buffs"],
 			["debuff"] = L["Debuffs"],
+			["highlight"] = L["Highlights"],
 			["both"] = L["Always"],
 		},
 		order = 0,
@@ -334,6 +335,98 @@ function PitBull4_Aura:GetFilterEditor()
 						return true
 					end,
 					order = 8,
+				},
+				spacer3 = {
+					type = 'header',
+					name = '',
+					desc = '',
+					order = 9,
+				},
+				friend_highlights = {
+					type = 'multiselect',
+					dialogControl = MULTISELECT_CONTROL, 
+					name = L['Extra friend highlights'],
+					desc = L['Select extra debuffs to highlight on your friends.'],
+					get = function(info,key)
+						local filters = PitBull4_Aura.db.profile.global.filters
+						local filter_name,entry = extract_filter_entry_from_key(key)
+						return filters[filter_name].name_list[entry]
+					end,
+					set = function(info,key,value)
+						local filters = PitBull4_Aura.db.profile.global.filters
+						local filter_name,entry = extract_filter_entry_from_key(key)
+						filters[filter_name].name_list[entry] = value
+					end,
+					values = function(info)
+						local t = {}
+						get_values_from_filter('*D',t)
+						return t
+					end,
+					order = 10,
+				},
+				friend_highlights_add = {
+					type = 'input',
+					name = L['Add friend highlight'],
+					desc = L['Add a friend debuff to the extra friend debuff highlights.'],
+					get = function(info) return "" end,
+					set = function(info, value)
+						local name_list = PitBull4_Aura:GetFilterDB('*D').name_list
+						name_list[value] = true
+						PitBull4_Aura:UpdateAll()
+					end,
+					validate = function(info, value)
+						if value:len() < 3 then
+							return L["Must be at least 3 characters long."]
+						end
+						return true
+					end,
+					order = 11,
+				},
+				spacer4 = {
+					type = 'header',
+					name = '',
+					desc = '',
+					order = 12,
+				},
+				enemy_highlights = {
+					type = 'multiselect',
+					dialogControl = MULTISELECT_CONTROL, 
+					name = L['Extra enemy highlights'],
+					desc = L['Select extra buffs to highlight on your enemies.'],
+					get = function(info,key)
+						local filters = PitBull4_Aura.db.profile.global.filters
+						local filter_name,entry = extract_filter_entry_from_key(key)
+						return filters[filter_name].name_list[entry]
+					end,
+					set = function(info,key,value)
+						local filters = PitBull4_Aura.db.profile.global.filters
+						local filter_name,entry = extract_filter_entry_from_key(key)
+						filters[filter_name].name_list[entry] = value
+					end,
+					values = function(info)
+						local t = {}
+						get_values_from_filter('*E',t)
+						return t
+					end,
+					order = 13,
+				},
+				enemy_highlights_add = {
+					type = 'input',
+					name = L['Add enemy highlight'],
+					desc = L['Add an enemy buff to the extra enemy buff highlights.'],
+					get = function(info) return "" end,
+					set = function(info, value)
+						local name_list = PitBull4_Aura:GetFilterDB('*E').name_list
+						name_list[value] = true
+						PitBull4_Aura:UpdateAll()
+					end,
+					validate = function(info, value)
+						if value:len() < 3 then
+							return L["Must be at least 3 characters long."]
+						end
+						return true
+					end,
+					order = 14,
 				},
 			},
 			order = 1,
