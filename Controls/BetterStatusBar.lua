@@ -107,9 +107,13 @@ end
 function BetterStatusBar:SetValue(value)
 	--@alpha@
 	expect(value, 'typeof', 'number')
-	expect(value, '>=', 0)
-	expect(value, '<=', 1)
 	--@end-alpha@
+	
+	if value < 0 then
+		value = 0
+	elseif value > 1 then
+		value = 1
+	end
 	
 	self.value = value
 	if self.deficit then
@@ -134,8 +138,10 @@ end
 function BetterStatusBar:SetExtraValue(extraValue)
 	--@alpha@
 	expect(extraValue, 'typeof', 'number')
-	expect(extraValue, '>=', 0)
 	--@end-alpha@
+	if extraValue < 0 then
+		extraValue = 0
+	end
 	
 	self.extraValue = extraValue
 	self:SetValue(self.value)
