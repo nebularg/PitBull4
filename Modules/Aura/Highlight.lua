@@ -141,8 +141,6 @@ local function result_sort(a, b)
 	local a_priority, b_priority = a.priority, b.priority
 	if a_priority ~= b_priority then
 		return a_priority < b_priority
-	else
-		return true
 	end
 end
 
