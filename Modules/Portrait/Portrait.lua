@@ -13,6 +13,14 @@ local CLASS_TEX_COORDS = {
 	DEATHKNIGHT = {0.25, 0.49609375, 0.5, 0.75},
 }
 
+for k, v in pairs(CLASS_TEX_COORDS) do
+	-- zoom by 14%
+	local left, right, top, bottom = unpack(v)
+	left, right = left + (right - left) * 0.07, right - (right - left) * 0.07
+	top, bottom = top + (bottom - top) * 0.07, bottom - (bottom - top) * 0.07
+	v[1], v[2], v[3], v[4] = left, right, top, bottom
+end
+
 local PitBull4 = _G.PitBull4
 if not PitBull4 then
 	error("PitBull4_Portrait requires PitBull4")
@@ -181,11 +189,11 @@ function PitBull4_Portrait:UpdateFrame(frame)
 		if class then
 			local tex_coord = CLASS_TEX_COORDS[class]
 			portrait.texture:SetTexture([[Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes]])
-			portrait.texture:SetTexCoord(tex_coord[1], tex_coord[2], tex_coord[3], tex_coord[4])
+			portrait.texture:SetTexCoord(unpack(tex_coord))
 		else
 			-- Pets. Work out a better icon?
 			portrait.texture:SetTexture([[Interface\Icons\Ability_Hunter_BeastCall]])
-			portrait.texture:SetTexCoord(0, 1, 0, 1)
+			portrait.texture:SetTexCoord(0.07, 0.93, 0.07, 0.93)
 		end
 	end
 	
