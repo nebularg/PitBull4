@@ -60,6 +60,8 @@ do
 	end
 	for i = 1, MAX_ARENA_TEAM_MEMBERS do
 		better_unit_ids["arena" .. i] = "arena" .. i
+		better_unit_ids["arenapet" .. i] = "arenapet" .. i
+		better_unit_ids["arena" .. i .. "pet"] = "arenapet" .. i
 	end
 	setmetatable(better_unit_ids, target_same_with_target_mt)
 	
