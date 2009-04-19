@@ -38,6 +38,7 @@ do
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(5185) -- Healing Touch
 	elseif class == "PALADIN" then
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(635) -- Holy Light
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(62124) -- Hand of Reckoning
 	elseif class == "SHAMAN" then
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(331) -- Healing Wave
 	elseif class == "WARLOCK" then
