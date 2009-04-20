@@ -33,6 +33,7 @@ do
 	local _,class = UnitClass("player")
 	
 	if class == "PRIEST" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(589) -- Shadow Word: Pain
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(2050) -- Lesser Heal
 	elseif class == "DRUID" then
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(5185) -- Healing Touch
