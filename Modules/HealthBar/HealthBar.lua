@@ -18,6 +18,7 @@ PitBull4_HealthBar:SetDescription(L["Show a bar indicating the unit's health."])
 PitBull4_HealthBar:SetDefaults({
 	position = 1,
 	color_by_class = true,
+	color_pvp_by_class = false,
 	hostility_color = true,
 	hostility_color_npcs = true
 }, {
@@ -70,14 +71,14 @@ end
 function PitBull4_HealthBar:GetColor(frame, value)
 	local db = self:GetLayoutDB(frame)
 	local unit = frame.unit
-	if not UnitIsConnected(unit) then
+	if not UnitIsConnected(unit) or not unit then
 		return unpack(self.db.profile.global.colors.disconnected)
 	elseif UnitIsDeadOrGhost(unit) then
 		return unpack(self.db.profile.global.colors.dead)
 	elseif UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) then
 		return unpack(self.db.profile.global.colors.tapped)
 	elseif UnitIsPlayer(unit) then
-		if db.color_by_class and unit then
+		if db.color_by_class and (db.color_pvp_by_class or UnitIsFriend("player", unit)) then
 			local _, class = UnitClass(unit)
 			local t = PitBull4.ClassColors[class]
 			if t then
@@ -165,7 +166,19 @@ PitBull4_HealthBar:SetLayoutOptionsFunction(function(self)
 			PitBull4.Options.GetLayoutDB(self).color_by_class = value
 			
 			PitBull4.Options.UpdateFrames()
-		end
+		end,
+	}, 'color_pvp_by_class', {
+		name = L["Color PvP by class"],
+		desc = L["Color the health bar for PvP enemies by unit class."],
+		type = 'toggle',
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).color_pvp_by_class
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).color_pvp_by_class = value
+			
+			PitBull4.Options.UpdateFrames()
+		end,
 	}, 'hostility_color', {
 		name = L["Color by hostility"],
 		desc = L["Color the health bar by hostility.  Note that color by class takes precedence over this."],
