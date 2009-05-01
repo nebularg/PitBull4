@@ -158,4 +158,5 @@ end, function(control)
 end, function(control)
 	-- onDelete
 	control:SetScript("OnUpdate", nil)
+	PitBull4_Aura:DisableCooldownText(control)
 end)

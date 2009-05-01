@@ -491,9 +491,9 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	end
 
 	if db.cooldown_text[rule] and duration and duration > 0 then
-		control.cooldown_text:Show()
+		PitBull4_Aura:EnableCooldownText(control)	
 	else
-		control.cooldown_text:Hide()
+		PitBull4_Aura:DisableCooldownText(control)	
 	end
 
 	if db.border[rule] then
@@ -684,21 +684,26 @@ function PitBull4_Aura:UpdateAuras(frame)
 	end
 end
 
-function PitBull4_Aura:UpdateCooldownTexts()
-	for frame in PitBull4:IterateFrames() do
-		local aura_buffs = frame.aura_buffs
-		if aura_buffs then
-			for i = 1, #aura_buffs do
-				update_cooldown_text(aura_buffs[i])
-			end
-		end
+local cooldown_texts = {}
 
-		local aura_debuffs = frame.aura_debuffs
-		if aura_debuffs then
-			for i = 1, #aura_debuffs do
-				update_cooldown_text(aura_debuffs[i])
-			end
-		end
+function PitBull4_Aura:EnableCooldownText(aura)
+	local cooldown_text = aura.cooldown_text
+	if not cooldown_text then return end
+	cooldown_text:Show()
+	cooldown_texts[aura] = true
+end
+
+function PitBull4_Aura:DisableCooldownText(aura)
+	local cooldown_text = aura.cooldown_text
+	if cooldown_text then
+		cooldown_text:Hide()
+	end
+	cooldown_texts[aura] = nil
+end
+
+function PitBull4_Aura:UpdateCooldownTexts()
+	for aura in pairs(cooldown_texts) do
+		update_cooldown_text(aura)
 	end
 end
 
