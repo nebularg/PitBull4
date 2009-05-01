@@ -35,39 +35,6 @@ function PitBull4_Aura:OnEnable()
 	end
 end
 
-local guids_to_update = {}
-
-function PitBull4_Aura:UNIT_AURA(event, unit)
-	-- UNIT_AURA updates are throttled to 1 per frame
-	-- by collecting them in guids_to_update and then updating
-	-- the relevent frames once every 0.2 seconds.  We capture
-	-- the GUID at the event time because the unit ids can change
-	-- between when we receive the event and do the throttled update
-	guids_to_update[UnitGUID(unit)] = true
-end
-
--- Function to execute the throttled updates
-function PitBull4_Aura:OnUpdate()
-	if next(guids_to_update) then
-		for frame in PitBull4:IterateFrames() do
-			if guids_to_update[frame.guid] then
-				if self:GetLayoutDB(frame).enabled then
-					self:UpdateFrame(frame)
-				else
-					self:ClearFrame(frame)
-				end
-			end
-		end
-		wipe(guids_to_update)
-	end
-
-	self:UpdateCooldownTexts()
-
-	self:UpdateWeaponEnchants()
-
-	self:UpdateFilters()
-end
-
 function PitBull4_Aura:ClearFrame(frame)
 	self:ClearAuras(frame)
 end
