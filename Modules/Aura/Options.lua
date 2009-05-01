@@ -47,6 +47,7 @@ PitBull4_Aura:SetDefaults({
 	max_buffs = 6,
 	max_debuffs = 6,
 	zoom_aura = false,
+	click_through = false,
 	cooldown = {
 		my_buffs = true,
 		my_debuffs = true,
@@ -1919,6 +1920,15 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				set = set,
 				disabled = is_aura_disabled,
 				order = 8,
+			},
+			click_through = {
+				type = 'toggle',
+				name = L['Click-through'],
+				desc = L['Disable capturing clicks on aura icons allowing the clicks to fall through to the window underneath the aura.'],
+				get = get,
+				set = set,
+				disabled = is_aura_disabled,
+				order = 9,
 			},
 		},
 	},

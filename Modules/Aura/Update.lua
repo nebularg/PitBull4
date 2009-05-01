@@ -466,7 +466,7 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend, is_player)
 	control.slot = slot
 
 	local class_db = frame.classification_db
-	if is_player and is_buff and class_db and not class_db.click_through then
+	if is_player and is_buff and not db.click_through and class_db and not class_db.click_through then
 		control:EnableMouse(true)
 	else
 		control:EnableMouse(false)
