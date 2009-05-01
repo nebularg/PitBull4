@@ -168,10 +168,10 @@ local function get_aura_list(list, unit, db, is_buff, frame)
 end
 
 -- Fills up to the maximum number of auras with sample auras
-local function get_aura_list_sample(list, unit, max, db, is_buff)
+local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 	-- figure the slot to use for the mainhand and offhand slots
 	local mainhand, offhand
-	if is_buff and db.enabled_weapons and unit and UnitIsUnit(unit, "player") then
+	if is_buff and db.enabled_weapons and unit and is_player then
 		if not weapon_list[MAINHAND] then
 			mainhand = #list + 1
 		end
@@ -439,7 +439,7 @@ end
 
 -- Setups up the aura frame and fill it with the proper data
 -- to display the proper aura.
-local function set_aura(frame, db, aura_controls, aura, i, is_friend)
+local function set_aura(frame, db, aura_controls, aura, i, is_friend, is_player)
 	local control = aura_controls[i]
 
 	local id, slot, quality, is_buff, name, rank, icon, count, debuff_type, duration, expiration_time, caster, is_stealable = unpack(aura, 1, ENTRY_END)
@@ -466,7 +466,7 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	control.slot = slot
 
 	local class_db = frame.classification_db
-	if class_db and not class_db.click_through then
+	if is_player and is_buff and class_db and not class_db.click_through then
 		control:EnableMouse(true)
 	else
 		control:EnableMouse(false)
@@ -539,6 +539,7 @@ local function update_auras(frame, db, is_buff)
 	end
 	local unit = frame.unit
 	local is_friend = unit and UnitIsFriend("player", unit)
+	local is_player = unit and UnitIsUnit(unit, "player")
 
 	local max = is_buff and db.max_buffs or db.max_debuffs
 
@@ -547,7 +548,7 @@ local function update_auras(frame, db, is_buff)
 
 	-- If weapons are enabled and the unit is the player
 	-- copy the weapon entries into the aura list
-	if is_buff and db.enabled_weapons and unit and UnitIsUnit(unit,"player") then
+	if is_buff and db.enabled_weapons and unit and is_player then
 		local filter = db.layout.buff.filter
 		copy_weapon_entry(weapon_list, list, MAINHAND)
 		if list[#list] and not PitBull4_Aura:FilterEntry(filter, list[#list], frame) then
@@ -566,7 +567,7 @@ local function update_auras(frame, db, is_buff)
 		end
 
 		-- Fill extra auras if we're in config mode
-		get_aura_list_sample(list, unit, max, db, is_buff)
+		get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 	end
 
 	local layout = is_buff and db.layout.buff or db.layout.debuff
@@ -583,7 +584,7 @@ local function update_auras(frame, db, is_buff)
 	local buff_count = (#list > max) and max or #list
 
 	for i = 1, buff_count do
-		set_aura(frame, db, controls, list[i], i, is_friend)
+		set_aura(frame, db, controls, list[i], i, is_friend, is_player)
 	end
 
 	-- Remove unnecessary aura frames
