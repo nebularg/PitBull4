@@ -48,16 +48,18 @@ end
 
 -- Function to execute the throttled updates
 function PitBull4_Aura:OnUpdate()
-	for frame in PitBull4:IterateFrames() do
-		if guids_to_update[frame.guid] then
-			if self:GetLayoutDB(frame).enabled then
-				self:UpdateFrame(frame)
-			else
-				self:ClearFrame(frame)
+	if next(guids_to_update) then
+		for frame in PitBull4:IterateFrames() do
+			if guids_to_update[frame.guid] then
+				if self:GetLayoutDB(frame).enabled then
+					self:UpdateFrame(frame)
+				else
+					self:ClearFrame(frame)
+				end
 			end
 		end
+		wipe(guids_to_update)
 	end
-	wipe(guids_to_update)
 
 	self:UpdateCooldownTexts()
 
