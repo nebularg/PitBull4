@@ -5,6 +5,9 @@ if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les
 local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
+
+local DEBUG = PitBull4.DEBUG
+
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
 local function copy(data)
@@ -57,13 +60,13 @@ local bool_values = {
 -- @param references a function to say which filters the filter references, takes the name of the filter as a reference.  Only needed by filters that call other filters.
 -- @return nil
 function PitBull4_Aura:RegisterFilterType(name, display_name, filter_func, config, references)
-	--@alpha@
-	expect(name, 'typeof', 'string')
-	expect(name, 'not_inset', filter_types)
-	expect(display_name, 'typeof', 'string')
-	expect(filter_func, 'typeof', 'function')
-	expect(config, 'typeof', 'function')
-	--@end-alpha@
+	if DEBUG then
+		expect(name, 'typeof', 'string')
+		expect(name, 'not_inset', filter_types)
+		expect(display_name, 'typeof', 'string')
+		expect(filter_func, 'typeof', 'function')
+		expect(config, 'typeof', 'function')
+	end
 
 	local entry = {}
 	entry.name = name

@@ -2,6 +2,8 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local DEBUG = PitBull4.DEBUG
+
 local global_functions = {}
 
 --- Set the function to be called that will return a tuple of key-value pairs that will be merged onto the options table for the module options.
@@ -11,10 +13,10 @@ local global_functions = {}
 --     return 'someOption', { name = "Some option", } -- etc
 -- end)
 function PitBull4.defaultModulePrototype:SetGlobalOptionsFunction(func)
-	--@alpha@
-	expect(func, 'typeof', 'function')
-	expect(global_functions[self], '==', nil)
-	--@end-alpha@
+	if DEBUG then
+		expect(func, 'typeof', 'function')
+		expect(global_functions[self], '==', nil)
+	end
 	
 	global_functions[self] = func
 end

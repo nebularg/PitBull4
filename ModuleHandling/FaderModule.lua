@@ -1,6 +1,8 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
+local DEBUG = PitBull4.DEBUG
+
 -- Constants -----------------------------------------------------------------
 -- how long in seconds it would take to go from 100% to 0% opacity (or the other way around)
 local FADE_TIME = 0.5
@@ -24,9 +26,9 @@ local changing_frames = {}
 -- @usage local opacity = PitBull4:GetFinalFrameOpacity(frame)
 -- @return a number within [0, 1]
 function PitBull4:GetFinalFrameOpacity(frame)
-	--@alpha@
-	expect(frame, 'typeof', 'frame')
-	--@end-alpha@
+	if DEBUG then
+		expect(frame, 'typeof', 'frame')
+	end
 	
 	local layout_db = frame.layout_db
 	local unit = frame.unit
@@ -87,9 +89,9 @@ end)
 -- @usage MyModule:ClearFrame(frame)
 -- @return false, since :UpdateLayout isn't required for this type of module
 function FaderModule:ClearFrame(frame)
-	--@alpha@
-	expect(frame, 'typeof', 'frame')
-	--@end-alpha@
+	if DEBUG then
+		expect(frame, 'typeof', 'frame')
+	end
 	
 	local frame_to_opacity = module_to_frame_to_opacity[self]
 	if not frame_to_opacity then
@@ -134,9 +136,9 @@ end
 -- @usage MyModule:UpdateStatusBar(frame)
 -- @return false, since :UpdateLayout isn't required for this type of module
 function FaderModule:UpdateFrame(frame)
-	--@alpha@
-	expect(frame, 'typeof', 'frame')
-	--@end-alpha@
+	if DEBUG then
+		expect(frame, 'typeof', 'frame')
+	end
 	
 	local frame_to_opacity = module_to_frame_to_opacity[self]
 	if not frame_to_opacity then

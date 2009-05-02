@@ -31,6 +31,8 @@ local scale_cache = {}
 local _G = _G
 local PitBull4 = _G.PitBull4
 
+local DEBUG = PitBull4.DEBUG
+
 local UnitFrame = PitBull4.UnitFrame
 
 local new, del = PitBull4.new, PitBull4.del
@@ -60,9 +62,9 @@ do
 	--     print(i, v)
 	-- end
 	function ipairs_with_del(list)
-		--@alpha@
-		expect(list, 'typeof', 'table')
-		--@end-alpha@
+		if DEBUG then
+			expect(list, 'typeof', 'table')
+		end
 		
 		return ipairs_with_del__iter, list, 0
 	end
@@ -76,9 +78,9 @@ local modules = PitBull4.modules
 -- @usage db = get_element_db("CombatText", "Normal")
 -- @usage db = get_element_db("DogTagTexts;Name", "Normal")
 local function get_element_db(id, layout)
-	--@alpha@
-	expect(id, 'typeof', 'string')
-	--@end-alpha@
+	if DEBUG then
+		expect(id, 'typeof', 'string')
+	end
 	
 	local module_id, element_id
 	if id:match(";") then
@@ -87,9 +89,9 @@ local function get_element_db(id, layout)
 		module_id = id
 	end
 	
-	--@alpha@
-	expect(module_id, 'inset', modules)
-	--@end-alpha@
+	if DEBUG then
+		expect(module_id, 'inset', modules)
+	end
 	
 	local module = modules[module_id]
 	
@@ -98,34 +100,34 @@ local function get_element_db(id, layout)
 		db = rawget(db.elements, element_id)
 	end
 	
-	--@alpha@
-	expect(db, 'typeof', 'nil;table')
-	--@end-alpha@
+	if DEBUG then
+		expect(db, 'typeof', 'nil;table')
+	end
 	return db
 end
 
 --- A dictionary of element_id to module_type.
 local element_id_to_module_type = setmetatable({}, {
 	__index = function(self, id)
-		--@alpha@
-		expect(id, 'typeof', 'string')
-		--@end-alpha@
+		if DEBUG then
+			expect(id, 'typeof', 'string')
+		end
 		
 		local module_id = id
 		if module_id:match(";") then
 			module_id = (";"):split(id, 2)
 		end
 		
-		--@alpha@
-		expect(module_id, 'inset', modules)
-		--@end-alpha@
+		if DEBUG then
+			expect(module_id, 'inset', modules)
+		end
 		
 		local module = modules[module_id]
 		local module_type = module.module_type
 		
-		--@alpha@
-		expect(module_type, 'typeof', 'string')
-		--@end-alpha@
+		if DEBUG then
+			expect(module_type, 'typeof', 'string')
+		end
 		
 		self[id] = module_type
 		return module_type
@@ -145,10 +147,10 @@ do
 	-- @usage element_ids = { "HealthBar", "PowerBar" }
 	-- sort_elements_by_position(element_ids)
 	function sort_elements_by_position(element_ids, layout)
-		--@alpha@
-		expect(element_ids, 'typeof', 'table')
-		expect(layout, 'typeof', 'string')
-		--@end-alpha@
+		if DEBUG then
+			expect(element_ids, 'typeof', 'table')
+			expect(layout, 'typeof', 'string')
+		end
 		
 		for _, element_id in ipairs(element_ids) do
 			local db = get_element_db(element_id, layout)
@@ -168,11 +170,11 @@ end
 -- @return a list of element ids
 -- @usage element_ids = filter_elements_for_side({ "HealthBar", "PowerBar" }, "Normal", "center")
 local function filter_elements_for_side(element_ids, layout, side)
-	--@alpha@
-	expect(element_ids, 'typeof', 'table')
-	expect(layout, 'typeof', 'string')
-	expect(side, 'inset', "left;center;right")
-	--@end-alpha@
+	if DEBUG then
+		expect(element_ids, 'typeof', 'table')
+		expect(layout, 'typeof', 'string')
+		expect(side, 'inset', "left;center;right")
+	end
 	
 	local filtered_element_ids = new()
 	for _, element_id in ipairs(element_ids) do
@@ -193,9 +195,9 @@ end
 -- @return a list of element ids where side = 'right'
 -- @usage bars, center_bars, left_bars, right_bars = get_all_bars(frame)
 local function get_all_bars(frame)
-	--@alpha@
-	expect(frame, 'inset', PitBull4.all_frames)
-	--@end-alpha@
+	if DEBUG then
+		expect(frame, 'inset', PitBull4.all_frames)
+	end
 	
 	local bars = new()
 	local layout = frame.layout
@@ -239,12 +241,12 @@ end
 -- @return the number of square indicators are on the right side
 -- @usage bar_width_points, bar_height_points, left_exempt_width, right_exempt_width = calculate_width_height_points("Normal", {"HealthBar", "PowerBar"}, {"Portrait"}, {})
 local function calculate_width_height_points(layout, center_bars, left_bars, right_bars)
-	--@alpha@
-	expect(layout, 'typeof', 'string')
-	expect(center_bars, 'typeof', 'table')
-	expect(left_bars, 'typeof', 'table')
-	expect(right_bars, 'typeof', 'table')
-	--@end-alpha@
+	if DEBUG then
+		expect(layout, 'typeof', 'string')
+		expect(center_bars, 'typeof', 'table')
+		expect(left_bars, 'typeof', 'table')
+		expect(right_bars, 'typeof', 'table')
+	end
 	
 	local bar_height_points = 0
 	local bar_width_points = 0
@@ -301,9 +303,9 @@ do
 	--     -- 3, "c" -- 2, "b", -- 1, "a"
 	-- end
 	function reverse_ipairs(list)
-		--@alpha@
-		expect(list, 'typeof', 'table')
-		--@end-alpha@
+		if DEBUG then
+			expect(list, 'typeof', 'table')
+		end
 		
 		return reverse_ipairs__iter, list, #list + 1
 	end
@@ -313,9 +315,9 @@ end
 -- @param frame a unit frame
 -- @usage update_bar_layout(frame)
 local function update_bar_layout(frame)
-	--@alpha@
-	expect(frame, 'inset', PitBull4.all_frames)
-	--@end-alpha@
+	if DEBUG then
+		expect(frame, 'inset', PitBull4.all_frames)
+	end
 	
 	local bars, center_bars, left_bars, right_bars = get_all_bars(frame)
 	

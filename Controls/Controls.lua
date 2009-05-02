@@ -2,6 +2,7 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local PitBull4_Controls = {}
 PitBull4.Controls = PitBull4_Controls
+local DEBUG = PitBull4.DEBUG
 
 local cache = {}
 
@@ -127,10 +128,10 @@ end
 
 -- fetch a control of the given type and apply the standard settings to it
 local function fetch_control(kind, parent, isCustom, ...)
-	--@alpha@
-	expect(kind, 'typeof', 'string')
-	expect(parent, 'typeof', 'frame')
-	--@end-alpha@
+	if DEBUG then
+		expect(kind, 'typeof', 'string')
+		expect(parent, 'typeof', 'frame')
+	end
 	
 	local cache_kind = cache[kind]
 	if not cache_kind then
@@ -168,9 +169,9 @@ end
 -- @usage local frame = PitBull4.Controls.MakeFrame(someFrame)
 -- @return a Frame object
 function PitBull4.Controls.MakeFrame(parent)
-	--@alpha@
-	expect(parent, 'typeof', 'frame')
-	--@end-alpha@
+	if DEBUG then
+		expect(parent, 'typeof', 'frame')
+	end
 	
 	return fetch_control("Frame", parent)
 end
@@ -181,10 +182,10 @@ end
 -- @usage local texture = PitBull4.Controls.MakeTexture(someFrame, "BACKGROUND")
 -- @return a Texture object
 function PitBull4.Controls.MakeTexture(parent, layer)
-	--@alpha@
-	expect(parent, 'typeof', 'frame')
-	expect(layer, 'typeof', 'string;nil')
-	--@end-alpha@
+	if DEBUG then
+		expect(parent, 'typeof', 'frame')
+		expect(layer, 'typeof', 'string;nil')
+	end
 
 	return fetch_control("Texture", parent, false, layer)
 end
@@ -195,10 +196,10 @@ end
 -- @usage local fs = PitBull4.Controls.MakeFontString(someFrame, "BACKGROUND")
 -- @return a FontString object
 function PitBull4.Controls.MakeFontString(parent, layer)
-	--@alpha@
-	expect(parent, 'typeof', 'frame')
-	expect(layer, 'typeof', 'string;nil')
-	--@end-alpha@
+	if DEBUG then
+		expect(parent, 'typeof', 'frame')
+		expect(layer, 'typeof', 'string;nil')
+	end
 	
 	return fetch_control("FontString", parent, false, layer)
 end
@@ -208,9 +209,9 @@ end
 -- @usage local frame = PitBull4.Controls.MakePlayerModel(someFrame)
 -- @return a PlayerModel object
 function PitBull4.Controls.MakePlayerModel(parent)
-	--@alpha@
-	expect(parent, 'typeof', 'frame')
-	--@end-alpha@
+	if DEBUG then
+		expect(parent, 'typeof', 'frame')
+	end
 	
 	return fetch_control("PlayerModel", parent)
 end
@@ -220,9 +221,9 @@ end
 -- @usage local frame = PitBull4.Controls.MakeCooldown(someFrame)
 -- @return a Cooldown object
 function PitBull4.Controls.MakeCooldown(parent)
-	--@alpha@
-	expect(parent, 'typeof', 'frame')
-	--@end-alpha@
+	if DEBUG then
+		expect(parent, 'typeof', 'frame')
+	end
 	
 	return fetch_control("Cooldown", parent)
 end
@@ -232,9 +233,9 @@ end
 -- @usage local frame = PitBull4.Controls.MakeButton(someFrame)
 -- @return a Button object
 function PitBull4.Controls.MakeButton(parent)
-	--@alpha@
-	expect(parent, 'typeof', 'frame')
-	--@end-alpha@
+	if DEBUG then
+		expect(parent, 'typeof', 'frame')
+	end
 	
 	return fetch_control("Button", parent)
 end
@@ -248,15 +249,15 @@ end
 -- @param inheritTemplate the Blizzard template(s) to inherit from
 -- @usage PitBull4.Controls.MakeNewControlType("BetterStatusBar", "StatusBar", function(control) end, function(control) end, function(control) end)
 function PitBull4.Controls.MakeNewControlType(name, frameType, onCreate, onRetrieve, onDelete, inheritTemplate)
-	--@alpha@
-	expect(name, 'typeof', 'string')
-	expect(PitBull4_Controls["Make" .. name], 'typeof', 'nil')
-	expect(frameType, 'typeof', 'string')
-	expect(onCreate, 'typeof', 'function')
-	expect(onRetrieve, 'typeof', 'function')
-	expect(onDelete, 'typeof', 'function')
-	expect(inheritTemplate, 'typeof', 'nil;string')
-	--@end-alpha@
+	if DEBUG then
+		expect(name, 'typeof', 'string')
+		expect(PitBull4_Controls["Make" .. name], 'typeof', 'nil')
+		expect(frameType, 'typeof', 'string')
+		expect(onCreate, 'typeof', 'function')
+		expect(onRetrieve, 'typeof', 'function')
+		expect(onDelete, 'typeof', 'function')
+		expect(inheritTemplate, 'typeof', 'nil;string')
+	end
 	
 	PitBull4_Controls["Make" .. name] = function(parent, ...)
 		return fetch_control(name, parent, true, frameType, onCreate, onRetrieve, onDelete, inheritTemplate, ...)

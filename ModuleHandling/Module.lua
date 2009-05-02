@@ -1,6 +1,8 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
+local DEBUG = PitBull4.DEBUG
+
 -- dictionary of module type name to module type prototype
 local module_types = {}
 
@@ -21,11 +23,11 @@ local module_to_global_defaults = {}
 -- @param defaults a dictionary of default values that all modules will have that inherit from this module type
 -- @usage MyModule:NewModuleType("mytype", { size = 50, verbosity = "lots" })
 function PitBull4:NewModuleType(name, defaults)
-	--@alpha@
-	expect(name, 'typeof', "string")
-	expect(name, 'not_inset', module_types)
-	expect(defaults, 'typeof', "table")
-	--@end-alpha@
+	if DEBUG then
+		expect(name, 'typeof', "string")
+		expect(name, 'not_inset', module_types)
+		expect(defaults, 'typeof', "table")
+	end
 	
 	module_types[name] = {}
 	module_types_to_layout_defaults[name] = defaults
@@ -45,10 +47,10 @@ local do_nothing = function() end
 -- end
 -- @return iterator that returns module and function
 function PitBull4:IterateFrameScriptHooks(script)
-	--@alpha@
-	expect(script, 'typeof', 'string')
-	expect(script, 'match', '^On[A-Z][A-Za-z]+$')
-	--@end-alpha@
+	if DEBUG then
+		expect(script, 'typeof', 'string')
+		expect(script, 'match', '^On[A-Z][A-Za-z]+$')
+	end
 	
 	if not module_script_hooks[script] then
 		return do_nothing
@@ -62,11 +64,11 @@ end
 -- @param ... any arguments to pass in
 -- @usage PitBull4:RunFrameScriptHooks(script, ...)
 function PitBull4:RunFrameScriptHooks(script, frame, ...)
-	--@alpha@
-	expect(script, 'typeof', 'string')
-	expect(frame, 'typeof', 'frame')
-	expect(frame, 'inset', PitBull4.all_frames)
-	--@end-alpha@
+	if DEBUG then
+		expect(script, 'typeof', 'string')
+		expect(frame, 'typeof', 'frame')
+		expect(frame, 'inset', PitBull4.all_frames)
+	end
 
 	for module, func in self:IterateFrameScriptHooks(script) do
 		func(frame, ...)
@@ -75,10 +77,10 @@ end
 
 function PitBull4:OnModuleCreated(module)
 	local id = module.moduleName
-	--@alpha@
-	expect(id, 'typeof', 'string')
-	expect(id, 'match', '^[A-Za-z_][A-Za-z0-9_]*$')
-	--@end-alpha@
+	if DEBUG then
+		expect(id, 'typeof', 'string')
+		expect(id, 'match', '^[A-Za-z_][A-Za-z0-9_]*$')
+	end
 	module.id = id
 	self[id] = module
 end
@@ -91,14 +93,14 @@ end
 --     -- do stuff here
 -- end)
 function Module:AddFrameScriptHook(script, method)
-	--@alpha@
-	expect(script, 'typeof', 'string')
-	expect(script, 'match', '^On[A-Z][A-Za-z]+$')
-	expect(method, 'typeof', 'function;string;nil')
-	if module_script_hooks[script] then
-		expect(self, 'not_inset', module_script_hooks[script])
+	if DEBUG then
+		expect(script, 'typeof', 'string')
+		expect(script, 'match', '^On[A-Z][A-Za-z]+$')
+		expect(method, 'typeof', 'function;string;nil')
+		if module_script_hooks[script] then
+			expect(self, 'not_inset', module_script_hooks[script])
+		end
 	end
-	--@end-alpha@
 	
 	if not method then
 		method = script
@@ -115,21 +117,21 @@ end
 -- @param script name of the script
 -- @usage MyModule:RemoveFrameScriptHook("OnEnter")
 function Module:RemoveFrameScriptHook(script)
-        --@alpha@
-        expect(script, 'typeof', 'string')
-        expect(script, 'match', '^On[A-Z][A-Za-z]+$')
-        --@end-alpha@
+	if DEBUG then
+		expect(script, 'typeof', 'string')
+		expect(script, 'match', '^On[A-Z][A-Za-z]+$')
+	end
 
-        module_script_hooks[script][self] = nil
+	module_script_hooks[script][self] = nil
 end
 
 --- Set the localized name of the module.
 -- @param name the localized name of the module, with proper spacing, and in Title Case.
 -- @usage MyModule:SetName("My Module")
 function Module:SetName(name)
-	--@alpha@
-	expect(name, 'typeof', 'string')
-	--@end-alpha@
+	if DEBUG then
+		expect(name, 'typeof', 'string')
+	end
 	
 	self.name = name
 end
@@ -138,9 +140,9 @@ end
 -- @param description the localized description of the module, as a full sentence, including a period at the end.
 -- @usage MyModule:SetDescription("This does a lot of things.")
 function Module:SetDescription(description)
-	--@alpha@
-	expect(description, 'typeof', 'string')
-	--@end-alpha@
+	if DEBUG then
+		expect(description, 'typeof', 'string')
+	end
 	
 	self.description = description
 end
@@ -150,10 +152,10 @@ end
 -- @param type one of "custom", "bar", or "indicator"
 -- @usage MyModule:SetModuleType("bar")
 function Module:SetModuleType(type)
-	--@alpha@
-	expect(type, 'typeof', 'string')
-	expect(type, 'inset', module_types)
-	--@end-alpha@
+	if DEBUG then
+		expect(type, 'typeof', 'string')
+		expect(type, 'inset', module_types)
+	end
 	
 	self.module_type = type
 	
@@ -205,11 +207,11 @@ end
 -- @usage MyModule:SetDefaults({ color = { 1, 0, 0, 1 } })
 -- @usage MyModule:SetDefaults({ color = { 1, 0, 0, 1 } }, {})
 function Module:SetDefaults(layout_defaults, global_defaults)
-	--@alpha@
-	expect(layout_defaults, 'typeof', 'table;nil')
-	expect(global_defaults, 'typeof', 'table;nil')
-	expect(self.module_type, 'typeof', 'string')
-	--@end-alpha@
+	if DEBUG then
+		expect(layout_defaults, 'typeof', 'table;nil')
+		expect(global_defaults, 'typeof', 'table;nil')
+		expect(self.module_type, 'typeof', 'string')
+	end
 	
 	local better_layout_defaults = merge(module_types_to_layout_defaults[self.module_type], layout_defaults or {})
 	
@@ -227,12 +229,12 @@ end
 -- @usage local color = MyModule:GetLayoutDB(frame).color
 -- @return the database table
 function Module:GetLayoutDB(layout)
-	--@alpha@
-	expect(layout, 'typeof', 'string;table;frame')
-	if type(layout) == "table" then
-		expect(layout.layout, 'typeof', 'string')
+	if DEBUG then
+		expect(layout, 'typeof', 'string;table;frame')
+		if type(layout) == "table" then
+			expect(layout.layout, 'typeof', 'string')
+		end
 	end
-	--@end-alpha@
 	
 	if type(layout) == "table" then
 		-- we're dealing with a unit frame that has the layout key on it.
@@ -249,10 +251,10 @@ end
 -- @usage MyModule:Update(frame)
 -- @return whether the update requires UpdateLayout to be called if return_changed is specified
 function Module:Update(frame, return_changed, same_guid)
-	--@alpha@
-	expect(frame, 'typeof', 'frame')
-	expect(return_changed, 'typeof', 'nil;boolean')
-	--@end-alpha@
+	if DEBUG then
+		expect(frame, 'typeof', 'frame')
+		expect(return_changed, 'typeof', 'nil;boolean')
+	end
 	
 	local changed
 	
@@ -277,10 +279,10 @@ end
 -- @usage MyModule:Clear(frame)
 -- @return whether the clear requires UpdateLayout to be called if return_changed is specified
 function Module:Clear(frame, return_changed)
-	--@alpha@
-	expect(frame, 'typeof', 'frame')
-	expect(return_changed, 'typeof', 'nil;boolean')
-	--@end-alpha@
+	if DEBUG then
+		expect(frame, 'typeof', 'frame')
+		expect(return_changed, 'typeof', 'nil;boolean')
+	end
 
 	local changed = self:ClearFrame(frame)
 
@@ -296,9 +298,9 @@ end
 -- @param unit the UnitID in question to update
 -- @usage MyModule:UpdateForUnitID("player")
 function Module:UpdateForUnitID(unit)
-	--@alpha@
-	expect(unit, 'typeof', 'string')
-	--@end-alpha@
+	if DEBUG then
+		expect(unit, 'typeof', 'string')
+	end
 	
 	for frame in PitBull4:IterateFramesForUnitID(unit) do
 		self:Update(frame)
@@ -309,9 +311,9 @@ end
 -- @param guid the GUID in question to update
 -- @usage MyModule:UpdateForGUID(UnitGUID("player"))
 function Module:UpdateForGUID(guid)
-	--@alpha@
-	expect(guid, 'typeof', 'string;nil')
-	--@end-alpha@
+	if DEBUG then
+		expect(guid, 'typeof', 'string;nil')
+	end
 	
 	if not guid then
 		return
@@ -326,9 +328,9 @@ end
 -- @param classification the classification in question to update
 -- @usage MyModule:UpdateForClassification("player")
 function Module:UpdateForClassification(classification)
-	--@alpha@
-	expect(classification, 'typeof', 'string')
-	--@end-alpha@
+	if DEBUG then
+		expect(classification, 'typeof', 'string')
+	end
 	
 	for frame in PitBull4:IterateFramesForClassification(classification) do
 		self:Update(frame)
@@ -415,10 +417,10 @@ function PitBull4:IterateModulesOfType(...)
 	end
 	
 	for i = 1, n do
-		--@alpha@
-		expect((select(i, ...)), 'typeof', 'string')
-		expect((select(i, ...)), 'inset', module_types)
-		--@end-alpha@
+		if DEBUG then
+			expect((select(i, ...)), 'typeof', 'string')
+			expect((select(i, ...)), 'inset', module_types)
+		end
 		
 		types[(select(i, ...))] = true
 	end

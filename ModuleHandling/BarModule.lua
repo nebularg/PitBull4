@@ -1,6 +1,8 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
+local DEBUG = PitBull4.DEBUG
+
 local BarModule = PitBull4:NewModuleType("bar", {
 	size = 2,
 	reverse = false,
@@ -134,9 +136,9 @@ end
 -- @usage local update_layout = MyModule:ClearFrame(frame)
 -- @return whether the update requires :UpdateLayout to be called
 function BarModule:ClearFrame(frame)
-	--@alpha@
-	expect(frame, 'typeof', 'frame')
-	--@end-alpha@
+	if DEBUG then
+		expect(frame, 'typeof', 'frame')
+	end
 	
 	local id = self.id
 	local control = frame[id]
@@ -153,9 +155,9 @@ end
 -- @usage local update_layout = MyModule:UpdateStatusBar(frame)
 -- @return whether the update requires :UpdateLayout to be called
 function BarModule:UpdateFrame(frame)
-	--@alpha@
-	expect(frame, 'typeof', 'frame')
-	--@end-alpha@
+	if DEBUG then
+		expect(frame, 'typeof', 'frame')
+	end
 	
 	local value, extra, icon = call_value_function(self, frame)
 	if not value then

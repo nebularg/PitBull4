@@ -1,3 +1,5 @@
+local DEBUG = PitBull4.DEBUG
+
 -- everything in here will be added to the controls verbatim
 local BetterStatusBar = {
 	value = 1,
@@ -105,9 +107,9 @@ end
 -- @param value value between [0, 1]
 -- @usage bar:SetValue(0.5)
 function BetterStatusBar:SetValue(value)
-	--@alpha@
-	expect(value, 'typeof', 'number')
-	--@end-alpha@
+	if DEBUG then
+		expect(value, 'typeof', 'number')
+	end
 	
 	if value < 0 then
 		value = 0
@@ -136,9 +138,10 @@ end
 -- @param extraValue
 -- @usage bar:SetExtraValue(0.25)
 function BetterStatusBar:SetExtraValue(extraValue)
-	--@alpha@
-	expect(extraValue, 'typeof', 'number')
-	--@end-alpha@
+	if DEBUG then
+		expect(extraValue, 'typeof', 'number')
+	end
+	
 	if extraValue < 0 then
 		extraValue = 0
 	end
@@ -235,9 +238,9 @@ end
 -- @param orientation "HORIZONTAL" or "VERTICAL"
 -- @usage bar:SetOrientation("VERTICAL")
 function BetterStatusBar:SetOrientation(orientation)
-	--@alpha@
-	expect(orientation, 'inset', 'HORIZONTAL;VERTICAL')
-	--@end-alpha@
+	if DEBUG then
+		expect(orientation, 'inset', 'HORIZONTAL;VERTICAL')
+	end
 	
 	if self.orientation == orientation then
 		return
@@ -258,9 +261,9 @@ end
 -- @param reverse whether the bar is reversed
 -- @usage bar:SetReverse(true)
 function BetterStatusBar:SetReverse(reverse)
-	--@alpha@
-	expect(reverse, 'typeof', 'boolean')
-	--@end-alpha@
+	if DEBUG then
+		expect(reverse, 'typeof', 'boolean')
+	end
 	
 	reverse = not not reverse
 	if self.reverse == reverse then
@@ -282,9 +285,9 @@ end
 -- @param deficit whether the bar shows its deficit
 -- @usage bar:SetDeficit(true)
 function BetterStatusBar:SetDeficit(deficit)
-	--@alpha@
-	expect(deficit, 'typeof', 'boolean')
-	--@end-alpha@
+	if DEBUG then
+		expect(deficit, 'typeof', 'boolean')
+	end
 	
 	deficit = not not deficit
 	if self.deficit == deficit then
@@ -305,9 +308,9 @@ end
 -- @param texture the path to the texture
 -- @usage bar:SetTexture([[Interface\TargetingFrame\UI-StatusBar]])
 function BetterStatusBar:SetTexture(texture)
-	--@alpha@
-	expect(texture, 'typeof', 'string')
-	--@end-alpha@
+	if DEBUG then
+		expect(texture, 'typeof', 'string')
+	end
 	
 	self.fg:SetTexture(texture)
 	self.extra:SetTexture(texture)
@@ -359,17 +362,17 @@ end
 -- @param b the blue value [0, 1]
 -- @usage bar:SetColor(1, 0.82, 0)
 function BetterStatusBar:SetColor(r, g, b)
-	--@alpha@
-	expect(r, 'typeof', 'number')
-	expect(r, '>=', 0)
-	expect(r, '<=', 1)
-	expect(g, 'typeof', 'number')
-	expect(g, '>=', 0)
-	expect(g, '<=', 1)
-	expect(b, 'typeof', 'number')
-	expect(b, '>=', 0)
-	expect(b, '<=', 1)
-	--@end-alpha@
+	if DEBUG then
+		expect(r, 'typeof', 'number')
+		expect(r, '>=', 0)
+		expect(r, '<=', 1)
+		expect(g, 'typeof', 'number')
+		expect(g, '>=', 0)
+		expect(g, '<=', 1)
+		expect(b, 'typeof', 'number')
+		expect(b, '>=', 0)
+		expect(b, '<=', 1)
+	end
 	
 	self.fg:SetVertexColor(r, g, b)
 	self.extra:SetVertexColor(get_extra_color(self))
@@ -393,11 +396,11 @@ BetterStatusBar.GetStatusBarColor = BetterStatusBar.GetColor
 -- @param a the alpha value [0, 1]
 -- @usage bar:SetNormalAlpha(0.7)
 function BetterStatusBar:SetNormalAlpha(a)
-	--@alpha@
-	expect(a, 'typeof', 'number')
-	expect(a, '>=', 0)
-	expect(a, '<=', 1)
-	--@end-alpha@
+	if DEBUG then
+		expect(a, 'typeof', 'number')
+		expect(a, '>=', 0)
+		expect(a, '<=', 1)
+	end
 	
 	self.fg:SetAlpha(a)
 	if not self.extraA then
@@ -423,22 +426,22 @@ end
 -- @usage bar:SetBackgroundColor(0.5, 0.41, 0)
 -- @usage bar:SetBackgroundColor()
 function BetterStatusBar:SetBackgroundColor(br, bg, bb)
-	--@alpha@
-	expect(br, 'typeof', 'number;nil')
-	if type(br) == "number" then
-		expect(br, '>=', 0)
-		expect(br, '<=', 1)
-		expect(bg, 'typeof', 'number')
-		expect(bg, '>=', 0)
-		expect(bg, '<=', 1)
-		expect(bb, 'typeof', 'number')
-		expect(bb, '>=', 0)
-		expect(bb, '<=', 1)
-	else
-		expect(bg, 'typeof', 'nil')
-		expect(bb, 'typeof', 'nil')
+	if DEBUG then
+		expect(br, 'typeof', 'number;nil')
+		if type(br) == "number" then
+			expect(br, '>=', 0)
+			expect(br, '<=', 1)
+			expect(bg, 'typeof', 'number')
+			expect(bg, '>=', 0)
+			expect(bg, '<=', 1)
+			expect(bb, 'typeof', 'number')
+			expect(bb, '>=', 0)
+			expect(bb, '<=', 1)
+		else
+			expect(bg, 'typeof', 'nil')
+			expect(bb, 'typeof', 'nil')
+		end
 	end
-	--@end-alpha@
 	
 	self.bgR, self.bgG, self.bgB = br or false, bg or false, bb or false
 	self.bg:SetVertexColor(get_bg_color(self))
@@ -461,13 +464,13 @@ end
 -- @usage bar:SetBackgroundAlpha(0.7)
 -- @usage bar:SetBackgroundAlpha()
 function BetterStatusBar:SetBackgroundAlpha(a)
-	--@alpha@
-	expect(a, 'typeof', 'number;nil')
-	if a then
-		expect(a, '>=', 0)
-		expect(a, '<=', 1)
+	if DEBUG then
+		expect(a, 'typeof', 'number;nil')
+		if a then
+			expect(a, '>=', 0)
+			expect(a, '<=', 1)
+		end
 	end
-	--@end-alpha@
 	
 	self.bgA = a or false
 	if not a then
@@ -492,22 +495,22 @@ end
 -- @usage bar:SetExtraColor(0.8, 0.6, 0)
 -- @usage bar:SetExtraColor()
 function BetterStatusBar:SetExtraColor(er, eg, eb)
-	--@alpha@
-	expect(er, 'typeof', 'number;nil')
-	if type(er) == "number" then
-		expect(er, '>=', 0)
-		expect(er, '<=', 1)
-		expect(eg, 'typeof', 'number')
-		expect(eg, '>=', 0)
-		expect(eg, '<=', 1)
-		expect(eb, 'typeof', 'number')
-		expect(eb, '>=', 0)
-		expect(eb, '<=', 1)
-	else
-		expect(eg, 'typeof', 'nil')
-		expect(eb, 'typeof', 'nil')
+	if DEBUG then
+		expect(er, 'typeof', 'number;nil')
+		if type(er) == "number" then
+			expect(er, '>=', 0)
+			expect(er, '<=', 1)
+			expect(eg, 'typeof', 'number')
+			expect(eg, '>=', 0)
+			expect(eg, '<=', 1)
+			expect(eb, 'typeof', 'number')
+			expect(eb, '>=', 0)
+			expect(eb, '<=', 1)
+		else
+			expect(eg, 'typeof', 'nil')
+			expect(eb, 'typeof', 'nil')
+		end
 	end
-	--@end-alpha@
 
 	self.extraR, self.extraG, self.extraB = er or false, eg or false, eb or false
 	self.extra:SetVertexColor(get_extra_color(self))
@@ -530,13 +533,13 @@ end
 -- @usage bar:SetExtraAlpha(0.7)
 -- @usage bar:SetExtraAlpha()
 function BetterStatusBar:SetExtraAlpha(a)
-	--@alpha@
-	expect(a, 'typeof', 'number;nil')
-	if a then
-		expect(a, '>=', 0)
-		expect(a, '<=', 1)
+	if DEBUG then
+		expect(a, 'typeof', 'number;nil')
+		if a then
+			expect(a, '>=', 0)
+			expect(a, '<=', 1)
+		end
 	end
-	--@end-alpha@
 	
 	self.extraA = a or false
 	if not a then
@@ -579,9 +582,9 @@ end
 -- @usage bar:SetIcon([[Interface\Icons\Ability_Parry]])
 -- @usage bar:SetIcon(nil)
 function BetterStatusBar:SetIcon(path)
-	--@alpha@
-	expect(path, 'typeof', 'string;nil')
-	--@end-alpha@
+	if DEBUG then
+		expect(path, 'typeof', 'string;nil')
+	end
 	
 	local old_icon_path = self.icon_path
 	if old_icon_path == path then
@@ -618,9 +621,9 @@ end
 -- @usage bar:SetIconPosition(true)
 -- @usage bar:SetIconPosition(false)
 function BetterStatusBar:SetIconPosition(value)
-	--@alpha@
-	expect(value, 'typeof', 'boolean')
-	--@end-alpha@
+	if DEBUG then
+		expect(value, 'typeof', 'boolean')
+	end
 	
 	if value == self.icon_position then
 		return

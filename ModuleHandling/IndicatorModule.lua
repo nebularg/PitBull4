@@ -3,6 +3,8 @@ local INDICATOR_SIZE = 15
 local _G = _G
 local PitBull4 = _G.PitBull4
 
+local DEBUG = PitBull4.DEBUG
+
 local IndicatorModule = PitBull4:NewModuleType("indicator", {
 	size = 1,
 	attach_to = "root",
@@ -69,9 +71,9 @@ end
 -- @usage local update_layout = MyModule:ClearFrame(frame)
 -- @return whether the update requires :UpdateLayout to be called
 function IndicatorModule:ClearFrame(frame)
-	--@alpha@
-	expect(frame, 'typeof', 'frame')
-	--@end-alpha@
+	if DEBUG then
+		expect(frame, 'typeof', 'frame')
+	end
 	
 	local id = self.id
 	local control = frame[id]
@@ -88,9 +90,9 @@ end
 -- @usage local update_layout = MyModule:UpdateFrame(frame)
 -- @return whether the update requires :UpdateLayout to be called
 function IndicatorModule:UpdateFrame(frame)
-	--@alpha@
-	expect(frame, 'typeof', 'frame')
-	--@end-alpha@
+	if DEBUG then
+		expect(frame, 'typeof', 'frame')
+	end
 	
 	local tex = call_texture_function(self, frame)
 	if not tex then

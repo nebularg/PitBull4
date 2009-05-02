@@ -2,6 +2,8 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local DEBUG = PitBull4.DEBUG
+
 local color_functions = {}
 
 --- Set the function to be called that will return a tuple of key-value pairs that will cause an options table show in the colors section.
@@ -15,10 +17,10 @@ local color_functions = {}
 --     end
 -- end)
 function PitBull4.defaultModulePrototype:SetColorOptionsFunction(func)
-	--@alpha@
-	expect(func, 'typeof', 'function')
-	expect(color_functions[self], '==', nil)
-	--@end-alpha@
+	if DEBUG then
+		expect(func, 'typeof', 'function')
+		expect(color_functions[self], '==', nil)
+	end
 	
 	color_functions[self] = func
 end
@@ -283,9 +285,9 @@ function PitBull4.Options.get_color_options()
 			local t = { color_functions[module](module) }
 			
 			local reset_func = table.remove(t)
-			--@alpha@
-			expect(reset_func, 'typeof', 'function')
-			--@end-alpha@
+			if DEBUG then
+				expect(reset_func, 'typeof', 'function')
+			end
 			for i = 1, #t, 2 do
 				local k, v = t[i], t[i + 1]
 				opt.args[k] = v

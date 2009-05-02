@@ -174,6 +174,10 @@ local _G = _G
 local PitBull4 = LibStub("AceAddon-3.0"):NewAddon("PitBull4", "AceEvent-3.0", "AceTimer-3.0")
 _G.PitBull4 = PitBull4
 
+PitBull4.DEBUG = _G.PitBull4_DEBUG or false
+_G.PitBull4_DEBUG = nil
+local DEBUG = PitBull4.DEBUG
+
 PitBull4.L = L
 
 PitBull4.SINGLETON_CLASSIFICATIONS = SINGLETON_CLASSIFICATIONS
@@ -213,10 +217,10 @@ do
 	-- t = del(t)
 	-- @return nil
 	function PitBull4.del(t)
-		--@alpha@
-		expect(t, 'typeof', 'table')
-		expect(t, 'not_inset', cache)
-		--@end-alpha@
+		if DEBUG then
+			expect(t, 'typeof', 'table')
+			expect(t, 'not_inset', cache)
+		end
 		
 		wipe(t)
 		cache[t] = true
@@ -291,9 +295,9 @@ PitBull4.name_to_header = name_to_header
 -- @usage MyNamespace.MyMethod = PitBull4:OutOfCombatWrapper(MyNamespace.MyMethod)
 -- @return the wrapped function
 function PitBull4:OutOfCombatWrapper(func)
-	--@alpha@
-	expect(func, 'typeof', 'function')
-	--@end-alpha@
+	if DEBUG then
+		expect(func, 'typeof', 'function')
+	end
 	
 	return function(...)
 		return PitBull4:RunOnLeaveCombat(func, ...)
@@ -354,9 +358,9 @@ end
 -- end
 -- @return iterator which returns frames
 function PitBull4:IterateFrames(also_hidden)
-	--@alpha@
-	expect(also_hidden, 'typeof', 'boolean;nil')
-	--@end-alpha@
+	if DEBUG then
+		expect(also_hidden, 'typeof', 'boolean;nil')
+	end
 	
 	return not also_hidden and iterate_shown_frames or half_next, all_frames
 end
@@ -372,9 +376,9 @@ end
 -- end
 -- @return iterator which returns frames
 function PitBull4:IterateWackyFrames(also_hidden)
-	--@alpha@
-	expect(also_hidden, 'typeof', 'boolean;nil')
-	--@end-alpha@
+	if DEBUG then
+		expect(also_hidden, 'typeof', 'boolean;nil')
+	end
 	
 	return not also_hidden and iterate_shown_frames or half_next, wacky_frames
 end
@@ -390,9 +394,9 @@ end
 -- end
 -- @return iterator which returns frames
 function PitBull4:IterateNonWackyFrames(also_hidden)
-	--@alpha@
-	expect(also_hidden, 'typeof', 'boolean;nil')
-	--@end-alpha@
+	if DEBUG then
+		expect(also_hidden, 'typeof', 'boolean;nil')
+	end
 	
 	return not also_hidden and iterate_shown_frames or half_next, non_wacky_frames
 end
@@ -408,9 +412,9 @@ end
 -- end
 -- @return iterator which returns frames
 function PitBull4:IterateSingletonFrames(also_hidden)
-	--@alpha@
-	expect(also_hidden, 'typeof', 'boolean;nil')
-	--@end-alpha@
+	if DEBUG then
+		expect(also_hidden, 'typeof', 'boolean;nil')
+	end
 	
 	return not also_hidden and iterate_shown_frames or half_next, singleton_frames
 end
@@ -426,9 +430,9 @@ end
 -- end
 -- @return iterator which returns frames
 function PitBull4:IterateMemberFrames(also_hidden)
-	--@alpha@
-	expect(also_hidden, 'typeof', 'boolean;nil')
-	--@end-alpha@
+	if DEBUG then
+		expect(also_hidden, 'typeof', 'boolean;nil')
+	end
 	
 	return not also_hidden and iterate_shown_frames or half_next, member_frames
 end
@@ -445,10 +449,10 @@ end
 -- end
 -- @return iterator which returns frames
 function PitBull4:IterateFramesForUnitID(unit, also_hidden)
-	--@alpha@
-	expect(unit, 'typeof', 'string')
-	expect(also_hidden, 'typeof', 'boolean;nil')
-	--@end-alpha@
+	if DEBUG then
+		expect(unit, 'typeof', 'string')
+		expect(also_hidden, 'typeof', 'boolean;nil')
+	end
 	
 	local id = PitBull4.Utils.GetBestUnitID(unit)
 	if not id then
@@ -503,10 +507,10 @@ end
 -- end
 -- @return iterator which returns frames
 function PitBull4:IterateFramesForClassification(classification, also_hidden)
-	--@alpha@
-	expect(classification, 'typeof', 'string')
-	expect(also_hidden, 'typeof', 'boolean;nil')
-	--@end-alpha@
+	if DEBUG then
+		expect(classification, 'typeof', 'string')
+		expect(also_hidden, 'typeof', 'boolean;nil')
+	end
 	
 	local frames = rawget(classification_to_frames, classification)
 	if not frames then
@@ -550,10 +554,10 @@ end
 -- end
 -- @return iterator which returns frames
 function PitBull4:IterateFramesForLayout(layout, also_hidden)
-	--@alpha@
-	expect(layout, 'typeof', 'string')
-	expect(also_hidden, 'typeof', 'boolean;nil')
-	--@end-alpha@
+	if DEBUG then
+		expect(layout, 'typeof', 'string')
+		expect(also_hidden, 'typeof', 'boolean;nil')
+	end
 	
 	return not also_hidden and layout_shown_iter or layout_iter, layout
 end
@@ -585,12 +589,12 @@ end
 -- end
 -- @return iterator which returns frames
 function PitBull4:IterateFramesForGUID(guid)
-	--@alpha@
-	expect(guid, 'typeof', 'string;nil')
-	if guid then
-		expect(guid, 'match', '^0x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x$')
+	if DEBUG then
+		expect(guid, 'typeof', 'string;nil')
+		if guid then
+			expect(guid, 'match', '^0x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x$')
+		end
 	end
-	--@end-alpha@
 	
 	if not guid then
 		return do_nothing
@@ -621,12 +625,12 @@ function PitBull4:IterateFramesForGUIDs(...)
 	local guids = new()
 	for i = 1, select('#', ...) do
 		local guid = (select(i, ...))
-		--@alpha@
-		expect(guid, 'typeof', 'string;nil')
-		if guid then
-			expect(guid, 'match', '^0x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x$')
+		if DEBUG then
+			expect(guid, 'typeof', 'string;nil')
+			if guid then
+				expect(guid, 'match', '^0x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x$')
+			end
 		end
-		--@end-alpha@
 		
 		if guid then
 			guids[guid] = true
@@ -659,9 +663,9 @@ end
 -- end
 -- @return iterator which returns frames
 function PitBull4:IterateFramesForName(name)
-	--@alpha@
-	expect(name, 'typeof', 'string;nil')
-	--@end-alpha@
+	if DEBUG then
+		expect(name, 'typeof', 'string;nil')
+	end
 
 	if not name then
 		return do_nothing
@@ -687,9 +691,9 @@ end
 -- end
 -- @return iterator which returns headers
 function PitBull4:IterateHeadersForUnitGroup(unit_group)
-	--@alpha@
-	expect(unit_group, 'typeof', 'string')
-	--@end-alpha@
+	if DEBUG then
+		expect(unit_group, 'typeof', 'string')
+	end
 	
 	local headers = rawget(unit_group_to_headers, unit_group)
 	if not headers then
@@ -706,10 +710,10 @@ end
 -- end
 -- @return iterator which returns headers
 function PitBull4:IterateHeadersForSuperUnitGroup(super_unit_group)
-	--@alpha@
-	expect(super_unit_group, 'typeof', 'string')
-	expect(super_unit_group, 'inset', 'party;raid')
-	--@end-alpha@
+	if DEBUG then
+		expect(super_unit_group, 'typeof', 'string')
+		expect(super_unit_group, 'inset', 'party;raid')
+	end
 	
 	local headers = rawget(super_unit_group_to_headers, super_unit_group)
 	if not headers then
@@ -734,9 +738,9 @@ end
 -- end
 -- @return iterator which returns zero or one header
 function PitBull4:IterateHeadersForName(name)
-	--@alpha@
-	expect(name, 'typeof', 'string')
-	--@end-alpha@
+	if DEBUG then
+		expect(name, 'typeof', 'string')
+	end
 	
 	return return_same, name_to_header[name]
 end
@@ -759,9 +763,9 @@ end
 -- end
 -- @return iterator which returns headers
 function PitBull4:IterateHeadersForLayout(layout, also_hidden)
-	--@alpha@
-	expect(layout, 'typeof', 'string')
-	--@end-alpha@
+	if DEBUG then
+		expect(layout, 'typeof', 'string')
+	end
 	
 	return header_layout_iter, layout
 end
@@ -1087,12 +1091,12 @@ do
 	-- @usage PitBull4:RunOnLeaveCombat(frame.SetAttribute, frame, "key", "value")
 	-- @usage PitBull4:RunOnLeaveCombat(frame, 'SetAttribute', "key", "value")
 	function PitBull4:RunOnLeaveCombat(func, ...)
-		--@alpha@
-		expect(func, 'typeof', 'table;function')
-		if type(func) == "table" then
-			expect(func[(...)], 'typeof', 'function')
+		if DEBUG then
+			expect(func, 'typeof', 'table;function')
+			if type(func) == "table" then
+				expect(func[(...)], 'typeof', 'function')
+			end
 		end
-		--@end-alpha@
 		if type(func) == "table" then
 			return self:RunOnLeaveCombat(func[(...)], func, select(2, ...))
 		end

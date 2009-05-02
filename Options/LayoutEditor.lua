@@ -1,6 +1,8 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
+local DEBUG = PitBull4.DEBUG
+
 local L = PitBull4.L
 
 local CURRENT_LAYOUT = L["Normal"]
@@ -14,12 +16,12 @@ function PitBull4.Options.GetLayoutDB(module)
 	if module == false then
 		return PitBull4.db.profile.layouts[CURRENT_LAYOUT]
 	end
-	--@alpha@
-	expect(module, 'typeof', 'string;table')
-	if type(module) == "table" then
-		expect(module.id, 'inset', PitBull4.modules)
+	if DEBUG then
+		expect(module, 'typeof', 'string;table')
+		if type(module) == "table" then
+			expect(module.id, 'inset', PitBull4.modules)
+		end
 	end
-	--@end-alpha@
 	if type(module) == "string" then
 		module = PitBull4:GetModule(module)
 	end
@@ -69,10 +71,10 @@ PitBull4.Options.layout_functions = layout_functions
 --     return 'someOption', { name = "Some option", } -- etc
 -- end)
 function PitBull4.defaultModulePrototype:SetLayoutOptionsFunction(func)
-	--@alpha@
-	expect(func, 'typeof', 'function')
-	expect(layout_functions[self], '==', nil)
-	--@end-alpha@
+	if DEBUG then
+		expect(func, 'typeof', 'function')
+		expect(layout_functions[self], '==', nil)
+	end
 	
 	layout_functions[self] = func
 end

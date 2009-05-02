@@ -1,6 +1,8 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
+local DEBUG = PitBull4.DEBUG
+
 local MAX_PARTY_MEMBERS_WITH_PLAYER = MAX_PARTY_MEMBERS + 1
 local NUM_CLASSES = 0
 for _ in pairs(RAID_CLASS_COLORS) do
@@ -54,9 +56,9 @@ end
 -- @param group the name for the group. Also acts as a unique identifier.
 -- @usage local header = PitBull4:MakeGroupHeader("Monkey")
 function PitBull4:MakeGroupHeader(group)
-	--@alpha@
-	expect(group, 'typeof', 'string')
-	--@end-alpha@
+	if DEBUG then
+		expect(group, 'typeof', 'string')
+	end
 	
 	local header_name = "PitBull4_Groups_" .. group
 	
@@ -293,11 +295,11 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		self.sort_method = sort_method
 		self.group_by = group_db.group_by
 		self.name_list = name_list
-		--@alpha@
-		if not party_based then
-			expect(unit_group:sub(1, 4), '==', "raid")
+		if DEBUG then
+			if not party_based then
+				expect(unit_group:sub(1, 4), '==', "raid")
+			end
 		end
-		--@end-alpha@
 	
 		if party_based then
 			self.super_unit_group = "party"
@@ -735,17 +737,15 @@ function GroupHeader:AssignFakeUnitIDs()
 			if old_unit ~= unit then
 				frame:Update()
 			end
-		--@alpha@
-		-- Spit out errors to chat if our code didn't
-		-- come up with the same unit ids for the real frames
-		-- that the group header did.
-		else
+		elseif DEBUG then
+			-- Spit out errors to chat if our code didn't
+			-- come up with the same unit ids for the real frames
+			-- that the group header did.
 			local unit = frame:GetAttribute("unit")
 			local expected_unit = sorting_table[sorting_table[i]]
 			if unit ~= expected_unit then
 				print("PitBull4 expected "..tostring(expected_unit).." but found "..tostring(unit).." for "..frame:GetName())
 			end
-		--@end-alpha@
 		end
 	end
 end
@@ -991,10 +991,10 @@ MemberUnitFrame.RefixSizeAndPosition = PitBull4:OutOfCombatWrapper(MemberUnitFra
 -- @param frame a Frame which inherits from SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate
 -- @usage PitBull4:ConvertIntoGroupHeader(header)
 function PitBull4:ConvertIntoGroupHeader(header)
-	--@alpha@
-	expect(header, 'typeof', 'frame')
-	expect(header, 'frametype', 'Frame')
-	--@end-alpha@
+	if DEBUG then
+		expect(header, 'typeof', 'frame')
+		expect(header, 'frametype', 'Frame')
+	end
 	
 	self.all_headers[header] = true
 	self.name_to_header[header.name] = header

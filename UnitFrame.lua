@@ -1,6 +1,8 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
+local DEBUG = PitBull4.DEBUG
+
 -- CONSTANTS ----------------------------------------------------------------
 
 local MODULE_UPDATE_ORDER = {
@@ -19,9 +21,9 @@ local MODULE_UPDATE_ORDER = {
 -- @param unit the UnitID of the frame in question
 -- @usage local frame = PitBull4:MakeSingletonFrame("player")
 function PitBull4:MakeSingletonFrame(unit)
-	--@alpha@
-	expect(unit, 'typeof', 'string')
-	--@end-alpha@
+	if DEBUG then
+		expect(unit, 'typeof', 'string')
+	end
 	
 	local id = PitBull4.Utils.GetBestUnitID(unit)
 	if not PitBull4.Utils.IsSingletonUnitID(id) then
@@ -253,11 +255,11 @@ end
 -- @param isExampleFrame whether the button is an example frame, thus not a real unit frame
 -- @usage PitBull4:ConvertIntoUnitFrame(frame)
 function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
-	--@alpha@
-	expect(frame, 'typeof', 'frame')
-	expect(frame, 'frametype', 'Button')
-	expect(isExampleFrame, 'typeof', 'nil;boolean')
-	--@end-alpha@
+	if DEBUG then
+		expect(frame, 'typeof', 'frame')
+		expect(frame, 'frametype', 'Button')
+		expect(isExampleFrame, 'typeof', 'nil;boolean')
+	end
 	
 	self.all_frames[frame] = true
 	_G.ClickCastFrames[frame] = true
@@ -475,9 +477,9 @@ end
 -- @usage frame:UpdateGUID(UnitGUID(frame.unit))
 -- @usage frame:UpdateGUID(UnitGUID(frame.unit), true)
 function UnitFrame:UpdateGUID(guid, force_update)
-	--@alpha@
-	expect(guid, 'typeof', 'string;nil')
-	--@end-alpha@
+	if DEBUG then
+		expect(guid, 'typeof', 'string;nil')
+	end
 	
 	-- if the guids are the same, cut out, but don't if it's a wacky unit that has a guid.
 	if not force_update and self.guid == guid and not (guid and self.is_wacky) then

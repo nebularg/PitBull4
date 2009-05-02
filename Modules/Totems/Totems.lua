@@ -11,6 +11,8 @@ if not PitBull4 then
 	error("PitBull4_Totems requires PitBull4")
 end
 
+local DEBUG = PitBull4.DEBUG
+
 -- CONSTANTS ----------------------------------------------------------------
 local MAX_TOTEMS = MAX_TOTEMS or 4 -- comes from blizzard's totem frame lua
 local FIRE_TOTEM_SLOT  = FIRE_TOTEM_SLOT  or 1
@@ -93,9 +95,9 @@ local GetTotemInfo = _G.GetTotemInfo
 local PitBull4_Totems = PitBull4:NewModule("Totems", "AceEvent-3.0", "AceTimer-3.0", "AceConsole-3.0")
 local self = PitBull4_Totems
 
---@alpha@
-PBTDBG = PitBull4_Totems
---@end-alpha@
+if DEBUG then
+	PBTDBG = PitBull4_Totems
+end
 
 -- Load LibSharedMedia
 local LSM = LibStub("LibSharedMedia-3.0", true)
@@ -121,11 +123,13 @@ PitBull4_Totems.show_font_option = true
 PitBull4_Totems.show_font_size_option = true
 PitBull4_Totems.can_set_side_to_center = false -- Intentionally deactivated until I find out how to scale the resulting pseudo-bar
 
-local function dbg(...)
---@alpha@
-	print(string.format(...))
---@end-alpha@
-	return
+local dbg
+if DEBUG then
+	function dbg(...)
+		print(string.format(...))
+	end
+else
+	function dbg() end
 end
 
 local function get_verbose_slot_name(slot)

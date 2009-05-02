@@ -3,6 +3,8 @@ local PitBull4 = _G.PitBull4
 
 local L = PitBull4.L
 
+local DEBUG = PitBull4.DEBUG
+
 PitBull4.Utils = {}
 
 do
@@ -189,10 +191,10 @@ do
 	-- @usage PitBull4.Utils.GetLocalizedClassification("partypettarget") == "Party pet targets"
 	-- @return a localized string of the unit classification
 	function PitBull4.Utils.GetLocalizedClassification(classification)
-		--@alpha@
-		expect(classification, 'typeof', 'string')
-		expect(classification, 'inset', classifications)
-		--@end-alpha@
+		if DEBUG then
+			expect(classification, 'typeof', 'string')
+			expect(classification, 'inset', classifications)
+		end
 		
 		return classifications[classification]
 	end
@@ -209,9 +211,9 @@ function PitBull4.Utils.ConvertMethodToFunction(namespace, func_name)
 		return func_name
 	end
 	
-	--@alpha@
-	expect(namespace[func_name], 'typeof', 'function')
-	--@end-alpha@
+	if DEBUG then
+		expect(namespace[func_name], 'typeof', 'function')
+	end
 	
 	return function(...)
 		return namespace[func_name](namespace, ...)

@@ -1,4 +1,5 @@
---@alpha@
+_G.PitBull4_DEBUG = true
+
 local function is_list(t)
 	local n = #t
 	
@@ -113,4 +114,3 @@ function _G.expect(alpha, condition, bravo)
 		error(("Expectation failed: %s %s %s"):format(pretty_tostring(alpha), condition, pretty_tostring(bravo)), 2)
 	end
 end
---@end-alpha@

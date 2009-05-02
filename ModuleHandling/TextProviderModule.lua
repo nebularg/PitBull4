@@ -1,6 +1,8 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
+local DEBUG = PitBull4.DEBUG
+
 local TextProviderModule = PitBull4:NewModuleType("text_provider", {
 	elements = {
 		['**'] = {
@@ -21,9 +23,9 @@ local new, del = PitBull4.new, PitBull4.del
 -- @usage local update_layout = MyModule:ClearFrame(frame)
 -- @return whether the update requires :UpdateLayout to be called
 function TextProviderModule:ClearFrame(frame)
-	--@alpha@
-	expect(frame, 'typeof', 'frame')
-	--@end-alpha@
+	if DEBUG then
+		expect(frame, 'typeof', 'frame')
+	end
 
 	local id = self.id
 	local texts = frame[id]
@@ -47,9 +49,9 @@ end
 -- @usage local update_layout = MyModule:UpdateIcon(frame)
 -- @return whether the update requires :UpdateLayout to be called
 function TextProviderModule:UpdateFrame(frame)
-	--@alpha@
-	expect(frame, 'typeof', 'frame')
-	--@end-alpha@
+	if DEBUG then
+		expect(frame, 'typeof', 'frame')
+	end
 	
 	local layout_db = self:GetLayoutDB(frame)
 	if not next(layout_db.elements) then
