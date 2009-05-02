@@ -422,12 +422,13 @@ function PitBull4:IterateModulesOfType(...)
 	end
 	
 	for i = 1, n do
+		local type = select(i, ...)
 		if DEBUG then
-			expect((select(i, ...)), 'typeof', 'string')
-			expect((select(i, ...)), 'inset', module_types)
+			expect(type, 'typeof', 'string')
+			expect(type, 'inset', module_types)
 		end
 		
-		types[(select(i, ...))] = true
+		types[type] = true
 	end
 	
 	types.also_disabled = also_disabled
