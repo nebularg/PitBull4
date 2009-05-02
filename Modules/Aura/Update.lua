@@ -439,7 +439,7 @@ end
 
 -- Setups up the aura frame and fill it with the proper data
 -- to display the proper aura.
-local function set_aura(frame, db, aura_controls, aura, i, is_friend, is_player)
+local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	local control = aura_controls[i]
 
 	local id, slot, quality, is_buff, name, rank, icon, count, debuff_type, duration, expiration_time, caster, is_stealable = unpack(aura, 1, ENTRY_END)
@@ -466,7 +466,7 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend, is_player)
 	control.slot = slot
 
 	local class_db = frame.classification_db
-	if is_player and is_buff and not db.click_through and class_db and not class_db.click_through then
+	if not db.click_through and class_db and not class_db.click_through then
 		control:EnableMouse(true)
 	else
 		control:EnableMouse(false)
@@ -584,7 +584,7 @@ local function update_auras(frame, db, is_buff)
 	local buff_count = (#list > max) and max or #list
 
 	for i = 1, buff_count do
-		set_aura(frame, db, controls, list[i], i, is_friend, is_player)
+		set_aura(frame, db, controls, list[i], i, is_friend)
 	end
 
 	-- Remove unnecessary aura frames
