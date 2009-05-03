@@ -56,7 +56,9 @@ end
 
 timerFrame:SetScript("OnUpdate", function()
 	for frame in PitBull4:IterateFramesForGUIDs(PLAYER_GUID, UnitGUID("pet")) do
-		PitBull4_HealthBar:Update(frame)
+		if not frame.is_wacky then
+			PitBull4_HealthBar:Update(frame)
+		end
 	end
 end)
 
