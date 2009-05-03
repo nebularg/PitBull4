@@ -369,7 +369,7 @@ local function refresh_guid(unit)
 	end
 	
 	for frame in PitBull4:IterateWackyFrames() do
-		if frame.best_unit == unit then
+		if frame.best_unit == unit or frame.guid == new_guid then
 			frame:UpdateBestUnit()
 		end
 	end
