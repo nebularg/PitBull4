@@ -40,6 +40,8 @@ function PitBull4_PowerBar:OnEnable()
 	PitBull4_PowerBar:RegisterEvent("UNIT_RUNIC_POWER", "UNIT_MANA")
 	PitBull4_PowerBar:RegisterEvent("UNIT_MAXRUNIC_POWER", "UNIT_MANA")
 	PitBull4_PowerBar:RegisterEvent("UNIT_DISPLAYPOWER", "UNIT_MANA")
+	PitBull4_PowerBar:RegisterEvent("CVAR_UPDATE")
+	PitBull4_PowerBar:RegisterEvent("VARIABLES_LOADED", "CVAR_UPDATE")
 end
 
 function PitBull4_PowerBar:OnDisable()
@@ -101,6 +103,14 @@ end
 
 function PitBull4_PowerBar:UNIT_MANA(event, unit)
 	PitBull4_PowerBar:UpdateForUnitID(unit)
+end
+
+function PitBull4_PowerBar:CVAR_UPDATE()
+	if GetCVarBool("predictedPower") then
+		timerFrame:Show()
+	else
+		timerFrame:Hide()
+	end
 end
 
 PitBull4_PowerBar:SetLayoutOptionsFunction(function(self)
