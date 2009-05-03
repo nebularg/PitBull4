@@ -165,6 +165,12 @@ function PitBull4_CastBar:GetExampleColor(frame, value)
 	return 0, 1, 0, 1
 end
 
+function PitBull4_CastBar:ClearFramesByGUID(guid)
+	for frame in PitBull4:IterateFramesForGUID(guid) do
+		frame:Update()	
+	end
+end
+
 function PitBull4_CastBar:UpdateInfo(event, unit)
 	local guid = UnitGUID(unit)
 	if not guid then
@@ -238,9 +244,11 @@ function PitBull4_CastBar:FixCastData()
 					
 					if alpha <= 0 then
 						cast_data[guid] = del(data)
+						self:ClearFramesByGUID(guid)
 					end
 				else
 					cast_data[guid] = del(data)
+					self:ClearFramesByGUID(guid)
 				end
 				break
 			end	
