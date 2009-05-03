@@ -8,6 +8,7 @@ local ADJUSTMENT_DIVISOR_FOR_EVENTS = 1e3 -- Events return different timestamps 
 -- Pseudo global initialization
 local send_time  = 0
 local start_time = 0
+local end_time   = 0
 local lag_time   = 0
 local max_time   = 0
 local is_channel = nil
