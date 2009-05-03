@@ -38,6 +38,11 @@ PitBull4_CastBarLatency:SetLayoutOptionsFunction(function(self) end)
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
 timerFrame:SetScript("OnUpdate", function()
+	-- No lag time so no reason to iterate the frames.
+	if lag_time == 0 then
+		return
+	end
+
 	-- Loop thru ALL PitBull Frames...
 	for frame in PitBull4:IterateFrames() do
 		local unit = frame.unit
@@ -91,12 +96,36 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_SENT(event, unit, spell, spellra
 	send_time = GetTime()
 end
 
+function PitBull4_CastBarLatency:UNIT_SPELLCAST_STOP(event, unit)
+	if unit ~= 'player' then
+		return
+	end
+
+	-- Ignore SPELLCAST_SUCCEEDED when we're channeling
+	if event == 'UNIT_SPELLCAST_SUCCEEDED' and is_channel then
+		return
+	end
+
+	-- Clear the lag_time when we're not casting
+	lag_time = 0
+
+	for frame in PitBull4:IterateFrames() do
+		self:ClearFrame(frame)
+	end
+end
+
 function PitBull4_CastBarLatency:OnEnable()
 	timerFrame:Show()
 	
 	self:RegisterEvent("UNIT_SPELLCAST_SENT")
 	self:RegisterEvent("UNIT_SPELLCAST_START")
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
+	self:RegisterEvent("UNIT_SPELLCAST_STOP")
+	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED","UNIT_SPELLCAST_STOP")
+	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED","UNIT_SPELLCAST_STOP")
+	self:RegisterEvent("UNIT_SPELLCAST_FAILED","UNIT_SPELLCAST_STOP")
+	self:RegisterEvent("UNIT_SPELLCAST_FAILED_QUIET","UNIT_SPELLCAST_STOP")
+	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP","UNIT_SPELLCAST_STOP")
 end
 
 function PitBull4_CastBarLatency:OnDisable()
@@ -111,8 +140,8 @@ function PitBull4_CastBarLatency:UpdateFrame(frame)
 	end
 	
 	local bar = frame.CastBar
-	if not bar then
-		-- no cast bar on this frame so we remove ourselves..
+	if not bar or lag_time == 0 then
+		-- no cast bar on this frame or no lag so we remove ourselves..
 		return self:ClearFrame(frame)
 	end
 	
