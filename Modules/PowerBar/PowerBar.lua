@@ -9,7 +9,7 @@ local EXAMPLE_VALUE = 0.6
 
 local L = PitBull4.L
 
-local PitBull4_PowerBar = PitBull4:NewModule("PowerBar", "AceEvent-3.0")
+local PitBull4_PowerBar = PitBull4:NewModule("PowerBar", "AceEvent-3.0", "AceHook-3.0")
 
 PitBull4_PowerBar:SetModuleType("bar")
 PitBull4_PowerBar:SetName(L["Power bar"])
@@ -27,21 +27,21 @@ timerFrame:Hide()
 local PLAYER_GUID
 function PitBull4_PowerBar:OnEnable()
 	PLAYER_GUID = UnitGUID("player")
-	timerFrame:Show()
 	
-	PitBull4_PowerBar:RegisterEvent("UNIT_MANA")
-	PitBull4_PowerBar:RegisterEvent("UNIT_MAXMANA", "UNIT_MANA")
-	PitBull4_PowerBar:RegisterEvent("UNIT_RAGE", "UNIT_MANA")
-	PitBull4_PowerBar:RegisterEvent("UNIT_MAXRAGE", "UNIT_MANA")
-	PitBull4_PowerBar:RegisterEvent("UNIT_FOCUS", "UNIT_MANA")
-	PitBull4_PowerBar:RegisterEvent("UNIT_MAXFOCUS", "UNIT_MANA")
-	PitBull4_PowerBar:RegisterEvent("UNIT_ENERGY", "UNIT_MANA")
-	PitBull4_PowerBar:RegisterEvent("UNIT_MAXENERGY", "UNIT_MANA")
-	PitBull4_PowerBar:RegisterEvent("UNIT_RUNIC_POWER", "UNIT_MANA")
-	PitBull4_PowerBar:RegisterEvent("UNIT_MAXRUNIC_POWER", "UNIT_MANA")
-	PitBull4_PowerBar:RegisterEvent("UNIT_DISPLAYPOWER", "UNIT_MANA")
-	PitBull4_PowerBar:RegisterEvent("CVAR_UPDATE")
-	PitBull4_PowerBar:RegisterEvent("VARIABLES_LOADED", "CVAR_UPDATE")
+	self:RegisterEvent("UNIT_MANA")
+	self:RegisterEvent("UNIT_MAXMANA", "UNIT_MANA")
+	self:RegisterEvent("UNIT_RAGE", "UNIT_MANA")
+	self:RegisterEvent("UNIT_MAXRAGE", "UNIT_MANA")
+	self:RegisterEvent("UNIT_FOCUS", "UNIT_MANA")
+	self:RegisterEvent("UNIT_MAXFOCUS", "UNIT_MANA")
+	self:RegisterEvent("UNIT_ENERGY", "UNIT_MANA")
+	self:RegisterEvent("UNIT_MAXENERGY", "UNIT_MANA")
+	self:RegisterEvent("UNIT_RUNIC_POWER", "UNIT_MANA")
+	self:RegisterEvent("UNIT_MAXRUNIC_POWER", "UNIT_MANA")
+	self:RegisterEvent("UNIT_DISPLAYPOWER", "UNIT_MANA")
+	
+	self:SecureHook("SetCVar")
+	self:SetCVar()
 end
 
 function PitBull4_PowerBar:OnDisable()
@@ -105,7 +105,7 @@ function PitBull4_PowerBar:UNIT_MANA(event, unit)
 	PitBull4_PowerBar:UpdateForUnitID(unit)
 end
 
-function PitBull4_PowerBar:CVAR_UPDATE()
+function PitBull4_PowerBar:SetCVar()
 	if GetCVarBool("predictedPower") then
 		timerFrame:Show()
 	else
