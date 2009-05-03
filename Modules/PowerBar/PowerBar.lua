@@ -10,6 +10,7 @@ local EXAMPLE_VALUE = 0.6
 local L = PitBull4.L
 
 local PitBull4_PowerBar = PitBull4:NewModule("PowerBar", "AceEvent-3.0", "AceHook-3.0")
+local last_player_power
 
 PitBull4_PowerBar:SetModuleType("bar")
 PitBull4_PowerBar:SetName(L["Power bar"])
@@ -49,9 +50,11 @@ function PitBull4_PowerBar:OnDisable()
 end
 
 timerFrame:SetScript("OnUpdate", function()
-	for frame in PitBull4:IterateFramesForGUIDs(PLAYER_GUID, UnitGUID("pet")) do
-		if not frame.is_wacky then
-			PitBull4_PowerBar:Update(frame)
+	if UnitPower("player") ~= last_player_power then
+		for frame in PitBull4:IterateFramesForGUIDs(PLAYER_GUID, UnitGUID("pet")) do
+			if not frame.is_wacky then
+				PitBull4_PowerBar:Update(frame)
+			end
 		end
 	end
 end)
@@ -65,6 +68,12 @@ function PitBull4_PowerBar:GetValue(frame)
 	elseif layout_db.hide_no_power and UnitPowerMax(unit) <= 0 then
 		return nil
 	end
+
+	if unit == "player" then
+		last_player_power = UnitPower(unit)
+		return last_player_power / UnitPowerMax(unit)
+	end
+
 	return UnitPower(unit) / UnitPowerMax(unit)
 end
 
