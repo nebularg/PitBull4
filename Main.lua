@@ -31,6 +31,30 @@ local UNIT_GROUPS = {
 	"raidpettargettarget",
 }
 
+local NORMAL_UNITS = {
+	"player",
+	"pet",
+	"target",
+	"focus",
+	-- "mouseover",
+}
+for i = 1, MAX_PARTY_MEMBERS do
+	NORMAL_UNITS[#NORMAL_UNITS+1] = "party" .. i
+	NORMAL_UNITS[#NORMAL_UNITS+1] = "partypet" .. i
+end
+for i = 1, MAX_RAID_MEMBERS do
+	NORMAL_UNITS[#NORMAL_UNITS+1] = "raid" .. i
+end
+
+do
+	local tmp = NORMAL_UNITS
+	NORMAL_UNITS = {}
+	for i, v in ipairs(tmp) do
+		NORMAL_UNITS[v] = true
+	end
+	tmp = nil
+end
+
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 if not LibSharedMedia then
 	LoadAddOn("LibSharedMedia-3.0")
@@ -274,6 +298,10 @@ end}
 local unit_id_to_frames = setmetatable({}, auto_table__mt)
 PitBull4.unit_id_to_frames = unit_id_to_frames
 
+-- A dictionary of UnitID to a set of all unit frames of that UnitID, plus wacky frames that are the same unit.
+local unit_id_to_frames_with_wacky = setmetatable({}, auto_table__mt)
+PitBull4.unit_id_to_frames_with_wacky = unit_id_to_frames_with_wacky
+
 -- A dictionary of classification to a set of all unit frames of that classification
 local classification_to_frames = setmetatable({}, auto_table__mt)
 PitBull4.classification_to_frames = classification_to_frames
@@ -288,6 +316,64 @@ PitBull4.super_unit_group_to_headers = super_unit_group_to_headers
 
 local name_to_header = {}
 PitBull4.name_to_header = name_to_header
+
+-- A dictionary of UnitID to GUID for non-wacky units
+local unit_id_to_guid = {}
+PitBull4.unit_id_to_guid = unit_id_to_guid
+
+-- A dictionary of GUID to a set of UnitIDs for non-wacky units
+local guid_to_unit_ids = {}
+PitBull4.guid_to_unit_ids = guid_to_unit_ids
+
+local function get_best_unit(guid)
+	if not guid then
+		return nil
+	end
+	
+	local guid_to_unit_ids__guid = guid_to_unit_ids[guid]
+	if not guid_to_unit_ids__guid then
+		return nil
+	end
+	
+	return (next(guid_to_unit_ids__guid))
+end
+PitBull4.get_best_unit = get_best_unit
+
+local function refresh_guid(unit)
+	if not NORMAL_UNITS[unit] then
+		return
+	end
+	
+	local new_guid = UnitGUID(unit)
+	local old_guid = unit_id_to_guid[unit]
+	if new_guid == old_guid then
+		return
+	end
+	unit_id_to_guid[unit] = new_guid
+	
+	if old_guid then
+		local guid_to_unit_ids__old_guid = guid_to_unit_ids[old_guid]
+		guid_to_unit_ids__old_guid[unit] = nil
+		if not next(guid_to_unit_ids__old_guid) then
+			guid_to_unit_ids[old_guid] = del(guid_to_unit_ids__old_guid)
+		end
+	end
+	
+	if new_guid then
+		local guid_to_unit_ids__new_guid = guid_to_unit_ids[new_guid]
+		if not guid_to_unit_ids__new_guid then
+			guid_to_unit_ids__new_guid = new()
+			guid_to_unit_ids[new_guid] = guid_to_unit_ids__new_guid
+		end
+		guid_to_unit_ids__new_guid[unit] = true
+	end
+	
+	for frame in PitBull4:IterateWackyFrames() do
+		if frame.best_unit == unit then
+			frame:UpdateBestUnit()
+		end
+	end
+end
 
 --- Wrap the given function so that any call to it will be piped through PitBull4:RunOnLeaveCombat.
 -- @param func function to call
@@ -393,7 +479,7 @@ end
 --     doSomethingWith(frame)
 -- end
 -- @return iterator which returns frames
-function PitBull4:IterateNonWackyFrames(also_hidden)
+function PitBull4:IterateNonWackyFrames(also_hidden, only_non_wacky)
 	if DEBUG then
 		expect(also_hidden, 'typeof', 'boolean;nil')
 	end
@@ -404,10 +490,10 @@ end
 --- Iterate over all singleton frames.
 -- This iterates over only shown frames unless also_hidden is passed in.
 -- @param also_hidden also return frames that are hidden
--- @usage for frame in PitBull4:IterateWackyFrames() do
+-- @usage for frame in PitBull4:IterateSingletonFrames() do
 --     doSomethingWith(frame)
 -- end
--- @usage for frame in PitBull4:IterateWackyFrames(true) do
+-- @usage for frame in PitBull4:IterateSingletonFrames(true) do
 --     doSomethingWith(frame)
 -- end
 -- @return iterator which returns frames
@@ -441,17 +527,22 @@ end
 -- This iterates over only shown frames unless also_hidden is passed in.
 -- @param unit the UnitID of the unit in question
 -- @param also_hidden also return frames that are hidden
+-- @param dont_include_wacky don't include wacky frames that are the same unit
 -- @usage for frame in PitBull4:IterateFramesForUnitID("player") do
 --     doSomethingWith(frame)
 -- end
 -- @usage for frame in PitBull4:IterateFramesForUnitID("party1", true) do
 --     doSomethingWith(frame)
 -- end
+-- @usage for frame in PitBull4:IterateFramesForUnitID("party1", false, true) do
+--     doSomethingWith(frame)
+-- end
 -- @return iterator which returns frames
-function PitBull4:IterateFramesForUnitID(unit, also_hidden)
+function PitBull4:IterateFramesForUnitID(unit, also_hidden, dont_include_wacky)
 	if DEBUG then
 		expect(unit, 'typeof', 'string')
 		expect(also_hidden, 'typeof', 'boolean;nil')
+		expect(dont_include_wacky, 'typeof', 'boolean;nil')
 	end
 	
 	local id = PitBull4.Utils.GetBestUnitID(unit)
@@ -459,7 +550,7 @@ function PitBull4:IterateFramesForUnitID(unit, also_hidden)
 		error(("Bad argument #1 to `IterateFramesForUnitID'. %q is not a valid UnitID"):format(tostring(unit)), 2)
 	end
 	
-	return not also_hidden and iterate_shown_frames or half_next, unit_id_to_frames[id]
+	return not also_hidden and iterate_shown_frames or half_next, (not dont_include_wacky and unit_id_to_frames_with_wacky or unit_id_to_frames)[id]
 end
 
 --- Iterate over all shown frames with the given UnitIDs.
@@ -483,7 +574,7 @@ function PitBull4:IterateFramesForUnitIDs(...)
 	
 	for i = 1, n do
 		local unit = (select(i, ...))
-		local frames = unit_id_to_frames[unit]
+		local frames = unit_id_to_frames_with_wacky[unit]
 		
 		for frame in pairs(frames) do
 			if also_hidden or frame:IsShown() then
@@ -973,6 +1064,7 @@ function PitBull4:CheckGUIDForUnitID(unit)
 		-- for ids such as npctarget
 		return
 	end
+	refresh_guid(unit)
 	local guid = UnitGUID(unit)
 	for frame in self:IterateFramesForUnitID(unit, true) do
 		frame:UpdateGUID(guid)
@@ -1008,9 +1100,11 @@ function PitBull4:UNIT_ENTERED_VEHICLE(_, unit)
 				frame.unit = new_unit
 				if old_unit then
 					PitBull4.unit_id_to_frames[old_unit][frame] = nil
+					PitBull4.unit_id_to_frames_with_wacky[old_unit][frame] = nil
 				end
 				if new_unit then
 					PitBull4.unit_id_to_frames[new_unit][frame] = true
+					PitBull4.unit_id_to_frames_with_wacky[new_unit][frame] = true
 				end
 				frame:UpdateGUID(UnitGUID(new_unit), true)
 			end
@@ -1032,6 +1126,10 @@ end
 
 local last_state = nil
 function PitBull4:RAID_ROSTER_UPDATE()
+	for unit in pairs(NORMAL_UNITS) do
+		refresh_guid(unit)
+	end
+	
 	local raid = GetNumRaidMembers()
 	local party = GetNumPartyMembers()
 	if raid > 0 then

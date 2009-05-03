@@ -219,11 +219,13 @@ function UnitFrame__scripts:OnAttributeChanged(key, value)
 	
 		if old_unit then
 			PitBull4.unit_id_to_frames[old_unit][self] = nil
+			PitBull4.unit_id_to_frames_with_wacky[old_unit][self] = nil
 		end
 	
 		self.unit = new_unit
 		if new_unit then
 			PitBull4.unit_id_to_frames[new_unit][self] = true
+			PitBull4.unit_id_to_frames_with_wacky[new_unit][self] = true
 		end
 	elseif key == "state-unitexists" then
 		if value then
@@ -433,6 +435,25 @@ function UnitFrame:GetFont(font_override, size_multiplier)
 	return font or DEFAULT_FONT, DEFAULT_FONT_SIZE * layout_db.font_size * (size_multiplier or 1)
 end
 
+local get_best_unit = PitBull4.get_best_unit
+function UnitFrame:UpdateBestUnit()
+	local old_best_unit = self.best_unit
+	local new_best_unit = self.is_wacky and get_best_unit(self.guid) or nil
+	if old_best_unit == new_best_unit then
+		return
+	end
+	
+	self.best_unit = new_best_unit
+	
+	if old_best_unit then
+		PitBull4.unit_id_to_frames_with_wacky[old_best_unit][self] = nil
+	end
+	
+	if new_best_unit then
+		PitBull4.unit_id_to_frames_with_wacky[new_best_unit][self] = true
+	end
+end
+
 --- Update all details about the UnitFrame, possibly after a GUID change
 -- @param same_guid whether the previous GUID is the same as the current, at which point is less crucial to update
 -- @param update_layout whether to update the layout no matter what
@@ -446,7 +467,9 @@ function UnitFrame:Update(same_guid, update_layout)
 	if not self.guid and not self.force_show then
 	 	if self.populated then
 			self.populated = nil
-		
+			
+			self:UpdateBestUnit()
+			
 			for _, module in PitBull4:IterateEnabledModules() do
 				module:Clear(self)
 			end
@@ -457,6 +480,10 @@ function UnitFrame:Update(same_guid, update_layout)
 		return	
 	end
 	self.populated = true
+	
+	if not same_guid then
+		self:UpdateBestUnit()
+	end
 	
 	local changed = update_layout
 	
@@ -482,7 +509,7 @@ function UnitFrame:UpdateGUID(guid, force_update)
 	end
 	
 	-- if the guids are the same, cut out, but don't if it's a wacky unit that has a guid.
-	if not force_update and self.guid == guid and not (guid and self.is_wacky) then
+	if not force_update and self.guid == guid and not (guid and self.is_wacky and not self.best_unit) then
 		return
 	end
 	local previousGUID = self.guid
