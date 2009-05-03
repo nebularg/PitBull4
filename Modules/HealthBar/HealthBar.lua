@@ -32,17 +32,21 @@ PitBull4_HealthBar:SetDefaults({
 	}
 })
 
+--[[ Currently the WoW Client isn't actually doing fast updates for health.
+--   It's unclear if this is a bug or a change in feature.  Disabling the
+--   code to support this for now since it's a waste of CPU time for no benefit.
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
+--]]
 
 local HOSTILE_REACTION = 2
 local NEUTRAL_REACTION = 4
 local FRIENDLY_REACTION = 5
 
-local PLAYER_GUID
+-- local PLAYER_GUID
 function PitBull4_HealthBar:OnEnable()
-	PLAYER_GUID = UnitGUID("player")
-	timerFrame:Show()
+--	PLAYER_GUID = UnitGUID("player")
+--	timerFrame:Show()
 	
 	self:RegisterEvent("UNIT_HEALTH")
 	self:RegisterEvent("UNIT_MAXHEALTH", "UNIT_HEALTH")
@@ -50,6 +54,7 @@ function PitBull4_HealthBar:OnEnable()
 	self:UpdateAll()
 end
 
+--[[
 function PitBull4_HealthBar:OnDisable()
 	timerFrame:Hide()
 end
@@ -61,6 +66,7 @@ timerFrame:SetScript("OnUpdate", function()
 		end
 	end
 end)
+--]]
 
 function PitBull4_HealthBar:GetValue(frame)
 	return UnitHealth(frame.unit) / UnitHealthMax(frame.unit)
