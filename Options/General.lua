@@ -38,5 +38,11 @@ function PitBull4.Options.get_general_options()
 			hidden = function()
 				return not LibStub("LibDataBroker-1.1", true) or not LibStub("LibDBIcon-1.0", true) or IsAddOnLoaded("Broker2FuBar")
 			end,
+		},
+		'version', {
+			name = L["Version: %s"]:format(PitBull4.version),
+			type = 'description',
+			order = -1,
+			width = 'normal',
 		}
 end

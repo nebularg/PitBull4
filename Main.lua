@@ -202,6 +202,11 @@ PitBull4.DEBUG = _G.PitBull4_DEBUG or false
 _G.PitBull4_DEBUG = nil
 local DEBUG = PitBull4.DEBUG
 
+PitBull4.version = "@project-version@"
+if PitBull4.version:match("@") then
+	PitBull4.version = "Development"
+end
+
 PitBull4.L = L
 
 PitBull4.SINGLETON_CLASSIFICATIONS = SINGLETON_CLASSIFICATIONS
