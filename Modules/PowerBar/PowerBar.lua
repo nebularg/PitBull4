@@ -67,6 +67,16 @@ timerFrame:SetScript("OnUpdate", function()
 	end
 end)
 
+local function get_power_and_cache(unit)
+	local power = UnitPower(unit)
+	if unit == "player" then
+		last_player_power = power
+	elseif unit == "pet" then
+		last_pet_power = power
+	end
+	return power
+end
+
 function PitBull4_PowerBar:GetValue(frame)	
 	local unit = frame.unit
 	local layout_db = self:GetLayoutDB(frame)
@@ -77,15 +87,7 @@ function PitBull4_PowerBar:GetValue(frame)
 		return nil
 	end
 
-	if unit == "player" then
-		last_player_power = UnitPower(unit)
-		return last_player_power / UnitPowerMax(unit)
-	elseif unit == "pet" then
-		last_pet_power = UnitPower(unit)
-		return last_pet_power / UnitPowerMax(unit)
-	end
-
-	return UnitPower(unit) / UnitPowerMax(unit)
+	return get_power_and_cache(unit) / UnitPowerMax(unit)
 end
 
 function PitBull4_PowerBar:GetExampleValue(frame)
