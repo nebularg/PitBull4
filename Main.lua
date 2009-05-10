@@ -380,6 +380,12 @@ local function refresh_guid(unit)
 	end
 end
 
+local function refresh_all_guids()
+	for unit in pairs(NORMAL_UNITS) do
+		refresh_guid(unit)
+	end
+end
+
 --- Wrap the given function so that any call to it will be piped through PitBull4:RunOnLeaveCombat.
 -- @param func function to call
 -- @usage myFunc = PitBull4:OutOfCombatWrapper(func)
@@ -1019,6 +1025,7 @@ end
 
 function PitBull4:OnEnable()
 	self:ScheduleRepeatingTimer("CheckWackyFramesForGUIDUpdate", 0.15)
+	self:ScheduleRepeatingTimer(refresh_all_guids, 15)
 	
 	-- register unit change events
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
@@ -1129,12 +1136,13 @@ function PitBull4:GetState()
 	return PitBull4.config_mode or STATE
 end
 
+function PitBull4:PLAYER_ENTERING_WORLD()
+	refresh_all_guids()
+end
+
 local last_state = nil
 function PitBull4:RAID_ROSTER_UPDATE()
-	for unit in pairs(NORMAL_UNITS) do
-		refresh_guid(unit)
-	end
-	
+	refresh_all_guids()
 	local raid = GetNumRaidMembers()
 	local party = GetNumPartyMembers()
 	if raid > 0 then
