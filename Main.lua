@@ -1046,6 +1046,8 @@ function PitBull4:OnEnable()
 	
 	self:RegisterEvent("RAID_ROSTER_UPDATE")
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED")
+	
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 
 	if oRA then
 		LibStub("AceEvent-2.0"):RegisterEvent("oRA_MainTankUpdate",main_tank_update)
@@ -1138,15 +1140,39 @@ function PitBull4:GetState()
 	return PitBull4.config_mode or STATE
 end
 
+PitBull4.current_map = nil
+-- This is done so that in battlegrounds, all the frames get created so there's no issues with users joining in combat
+function PitBull4:UpdateMapInfo()
+	SetMapToCurrentZone()
+	local map = GetMapInfo()
+	if map == PitBull4.current_map then
+		return
+	end
+	PitBull4.current_map = map
+	for header in PitBull4:IterateHeaders() do
+		header:ForceUnitFrameCreation()
+	end
+end
+
 function PitBull4:PLAYER_ENTERING_WORLD()
 	refresh_all_guids()
+	
+	self:UpdateMapInfo()
+	self:ScheduleTimer("UpdateMapInfo", 0.1)
 end
 
 local last_state = nil
-function PitBull4:RAID_ROSTER_UPDATE()
+local last_raid_num = nil
+local last_party_num = nil
+function PitBull4:RAID_ROSTER_UPDATE(force)
 	refresh_all_guids()
 	local raid = GetNumRaidMembers()
 	local party = GetNumPartyMembers()
+	if not force and last_raid_num == raid and last_party_num == party then
+		return
+	end
+	last_raid_num = raid
+	last_party_num = party
 	if raid > 0 then
 		if raid > 25 then
 			STATE = "raid40"
@@ -1169,6 +1195,9 @@ function PitBull4:RAID_ROSTER_UPDATE()
 		for header in PitBull4:IterateHeaders() do
 			header:UpdateShownState(state)
 		end
+	end
+	for header in PitBull4:IterateHeaders() do
+		header:ForceUnitFrameCreation()
 	end
 end
 PitBull4.PARTY_MEMBERS_CHANGED = PitBull4.RAID_ROSTER_UPDATE

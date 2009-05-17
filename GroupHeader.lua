@@ -9,6 +9,7 @@ for _ in pairs(RAID_CLASS_COLORS) do
 	NUM_CLASSES = NUM_CLASSES + 1
 end
 local MINIMUM_EXAMPLE_GROUP = 2
+local GROUP_EXPECTED_LENIENCY = 3
 
 local ACCEPTABLE_STATES = {
 	party = {
@@ -25,6 +26,13 @@ local ACCEPTABLE_STATES = {
 		raid25 = true,
 		raid40 = true,
 	}
+}
+
+local BATTLEGROUND_MAP_TO_UNITS = {
+	["WarsongGulch"] = 10,
+	["ArathiBasin"] = 15,
+	["AlteracValley"] = 40,
+	["NetherstormArena"] = 15,
 }
 
 local CLASS_ORDER = { -- TODO: make this configurable
@@ -437,12 +445,16 @@ function GroupHeader:InitialConfigFunction(frame)
 	
 	frame:RefreshLayout()
 end
+GroupHeader.InitialConfigFunction = PitBull4:OutOfCombatWrapper(GroupHeader.InitialConfigFunction)
 
 --- Force unit frames to be created on the group header, even if those units don't exist.
 -- Note: this is a hack to get around a Blizzard bug preventing frames from being initialized properly while in combat.
 -- @usage header:ForceUnitFrameCreation()
 function GroupHeader:ForceUnitFrameCreation()
-	local num = self:GetMaxUnits()
+	local num = self:GetExpectedUnits()
+	if #self >= num then
+		return
+	end
 	
 	local maxColumns = self:GetAttribute("maxColumns")
 	local unitsPerColumn = self:GetAttribute("unitsPerColumn")
@@ -806,6 +818,39 @@ function GroupHeader:GetMaxUnits()
 			return MAX_PARTY_MEMBERS
 		end
 	end
+end
+
+function GroupHeader:GetExpectedUnits()
+	if self.force_show or self.super_unit_group == "party" then
+		return self:GetMaxUnits()
+	end
+	
+	local num = BATTLEGROUND_MAP_TO_UNITS[PitBull4.current_map]
+	if num then
+		local max = self:GetMaxUnits()
+		if num < max then
+			return num
+		else
+			return max
+		end
+	end
+	
+	num = GetNumRaidMembers()
+	
+	if num == 0 then
+		return 1
+	end
+	
+	num = num + GROUP_EXPECTED_LENIENCY
+	if num < #self then
+		return num
+	end
+	
+	local max = self:GetMaxUnits()
+	if num >= max then
+		return max
+	end
+	return num
 end
 
 local make_set
