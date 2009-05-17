@@ -1169,7 +1169,6 @@ function PitBull4:RAID_ROSTER_UPDATE()
 		end
 	end
 end
-PitBull4.RAID_ROSTER_UPDATE = PitBull4:OutOfCombatWrapper(PitBull4.RAID_ROSTER_UPDATE)
 PitBull4.PARTY_MEMBERS_CHANGED = PitBull4.RAID_ROSTER_UPDATE
 
 do
