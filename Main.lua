@@ -1232,5 +1232,6 @@ do
 		for i = 1, n do
 			t[i+1] = select(i, ...)
 		end
+		actions_to_perform[#actions_to_perform+1] = t
 	end
 end
