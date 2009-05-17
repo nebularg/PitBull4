@@ -23,6 +23,9 @@ PitBull4_DruidManaBar:SetDefaults({
 -- constants
 local MANA_TYPE = 0
 
+-- cached power type for optimization
+local power_type = nil
+
 function PitBull4_DruidManaBar:OnEnable()
 	PitBull4_DruidManaBar:RegisterEvent("UNIT_MANA")
 	PitBull4_DruidManaBar:RegisterEvent("UNIT_DISPLAYPOWER")
@@ -33,8 +36,9 @@ function PitBull4_DruidManaBar:GetValue(frame)
 	if frame.unit ~= "player" then
 		return nil
 	end
-    
-	if UnitPowerType("player") == MANA_TYPE then
+ 
+	power_type = UnitPowerType("player")
+	if power_type == MANA_TYPE then
 		return nil
 	end
 	
@@ -61,7 +65,16 @@ function PitBull4_DruidManaBar:UNIT_MANA(event, unit)
 	if unit ~= "player" then
 		return
 	end
-	
+
+	local prev_power_type = power_type
+	power_type = UnitPowerType("player") 
+	if power_type == MANA_TYPE and power_type == prev_power_type then
+		-- We really don't want to iterate all the frames on every mana
+		-- update when the druid is already in a mana form and the bar
+		-- is already hidden.
+		return
+	end
+
 	for frame in PitBull4:IterateFramesForUnitID("player") do
 		self:Update(frame)
 	end
