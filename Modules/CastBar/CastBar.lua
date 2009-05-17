@@ -53,22 +53,7 @@ function PitBull4_CastBar:FixCastDataAndUpdateAll()
 	self:FixCastData()
 
 	if next(cast_data) then
-		-- Can't use self:UpdateAll() because if we create or destroy the
-		-- CastBar (because of the auto-hide feature) we have to cause a
-		-- full frame update in order to keep the text providers working.
-		for frame in PitBull4:IterateFrames() do
-			if not frame.CastBar then
-				self:Update(frame)
-				if frame.CastBar then
-					frame:Update()
-				end
-			else
-				self:Update(frame)
-				if not frame.CastBar then
-					frame:Update()
-				end
-			end
-		end
+		self:UpdateAll(frame)
 	end
 end
 
@@ -167,7 +152,7 @@ end
 
 function PitBull4_CastBar:ClearFramesByGUID(guid)
 	for frame in PitBull4:IterateFramesForGUID(guid) do
-		frame:Update()	
+		self:Update(frame)
 	end
 end
 

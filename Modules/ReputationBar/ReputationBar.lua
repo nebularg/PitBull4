@@ -55,10 +55,6 @@ hooksecurefunc("ReputationWatchBar_Update", function()
 		return
 	end
 	for frame in PitBull4:IterateFramesForUnitID("player") do
-		if not frame.ReputationBar then
-			frame:Update()
-		else
-			PitBull4_ReputationBar:Update(frame)
-		end
+		PitBull4_ReputationBar:Update(frame)
 	end
 end)

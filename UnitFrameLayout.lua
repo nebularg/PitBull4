@@ -1076,12 +1076,23 @@ local function update_indicator_and_text_layout(frame)
 end
 
 --- Reposition all controls on the Unit Frame
+-- @param should_update_texts whether :Update should be called for the frame on text modules
 -- @usage frame:UpdateLayout()
-function UnitFrame:UpdateLayout()
+function UnitFrame:UpdateLayout(should_update_texts)
+	if DEBUG then
+		expect(should_update_texts, 'typeof', 'boolean')
+	end
 	if not self.classification_db or not self.layout_db then
 		-- Possibly unused frame made for another profile
 		return
 	end
 	update_bar_layout(self)
+	if should_update_texts then
+		for module_type in pairs(TEXT_MODULE_TYPES) do
+			for _, module in PitBull4:IterateModulesOfType(module_type) do
+				module:Update(self, true, true)
+			end
+		end
+	end
 	update_indicator_and_text_layout(self)
 end

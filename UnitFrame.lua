@@ -494,7 +494,7 @@ function UnitFrame:Update(same_guid, update_layout)
 	end
 	
 	if changed then
-		self:UpdateLayout()
+		self:UpdateLayout(false)
 	end
 end
 

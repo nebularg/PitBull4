@@ -18,7 +18,7 @@ local BarProviderModule = PitBull4:NewModuleType("bar_provider", {
 			exists = false,
 		}
 	}
-})
+}, true)
 
 local new, del = PitBull4.new, PitBull4.del
 

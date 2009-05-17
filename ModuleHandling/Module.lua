@@ -9,6 +9,9 @@ local module_types = {}
 -- dictionary of module type name to layout defaults
 local module_types_to_layout_defaults = {}
 
+-- dictionary of module type name to whether texts should update
+local module_types_to_update_texts = {}
+
 -- dictionary of script name to a dictionary of module to callback
 local module_script_hooks = {}
 
@@ -21,16 +24,19 @@ local module_to_global_defaults = {}
 --- Add a new module type.
 -- @param name name of the module type
 -- @param defaults a dictionary of default values that all modules will have that inherit from this module type
+-- @param update_texts if texts on the frame should be updated along with :UpdateLayout
 -- @usage MyModule:NewModuleType("mytype", { size = 50, verbosity = "lots" })
-function PitBull4:NewModuleType(name, defaults)
+function PitBull4:NewModuleType(name, defaults, update_texts)
 	if DEBUG then
 		expect(name, 'typeof', "string")
 		expect(name, 'not_inset', module_types)
 		expect(defaults, 'typeof', "table")
+		expect(update_texts, 'typeof', 'boolean;nil')
 	end
 	
 	module_types[name] = {}
 	module_types_to_layout_defaults[name] = defaults
+	module_types_to_update_texts[name] = update_texts or false
 	
 	return module_types[name]
 end
@@ -256,7 +262,7 @@ function Module:Update(frame, return_changed, same_guid)
 		expect(return_changed, 'typeof', 'nil;boolean')
 	end
 	
-	local changed
+	local changed, should_update_texts
 	
 	local layout_db = self:GetLayoutDB(frame)
 	if not layout_db.enabled or (not frame.guid and not frame.force_show) then
@@ -269,7 +275,7 @@ function Module:Update(frame, return_changed, same_guid)
 		return changed
 	end
 	if changed then
-		frame:UpdateLayout()
+		frame:UpdateLayout(module_types_to_update_texts[self.module_type])
 	end
 end
 
@@ -290,7 +296,7 @@ function Module:Clear(frame, return_changed)
 		return changed
 	end
 	if changed and frame.classification_db and frame.layout_db then
-		frame:UpdateLayout()
+		frame:UpdateLayout(module_types_to_update_texts[self.module_type])
 	end
 end
 

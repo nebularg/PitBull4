@@ -14,7 +14,7 @@ local BarModule = PitBull4:NewModuleType("bar", {
 	enabled = true,
 	custom_color = nil,
 	icon_on_left = true,
-})
+}, true)
 
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 if not LibSharedMedia then

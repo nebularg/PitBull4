@@ -63,18 +63,7 @@ function PitBull4_DruidManaBar:UNIT_MANA(event, unit)
 	end
 	
 	for frame in PitBull4:IterateFramesForUnitID("player") do
-		if not frame.DruidManaBar then
-			frame:Update()
-		else
-			self:Update(frame)	
-			-- The DruidManaBar existed before we updated just
-			-- for our own module, but it no longer exists now
-			-- so we need to force the entire frame to Update()
-			-- so that any texts attached are removed.
-			if not frame.DruidManaBar then
-				frame:Update()
-			end
-		end
+		self:Update(frame)
 	end
 end
 
