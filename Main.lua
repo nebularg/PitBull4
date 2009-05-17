@@ -900,6 +900,8 @@ function PitBull4:OnInitialize()
 	self.db = db
 	
 	db.RegisterCallback(self, "OnProfileChanged")
+	db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
+	db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
 	
 	-- used for run-once-only initialization
 	self:RegisterEvent("ADDON_LOADED")
