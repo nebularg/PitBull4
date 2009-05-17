@@ -1012,7 +1012,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		return header:InitialConfigFunction(...)
 	end
 	
-	header:RefreshGroup()
+	header:RefreshGroup(true)
 	
 	header:SetMovable(true)
 	
