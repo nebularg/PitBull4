@@ -1177,16 +1177,14 @@ do
 	local in_combat = false
 	local in_lockdown = false
 	local actions_to_perform = {}
-	local pool = {}
+	local pool = setmetatable({}, {__mode='k'})
 	function PitBull4:PLAYER_REGEN_ENABLED()
 		in_combat = false
 		in_lockdown = false
 		for i, t in ipairs(actions_to_perform) do
-			t[1](unpack(t, 2, t.n+1))
-			for k in pairs(t) do
-				t[k] = nil
-			end
+			t.f(unpack(t, 1, t.n))
 			actions_to_perform[i] = nil
+			wipe(t)
 			pool[t] = true
 		end
 	end
@@ -1194,23 +1192,15 @@ do
 		in_combat = true
 	end
 	--- Call a function if out of combat or schedule to run once combat ends.
-	-- You can also pass in a table (or frame), method, and arguments.
 	-- If current out of combat, the function provided will be called without delay.
 	-- @param func function to call
 	-- @param ... arguments to pass into func
 	-- @usage PitBull4:RunOnLeaveCombat(someSecureFunction)
 	-- @usage PitBull4:RunOnLeaveCombat(someSecureFunction, "player")
 	-- @usage PitBull4:RunOnLeaveCombat(frame.SetAttribute, frame, "key", "value")
-	-- @usage PitBull4:RunOnLeaveCombat(frame, 'SetAttribute', "key", "value")
 	function PitBull4:RunOnLeaveCombat(func, ...)
 		if DEBUG then
-			expect(func, 'typeof', 'table;function')
-			if type(func) == "table" then
-				expect(func[(...)], 'typeof', 'function')
-			end
-		end
-		if type(func) == "table" then
-			return self:RunOnLeaveCombat(func[(...)], func, select(2, ...))
+			expect(func, 'typeof', 'function')
 		end
 		if not in_combat then
 			-- out of combat, call right away and return
@@ -1227,11 +1217,11 @@ do
 		local t = next(pool) or {}
 		pool[t] = nil
 		
-		t[1] = func
+		t.f = func
 		local n = select('#', ...)
 		t.n = n
 		for i = 1, n do
-			t[i+1] = select(i, ...)
+			t[i] = select(i, ...)
 		end
 		actions_to_perform[#actions_to_perform+1] = t
 	end
