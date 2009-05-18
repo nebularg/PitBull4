@@ -60,6 +60,10 @@ for class in pairs(RAID_CLASS_COLORS) do
 	end
 end
 
+-- lock to prevent the SecureGroupHeader_Update for doing unnecessary
+-- work when running ForceShow
+local in_force_show = false
+
 --- Make a group header.
 -- @param group the name for the group. Also acts as a unique identifier.
 -- @usage local header = PitBull4:MakeGroupHeader("Monkey")
@@ -496,6 +500,9 @@ local function hook_SecureGroupHeader_Update()
 		if not self.force_show then
 			return
 		end
+		if in_force_show then
+			return
+		end
 		self:AssignFakeUnitIDs()
 		PitBull4:RecheckConfigMode()
 	end)
@@ -916,6 +923,7 @@ function GroupHeader:IterateMembers(guess_num)
 end
 
 function GroupHeader:ForceShow()
+	in_force_show = true
 	if not self.force_show then
 		if hook_SecureGroupHeader_Update then
 			hook_SecureGroupHeader_Update()
@@ -939,6 +947,7 @@ function GroupHeader:ForceShow()
 		frame:ForceShow()
 		frame:Update(true, true)
 	end
+	in_force_show = false
 end
 GroupHeader.ForceShow = PitBull4:OutOfCombatWrapper(GroupHeader.ForceShow)
 
