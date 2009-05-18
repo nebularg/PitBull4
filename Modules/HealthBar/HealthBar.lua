@@ -10,7 +10,7 @@ local EXAMPLE_VALUE = 0.8
 local unpack = _G.unpack
 local L = PitBull4.L
 
-local PitBull4_HealthBar = PitBull4:NewModule("HealthBar", "AceEvent-3.0")
+local PitBull4_HealthBar = PitBull4:NewModule("HealthBar", "AceEvent-3.0", "AceBucket-3.0")
 
 PitBull4_HealthBar:SetModuleType("bar")
 PitBull4_HealthBar:SetName(L["Health bar"])
@@ -48,8 +48,7 @@ function PitBull4_HealthBar:OnEnable()
 --	PLAYER_GUID = UnitGUID("player")
 --	timerFrame:Show()
 	
-	self:RegisterEvent("UNIT_HEALTH")
-	self:RegisterEvent("UNIT_MAXHEALTH", "UNIT_HEALTH")
+	self:RegisterBucketEvent({"UNIT_HEALTH", "UNIT_MAXHEALTH"}, 0.05, "UNIT_HEALTH")
 	
 	self:UpdateAll()
 end
@@ -158,8 +157,10 @@ function PitBull4_HealthBar:GetExampleColor(frame, value)
 	return unpack(self.db.profile.global.colors.disconnected)
 end
 
-function PitBull4_HealthBar:UNIT_HEALTH(event, unit)
-	self:UpdateForUnitID(unit)
+function PitBull4_HealthBar:UNIT_HEALTH(units)
+	for unit in pairs(units) do
+		self:UpdateForUnitID(unit)
+	end
 end
 
 PitBull4_HealthBar:SetLayoutOptionsFunction(function(self)

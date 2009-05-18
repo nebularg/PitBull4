@@ -34,6 +34,9 @@ externals:
     libs/AceTimer-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceTimer-3.0
         tag: latest
+    libs/AceBucket-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceBucket-3.0
+        tag: latest
     libs/LibDogTag-3.0:
         url: svn://svn.wowace.com/wow/libdogtag-3-0/mainline/trunk
         tag: latest
