@@ -13,7 +13,6 @@
 <Include file="libs\AceEvent-3.0\AceEvent-3.0.xml"/>
 <Include file="libs\AceTimer-3.0\AceTimer-3.0.xml"/>
 <Include file="libs\AceHook-3.0\AceHook-3.0.xml"/>
-<Include file="libs\AceBucket-3.0\AceBucket-3.0.xml"/>
 <Include file="libs\LibDogTag-3.0\lib.xml"/>
 <Include file="libs\LibDogTag-Unit-3.0\lib.xml"/>
 <Include file="libs\LibSharedMedia-3.0\lib.xml"/>

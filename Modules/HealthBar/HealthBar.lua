@@ -10,7 +10,7 @@ local EXAMPLE_VALUE = 0.8
 local unpack = _G.unpack
 local L = PitBull4.L
 
-local PitBull4_HealthBar = PitBull4:NewModule("HealthBar", "AceEvent-3.0", "AceBucket-3.0")
+local PitBull4_HealthBar = PitBull4:NewModule("HealthBar", "AceEvent-3.0", "AceTimer-3.0")
 
 PitBull4_HealthBar:SetModuleType("bar")
 PitBull4_HealthBar:SetName(L["Health bar"])
@@ -43,12 +43,17 @@ local HOSTILE_REACTION = 2
 local NEUTRAL_REACTION = 4
 local FRIENDLY_REACTION = 5
 
+local guids_to_update = {}
+
 -- local PLAYER_GUID
 function PitBull4_HealthBar:OnEnable()
 --	PLAYER_GUID = UnitGUID("player")
 --	timerFrame:Show()
 	
-	self:RegisterBucketEvent({"UNIT_HEALTH", "UNIT_MAXHEALTH"}, 0.05, "UNIT_HEALTH")
+	self:ScheduleRepeatingTimer("OnUpdate", 0.1)
+
+	self:RegisterEvent("UNIT_HEALTH")
+	self:RegisterEvent("UNIT_MAXHEALTH","UNIT_HEALTH")
 	
 	self:UpdateAll()
 end
@@ -157,9 +162,18 @@ function PitBull4_HealthBar:GetExampleColor(frame, value)
 	return unpack(self.db.profile.global.colors.disconnected)
 end
 
-function PitBull4_HealthBar:UNIT_HEALTH(units)
-	for unit in pairs(units) do
-		self:UpdateForUnitID(unit)
+function PitBull4_HealthBar:UNIT_HEALTH(event, unit)
+	guids_to_update[UnitGUID(unit)] = true
+end
+
+function PitBull4_HealthBar:OnUpdate()
+	if next(guids_to_update) then
+		for frame in PitBull4:IterateFrames() do
+			if guids_to_update[frame.guid] then
+				self:Update(frame)
+			end
+		end
+		wipe(guids_to_update)
 	end
 end
 
