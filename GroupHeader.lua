@@ -235,6 +235,10 @@ function GroupHeader:RefixSizeAndPosition()
 	self:SetPoint(anchor, UIParent, "CENTER", group_db.position_x / scale + x_diff, group_db.position_y / scale + y_diff)
 end
 
+local function count_returns(...)
+	return select('#', ...)
+end
+
 local tank_list = {}
 local function get_main_tank_name_list()
 	local main_tanks
@@ -253,9 +257,10 @@ local function get_main_tank_name_list()
 		end
 		local s = table.concat(tank_list, ',')
 		if s ~= "" then
-			return s
+			return s, #tank_list
 		end
 	end
+	return nil, count_returns(GetPartyAssignment("MAINTANK"))
 end
 
 --- Recheck the group-based settings of the group header, including sorting, position, what units are shown.
@@ -832,20 +837,26 @@ function GroupHeader:GetExpectedUnits()
 		return self:GetMaxUnits()
 	end
 	
+	local group_filter = self.group_db.group_filter
 	local num = BATTLEGROUND_MAP_TO_UNITS[PitBull4.current_map]
-	if num then
+	if group_filter == "MAINTANK" then
+		_, num = get_main_tank_name_list()
+		if num == 0 then
+			return 5 -- Maintain 5 maintank entries minimum
+		end
+	elseif num then 
+		-- we're in a battleground
 		local max = self:GetMaxUnits()
 		if num < max then
 			return num
 		else
 			return max
 		end
-	end
-	
-	num = GetNumRaidMembers()
-	
-	if num == 0 then
-		return 1
+	else
+		num = GetNumRaidMembers()
+		if num == 0 then
+			return 1
+		end
 	end
 	
 	num = num + GROUP_EXPECTED_LENIENCY
