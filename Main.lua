@@ -1164,7 +1164,7 @@ end
 local last_state = nil
 local last_raid_num = nil
 local last_party_num = nil
-function PitBull4:RAID_ROSTER_UPDATE(force)
+function PitBull4:RAID_ROSTER_UPDATE(force, no_create)
 	refresh_all_guids()
 	local raid = GetNumRaidMembers()
 	local party = GetNumPartyMembers()
@@ -1196,8 +1196,10 @@ function PitBull4:RAID_ROSTER_UPDATE(force)
 			header:UpdateShownState(state)
 		end
 	end
-	for header in PitBull4:IterateHeaders() do
-		header:ForceUnitFrameCreation()
+	if not no_create then
+		for header in PitBull4:IterateHeaders() do
+			header:ForceUnitFrameCreation()
+		end
 	end
 end
 PitBull4.PARTY_MEMBERS_CHANGED = PitBull4.RAID_ROSTER_UPDATE
