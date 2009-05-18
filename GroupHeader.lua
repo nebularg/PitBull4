@@ -921,6 +921,7 @@ function GroupHeader:ForceShow()
 			hook_SecureGroupHeader_Update()
 		end
 		self.force_show = true
+		self:ForceUnitFrameCreation()
 		self:AssignFakeUnitIDs()
 		if not self.label then
 			local label = self:CreateFontString(self:GetName() .. "_Label", "OVERLAY", "ChatFontNormal")
