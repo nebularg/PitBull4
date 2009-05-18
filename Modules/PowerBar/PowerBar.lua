@@ -9,7 +9,7 @@ local EXAMPLE_VALUE = 0.6
 
 local L = PitBull4.L
 
-local PitBull4_PowerBar = PitBull4:NewModule("PowerBar", "AceEvent-3.0", "AceHook-3.0")
+local PitBull4_PowerBar = PitBull4:NewModule("PowerBar", "AceEvent-3.0", "AceHook-3.0", "AceBucket-3.0")
 local last_player_power
 local last_pet_power
 
@@ -29,18 +29,8 @@ timerFrame:Hide()
 local PLAYER_GUID
 function PitBull4_PowerBar:OnEnable()
 	PLAYER_GUID = UnitGUID("player")
-	
-	self:RegisterEvent("UNIT_MANA")
-	self:RegisterEvent("UNIT_MAXMANA", "UNIT_MANA")
-	self:RegisterEvent("UNIT_RAGE", "UNIT_MANA")
-	self:RegisterEvent("UNIT_MAXRAGE", "UNIT_MANA")
-	self:RegisterEvent("UNIT_FOCUS", "UNIT_MANA")
-	self:RegisterEvent("UNIT_MAXFOCUS", "UNIT_MANA")
-	self:RegisterEvent("UNIT_ENERGY", "UNIT_MANA")
-	self:RegisterEvent("UNIT_MAXENERGY", "UNIT_MANA")
-	self:RegisterEvent("UNIT_RUNIC_POWER", "UNIT_MANA")
-	self:RegisterEvent("UNIT_MAXRUNIC_POWER", "UNIT_MANA")
-	self:RegisterEvent("UNIT_DISPLAYPOWER", "UNIT_MANA")
+
+	self:RegisterBucketEvent({"UNIT_MANA", "UNIT_MAXMANA", "UNIT_RAGE", "UNIT_MAXRAGE", "UNIT_FOCUS", "UNIT_MAXFOCUS", "UNIT_ENERGY", "UNIT_MAXENERGY", "UNIT_RUNIC_POWER", "UNIT_MAXRUNIC_POWER", "UNIT_DISPLAYPOWER"}, 0.05, "UNIT_MANA")
 	
 	self:SecureHook("SetCVar")
 	self:SetCVar()
@@ -123,8 +113,10 @@ function PitBull4_PowerBar:GetExampleColor(frame)
 	end
 end
 
-function PitBull4_PowerBar:UNIT_MANA(event, unit)
-	PitBull4_PowerBar:UpdateForUnitID(unit)
+function PitBull4_PowerBar:UNIT_MANA(units)
+	for unit in pairs(units) do
+		PitBull4_PowerBar:UpdateForUnitID(unit)
+	end
 end
 
 function PitBull4_PowerBar:SetCVar()
