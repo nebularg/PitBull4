@@ -129,9 +129,6 @@ end
 
 function PitBull4_PowerBar:UNIT_MANA(event, unit)
 	guids_to_update[UnitGUID(unit)] = true
-	for unit in pairs(units) do
-		PitBull4_PowerBar:UpdateForUnitID(unit)
-	end
 end
 
 function PitBull4_PowerBar:OnUpdate()
