@@ -83,11 +83,12 @@ local can_dispel = {
 can_dispel.player = can_dispel[player_class]
 PitBull4_Aura.can_dispel = can_dispel
 
--- Handle CHARACTER_POINTS_CHANGED events.  If the points aren't changed
--- due to leveling, rescan the talents for the relevent talents that change
--- what we can dispel.
-function PitBull4_Aura:CHARACTER_POINTS_CHANGED(event, count, levels)
-	if levels > 0 then return end -- Not interested in gained points from leveling
+-- Handle PLAYER_TALENT_CHANGED and CHARACTER_POINTS_CHANGED events.
+-- If the points aren't changed due to leveling, rescan the talents
+-- for the relevent talents that change what we can dispel.
+function PitBull4_Aura:PLAYER_TALENT_UPDATE(event, count, levels)
+	-- Not interested in gained points from leveling	
+	if event == "CHARACTER_POINTS_CHANGED" and levels > 0 then return end
 	local curse = scan_for_known_talent(51886)
 	can_dispel.SHAMAN.Curse = curse -- can_dispel table
 	self:GetFilterDB('23').aura_type_list.Curse = curse -- Shaman can dispel filter
