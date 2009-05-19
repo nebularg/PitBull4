@@ -162,6 +162,7 @@ self_buffs.DRUID = {
 	[12536] = true, -- Clearcasting
 	[1850]  = true, -- Dash
 	[9634]  = true, -- Dire Bear Form
+	[48517] = true, -- Eclipse
 	[3019]  = true, -- Enrage
 	[33943] = true, -- Flight Form
 	[22842] = true, -- Frenzied Regeneration
