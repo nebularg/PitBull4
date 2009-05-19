@@ -77,7 +77,7 @@ end
 
 function PitBull4_CastBar:GetValue(frame)
 	local unit = frame.unit
-	if frame.is_wacky or unit == "target" and unit == "focus" then
+	if frame.is_wacky or unit == "target" or unit == "focus" then
 		self:UpdateInfo(nil, unit)
 	end
 	
