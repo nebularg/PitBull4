@@ -36,6 +36,8 @@ do
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(589) -- Shadow Word: Pain
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(2050) -- Lesser Heal
 	elseif class == "DRUID" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(33786) -- Cyclone
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(5176) -- Wrath
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(5185) -- Healing Touch
 	elseif class == "PALADIN" then
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(635) -- Holy Light
