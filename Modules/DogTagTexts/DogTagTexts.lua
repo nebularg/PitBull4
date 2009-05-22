@@ -2,7 +2,7 @@ if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les
 
 local PitBull4 = _G.PitBull4
 if not PitBull4 then
-	error("PitBull4_CombatIcon requires PitBull4")
+	error("PitBull4_DogTagTexts requires PitBull4")
 end
 
 local L = PitBull4.L
