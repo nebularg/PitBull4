@@ -10,12 +10,15 @@ local control__index = {}
 
 -- functions to call when deleting specific types of controls
 local delete_funcs = {}
+
+local default_font, default_font_size = ChatFontNormal:GetFont()
 function delete_funcs:FontString()
 	self:SetText("")
 	self:SetJustifyH("CENTER")
 	self:SetJustifyV("MIDDLE")
 	self:SetNonSpaceWrap(true)
 	self:SetTextColor(1, 1, 1, 1)
+	self:SetFont(default_font, default_font_size, nil)
 	self:SetFontObject(nil)
 end
 function delete_funcs:Texture()
