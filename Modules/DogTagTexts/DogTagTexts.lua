@@ -141,17 +141,17 @@ local PROVIDED_CODES = function() return {
 		[L["Smart"]]          = "[if not IsMana then MissingDruidMP:Hide(0):Short:Color('7f7fff')]",
 	},
 	[L["Threat"]] = {
-		[L["Percent"]]            = "[PercentThreat:Short:Hide(0):Percent]",
-		[L["Raw percent"]]         = "[RawPercentThreat:Short:Hide(0):Percent]",
-		[L["Colored percent"]]    = "[PercentThreat:Short:Hide(0):Percent:ThreatStatusColor(ThreatStatus)]",
-		[L["Colored raw percent"]] = "[RawPercentThreat:Short:Hide(0):Percent:ThreatStatusColor(ThreatStatus)]",
+		[L["Percent"]]            = "[PercentThreat:Round(1):Hide(0):Percent]",
+		[L["Raw percent"]]         = "[RawPercentThreat:Round(1):Hide(0):Percent]",
+		[L["Colored percent"]]    = "[PercentThreat:Round(1):Hide(0):Percent:ThreatStatusColor(ThreatStatus)]",
+		[L["Colored raw percent"]] = "[RawPercentThreat:Round(1):Hide(0):Percent:ThreatStatusColor(ThreatStatus)]",
 	},
 	[L["Cast"]] = {
 		[L["Standard name"]] = "[Alpha((-CastStopDuration or 0) + 1) CastStopMessage or (CastName ' ' CastTarget:Paren)]",
 		[L["Standard time"]] = "[if not CastStopDuration then Concatenate('+', CastDelay:Round(1):Hide(0)):Red ' ' [CastEndDuration >= 0 ? '%.1f':Format(CastEndDuration)]]",
 	},
 	[L["Combo points"]] = {
-		[L["Standard"]]       = playerClass == "DRUID" and "[if IsEnergy(unit='player') then Combos:Hide(0)]" or "[Combos:Hide(0)]",
+		[L["Standard"]]       = "[Combos:Hide(0)]",
 	},
 	[L["Experience"]] = {
 		[L["Standard"]]       = "[FractionalXP] [PercentXP:Percent:Paren] [Concatenate('R: ', PercentRestXP:Hide(0):Percent)]",
