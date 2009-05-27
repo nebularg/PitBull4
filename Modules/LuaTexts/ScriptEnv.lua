@@ -109,7 +109,12 @@ local L_DAY_ONELETTER_ABBR    = DAY_ONELETTER_ABBR:gsub("%s*%%d%s*", "")
 local L_HOUR_ONELETTER_ABBR   = HOUR_ONELETTER_ABBR:gsub("%s*%%d%s*", "")
 local L_MINUTE_ONELETTER_ABBR = MINUTE_ONELETTER_ABBR:gsub("%s*%%d%s*", "")
 local L_SECOND_ONELETTER_ABBR = SECOND_ONELETTER_ABBR:gsub("%s*%%d%s*", "")
+local L_DAYS_ABBR = DAYS_ABBR:gsub("%s*%%d%s*","")
+local L_HOURS_ABBR = HOURS_ABBR:gsub("%s*%%d%s*","")
+local L_MINUTES_ABBR = MINUTES_ABBR:gsub("%s*%%d%s*","")
+local L_SECONDS_ABBR = SECONDS_ABBR:gsub("%s*%%d%s*","")
 
+local t = {}
 local function FormatDuration(number, format)
 	local negative = ""
 	if number < 0 then
@@ -139,7 +144,7 @@ local function FormatDuration(number, format)
 			number = number % (60*60*24)
 			t[#t+1] = ("%.0f"):format(days)
 			t[#t+1] = " "
-			t[#t+1] = DAYS_ABBR
+			t[#t+1] = _L_DAYS_ABBR
 			first = false
 		end
 
@@ -153,7 +158,7 @@ local function FormatDuration(number, format)
 			end
 			t[#t+1] = hours
 			t[#t+1] = " "
-			t[#t+1] = HOURS_ABBR
+			t[#t+1] = L_HOURS_ABBR
 		end
 
 		if number >= 60 then
@@ -166,7 +171,7 @@ local function FormatDuration(number, format)
 			end
 			t[#t+1] = minutes
 			t[#t+1] = " "
-			t[#t+1] = MINUTES_ABBR
+			t[#t+1] = L_MINUTES_ABBR
 		end
 
 		if number >= 1 or first then
@@ -178,7 +183,7 @@ local function FormatDuration(number, format)
 			end
 			t[#t+1] = seconds
 			t[#t+1] = " "
-			t[#t+1] = SECONDS_ABBR
+			t[#t+1] = L_SECONDS_ABBR
 		end
 		local s = table.concat(t)
 		for k in pairs(t) do
@@ -201,15 +206,15 @@ local function FormatDuration(number, format)
 		if number == 1/0 then
 			return negative .. "***"
 		elseif number >= 2*60*60*24 then
-			return ("%s%.1f %s"):format(negative, number/86400, DAYS_ABBR)
+			return ("%s%.1f %s"):format(negative, number/86400, L_DAYS_ABBR)
 		elseif number >= 2*60*60 then
-			return ("%s%.1f %s"):format(negative, number/3600, HOURS_ABBR)
+			return ("%s%.1f %s"):format(negative, number/3600, L_HOURS_ABBR)
 		elseif number >= 2*60 then
-			return ("%s%.1f %s"):format(negative, number/60, MINUTES_ABBR)
+			return ("%s%.1f %s"):format(negative, number/60, L_MINUTES_ABBR)
 		elseif number >= 3 then
-			return ("%s%.0f %s"):format(negative, number, SECONDS_ABBR)
+			return ("%s%.0f %s"):format(negative, number, L_SECONDS_ABBR)
 		else
-			return ("%s%.1f %s"):format(negative, number, SECONDS_ABBR)
+			return ("%s%.1f %s"):format(negative, number, L_SECONDS_ABBR)
 		end
 	else
 		if number == 1/0 then
