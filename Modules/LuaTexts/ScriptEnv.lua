@@ -409,14 +409,6 @@ local function Dead(unit)
 end
 ScriptEnv.Dead = Dead 
 
--- TODO: Real Aura implementation, this is kinda cheezy but it works.
-local DIVINE_INTERVENTION = GetSpellInfo(19752)
-local function HasDivineIntervention(unit)
-	local name = UnitAura(unit,DIVINE_INTERVENTION)
-	return name
-end
-ScriptEnv.HasDivineIntervention = HasDivineIntervention
-
 local MOONKIN_FORM = GetSpellInfo(24858)
 local AQUATIC_FORM = GetSpellInfo(1066)
 local FLIGHT_FORM = GetSpellInfo(33943)
@@ -448,8 +440,9 @@ local function DruidForm(unit)
 end
 ScriptEnv.DruidForm = DruidForm
 
+local DIVINE_INTERVENTION = GetSpellInfo(19752)
 local function Status(unit)
-	return Offline(unit) or HasDivineIntervention(unit) or (UnitIsFeignDeath(unit) and L["Feigned Death"]) or Dead(unit)
+	return Offline(unit) or UnitAura(unit,DIVINE_INTERVENTION) or (UnitIsFeignDeath(unit) and L["Feigned Death"]) or Dead(unit)
 end
 ScriptEnv.Status = Status
 
