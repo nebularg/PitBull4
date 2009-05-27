@@ -20,6 +20,7 @@
 <Include file="Modules\HideBlizzard\load.xml"/>
 <Include file="Modules\Highlight\load.xml"/>
 <Include file="Modules\LeaderIcon\load.xml"/>
+<Include file="Modules\LuaTexts\load.xml"/>
 <Include file="Modules\ManaSpark\load.xml"/>
 <Include file="Modules\MasterLooterIcon\load.xml"/>
 <Include file="Modules\Portrait\load.xml"/>
