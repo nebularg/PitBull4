@@ -48,7 +48,7 @@ function PitBull4_DogTagTexts:OnNewLayout(layout)
 			location = "left"
 		},
 		[L["Health"]] = {
-			code = "[Status or (if IsFriend then MissingHP:Hide(0):Short:Color('ff7f7f') else FractionalHP(known=true):Short or PercentHP:Percent)]",
+			code = "[Status or (if IsFriend then MissingHP:Hide(0):Short:Color('ff7f7f') else FractionalHP:Short)]",
 			attach_to = "HealthBar",
 			location = "right",
 		},
@@ -83,7 +83,7 @@ function PitBull4_DogTagTexts:OnNewLayout(layout)
 			location = "center",
 		},
 		[L["Threat"]] = {
-			code = "[PercentThreat:Short:Hide(0):Percent]",
+			code = "[PercentThreat:Round(1):Hide(0):Percent]",
 			attach_to = "ThreatBar",
 			location = "center",
 		},
