@@ -435,6 +435,8 @@ local function Dead(unit)
 	local dead_type = (UnitIsGhost(unit) and L["Ghost"]) or (UnitIsDead(unit) and L["Dead"])
 	if dead_time and dead_type then
 		return dead_type..' ('..FormatDuration(dead_time)..')'
+	elseif dead_type then
+		return dead_type
 	end
 end
 ScriptEnv.Dead = Dead 
