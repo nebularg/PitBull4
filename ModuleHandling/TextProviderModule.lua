@@ -11,6 +11,7 @@ local TextProviderModule = PitBull4:NewModuleType("text_provider", {
 			location = "edge_top_left",
 			position = 1,
 			exists = false,
+			enabled = true,
 		},
 	},
 	enabled = true,
@@ -81,18 +82,17 @@ function TextProviderModule:UpdateFrame(frame)
 	for name, text_db in pairs(layout_db.elements) do
 		local font_string = texts[name]
 		
+		local enabled = text_db.enabled
 		local attach_to = text_db.attach_to
-		
-		local has_attach_to = false
-		if attach_to == "root" then
-			has_attach_to = true
-		elseif frame[attach_to] then
-			has_attach_to = true
+
+		if enabled then
+			if attach_to ~= "root" and not frame[attach_to] then
+				-- what we're attaching to doesn't exist so we're disabled
+				enabled = false
+			end
 		end
 		
-		if has_attach_to then
-			-- what we're attaching to exists
-			
+		if enabled then
 			if not font_string then
 				font_string = PitBull4.Controls.MakeFontString(frame.overlay, "OVERLAY")
 				texts[name] = font_string

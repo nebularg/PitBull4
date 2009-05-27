@@ -23,6 +23,7 @@ PitBull4_DogTagTexts:SetDefaults({
 			position = 1,
 			exists = false,
 			code = "",
+			enabled = true,
 		},
 	},
 	first = true

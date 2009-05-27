@@ -268,16 +268,24 @@ function PitBull4.Options.get_layout_editor_text_options()
 		desc = L["Enable this text."],
 		order = 1,
 		get = function(info)
-			return GetLayoutDB(CURRENT_CUSTOM_TEXT_MODULE).enabled
+			if CURRENT_CUSTOM_TEXT_MODULE then
+				return GetLayoutDB(CURRENT_CUSTOM_TEXT_MODULE).enabled
+			end
+			if not CURRENT_TEXT_PROVIDER_MODULE then
+				return nil 
+			end
+			return GetTextLayoutDB().enabled
 		end,
 		set = function(info, value)
-			GetLayoutDB(CURRENT_CUSTOM_TEXT_MODULE).enabled = value
+			if CURRENT_CUSTOM_TEXT_MODULE then
+				GetLayoutDB(CURRENT_CUSTOM_TEXT_MODULE).enabled = value
+			else
+				GetTextLayoutDB().enabled = value
+			end
 			
 			UpdateFrames()
 		end,
-		hidden = function(info)
-			return not CURRENT_CUSTOM_TEXT_MODULE
-		end,
+		disabled = disabled,
 	}
 	
 	options.args.edit.args.name = {
