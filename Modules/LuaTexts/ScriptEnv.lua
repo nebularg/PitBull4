@@ -223,6 +223,7 @@ local function FormatDuration(number, format)
 		end
 	end
 end
+ScriptEnv.FormatDuration = FormatDuration
 
 local function Angle(value)
 	if value and value ~= '' then
@@ -251,12 +252,20 @@ local function UpdateIn(seconds)
 end
 ScriptEnv.UpdateIn = UpdateIn
 
-local function AFK(unit)
- 	local afk = afk_times[UnitGUID(unit)]
+local function AFKDuration(unit)
+	local afk = afk_times[UnitGUID(unit)]
 	afk_cache[ScriptEnv.font_string] = true
 	if afk then
 		UpdateIn(0.25)
-		return _G.AFK..' ('..FormatDuration(GetTime() - afk)..')'
+		return GetTime() - afk
+	end
+end
+ScriptEnv.AFKDuration = AFKDuration
+
+local function AFK(unit)
+	local afk = AFKDuration(unit)
+	if afk then
+		return _G.AFK..' ('..FormatDuration(afk)..')'
 	end
 end
 ScriptEnv.AFK = AFK
@@ -388,23 +397,39 @@ local function IsPet(unit)
 end
 ScriptEnv.IsPet = IsPet
 
-local function Offline(unit)
- 	local offline = offline_times[UnitGUID(unit)]
+local function OfflineDuration(unit)
+	local offline = offline_times[UnitGUID(unit)]
 	offline_cache[ScriptEnv.font_string] = true
 	if offline then
 		UpdateIn(0.25)
-		return L["Offline"]..' ('..FormatDuration(GetTime() - offline)..')'
+		return GetTime() - offline
+	end
+end
+ScriptEnv.OfflineDuration = OfflineDuration
+
+local function Offline(unit)
+ 	local offline = OfflineDuration(unit)
+	if offline then
+		return L["Offline"]..' ('..FormatDuration(offline)..')'
 	end
 end
 ScriptEnv.Offline = Offline
 
-local function Dead(unit)
+local function DeadDuration(unit)
 	local dead_time = dead_times[UnitGUID(unit)]
-	local dead_type = (UnitIsGhost(unit) and L["Ghost"]) or (UnitIsDead(unit) and L["Dead"])
 	dead_cache[ScriptEnv.font_string] = true
-	if dead_time and dead_type then
+	if dead_time then
 		UpdateIn(0.25)
-		return dead_type..' ('..FormatDuration(GetTime() - dead_time)..')'
+		return GetTime() - dead_time
+	end
+end
+ScriptEnv.DeadDuration = DeadDuration
+
+local function Dead(unit)
+	local dead_time = DeadDuration(unit) 
+	local dead_type = (UnitIsGhost(unit) and L["Ghost"]) or (UnitIsDead(unit) and L["Dead"])
+	if dead_time and dead_type then
+		return dead_type..' ('..FormatDuration(dead_time)..')'
 	end
 end
 ScriptEnv.Dead = Dead 
