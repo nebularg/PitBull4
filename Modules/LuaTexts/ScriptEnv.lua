@@ -75,7 +75,7 @@ end})
 
 local function VehicleName(unit)
 	local name = UnitName(unit:gsub("vehicle", "pet")) or UnitName(unit) or L["Vehicle"]
-	local owner_unit = unit:gsub("vheicle", "")
+	local owner_unit = unit:gsub("vehicle", "")
 	if owner_unit == "" then
 		owner_unit = "player"
 	end
