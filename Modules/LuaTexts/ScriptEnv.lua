@@ -769,3 +769,13 @@ local function Abbreviate(value)
     end
 end
 ScriptEnv.Abbreviate = Abbreviate
+
+local function PVPDuration(unit)
+	if unit and not UnitIsUnit(unit,"player") then return end
+  if IsPVPTimerRunning() then
+		UpdateIn(0.25)
+		return GetPVPTimer()/1000
+	end
+end
+ScriptEnv.PVPDuration = PVPDuration
+
