@@ -355,6 +355,12 @@ local function DifficultyColor(unit)
 end
 ScriptEnv.DifficultyColor = DifficultyColor
 
+local function AggroColor(unit)
+	local r, g, b = UnitSelectionColor(unit)
+	return r * 255, g * 255, b * 255
+end
+ScriptEnv.AggroColor = AggroColor
+
 local classification_lookup = {
 	rare = L["Rare"],
 	rareelite = L["Rare-Elite"],
@@ -782,3 +788,55 @@ local function PVPDuration(unit)
 end
 ScriptEnv.PVPDuration = PVPDuration
 
+local function HPColor(cur, max)
+	local perc = cur / max
+	local r1, g1, b1
+	local r2, g2, b2
+	if perc <= 0.5 then
+		perc = perc * 2
+		r1, g1, b1 = 1, 0, 0  -- TODO: Let these be configurable?
+		r2, g2, b2 = 1, 1, 0 
+	else
+		perc = perc * 2 - 1
+		r1, g1, b1 = 1, 1, 0 
+		r2, g2, b2 = 0, 1, 0 
+	end
+	local r, g, b = r1 + (r2 - r1)*perc, g1 + (g2 - g1)*perc, b1 + (b2 - b1)*perc
+	if r < 0 then
+		r = 0
+	elseif r > 1 then
+		r = 1
+	end
+	if g < 0 then
+		g = 0
+	elseif g > 1 then
+		g = 1
+	end
+	if b < 0 then
+		b = 0
+	elseif b > 1 then
+		b = 1
+	end
+	return r * 255, g * 255, b * 255
+end
+ScriptEnv.HPColor = HPColor
+
+local function PowerColor(power_type)
+	local color = PitBull4.PowerColors[power_type]
+	local r,g,b
+	if color then
+		r, g, b = color[1],color[2],color[3]
+	else
+		r, g, b = 0.7, 0.7, 0.7
+	end
+	return r * 255, g * 255, b * 255
+end
+ScriptEnv.PowerColor = PowerColor
+
+local function ReputationColor(reaction)
+  local color = FACTION_BAR_COLORS[reaction]
+	if color then
+		return color.r * 255, color.g * 255, color.b * 255
+	end
+end
+ScriptEnv.ReputationColor = ReputationColor
