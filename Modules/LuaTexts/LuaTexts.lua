@@ -838,6 +838,7 @@ function PitBull4_LuaTexts:PARTY_MEMBERS_CHANGED(event)
 		return
 	end
 
+	wipe(group_members)
 	for i = min, max do
 		local unit
 		if i == 0 then
