@@ -770,6 +770,18 @@ local function ThickOutline()
 end
 ScriptEnv.ThickOutline = ThickOutline
 
+local function abbreviate(text)
+	local b = text:byte(1)
+	if b <= 127 then
+		return text:sub(1, 1)
+	elseif b <= 223 then
+		return text:sub(1, 2)
+	elseif b <= 239 then
+		return text:sub(1, 3)
+	else
+		return text:sub(1, 4)
+	end
+end
 local function Abbreviate(value)
     if value:find(" ") then
       return value:gsub(" *([^ ]+) *", abbreviate)
