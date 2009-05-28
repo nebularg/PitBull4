@@ -754,6 +754,7 @@ local group_members = {}
 local first = true
 local function update_timers()
 	if first then
+		first = false
 		PitBull4_LuaTexts:PARTY_MEMBERS_CHANGED()
 	end
 	for unit, guid in pairs(group_members) do 
