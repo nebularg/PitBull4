@@ -305,6 +305,9 @@ local function HostileColor(unit)
 			elseif UnitCanAttack("player", unit) then
 				-- they can't attack me, but I can attack them
 				r, g, b = unpack(PitBull4.ReactionColors[NEUTRAL_REACTION])
+			elseif UnitIsPVP(unit) then
+				-- on my team
+				r, g, b = unpack(PitBull4.ReactionColors[FRIENDLY_REACTION])
 			else
 				-- either enemy or friend, no violance
 				r, g, b = unpack(PitBull4.ReactionColors.civilian)
