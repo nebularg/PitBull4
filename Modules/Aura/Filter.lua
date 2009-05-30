@@ -724,6 +724,9 @@ self_buffs.WARRIOR = {
 	[37523] = true, -- Reinforced Shield
 	-- T5, DPS, 2 piece bonus
 	[7384]  = true, -- Overpower
+	[40729] = true, -- Heightened Reflexes
+	[61571] = true, -- Spirits of the Lost
+	[46916] = true, -- Slam!
 }
 self_debuffs.WARRIOR = {
 	[12292] = true, -- Death Wish
