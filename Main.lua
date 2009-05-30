@@ -1221,6 +1221,8 @@ do
 	end
 	function PitBull4:PLAYER_REGEN_DISABLED()
 		in_combat = true
+		self.SingletonUnitFrame:PLAYER_REGEN_DISABLED()
+		self.MemberUnitFrame:PLAYER_REGEN_DISABLED()
 	end
 	--- Call a function if out of combat or schedule to run once combat ends.
 	-- If current out of combat, the function provided will be called without delay.

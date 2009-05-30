@@ -455,7 +455,6 @@ function GroupHeader:InitialConfigFunction(frame)
 	frame:RefreshLayout()
 end
 GroupHeader.InitialConfigFunction = PitBull4:OutOfCombatWrapper(GroupHeader.InitialConfigFunction)
-
 --- Force unit frames to be created on the group header, even if those units don't exist.
 -- Note: this is a hack to get around a Blizzard bug preventing frames from being initialized properly while in combat.
 -- @usage header:ForceUnitFrameCreation()
@@ -1036,11 +1035,11 @@ function MemberUnitFrame__scripts:OnMouseUp(button)
 	end
 end
 
-LibStub("AceEvent-3.0").RegisterEvent("PitBull4-MemberUnitFrame:OnDragStop", "PLAYER_REGEN_DISABLED", function()
+function MemberUnitFrame:PLAYER_REGEN_DISABLED()
 	if moving_frame then
 		MemberUnitFrame__scripts.OnDragStop(moving_frame)
 	end
-end)
+end
 
 --- Reset the size of the unit frame, not position as that is handled through the group header.
 -- @usage frame:RefixSizeAndPosition()

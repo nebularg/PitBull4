@@ -185,11 +185,11 @@ function SingletonUnitFrame__scripts:OnMouseUp(button)
 	end
 end
 
-LibStub("AceEvent-3.0").RegisterEvent("PitBull4-SingletonUnitFrame:OnDragStop", "PLAYER_REGEN_DISABLED", function()
+function SingletonUnitFrame:PLAYER_REGEN_DISABLED()
 	if moving_frame then
 		SingletonUnitFrame__scripts.OnDragStop(moving_frame)
 	end
-end)
+end
 
 function UnitFrame__scripts:OnEnter()
 	if self.guid then
