@@ -92,16 +92,9 @@ function PitBull4:RecheckConfigMode()
 	end
 end
 
-local frame = CreateFrame("Frame")
-frame:RegisterEvent("PLAYER_REGEN_DISABLED")
-frame:SetScript("OnEvent", function()
-	if not PitBull4.config_mode then
-		return
-	end
-	
-	UIErrorsFrame:AddMessage("Disabling PitBull4 config mode, entering combat.", 0.5, 1, 0.5, nil, 1)
-	PitBull4:SetConfigMode(nil)
-end)
+-- See PitBull4:PLAYER_REGEN_DISABLED() for code that turns config mode off when entering
+-- combat.
+
 
 function PitBull4.Options.get_config_mode_options()
 	return {

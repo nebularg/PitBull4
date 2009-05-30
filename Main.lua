@@ -1223,6 +1223,10 @@ do
 		in_combat = true
 		self.SingletonUnitFrame:PLAYER_REGEN_DISABLED()
 		self.MemberUnitFrame:PLAYER_REGEN_DISABLED()
+		if PitBull4.config_mode then
+			UIErrorsFrame:AddMessage(L["Disabling PitBull4 config mode, entering combat."], 0.5, 1, 0.5, nil, 1)
+			PitBull4:SetConfigMode(nil)
+		end
 	end
 	--- Call a function if out of combat or schedule to run once combat ends.
 	-- If current out of combat, the function provided will be called without delay.
