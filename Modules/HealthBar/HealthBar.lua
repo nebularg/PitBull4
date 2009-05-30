@@ -32,12 +32,8 @@ PitBull4_HealthBar:SetDefaults({
 	}
 })
 
---[[ Currently the WoW Client isn't actually doing fast updates for health.
---   It's unclear if this is a bug or a change in feature.  Disabling the
---   code to support this for now since it's a waste of CPU time for no benefit.
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
---]]
 
 local HOSTILE_REACTION = 2
 local NEUTRAL_REACTION = 4
@@ -48,29 +44,38 @@ local guids_to_update = {}
 -- local PLAYER_GUID
 function PitBull4_HealthBar:OnEnable()
 --	PLAYER_GUID = UnitGUID("player")
---	timerFrame:Show()
+	timerFrame:Show()
 	
-	self:ScheduleRepeatingTimer("OnUpdate", 0.1)
-
 	self:RegisterEvent("UNIT_HEALTH")
 	self:RegisterEvent("UNIT_MAXHEALTH","UNIT_HEALTH")
 	
 	self:UpdateAll()
 end
 
---[[
 function PitBull4_HealthBar:OnDisable()
 	timerFrame:Hide()
 end
 
 timerFrame:SetScript("OnUpdate", function()
+	if next(guids_to_update) then 
+		for frame in PitBull4:IterateFrames() do
+			if guids_to_update[frame.guid] then
+				PitBull4_HealthBar:Update(frame)
+			end
+		end
+		wipe(guids_to_update)
+	end
+
+--[[ Currently the WoW Client isn't actually doing fast updates for health.
+--   It's unclear if this is a bug or a change in feature.  Disabling the
+--   code to support this for now since it's a waste of CPU time for no benefit.
 	for frame in PitBull4:IterateFramesForGUIDs(PLAYER_GUID, UnitGUID("pet")) do
 		if not frame.is_wacky then
 			PitBull4_HealthBar:Update(frame)
 		end
 	end
-end)
 --]]
+end)
 
 function PitBull4_HealthBar:GetValue(frame)
 	return UnitHealth(frame.unit) / UnitHealthMax(frame.unit)
@@ -164,17 +169,6 @@ end
 
 function PitBull4_HealthBar:UNIT_HEALTH(event, unit)
 	guids_to_update[UnitGUID(unit)] = true
-end
-
-function PitBull4_HealthBar:OnUpdate()
-	if next(guids_to_update) then
-		for frame in PitBull4:IterateFrames() do
-			if guids_to_update[frame.guid] then
-				self:Update(frame)
-			end
-		end
-		wipe(guids_to_update)
-	end
 end
 
 PitBull4_HealthBar:SetLayoutOptionsFunction(function(self)

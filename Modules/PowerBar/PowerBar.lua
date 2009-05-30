@@ -32,8 +32,6 @@ local PLAYER_GUID
 function PitBull4_PowerBar:OnEnable()
 	PLAYER_GUID = UnitGUID("player")
 
-	self:ScheduleRepeatingTimer("OnUpdate", 0.1)
-
 	self:RegisterEvent("UNIT_MANA")
 	self:RegisterEvent("UNIT_MAXMANA", "UNIT_MANA")
 	self:RegisterEvent("UNIT_RAGE", "UNIT_MANA")
@@ -61,13 +59,26 @@ timerFrame:SetScript("OnUpdate", function()
 				PitBull4_PowerBar:Update(frame)
 			end
 		end
+		guids_to_update[PLAYER_GUID] = nil
 	end
 	if UnitPower("pet") ~= last_pet_power then
-		for frame in PitBull4:IterateFramesForGUID(UnitGUID("pet")) do
-			if not frame.is_wacky then
+		local pet_guid = UnitGUID("pet")
+		if pet_guid then
+			for frame in PitBull4:IterateFramesForGUID(pet_guid) do
+				if not frame.is_wacky then
+					PitBull4_PowerBar:Update(frame)
+				end
+			end
+			guids_to_update[pet_guid] = nil
+		end
+	end
+	if next(guids_to_update) then
+		for frame in PitBull4:IterateFrames() do
+			if guids_to_update[frame.guid] then
 				PitBull4_PowerBar:Update(frame)
 			end
 		end
+		wipe(guids_to_update)
 	end
 end)
 
@@ -129,17 +140,6 @@ end
 
 function PitBull4_PowerBar:UNIT_MANA(event, unit)
 	guids_to_update[UnitGUID(unit)] = true
-end
-
-function PitBull4_PowerBar:OnUpdate()
-	if next(guids_to_update) then
-		for frame in PitBull4:IterateFrames() do
-			if guids_to_update[frame.guid] then
-				self:Update(frame)
-			end
-		end
-		wipe(guids_to_update)
-	end
 end
 
 function PitBull4_PowerBar:SetCVar()
