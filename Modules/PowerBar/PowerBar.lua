@@ -24,6 +24,7 @@ PitBull4_PowerBar:SetDefaults({
 })
 
 local guids_to_update = {}
+local predicted_power = true
 
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
@@ -46,6 +47,8 @@ function PitBull4_PowerBar:OnEnable()
 
 	self:SecureHook("SetCVar")
 	self:SetCVar()
+
+	timerFrame:Show()
 end
 
 function PitBull4_PowerBar:OnDisable()
@@ -53,7 +56,7 @@ function PitBull4_PowerBar:OnDisable()
 end
 
 timerFrame:SetScript("OnUpdate", function()
-	if UnitPower("player") ~= last_player_power then
+	if predicted_power and UnitPower("player") ~= last_player_power then
 		for frame in PitBull4:IterateFramesForGUID(PLAYER_GUID) do
 			if not frame.is_wacky then
 				PitBull4_PowerBar:Update(frame)
@@ -61,7 +64,7 @@ timerFrame:SetScript("OnUpdate", function()
 		end
 		guids_to_update[PLAYER_GUID] = nil
 	end
-	if UnitPower("pet") ~= last_pet_power then
+	if predicted_power and UnitPower("pet") ~= last_pet_power then
 		local pet_guid = UnitGUID("pet")
 		if pet_guid then
 			for frame in PitBull4:IterateFramesForGUID(pet_guid) do
@@ -143,11 +146,7 @@ function PitBull4_PowerBar:UNIT_MANA(event, unit)
 end
 
 function PitBull4_PowerBar:SetCVar()
-	if GetCVarBool("predictedPower") then
-		timerFrame:Show()
-	else
-		timerFrame:Hide()
-	end
+	predicted_power = GetCVarBool("predictedPower")
 end
 
 PitBull4_PowerBar:SetLayoutOptionsFunction(function(self)
