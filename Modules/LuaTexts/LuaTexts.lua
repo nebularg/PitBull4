@@ -706,10 +706,14 @@ local function update_cast_data(event, unit)
 	end
 end
 
+local tmp = {}
 local function fix_cast_data()
 	local frame
 	local current_time = GetTime()
 	for guid, data in pairs(cast_data) do
+		tmp[guid] = data
+	end
+	for guid, data in pairs(tmp) do
 		if data.casting then
 			if current_time > data.end_time and player_guid ~= guid then
 				data.casting = false
@@ -748,6 +752,7 @@ local function fix_cast_data()
 			end
 		end
 	end
+	wipe(tmp)
 end
 
 local group_members = {}
@@ -825,7 +830,6 @@ local function update_timers()
 	end
 end
 
-local tmp = {}
 function PitBull4_LuaTexts:PARTY_MEMBERS_CHANGED(event)
   local prefix, min, max = "raid", 1, GetNumRaidMembers()
 	if max == 0 then
