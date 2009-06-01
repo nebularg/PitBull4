@@ -200,10 +200,14 @@ function PitBull4_CastBar:UpdateInfo(event, unit)
 	end
 end
 
+local tmp = {}
 function PitBull4_CastBar:FixCastData()
 	local frame
 	local currentTime = GetTime()
 	for guid, data in pairs(cast_data) do
+		tmp[guid] = data
+	end
+	for guid, data in pairs(tmp) do
 		local found = false
 		for frame in PitBull4:IterateFramesForGUID(guid) do
 			if self:GetLayoutDB(frame).enabled then
@@ -242,6 +246,7 @@ function PitBull4_CastBar:FixCastData()
 			cast_data[guid] = del(data)
 		end
 	end
+	wipe(tmp)
 end
 
 PitBull4_CastBar.UNIT_SPELLCAST_START = PitBull4_CastBar.UpdateInfo
