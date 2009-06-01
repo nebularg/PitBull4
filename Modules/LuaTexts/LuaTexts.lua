@@ -6,7 +6,7 @@ end
 
 local L = PitBull4.L
 
-local PitBull4_LuaTexts = PitBull4:NewModule("LuaTexts","AceEvent-3.0")
+local PitBull4_LuaTexts = PitBull4:NewModule("LuaTexts","AceEvent-3.0","AceHook-3.0")
 
 local texts = {}
 local event_cache = {}
@@ -38,6 +38,7 @@ PitBull4_LuaTexts.dnd = dnd
 local dead_times = {}
 PitBull4_LuaTexts.dead_times = dead_times
 local player_guid
+local predicted_power = true
 
 local PROVIDED_CODES = {
 	[L["Class"]] = {
@@ -528,6 +529,10 @@ local timerframe = CreateFrame("Frame")
 PitBull4_LuaTexts.timerframe = timerframe
 timerframe:Hide()
 
+function PitBull4_LuaTexts:SetCVar()
+	predicted_power = GetCVarBool("predictedPower")
+end
+
 function PitBull4_LuaTexts:OnEnable()
 	-- UNIT_SPELLCAST_SENT has to always be registered so we can capture 
 	-- additional data not always available.
@@ -537,6 +542,9 @@ function PitBull4_LuaTexts:OnEnable()
 	-- Cache the player's guid for later use
 	player_guid = UnitGUID("player")
 	PitBull4.LuaTexts.ScriptEnv.player_guid = player_guid
+
+	self:SecureHook("SetCVar")
+	self:SetCVar()
 
 	timerframe:Show()
 end
@@ -915,7 +923,7 @@ local timer = 0
 timerframe:SetScript("OnUpdate", function(self, elapsed)
 	local ScriptEnv = PitBull4_LuaTexts.ScriptEnv
 	-- Fast updates for powerbars for player and pet frames
-	if next(power_cache) then
+	if predicted_power and next(power_cache) then
 		if UnitPower("player") ~= ScriptEnv.player_power then	
 			for font_string in pairs(power_cache) do
 				if font_string.frame.guid == player_guid then
