@@ -127,6 +127,7 @@ do
 		party = true,
 		partypet = true,
 		raid = true,
+		raidpet = true,
 	}
 	
 	--- Return whether the classification provided is considered "wacky"
