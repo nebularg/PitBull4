@@ -373,6 +373,23 @@ local function Classification(unit)
 end
 ScriptEnv.Classification = Classification
 
+local ShortClassification_abbrev = {
+	[L["Rare"]] = L["Rare_short"],
+	[L["Rare-Elite"]] = L["Rare-Elite_short"],
+	[L["Elite"]] = L["Elite_short"],
+	[L["Boss"]] = L["Boss_short"]
+}
+
+local function ShortClassification(arg)
+	local short = ShortClassification_abbrev[arg]
+	if not short and PitBull4.Utils.GetBestUnitID(arg) then
+		-- If it's empty then maybe arg is a unit
+		short = ShortClassification_abbrev[Classification(arg)]
+	end
+	return short
+end
+ScriptEnv.ShortClassification = ShortClassification
+
 local function Class(unit)
 	if UnitIsPlayer(unit) then
 		return UnitClass(unit) or UNKNOWN
@@ -381,6 +398,39 @@ local function Class(unit)
 	end
 end
 ScriptEnv.Class = Class
+
+local ShortClass_abbrev = {
+	[L["Priest"]] = L["Priest_short"],
+	[L["Mage"]] = L["Mage_short"],
+	[L["Shaman"]] = L["Shaman_short"],
+	[L["Paladin"]] = L["Paladin_short"],
+	[L["Warlock"]] = L["Warlock_short"],
+	[L["Druid"]] = L["Druid_short"],
+	[L["Rogue"]] = L["Rogue_short"],
+	[L["Hunter"]] = L["Hunter_short"],
+	[L["Warrior"]] = L["Warrior_short"],
+	[L["Death Knight"]] = L["Death Knight_short"],
+	[L["Priest_female"]] = L["Priest_short"],
+	[L["Mage_female"]] = L["Mage_short"],
+	[L["Shaman_female"]] = L["Shaman_short"],
+	[L["Paladin_female"]] = L["Paladin_short"],
+	[L["Warlock_female"]] = L["Warlock_short"],
+	[L["Druid_female"]] = L["Druid_short"],
+	[L["Rogue_female"]] = L["Rogue_short"],
+	[L["Hunter_female"]] = L["Hunter_short"],
+	[L["Warrior_female"]] = L["Warrior_short"],
+	[L["Death Knight_female"]] = L["Death Knight_short"],
+}
+
+local function ShortClass(arg)
+	local short = ShortClass_abbrev[arg]
+	if not short and PitBull4.Utils.GetBestUnitID(arg) then
+		-- If it's empty then maybe arg is a unit
+		short = ShortClass_abbrev[Class(arg)]
+	end
+	return short
+end
+ScriptEnv.ShortClass = ShortClass
 
 local function Level(unit)
 	local level = UnitLevel(unit)
@@ -405,6 +455,39 @@ local function SmartRace(unit)
 	end
 end
 ScriptEnv.SmartRace = SmartRace
+
+local ShortRace_abbrev = {
+	[L["Blood Elf"]] = L["Blood Elf_short"],
+	[L["Draenei"]] = L["Draenei_short"],
+	[L["Dwarf"]] = L["Dwarf_short"],
+	[L["Gnome"]] = L["Gnome_short"],
+	[L["Human"]] = L["Human_short"],
+	[L["Night Elf"]] = L["Night Elf_short"],
+	[L["Orc"]] = L["Orc_short"],
+	[L["Tauren"]] = L["Tauren_short"],
+	[L["Troll"]] = L["Troll_short"],
+	[L["Undead"]] = L["Undead_short"],
+	[L["Blood Elf_female"]] = L["Blood Elf_short"],
+	[L["Draenei_female"]] = L["Draenei_short"],
+	[L["Dwarf_female"]] = L["Dwarf_short"],
+	[L["Gnome_female"]] = L["Gnome_short"],
+	[L["Human_female"]] = L["Human_short"],
+	[L["Night Elf_female"]] = L["Night Elf_short"],
+	[L["Orc_female"]] = L["Orc_short"],
+	[L["Tauren_female"]] = L["Tauren_short"],
+	[L["Troll_female"]] = L["Troll_short"],
+	[L["Undead_female"]] = L["Undead_short"],
+}
+
+local function ShortRace(arg)
+	local short = ShortRace_abbrev[arg]
+	if not short and PitBull4.Utils.GetBestUnitID(arg) then
+		-- If it's empty then maybe arg is a unit
+		short = ShortRace_abbrev[UnitRace(arg)]
+	end
+	return short
+end
+ScriptEnv.ShortRace = ShortRace
 
 local function IsPet(unit)
 	return not UnitIsPlayer(unit) and (UnitPlayerControlled(unit) or UnitPlayerOrPetInRaid(unit))

@@ -11,4 +11,7 @@
 <Script file="zhCN.lua"/>
 <Script file="zhTW.lua"/>
 @end-non-debug@-->
+<!--@debug@-->
+<Script file="Debug.lua"/>
+<!--@end-debug@-->
 </Ui>
