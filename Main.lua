@@ -1083,7 +1083,7 @@ timerFrame:SetScript("OnUpdate",function(self, elapsed)
 		end
 		local unit = current_wacky_frame.unit
 		if  unit and current_wacky_frame:IsShown() then
-			current_wacky_frame:UpdateGUIDWacky(UnitGUID(unit))
+			current_wacky_frame:UpdateGUID(UnitGUID(unit))
 		end
 		timer = timer - wacky_update_rate
 	end
