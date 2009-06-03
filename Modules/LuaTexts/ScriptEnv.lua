@@ -373,7 +373,7 @@ local function Classification(unit)
 end
 ScriptEnv.Classification = Classification
 
-function Class(unit)
+local function Class(unit)
 	if UnitIsPlayer(unit) then
 		return UnitClass(unit) or UNKNOWN
 	else
