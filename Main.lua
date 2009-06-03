@@ -273,6 +273,8 @@ PitBull4.all_frames_list = all_frames_list
 local wacky_frames = {}
 PitBull4.wacky_frames = wacky_frames
 
+PitBull4.num_wacky_frames = 0
+
 -- A set of all unit frames with the is_wacky flag set to false
 local non_wacky_frames = {}
 PitBull4.non_wacky_frames = non_wacky_frames
@@ -1025,8 +1027,10 @@ function PitBull4:OnProfileChanged()
 	end
 end
 
+local timerFrame = CreateFrame("Frame")
+timerFrame:Hide()
+
 function PitBull4:OnEnable()
-	self:ScheduleRepeatingTimer("CheckWackyFramesForGUIDUpdate", 0.15)
 	self:ScheduleRepeatingTimer(refresh_all_guids, 15)
 	
 	-- register unit change events
@@ -1057,10 +1061,33 @@ function PitBull4:OnEnable()
 		self:ScheduleTimer(main_tank_update, 1)
 	end
 	
+	timerFrame:Show()
+
 	-- show initial frames
 	self:OnProfileChanged()
 	self:RAID_ROSTER_UPDATE()
 end
+
+local timer = 0
+local wacky_update_rate
+local current_wacky_frame 
+timerFrame:SetScript("OnUpdate",function(self, elapsed)
+	local num_wacky_frames = PitBull4.num_wacky_frames
+	if num_wacky_frames <= 0 then return end
+	wacky_update_rate = 0.15 / num_wacky_frames
+	timer = timer + elapsed
+	while timer > wacky_update_rate do
+		current_wacky_frame = next(wacky_frames, current_wacky_frame)
+		if not current_wacky_frame then
+			current_wacky_frame = next(wacky_frames, current_wacky_frame)
+		end
+		local unit = current_wacky_frame.unit
+		if  unit and current_wacky_frame:IsShown() then
+			current_wacky_frame:UpdateGUIDWacky(UnitGUID(unit))
+		end
+		timer = timer - wacky_update_rate
+	end
+end)
 
 --- Iterate over all wacky frames, and call their respective :UpdateGUID methods.
 -- @usage PitBull4:CheckWackyFramesForGUIDUpdate()

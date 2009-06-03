@@ -271,6 +271,7 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 	
 	if frame.is_wacky then
 		self.wacky_frames[frame] = true
+		PitBull4.num_wacky_frames = PitBull4.num_wacky_frames + 1
 	else
 		self.non_wacky_frames[frame] = true
 	end
