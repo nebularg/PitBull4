@@ -1066,7 +1066,7 @@ end
 -- @usage PitBull4:CheckWackyFramesForGUIDUpdate()
 function PitBull4:CheckWackyFramesForGUIDUpdate()
 	for frame in self:IterateWackyFrames() do
-		if frame.unit then
+		if frame.unit and frame:IsShown() then
 			frame:UpdateGUID(UnitGUID(frame.unit))
 		end
 	end
