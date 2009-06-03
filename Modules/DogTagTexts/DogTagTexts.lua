@@ -91,6 +91,10 @@ function PitBull4_DogTagTexts:OnNewLayout(layout)
 			code = "[if not IsMana then FractionalDruidMP]",
 			attach_to = "DruidManaBar",
 			location = "right",
+		},
+		[L["PVPTimer"]] = {
+			code = "[PvPDuration:FormatDuration:Red]",
+			location = "out_right_top",
 		}
 	} do
 		local text_db = texts[name]
@@ -160,6 +164,9 @@ local PROVIDED_CODES = function() return {
 	},
 	[L["Reputation"]] = {
 		[L["Standard"]]       = "[if IsMouseOver then ReputationName else if ReputationName then FractionalReputation ' ' PercentReputation:Percent:Paren]"
+	},
+	[L["PVPTimer"]] = {
+		[L["Standard"]]       = "[PvPDuration:FormatDuration:Red]"
 	},
 } end
 

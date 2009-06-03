@@ -416,6 +416,18 @@ else
 end]],
 		},
 	},
+	[L["PVPTimer"]] = {
+		[L["Standard"]] = {
+			events = {['PLAYER_FLAGS_CHANGED']=true},
+			code = [[
+if unit == "player" then
+  local pvp = PVPDuration()
+  if pvp then
+    return "|cffff0000%s|r",FormatDuration(pvp)
+  end
+end]],
+		},
+	},
 	[L["Cast"]] = {
 		[L["Standard name"]] = {
 			events = {['UNIT_SPELLCAST_START']=true,['UNIT_SPELLCAST_CHANNEL_START']=true,['UNIT_SPELLCAST_STOP']=true,['UNIT_SPELLCAST_FAILED']=true,['UNIT_SPELLCAST_INTERRUPTED']=true,['UNIT_SPELLCAST_DELAYED']=true,['UNIT_SPELLCAST_CHANNEL_UPDATE']=true,['UNIT_SPELLCAST_CHANNEL_STOP']=true},
@@ -1052,6 +1064,11 @@ function PitBull4_LuaTexts:OnNewLayout(layout)
 			events = copy(PROVIDED_CODES[L['Druid mana']][L['Absolute']].events),
 			attach_to = "DruidManaBar",
 			location = "center"
+		},
+		["Lua:"..L["PVPTimer"]] = {
+			code = PROVIDED_CODES[L["PVPTimer"]][L["Standard"]].code,
+			events = copy(PROVIDED_CODES[L["PVPTimer"]][L["Standard"]].events),
+			location = "out_right_top"
 		},
 	} do
 		local text_db = texts[name]
