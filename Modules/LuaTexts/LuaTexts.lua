@@ -574,6 +574,7 @@ local function set_text(font_string, ...)
 	end
 end
 
+local lua_name = "Lua:"..L["Name"]
 local function update_text(font_string)
 	if not texts[font_string] then return end
 	local code = font_string.db.code
@@ -584,7 +585,7 @@ local function update_text(font_string)
 	local ScriptEnv = PitBull4_LuaTexts.ScriptEnv
 --	print(string.format("%q %q %q %q",name,font_string:GetName(),frame:GetName(),unit))
 
-	if (frame.force_show and not frame.guid and name ~= L["Name"] and name ~= L["Lua:Name"]) or not unit then
+	if (frame.force_show and not frame.guid and name ~= L["Name"] and name ~= lua_name) or not unit then
 		font_string:SetFormattedText("{%s}",font_string.luatexts_name)
 		return
 	end
@@ -1302,7 +1303,7 @@ PitBull4_LuaTexts:SetGlobalOptionsFunction(function(self)
 		hidden = hidden, 
 	}, 'edit_event', {
 		type = 'group',
-		name = L['Edit Event'],
+		name = L['Edit event'],
 		desc = L['Edit which units the event triggers updates on.'],
 		inline = true,
 		hidden = hidden, 
