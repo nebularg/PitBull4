@@ -159,6 +159,9 @@ local function fetch_control(kind, parent, isCustom, ...)
 	if kind == "Texture" or kind == "FontString" then
 		control:SetDrawLayer((...))
 	end
+	if control.SetScale then
+		control:SetScale(1)
+	end
 	control:Show()
 	if onRetrieve then
 		onRetrieve(control, select(6, ...)) -- onRetrieve
