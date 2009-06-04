@@ -297,6 +297,16 @@ local function set_weapon_entry(list, is_enchant, time_left, expiration_time, co
 	-- Try and get the name of the enchant from the tooltip, if not
 	-- use the weapon name.
 	local name = get_weapon_enchant_name(slot) or weapon
+
+	-- name should always have gotten set by the above but per ticket 418 it apparently
+	-- can sometimes not get set.  Probably due the cache being empty.  It's ok to end
+	-- up doing nothing because eventually it should work and the weapon enchants are
+	-- checked on a timer anyway.
+	if not name then 
+		wipe(entry)
+		return
+	end
+
 	if PitBull4_Aura.db.profile.global.guess_weapon_enchant_icon then
 		texture = guess_spell_icon[name] or texture
 	end
