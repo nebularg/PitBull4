@@ -77,7 +77,7 @@ end
 -- Not in the Aura table since it is only active on
 -- buff aura controls.
 local function OnClick(self)
-	if not UnitIsUnit("player",self:GetUnit()) then return end
+	if not self.is_buff or not UnitIsUnit("player",self:GetUnit()) then return end
 	local slot = self.slot
 	if slot then
 		if slot == MAINHAND then
