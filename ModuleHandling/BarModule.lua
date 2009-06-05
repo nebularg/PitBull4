@@ -13,6 +13,7 @@ local BarModule = PitBull4:NewModuleType("bar", {
 	side = 'center',
 	enabled = true,
 	custom_color = nil,
+	custom_background = nil,
 	icon_on_left = true,
 }, true)
 
@@ -94,6 +95,42 @@ local function call_color_function(self, frame, value, extra, icon)
 	end
 	return r, g, b, a or 1
 end
+
+--- Call the :GetBackgroundColor function on the status bar module regarding the given frame.
+--- Call the color function which the current status bar module has registered regarding the given frame.
+-- @param self the module
+-- @param frame the frame to get the background color of
+-- @param value the value as returned by call_value_function
+-- @param extra the extra value as returned by call_value_function
+-- @param icon the icon path as returned by call_value_function
+-- @usage local r, g, b, a = call_extra_color_function(MyModule, someFrame)
+-- @return red value within [0, 1]
+-- @return green value within [0, 1]
+-- @return blue value within [0, 1]
+-- @return alpha value within [0, 1] or nil
+local function call_background_color_function(self, frame, value, extra, icon)
+	local layout_db = self:GetLayoutDB(frame)
+	local custom_background = layout_db.custom_background
+	if custom_background then
+		return unpack(custom_background)
+	end
+	
+	if not self.GetBackgroundColor then
+		return 
+	end
+	local r, g, b, a
+	if frame.guid then
+		r, g, b, a = self:GetBackgroundColor(frame, value, extra, icon)
+	end
+	if (not r or not g or not b) and frame.force_show and self.GetExampleBackgroundColor then
+		r, g, b, a = self:GetExampleBackgroundColor(frame, value, extra, icon)
+	end
+	if not r or not g or not b then
+		return
+	end
+	return r, g, b, a or 1
+end
+
 
 --- Call the :GetExtraColor function on the status bar module regarding the given frame.
 --- Call the color function which the current status bar module has registered regarding the given frame.
@@ -178,6 +215,10 @@ function BarModule:UpdateFrame(frame)
 	local r, g, b, a = call_color_function(self, frame, value, extra or 0, icon)
 	control:SetColor(r, g, b)
 	control:SetAlpha(a)
+
+	r, g, b, a = call_background_color_function(self, frame, value, extra or 0, icon)
+	control:SetBackgroundColor(r, g, b)
+	control:SetBackgroundAlpha(a)
 
 	if extra then
 		control:SetExtraValue(extra)

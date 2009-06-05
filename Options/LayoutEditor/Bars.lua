@@ -546,6 +546,49 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		end,
 		disabled = disabled,
 	}
+
+	bar_args.toggle_custom_background = {
+		type = 'toggle',
+		name = L["Custom background"],
+		desc = L["Whether to override the background color and use a custom one."],
+		order = -2,
+		get = function(info)
+			local db = get_current_layout_db(info)
+			return db and not not db.custom_background
+		end,
+		set = function(info, value)
+			if value then
+				get_current_layout_db(info).custom_background = { 0.31, 0.31, 0.31, 1 }
+			else
+				get_current_layout_db(info).custom_background = nil
+			end
+			
+			UpdateFrames()
+		end,
+		disabled = disabled,
+	}
+	
+	bar_args.custom_background = {
+		type = 'color',
+		name = L["Custom background"],
+		desc = L["What background color to override the bar with."],
+		order = -1,
+		hasAlpha = true,
+		get = function(info)
+			return unpack(get_current_layout_db(info).custom_background)
+		end,
+		set = function(info, r, g, b, a)
+			local color = get_current_layout_db(info).custom_background
+			color[1], color[2], color[3], color[4] = r, g, b, a
+			
+			UpdateFrames()
+		end,
+		hidden = function(info)
+			local db = get_current_layout_db(info)
+			return not db or not db.custom_background
+		end,
+		disabled = disabled,
+	}
 	
 	local layout_functions = PitBull4.Options.layout_functions
 	
