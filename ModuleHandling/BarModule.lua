@@ -102,7 +102,7 @@ end
 -- @param value the value as returned by call_value_function
 -- @param extra the extra value as returned by call_value_function
 -- @param icon the icon path as returned by call_value_function
--- @usage local r, g, b = call_extra_color_function(MyModule, someFrame)
+-- @usage local r, g, b = call_background_color_function(MyModule, someFrame)
 -- @return red value within [0, 1]
 -- @return green value within [0, 1]
 -- @return blue value within [0, 1]
