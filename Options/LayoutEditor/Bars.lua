@@ -530,13 +530,12 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		name = L["Custom color"],
 		desc = L["What color to override the bar with."],
 		order = -1,
-		hasAlpha = true,
 		get = function(info)
 			return unpack(get_current_layout_db(info).custom_color)
 		end,
-		set = function(info, r, g, b, a)
+		set = function(info, r, g, b)
 			local color = get_current_layout_db(info).custom_color
-			color[1], color[2], color[3], color[4] = r, g, b, a
+			color[1], color[2], color[3], color[4] = r, g, b
 			
 			UpdateFrames()
 		end,
@@ -558,7 +557,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		end,
 		set = function(info, value)
 			if value then
-				get_current_layout_db(info).custom_background = { 0.31, 0.31, 0.31, 1 }
+				get_current_layout_db(info).custom_background = { 0.31, 0.31, 0.31 }
 			else
 				get_current_layout_db(info).custom_background = nil
 			end
@@ -573,13 +572,12 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		name = L["Custom background"],
 		desc = L["What background color to override the bar with."],
 		order = -1,
-		hasAlpha = true,
 		get = function(info)
 			return unpack(get_current_layout_db(info).custom_background)
 		end,
-		set = function(info, r, g, b, a)
+		set = function(info, r, g, b)
 			local color = get_current_layout_db(info).custom_background
-			color[1], color[2], color[3], color[4] = r, g, b, a
+			color[1], color[2], color[3], color[4] = r, g, b
 			
 			UpdateFrames()
 		end,

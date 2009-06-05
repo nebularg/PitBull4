@@ -68,11 +68,10 @@ end
 -- @param value the value as returned by call_value_function
 -- @param extra the extra value as returned by call_value_function
 -- @param icon the icon path as returned by call_value_function
--- @usage local r, g, b, a = call_color_function(MyModule, someFrame)
+-- @usage local r, g, b = call_color_function(MyModule, someFrame)
 -- @return red value within [0, 1]
 -- @return green value within [0, 1]
 -- @return blue value within [0, 1]
--- @return alpha value within [0, 1]
 local function call_color_function(self, frame, value, extra, icon)
 	local layout_db = self:GetLayoutDB(frame)
 	local custom_color = layout_db.custom_color
@@ -83,17 +82,17 @@ local function call_color_function(self, frame, value, extra, icon)
 	if not self.GetColor then
 		return 0.7, 0.7, 0.7, 1
 	end
-	local r, g, b, a
+	local r, g, b
 	if frame.guid then
-		r, g, b, a = self:GetColor(frame, value, extra, icon)
+		r, g, b = self:GetColor(frame, value, extra, icon)
 	end
 	if (not r or not g or not b) and frame.force_show and self.GetExampleColor then
-		r, g, b, a = self:GetExampleColor(frame, value, extra, icon)
+		r, g, b = self:GetExampleColor(frame, value, extra, icon)
 	end
 	if not r or not g or not b then
-		return 0.7, 0.7, 0.7, a or 1
+		return 0.7, 0.7, 0.7
 	end
-	return r, g, b, a or 1
+	return r, g, b
 end
 
 --- Call the :GetBackgroundColor function on the status bar module regarding the given frame.
@@ -103,11 +102,10 @@ end
 -- @param value the value as returned by call_value_function
 -- @param extra the extra value as returned by call_value_function
 -- @param icon the icon path as returned by call_value_function
--- @usage local r, g, b, a = call_extra_color_function(MyModule, someFrame)
+-- @usage local r, g, b = call_extra_color_function(MyModule, someFrame)
 -- @return red value within [0, 1]
 -- @return green value within [0, 1]
 -- @return blue value within [0, 1]
--- @return alpha value within [0, 1] or nil
 local function call_background_color_function(self, frame, value, extra, icon)
 	local layout_db = self:GetLayoutDB(frame)
 	local custom_background = layout_db.custom_background
@@ -118,17 +116,17 @@ local function call_background_color_function(self, frame, value, extra, icon)
 	if not self.GetBackgroundColor then
 		return 
 	end
-	local r, g, b, a
+	local r, g, b
 	if frame.guid then
-		r, g, b, a = self:GetBackgroundColor(frame, value, extra, icon)
+		r, g, b = self:GetBackgroundColor(frame, value, extra, icon)
 	end
 	if (not r or not g or not b) and frame.force_show and self.GetExampleBackgroundColor then
-		r, g, b, a = self:GetExampleBackgroundColor(frame, value, extra, icon)
+		r, g, b = self:GetExampleBackgroundColor(frame, value, extra, icon)
 	end
 	if not r or not g or not b then
 		return
 	end
-	return r, g, b, a or 1
+	return r, g, b
 end
 
 
@@ -139,33 +137,32 @@ end
 -- @param value the value as returned by call_value_function
 -- @param extra the extra value as returned by call_value_function
 -- @param icon the icon path as returned by call_value_function
--- @usage local r, g, b, a = call_extra_color_function(MyModule, someFrame)
+-- @usage local r, g, b = call_extra_color_function(MyModule, someFrame)
 -- @return red value within [0, 1]
 -- @return green value within [0, 1]
 -- @return blue value within [0, 1]
--- @return alpha value within [0, 1] or nil
 local function call_extra_color_function(self, frame, value, extra, icon)
 	local layout_db = self:GetLayoutDB(frame)
 	local custom_color = layout_db.custom_color
 	if custom_color then
-		local r, g, b, a = unpack(custom_color)
-		return (1 + 2*r) / 3, (1 + 2*g) / 3, (1 + 2*b) / 3, a
+		local r, g, b = unpack(custom_color)
+		return (1 + 2*r) / 3, (1 + 2*g) / 3, (1 + 2*b) / 3
 	end
 	
 	if not self.GetExtraColor then
 		return 0.5, 0.5, 0.5, nil
 	end
-	local r, g, b, a
+	local r, g, b
 	if frame.guid then
-		r, g, b, a = self:GetExtraColor(frame, value, extra)
+		r, g, b = self:GetExtraColor(frame, value, extra)
 	end
 	if (not r or not g or not b) and frame.force_show and self.GetExampleExtraColor then
-		r, g, b, a = self:GetExampleExtraColor(frame, value, extra)
+		r, g, b = self:GetExampleExtraColor(frame, value, extra)
 	end
 	if not r or not g or not b then
-		return 0.5, 0.5, 0.5, nil
+		return 0.5, 0.5, 0.5
 	end
-	return r, g, b, a
+	return r, g, b
 end
 
 --- Clear the status bar for the current module if it exists.
@@ -212,20 +209,17 @@ function BarModule:UpdateFrame(frame)
 	control:SetTexture(self:GetTexture(frame))
 	
 	control:SetValue(value)
-	local r, g, b, a = call_color_function(self, frame, value, extra or 0, icon)
+	local r, g, b = call_color_function(self, frame, value, extra or 0, icon)
 	control:SetColor(r, g, b)
-	control:SetAlpha(a)
 
-	r, g, b, a = call_background_color_function(self, frame, value, extra or 0, icon)
+	r, g, b = call_background_color_function(self, frame, value, extra or 0, icon)
 	control:SetBackgroundColor(r, g, b)
-	control:SetBackgroundAlpha(a)
 
 	if extra then
 		control:SetExtraValue(extra)
 		
-		local r, g, b, a = call_extra_color_function(self, frame, value, extra, icon)
+		local r, g, b = call_extra_color_function(self, frame, value, extra, icon)
 		control:SetExtraColor(r, g, b)
-		control:SetExtraAlpha(a)
 	else
 		control:SetExtraValue(0)
 	end
