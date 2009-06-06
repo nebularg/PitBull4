@@ -606,14 +606,16 @@ end
 -- TODO Configurable formatting
 local function format_time(seconds)
 	if seconds >= 3600 then
-		return HOUR_ONELETTER_ABBR:format(ceil(seconds/3600))
+		return HOUR_ONELETTER_ABBR,ceil(seconds/3600)
 	elseif seconds >= 180 then
-		return MINUTE_ONELETTER_ABBR:format(ceil(seconds/60))
+		return MINUTE_ONELETTER_ABBR,ceil(seconds/60)
 	elseif seconds > 60 then
 		seconds = ceil(seconds)
-		return ("%d:%d"):format(seconds/60, seconds%60)
+		return "%d:%d",seconds/60,seconds%60
+	elseif seconds < 3 then
+		return "%.1f",seconds
 	else
-		return ("%d"):format(ceil(seconds))
+		return "%d",ceil(seconds)
 	end
 end
 
@@ -625,11 +627,24 @@ local function update_cooldown_text(aura)
 
 	local current_time = GetTime()
 	local time_left = expiration_time - current_time
-	if time_left >= 1 then
-		cooldown_text:SetText(format_time(time_left))
+	local new_time
+	if time_left >= 0 then
+		if time_left >= 3600 then
+			new_time = 30 
+		elseif time_left >= 180 then
+			new_time = 1 
+		elseif time_left >= 60 then
+			new_time = 0.5 
+		elseif time_left < 3 then
+			new_time = 0
+		else
+			new_time = 0.25
+		end
+		cooldown_text:SetFormattedText(format_time(time_left))
 	else
 		cooldown_text:SetText("")
 	end
+	return new_time
 end
 
 local function clear_auras(frame, is_buff)
@@ -701,7 +716,8 @@ function PitBull4_Aura:EnableCooldownText(aura)
 	local cooldown_text = aura.cooldown_text
 	if not cooldown_text then return end
 	cooldown_text:Show()
-	cooldown_texts[aura] = true
+	cooldown_texts[aura] = 0 
+	self.next_text_update = 0
 end
 
 function PitBull4_Aura:DisableCooldownText(aura)
@@ -712,10 +728,19 @@ function PitBull4_Aura:DisableCooldownText(aura)
 	cooldown_texts[aura] = nil
 end
 
-function PitBull4_Aura:UpdateCooldownTexts()
-	for aura in pairs(cooldown_texts) do
-		update_cooldown_text(aura)
+function PitBull4_Aura:UpdateCooldownTexts(elapsed)
+	local min_time
+	for aura,time in pairs(cooldown_texts) do
+		time = time - elapsed
+		if time <= 0 then
+			time = update_cooldown_text(aura,elapsed)
+		end
+		cooldown_texts[aura] = time
+		if not min_time or (time and time < min_time) then
+			min_time = time
+		end
 	end
+	return min_time
 end
 
 -- Looks for changes to weapon enchants that we do not have cached
@@ -854,8 +879,6 @@ function PitBull4_Aura:OnUpdate()
 		end
 		wipe(guids_to_update)
 	end
-
-	self:UpdateCooldownTexts()
 
 	self:UpdateWeaponEnchants()
 

@@ -10,7 +10,7 @@ end
 local wipe = _G.table.wipe
 
 local L = PitBull4.L
-local PitBull4_Aura= PitBull4:NewModule("Aura", "AceEvent-3.0", "AceTimer-3.0")
+local PitBull4_Aura= PitBull4:NewModule("Aura", "AceEvent-3.0")
 
 PitBull4_Aura:SetModuleType("custom")
 PitBull4_Aura:SetName(L["Aura"])
@@ -21,9 +21,33 @@ PitBull4_Aura.MAINHAND = GetInventorySlotInfo("MainHandSlot")
 PitBull4_Aura.OFFHAND = GetInventorySlotInfo("SecondaryHandSlot")
 
 
+local timerFrame = CreateFrame("Frame")
+timerFrame:Hide()
+local timer = 0
+local elapsed_since_text_update = 0
+timerFrame:SetScript("OnUpdate",function(self, elapsed)
+	timer = timer + elapsed
+	if timer >= 0.2 then
+		PitBull4_Aura:OnUpdate()
+		timer = 0
+	end
+
+	local next_text_update = PitBull4_Aura.next_text_update
+	if next_text_update then 
+		next_text_update = next_text_update - elapsed
+		elapsed_since_text_update = elapsed_since_text_update + elapsed
+		if next_text_update <= 0 then
+			next_text_update = PitBull4_Aura:UpdateCooldownTexts(elapsed_since_text_update)
+			elapsed_since_text_update = 0
+		end
+		PitBull4_Aura.next_text_update = next_text_update 
+	end
+end)
+
+
 function PitBull4_Aura:OnEnable()
 	self:RegisterEvent("UNIT_AURA")
-	self:ScheduleRepeatingTimer("OnUpdate", 0.2)
+	timerFrame:Show()
 
 	-- Need to track talents for Shaman since it can change what they
 	-- can dispel.
@@ -34,6 +58,10 @@ function PitBull4_Aura:OnEnable()
 		-- Update the Shaman can dispel filter
 		PitBull4_Aura:GetFilterDB('23').aura_type_list.Curse = PitBull4_Aura.can_dispel.SHAMAN.Curse
 	end
+end
+
+function PitBull4_Aura:OnDisable()
+	timerFrame:Hide()
 end
 
 function PitBull4_Aura:ClearFrame(frame)
