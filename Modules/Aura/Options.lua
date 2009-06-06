@@ -19,6 +19,7 @@ local color_defaults = {
 	friend = {
 		my = {0, 1, 0, 1},
 		other = {1, 0, 0, 1},
+		use_enemy = false,
 	},
 	weapon = {
 		weapon = {1, 0, 0, 1},
@@ -1148,6 +1149,19 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 				get = get,
 				set = set,
 				order = 1,
+			},
+			use_enemy = {
+				type = 'toggle',
+				name = L['Use unfriendly colors'],
+				desc = L['Set the color based on the type of the aura.'],
+				get = function(info)
+					return self.db.profile.global.colors.friend.use_enemy
+				end,
+				set = function(info, value)
+					self.db.profile.global.colors.friend.use_enemy = value
+					self:UpdateAll()
+				end,
+				order = 2,
 			},
 		},
 	},

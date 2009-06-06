@@ -515,7 +515,7 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 			border:SetVertexColor(r,g,b)
 		elseif slot then
 			border:SetVertexColor(unpack(colors.weapon[who]))
-		elseif (is_buff and is_friend) or (not is_buff and not is_friend) then
+		elseif ((is_buff and is_friend) or (not is_buff and not is_friend)) and not colors.friend.use_enemy then
 			border:SetVertexColor(unpack(colors.friend[who]))
 		else
 			local color = colors.enemy[tostring(debuff_type)]
