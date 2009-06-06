@@ -1131,6 +1131,9 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 		self.db.profile.global.colors[group][id] = {r, g, b, a}
 		self:UpdateAll()
 	end
+	local function is_friendly_disabled(info)
+		return self.db.profile.global.colors.friend.use_enemy
+	end
 	return 'friend', {
 		type = 'group',
 		name = L['Friendly auras'],
@@ -1142,6 +1145,7 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 				desc = L['Color for own buffs.'],
 				get = get,
 				set = set,
+				disabled = is_friendly_disabled,
 				order = 0,
 			},
 			other = {
@@ -1150,6 +1154,7 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 				desc = L["Color of others' buffs."],
 				get = get,
 				set = set,
+				disabled = is_friendly_disabled,
 				order = 1,
 			},
 			use_enemy = {
