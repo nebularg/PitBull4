@@ -154,7 +154,6 @@ end, function(control)
 	-- that everything should be done when the actual aura is set on
 	-- the control.  This is because the controls are recyled unless
 	-- the number of them changes a new control will not be retrieved.
-	control:SetFrameLevel(control:GetParent():GetFrameLevel() + 2)
 end, function(control)
 	-- onDelete
 	control:SetScript("OnUpdate", nil)

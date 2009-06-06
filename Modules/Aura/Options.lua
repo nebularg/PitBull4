@@ -101,6 +101,7 @@ PitBull4_Aura:SetDefaults({
 			col_spacing = 0,
 			new_row_size = false,
 			filter = "",
+			frame_level = 2,
 		},
 		debuff = {
 			size = 16,
@@ -1822,6 +1823,23 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get_layout,
 				set = set_layout,
 				order = 53,
+			},
+			break_5 = {
+				type = 'header',
+				name = '',
+				order = 54,
+			},
+			frame_level = {
+				type = 'range',
+				name = L['Frame level'],
+				desc = L['Set how many frame levels auras are above the frame.'],
+				get = get_layout,
+				set = set_layout,
+				disabled = is_aura_disabled,
+				min = 1,
+				max = 10,
+				step = 1,
+				order = 55,
 			},
 		},
 	}

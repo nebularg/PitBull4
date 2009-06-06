@@ -466,6 +466,9 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 		aura_controls[i] = control
 	end
 
+	local layout = is_buff and db.layout.buff or db.layout.debuff
+	control:SetFrameLevel(frame:GetFrameLevel() + layout.frame_level)
+
 	control.id = id
 	control.is_mine = is_mine
 	control.is_buff = is_buff
