@@ -409,7 +409,7 @@ end]],
 			code = [[
 local name,_,min,max,value = GetWatchedFactionInfo()
 if IsMouseOver() then
-  return name 
+  return name or '' 
 else
   local bar_cur,bar_max = value-min,max-min
   return "%d/%d (%s%%)",bar_cur,bar_max,Percent(bar_cur,bar_max)
