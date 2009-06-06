@@ -2195,7 +2195,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				desc = L["Size of the text."],
 				get = get_text, 
 				set = set_text,
-				min = 0.5,
+				min = 0.3,
 				max = 3,
 				step = 0.01,
 				bigStep = 0.05,
