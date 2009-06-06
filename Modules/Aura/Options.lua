@@ -2248,7 +2248,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			color = {
 				type = 'color',
 				name = L['Color'],
-				desc = L['Set the color of the text'],
+				desc = L['Set the color of the text.'],
 				hasAlpha = true,
 				get = function(info)
 					return unpack(GetTextDB().color)
