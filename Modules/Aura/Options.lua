@@ -124,6 +124,102 @@ PitBull4_Aura:SetDefaults({
 			frame_level = 2,
 		},
 	},
+	texts = {
+		my_buffs = {
+			count = {
+				font = nil,
+				size = 0.8,
+				color = { 1, 1, 1, 1 },
+				anchor = "BOTTOMRIGHT",
+				offset_x = 0,
+				offset_y = 0,
+			},
+			cooldown_text = {
+				font = nil,
+				size = 0.8,
+				color = { 1, 1, 1, 1 },
+				anchor = "TOP",
+				offset_x = 0,
+				offset_y = 0,
+			}
+		},
+		my_debuffs = {
+			count = {
+				font = nil,
+				size = 0.8,
+				color = { 1, 1, 1, 1 },
+				anchor = "BOTTOMRIGHT",
+				offset_x = 0,
+				offset_y = 0,
+			},
+			cooldown_text = {
+				font = nil,
+				size = 0.8,
+				color = { 1, 1, 1, 1 },
+				color_by_time = false,
+				anchor = "TOP",
+				offset_x = 0,
+				offset_y = 0,
+			}
+		},
+		other_buffs = {
+			count = {
+				font = nil,
+				size = 0.8,
+				color = { 1, 1, 1, 1 },
+				anchor = "BOTTOMRIGHT",
+				offset_x = 0,
+				offset_y = 0,
+			},
+			cooldown_text = {
+				font = nil,
+				size = 0.8,
+				color = { 1, 1, 1, 1 },
+				color_by_time = false,
+				anchor = "TOP",
+				offset_x = 0,
+				offset_y = 0,
+			}
+		},
+		other_debuffs = {
+			count = {
+				font = nil,
+				size = 0.8,
+				color = { 1, 1, 1, 1 },
+				anchor = "BOTTOMRIGHT",
+				offset_x = 0,
+				offset_y = 0,
+			},
+			cooldown_text = {
+				font = nil,
+				size = 0.8,
+				color = { 1, 1, 1, 1 },
+				color_by_time = false,
+				anchor = "TOP",
+				offset_x = 0,
+				offset_y = 0,
+			}
+		},
+		weapon_buffs = {
+			count = {
+				font = nil,
+				size = 0.8,
+				color = { 1, 1, 1, 1 },
+				anchor = "BOTTOMRIGHT",
+				offset_x = 0,
+				offset_y = 0,
+			},
+			cooldown_text = {
+				font = nil,
+				size = 0.8,
+				color = { 1, 1, 1, 1 },
+				color_by_time = false,
+				anchor = "TOP",
+				offset_x = 0,
+				offset_y = 0,
+			}
+		},
+	},
 },
 {
 	-- Global defaults
@@ -1486,6 +1582,7 @@ function PitBull4_Aura.SetHighlightOptions(self, options)
 	end
 end
 
+local CURRENT_TEXT
 PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 
 	-- Functions for use in the options
@@ -1852,6 +1949,35 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 
 	PitBull4_Aura.SetHighlightOptions(self,HIGHLIGHT_FILTER_OPTIONS)
 
+	if not CURRENT_TEXT then
+		CURRENT_TEXT = "my_buffs.cooldown_text"
+	end
+	local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+	LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
+	local AceGUI = LibStub("AceGUI-3.0")
+
+	local function split_text()
+		return string.match(CURRENT_TEXT,"([^%.]*)%.(.*)")
+	end
+
+	local function GetTextDB()
+		local db = PitBull4.Options.GetLayoutDB(self)
+		local rule,text = split_text()
+		return db.texts[rule][text]
+	end
+
+	local function get_text(info)
+		local id = info[#info]
+		return GetTextDB()[id]
+	end
+	
+	local function set_text(info, value)
+		local id = info[#info]
+		GetTextDB()[id] = value
+
+		PitBull4.Options.UpdateFrames()
+	end
+
 	return 	true, 'display', {
 		type = 'group',
 		name = 'Display',
@@ -1972,6 +2098,185 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 	},
 	'buff', layout,
 	'debuff', layout,
+	'texts', {
+		type = 'group',
+		name = L['Texts'],
+		desc = L['Configure the text displayed on auras.'],
+		args = {
+			current_text = {
+				type = 'select',
+				name = L['Current text'],
+				desc = L['Choose the text to configure.'],
+				get = function(info)
+					return CURRENT_TEXT
+				end,
+				set = function(info, value)
+					CURRENT_TEXT = value
+				end,
+				values = {
+					['my_buffs.count'] = L['My own buffs count'],
+					['my_buffs.cooldown_text'] = L['My own buffs time remaining'],
+					['my_debuffs.count'] = L['My own debuffs count'],
+					['my_debuffs.cooldown_text'] = L['My own debuffs time remaining'],
+					['other_buffs.count'] = L["Others' buffs count"],
+					['other_buffs.cooldown_text'] = L["Others' buffs time remaining"],
+					['other_debuffs.count'] = L["Others' debuffs count"],
+					['other_debuffs.cooldown_text'] = L["Others' debuffs time remaining"],
+					['weapon_buffs.count'] = L['Weapon buffs count'],
+					['weapon_buffs.cooldown_text'] = L['Weapon buffs time remaining'],
+				},
+				width = 'double',
+				order = 1,
+			},
+			div = {
+				type = 'header',
+				name = '',
+				desc = '',
+				order = 2,
+			},
+			enabled = {
+				type = 'toggle',
+				name = L['Enabled'],
+				desc = L['Enable this text.'],
+				get = function(info)
+					local rule,text = split_text()
+					return PitBull4.Options.GetLayoutDB(self)[text][rule]
+				end,
+				set = function(info,value)
+					local rule,text = split_text()
+					PitBull4.Options.GetLayoutDB(self)[text][rule] = value
+					PitBull4.Options.UpdateFrames()
+				end,
+				hidden = function(info)
+					local _,text = split_text()
+					return text == "count"
+				end,
+				order = 3,
+			},
+			font = {
+				type = 'select',
+				name = L['Font'],
+				desc = L["Which font to use for this text."] .. "\n" .. L["If you want more fonts, you should install the addon 'SharedMedia'."],
+				get = function(info)
+					local font = GetTextDB().font
+					return font or PitBull4.Options.GetLayoutDB(false).font
+				end,
+				set = function(info, value)
+					local default = PitBull4.Options.GetLayoutDB(false).font
+					if value == default then
+						value = nil
+					end
+
+					GetTextDB().font = value
+
+					PitBull4.Options.UpdateFrames()
+				end,
+				values = function(info)
+					local t = {}
+					local default = PitBull4.Options.GetLayoutDB(false).font
+					for k in pairs(LibSharedMedia:HashTable("font")) do
+						if k == default then
+							t[k] = ("%s (Default)"):format(k)
+						else
+							t[k] = k
+						end
+					end
+					return t
+				end,
+				hidden = function(info)
+					return not LibSharedMedia
+				end,
+				dialogControl = AceGUI.WidgetRegistry["LSM30_Font"] and "LSM30_Font" or nil,
+				order = 4,
+			},
+			size = {
+				type = 'range',
+				name = L["Size"],
+				desc = L["Size of the text."],
+				get = get_text, 
+				set = set_text,
+				min = 0.5,
+				max = 3,
+				step = 0.01,
+				bigStep = 0.05,
+				isPercent = true,
+				order = 5,
+			},
+			anchor = {
+				type = 'select',
+				name = L['Anchor'],
+				desc = L['Set the anchor point on the inside of the aura.'],
+				get = get_text,
+				set = set_text,
+				values = {
+					['TOP'] = L['Top'],
+					['BOTTOM'] = L['Bottom'],
+					['LEFT'] = L['Left'],
+					['RIGHT'] = L['Right'],
+					['TOPLEFT'] = L['Top-left'],
+					['TOPRIGHT'] = L['Top-right'],
+					['BOTTOMLEFT'] = L['Bottom-left'],
+					['BOTTOMRIGHT'] = L['Bottom-right'],
+					['CENTER'] = L['Center'],
+				},
+				order = 6,
+			},
+			offset_x = {
+				type = 'range',
+				name = L['Horizontal offset'],
+				desc = L['Number of pixels to offset the text from the anchor point horizontally.'],
+				get = get_text,
+				set = set_text,
+				min = -50,
+				max = 50,
+				step = 1,
+				bigStep = 5,
+				order = 7,
+			},
+			offset_y = {
+				type = 'range',
+				name = L['Vertical offset'],
+				desc = L['Number of pixels to offset the text from the anchor point vertically.'],
+				get = get_text,
+				set = set_text,
+				min = -50,
+				max = 50,
+				step = 1,
+				bigStep = 5,
+				order = 8,
+			},
+			color = {
+				type = 'color',
+				name = L['Color'],
+				desc = L['Set the color of the text'],
+				hasAlpha = true,
+				get = function(info)
+					return unpack(GetTextDB().color)
+				end,
+				set = function(info, r, g, b, a)
+					local color = GetTextDB().color
+					color[1], color[2], color[3], color[4] = r, g, b, a
+					PitBull4.Options.UpdateFrames()
+				end,
+				disabled = function(info)
+					return GetTextDB().color_by_time
+				end,
+				order = 9,
+			},
+			color_by_time = {
+				type = 'toggle',
+				name = L['Color by time'],
+				desc = L['Color the text by the time remaining on the aura.'],
+				get = get_text,
+				set = set_text,
+				hidden = function(info)
+					local _,text = split_text()
+					return text == "count"
+				end,
+				order = 10,
+			},
+		},
+	},
 	'filters', {
 		type = 'group',
 		name = L['Filters'],

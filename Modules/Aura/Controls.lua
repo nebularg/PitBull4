@@ -112,16 +112,17 @@ PitBull4.Controls.MakeNewControlType("Aura", "Button", function(control)
 	control.texture = texture
 	texture:SetAllPoints(control)
 
+	local overlay = PitBull4.Controls.MakeFrame(control, "OVERLAY")
+	control.overlay = overlay
+	overlay:SetAllPoints(control)
+
 	local border = PitBull4.Controls.MakeTexture(control, "BORDER")
 	control.border = border
 	border:SetAllPoints(control)
 	border:SetTexture(border_path)
 
-	local count_text = PitBull4.Controls.MakeFontString(control, "OVERLAY")
+	local count_text = PitBull4.Controls.MakeFontString(overlay, "OVERLAY")
 	control.count_text = count_text
-	-- TODO configurable font
-	local font, font_size = ChatFontNormal:GetFont()
-	count_text:SetFont(font, font_size, "OUTLINE")
 	count_text:SetShadowColor(0, 0, 0, 1)
 	count_text:SetShadowOffset(0.8, -0.8)
 	count_text:SetPoint("BOTTOMRIGHT", control, "BOTTOMRIGHT", 0, 0)
@@ -131,10 +132,11 @@ PitBull4.Controls.MakeNewControlType("Aura", "Button", function(control)
 	cooldown:SetReverse(true)
 	cooldown:SetAllPoints(control)
 
-	local cooldown_text = PitBull4.Controls.MakeFontString(control, "OVERLAY")
+	-- Set the overlay above the cooldown spinner so the fonts will be over it.
+	overlay:SetFrameLevel(cooldown:GetFrameLevel()+1)
+
+	local cooldown_text = PitBull4.Controls.MakeFontString(overlay, "OVERLAY")
 	control.cooldown_text = cooldown_text
-	-- TODO configurable font
-	cooldown_text:SetFont(font, font_size, "OUTLINE")
 	cooldown_text:SetShadowColor(0, 0, 0, 1)
 	cooldown_text:SetShadowOffset(0.8, -0.8)
 	cooldown_text:SetPoint("TOP", control, "TOP", 0, 0)

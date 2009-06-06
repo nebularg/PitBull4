@@ -474,6 +474,7 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	control.is_buff = is_buff
 	control.name = name
 	control.count = count
+	control.duration = duration
 	control.expiration_time = expiration_time
 	control.debuff_type = debuff_type
 	control.slot = slot
@@ -493,7 +494,17 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 		texture:SetTexCoord(0, 1, 0, 1)
 	end
 
-	control.count_text:SetText(count > 1 and count or "")
+	local texts = db.texts[rule]
+	local count_db = texts.count
+	local font,font_size = frame:GetFont(count_db.font, count_db.size)
+	local count_text = control.count_text
+	local count_anchor = count_db.anchor
+	local count_color = count_db.color
+	count_text:ClearAllPoints()
+	count_text:SetPoint(count_anchor,control,count_anchor,count_db.offset_x,count_db.offset_y)
+	count_text:SetFont(font, font_size, "OUTLINE")
+	count_text:SetTextColor(count_color[1],count_color[2],count_color[3],count_color[4])
+	count_text:SetText(count > 1 and count or "")
 
 	if db.cooldown[rule] and duration and duration > 0 then
 		local cooldown = control.cooldown
@@ -504,6 +515,20 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	end
 
 	if db.cooldown_text[rule] and duration and duration > 0 then
+		local cooldown_text = control.cooldown_text
+		local cooldown_text_db = texts.cooldown_text
+		local color = cooldown_text_db.color
+		local r,g,b,a = color[1],color[2],color[3],color[4]
+		font,font_size = frame:GetFont(cooldown_text_db.font, cooldown_text_db.size)
+		cooldown_text:SetFont(font, font_size, "OUTLINE")
+		cooldown_text:ClearAllPoints()
+		local anchor = cooldown_text_db.anchor
+		cooldown_text:SetPoint(anchor,control,anchor,cooldown_text_db.offset_x,cooldown_text_db.offset_y)
+		local color_by_time = cooldown_text_db.color_by_time
+		if not color_by_time then
+			cooldown_text:SetTextColor(r,g,b,a)
+		end
+		cooldown_text.color_by_time = cooldown_text_db.color_by_time
 		PitBull4_Aura:EnableCooldownText(control)	
 	else
 		PitBull4_Aura:DisableCooldownText(control)	
@@ -614,7 +639,7 @@ local function format_time(seconds)
 		return MINUTE_ONELETTER_ABBR,ceil(seconds/60)
 	elseif seconds > 60 then
 		seconds = ceil(seconds)
-		return "%d:%d",seconds/60,seconds%60
+		return "%d:%02d",seconds/60,seconds%60
 	elseif seconds < 3 then
 		return "%.1f",seconds
 	else
@@ -627,6 +652,8 @@ local function update_cooldown_text(aura)
 	if not cooldown_text:IsShown() then return end
 	local expiration_time = aura.expiration_time
 	if not expiration_time then return end
+	local duration = aura.duration
+	local color_by_time = cooldown_text.color_by_time
 
 	local current_time = GetTime()
 	local time_left = expiration_time - current_time
@@ -642,6 +669,24 @@ local function update_cooldown_text(aura)
 			new_time = 0
 		else
 			new_time = 0.25
+		end
+		if color_by_time and duration and duration > 0 then
+			local duration_left = time_left / duration
+			if duration_left >= 0.3 then
+				-- More than 30% so green
+				cooldown_text:SetTextColor(0,1,0,1)
+			elseif duration_left >= 0.2 then
+				-- fade from green to yellow betwee 30% left to 20% left
+				local r = 1 - ((duration_left - 0.2) * 10)
+				cooldown_text:SetTextColor(r,1,0,1)
+			elseif duration_left >= 0.1 then 
+				-- fade from yellow to red betwee 20% left to 10% left
+				local g = (duration_left - 0.1) * 10
+				cooldown_text:SetTextColor(1,g,0,1)
+			else		
+				-- less than 10% so stay red.
+				cooldown_text:SetTextColor(1,0,0,1)
+			end
 		end
 		cooldown_text:SetFormattedText(format_time(time_left))
 	else
