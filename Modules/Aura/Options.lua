@@ -1782,7 +1782,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				desc = L['Set the number of pixels between each row of auras.'],
 				get = get_layout,
 				set = set_layout,
-				disabled = is_arua_disabled,
+				disabled = is_aura_disabled,
 				min = 0,
 				max = 10,
 				step = 1,
