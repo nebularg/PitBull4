@@ -121,6 +121,7 @@ PitBull4_Aura:SetDefaults({
 			row_spacing = 0,
 			new_row_size = false,
 			filter = "",
+			frame_level = 2,
 		},
 	},
 },
