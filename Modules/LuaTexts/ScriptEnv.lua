@@ -935,3 +935,12 @@ local function ReputationColor(reaction)
 	end
 end
 ScriptEnv.ReputationColor = ReputationColor
+
+local function ConfigMode()
+	local font_string = ScriptEnv.font_string
+	local frame = font_string.frame
+	if frame.force_show then
+		return '{'..font_string.luatexts_name..'}'
+	end
+end
+ScriptEnv.ConfigMode = ConfigMode

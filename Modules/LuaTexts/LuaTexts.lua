@@ -331,7 +331,8 @@ if unit_a and unit_b then
   if percent and percent ~= 0 then
     return "%s%%",Round(percent,1)
   end
-end]],
+end
+return ConfigMode()]],
 		},
 		[L["Raw percent"]] = {
 			events = {['UNIT_THREAT_LIST_UPDATE']=true,['UNIT_THREAT_SITUATION_UPDATE']=true},
@@ -342,7 +343,8 @@ if unit_a and unit_b then
     if raw_percent and raw_percent ~= 0 then
     return "%s%%",Round(raw_percent,1)
   end
-end]],
+end
+return ConfigMode()]],
 		},
 		[L["Colored percent"]] = {
 			events = {['UNIT_THREAT_LIST_UPDATE']=true,['UNIT_THREAT_SITUATION_UPDATE']=true},
@@ -354,7 +356,8 @@ if unit_a and unit_b then
     local r,g,b = ThreatStatusColor(status)
     return "|cff%02x%02x%02x%s%%|r",r,g,b,Round(percent,1)
   end
-end]],
+end
+return ConfigMode()]],
 		},
 		[L["Colored raw percent"]] = {
 			events = {['UNIT_THREAT_LIST_UPDATE']=true,['UNIT_THREAT_SITUATION_UPDATE']=true},
@@ -366,7 +369,8 @@ if unit_a and unit_b then
     local r,g,b = ThreatStatusColor(status)
     return "|cff%02x%02x%02x%s%%|r",r,g,b,Round(raw_percent,1)
   end
-end]],
+end
+return ConfigMode()]],
 		},
 	},
 	[L["Combo points"]] = {
@@ -409,7 +413,7 @@ end]],
 			code = [[
 local name,_,min,max,value = GetWatchedFactionInfo()
 if IsMouseOver() then
-  return name or '' 
+  return name or ConfigMode() 
 else
   local bar_cur,bar_max = value-min,max-min
   return "%d/%d (%s%%)",bar_cur,bar_max,Percent(bar_cur,bar_max)
@@ -447,7 +451,8 @@ if cast_data then
   else
     return spell 
   end
-end]],
+end
+return ConfigMode()]],
 		},
 		[L["Standard time"]] = {
 			events = {['UNIT_SPELLCAST_START']=true,['UNIT_SPELLCAST_CHANNEL_START']=true,['UNIT_SPELLCAST_STOP']=true,['UNIT_SPELLCAST_FAILED']=true,['UNIT_SPELLCAST_INTERRUPTED']=true,['UNIT_SPELLCAST_DELAYED']=true,['UNIT_SPELLCAST_CHANNEL_UPDATE']=true,['UNIT_SPELLCAST_CHANNEL_STOP']=true},
@@ -470,7 +475,8 @@ if cast_data then
       return "%.1f",duration
     end
   end
-end]],
+end
+return ConfigMode()]],
 		},
 	},
 }
