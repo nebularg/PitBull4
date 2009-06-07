@@ -523,7 +523,10 @@ end
 -- @param force_update force an update even if the guid isn't changed, but is non-nil
 -- @usage frame:UpdateGUID(UnitGUID(frame.unit))
 -- @usage frame:UpdateGUID(UnitGUID(frame.unit), true)
+--shefki = {}
 function UnitFrame:UpdateGUID(guid, force_update)
+--	local stack = debugstack(2,10,0)
+--	shefki[stack] = (shefki[stack] or 0) + 1
 	if DEBUG then
 		expect(guid, 'typeof', 'string;nil')
 	end

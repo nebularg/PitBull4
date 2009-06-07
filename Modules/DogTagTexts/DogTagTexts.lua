@@ -10,6 +10,7 @@ local L = PitBull4.L
 local PitBull4_DogTagTexts = PitBull4:NewModule("DogTagTexts")
 
 local LibDogTag
+local missing_lib = false
 
 PitBull4_DogTagTexts:SetModuleType("text_provider")
 PitBull4_DogTagTexts:SetName(L["DogTag-3.0 texts"])
@@ -177,7 +178,9 @@ local function run_first()
 		LoadAddOn("LibDogTag-3.0")
 		LibDogTag = LibStub("LibDogTag-3.0", true)
 		if not LibDogTag then
-			error("PitBull4_DogTagTexts requires LibDogTag-3.0 to function.")
+			geterrorhandler()("PitBull4_DogTagTexts requires LibDogTag-3.0 to function.")
+			missing_lib = true
+			PitBull4:DisableModule(PitBull4_DogTagTexts)
 		end
 	end
 	local LibDogTag_Unit = LibStub("LibDogTag-Unit-3.0", true)
@@ -185,7 +188,9 @@ local function run_first()
 		LoadAddOn("LibDogTag-Unit-3.0")
 		LibDogTag_Unit = LibStub("LibDogTag-Unit-3.0", true)
 		if not LibDogTag_Unit then
-			error("PitBull4_DogTagTexts requires LibDogTag-Unit-3.0 to function.")
+			geterrorhandler()("PitBull4_DogTagTexts requires LibDogTag-Unit-3.0 to function.")
+			missing_lib = true
+			PitBull4:DisableModule(PitBull4_DogTagTexts)
 		end
 	end
 end
@@ -215,7 +220,11 @@ function PitBull4_DogTagTexts:AddFontString(...)
 	if run_first then
 		run_first()
 	end
-	
+
+	if not LibDogTag then
+		return
+	end
+
 	self.AddFontString = self._AddFontString
 	self._AddFontString = nil
 	
@@ -223,6 +232,7 @@ function PitBull4_DogTagTexts:AddFontString(...)
 end
 
 function PitBull4_DogTagTexts:RemoveFontString(font_string)
+	if not LibDogTag then return end
 	LibDogTag:RemoveFontString(font_string)
 end
 
@@ -322,3 +332,9 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 		end,
 	}
 end)
+
+function PitBull4_DogTagTexts:OnEnable()
+	if missing_lib then
+		PitBull4:DisableModule(self)
+	end
+end
