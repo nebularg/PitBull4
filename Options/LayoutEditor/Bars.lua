@@ -73,7 +73,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		name = L["Spacing"],
 		desc = L["Spacing in pixels between bars."],
 		order = 2,
-		min = 0,
+		min = -10,
 		max = 10,
 		step = 1,
 		get = function(info)
