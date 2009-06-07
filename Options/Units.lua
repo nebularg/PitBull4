@@ -309,7 +309,7 @@ function PitBull4.Options.get_unit_options()
 			end
 		end
 	end
-	local function set_with_update(info)
+	local function set_with_update(info, value)
 		if set(info, value) then
 			update(info[1])
 		end
