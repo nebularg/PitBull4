@@ -779,7 +779,7 @@ ScriptEnv.Percent = Percent
 local function XP(unit)
 	if unit == "player" then
 		return UnitXP(unit)
-	elseif unit == "pet" then
+	elseif unit == "pet" or unit == "playerpet" then
 		return GetPetExperience()
 	else
 		return 0
@@ -790,7 +790,7 @@ ScriptEnv.XP = XP
 local function MaxXP(unit)
 	if unit == "player" then
 		return UnitXPMax(unit)
-	elseif unit == "pet" then
+	elseif unit == "pet" or unit == "playerpet" then
 		local _, max = GetPetExperience()
 		return max
 	else
