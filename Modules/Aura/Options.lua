@@ -1966,6 +1966,14 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 		return db.texts[rule][text]
 	end
 
+	local function disable_text(info)
+		local rule,text = split_text()
+		if text == "count" then
+			return false
+		end
+		return not PitBull4.Options.GetLayoutDB(self)[text][rule]
+	end
+
 	local function get_text(info)
 		local id = info[#info]
 		return GetTextDB()[id]
@@ -2176,6 +2184,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				hidden = function(info)
 					return not LibSharedMedia
 				end,
+				disabled = disable_text,
 				dialogControl = AceGUI.WidgetRegistry["LSM30_Font"] and "LSM30_Font" or nil,
 				order = 4,
 			},
@@ -2190,6 +2199,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				step = 0.01,
 				bigStep = 0.05,
 				isPercent = true,
+				disabled = disable_text,
 				order = 5,
 			},
 			anchor = {
@@ -2209,6 +2219,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 					['BOTTOMRIGHT'] = L['Bottom-right'],
 					['CENTER'] = L['Center'],
 				},
+				disabled = disable_text,
 				order = 6,
 			},
 			offset_x = {
@@ -2221,6 +2232,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				max = 50,
 				step = 1,
 				bigStep = 5,
+				disabled = disable_text,
 				order = 7,
 			},
 			offset_y = {
@@ -2233,6 +2245,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				max = 50,
 				step = 1,
 				bigStep = 5,
+				disabled = disable_text,
 				order = 8,
 			},
 			color = {
@@ -2251,6 +2264,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				disabled = function(info)
 					return GetTextDB().color_by_time
 				end,
+				disabled = disable_text,
 				order = 9,
 			},
 			color_by_time = {
@@ -2263,6 +2277,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 					local _,text = split_text()
 					return text == "count"
 				end,
+				disabled = disable_text,
 				order = 10,
 			},
 		},
