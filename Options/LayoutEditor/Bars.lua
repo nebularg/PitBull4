@@ -365,7 +365,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			return db and db.texture or GetLayoutDB(false).bar_texture
 		end,
 		set = function(info, value)
-			local default = get_current_layout_db(info).bar_texture
+			local default = GetLayoutDB(false).bar_texture 
 			if value == default then
 				value = nil
 			end
