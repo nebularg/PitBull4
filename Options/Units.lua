@@ -714,7 +714,7 @@ function PitBull4.Options.get_unit_options()
 		min = 1,
 		max = MAX_RAID_MEMBERS,
 		get = get,
-		set = set_with_refresh_layout,
+		set = set_with_refresh_group,
 		step = 1,
 		disabled = disabled,
 	}
