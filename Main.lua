@@ -89,6 +89,7 @@ local DATABASE_DEFAULTS = {
 				layout = L["Normal"],
 				horizontal_mirror = false,
 				vertical_mirror = false,
+				vehicle_swap = true,
 				click_through = false,
 			},
 			player = { enabled = true },
@@ -123,6 +124,7 @@ local DATABASE_DEFAULTS = {
 				layout = L["Normal"],
 				horizontal_mirror = false,
 				vertical_mirror = false,
+				vehicle_swap = true,
 				click_through = false,
 				
 				show_when = {

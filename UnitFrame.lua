@@ -311,7 +311,7 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 		frame:SetAttribute("*type1", "target")
 		frame:SetAttribute("*type2", "menu")
 	end
-	frame:SetAttribute("toggleForVehicle", true)
+	frame:RefreshVehicle()
 	
 	UnitFrame__scripts:OnAttributeChanged(frame, "unit", frame:GetAttribute("unit"))
 	
@@ -321,6 +321,25 @@ PitBull4.ConvertIntoUnitFrame = PitBull4:OutOfCombatWrapper(PitBull4.ConvertInto
 
 -- we store layout_db instead of layout, since if a new profile comes up, it'll be a distinct table
 local seen_layout_dbs = setmetatable({}, {__mode='k'})
+
+--- Reheck the toggleForVehicle attribute for the unit frame
+-- @usage frame:RefreshVehicle()
+function UnitFrame:RefreshVehicle()
+	local classification_db = self.classification_db
+	if not classification_db then
+		return
+	end
+
+	local config_value = classification_db.vehicle_swap or nil 
+	local frame_value = self:GetAttribute("toggleForVehicle")
+	if frame_value ~= config_value then
+		self:SetAttribute("toggleForVehicle", config_value)
+		local unit = self.unit
+		if unit then
+			PitBull4:UNIT_ENTERED_VEHICLE(nil, unit)
+		end
+	end
+end
 
 --- Recheck the layout of the unit frame, make sure it's up to date, and update the frame.
 -- @usage frame:RefreshLayout()
