@@ -460,7 +460,11 @@ GroupHeader.InitialConfigFunction = PitBull4:OutOfCombatWrapper(GroupHeader.Init
 -- @usage header:ForceUnitFrameCreation()
 function GroupHeader:ForceUnitFrameCreation()
 	local num = self:GetExpectedUnits()
-	if #self >= num then
+	-- Note we can't bail out of this early if we're in config mode because otherwise the
+	-- SecureGroupHeader_Update() only bothers to update the settings for the units it thinks
+	-- it needs and will fail to update our example units for config mode, thus breaking the
+	-- usefulness of config mode.
+	if not self.force_show and #self >= num then
 		return
 	end
 	
