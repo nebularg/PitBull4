@@ -179,11 +179,13 @@ function layout_auras(frame, db, is_buff)
 			anchor = horizontal_mirrored_point[anchor]
 			side = horizontal_mirrored_point[side]
 			growth = horizontal_mirrored_growth[growth]
+			offset_x = -offset_x
 		end
 		if class_db.vertical_mirror then
 			anchor = vertical_mirrored_point[anchor]
 			side = vertical_mirrored_point[side]
 			growth = vertical_mirrored_growth[growth]
+			offset_y = -offset_y
 		end
 	end
 
