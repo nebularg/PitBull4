@@ -1036,10 +1036,7 @@ function PitBull4:OnEnable()
 	self:ScheduleRepeatingTimer(refresh_all_guids, 15)
 	
 	-- register unit change events
-	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterEvent("PLAYER_FOCUS_CHANGED")
-	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
-	self:RegisterEvent("PLAYER_PET_CHANGED")
 	self:RegisterEvent("UNIT_TARGET")
 	self:RegisterEvent("UNIT_PET")
 	
@@ -1116,10 +1113,7 @@ function PitBull4:CheckGUIDForUnitID(unit)
 	end
 end
 
-function PitBull4:PLAYER_TARGET_CHANGED() self:CheckGUIDForUnitID("target") end
 function PitBull4:PLAYER_FOCUS_CHANGED() self:CheckGUIDForUnitID("focus") end
-function PitBull4:UPDATE_MOUSEOVER_UNIT() self:CheckGUIDForUnitID("mouseover") end
-function PitBull4:PLAYER_PET_CHANGED() self:CheckGUIDForUnitID("pet") end
 function PitBull4:UNIT_TARGET(_, unit) self:CheckGUIDForUnitID(unit .. "target") end
 function PitBull4:UNIT_PET(_, unit) self:CheckGUIDForUnitID(unit .. "pet") end
 
