@@ -348,12 +348,11 @@ local function get_best_unit(guid)
 end
 PitBull4.get_best_unit = get_best_unit
 
-local function refresh_guid(unit)
+local function refresh_guid(unit,new_guid)
 	if not NORMAL_UNITS[unit] then
 		return
 	end
 	
-	local new_guid = UnitGUID(unit)
 	local old_guid = unit_id_to_guid[unit]
 	if new_guid == old_guid then
 		return
@@ -386,7 +385,8 @@ end
 
 local function refresh_all_guids()
 	for unit in pairs(NORMAL_UNITS) do
-		refresh_guid(unit)
+		local guid = UnitGUID(unit)
+		refresh_guid(unit,guid)
 	end
 end
 
@@ -1109,8 +1109,8 @@ function PitBull4:CheckGUIDForUnitID(unit)
 		-- for ids such as npctarget
 		return
 	end
-	refresh_guid(unit)
 	local guid = UnitGUID(unit)
+	refresh_guid(unit,guid)
 	for frame in self:IterateFramesForUnitID(unit, true) do
 		frame:UpdateGUID(guid)
 	end
