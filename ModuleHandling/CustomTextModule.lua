@@ -27,6 +27,19 @@ function CustomTextModule:ClearFrame(frame)
 	return false
 end
 
+--- Handle the frame being hidden
+-- @param frame the Unit Frame hidden.
+-- @usage MyModule:OnHide(frame)
+function CustomTextModule:OnHide(frame)
+	if DEBUG then
+		expect(frame, 'typeof', 'frame')
+	end
+
+	-- Nothing to do, we don't want to remove anything from
+	-- a hidden frame
+	return
+end
+
 --- Return the font and size to use for the given frame.
 -- @param frame the unit frame
 -- @return the font path

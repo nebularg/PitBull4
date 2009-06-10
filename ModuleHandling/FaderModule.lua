@@ -84,6 +84,19 @@ timerFrame:SetScript("OnUpdate", function(self, elapsed)
 	end
 end)
 
+--- Handle the frame being hidden
+-- @param frame the Unit Frame hidden.
+-- @usage MyModule:OnHide(frame)
+function FaderModule:OnHide(frame)
+	if DEBUG then
+		expect(frame, 'typeof', 'frame')
+	end
+
+	-- No point in removing the opacity change, it'll be set anyway
+	-- when the frame is shown.
+	return
+end
+
 --- Remove any opacity value for this module.
 -- @param frame the Unit Frame to clear
 -- @usage MyModule:ClearFrame(frame)

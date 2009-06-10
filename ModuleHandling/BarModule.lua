@@ -165,6 +165,19 @@ local function call_extra_color_function(self, frame, value, extra, icon)
 	return r, g, b
 end
 
+--- Handle the frame being hidden
+-- @param frame the Unit Frame hidden.
+-- @usage MyModule:OnHide(frame)
+function BarModule:OnHide(frame)
+	if DEBUG then
+		expect(frame, 'typeof', 'frame')
+	end
+
+	-- Nothing to do, we don't want to remove anything from
+	-- a hidden frame
+	return
+end
+
 --- Clear the status bar for the current module if it exists.
 -- @param frame the Unit Frame to clear
 -- @usage local update_layout = MyModule:ClearFrame(frame)

@@ -127,3 +127,16 @@ function IndicatorModule:GetFont(frame)
 	local db = self:GetLayoutDB(frame)
 	return frame:GetFont(db.text_font, db.text_size)
 end
+
+--- Handle the frame being hidden
+-- @param frame the Unit Frame hidden.
+-- @usage MyModule:OnHide(frame)
+function IndicatorModule:OnHide(frame)
+	if DEBUG then
+		expect(frame, 'typeof', 'frame')
+	end
+
+	-- Nothing to do, we don't want to remove anything from
+	-- a hidden frame
+	return
+end

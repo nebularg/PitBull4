@@ -45,6 +45,13 @@ function TextProviderModule:ClearFrame(frame)
 	return true
 end
 
+--- Handle the frame being hidden
+-- @param frame the Unit Frame hidden.
+-- @usage MyModule:OnHide(frame)
+-- For text providers just map it to ClearFrame, we don't want them
+-- thinking they need to update texts on hidden frames.
+TextProviderModule.OnHide = TextProviderModule.ClearFrame
+
 --- Update the texts for the current module
 -- @param frame the Unit Frame to update
 -- @usage local update_layout = MyModule:UpdateIcon(frame)

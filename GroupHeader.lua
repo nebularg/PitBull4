@@ -973,7 +973,6 @@ function GroupHeader:UnforceShow()
 	self.label:Hide()
 	for _, frame in ipairs(self) do
 		frame:UnforceShow()
-		frame:Update(true, true)
 	end
 end
 GroupHeader.UnforceShow = PitBull4:OutOfCombatWrapper(GroupHeader.UnforceShow)
@@ -997,6 +996,42 @@ function GroupHeader:Rename(name)
 	
 	for i, frame in ipairs(self) do
 		frame.classification = name
+	end
+end
+
+function GroupHeader:ClearFrames()
+	-- Clears the frames over a 10 minute period.  Starting from the 
+	-- end working our way to the front
+	local clear_index = self.clear_index
+	-- Frames will have no guid at this point so Update == Clear
+	self[clear_index]:Update()
+	clear_index = clear_index - 1
+	if clear_index > 0 then
+		local max_units = self:GetMaxUnits()
+		if clear_index > max_units then
+			max_units = clear_index + 1
+		end
+		local delay = 600 / max_units
+		self.clear_index = clear_index
+		self.clear_timer = PitBull4:ScheduleTimer(self.ClearFrames, delay, self)
+	else
+		self.clear_index = nil
+		self.clear_timer = nil
+	end
+end
+
+function GroupHeader__scripts:OnHide()
+	-- Start clearing the frames in 5 minutes. 
+	self.clear_index = #self
+	self.clear_timer = PitBull4:ScheduleTimer(self.ClearFrames, 300, self)
+end
+
+function GroupHeader__scripts:OnShow()
+	local clear_timer = self.clear_timer
+	if clear_timer then
+		PitBull4:CancelTimer(clear_timer, true)
+		self.clear_timer = nil
+		self.clear_index = nil
 	end
 end
 

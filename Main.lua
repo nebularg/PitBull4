@@ -1109,8 +1109,19 @@ function PitBull4:CheckGUIDForUnitID(unit)
 	end
 	local guid = UnitGUID(unit)
 	refresh_guid(unit,guid)
-	for frame in self:IterateFramesForUnitID(unit, true) do
-		frame:UpdateGUID(guid)
+
+	-- If there is no guid then we want to disallow upating the frame
+	-- However, if there is a guid we want to pass nil and leave it up
+	-- to UpdateGUID()
+	local update
+	if not guid then
+		update = false
+	end
+
+	-- If the guid is nil we don't want to see hidden frames since
+	-- there's nothing to do as UnitFrame:OnHide will have already done this work.
+	for frame in self:IterateFramesForUnitID(unit,not not guid) do
+		frame:UpdateGUID(guid,update)
 	end
 end
 

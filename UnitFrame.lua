@@ -249,7 +249,22 @@ end
 
 function UnitFrame__scripts:OnHide()
 	self:GetScript("OnDragStop")(self)
-	self:UpdateGUID(nil)
+	self:UpdateGUID(nil,false) -- Clear the guid without causing an update
+
+	-- Iterate the modules and call their OnHide function to tell them 
+	-- a frame was hidden.  They may very well be changing the frame and
+	-- causing layout changes.  However, since the frame is hidden we
+	-- do not track this or cause layout updates to happen.  They'll
+	-- happen when the frame is shown again anyway.  Skip calling OnHide
+	-- when dont_update is set becuase we're only temporarily hiding the
+	-- frame for RefreshGroup().
+	if not self.dont_update then
+		for _, module_type in ipairs(MODULE_UPDATE_ORDER) do
+			for _, module in PitBull4:IterateModulesOfType(module_type) do
+				module:OnHide(self)
+			end
+		end
+	end
 end
 
 --- Add the proper functions and scripts to a SecureUnitButton, as well as some various initialization.
@@ -520,21 +535,23 @@ end
 
 --- Check the guid of the Unit Frame, if it is changed, then update the frame.
 -- @param guid result from UnitGUID(unit)
--- @param force_update force an update even if the guid isn't changed, but is non-nil
+-- @param update when true force an update even if the guid isn't changed, but is non-nil, when false never cause an update and when update is empty or nil let the function decide on its own if an update is needed.
 -- @usage frame:UpdateGUID(UnitGUID(frame.unit))
 -- @usage frame:UpdateGUID(UnitGUID(frame.unit), true)
-function UnitFrame:UpdateGUID(guid, force_update)
+function UnitFrame:UpdateGUID(guid, update)
 	if DEBUG then
 		expect(guid, 'typeof', 'string;nil')
 	end
 	
 	-- if the guids are the same, cut out, but don't if it's a wacky unit that has a guid.
-	if not force_update and self.guid == guid and not (guid and self.is_wacky and not self.best_unit) then
+	if update ~= true and self.guid == guid and not (guid and self.is_wacky and not self.best_unit) then
 		return
 	end
 	local previousGUID = self.guid
 	self.guid = guid
-	self:Update(previousGUID == guid)
+	if update ~= false then
+		self:Update(previousGUID == guid)
+	end
 end
 
 local function iter(frame, id)
