@@ -66,9 +66,9 @@ function PitBull4:SetConfigMode(kind)
 	
 	PitBull4.config_mode = kind
 	
-	PitBull4:RAID_ROSTER_UPDATE(true, true)
-	
 	self:RecheckConfigMode()
+	
+	PitBull4:RAID_ROSTER_UPDATE(true, true)
 end
 
 function PitBull4:RecheckConfigMode()
