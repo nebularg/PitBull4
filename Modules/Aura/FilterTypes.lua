@@ -51,6 +51,13 @@ local bool_values = {
 	['no'] = L['No'],
 }
 
+local unit_values = {
+	['=='] = L['is'],
+	['~='] = L['is not'],
+	['friend'] = L['is friend'],
+	['enemy'] = L['is enemy'],
+}
+
 --- Registers a new filter type.
 -- Anyone that wants to add a new filter type to the Aura module needs this.
 -- @param name the name to index the filter type by
@@ -929,12 +936,7 @@ PitBull4_Aura:RegisterFilterType('Unit',L["Unit"],unit_filter,function(self,opti
 			PitBull4_Aura:GetFilterDB(self).unit_operator = value
 			PitBull4_Aura:UpdateAll()
 		end,
-		values = {
-			['=='] = L['is'],
-			['~='] = L['is not'],
-			['friend'] = L['is friend'],
-			['enemy'] = L['is enemy'],
-		},
+		values = unit_values, 
 		order = 1,
 	}
 	options.unit = {
@@ -1146,6 +1148,71 @@ PitBull4_Aura:RegisterFilterType('True',L["True"],false_filter,function(self,opt
 	options.text = {
 		type = 'description',
 		name = L["The True filter is always true."],
+	}
+end)
+
+-- Caster 
+local function caster_filter(self, entry, frame)
+	local db = PitBull4_Aura:GetFilterDB(self)
+	if db.unit_operator == "==" then
+		return entry[12] == db.unit
+	elseif db.unit_operator == "~=" then
+		return entry[12] ~= db.unit
+	elseif db.unit_operator == "friend" then
+		if not entry[12] then return false end
+		return UnitIsFriend(entry[12],'player')
+	elseif db.unit_operator == "enemy" then
+		if not entry[12] then return false end
+		return not UnitIsFriend(entry[12],'player')
+	end
+end
+PitBull4_Aura:RegisterFilterType('Caster',L["Caster"],caster_filter,function(self,options)
+	options.unit_operator = {
+		type = 'select',
+		name = L['Test'],
+		desc = L['Type of test to check the caster by.'],
+		get = function(info)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			if not db.unit_operator then
+				db.unit_operator = '=='
+			end
+			return db.unit_operator
+		end,
+		set = function(info, value)
+			PitBull4_Aura:GetFilterDB(self).unit_operator = value
+			PitBull4_Aura:UpdateAll()
+		end,
+		values =  unit_values,
+		order = 1,
+	}
+	options.unit = {
+		type = 'input',
+		name = L['Unit'],
+		desc = L['Enter the unit to compare the caster of the aura against.'],
+		get = function(info)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			if not db.unit then
+				db.unit = "player"
+			end
+			return db.unit
+		end,
+		set = function(info, value)
+			PitBull4_Aura:GetFilterDB(self).unit = value
+			PitBull4_Aura:UpdateAll()
+		end,
+		hidden = function(info, value)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			local unit_operator = db.unit_operator
+			return unit_operator == 'friend' or unit_operator == 'enemy'
+		end,
+		validate = function(info, value)
+			if PitBull4.Utils.GetBestUnitID(value) then
+				return true
+			else
+				return L['Must be a valid unit id.']
+			end
+		end,
+		order = 2,
 	}
 end)
 
