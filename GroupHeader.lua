@@ -1011,7 +1011,7 @@ function GroupHeader:ClearFrames()
 		if clear_index > max_units then
 			max_units = clear_index + 1
 		end
-		local delay = 600 / max_units
+		local delay = 600 / (max_units - 1)
 		self.clear_index = clear_index
 		self.clear_timer = PitBull4:ScheduleTimer(self.ClearFrames, delay, self)
 	else
