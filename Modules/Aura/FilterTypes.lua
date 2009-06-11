@@ -56,7 +56,45 @@ local unit_values = {
 	['~='] = L['is not'],
 	['friend'] = L['is friend'],
 	['enemy'] = L['is enemy'],
+	['is'] = L['is the same as unit'],
+	['isnot'] = L['is not the same as unit'],
+	['match'] = L['matches the pattern'],
+	['nomatch'] = L['does not match the pattern'],
+	['player_controlled'] = L['is player controlled'],
+	['not_player_controlled'] = L['is not player controlled'],
 }
+
+local function compare_unit(unit,op,value)
+	if op == "==" then
+		return unit == value
+	elseif op == "~=" then
+		return unit ~= value
+	elseif op == "friend" then
+		if not unit then return false end
+		return UnitIsFriend(unit,'player')
+	elseif op == "enemy" then
+		if not unit then return false end
+		return not UnitIsFriend(unit,'player')
+	elseif op == "is" then
+		if not unit then return false end
+		return UnitIsUnit(unit,value)
+	elseif op == "isnot" then
+		if not unit then return false end
+		return not UnitIsUnit(unit,value)
+	elseif op == "player_controlled" then
+		if not unit then return false end
+		return UnitPlayerControlled(unit)
+	elseif op == "not_player_controlled" then
+		if not unit then return false end
+		return not UnitPlayerControlled(unit)
+	elseif op == "match" then
+		if not unit then return false end
+		return not not string.match(unit,value)
+	elseif op == "nomatch" then
+		if not unit then return false end
+		return not string.match(unit,value)
+	end
+end
 
 --- Registers a new filter type.
 -- Anyone that wants to add a new filter type to the Aura module needs this.
@@ -908,17 +946,7 @@ end)
 -- Unit
 local function unit_filter(self, entry, frame)
 	local db = PitBull4_Aura:GetFilterDB(self)
-	if db.unit_operator == "==" then
-		return frame.unit == db.unit
-	elseif db.unit_operator == "~=" then
-		return frame.unit ~= db.unit
-	elseif db.unit_operator == "friend" then
-		if not frame.unit then return false end
-		return UnitIsFriend(frame.unit,'player')
-	elseif db.unit_operator == "enemy" then
-		if not frame.unit then return false end
-		return not UnitIsFriend(frame.unit,'player')
-	end
+	return compare_unit(frame.unit,db.unit_operator,db.unit)
 end
 PitBull4_Aura:RegisterFilterType('Unit',L["Unit"],unit_filter,function(self,options)
 	options.unit_operator = {
@@ -933,7 +961,11 @@ PitBull4_Aura:RegisterFilterType('Unit',L["Unit"],unit_filter,function(self,opti
 			return db.unit_operator
 		end,
 		set = function(info, value)
-			PitBull4_Aura:GetFilterDB(self).unit_operator = value
+			local db = PitBull4_Aura:GetFilterDB(self)
+			db.unit_operator = value
+			if value ~= "match" and value ~= "nomatch" and not PitBull4.Utils.GetBestUnitID(db.unit) then
+				db.unit = "player"
+			end
 			PitBull4_Aura:UpdateAll()
 		end,
 		values = unit_values, 
@@ -957,9 +989,14 @@ PitBull4_Aura:RegisterFilterType('Unit',L["Unit"],unit_filter,function(self,opti
 		hidden = function(info, value)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			local unit_operator = db.unit_operator
-			return unit_operator == 'friend' or unit_operator == 'enemy'
+			return unit_operator == 'friend' or unit_operator == 'enemy' or unit_operator == "player_controlled" or unit_operator == "not_player_controlled"
 		end,
 		validate = function(info, value)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			local unit_operator = db.unit_operator
+			if unit_operator == "match" or unit_operator == "nomatch" then
+				return true
+			end
 			if PitBull4.Utils.GetBestUnitID(value) then
 				return true
 			else
@@ -1154,17 +1191,7 @@ end)
 -- Caster 
 local function caster_filter(self, entry, frame)
 	local db = PitBull4_Aura:GetFilterDB(self)
-	if db.unit_operator == "==" then
-		return entry[12] == db.unit
-	elseif db.unit_operator == "~=" then
-		return entry[12] ~= db.unit
-	elseif db.unit_operator == "friend" then
-		if not entry[12] then return false end
-		return UnitIsFriend(entry[12],'player')
-	elseif db.unit_operator == "enemy" then
-		if not entry[12] then return false end
-		return not UnitIsFriend(entry[12],'player')
-	end
+	return compare_unit(entry[12],db.unit_operator,db.unit)
 end
 PitBull4_Aura:RegisterFilterType('Caster',L["Caster"],caster_filter,function(self,options)
 	options.unit_operator = {
@@ -1179,7 +1206,11 @@ PitBull4_Aura:RegisterFilterType('Caster',L["Caster"],caster_filter,function(sel
 			return db.unit_operator
 		end,
 		set = function(info, value)
-			PitBull4_Aura:GetFilterDB(self).unit_operator = value
+			local db = PitBull4_Aura:GetFilterDB(self)
+			db.unit_operator = value
+			if value ~= "match" and value ~= "nomatch" and not PitBull4.Utils.GetBestUnitID(db.unit) then
+				db.unit = "player"
+			end
 			PitBull4_Aura:UpdateAll()
 		end,
 		values =  unit_values,
@@ -1203,9 +1234,14 @@ PitBull4_Aura:RegisterFilterType('Caster',L["Caster"],caster_filter,function(sel
 		hidden = function(info, value)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			local unit_operator = db.unit_operator
-			return unit_operator == 'friend' or unit_operator == 'enemy'
+			return unit_operator == 'friend' or unit_operator == 'enemy' or unit_operator == "player_controlled" or unit_operator == "not_player_controlled"
 		end,
 		validate = function(info, value)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			local unit_operator = db.unit_operator
+			if unit_operator == "match" or unit_operator == "nomatch" then
+				return true
+			end
 			if PitBull4.Utils.GetBestUnitID(value) then
 				return true
 			else
