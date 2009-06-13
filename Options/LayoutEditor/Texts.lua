@@ -42,9 +42,10 @@ function PitBull4.Options.get_layout_editor_text_options()
 	local function disabled()
 		if CURRENT_CUSTOM_TEXT_MODULE then
 			return not GetLayoutDB(CURRENT_CUSTOM_TEXT_MODULE).enabled
-		else
-			return not CURRENT_TEXT_PROVIDER_MODULE
+		elseif not CURRENT_TEXT_PROVIDER_MODULE then
+			return true 
 		end
+		return not GetTextLayoutDB().enabled
 	end
 	
 	options.args.current_text = {
@@ -285,7 +286,6 @@ function PitBull4.Options.get_layout_editor_text_options()
 			
 			UpdateFrames()
 		end,
-		disabled = disabled,
 	}
 	
 	options.args.edit.args.name = {
