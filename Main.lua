@@ -1197,6 +1197,27 @@ function PitBull4:PLAYER_ENTERING_WORLD()
 	self:ScheduleTimer("UpdateMapInfo", 0.1)
 end
 
+local function get_state_from_groups(raid)
+	local state
+	for i=1,raid do
+		local _,_,subgroup = GetRaidRosterInfo(i)
+		if subgroup >= 6 then
+			-- 40 man raid state no point in looking at any other entries
+			state = 40
+			break
+		elseif subgroup >= 3 then
+			if not state or  state < 25 then
+				state = 25 
+			end
+		else
+			if not state or state < 10 then 
+				state = 10
+			end
+		end
+	end
+	return "raid"..state
+end
+
 local last_state = nil
 local last_raid_num = nil
 local last_party_num = nil
@@ -1212,12 +1233,10 @@ function PitBull4:RAID_ROSTER_UPDATE(force, no_create)
 	if raid > 0 then
 		if raid > 25 then
 			STATE = "raid40"
-		elseif raid > 10 then
-			STATE = "raid25"
 		elseif raid <= 5 and party == raid - 1 then -- TODO: make it an option to have 5-man raids act as parties.
 			STATE = "party"
 		else
-			STATE = "raid10"
+			STATE = get_state_from_groups(raid) 
 		end
 	elseif party > 0 then
 		STATE = "party"
