@@ -159,6 +159,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 			local db = texts_db[value]
 			db.exists = true
 			
+			CURRENT_CUSTOM_TEXT_MODULE = nil
 			CURRENT_TEXT_PROVIDER_MODULE = module
 			CURRENT_TEXT_PROVIDER_ID = value
 			
