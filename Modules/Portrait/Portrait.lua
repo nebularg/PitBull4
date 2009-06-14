@@ -107,6 +107,13 @@ local function model_OnUpdate(self, elapsed)
 	end
 end
 
+function PitBull4_Portrait:OnHide(frame)
+	local portrait = frame.Portrait
+	if portrait then
+		portrait.guid = frame.guid
+	end
+end
+
 function PitBull4_Portrait:UpdateFrame(frame)
 	local layout_db = self:GetLayoutDB(frame)
 	local style = layout_db.style
