@@ -592,7 +592,7 @@ local function set_text(font_string, ...)
 end
 
 local lua_name = "Lua:"..L["Name"]
-local function update_text(font_string)
+local function update_text(font_string, event)
 	if not texts[font_string] then return end
 	local code = font_string.db.code
 	local frame = font_string.frame
@@ -609,7 +609,7 @@ local function update_text(font_string)
 
 	if not func then
 		-- Doesn't exist in the cache so we build it
-		local lua_string = 'return function(unit,font_string) '..code..' end'
+		local lua_string = 'return function(unit) '..code..' end'
 		local lua_string_name = "PitBull4_LuaTexts:"..frame.layout..':'..font_string.luatexts_name
 		local create_func, err = loadstring(lua_string,lua_string_name)
 		if create_func then
@@ -626,10 +626,11 @@ local function update_text(font_string)
 		end
 	end
 
-	-- Put the font_string into the ScriptEnv before running the user function
-	-- so we can have access to it without actually requiring it to be passed
-	-- to our utility functions.
+	-- Put the font_string and event into the ScriptEnv before running the
+	-- user function so we can have access to it without actually requiring
+	-- it to be passed to our utility functions.
 	ScriptEnv.font_string = font_string
+	ScriptEnv.event = event
 
 	-- Set alpha and outline to default values
 	PitBull4_LuaTexts.alpha = 1
@@ -931,7 +932,7 @@ function PitBull4_LuaTexts:OnEvent(event, unit)
 	for font_string in pairs(event_entry) do
 		local fs_guid = font_string.frame.guid
 		if all or (by_unit and fs_guid == guid) or (player and fs_guid == player_guid) or (pet and fs_guid == UnitGUID("pet")) then
-			update_text(font_string)	
+			update_text(font_string,event)	
 		end
 	end
 end
@@ -990,7 +991,7 @@ timerframe:SetScript("OnUpdate", function(self, elapsed)
 		time = time - elapsed
 		if time <= 0 then
 			to_update[font_string] = nil
-			update_text(font_string)
+			update_text(font_string,"_timer")
 		else
 			to_update[font_string] = time
 		end
@@ -1131,7 +1132,7 @@ function PitBull4_LuaTexts:AddFontString(frame, font_string, name, data)
 		end
 	end
 
-	update_text(font_string)
+	update_text(font_string,"_new")
 
 	if spell_cast_cache[font_string] then
 		-- If the font_string is looking to display spell cast
