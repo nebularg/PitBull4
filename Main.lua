@@ -1022,6 +1022,15 @@ function PitBull4:OnProfileChanged()
 		end
 	end
 	
+	-- Enable/Disable modules to match the new profile.
+	for _,module in self:IterateModules() do
+		if module.db.profile.global.enabled then
+			self:EnableModule(module)
+		else
+			self:DisableModule(module)
+		end
+	end
+
 	self:RecheckConfigMode()
 	
 	if not IsAddOnLoaded("Broker2FuBar") then
