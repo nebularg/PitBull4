@@ -529,7 +529,6 @@ do
 	},
 	{
 		-- Global defaults
-		enabled = false,
 		events = events,
 	})
 end

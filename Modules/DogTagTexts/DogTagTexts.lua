@@ -27,6 +27,10 @@ PitBull4_DogTagTexts:SetDefaults({
 		},
 	},
 	first = true
+},
+{
+	-- Global defaults
+	enabled = false,
 })
 
 function PitBull4_DogTagTexts:OnNewLayout(layout)
