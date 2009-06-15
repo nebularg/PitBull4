@@ -257,6 +257,12 @@ local function UpdateIn(seconds)
 end
 ScriptEnv.UpdateIn = UpdateIn
 
+local function IsAFK(unit)
+	afk_cache[ScriptEnv.font_string] = true
+	return not not afk_times[UnitGUID(unit)]
+end
+ScriptEnv.IsAFK = IsAFK
+
 local function AFKDuration(unit)
 	local afk = afk_times[UnitGUID(unit)]
 	afk_cache[ScriptEnv.font_string] = true
@@ -274,6 +280,12 @@ local function AFK(unit)
 	end
 end
 ScriptEnv.AFK = AFK
+
+local function IsDND(unit)
+	dnd_cache[ScriptEnv.font_string] = true
+	return not not dnd_times[UnitGUID(unit)]
+end
+ScriptEnv.IsDND = IsDND
 
 local function DND(unit)
 	dnd_cache[ScriptEnv.font_string] = true
@@ -511,6 +523,12 @@ local function Offline(unit)
 	end
 end
 ScriptEnv.Offline = Offline
+
+local function IsOffline(unit)
+	offline_cache[ScriptEnv.font_string] = true
+	return not not offline_times[UnitGUID(unit)]
+end
+ScriptEnv.IsOffline = IsOffline
 
 local function DeadDuration(unit)
 	local dead_time = dead_times[UnitGUID(unit)]
