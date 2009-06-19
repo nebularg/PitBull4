@@ -186,9 +186,7 @@ local function FormatDuration(number, format)
 			t[#t+1] = L_SECONDS_ABBR
 		end
 		local s = table.concat(t)
-		for k in pairs(t) do
-			t[k] = nil
-		end
+		wipe(t)
 		return s
 	elseif format == "f" then
 		if number == 1/0 then
