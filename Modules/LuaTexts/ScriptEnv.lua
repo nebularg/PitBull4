@@ -228,6 +228,41 @@ local function FormatDuration(number, format)
 end
 ScriptEnv.FormatDuration = FormatDuration
 
+-- Depends upon the local t = {} above FormatDuration
+local function SeparateDigits(number, thousands, decimal)
+	if not thousands then
+		thousands = ','
+	end
+	if not decimal then
+		decimal = '.'
+	end
+	local int = math.floor(number)
+	local rest = number % 1
+	if int == 0 then
+		t[#t+1] = 0
+	else
+		local digits = math.log10(int)
+		local segments = math.floor(digits / 3)
+		t[#t+1] = math.floor(int / 1000^segments)
+		for i = segments-1, 0, -1 do
+			t[#t+1] = thousands
+			t[#t+1] = ("%03d"):format(math.floor(int / 1000^i) % 1000)
+		end
+	end
+	if rest ~= 0 then
+		t[#t+1] = decimal
+		rest = math.floor(rest * 10^6)
+		while rest % 10 == 0 do
+			rest = rest / 10
+		end
+		t[#t+1] = rest
+	end
+	local s = table.concat(t)
+	wipe(t)
+	return s
+end
+ScriptEnv.SeparateDigits = SeparateDigits
+
 local function Angle(value)
 	if value and value ~= '' then
 		return '<',value,'>'
