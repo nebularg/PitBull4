@@ -150,7 +150,7 @@ local function call_extra_color_function(self, frame, value, extra, icon)
 	end
 	
 	if not self.GetExtraColor then
-		return 0.5, 0.5, 0.5, nil
+		return 0.5, 0.5, 0.5
 	end
 	local r, g, b
 	if frame.guid then
