@@ -1156,6 +1156,7 @@ function PitBull4:UNIT_ENTERED_VEHICLE(_, unit)
 		non_pet = "player"
 	end
 	tmp[non_pet] = true
+	local support_blizz_buff = not PlayerFrame:IsShown() and not not BuffFrame:IsShown()
 	for frame in self:IterateFrames(true) do
 		if tmp[frame:GetAttribute("unit")] then
 			local new_unit = SecureButton_GetModifiedUnit(frame, "LeftButton")
@@ -1171,6 +1172,17 @@ function PitBull4:UNIT_ENTERED_VEHICLE(_, unit)
 					PitBull4.unit_id_to_frames_with_wacky[new_unit][frame] = true
 				end
 				frame:UpdateGUID(UnitGUID(new_unit), true)
+			end
+
+			-- Keep the unit set on the Blizzard PlayerFrame in sync with our
+			-- PlayerFrame if the Blizzard one is not shown and the Blizzard
+			-- BuffFrame is shown.  This is necesary so that the Blizzard
+			-- BuffFrame can function and stay in sync with our Player Frame's
+			-- vehicle swap settings.  The Blizzard BuffFrame gets the unit it
+			-- should display buffs from the PlayerFrame.
+			if support_blizz_buff and frame.is_singleton and frame.classification == "player" and PlayerFrame.unit ~= new_unit then
+				PlayerFrame.unit = new_unit
+				BuffFrame_Update()
 			end
 		end
 	end

@@ -56,6 +56,9 @@ function hiders:player()
 	PlayerFrameHealthBar:UnregisterAllEvents()
 	PlayerFrameManaBar:UnregisterAllEvents()
 	PlayerFrame:Hide()
+
+	-- Fake a vehicle event to keep the BuffFrame in sync with our player frame.
+	PitBull4:UNIT_ENTERED_VEHICLE(nil, "player")
 end
 
 function showers:player()
