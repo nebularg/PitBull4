@@ -45,7 +45,11 @@ local EXAMPLE_CLASSIFICATIONS = {
 	raid = true,
 }
 function PitBull4_ReadyCheckIcon:GetExampleTexture(frame)
-	if not EXAMPLE_CLASSIFICATIONS[frame.classification] then
+	if frame.is_singleton then
+		if not EXAMPLE_CLASSIFICATIONS[frame.classification] then
+			return nil
+		end
+	elseif not EXAMPLE_CLASSIFICATIONS[frame.header.unit_group] then
 		return nil
 	end
 	
