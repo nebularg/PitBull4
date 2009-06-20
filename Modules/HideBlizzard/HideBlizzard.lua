@@ -59,42 +59,13 @@ function hiders:player()
 end
 
 function showers:player()
-	PlayerFrame:RegisterEvent("UNIT_LEVEL")
-	PlayerFrame:RegisterEvent("UNIT_COMBAT")
-	PlayerFrame:RegisterEvent("UNIT_SPELLMISS")
-	PlayerFrame:RegisterEvent("UNIT_PVP_UPDATE")
-	PlayerFrame:RegisterEvent("UNIT_MAXMANA")
-	PlayerFrame:RegisterEvent("PLAYER_ENTER_COMBAT")
-	PlayerFrame:RegisterEvent("PLAYER_LEAVE_COMBAT")
-	PlayerFrame:RegisterEvent("PLAYER_UPDATE_RESTING")
-	PlayerFrame:RegisterEvent("PARTY_MEMBERS_CHANGED")
-	PlayerFrame:RegisterEvent("PARTY_LEADER_CHANGED")
-	PlayerFrame:RegisterEvent("PARTY_LOOT_METHOD_CHANGED")
-	PlayerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-	PlayerFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-	PlayerFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-	PlayerFrameHealthBar:RegisterEvent("UNIT_HEALTH")
-	PlayerFrameHealthBar:RegisterEvent("UNIT_MAXHEALTH")
-	PlayerFrameManaBar:RegisterEvent("UNIT_MANA")
-	PlayerFrameManaBar:RegisterEvent("UNIT_RAGE")
-	PlayerFrameManaBar:RegisterEvent("UNIT_FOCUS")
-	PlayerFrameManaBar:RegisterEvent("UNIT_ENERGY")
-	PlayerFrameManaBar:RegisterEvent("UNIT_HAPPINESS")
-	PlayerFrameManaBar:RegisterEvent("UNIT_MAXMANA")
-	PlayerFrameManaBar:RegisterEvent("UNIT_MAXRAGE")
-	PlayerFrameManaBar:RegisterEvent("UNIT_MAXFOCUS")
-	PlayerFrameManaBar:RegisterEvent("UNIT_MAXENERGY")
-	PlayerFrameManaBar:RegisterEvent("UNIT_MAXHAPPINESS")
-	PlayerFrameManaBar:RegisterEvent("UNIT_DISPLAYPOWER")
-	PlayerFrame:RegisterEvent("UNIT_NAME_UPDATE")
-	PlayerFrame:RegisterEvent("UNIT_PORTRAIT_UPDATE")
-	PlayerFrame:RegisterEvent("UNIT_DISPLAYPOWER")
+	PlayerFrame:GetScript("OnLoad")(PlayerFrame)
 	PlayerFrame:Show()
 	-- Emulate some events to get the frame setup in a normal state.
 	-- Blizzard doesn't do an update on show for the player frame since
 	-- they never imagine it won't be shown.
-	PlayerFrame_OnEvent(PlayerFrame, "PLAYER_ENTERING_WORLD")
-	PlayerFrame_OnEvent(PlayerFrame, "PARTY_MEMBERS_CHANGED")
+	PlayerFrame:GetScript("OnEvent")(PlayerFrame, "PLAYER_ENTERING_WORLD")
+	PlayerFrame:GetScript("OnEvent")(PlayerFrame, "PARTY_MEMBERS_CHANGED")
 end
 
 function hiders:party()
@@ -112,20 +83,8 @@ function showers:party()
 	for i = 1, 4 do
 		local frame = _G["PartyMemberFrame"..i]
 		frame.Show = nil
-		frame:RegisterEvent("PARTY_MEMBERS_CHANGED")
-		frame:RegisterEvent("PARTY_LEADER_CHANGED")
-		frame:RegisterEvent("PARTY_MEMBER_ENABLE")
-		frame:RegisterEvent("PARTY_MEMBER_DISABLE")
-		frame:RegisterEvent("PARTY_LOOT_METHOD_CHANGED")
-		frame:RegisterEvent("UNIT_PVP_UPDATE")
-		frame:RegisterEvent("UNIT_AURA")
-		frame:RegisterEvent("UNIT_PET")
-		frame:RegisterEvent("VARIABLES_LOADED")
-		frame:RegisterEvent("UNIT_NAME_UPDATE")
-		frame:RegisterEvent("UNIT_PORTRAIT_UPDATE")
-		frame:RegisterEvent("UNIT_DISPLAYPOWER")
-
-		UnitFrame_OnEvent("PARTY_MEMBERS_CHANGED")
+		frame:GetScript("OnLoad")(frame)
+		frame:GetScript("OnEvent")(frame, "PARTY_MEMBERS_CHANGED")
 		
 		PartyMemberFrame_UpdateMember(frame)
 	end
@@ -141,20 +100,9 @@ function hiders:target()
 end
 
 function showers:target()
-	TargetFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
-	TargetFrame:RegisterEvent("PLAYER_FOCUS_CHANGED")
-	TargetFrame:RegisterEvent("UNIT_HEALTH")
-	TargetFrame:RegisterEvent("UNIT_LEVEL")
-	TargetFrame:RegisterEvent("UNIT_FACTION")
-	TargetFrame:RegisterEvent("UNIT_CLASSIFICATION_CHANGED")
-	TargetFrame:RegisterEvent("UNIT_AURA")
-	TargetFrame:RegisterEvent("PLAYER_FLAGS_CHANGED")
-	TargetFrame:RegisterEvent("PARTY_MEMBERS_CHANGED")
-	TargetFrame_Update(TargetFrame)
+	TargetFrame:GetScript("OnLoad")(TargetFrame)
 
-	ComboFrame:RegisterEvent("PLAYER_FOCUS_CHANGED")
-	ComboFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
-	ComboFrame:RegisterEvent("PLAYER_COMBO_POINTS")
+	ComboFrame:GetScript("OnLoad")(ComboFrame)
 end
 
 function hiders:focus()
@@ -163,15 +111,7 @@ function hiders:focus()
 end
 
 function showers:focus()
-	FocusFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
-	FocusFrame:RegisterEvent("PLAYER_FOCUS_CHANGED")
-	FocusFrame:RegisterEvent("UNIT_HEALTH")
-	FocusFrame:RegisterEvent("UNIT_LEVEL")
-	FocusFrame:RegisterEvent("UNIT_FACTION")
-	FocusFrame:RegisterEvent("UNIT_CLASSIFICATION_CHANGED")
-	FocusFrame:RegisterEvent("UNIT_AURA")
-	FocusFrame:RegisterEvent("PLAYER_FLAGS_CHANGED")
-	FocusFrame:RegisterEvent("PARTY_MEMBERS_CHANGED")
+	FocusFrame:GetScript("OnLoad")(FocusFrame)
 	FocusFrame_Update(FocusFrame)
 end
 
@@ -181,25 +121,13 @@ function hiders:castbar()
 end
 
 function showers:castbar()
-	for _, frame in ipairs { CastingBarFrame, PetCastingBarFrame } do
-		frame:RegisterEvent("UNIT_SPELLCAST_START")
-		frame:RegisterEvent("UNIT_SPELLCAST_STOP")
-		frame:RegisterEvent("UNIT_SPELLCAST_FAILED")
-		frame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
-		frame:RegisterEvent("UNIT_SPELLCAST_DELAYED")
-		frame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
-		frame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
-		frame:RegisterEvent("PLAYER_ENTERING_WORLD")
-	end
-
-	PetCastingBarFrame:RegisterEvent("UNIT_PET")
+	CastingBarFrame:GetScript("OnLoad")(CastingBarFrame)
+	PetCastingBarFrame:GetScript("OnLoad")(PetCastingBarFrame)
 end
 
 function hiders:runebar()
 	RuneFrame:Hide()
-	RuneFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	RuneFrame:UnregisterEvent("RUNE_POWER_UPDATE")
-	RuneFrame:UnregisterEvent("RUNE_TYPE_UPDATE")
+	RuneFrame:UnregisterAllEvents()
 end
 
 function showers:runebar()
@@ -207,10 +135,8 @@ function showers:runebar()
 	if class == "DEATHKNIGHT" then
 		RuneFrame:Show()
 	end
-	RuneFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-	RuneFrame:RegisterEvent("RUNE_POWER_UPDATE")
-	RuneFrame:RegisterEvent("RUNE_TYPE_UPDATE")
-	RuneFrame_OnEvent(RuneFrame, "PLAYER_ENTERING_WORLD")
+	RuneFrame:GetScript("OnLoad")(RuneFrame)
+	RuneFrame:GetScript("OnEvent")(RuneFrame, "PLAYER_ENTERING_WORLD")
 end
 
 function hiders:aura()
@@ -222,7 +148,7 @@ end
 function showers:aura()
 	BuffFrame:Show()
 	TemporaryEnchantFrame:Show()
-	BuffFrame:RegisterEvent("PLAYER_AURAS_CHANGED")
+	BuffFrame:GetScript("OnLoad")(BuffFrame)
 
 	BuffFrame_Update()
 end
