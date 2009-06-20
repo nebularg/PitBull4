@@ -48,6 +48,7 @@ function PitBull4_HealthBar:OnEnable()
 	
 	self:RegisterEvent("UNIT_HEALTH")
 	self:RegisterEvent("UNIT_MAXHEALTH","UNIT_HEALTH")
+	self:RegisterEvent("PLAYER_ALIVE")
 	
 	self:UpdateAll()
 end
@@ -169,6 +170,10 @@ end
 
 function PitBull4_HealthBar:UNIT_HEALTH(event, unit)
 	guids_to_update[UnitGUID(unit)] = true
+end
+
+function PitBull4_HealthBar:PLAYER_ALIVE(event)
+	guids_to_update[UnitGUID("player")] = true
 end
 
 PitBull4_HealthBar:SetLayoutOptionsFunction(function(self)
