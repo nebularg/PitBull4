@@ -508,7 +508,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		type = 'toggle',
 		name = L["Custom color"],
 		desc = L["Whether to override the color and use a custom one."],
-		order = -2,
+		order = -4,
 		get = function(info)
 			local db = get_current_layout_db(info)
 			return db and not not db.custom_color
@@ -529,7 +529,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		type = 'color',
 		name = L["Custom color"],
 		desc = L["What color to override the bar with."],
-		order = -1,
+		order = -3,
 		get = function(info)
 			return unpack(get_current_layout_db(info).custom_color)
 		end,
