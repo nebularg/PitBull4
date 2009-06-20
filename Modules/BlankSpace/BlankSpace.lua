@@ -40,5 +40,8 @@ PitBull4_BlankSpace.GetExampleColor = PitBull4_BlankSpace.GetColor
 PitBull4_BlankSpace:SetLayoutOptionsFunction(function(self)
 	return
 		'deficit', nil,
-		'background_alpha', nil
+		'background_alpha', nil,
+		'toggle_custom_background', nil,
+		'custom_background', nil,
+		'reverse', nil
 end)
