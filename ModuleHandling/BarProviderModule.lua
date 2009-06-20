@@ -86,19 +86,19 @@ local function call_color_function(self, frame, bar_db, value, extra)
 	end
 	
 	if not self.GetColor then
-		return 0.7, 0.7, 0.7, 1
+		return 0.7, 0.7, 0.7
 	end
-	local r, g, b, a
+	local r, g, b
 	if frame.guid then
-		r, g, b, a = self:GetColor(frame, bar_db, value, extra)
+		r, g, b = self:GetColor(frame, bar_db, value, extra)
 	end
 	if (not r or not g or not b) and frame.force_show and self.GetExampleColor then
-		r, g, b, a = self:GetExampleColor(frame, bar_db, value, extra)
+		r, g, b = self:GetExampleColor(frame, bar_db, value, extra)
 	end
 	if not r or not g or not b then
-		return 0.7, 0.7, 0.7, a or 1
+		return 0.7, 0.7, 0.7
 	end
-	return r, g, b, a or 1
+	return r, g, b
 end
 
 --- Call the :GetExtraColor function on the status bar module regarding the given frame.
@@ -116,24 +116,24 @@ end
 local function call_extra_color_function(self, frame, bar_db, value, extra)
 	local custom_color = bar_db.custom_color
 	if custom_color then
-		local r, g, b, a = custom_color
+		local r, g, b = custom_color
 		return (1 + 2*r) / 3, (1 + 2*g) / 3, (1 + 2*b) / 3, a
 	end
 	
 	if not self.GetExtraColor then
-		return 0.5, 0.5, 0.5, nil
+		return 0.5, 0.5, 0.5
 	end
-	local r, g, b, a
+	local r, g, b
 	if frame.guid then
-		r, g, b, a = self:GetExtraColor(frame, value, extra)
+		r, g, b = self:GetExtraColor(frame, value, extra)
 	end
 	if (not r or not g or not b) and frame.force_show and self.GetExampleExtraColor then
-		r, g, b, a = self:GetExampleExtraColor(frame, value, extra)
+		r, g, b = self:GetExampleExtraColor(frame, value, extra)
 	end
 	if not r or not g or not b then
-		return 0.5, 0.5, 0.5, nil
+		return 0.5, 0.5, 0.5
 	end
-	return r, g, b, a
+	return r, g, b
 end
 
 --- Handle the frame being hidden
@@ -234,16 +234,14 @@ function BarProviderModule:UpdateFrame(frame)
 			bar:SetTexture(texture or [[Interface\TargetingFrame\UI-StatusBar]])
 			bar:SetValue(value)
 			
-			local r, g, b, a = call_color_function(self, frame, bar_db, value, extra or 0)
+			local r, g, b = call_color_function(self, frame, bar_db, value, extra or 0)
 			bar:SetColor(r, g, b)
-			bar:SetAlpha(a)
 			
 			if extra then
 				bar:SetExtraValue(extra)
 
-				local r, g, b, a = call_extra_color_function(self, frame, bar_db, value, extra)
+				local r, g, b = call_extra_color_function(self, frame, bar_db, value, extra)
 				bar:SetExtraColor(r, g, b)
-				bar:SetExtraAlpha(a)
 			else
 				bar:SetExtraValue(0)
 			end
