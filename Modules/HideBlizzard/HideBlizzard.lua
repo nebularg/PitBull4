@@ -198,7 +198,10 @@ function hiders:runebar()
 end
 
 function showers:runebar()
-	RuneFrame:Show()
+	local _,class = UnitClass("player")
+	if class == "DEATHKNIGHT" then
+		RuneFrame:Show()
+	end
 	RuneFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	RuneFrame:RegisterEvent("RUNE_POWER_UPDATE")
 	RuneFrame:RegisterEvent("RUNE_TYPE_UPDATE")
