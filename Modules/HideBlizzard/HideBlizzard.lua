@@ -90,6 +90,11 @@ function showers:player()
 	PlayerFrame:RegisterEvent("UNIT_PORTRAIT_UPDATE")
 	PlayerFrame:RegisterEvent("UNIT_DISPLAYPOWER")
 	PlayerFrame:Show()
+	-- Emulate some events to get the frame setup in a normal state.
+	-- Blizzard doesn't do an update on show for the player frame since
+	-- they never imagine it won't be shown.
+	PlayerFrame_OnEvent(PlayerFrame, "PLAYER_ENTERING_WORLD")
+	PlayerFrame_OnEvent(PlayerFrame, "PARTY_MEMBERS_CHANGED")
 end
 
 function hiders:party()
