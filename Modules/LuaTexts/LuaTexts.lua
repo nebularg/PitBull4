@@ -47,18 +47,19 @@ local PROVIDED_CODES = {
 			code = [[
 local dr,dg,db = DifficultyColor(unit)
 local form = DruidForm(unit)
+local classification = Classification(unit)
 if UnitIsPlayer(unit) or (not UnitIsFriend(unit,"player") and not IsPet(unit)) then
   local cr,cg,cb = ClassColor(unit)
   if form then
-    return "%s |cff%02x%02x%02x%s|r |cff%02x%02x%02x%s|r (%s) %s",Classification(unit) or '',dr,dg,db,Level(unit),cr,cg,cb,Class(unit),form,SmartRace(unit) or ''
+    return "%s%s|cff%02x%02x%02x%s|r |cff%02x%02x%02x%s|r (%s) %s",classification or '',classification and ' ' or '',dr,dg,db,Level(unit),cr,cg,cb,Class(unit),form,SmartRace(unit) or ''
   else
-    return "%s |cff%02x%02x%02x%s|r |cff%02x%02x%02x%s|r %s",Classification(unit) or '',dr,dg,db,Level(unit),cr,cg,cb,Class(unit),SmartRace(unit) or ''
+    return "%s%s|cff%02x%02x%02x%s|r |cff%02x%02x%02x%s|r %s",classification or '',classification and ' ' or '',dr,dg,db,Level(unit),cr,cg,cb,Class(unit),SmartRace(unit) or ''
   end
 else
   if form then
-    return "%s |cff%02x%02x%02x%s|r (%s) %s",Classification(unit) or '',dr,dg,db,Level(unit),form,SmartRace(unit) or ''
+    return "%s%s|cff%02x%02x%02x%s|r (%s) %s",classification or '',classification and ' ' or '',dr,dg,db,Level(unit),form,SmartRace(unit) or ''
   else
-    return "%s |cff%02x%02x%02x%s|r %s",Classification(unit) or '',dr,dg,db,Level(unit),SmartRace(unit) or ''
+    return "%s%s|cff%02x%02x%02x%s|r %s",classification or '',classification and ' ' or '',dr,dg,db,Level(unit),SmartRace(unit) or ''
   end
 end]],
 		},
@@ -67,18 +68,19 @@ end]],
 			code = [[
 local dr,dg,db = DifficultyColor(unit)
 local form = DruidForm(unit)
+local classification = Classification(unit)
 if UnitIsPlayer(unit) then
   local cr,cg,cb = ClassColor(unit)
   if form then
-    return "%s |cff%02x%02x%02x%s|r |cff%02x%02x%02x%s|r (%s) %s",Classification(unit) or '',dr,dg,db,Level(unit),cr,cg,cb,Class(unit),form,SmartRace(unit) or ''
+    return "%s%s|cff%02x%02x%02x%s|r |cff%02x%02x%02x%s|r (%s) %s",classification or '',classification and ' ' or '',dr,dg,db,Level(unit),cr,cg,cb,Class(unit),form,SmartRace(unit) or ''
   else
-    return "%s |cff%02x%02x%02x%s|r |cff%02x%02x%02x%s|r %s",Classification(unit) or '',dr,dg,db,Level(unit),cr,cg,cb,Class(unit),SmartRace(unit) or ''
+    return "%s%s|cff%02x%02x%02x%s|r |cff%02x%02x%02x%s|r %s",classification or '',classification and ' ' or '',dr,dg,db,Level(unit),cr,cg,cb,Class(unit),SmartRace(unit) or ''
   end
 else
   if form then
-    return "%s |cff%02x%02x%02x%s|r (%s) %s",Classification(unit) or '',dr,dg,db,Level(unit),form,SmartRace(unit) or ''
+    return "%s%s|cff%02x%02x%02x%s|r (%s) %s",classification or '',classification and ' ' or '',dr,dg,db,Level(unit),form,SmartRace(unit) or ''
   else
-    return "%s |cff%02x%02x%02x%s|r %s",Classification(unit) or '',dr,dg,db,Level(unit),SmartRace(unit) or ''
+    return "%s%s|cff%02x%02x%02x%s|r %s",classification or '',classification and ' ' or '',dr,dg,db,Level(unit),SmartRace(unit) or ''
   end
 end]],
 		},
@@ -86,7 +88,7 @@ end]],
 			events = {['UNIT_CLASSIFICATION_CHANGED']=true,['UNIT_LEVEL']=true},
 			code = [[
 local dr,dg,db = DifficultyColor(unit)
-return "|cff%02x%02x%02x%s%s|r  %s",dr,dg,db,Level(unit),Classification(unit) and '+' or '',SmartRace(unit) or '']],
+return "|cff%02x%02x%02x%s%s|r %s",dr,dg,db,Level(unit),Classification(unit) and '+' or '',SmartRace(unit) or '']],
 		},
 	},
 	[L["Health"]] = {
