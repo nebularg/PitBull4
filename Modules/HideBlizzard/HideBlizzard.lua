@@ -66,6 +66,13 @@ function showers:player()
 	-- they never imagine it won't be shown.
 	PlayerFrame:GetScript("OnEvent")(PlayerFrame, "PLAYER_ENTERING_WORLD")
 	PlayerFrame:GetScript("OnEvent")(PlayerFrame, "PARTY_MEMBERS_CHANGED")
+
+	-- Hack to trick PlayerFrame into doing the swap for the vehicle if necessary.
+	-- As a side benefit we end up doing the animation so it's kinda cool.
+	PlayerFrame.animFinished = true
+	PlayerFrame.inSeat = true
+	PlayerFrame.inSequence = true
+	PlayerFrame_UpdateArt(PlayerFrame)
 end
 
 function hiders:party()
