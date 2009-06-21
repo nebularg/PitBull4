@@ -1022,7 +1022,8 @@ end
 --- Load Load-on-demand modules if they are enabled and exist.
 -- @usage PitBull4:LoadModules()
 function PitBull4:LoadModules()
-	for i, name in self:IterateModuleList() do
+	for i, name in self:IterateLoadOnDemandModules() do
+		-- print(("Found module '%s', loading."):format(name))
 		LoadAddOn(name)
 	end
 end
