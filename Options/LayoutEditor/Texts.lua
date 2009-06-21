@@ -667,59 +667,69 @@ function PitBull4.Options.get_layout_editor_text_options()
 	
 	local layout_functions = PitBull4.Options.layout_functions
 	
-	for id, module in PitBull4:IterateModulesOfType("text_provider", true) do
-		if layout_functions[module] then
-			local t = { layout_functions[module](module) }
-			layout_functions[module] = false
+	function PitBull4.Options.layout_editor_text_provider_handle_module_load(module)
+		local id = module.id
+		if not layout_functions[module] then
+			return
+		end
+		local t = { layout_functions[module](module) }
+		layout_functions[module] = false
+		
+		for i = 1, #t, 2 do
+			local k = t[i]
+			local v = t[i+1]
 			
-			for i = 1, #t, 2 do
-				local k = t[i]
-				local v = t[i+1]
-				
-				v.order = i + 100
-				
-				local old_disabled = v.disabled
-				v.disabled = function(info)
-					return disabled(info) or (old_disabled and old_disabled(info))
-				end
-				
-				local old_hidden = v.hidden
-				v.hidden = function(info)
-					return module ~= CURRENT_TEXT_PROVIDER_MODULE or (old_hidden and old_hidden(info))
-				end
-				
-				options.args.edit.args[id .. "-" .. k] = v
+			v.order = i + 100
+			
+			local old_disabled = v.disabled
+			v.disabled = function(info)
+				return disabled(info) or (old_disabled and old_disabled(info))
 			end
+			
+			local old_hidden = v.hidden
+			v.hidden = function(info)
+				return module ~= CURRENT_TEXT_PROVIDER_MODULE or (old_hidden and old_hidden(info))
+			end
+			
+			options.args.edit.args[id .. "-" .. k] = v
 		end
 	end
+	for id, module in PitBull4:IterateModulesOfType("text_provider", true) do
+		PitBull4.Options.layout_editor_text_provider_handle_module_load(module)
+	end
 	
-	for id, module in PitBull4:IterateModulesOfType("custom_text", true) do
-		if layout_functions[module] then
-			local t = { layout_functions[module](module) }
-			layout_functions[module] = false
-			
-			local order = 100
-			for i = 1, #t, 2 do
-				local k = t[i]
-				local v = t[i+1]
-				
-				order = order + 1
-				
-				v.order = order
-				
-				local old_disabled = v.disabled
-				v.disabled = function(info)
-					return disabled(info) or (old_disabled and old_disabled(info))
-				end
-				
-				local old_hidden = v.hidden
-				v.hidden = function(info)
-					return module ~= CURRENT_CUSTOM_TEXT_MODULE or (old_hidden and old_hidden(info))
-				end
-				
-				options.args.edit.args[id .. "-" .. k] = v
-			end
+	function PitBull4.Options.layout_editor_custom_text_handle_module_load(module)
+		local id = module.id
+		if not layout_functions[module] then
+			return
 		end
+		local t = { layout_functions[module](module) }
+		layout_functions[module] = false
+
+		local order = 100
+		for i = 1, #t, 2 do
+			local k = t[i]
+			local v = t[i+1]
+
+			order = order + 1
+
+			v.order = order
+
+			local old_disabled = v.disabled
+			v.disabled = function(info)
+				return disabled(info) or (old_disabled and old_disabled(info))
+			end
+
+			local old_hidden = v.hidden
+			v.hidden = function(info)
+				return module ~= CURRENT_CUSTOM_TEXT_MODULE or (old_hidden and old_hidden(info))
+			end
+
+			options.args.edit.args[id .. "-" .. k] = v
+		end
+	end
+	for id, module in PitBull4:IterateModulesOfType("custom_text", true) do
+		PitBull4.Options.layout_editor_custom_text_handle_module_load(module)
 	end
 	
 	return options

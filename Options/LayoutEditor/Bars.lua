@@ -594,7 +594,8 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		return { ... }, select('#', ...)
 	end
 	
-	for id, module in PitBull4:IterateModulesOfType("bar", true) do
+	function PitBull4.Options.layout_editor_bar_handle_module_load(module)
+		local id = module.id
 		local args = {}
 		args.enable = enable_option
 		for k, v in pairs(bar_args) do
@@ -627,8 +628,12 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			end,
 		}
 	end
+	for id, module in PitBull4:IterateModulesOfType("bar", true) do
+		PitBull4.Options.layout_editor_bar_handle_module_load(module)
+	end
 	
-	for id, module in PitBull4:IterateModulesOfType("bar_provider", true) do
+	function PitBull4.Options.layout_editor_bar_provider_handle_module_load(module)
+		local id = module.id
 		options.args[id] = {
 			name = module.name,
 			desc = module.description,
@@ -718,6 +723,9 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			inline = true,
 			args = args,
 		}
+	end
+	for id, module in PitBull4:IterateModulesOfType("bar_provider", true) do
+		PitBull4.Options.layout_editor_bar_provider_handle_module_load(module)
 	end
 	
 	return options

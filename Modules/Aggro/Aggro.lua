@@ -11,7 +11,7 @@ local LibBanzai
 local PitBull4_Aggro = PitBull4:NewModule("Aggro", "AceEvent-3.0", "AceHook-3.0")
 PitBull4_Aggro:SetModuleType("custom")
 PitBull4_Aggro:SetName(L["Aggro"])
-PitBull4_Aggro:SetDescription(L["Adds aggro coloring to PitBull4"])
+PitBull4_Aggro:SetDescription(L["Add aggro coloring to the unit frame."])
 PitBull4_Aggro:SetDefaults({
 	kind = "HealthBar",
 },{aggro_color = {1, 0, 0, 1}})

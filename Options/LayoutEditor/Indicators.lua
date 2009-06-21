@@ -747,7 +747,8 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 	
 	local layout_functions = PitBull4.Options.layout_functions
 	
-	for id, module in PitBull4:IterateModulesOfType("indicator", true) do
+	function PitBull4.Options.layout_editor_indicator_handle_module_load(module)
+		local id = module.id
 		local args = {}
 		for k, v in pairs(indicator_args) do
 			args[k] = v
@@ -756,10 +757,10 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			local data = { layout_functions[module](module) }
 			for i = 1, #data, 2 do
 				local k, v = data[i], data[i+1]
-				
+
 				args[k] = v
 				v.order = 100 + i
-				
+
 				local v_disabled = v.disabled
 				function v.disabled(info)
 					return disabled(info) or (v_disabled and v_disabled(info))
@@ -767,7 +768,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			end
 			layout_functions[module] = false
 		end
-		
+
 		options.args[id] = {
 			name = module.name,
 			desc = module.description,
@@ -777,6 +778,9 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 				return not module:IsEnabled()
 			end,
 		}
+	end
+	for id, module in PitBull4:IterateModulesOfType("indicator", true) do
+		PitBull4.Options.layout_editor_indicator_handle_module_load(module)
 	end
 	
 	return options

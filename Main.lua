@@ -1008,24 +1008,58 @@ do
 		end
 		
 		-- passes all tests
-		return i, name
+		return i, name, module_name
 	end
 	
-	--- Return a iterator of addon ID, addon name that are modules that PitBull4 can load
-	-- @usage for i, name in PitBull4:IterateLoadOnDemandModules()
-	-- @return an iterator which returns id, name
+	--- Return a iterator of addon ID, addon name that are modules that PitBull4 can load.
+	-- module_name is the same as name without the "PitBull4_" prefix.
+	-- @usage for i, name, module_name in PitBull4:IterateLoadOnDemandModules() do
+	--     print(i, name, module_name)
+	-- end
+	-- @return an iterator which returns id, name, module_name
 	function PitBull4:IterateLoadOnDemandModules()
 		return iter, GetNumAddOns(), 0
 	end
 end
 
+local modules_not_loaded = {}
+PitBull4.modules_not_loaded = modules_not_loaded
+
 --- Load Load-on-demand modules if they are enabled and exist.
 -- @usage PitBull4:LoadModules()
 function PitBull4:LoadModules()
-	for i, name in self:IterateLoadOnDemandModules() do
-		-- print(("Found module '%s', loading."):format(name))
-		LoadAddOn(name)
+	-- NOTE: this assumes that module profiles are the same as PitBull4's profile.
+	local current_profile = self.db:GetCurrentProfile()
+	
+	local sv = self.db.sv
+	local sv_namespaces = sv and sv.namespaces
+	for i, name, module_name in self:IterateLoadOnDemandModules() do
+		local module_sv = sv_namespaces and sv_namespaces[module_name]
+		local module_profile_db = module_sv and module_sv.profiles and module_sv.profiles[current_profile]
+		local enabled = module_profile_db and module_profile_db.global and module_profile_db.global.enabled
+		
+		if enabled == nil then
+			-- we have to figure out the default state
+			local default_state = GetAddOnMetadata(name, "X-PitBull4-DefaultState")
+			enabled = (default_state ~= "disabled")
+		end
+		
+		if enabled then
+			-- print(("Found module '%s', loading."):format(module_name))
+			LoadAddOn(name)
+		else
+			-- print(("Found module '%s', not loading."):format(module_name))
+			modules_not_loaded[module_name] = true
+		end
 	end
+end
+
+--- Load the module with the given id and enable it
+function PitBull4:LoadAndEnableModule(id)
+	LoadAddOn('PitBull4_' .. id)
+	local module = self:GetModule(id)
+	assert(module)
+	self:EnableModule(module)
 end
 
 local function merge_onto(base, addition)

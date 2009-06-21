@@ -65,7 +65,8 @@ function PitBull4.Options.get_layout_editor_fader_options()
 	
 	local layout_functions = PitBull4.Options.layout_functions
 	
-	for id, module in PitBull4:IterateModulesOfType("fader", true) do
+	function PitBull4.Options.layout_editor_fader_handle_module_load(module)
+		local id = module.id
 		options.args[id] = {
 			type = 'group',
 			inline = true,
@@ -111,6 +112,9 @@ function PitBull4.Options.get_layout_editor_fader_options()
 				args[k] = v
 			end
 		end
+	end
+	for id, module in PitBull4:IterateModulesOfType("fader", true) do
+		PitBull4.Options.layout_editor_fader_handle_module_load(module)
 	end
 	
 	return options

@@ -1,0 +1,24 @@
+## Interface: 30100
+## Title: PitBull4 |r[|cffeda55fMaster looter icon|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Master looter icon")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Master looter icon")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Master looter icon")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Master looter icon")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Master looter icon")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Master looter icon")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Master looter icon")@|r]
+## Notes: Show an icon on the unit frame when the unit is the master looter.
+## Notes-deDE: @localization(locale="deDE", key="Show an icon on the unit frame when the unit is the master looter.")@
+## Notes-esES: @localization(locale="esES", key="Show an icon on the unit frame when the unit is the master looter.")@
+## Notes-frFR: @localization(locale="frFR", key="Show an icon on the unit frame when the unit is the master looter.")@
+## Notes-koKR: @localization(locale="koKR", key="Show an icon on the unit frame when the unit is the master looter.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Show an icon on the unit frame when the unit is the master looter.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Show an icon on the unit frame when the unit is the master looter.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Show an icon on the unit frame when the unit is the master looter.")@
+## Author: ckknight
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## Version: @project-version@
+
+load.xml

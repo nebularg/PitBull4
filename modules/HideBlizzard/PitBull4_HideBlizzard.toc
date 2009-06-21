@@ -1,0 +1,24 @@
+## Interface: 30100
+## Title: PitBull4 |r[|cffeda55fHide Blizzard frames|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Hide Blizzard frames")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Hide Blizzard frames")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Hide Blizzard frames")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Hide Blizzard frames")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Hide Blizzard frames")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Hide Blizzard frames")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Hide Blizzard frames")@|r]
+## Notes: Hide Blizzard frames that are no longer needed.
+## Notes-deDE: @localization(locale="deDE", key="Hide Blizzard frames that are no longer needed.")@
+## Notes-esES: @localization(locale="esES", key="Hide Blizzard frames that are no longer needed.")@
+## Notes-frFR: @localization(locale="frFR", key="Hide Blizzard frames that are no longer needed.")@
+## Notes-koKR: @localization(locale="koKR", key="Hide Blizzard frames that are no longer needed.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Hide Blizzard frames that are no longer needed.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Hide Blizzard frames that are no longer needed.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Hide Blizzard frames that are no longer needed.")@
+## Author: ckknight
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## Version: @project-version@
+
+load.xml

@@ -81,6 +81,7 @@ function PitBull4:RunFrameScriptHooks(script, frame, ...)
 	end
 end
 
+local recent_modules = {}
 function PitBull4:OnModuleCreated(module)
 	local id = module.moduleName
 	if DEBUG then
@@ -89,7 +90,22 @@ function PitBull4:OnModuleCreated(module)
 	end
 	module.id = id
 	self[id] = module
+	
+	recent_modules[#recent_modules+1] = module
 end
+
+LibStub("AceEvent-3.0"):RegisterEvent("ADDON_LOADED", function(event, addon)
+	if not PitBull4.Options or not PitBull4.Options.HandleModuleLoad then
+		return
+	end
+	while true do
+		local module = table.remove(recent_modules, 1)
+		if not module then
+			break
+		end
+		PitBull4.Options.HandleModuleLoad(module)
+	end
+end)
 
 --- Add a script hook for the unit frames.
 -- @name Module:AddFrameScriptHook

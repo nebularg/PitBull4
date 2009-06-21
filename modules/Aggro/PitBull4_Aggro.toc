@@ -1,0 +1,24 @@
+## Interface: 30100
+## Title: PitBull4 |r[|cffeda55fAggro|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Aggro")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Aggro")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Aggro")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Aggro")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Aggro")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Aggro")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Aggro")@|r]
+## Notes: Add aggro coloring to the unit frame.
+## Notes-deDE: @localization(locale="deDE", key="Add aggro coloring to the unit frame.")@
+## Notes-esES: @localization(locale="esES", key="Add aggro coloring to the unit frame.")@
+## Notes-frFR: @localization(locale="frFR", key="Add aggro coloring to the unit frame.")@
+## Notes-koKR: @localization(locale="koKR", key="Add aggro coloring to the unit frame.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Add aggro coloring to the unit frame.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Add aggro coloring to the unit frame.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Add aggro coloring to the unit frame.")@
+## Author: ckknight
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## Version: @project-version@
+
+load.xml

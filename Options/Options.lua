@@ -44,13 +44,27 @@ end
 
 PitBull4.Options = {}
 
+local options
+
+function PitBull4.Options.HandleModuleLoad(module)
+	if not options then
+		-- doesn't matter yet, it'll be caught in the real config opening.
+		return
+	end
+	
+	PitBull4.Options.modules_handle_module_load(module)
+	PitBull4.Options.colors_handle_module_load(module)
+	
+	PitBull4.Options["layout_editor_" .. module.module_type .. "_handle_module_load"](module)
+end
+
 function PitBull4.Options.OpenConfig()
 	-- redefine it so that we just open up the pane next time
 	function PitBull4.Options.OpenConfig()
 		AceConfigDialog:Open("PitBull4")
 	end
 	
-	local options = {
+	options = {
 		name = L["PitBull"],
 		handler = PitBull4,
 		type = 'group',

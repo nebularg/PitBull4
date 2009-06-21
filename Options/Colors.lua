@@ -268,8 +268,9 @@ function PitBull4.Options.get_color_options()
 	color_options.args.power = get_power_options()
 	color_options.args.reaction = get_reaction_options()
 	
-	for id, module in PitBull4:IterateModules() do
+	function PitBull4.Options.colors_handle_module_load(module)
 		if color_functions[module] then
+			local id = module.id
 			local opt = {
 				type = 'group',
 				name = module.name,
@@ -281,9 +282,9 @@ function PitBull4.Options.get_color_options()
 				end
 			}
 			color_options.args[id] = opt
-			
+		
 			local t = { color_functions[module](module) }
-			
+		
 			local reset_func = table.remove(t)
 			if DEBUG then
 				expect(reset_func, 'typeof', 'function')
@@ -293,8 +294,8 @@ function PitBull4.Options.get_color_options()
 				opt.args[k] = v
 				v.order = i
 			end
-			
-			
+		
+		
 			opt.args.reset_sep = {
 				type = 'header',
 				name = '',
@@ -308,15 +309,19 @@ function PitBull4.Options.get_color_options()
 				order = -1,
 				func = function(info)
 					reset_func(info)
-					
+				
 					for frame in PitBull4:IterateFrames() do
 						module:Update(frame)
 					end
 				end,
 			}
-			
+		
 			color_functions[module] = false
 		end
+	end
+	
+	for id, module in PitBull4:IterateModules() do
+		PitBull4.Options.colors_handle_module_load(module)
 	end
 	
 	return color_options

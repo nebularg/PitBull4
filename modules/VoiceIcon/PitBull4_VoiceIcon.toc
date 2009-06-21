@@ -1,0 +1,24 @@
+## Interface: 30100
+## Title: PitBull4 |r[|cffeda55fVoiceIcon|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="VoiceIcon")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="VoiceIcon")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="VoiceIcon")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="VoiceIcon")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="VoiceIcon")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="VoiceIcon")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="VoiceIcon")@|r]
+## Notes: Show an icon based on whether or not the unit's voice status.
+## Notes-deDE: @localization(locale="deDE", key="Show an icon based on whether or not the unit's voice status.")@
+## Notes-esES: @localization(locale="esES", key="Show an icon based on whether or not the unit's voice status.")@
+## Notes-frFR: @localization(locale="frFR", key="Show an icon based on whether or not the unit's voice status.")@
+## Notes-koKR: @localization(locale="koKR", key="Show an icon based on whether or not the unit's voice status.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Show an icon based on whether or not the unit's voice status.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Show an icon based on whether or not the unit's voice status.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Show an icon based on whether or not the unit's voice status.")@
+## Author: ckknight
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## Version: @project-version@
+
+load.xml
