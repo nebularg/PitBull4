@@ -105,7 +105,7 @@ local function figure_unit_menu(unit)
 	end
 	
 	if not UnitIsPlayer(unit) then
-		return "RAID_TARGET_ICON"
+		return "TARGET"
 	end
 	
 	local id = UnitInRaid(unit)
