@@ -1,5 +1,6 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
+local L = PitBull4.L
 
 local DEBUG = PitBull4.DEBUG
 
@@ -16,11 +17,25 @@ local MODULE_UPDATE_ORDER = {
 }
 
 local BLACKLISTED_UNIT_MENU_OPTIONS = {
-	SET_FOCUS = true,
-	CLEAR_FOCUS = true,
+	SET_FOCUS = "PB4_SET_FOCUS",
+	CLEAR_FOCUS = "PB4_CLEAR_FOCUS",
+	LOCK_FOCUS_FRAME = true,
+	UNLOCK_FOCUS_FRAME = true,
 }
 
 -----------------------------------------------------------------------------
+
+UnitPopupButtons["PB4_SET_FOCUS"] = {
+	text = L["Type %s to Set Focus"]:format(SLASH_FOCUS1),
+	tooltipText = L["Blizzard currently does not provide a proper way to right-click focus with custom unit frames."],
+	dist = 0,
+}
+
+UnitPopupButtons["PB4_CLEAR_FOCUS"] = {
+	text = L["Type %s to Clear Focus"]:format(SLASH_CLEARFOCUS1),
+	tooltipText = L["Blizzard currently does not provide a proper way to right-click focus with custom unit frames."],
+	dist = 0,
+}
 
 --- Make a singleton unit frame.
 -- @param unit the UnitID of the frame in question
@@ -92,6 +107,7 @@ PitBull4.SingletonUnitFrame__scripts = SingletonUnitFrame__scripts
 PitBull4.MemberUnitFrame__scripts = MemberUnitFrame__scripts
 
 local PitBull4_UnitFrame_DropDown = CreateFrame("Frame", "PitBull4_UnitFrame_DropDown", UIParent, "UIDropDownMenuTemplate")
+UnitPopupFrames[#UnitPopupFrames+1] = "PitBull4_UnitFrame_DropDown"
 
 -- from a unit, figure out the proper menu and, if appropriate, the corresponding ID
 local function figure_unit_menu(unit)
@@ -163,8 +179,11 @@ local function munge_unit_menu(menu)
 	
 	local new_data = {}
 	for _, v in ipairs(data) do
-		if not BLACKLISTED_UNIT_MENU_OPTIONS[v] then
+		local blacklisted = BLACKLISTED_UNIT_MENU_OPTIONS[v]
+		if not blacklisted then
 			new_data[#new_data+1] = v
+		elseif blacklisted ~= true then
+			new_data[#new_data+1] = blacklisted
 		end
 	end
 	local new_menu_name = "PB4_" .. menu
@@ -174,21 +193,20 @@ local function munge_unit_menu(menu)
 	return new_menu_name
 end
 
-local function f()
-	local unit = PitBull4_UnitFrame_DropDown.unit
-	if not unit then
+local dropdown_unit = nil
+UIDropDownMenu_Initialize(PitBull4_UnitFrame_DropDown, function()
+	if not dropdown_unit then
 		return
 	end
 	
-	local menu, id = figure_unit_menu(unit)
+	local menu, id = figure_unit_menu(dropdown_unit)
 	if menu then
 		menu = munge_unit_menu(menu)
-		UnitPopup_ShowMenu(PitBull4_UnitFrame_DropDown, menu, unit, nil, id)
+		UnitPopup_ShowMenu(PitBull4_UnitFrame_DropDown, menu, dropdown_unit, nil, id)
 	end
-end
-UIDropDownMenu_Initialize(PitBull4_UnitFrame_DropDown, f, "MENU", nil)
+end, "MENU", nil)
 function UnitFrame:menu(unit)
-	PitBull4_UnitFrame_DropDown.unit = unit
+	dropdown_unit = unit
 	ToggleDropDownMenu(1, nil, PitBull4_UnitFrame_DropDown, "cursor")
 end
 
