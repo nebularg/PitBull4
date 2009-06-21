@@ -43,7 +43,6 @@ end)
 
 function PitBull4_CombatText:OnEnable()
 	self:RegisterEvent("UNIT_COMBAT")
-	timerFrame:Show()
 end
 
 function PitBull4_CombatText:OnDisable()
@@ -146,6 +145,7 @@ function PitBull4_CombatText:UNIT_COMBAT(_, unit, event, flags, amount, type)
 			font_string:SetAlpha(0)
 			
 			frame_to_time[frame] = GetTime()
+			timerFrame:Show()
 		end
 	end
 end
@@ -171,5 +171,8 @@ function PitBull4_CombatText:UpdateAlphas()
 				frame_to_time[frame] = nil
 			end
 		end
+	end
+	if not next(frame_to_time) then
+		timerFrame:Hide()
 	end
 end
