@@ -1,12 +1,12 @@
 ## Interface: 30100
 ## Title: PitBull Unit Frames 4.0
-## Title-deDE: @localization(locale="deDE", key="PitBull Unit Frames 4.0")
-## Title-esES: @localization(locale="esES", key="PitBull Unit Frames 4.0")
-## Title-frFR: @localization(locale="frFR", key="PitBull Unit Frames 4.0")
-## Title-koKR: @localization(locale="koKR", key="PitBull Unit Frames 4.0")
-## Title-ruRU: @localization(locale="ruRU", key="PitBull Unit Frames 4.0")
-## Title-zhCN: @localization(locale="zhCN", key="PitBull Unit Frames 4.0")
-## Title-zhTW: @localization(locale="zhTW", key="PitBull Unit Frames 4.0")
+## Title-deDE: @localization(locale="deDE", key="PitBull Unit Frames 4.0")@
+## Title-esES: @localization(locale="esES", key="PitBull Unit Frames 4.0")@
+## Title-frFR: @localization(locale="frFR", key="PitBull Unit Frames 4.0")@
+## Title-koKR: @localization(locale="koKR", key="PitBull Unit Frames 4.0")@
+## Title-ruRU: @localization(locale="ruRU", key="PitBull Unit Frames 4.0")@
+## Title-zhCN: @localization(locale="zhCN", key="PitBull Unit Frames 4.0")@
+## Title-zhTW: @localization(locale="zhTW", key="PitBull Unit Frames 4.0")@
 ## Notes: Dog-themed unit frames. Woof. Arf. Yip.
 ## Notes-deDE: @localization(locale="deDE", key="Dog-themed unit frames. Woof. Arf. Yip.")@
 ## Notes-esES: @localization(locale="esES", key="Dog-themed unit frames. Woof. Arf. Yip.")@
