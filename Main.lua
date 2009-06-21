@@ -952,6 +952,79 @@ function PitBull4:ADDON_LOADED()
 	if _G.CT_RAOptions_UpdateMTs then
 		hooksecurefunc("CT_RAOptions_UpdateMTs",main_tank_update)
 	end
+	
+	self:LoadModules()
+end
+
+do
+	local function find_PitBull4(...)
+		for i = 1, select('#', ...) do
+			if (select(i, ...)) == "PitBull4" then
+				return true
+			end
+		end
+		return false
+	end
+	
+	local function iter(num_addons, i)
+		i = i + 1
+		if i >= num_addons then
+			-- and we're done
+			return nil
+		end
+		
+		-- must be Load-on-demand (obviously)
+		if not IsAddOnLoadOnDemand(i) then
+			return iter(num_addons, i)
+		end
+		
+		local name = GetAddOnInfo(i)
+		
+		-- must start with PitBull4_
+		local module_name = name:match("^PitBull4_(.*)$")
+		if not module_name then
+			return iter(num_addons, i)
+		end
+		
+		-- PitBull4 must be in the Dependency list
+		if not find_PitBull4(GetAddOnDependencies(i)) then
+			return iter(num_addons, i)
+		end
+		
+		local condition = GetAddOnMetadata(name, "X-PitBull4-Condition")
+		if condition then
+			local func, err = loadstring(condition)
+			if func then
+				-- function created successfully
+				local success, ret = pcall(func)
+				if success then
+					-- function called and returned successfully
+					if not ret then
+						-- shouldn't load, e.g. DruidManaBar when you're not a druid
+						return iter(num_addons, i)
+					end
+				end
+			end
+		end
+		
+		-- passes all tests
+		return i, name
+	end
+	
+	--- Return a iterator of addon ID, addon name that are modules that PitBull4 can load
+	-- @usage for i, name in PitBull4:IterateLoadOnDemandModules()
+	-- @return an iterator which returns id, name
+	function PitBull4:IterateLoadOnDemandModules()
+		return iter, GetNumAddOns(), 0
+	end
+end
+
+--- Load Load-on-demand modules if they are enabled and exist.
+-- @usage PitBull4:LoadModules()
+function PitBull4:LoadModules()
+	for i, name in self:IterateModuleList() do
+		LoadAddOn(name)
+	end
 end
 
 local function merge_onto(base, addition)
