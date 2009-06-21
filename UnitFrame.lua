@@ -15,6 +15,11 @@ local MODULE_UPDATE_ORDER = {
 	"fader",
 }
 
+local BLACKLISTED_UNIT_MENU_OPTIONS = {
+	SET_FOCUS = true,
+	CLEAR_FOCUS = true,
+}
+
 -----------------------------------------------------------------------------
 
 --- Make a singleton unit frame.
@@ -90,6 +95,10 @@ local PitBull4_UnitFrame_DropDown = CreateFrame("Frame", "PitBull4_UnitFrame_Dro
 
 -- from a unit, figure out the proper menu and, if appropriate, the corresponding ID
 local function figure_unit_menu(unit)
+	if unit == "focus" then
+		return "FOCUS"
+	end
+	
 	if UnitIsUnit(unit, "player") then
 		return "SELF"
 	end
@@ -120,6 +129,51 @@ local function figure_unit_menu(unit)
 	return "PLAYER"
 end
 
+local munged_unit_menus = {}
+local function munge_unit_menu(menu)
+	local result = munged_unit_menus[menu]
+	if result then
+		return result
+	end
+	
+	if not UnitPopupMenus then
+		munged_unit_menus[menu] = menu
+		return menu
+	end
+	
+	local data = UnitPopupMenus[menu]
+	if not data then
+		munged_unit_menus[menu] = menu
+		return menu
+	end
+	
+	local found = false
+	for _, v in ipairs(data) do
+		if BLACKLISTED_UNIT_MENU_OPTIONS[v] then
+			found = true
+			break
+		end
+	end
+	
+	if not found then
+		-- nothing to remove, we're all fine here.
+		munged_unit_menus[menu] = menu
+		return menu
+	end
+	
+	local new_data = {}
+	for _, v in ipairs(data) do
+		if not BLACKLISTED_UNIT_MENU_OPTIONS[v] then
+			new_data[#new_data+1] = v
+		end
+	end
+	local new_menu_name = "PB4_" .. menu
+	
+	UnitPopupMenus[new_menu_name] = new_data
+	munged_unit_menus[menu] = new_menu_name
+	return new_menu_name
+end
+
 local function f()
 	local unit = PitBull4_UnitFrame_DropDown.unit
 	if not unit then
@@ -128,6 +182,7 @@ local function f()
 	
 	local menu, id = figure_unit_menu(unit)
 	if menu then
+		menu = munge_unit_menu(menu)
 		UnitPopup_ShowMenu(PitBull4_UnitFrame_DropDown, menu, unit, nil, id)
 	end
 end
