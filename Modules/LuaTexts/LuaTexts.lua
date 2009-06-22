@@ -10,6 +10,7 @@ local L = PitBull4.L
 local PitBull4_LuaTexts = PitBull4:NewModule("LuaTexts","AceEvent-3.0","AceHook-3.0")
 
 local texts = {}
+local no_update = {}
 local event_cache = {}
 local func_cache = {}
 local power_cache = {}
@@ -597,6 +598,7 @@ end
 local lua_name = "Lua:"..L["Name"]
 local function update_text(font_string, event)
 	if not texts[font_string] then return end
+	if no_update[font_string] then return end
 	local code = font_string.db.code
 	local frame = font_string.frame
 	local name = font_string.luatexts_name
@@ -1091,32 +1093,12 @@ end
 function PitBull4_LuaTexts:AddFontString(frame, font_string, name, data)
 	local db = font_string.db
 
-	-- This font_string is already assigned to us.  So cleanup any
-	-- cache entries that might not be needed anymore.  When configuring
-	-- events/mouseover get removed that might be set for frames already in existance
+	no_update[font_string] = nil
+	-- This font_string is already assigned to us.  So do nothing but
+	-- update the text.
 	if texts[font_string] then
-		local events = db.events
-		for event,entry in pairs(event_cache) do
-			if not events[event] and entry[font_string] then
-				entry[font_string] = nil
-				if not next(entry) then
-					if not protected_events[event] then
-						self:UnregisterEvent(event)
-					end
-					event_cache[event] = nil
-				end
-			end
-		end
-		mouseover_check_cache[font_string] = nil
-		spell_cast_cache[font_string] = nil
-		to_update[font_string] = nil
-		afk_cache[font_string] = nil
-		dnd_cache[font_string] = nil
-		offline_cache[font_string] = nil
-		dead_cache[font_string] = nil
-		if not next(mouseover_check_cache) then
-			self.mouseover = nil
-		end
+		update_text(font_string,"_update")
+		return true
 	end
 
 	-- Setup the font_string
@@ -1178,6 +1160,38 @@ function PitBull4_LuaTexts:RemoveFontString(font_string)
 	texts[font_string] = nil
 end
 
+-- When a frame is hidden stop updating any texts
+-- attached to it.  When it is shown it will be
+-- updated again and cause everything to be put
+-- back.
+function PitBull4_LuaTexts:OnHide(frame)
+	for font_string in pairs(texts) do
+		if font_string.frame == frame then
+			no_update[font_string] = true
+			power_cache[font_string] = nil
+			mouseover_check_cache[font_string] = nil
+			spell_cast_cache[font_string] = nil
+			to_update[font_string] = nil
+			afk_cache[font_string] = nil
+			dnd_cache[font_string] = nil
+			offline_cache[font_string] = nil
+			dead_cache[font_string] = nil
+			if not next(mouseover_check_cache) then
+				self.mouseover = nil
+			end
+		end
+	end
+end
+
+-- Handle updating after a config change
+local function update()
+	local layout = PitBull4.Options.GetCurrentLayout()
+
+	for frame in PitBull4:IterateFramesForLayout(layout) do
+		PitBull4_LuaTexts:ForceTextUpdate(frame)
+	end
+end
+
 PitBull4_LuaTexts:SetLayoutOptionsFunction(function(self)
 	local values = {}
 	local value_key_to_entry = {}
@@ -1229,7 +1243,7 @@ PitBull4_LuaTexts:SetLayoutOptionsFunction(function(self)
 			db.code = entry.code
 			db.events = copy(entry.events)
 		
-			PitBull4.Options.UpdateFrames()
+			update()	
 		end,
 		values = values,
 	}, 'code', {
@@ -1243,7 +1257,7 @@ PitBull4_LuaTexts:SetLayoutOptionsFunction(function(self)
 			local db = PitBull4.Options.GetTextLayoutDB()
 			func_cache[db.code] = nil
 			db.code = value:gsub("||","|")
-			PitBull4.Options.UpdateFrames()
+			update()	
 		end,
 		multiline = true,
 		width = 'full',
@@ -1258,7 +1272,7 @@ PitBull4_LuaTexts:SetLayoutOptionsFunction(function(self)
 		set = function(info,key,value)
 			local events = PitBull4.Options.GetTextLayoutDB().events
 			events[key] = value
-			PitBull4.Options.UpdateFrames()
+			update()	
 		end,
 		width = 'double',
 		values = function(info)

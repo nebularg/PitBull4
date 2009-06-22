@@ -10,6 +10,7 @@ local L = PitBull4.L
 local PitBull4_DogTagTexts = PitBull4:NewModule("DogTagTexts")
 
 local LibDogTag
+local texts = {}
 
 PitBull4_DogTagTexts:SetModuleType("text_provider")
 PitBull4_DogTagTexts:SetName(L["DogTag-3.0 texts"])
@@ -203,7 +204,13 @@ end})
 function PitBull4_DogTagTexts:_AddFontString(frame, font_string, name, data)
 	if frame.force_show and not frame.guid and (name ~= L["Name"] or not frame.unit) then
 		LibDogTag:RemoveFontString(font_string)
+		texts[font_string] = nil
 		font_string:SetFormattedText("[%s]",name)
+	elseif texts[font_string] then
+		-- Text is already set.  Don't actually do anything.  Since LibDogTag will
+		-- handle all updates.  If a config change happens the config system removes
+		-- the texts before rebuilding them.
+		return true
 	else
 		LibDogTag:AddFontString(
 			font_string,
@@ -211,6 +218,7 @@ function PitBull4_DogTagTexts:_AddFontString(frame, font_string, name, data)
 			data.code,
 			"Unit",
 			unit_kwargs[frame.unit])
+		texts[font_string] = true
 	end
 	return true
 end
@@ -228,6 +236,16 @@ end
 
 function PitBull4_DogTagTexts:RemoveFontString(font_string)
 	LibDogTag:RemoveFontString(font_string)
+	texts[font_string] = nil
+end
+
+-- Handle updating after a config change
+local function update()
+	local layout = PitBull4.Options.GetCurrentLayout()
+
+	for frame in PitBull4:IterateFramesForLayout(layout) do
+		PitBull4_DogTagTexts:ForceTextUpdate(frame)
+	end
 end
 
 PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
@@ -269,7 +287,7 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 		set = function(info, value)
 			PitBull4.Options.GetTextLayoutDB().code = value_key_to_code[value]
 			
-			PitBull4.Options.UpdateFrames()
+			update()	
 		end,
 		values = values,
 		disabled = function(info)
@@ -298,7 +316,7 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 		set = function(info, value)
 			PitBull4.Options.GetTextLayoutDB().code = LibDogTag:CleanCode(value)
 			
-			PitBull4.Options.UpdateFrames()
+			update()	
 		end,
 		multiline = true,
 		width = 'full',

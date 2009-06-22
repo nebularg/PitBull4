@@ -85,7 +85,7 @@ function TextProviderModule:UpdateFrame(frame)
 		end
 	end
 	
-	-- create or update bars
+	-- create or update font_strings 
 	for name, text_db in pairs(layout_db.elements) do
 		local font_string = texts[name]
 		
@@ -107,6 +107,7 @@ function TextProviderModule:UpdateFrame(frame)
 				font_string:SetShadowColor(0, 0, 0, 1)
 				font_string:SetShadowOffset(0.8, -0.8)
 				font_string:SetNonSpaceWrap(false)
+				changed = true
 			end
 			
 			local font, size = frame:GetFont(text_db.font, text_db.size)
@@ -118,8 +119,6 @@ function TextProviderModule:UpdateFrame(frame)
 				font_string.db = nil
 				texts[name] = font_string:Delete()
 				frame[self.id .. ";" .. name] = nil
-			else
-				changed = true
 			end
 		else
 			-- TODO: see if this is a good idea
@@ -138,4 +137,15 @@ function TextProviderModule:UpdateFrame(frame)
 	end
 	
 	return changed
+end
+
+--- Forces all texts for the frame to be rebuilt.
+-- @param frame the Unit Frame to update
+-- @usage MyModule:ForceTextUpdate(frame)
+-- Used to force all the texts to be cleared and rebulit.
+-- Particularly after a config change.
+function TextProviderModule:ForceTextUpdate(frame)
+	self:ClearFrame(frame)
+	self:UpdateFrame(frame)
+	frame:UpdateLayout(false)
 end
