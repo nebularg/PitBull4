@@ -30,6 +30,10 @@ function PitBull4_HideBlizzard:OnDisable()
 	self:UpdateFrames()
 end
 
+function PitBull4_HideBlizzard:OnProfileChanged()
+	self:UpdateFrames()
+end
+
 local showers = {}
 local hiders = {}
 local currently_hidden = {}
