@@ -202,22 +202,24 @@ end})
 
 -- this will replace the normal :AddFontString
 function PitBull4_DogTagTexts:_AddFontString(frame, font_string, name, data)
-	if frame.force_show and not frame.guid and (name ~= L["Name"] or not frame.unit) then
+	local unit = frame.unit
+	if frame.force_show and not frame.guid and (name ~= L["Name"] or not unit) then
 		LibDogTag:RemoveFontString(font_string)
 		texts[font_string] = nil
 		font_string:SetFormattedText("[%s]",name)
-	elseif texts[font_string] then
+	elseif texts[font_string] and font_string.unit == unit then
 		-- Text is already set.  Don't actually do anything.  Since LibDogTag will
 		-- handle all updates.  If a config change happens the config system removes
 		-- the texts before rebuilding them.
 		return true
 	else
+		font_string.unit = unit
 		LibDogTag:AddFontString(
 			font_string,
 			frame,
 			data.code,
 			"Unit",
-			unit_kwargs[frame.unit])
+			unit_kwargs[unit])
 		texts[font_string] = true
 	end
 	return true
