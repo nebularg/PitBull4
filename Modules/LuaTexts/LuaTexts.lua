@@ -1098,9 +1098,10 @@ function PitBull4_LuaTexts:AddFontString(frame, font_string, name, data)
 	-- update the text.
 	if texts[font_string] then
 		update_text(font_string,"_update")
-		if frame.is_wacky and spell_cast_cache[font_string] then
-			-- For wacky frames we have to update the cast data cache
-			-- for every update because we don't get events for it.
+		if spell_cast_cache[font_string]  then
+			-- The actual object the frame is pointing at may have changed
+			-- or this may be a wacky unit that we don't get events for so
+			-- we need to check the cast info anyway.
 			update_cast_data(nil,frame.unit)
 		end
 		return true
