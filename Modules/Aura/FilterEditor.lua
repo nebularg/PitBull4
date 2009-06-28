@@ -178,6 +178,15 @@ local function extract_filter_entry_from_key(key)
 	return decode(filter_name),decode(entry)
 end
 
+PitBull4_Aura.OnProfileChanged_funcs[#PitBull4_Aura.OnProfileChanged_funcs+1] = 
+function(self)
+	-- Recalculate the filter options on a profile change
+	if CURRENT_FILTER then
+		self:SetFilterOptions(CURRENT_FILTER,CURRENT_FILTER_OPTIONS)
+	end
+end
+
+
 -- Generates the options for the filter editor.
 function PitBull4_Aura:GetFilterEditor()
 	if not CURRENT_FILTER then
@@ -442,6 +451,11 @@ function PitBull4_Aura:GetFilterEditor()
 					name = L['Current filter'],
 					desc = L['Change the filter you are currently editing.'],
 					get = function(info)
+						local filters = self.db.profile.global.filters
+						if not rawget(filters,CURRENT_FILTER) then
+							CURRENT_FILTER = next(filters)
+							self:SetFilterOptions(CURRENT_FILTER,CURRENT_FILTER_OPTIONS)
+						end
 						return CURRENT_FILTER
 					end,
 					set = function(info, value)

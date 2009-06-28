@@ -1322,6 +1322,10 @@ PitBull4_LuaTexts:SetGlobalOptionsFunction(function(self)
 		name = L['Current event'],
 		desc = L['Change the current event you are editing.'],
 		get = function(info)
+			local events = self.db.profile.global.events
+			if not rawget(events,CURRENT_EVENT) then
+				CURRENT_EVENT = next(events)
+			end
 			return CURRENT_EVENT
 		end,
 		set = function(info, value)

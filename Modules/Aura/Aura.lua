@@ -20,6 +20,7 @@ PitBull4_Aura:SetDescription(L["Shows buffs and debuffs for PitBull4 frames."])
 PitBull4_Aura.MAINHAND = GetInventorySlotInfo("MainHandSlot")
 PitBull4_Aura.OFFHAND = GetInventorySlotInfo("SecondaryHandSlot")
 
+PitBull4_Aura.OnProfileChanged_funcs = {}
 
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
@@ -62,6 +63,14 @@ end
 
 function PitBull4_Aura:OnDisable()
 	timerFrame:Hide()
+end
+
+function PitBull4_Aura:OnProfileChanged()
+	local funcs = self.OnProfileChanged_funcs
+	for i = 1, #funcs do
+		funcs[i](self)
+	end
+	LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
 end
 
 function PitBull4_Aura:ClearFrame(frame)

@@ -1405,6 +1405,12 @@ local function copy(data)
 	return t
 end
 
+PitBull4_Aura.OnProfileChanged_funcs[#PitBull4_Aura.OnProfileChanged_funcs+1] = 
+function(self)
+	-- Recalculate the filter options on a profile change
+	self.SetHighlightOptions(self, HIGHLIGHT_FILTER_OPTIONS)
+end
+
 function PitBull4_Aura.SetHighlightOptions(self, options)
 	local filter_option = {
 		type = 'select',
@@ -1564,7 +1570,6 @@ function PitBull4_Aura.SetHighlightOptions(self, options)
 		order = order,
 	}
 	order = order + 1
-
 
 	for i = 1, #filters+1 do
 		local slot = 'filter_'..i

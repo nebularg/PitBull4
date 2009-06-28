@@ -90,6 +90,10 @@ function PitBull4.Options.get_unit_options()
 			return t
 		end,
 		get = function(info)
+			local groups = PitBull4.db.profile.groups
+			if not rawget(groups, CURRENT_GROUP) then
+				CURRENT_GROUP = next(groups)
+			end
 			return CURRENT_GROUP
 		end,
 		set = function(info, value)

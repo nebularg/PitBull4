@@ -166,7 +166,8 @@ local meta_operators = {
 }
 local meta_filter_funcs = {}
 
-function PitBull4_Aura:OnProfileChanged() 
+PitBull4_Aura.OnProfileChanged_funcs[#PitBull4_Aura.OnProfileChanged_funcs+1] = 
+function(self) 
 	-- Must invalidate the cached filter functions on a profile change
 	wipe(meta_filter_funcs)
 end
