@@ -575,10 +575,11 @@ function PitBull4_LuaTexts:OnDisable()
 end
 
 local function set_text(font_string, ...)
-  if not select(1,...) then
+	local success = select(1,...) -- first arg is true if user code was successful
+	if not success then
 		geterrorhandler()(select(2,...))
 		font_string:SetText("{err}")
-	elseif select('#',...) > 1 then
+	elseif select('#',...) > 1 and select(2,...) ~= nil then
 		local success, err = pcall(font_string.SetFormattedText,font_string,select(2,...))
 		if not success then
 --			print(select(2,...))
