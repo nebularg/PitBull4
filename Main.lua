@@ -1255,7 +1255,7 @@ function PitBull4:CheckGUIDForUnitID(unit)
 end
 
 function PitBull4:PLAYER_FOCUS_CHANGED() self:CheckGUIDForUnitID("focus") self:CheckGUIDForUnitID("focustarget") self:CheckGUIDForUnitID("focustargettarget") end
-function PitBull4:PLAYER_TARGET_CHANGED() self:CheckGUIDForUnitID("target") self:CheckGUIDFOrUnitID("targettarget") self:CheckGUIDForUnitID("targettargettarget") end
+function PitBull4:PLAYER_TARGET_CHANGED() self:CheckGUIDForUnitID("target") self:CheckGUIDForUnitID("targettarget") self:CheckGUIDForUnitID("targettargettarget") end
 function PitBull4:UNIT_TARGET(_, unit) if unit ~= "player" then self:CheckGUIDForUnitID(unit .. "target") self:CheckGUIDForUnitID(unit .. "targettarget") end end
 function PitBull4:UNIT_PET(_, unit) self:CheckGUIDForUnitID(unit .. "pet") self:CheckGUIDForUnitID(unit .. "pet" .. "target") self:CheckGUIDForUnitID(unit .. "pet" .. "targettarget")  end
 
