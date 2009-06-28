@@ -78,7 +78,7 @@ function PitBull4_DogTagTexts:OnNewLayout(layout)
 			location = "left",
 		},
 		[L["Cast time"]] = {
-			code = "[if not CastStopDuration then Concatenate('+', CastDelay:Round(1):Hide(0)):Red ' ' [CastEndDuration >= 0 ? '%.1f':Format(CastEndDuration)]]",
+			code = "[if not CastStopDuration then Concatenate(CastIsChanneling ? '-' ! '+', CastDelay:Abs:Round(1):Hide(0)):Red ' ' [CastEndDuration >= 0 ? '%.1f':Format(CastEndDuration)]]",
 			attach_to = "CastBar",
 			location = "right",
 		},
@@ -158,7 +158,7 @@ local PROVIDED_CODES = function() return {
 	},
 	[L["Cast"]] = {
 		[L["Standard name"]] = "[Alpha((-CastStopDuration or 0) + 1) CastStopMessage or (CastName ' ' CastTarget:Paren)]",
-		[L["Standard time"]] = "[if not CastStopDuration then Concatenate('+', CastDelay:Round(1):Hide(0)):Red ' ' [CastEndDuration >= 0 ? '%.1f':Format(CastEndDuration)]]",
+		[L["Standard time"]] = "[if not CastStopDuration then Concatenate(CastIsChanneling ? '-' ! '+', CastDelay:Abs:Round(1):Hide(0)):Red ' ' [CastEndDuration >= 0 ? '%.1f':Format(CastEndDuration)]]",
 	},
 	[L["Combo points"]] = {
 		[L["Standard"]]       = "[Combos:Hide(0)]",

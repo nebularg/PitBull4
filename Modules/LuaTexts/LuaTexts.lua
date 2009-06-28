@@ -470,10 +470,14 @@ if cast_data then
       duration = end_time - GetTime()
     end
     if delay and delay ~= 0 then
+      local delay_sign = '+'
+      if delay < 0 then
+        delay_sign = ''
+      end
       if duration and duration >= 0 then
-        return "|cffff0000+%s|r %.1f",Round(delay,1),duration
+        return "|cffff0000%s%s|r %.1f",delay_sign,Round(delay,1),duration
       else
-        return "|cffff0000+%s|r",Round(delay,1)
+        return "|cffff0000%s%s|r",delay_sign,Round(delay,1)
       end
     elseif duration and duration >= 0 then
       return "%.1f",duration
