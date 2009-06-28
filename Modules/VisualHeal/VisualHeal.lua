@@ -76,7 +76,11 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 	
 	local unit = frame.unit
 	
-	local is_casting_on_this_unit = player_is_casting and player_healing_target_name == UnitName(unit)
+	local name,server = UnitName(unit)
+	if server and server ~= "" then
+		name = name .. "-" .. server
+	end
+	local is_casting_on_this_unit = player_is_casting and player_healing_target_name == name 
 	
 	local incoming_heal
 	if is_casting_on_this_unit then
@@ -187,8 +191,9 @@ end
 local function update_names(...)
 	for i = 1, select('#', ...) do
 		local target_name = (select(i, ...))
+		local name, server = strsplit('-', target_name)
 		
-		for frame in PitBull4:IterateFramesForName(target_name) do
+		for frame in PitBull4:IterateFramesForName(name,server) do
 			PitBull4_VisualHeal:Update(frame)
 		end
 	end

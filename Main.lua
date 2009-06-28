@@ -751,24 +751,30 @@ function PitBull4:IterateFramesForGUIDs(...)
 	return guids_iter, guids, nil
 end
 
-local function name_iter(name, frame)
+local function name_iter(state, frame)
 	frame = next(all_frames, frame)
 	if not frame then
 		return nil
 	end
-	if frame.guid and frame.unit and UnitName(frame.unit) == name then
-		return frame
+	local name,server = state.name, state.server
+	if frame.guid and frame.unit then
+		local frame_name, frame_server = UnitName(frame.unit)
+		if frame_name == name and (not server and server ~= "" or server == frame_server) then
+			return frame
+		end
 	end
-	return name_iter(name, frame)
+	return name_iter(state, frame)
 end
 
+local state = {}
 --- Iterate over all frames with the given name
 -- @param name the name to check. can be nil, which will cause no frames to return.
+-- @param server the name of the realm, can be nil, which will cause only the name to be matched.
 -- @usage for frame in PitBull4:IterateFramesForName("Someguy") do
 --     doSomethingWith(frame)
 -- end
 -- @return iterator which returns frames
-function PitBull4:IterateFramesForName(name)
+function PitBull4:IterateFramesForName(name,server)
 	if DEBUG then
 		expect(name, 'typeof', 'string;nil')
 	end
@@ -777,7 +783,10 @@ function PitBull4:IterateFramesForName(name)
 		return do_nothing
 	end
 
-	return name_iter, name, nil
+	state.name = name
+	state.server = server
+
+	return name_iter, state, nil
 end
 
 --- Iterate over all headers.
