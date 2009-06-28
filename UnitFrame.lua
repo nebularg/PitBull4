@@ -323,14 +323,14 @@ end
 function UnitFrame__scripts:OnHide()
 	self:GetScript("OnDragStop")(self)
 
-	if self.force_show then
-		-- Clear the guid without specifying not to update and return since the 
-		-- frame isn't actually goign to be hidden.
-		self:UpdateGUID(nil)
+	local force_show = self.force_show
+	-- Clear the guid without causing an update unless the frame
+	-- is force_shown in which case force an update.
+	self:UpdateGUID(nil,force_show and true or false)
+	if force_show then
+		-- Nothing more to do the frame isn't really being hidden
 		return
 	end
-
-	self:UpdateGUID(nil,false) -- Clear the guid without causing an update
 
 	-- Iterate the modules and call their OnHide function to tell them 
 	-- a frame was hidden.  They may very well be changing the frame and
