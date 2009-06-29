@@ -29,21 +29,27 @@ do
 	local pet_spells = {}
 	local enemy_spells = {}
 	local long_enemy_spells = {}
+	local res_spells = {}
 	
 	local _,class = UnitClass("player")
 	
 	if class == "PRIEST" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(589) -- Shadow Word: Pain
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(2050) -- Lesser Heal
+		res_spells[#res_spells+1] = GetSpellInfo(2006) -- Resurrection
 	elseif class == "DRUID" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(33786) -- Cyclone
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(5176) -- Wrath
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(5185) -- Healing Touch
+		res_spells[#res_spells+1] = GetSpellInfo(50769) -- Revive 
+		res_spells[#res_spells+1] = GetSpellInfo(20484) -- Rebirth 
 	elseif class == "PALADIN" then
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(635) -- Holy Light
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(62124) -- Hand of Reckoning
+		res_spells[#res_spells+1] = GetSpellInfo(7328) -- Redemption 
 	elseif class == "SHAMAN" then
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(331) -- Healing Wave
+		res_spells[#res_spells+1] = GetSpellInfo(2008) -- Ancestral Spirit 
 	elseif class == "WARLOCK" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(5782) -- Fear
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(172) -- Corruption
@@ -56,6 +62,7 @@ do
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(75) -- Auto Shot
 	elseif class == "DEATHKNIGHT" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(49576) -- Death Grip
+		res_spells[#res_spells+1] = GetSpellInfo(61999) -- Raise Ally 
 	end
 	
 	function friendly_is_in_range(unit)
@@ -63,6 +70,18 @@ do
 			return true
 		end
 		
+		if UnitIsDeadOrGhost(unit) then
+			for _, name in ipairs(res_spells) do
+				if IsSpellInRange(name, unit) == 1 then
+					return true
+				end
+			end
+
+			-- Only check range for resurrection spells if the
+			-- unit is dead.
+			return false
+		end
+
 		for _, name in ipairs(friendly_spells) do
 			if IsSpellInRange(name, unit) == 1 then
 				return true
