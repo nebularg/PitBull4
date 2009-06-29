@@ -48,6 +48,8 @@ do
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(62124) -- Hand of Reckoning
 		res_spells[#res_spells+1] = GetSpellInfo(7328) -- Redemption 
 	elseif class == "SHAMAN" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(8042) -- Earth Shock 
+		long_enemy_spells[#enemy_spells+1] = GetSpellInfo(403) -- Lightning Bolt
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(331) -- Healing Wave
 		res_spells[#res_spells+1] = GetSpellInfo(2008) -- Ancestral Spirit 
 	elseif class == "WARLOCK" then
