@@ -88,10 +88,10 @@ function PitBull4_CastBar:GetValue(frame)
 		if db.auto_hide then
 			return nil
 		end
-		return 0, nil, db.show_icon and "" or nil
+		return 0, nil, nil
 	end
 	
-	local icon = db.show_icon and (data.icon or "") or nil
+	local icon = db.show_icon and data.icon or nil
 	
 	if data.casting then
 		local startTime = data.startTime

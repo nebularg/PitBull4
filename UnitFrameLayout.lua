@@ -658,17 +658,15 @@ function position_indicator_on_root:edge_bottom_right(indicator)
 end
 
 function position_indicator_on_bar:left(indicator, bar)
-	local attach, attach_point
-	if bar.icon and bar.reverse ~= bar.icon_position then
-		attach = bar.icon
-		attach_point = "RIGHT"
+	local attach
+	if bar.reverse then
+		attach = bar.bg
 	else
-		attach = bar
-		attach_point = "LEFT"
+		attach = bar.fg
 	end
 	
 	local scale = scale_cache[indicator]
-	indicator:SetPoint("LEFT", attach, attach_point, self.layout_db.indicator_bar_inside_horizontal_padding / scale, 0)
+	indicator:SetPoint("LEFT", attach, "LEFT", self.layout_db.indicator_bar_inside_horizontal_padding / scale, 0)
 end
 function position_indicator_on_bar:center(indicator, bar, _, indicators_and_texts)
 	if #indicators_and_texts == 1 then
@@ -679,50 +677,44 @@ function position_indicator_on_bar:center(indicator, bar, _, indicators_and_text
 	end
 end
 function position_indicator_on_bar:right(indicator, bar)
-	local attach, attach_point
-	if bar.icon and bar.reverse == bar.icon_position then
-		attach = bar.icon
-		attach_point = "LEFT"
+	local attach
+	if bar.reverse then
+		attach = bar.fg
 	else
-		attach = bar
-		attach_point = "RIGHT"
+		attach = bar.bg
 	end
 	
 	local scale = scale_cache[indicator]
-	indicator:SetPoint("RIGHT", attach, attach_point, -self.layout_db.indicator_bar_inside_horizontal_padding / scale, 0)
+	indicator:SetPoint("RIGHT", attach, "RIGHT", -self.layout_db.indicator_bar_inside_horizontal_padding / scale, 0)
 end
 function position_indicator_on_bar:top(indicator, bar, _, indicators_and_texts)
-	local attach, attach_point
-	if bar.icon and bar.reverse ~= bar.icon_position then
-		attach = bar.icon
-		attach_point = "BOTTOM"
+	local attach
+	if bar.reverse then
+		attach = bar.fg
 	else
-		attach = bar
-		attach_point = "TOP"
+		attach = bar.bg
 	end
 	
 	if #indicators_and_texts == 1 then
-		indicator:SetPoint("TOP", attach, attach_point, 0, 0)
+		indicator:SetPoint("TOP", attach, "TOP", 0, 0)
 	else
 		local scale = scale_cache[indicator]
-		indicator:SetPoint("TOPLEFT", attach, attach_point, -get_half_width(self, indicators_and_texts) / scale, -self.layout_db.indicator_bar_inside_vertical_padding / scale)
+		indicator:SetPoint("TOPLEFT", attach, "TOP", -get_half_width(self, indicators_and_texts) / scale, -self.layout_db.indicator_bar_inside_vertical_padding / scale)
 	end
 end
 function position_indicator_on_bar:bottom(indicator, bar, _, indicators_and_texts)
-	local attach, attach_point
-	if bar.icon and bar.reverse == bar.icon_position then
-		attach = bar.icon
-		attach_point = "TOP"
+	local attach
+	if bar.reverse then
+		attach = bar.bg
 	else
-		attach = bar
-		attach_point = "BOTTOM"
+		attach = bar.fg
 	end
 	
 	if #indicators_and_texts == 1 then
-		indicator:SetPoint("BOTTOM", attach, attach_point, 0, 0)
+		indicator:SetPoint("BOTTOM", attach, "BOTTOM", 0, 0)
 	else
 		local scale = scale_cache[indicator]
-		indicator:SetPoint("BOTTOMLEFT", attach, attach_point, -get_half_width(self, indicators_and_texts) / scale, self.layout_db.indicator_bar_inside_vertical_padding / scale)
+		indicator:SetPoint("BOTTOMLEFT", attach, "BOTTOM", -get_half_width(self, indicators_and_texts) / scale, self.layout_db.indicator_bar_inside_vertical_padding / scale)
 	end
 end
 function position_indicator_on_bar:top_left(indicator, bar)
