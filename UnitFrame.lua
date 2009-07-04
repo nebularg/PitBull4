@@ -231,7 +231,7 @@ function SingletonUnitFrame__scripts:OnDragStart()
 end
 
 function SingletonUnitFrame__scripts:OnDragStop()
-	if not moving_frame then return end
+	if moving_frame ~= self then return end
 	moving_frame = nil
 	LibStub("LibSimpleSticky-1.0"):StopMoving(self)
 	
