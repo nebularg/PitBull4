@@ -1041,14 +1041,14 @@ function MemberUnitFrame__scripts:OnDragStart()
 		return
 	end
 	
-	moving_frame = self
+	moving_frame = self.header
 	LibStub("LibSimpleSticky-1.0"):StartMoving(self.header, PitBull4.all_frames_list, 0, 0, 0, 0)
 end
 
 function MemberUnitFrame__scripts:OnDragStop()
-	if not moving_frame then return end
-	moving_frame = nil
 	local header = self.header
+	if moving_frame ~= header then return end
+	moving_frame = nil
 
 	-- We have to force a GroupHeader update before doing any of the positioning
 	-- calculations.  In config mode the width and height of the GroupHeader may
@@ -1086,7 +1086,7 @@ end
 
 function MemberUnitFrame:PLAYER_REGEN_DISABLED()
 	if moving_frame then
-		MemberUnitFrame__scripts.OnDragStop(moving_frame)
+		MemberUnitFrame__scripts.OnDragStop(moving_frame[1])
 	end
 end
 
