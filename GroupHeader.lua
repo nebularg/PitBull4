@@ -1049,6 +1049,16 @@ function MemberUnitFrame__scripts:OnDragStop()
 	if not moving_frame then return end
 	moving_frame = nil
 	local header = self.header
+
+	-- We have to force a GroupHeader update before doing any of the positioning
+	-- calculations.  In config mode the width and height of the GroupHeader may
+	-- become out of sync with the width/height of the unit frames.  We could do
+	-- this from the config side but doing so introduces lagginess in the sliders
+	-- and this is the only problem this out of sync situation creates.  Since the
+	-- user has just stopped moving the frame it doesn't cause any user noticeable
+	-- UI lag here.
+	header:Update()
+
 	LibStub("LibSimpleSticky-1.0"):StopMoving(header)
 	
 	local ui_scale = UIParent:GetEffectiveScale()
