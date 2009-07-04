@@ -121,6 +121,7 @@ end
 function GroupHeader:ProxySetAttribute(key, value)
 	if self:GetAttribute(key) ~= value then
 		self:SetAttribute(key, value)
+		return true
 	end
 end
 
@@ -217,6 +218,7 @@ function GroupHeader:RefixSizeAndPosition()
 	local group_db = self.group_db
 	local layout = group_db.layout
 	local layout_db = PitBull4.db.profile.layouts[layout]
+	local updated = false
 	
 	self:SetScale(layout_db.scale * group_db.scale)
 
@@ -225,10 +227,36 @@ function GroupHeader:RefixSizeAndPosition()
 	local direction = group_db.direction
 	local anchor = DIRECTION_TO_GROUP_ANCHOR_POINT[direction]
 	local frame = self[1]
+	local point = self:GetAttribute("point")
+	local unit_width = frame:GetWidth()
+	local unit_height = frame:GetHeight()
+
+	-- Set minimum width and/or height depending on the anchor point
+	-- If we don't do this then SecureTemplates will calculate the
+	-- size dynamically and these dimensions will end up being set to
+	-- 0.1 if there are no units to display.  This causes the positioning
+	-- of the group header to move and results in group frames that jump
+	-- when someone joins the group from where they were in config mode.
+	if point == "RIGHT" or point == "LEFT" or point == "CENTER" then
+		updated = self:ProxySetAttribute("minWidth",unit_width) or updated
+	else
+		updated = self:ProxySetAttribute("minWidth",nil) or updated
+	end
+	if point == "TOP" or point == "BOTTOM" or point == "CENTER" then 
+		updated = self:ProxySetAttribute("minHeight",unit_height) or updated
+	else
+		updated = self:ProxySetAttribute("minHeight",nil) or updated
+	end
+
+	if not updated then
+		-- Update absolutely must be called at least once to ensure the GroupHeader
+		-- frame size is recalculated.
+		self:Update()
+	end
 
 	if frame then
-		x_diff = frame:GetWidth() / 2 * -DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction]
-		y_diff = frame:GetHeight() / 2 * -DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction]
+		x_diff = unit_width / 2 * -DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction]
+		y_diff = unit_height / 2 * -DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction]
 	end
 
 	self:ClearAllPoints()
@@ -1049,15 +1077,6 @@ function MemberUnitFrame__scripts:OnDragStop()
 	local header = self.header
 	if moving_frame ~= header then return end
 	moving_frame = nil
-
-	-- We have to force a GroupHeader update before doing any of the positioning
-	-- calculations.  In config mode the width and height of the GroupHeader may
-	-- become out of sync with the width/height of the unit frames.  We could do
-	-- this from the config side but doing so introduces lagginess in the sliders
-	-- and this is the only problem this out of sync situation creates.  Since the
-	-- user has just stopped moving the frame it doesn't cause any user noticeable
-	-- UI lag here.
-	header:Update()
 
 	LibStub("LibSimpleSticky-1.0"):StopMoving(header)
 	
