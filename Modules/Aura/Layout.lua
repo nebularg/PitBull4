@@ -149,7 +149,7 @@ local vertical_mirrored_point = setmetatable({}, {__index = function(self, key)
 end})
 
 
-function layout_auras(frame, db, is_buff)
+local function layout_auras(frame, db, is_buff)
 	local list, cfg
 	if is_buff then
 		list = frame.aura_buffs
