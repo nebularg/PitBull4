@@ -53,7 +53,7 @@ local timerFrame = CreateFrame("Frame")
 timerFrame:SetScript("OnUpdate", function(self, elapsed)
 	local opacity_delta = elapsed * OPACITY_POINTS_PER_SECOND
 	for frame in pairs(changing_frames) do
-		if not frame:IsShown() then
+		if not frame:IsVisible() then
 			changing_frames[frame] = nil
 		else
 			local final_opacity = PitBull4:GetFinalFrameOpacity(frame)
