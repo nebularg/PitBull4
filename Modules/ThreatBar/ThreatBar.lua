@@ -55,7 +55,7 @@ function PitBull4_ThreatBar:GetValue(frame)
 	if not ACCEPTABLE_CLASSIFICATIONS[frame.classification] or not player_in_group then
 		return nil
 	end
-	unit = frame.unit
+	local unit = frame.unit
 	
 	local _,_,threatpct = UnitDetailedThreatSituation(unit, "target")
        
