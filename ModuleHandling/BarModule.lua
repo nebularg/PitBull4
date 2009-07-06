@@ -33,7 +33,7 @@ local function call_value_function(self, frame)
 	if not self.GetValue then
 		return nil, nil
 	end
-	local value, extra
+	local value, extra, icon
 	if frame.guid then
 		value, extra, icon = self:GetValue(frame)
 	end
