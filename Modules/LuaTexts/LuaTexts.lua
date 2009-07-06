@@ -976,7 +976,7 @@ timerframe:SetScript("OnUpdate", function(self, elapsed)
 	-- If there are any font_strings with mouseover checks
 	if next(mouseover_check_cache) then
 		local old_mouseover = PitBull4_LuaTexts.mouseover
-		mouseover = GetMouseFocus()
+		local mouseover = GetMouseFocus()
 		PitBull4_LuaTexts.mouseover = mouseover
 		if old_mouseover ~= mouseover then 
 			for font_string, frame in pairs(mouseover_check_cache) do
