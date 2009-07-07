@@ -410,8 +410,6 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 	end
 	frame:RefreshVehicle()
 	
-	UnitFrame__scripts:OnAttributeChanged(frame, "unit", frame:GetAttribute("unit"))
-	
 	frame:SetClampedToScreen(true)
 end
 PitBull4.ConvertIntoUnitFrame = PitBull4:OutOfCombatWrapper(PitBull4.ConvertIntoUnitFrame)
