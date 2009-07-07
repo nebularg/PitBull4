@@ -383,11 +383,11 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 	overlay:SetFrameLevel(frame:GetFrameLevel() + 4)
 	
 	for k, v in pairs(UnitFrame__scripts) do
-		frame:SetScript(k, v)
+		frame:HookScript(k, v)
 	end
 	
 	for k, v in pairs(frame.is_singleton and SingletonUnitFrame__scripts or MemberUnitFrame__scripts) do
-		frame:SetScript(k, v)
+		frame:HookScript(k, v)
 	end
 	
 	for k, v in pairs(UnitFrame) do
