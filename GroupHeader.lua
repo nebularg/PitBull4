@@ -226,13 +226,13 @@ function GroupHeader:RefixSizeAndPosition()
 	self:SetScale(layout_db.scale * group_db.scale)
 
 	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
-	local x_diff, y_diff = 0, 0
 	local direction = group_db.direction
 	local anchor = DIRECTION_TO_GROUP_ANCHOR_POINT[direction]
-	local frame = self[1]
 	local point = self:GetAttribute("point")
-	local unit_width = frame:GetWidth()
-	local unit_height = frame:GetHeight()
+	local unit_width = layout_db.size_x * group_db.size_x 
+	local unit_height = layout_db.size_y * group_db.size_y 
+	local x_diff = unit_width / 2 * -DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction]
+	local y_diff = unit_height / 2 * -DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction]
 
 	-- Set minimum width and/or height depending on the anchor point
 	-- If we don't do this then SecureTemplates will calculate the
@@ -257,10 +257,6 @@ function GroupHeader:RefixSizeAndPosition()
 		self:Update()
 	end
 
-	if frame then
-		x_diff = unit_width / 2 * -DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction]
-		y_diff = unit_height / 2 * -DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction]
-	end
 
 	self:ClearAllPoints()
 	self:SetPoint(anchor, UIParent, "CENTER", group_db.position_x / scale + x_diff, group_db.position_y / scale + y_diff)
