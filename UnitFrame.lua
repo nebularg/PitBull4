@@ -213,6 +213,7 @@ end
 function UnitFrame:ProxySetAttribute(key, value)
 	if self:GetAttribute(key) ~= value then
 		self:SetAttribute(key, value)
+		return true
 	end
 end
 
