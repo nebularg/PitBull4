@@ -845,18 +845,20 @@ end
 
 function GroupHeader:GetMaxUnits()
 	if self.super_unit_group == "raid" then
-		local group_filter = self.group_db.group_filter
-		if group_filter then
-			if group_filter == "" then
-			-- Everything filtered, but always have at least one unit
-				return 1 
-			end
+		if self.group_db then
+			local group_filter = self.group_db.group_filter
+			if group_filter then
+				if group_filter == "" then
+				-- Everything filtered, but always have at least one unit
+					return 1 
+				end
 
-			-- If we're filtering by raid group we may not need all 40
-			-- units for this group header.
-			local by_raid_group,count = get_filter_type_count(strsplit(",",group_filter))
-			if by_raid_group then
-				return MEMBERS_PER_RAID_GROUP * count
+				-- If we're filtering by raid group we may not need all 40
+				-- units for this group header.
+				local by_raid_group,count = get_filter_type_count(strsplit(",",group_filter))
+				if by_raid_group then
+					return MEMBERS_PER_RAID_GROUP * count
+				end
 			end
 		end
 
