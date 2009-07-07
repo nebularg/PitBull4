@@ -352,24 +352,24 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		if party_based then
 			self.super_unit_group = "party"
 			self.unitsuffix = unit_group:sub(6)
-			self:ProxySetAttribute("showRaid", nil)
-			self:ProxySetAttribute("showParty", true)
-			self:ProxySetAttribute("showPlayer", include_player and true or nil)
-			self:ProxySetAttribute("showSolo", show_solo and true or nil)
-			self:ProxySetAttribute("groupFilter", nil)
+			self:SetAttribute("showRaid", nil)
+			self:SetAttribute("showParty", true)
+			self:SetAttribute("showPlayer", include_player and true or nil)
+			self:SetAttribute("showSolo", show_solo and true or nil)
+			self:SetAttribute("groupFilter", nil)
 		else
 			self.super_unit_group = "raid"
 			self.unitsuffix = unit_group:sub(5)
-			self:ProxySetAttribute("showParty", nil)
-			self:ProxySetAttribute("showPlayer", nil)
-			self:ProxySetAttribute("showSolo", nil)
-			self:ProxySetAttribute("showRaid", true)
+			self:SetAttribute("showParty", nil)
+			self:SetAttribute("showPlayer", nil)
+			self:SetAttribute("showSolo", nil)
+			self:SetAttribute("showRaid", true)
 			if name_list then
-				self:ProxySetAttribute("groupFilter", nil) 
-				self:ProxySetAttribute("nameList", name_list)
+				self:SetAttribute("groupFilter", nil) 
+				self:SetAttribute("nameList", name_list)
 			else
-				self:ProxySetAttribute("groupFilter", group_filter)
-				self:ProxySetAttribute("nameList", nil)
+				self:SetAttribute("groupFilter", group_filter)
+				self:SetAttribute("nameList", nil)
 			end
 		end
 		if self.unitsuffix == "" then
@@ -384,7 +384,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		end
 		
 		for _, frame in self:IterateMembers() do
-			frame:ProxySetAttribute("unitsuffix", self.unitsuffix)
+			frame:SetAttribute("unitsuffix", self.unitsuffix)
 		end
 		PitBull4.unit_group_to_headers[unit_group][self] = true
 		PitBull4.super_unit_group_to_headers[self.super_unit_group][self] = true
@@ -393,30 +393,30 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	local direction = group_db.direction
 	local point = DIRECTION_TO_POINT[direction]
 	
-	self:ProxySetAttribute("point", point)
+	self:SetAttribute("point", point)
 	if point == "LEFT" or point == "RIGHT" then
-		self:ProxySetAttribute("xOffset", group_db.horizontal_spacing * DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction])
-		self:ProxySetAttribute("yOffset", 0)
-		self:ProxySetAttribute("columnSpacing", group_db.vertical_spacing)
+		self:SetAttribute("xOffset", group_db.horizontal_spacing * DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction])
+		self:SetAttribute("yOffset", 0)
+		self:SetAttribute("columnSpacing", group_db.vertical_spacing)
 	else
-		self:ProxySetAttribute("xOffset", 0)
-		self:ProxySetAttribute("yOffset", group_db.vertical_spacing * DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction])
-		self:ProxySetAttribute("columnSpacing", group_db.horizontal_spacing)
+		self:SetAttribute("xOffset", 0)
+		self:SetAttribute("yOffset", group_db.vertical_spacing * DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction])
+		self:SetAttribute("columnSpacing", group_db.horizontal_spacing)
 	end
 	if self.label then
 		position_label(self, self.label)
 	end
-	self:ProxySetAttribute("sortMethod", sort_method)
-	self:ProxySetAttribute("sortDir", sort_direction)
-	self:ProxySetAttribute("template", "SecureUnitButtonTemplate")
-	self:ProxySetAttribute("templateType", "Button")
-	self:ProxySetAttribute("groupBy", group_by)
-	self:ProxySetAttribute("groupingOrder", GROUPING_ORDER[group_db.group_by])
-	self:ProxySetAttribute("unitsPerColumn", group_db.units_per_column)
-	self:ProxySetAttribute("maxColumns", self:GetMaxUnits())
-	self:ProxySetAttribute("startingIndex", 1)
-	self:ProxySetAttribute("columnAnchorPoint", DIRECTION_TO_COLUMN_ANCHOR_POINT[direction])
-	self:ProxySetAttribute("useOwnerUnit", 1)
+	self:SetAttribute("sortMethod", sort_method)
+	self:SetAttribute("sortDir", sort_direction)
+	self:SetAttribute("template", "SecureUnitButtonTemplate")
+	self:SetAttribute("templateType", "Button")
+	self:SetAttribute("groupBy", group_by)
+	self:SetAttribute("groupingOrder", GROUPING_ORDER[group_db.group_by])
+	self:SetAttribute("unitsPerColumn", group_db.units_per_column)
+	self:SetAttribute("maxColumns", self:GetMaxUnits())
+	self:SetAttribute("startingIndex", 1)
+	self:SetAttribute("columnAnchorPoint", DIRECTION_TO_COLUMN_ANCHOR_POINT[direction])
+	self:SetAttribute("useOwnerUnit", 1)
 	
 	self:ForceUnitFrameCreation()
 	self:AssignFakeUnitIDs()
