@@ -1141,7 +1141,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 	self.name_to_header[header.name] = header
 	
 	for k, v in pairs(GroupHeader__scripts) do
-		header:SetScript(k, v)
+		header:HookScript(k, v)
 	end
 	
 	for k, v in pairs(GroupHeader) do

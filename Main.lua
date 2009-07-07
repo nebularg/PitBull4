@@ -903,9 +903,6 @@ local function main_tank_update()
 		local group_db = header.group_db
 		if group_db and group_db.group_filter == "MAINTANK" then
 			header:RefreshGroup()
-			-- Force an update, since RefreshGroup doesn't do so for
-			-- a nameList change.  Seems to be a bug in the secure templates 
-			header:Update() 
 		end
 	end
 end
