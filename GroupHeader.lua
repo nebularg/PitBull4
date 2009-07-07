@@ -479,9 +479,9 @@ function GroupHeader:InitialConfigFunction(frame)
 	frame:ProxySetAttribute("initial-height", layout_db.size_y * self.group_db.size_y)
 	frame:ProxySetAttribute("initial-unitWatch", true)
 	
-	frame:RefreshLayout()
+	frame:_RefreshLayout() -- Normally protected by an OutOfCombatWrapper
 end
-GroupHeader.InitialConfigFunction = PitBull4:OutOfCombatWrapper(GroupHeader.InitialConfigFunction)
+
 --- Force unit frames to be created on the group header, even if those units don't exist.
 -- Note: this is a hack to get around a Blizzard bug preventing frames from being initialized properly while in combat.
 -- @usage header:ForceUnitFrameCreation()
@@ -1118,13 +1118,13 @@ end
 --- Reset the size of the unit frame, not position as that is handled through the group header.
 -- @usage frame:RefixSizeAndPosition()
 function MemberUnitFrame:RefixSizeAndPosition()
+	if not self:CanChangeProtectedState() then return end
 	local layout_db = self.layout_db
 	local classification_db = self.classification_db
 	
 	self:SetWidth(layout_db.size_x * classification_db.size_x)
 	self:SetHeight(layout_db.size_y * classification_db.size_y)
 end
-MemberUnitFrame.RefixSizeAndPosition = PitBull4:OutOfCombatWrapper(MemberUnitFrame.RefixSizeAndPosition)
 
 --- Add the proper functions and scripts to a SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate, as well as some initialization.
 -- @param frame a Frame which inherits from SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate

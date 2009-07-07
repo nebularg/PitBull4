@@ -412,7 +412,6 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 	
 	frame:SetClampedToScreen(true)
 end
-PitBull4.ConvertIntoUnitFrame = PitBull4:OutOfCombatWrapper(PitBull4.ConvertIntoUnitFrame)
 
 -- we store layout_db instead of layout, since if a new profile comes up, it'll be a distinct table
 local seen_layout_dbs = setmetatable({}, {__mode='k'})
@@ -438,7 +437,7 @@ end
 
 --- Recheck the layout of the unit frame, make sure it's up to date, and update the frame.
 -- @usage frame:RefreshLayout()
-function UnitFrame:RefreshLayout()
+function UnitFrame:_RefreshLayout()
 	local old_layout = self.layout
 	
 	local classification_db = self.classification_db
@@ -466,7 +465,7 @@ function UnitFrame:RefreshLayout()
 		self:Update(true, true)
 	end
 end
-UnitFrame.RefreshLayout = PitBull4:OutOfCombatWrapper(UnitFrame.RefreshLayout)
+UnitFrame.RefreshLayout = PitBull4:OutOfCombatWrapper(UnitFrame._RefreshLayout)
 
 --- Reset the size and position of the unit frame.
 -- @usage frame:RefixSizeAndPosition()
