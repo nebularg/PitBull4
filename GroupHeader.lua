@@ -105,7 +105,10 @@ local MemberUnitFrame__scripts = PitBull4.MemberUnitFrame__scripts
 -- This is just a wrapper for SecureGroupHeader_Update.
 -- @usage header:Update()
 function GroupHeader:Update()
-	SecureGroupHeader_Update(self)
+	-- We can't directly call SecureGroupHeader_Update so we just
+	-- set an attribute back to iself.  Calling SecureGroupHeader_Update
+	-- directly taints the entire template system and is very bad.
+	self:SetAttribute("maxColumns",self:GetAttribute("maxColumns"))
 end
 GroupHeader.Update = PitBull4:OutOfCombatWrapper(GroupHeader.Update)
 
@@ -496,6 +499,7 @@ function GroupHeader:ForceUnitFrameCreation()
 		return
 	end
 	
+	local rehide = false
 	local maxColumns = self:GetAttribute("maxColumns")
 	local unitsPerColumn = self:GetAttribute("unitsPerColumn")
 	local startingIndex = self:GetAttribute("startingIndex")
@@ -506,15 +510,19 @@ function GroupHeader:ForceUnitFrameCreation()
 		self:ProxySetAttribute("maxColumns", 1)
 		self:ProxySetAttribute("unitsPerColumn", num)
 	end
-	self:ProxySetAttribute("startingIndex", -num + 1)
-	
-	SecureGroupHeader_Update(self)
+	if not self:IsShown() then
+		self:Show()
+		rehide = true
+	end
+	self:SetAttribute("startingIndex", -num + 1) -- Not proxied to ensure an Update happens
 	
 	self:ProxySetAttribute("maxColumns", maxColumns)
 	self:ProxySetAttribute("unitsPerColumn", unitsPerColumn)
-	self:ProxySetAttribute("startingIndex", startingIndex)
-	
-	SecureGroupHeader_Update(self)
+	self:SetAttribute("startingIndex", startingIndex) -- Not proxied to ensure an Update happens
+
+	if rehide then
+		self:Hide()
+	end
 	
 	-- this is done because the previous hack can mess up some unit references
 	for _, frame in self:IterateMembers() do
