@@ -664,6 +664,9 @@ function position_indicator_on_bar:left(indicator, bar)
 	else
 		attach = bar.fg
 	end
+	if not attach then
+		attach = bar
+	end
 	
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("LEFT", attach, "LEFT", self.layout_db.indicator_bar_inside_horizontal_padding / scale, 0)
@@ -683,6 +686,9 @@ function position_indicator_on_bar:right(indicator, bar)
 	else
 		attach = bar.bg
 	end
+	if not attach then
+		attach = bar
+	end
 	
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("RIGHT", attach, "RIGHT", -self.layout_db.indicator_bar_inside_horizontal_padding / scale, 0)
@@ -693,6 +699,9 @@ function position_indicator_on_bar:top(indicator, bar, _, indicators_and_texts)
 		attach = bar.fg
 	else
 		attach = bar.bg
+	end
+	if not attach then
+		attach = bar
 	end
 	
 	if #indicators_and_texts == 1 then
@@ -708,6 +717,9 @@ function position_indicator_on_bar:bottom(indicator, bar, _, indicators_and_text
 		attach = bar.bg
 	else
 		attach = bar.fg
+	end
+	if not attach then
+		attach = bar
 	end
 	
 	if #indicators_and_texts == 1 then
