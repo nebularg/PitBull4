@@ -9,7 +9,6 @@ for _ in pairs(RAID_CLASS_COLORS) do
 	NUM_CLASSES = NUM_CLASSES + 1
 end
 local MINIMUM_EXAMPLE_GROUP = 2
-local GROUP_EXPECTED_LENIENCY = 3
 
 local ACCEPTABLE_STATES = {
 	party = {
@@ -26,13 +25,6 @@ local ACCEPTABLE_STATES = {
 		raid25 = true,
 		raid40 = true,
 	}
-}
-
-local BATTLEGROUND_MAP_TO_UNITS = {
-	["WarsongGulch"] = 10,
-	["ArathiBasin"] = 15,
-	["AlteracValley"] = 40,
-	["NetherstormArena"] = 15,
 }
 
 local CLASS_ORDER = { -- TODO: make this configurable
@@ -414,9 +406,6 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	self:SetAttribute("columnAnchorPoint", DIRECTION_TO_COLUMN_ANCHOR_POINT[direction])
 	self:SetAttribute("useOwnerUnit", 1)
 	
-	self:ForceUnitFrameCreation()
-	self:AssignFakeUnitIDs()
-
 	self:RefixSizeAndPosition()
 	
 	if is_shown then
@@ -503,15 +492,7 @@ end
 -- Note: this is a hack to get around a Blizzard bug preventing frames from being initialized properly while in combat.
 -- @usage header:ForceUnitFrameCreation()
 function GroupHeader:ForceUnitFrameCreation()
-	local num = self:GetExpectedUnits()
-	-- Note we can't bail out of this early if we're in config mode because otherwise the
-	-- SecureGroupHeader_Update() only bothers to update the settings for the units it thinks
-	-- it needs and will fail to update our example units for config mode, thus breaking the
-	-- usefulness of config mode.
-	if not self.force_show and #self >= num then
-		return
-	end
-	
+	local num = self:GetMaxUnits()
 	local rehide = false
 	local maxColumns = self:GetAttribute("maxColumns")
 	local unitsPerColumn = self:GetAttribute("unitsPerColumn")
@@ -886,45 +867,6 @@ function GroupHeader:GetMaxUnits()
 	end
 end
 
-function GroupHeader:GetExpectedUnits()
-	if self.force_show or self.super_unit_group == "party" then
-		return self:GetMaxUnits()
-	end
-	
-	local group_filter = self.group_db.group_filter
-	local num = BATTLEGROUND_MAP_TO_UNITS[PitBull4.current_map]
-	if group_filter == "MAINTANK" then
-		_, num = get_main_tank_name_list()
-		if num == 0 then
-			return 5 -- Maintain 5 maintank entries minimum
-		end
-	elseif num then 
-		-- we're in a battleground
-		local max = self:GetMaxUnits()
-		if num < max then
-			return num
-		else
-			return max
-		end
-	else
-		num = GetNumRaidMembers()
-		if num == 0 then
-			return 1
-		end
-	end
-	
-	num = num + GROUP_EXPECTED_LENIENCY
-	if num < #self then
-		return num
-	end
-	
-	local max = self:GetMaxUnits()
-	if num >= max then
-		return max
-	end
-	return num
-end
-
 local make_set
 do
 	local set = {}
@@ -1171,6 +1113,4 @@ function PitBull4:ConvertIntoGroupHeader(header)
 	header:RefreshGroup(true)
 	
 	header:SetMovable(true)
-	
-	header:ForceUnitFrameCreation()
 end

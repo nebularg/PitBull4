@@ -1321,25 +1321,8 @@ function PitBull4:GetState()
 	return PitBull4.config_mode or STATE
 end
 
-PitBull4.current_map = nil
--- This is done so that in battlegrounds, all the frames get created so there's no issues with users joining in combat
-function PitBull4:UpdateMapInfo()
-	SetMapToCurrentZone()
-	local map = GetMapInfo()
-	if map == PitBull4.current_map then
-		return
-	end
-	PitBull4.current_map = map
-	for header in PitBull4:IterateHeaders() do
-		header:ForceUnitFrameCreation()
-	end
-end
-
 function PitBull4:PLAYER_ENTERING_WORLD()
 	refresh_all_guids()
-	
-	self:UpdateMapInfo()
-	self:ScheduleTimer("UpdateMapInfo", 0.1)
 end
 
 local function get_state_from_groups(raid)
@@ -1366,7 +1349,7 @@ end
 local last_state = nil
 local last_raid_num = nil
 local last_party_num = nil
-function PitBull4:RAID_ROSTER_UPDATE(force, no_create)
+function PitBull4:RAID_ROSTER_UPDATE(force)
 	refresh_all_guids()
 	local raid = GetNumRaidMembers()
 	local party = GetNumPartyMembers()
@@ -1394,11 +1377,6 @@ function PitBull4:RAID_ROSTER_UPDATE(force, no_create)
 		last_state = state
 		for header in PitBull4:IterateHeaders() do
 			header:UpdateShownState(state)
-		end
-	end
-	if not no_create then
-		for header in PitBull4:IterateHeaders() do
-			header:ForceUnitFrameCreation()
 		end
 	end
 end
