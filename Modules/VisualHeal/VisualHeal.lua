@@ -70,11 +70,10 @@ local player_end_time = nil
 
 function PitBull4_VisualHeal:UpdateFrame(frame)
 	local health_bar = frame.HealthBar
-	if not health_bar or not LibHealComm then
+	local unit = frame.unit
+	if not health_bar or not LibHealComm or not unit then
 		return self:ClearFrame(frame)
 	end
-	
-	local unit = frame.unit
 	
 	local name,server = UnitName(unit)
 	if server and server ~= "" then
