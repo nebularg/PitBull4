@@ -112,8 +112,6 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 	end
 	bar:SetValue(math.min(incoming_percent, 1))
 	bar:SetExtraValue(player_percent)
-	bar:SetWidth(health_bar:GetWidth())
-	bar:SetHeight(health_bar:GetHeight())
 	bar:SetTexture(health_bar:GetTexture())
 	
 	local deficit = health_bar.deficit
@@ -122,11 +120,20 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 	bar:SetOrientation(orientation)
 	bar:SetReverse(deficit ~= reverse)
 	
+	bar:ClearAllPoints()
 	local point, attach
 	if orientation == "HORIZONTAL" then
 		point, attach = "LEFT", "RIGHT"
+		bar:SetWidth(health_bar:GetWidth())
+		bar:SetHeight(0)
+		bar:SetPoint("TOP", health_bar, "TOP")
+		bar:SetPoint("BOTTOM", health_bar, "BOTTOM")
 	else
 		point, attach = "BOTTOM", "TOP"
+		bar:SetHeight(health_bar:GetHeight())
+		bar:SetWidth(0)
+		bar:SetPoint("LEFT", health_bar, "LEFT")
+		bar:SetPoint("RIGHT", health_bar, "RIGHT")
 	end
 	
 	if deficit then
@@ -137,7 +144,6 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 		point, attach = REVERSE_POINT[point], REVERSE_POINT[attach]
 	end
 	
-	bar:ClearAllPoints()
 	bar:SetPoint(point, health_bar.fg, attach)
 	
 	local db = self.db.profile.global
