@@ -1028,8 +1028,8 @@ function PitBull4_LuaTexts:OnNewLayout(layout)
 			location = "left"
 		},
 		["Lua:"..L["Health"]] = {
-			code = PROVIDED_CODES[L['Health']][L['Smart']].code,
-			events = copy(PROVIDED_CODES[L['Health']][L['Smart']].events),
+			code = PROVIDED_CODES[L['Health']][L['Absolute and percent']].code,
+			events = copy(PROVIDED_CODES[L['Health']][L['Absolute and percent']].events),
 			attach_to = "HealthBar",
 			location = "right"
 		},

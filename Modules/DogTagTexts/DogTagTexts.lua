@@ -53,7 +53,7 @@ function PitBull4_DogTagTexts:OnNewLayout(layout)
 			location = "left"
 		},
 		[L["Health"]] = {
-			code = "[Status or (if IsFriend then MissingHP:Hide(0):Short:Color('ff7f7f') else FractionalHP:Short)]",
+			code = "[Status or (FractionalHP:Short ' || ' PercentHP:Percent)]",
 			attach_to = "HealthBar",
 			location = "right",
 		},
