@@ -858,7 +858,7 @@ friend_buffs.Troll = {
 }
 friend_debuffs.Troll = {}
 self_buffs.Troll = {
-	[20554] = true, -- Berserking
+	[26297] = true, -- Berserking
 }
 self_debuffs.Troll = {}
 pet_buffs.Troll = {}
