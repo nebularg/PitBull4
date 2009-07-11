@@ -523,6 +523,12 @@ function UnitFrame:UnforceShow()
 	-- Ask the SecureStateDriver to show/hide the frame for us
 	UnregisterUnitWatch(self)
 	RegisterUnitWatch(self)
+
+	-- If we're visible force an udpate so everything is properly in a
+	-- non-config mode state
+	if self:IsVisible() then
+		self:Update()
+	end
 end
 UnitFrame.UnforceShow = PitBull4:OutOfCombatWrapper(UnitFrame.UnforceShow)
 
