@@ -144,9 +144,15 @@ function BarProviderModule:OnHide(frame)
 		expect(frame, 'typeof', 'frame')
 	end
 
-	-- Nothing to do, we don't want to remove anything from
-	-- a hidden frame
-	return
+	local id = self.id
+	local bars = frame[id]
+	if not bars then
+		return
+	end
+
+	for name, bar in pairs(bars) do
+		bar:Hide()
+	end
 end
 
 --- Clear the status bar for the current module if it exists.
@@ -245,6 +251,8 @@ function BarProviderModule:UpdateFrame(frame)
 			else
 				bar:SetExtraValue(0)
 			end
+
+			bar:Show()
 		end
 	end
 	

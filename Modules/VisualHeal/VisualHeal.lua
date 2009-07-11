@@ -193,6 +193,8 @@ function PitBull4_VisualHeal:ClearFrame(frame)
 	return true
 end
 
+PitBull4_VisualHeal.OnHide = PitBull4_VisualHeal.ClearFrame
+
 local function update_names(...)
 	for i = 1, select('#', ...) do
 		local target_name = (select(i, ...))

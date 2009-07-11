@@ -111,6 +111,7 @@ function PitBull4_Portrait:OnHide(frame)
 	local portrait = frame.Portrait
 	if portrait then
 		portrait.guid = frame.guid
+		portrait:Hide()
 	end
 end
 
@@ -172,6 +173,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 	end
 	
 	if portrait.guid == frame.guid and guid_demanding_update ~= frame.guid then
+		portrait:Show()
 		return false
 	end
 	
@@ -204,6 +206,8 @@ function PitBull4_Portrait:UpdateFrame(frame)
 		end
 	end
 	
+	portrait:Show()
+
 	return created
 end
 

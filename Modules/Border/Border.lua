@@ -157,6 +157,8 @@ function PitBull4_Border:UpdateFrame(frame)
 		tex:SetVertexColor(r, g, b, a)
 	end
 	
+	border:Show()
+
 	return false
 end
 
@@ -172,6 +174,13 @@ function PitBull4_Border:ClearFrame(frame)
 	frame.Border = border:Delete()
 	
 	return false
+end
+
+function PitBull4_Border:OnHide(frame)
+	local border = frame.Border
+	if border then
+		border:Hide()
+	end
 end
 
 function PitBull4_Border:OnEnter(frame)

@@ -28,6 +28,7 @@ function PitBull4_Background:UpdateFrame(frame)
 		background:SetAllPoints(frame)
 	end
 	
+	background:Show()
 	background:SetTexture(self:GetColor(frame))
 	return false
 end
@@ -39,6 +40,13 @@ function PitBull4_Background:ClearFrame(frame)
 	
 	frame.Background = frame.Background:Delete()
 	return false
+end
+
+function PitBull4_Background:OnHide(frame)
+	local background = frame.Background
+	if background then
+		background:Hide()
+	end
 end
 
 PitBull4_Background:SetLayoutOptionsFunction(function(self)

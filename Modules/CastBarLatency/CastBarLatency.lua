@@ -217,6 +217,8 @@ function PitBull4_CastBarLatency:ClearFrame(frame)
 	return false
 end
 
+PitBull4_CastBarLatency.OnHide = PitBull4_CastBarLatency.ClearFrame
+
 PitBull4_CastBarLatency:SetColorOptionsFunction(function(self)
 	return 'latency_color', {
 		type = 'color',

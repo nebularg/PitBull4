@@ -173,9 +173,11 @@ function BarModule:OnHide(frame)
 		expect(frame, 'typeof', 'frame')
 	end
 
-	-- Nothing to do, we don't want to remove anything from
-	-- a hidden frame
-	return
+	local id = self.id
+	local control = frame[id]
+	if control then
+		control:Hide()
+	end
 end
 
 --- Clear the status bar for the current module if it exists.
@@ -239,6 +241,7 @@ function BarModule:UpdateFrame(frame)
 	
 	control:SetIcon(icon)
 	control:SetIconPosition(self:GetLayoutDB(frame).icon_on_left)
+	control:Show()
 	
 	return made_control
 end

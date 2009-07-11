@@ -120,6 +120,8 @@ function PitBull4_ManaSpark:ClearFrame(frame)
 	return false
 end
 
+PitBull4_ManaSpark.OnHide = PitBull4_ManaSpark.ClearFrame
+
 function PitBull4_ManaSpark:UNIT_MANA(event, unit)
 	if unit ~= 'player' then
 		return

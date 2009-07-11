@@ -77,6 +77,8 @@ function PitBull4_Aura:ClearFrame(frame)
 	self:ClearAuras(frame)
 end
 
+PitBull4_Aura.OnHide = PitBull4_Aura.ClearFrame
+
 function PitBull4_Aura:UpdateFrame(frame)
 	self:UpdateAuras(frame)
 	self:LayoutAuras(frame)

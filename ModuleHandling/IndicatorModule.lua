@@ -114,6 +114,8 @@ function IndicatorModule:UpdateFrame(frame)
 	
 	control:SetTexCoord(call_tex_coord_function(self, frame, tex))
 	
+	control:Show()
+
 	return made_control
 end
 
@@ -136,7 +138,10 @@ function IndicatorModule:OnHide(frame)
 		expect(frame, 'typeof', 'frame')
 	end
 
-	-- Nothing to do, we don't want to remove anything from
-	-- a hidden frame
+	local id = self.id
+	local control = frame[id]
+	if control then
+		control:Hide()
+	end
 	return
 end

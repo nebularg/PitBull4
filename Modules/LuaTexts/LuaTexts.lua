@@ -1099,6 +1099,7 @@ function PitBull4_LuaTexts:AddFontString(frame, font_string, name, data)
 	local db = font_string.db
 
 	no_update[font_string] = nil
+	font_string:Show()
 	-- This font_string is already assigned to us.  So do nothing but
 	-- update the text.
 	if texts[font_string] then
@@ -1190,6 +1191,7 @@ function PitBull4_LuaTexts:OnHide(frame)
 			if not next(mouseover_check_cache) then
 				self.mouseover = nil
 			end
+			font_string:Hide()
 		end
 	end
 end
