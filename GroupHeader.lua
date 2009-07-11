@@ -1094,6 +1094,16 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		expect(header, 'frametype', 'Frame')
 	end
 	
+	-- Stop the group header from listening to UNIT_NAME_UPDATE.  
+	-- Allowing it to do so is a uge performance drain since the
+	-- GroupHeader's OnEvent updates the header regardless of the unit
+	-- passed in the argument.  Many UNIT_NAME_UPDATE events can be
+	-- generated when zoning into battlegrounds, spirit rezes in 
+	-- battlegrounds, pet rezes, etc.  This should prevent some
+	-- stuttering isseus with BGs.  See this post for more details:
+	-- http://forums.wowace.com/showthread.php?p=111494#post111494
+	self:UnregisterEvent("UNIT_NAME_UPDATE")
+
 	self.all_headers[header] = true
 	self.name_to_header[header.name] = header
 	
