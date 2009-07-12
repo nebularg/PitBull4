@@ -1095,7 +1095,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 	end
 	
 	-- Stop the group header from listening to UNIT_NAME_UPDATE.  
-	-- Allowing it to do so is a uge performance drain since the
+	-- Allowing it to do so is a huge performance drain since the
 	-- GroupHeader's OnEvent updates the header regardless of the unit
 	-- passed in the argument.  Many UNIT_NAME_UPDATE events can be
 	-- generated when zoning into battlegrounds, spirit rezes in 
