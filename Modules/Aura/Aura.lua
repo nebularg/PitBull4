@@ -75,6 +75,9 @@ end
 
 function PitBull4_Aura:ClearFrame(frame)
 	self:ClearAuras(frame)
+	if frame.aura_highlight then
+		frame.aura_highlight = frame.aura_highlight:Delete()
+	end
 end
 
 PitBull4_Aura.OnHide = PitBull4_Aura.ClearFrame
