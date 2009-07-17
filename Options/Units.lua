@@ -217,6 +217,8 @@ function PitBull4.Options.get_unit_options()
 	local shared_args = {}
 	local unit_args = {}
 	local group_args = {}
+	local group_layout_args = {}
+	local group_filtering_args = {}
 	
 	unit_args.enable = {
 		name = L["Enable"],
@@ -587,7 +589,7 @@ function PitBull4.Options.get_unit_options()
 		GROUP = L["By group"],
 	}
 	
-	group_args.sort_method = {
+	group_layout_args.sort_method = {
 		name = L["Sort method"],
 		desc = L["How to sort the frames within the group."],
 		type = 'select',
@@ -629,7 +631,7 @@ function PitBull4.Options.get_unit_options()
 		disabled = disabled,
 	}
 	
-	group_args.sort_direction = {
+	group_layout_args.sort_direction = {
 		name = L["Sort direction"],
 		desc = L["Which direction to sort the frames within a group."],
 		type = 'select',
@@ -650,7 +652,7 @@ function PitBull4.Options.get_unit_options()
 		up_left = true,
 	}
 	
-	group_args.vertical_spacing = {
+	group_layout_args.vertical_spacing = {
 		name = L["Vertical spacing"],
 		desc = L["How many pixels between rows in this group."],
 		order = next_order(),
@@ -664,7 +666,7 @@ function PitBull4.Options.get_unit_options()
 		disabled = disabled,
 	}
 	
-	group_args.horizontal_spacing = {
+	group_layout_args.horizontal_spacing = {
 		name = L["Horizontal spacing"],
 		desc = L["How many pixels between columns in this group."],
 		order = next_order(),
@@ -678,7 +680,7 @@ function PitBull4.Options.get_unit_options()
 		disabled = disabled,
 	}
 	
-	group_args.direction = {
+	group_layout_args.direction = {
 		name = L["Growth direction"],
 		desc = L["Which way frames should placed."],
 		order = next_order(),
@@ -698,7 +700,7 @@ function PitBull4.Options.get_unit_options()
 		disabled = disabled,
 	}
 	
-	group_args.units_per_column = {
+	group_layout_args.units_per_column = {
 		name = function(info)
 			if VERTICAL_FIRST[get_group_db().direction] then
 				return L["Units per column"]
@@ -723,7 +725,7 @@ function PitBull4.Options.get_unit_options()
 		disabled = disabled,
 	}
 	
-	group_args.shown_when = {
+	group_filtering_args.shown_when = {
 		name = L["Show when in"],
 		desc = L["Which situations to show the unit group in."],
 		order = next_order(),
@@ -766,7 +768,7 @@ function PitBull4.Options.get_unit_options()
 		disabled = disabled,
 	}
 	
-	group_args.filter_type = {
+	group_filtering_args.filter_type = {
 		name = L["Filter type"],
 		desc = L["What type of filter to run on the unit group."],
 		order = next_order(),
@@ -877,7 +879,7 @@ function PitBull4.Options.get_unit_options()
 		refresh_group('groups')
 	end
 	
-	group_args.group_filter_number = {
+	group_filtering_args.group_filter_number = {
 		name = L["Filter groups"],
 		desc = L["Which raid groups should show in this unit group"],
 		order = next_order(),
@@ -914,10 +916,10 @@ function PitBull4.Options.get_unit_options()
 		end
 	}
 	for i = 1, NUM_RAID_GROUPS do
-		group_args.group_filter_number.values[i..""] = L["Group #%d"]:format(i)
+		group_filtering_args.group_filter_number.values[i..""] = L["Group #%d"]:format(i)
 	end
 	
-	group_args.group_filter_class = {
+	group_filtering_args.group_filter_class = {
 		name = L["Filter classes"],
 		desc = L["Which classes should show in this unit group"],
 		order = next_order(),
@@ -962,7 +964,7 @@ function PitBull4.Options.get_unit_options()
 		HUNTER = L["Hunters"],
 	}
 	for class in pairs(RAID_CLASS_COLORS) do
-		group_args.group_filter_class.values[class] = class_translations[class] or class
+		group_filtering_args.group_filter_class.values[class] = class_translations[class] or class
 	end
 	
 	local current_order = 0
@@ -988,11 +990,27 @@ function PitBull4.Options.get_unit_options()
 	for k, v in pairs(group_args) do
 		args[k] = v
 	end
-	group_options.args.sub = {
+	group_options.args.general = {
 		type = 'group',
-		name = "",
-		inline = true,
+		name = L["General"],
 		args = args,
+		order = next_order(),
+	}
+
+	group_options.args.layout = {
+		type = 'group',
+		name = L["Unit formation"],
+		desc = L["Configure how the units in the group will be ordered and positioned."],
+		args = group_layout_args,
+		order = next_order(),
+	}
+
+	group_options.args.filtering = {
+		type = 'group',
+		name = L['Filtering'],
+		desc = L["Configure when the group will be shown and if units will be filtered."],
+		args = group_filtering_args,
+		order = next_order(),
 	}
 	
 	return unit_options, group_options
