@@ -64,7 +64,7 @@ local REVERSE_POINT = {
 
 local player_name = UnitName("player")
 local player_is_casting = false
-local player_healing_target_name = nil
+local player_healing_target_names = {} 
 local player_healing_size = 0
 local player_end_time = nil
 
@@ -79,7 +79,15 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 	if server and server ~= "" then
 		name = name .. "-" .. server
 	end
-	local is_casting_on_this_unit = player_is_casting and player_healing_target_name == name 
+	local is_casting_on_this_unit = false
+	if player_is_casting then
+		for _,player_healing_target_name in ipairs(player_healing_target_names) do
+			if player_healing_target_name == name then
+				is_casting_on_this_unit = true
+				break
+			end
+		end
+	end
 	
 	local incoming_heal
 	if is_casting_on_this_unit then
@@ -209,7 +217,10 @@ end
 function PitBull4_VisualHeal:HealComm_DirectHealStart(event, healer_name, heal_size, end_time, ...)
 	if healer_name == player_name then
 		player_is_casting = true
-		player_healing_target_name = (...)
+		wipe(player_healing_target_names)
+		for i=1,select('#',...) do
+			player_healing_target_names[i] = select(i,...)
+		end
 		player_healing_size = heal_size
 		player_end_time = end_time
 	end
