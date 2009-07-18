@@ -600,19 +600,19 @@ function position_indicator_on_root:in_top_right(indicator)
 end
 function position_indicator_on_root:in_bottom_left(indicator)
 	local scale = scale_cache[indicator]
-	indicator:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", self.layout_db.indicator_root_inside_horizontal_padding / scale, -self.layout_db.indicator_root_inside_vertical_padding / scale)
+	indicator:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", self.layout_db.indicator_root_inside_horizontal_padding / scale, self.layout_db.indicator_root_inside_vertical_padding / scale)
 end
 function position_indicator_on_root:in_bottom(indicator, _, _, indicators_and_texts)
 	local scale = scale_cache[indicator]
 	if #indicators_and_texts == 1 then
-		indicator:SetPoint("BOTTOM", self, "BOTTOM", 0, -self.layout_db.indicator_root_inside_vertical_padding / scale)
+		indicator:SetPoint("BOTTOM", self, "BOTTOM", 0, self.layout_db.indicator_root_inside_vertical_padding / scale)
 	else
-		indicator:SetPoint("BOTTOMLEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts) / scale, -self.layout_db.indicator_root_inside_vertical_padding / scale)
+		indicator:SetPoint("BOTTOMLEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts) / scale, self.layout_db.indicator_root_inside_vertical_padding / scale)
 	end
 end
 function position_indicator_on_root:in_bottom_right(indicator)
 	local scale = scale_cache[indicator]
-	indicator:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -self.layout_db.indicator_root_inside_horizontal_padding / scale, -self.layout_db.indicator_root_inside_vertical_padding / scale)
+	indicator:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -self.layout_db.indicator_root_inside_horizontal_padding / scale, self.layout_db.indicator_root_inside_vertical_padding / scale)
 end
 function position_indicator_on_root:in_left(indicator)
 	local scale = scale_cache[indicator]
