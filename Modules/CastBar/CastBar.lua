@@ -110,7 +110,8 @@ function PitBull4_CastBar:GetValue(frame)
 end
 
 function PitBull4_CastBar:GetExampleValue(frame)
-	return EXAMPLE_VALUE, nil, EXAMPLE_ICON
+	local db = self:GetLayoutDB(frame)
+	return EXAMPLE_VALUE, nil, db.show_icon and EXAMPLE_ICON or nil
 end
 
 function PitBull4_CastBar:GetColor(frame, value)
