@@ -1234,8 +1234,9 @@ end
 
 --- Check the GUID of the given UnitID and send that info to all frames for that UnitID
 -- @param unit the UnitID to check
+-- @param is_pet pass true if calling from UNIT_PET
 -- @usage PitBull4:CheckGUIDForUnitID("player")
-function PitBull4:CheckGUIDForUnitID(unit)
+function PitBull4:CheckGUIDForUnitID(unit, is_pet)
 	if not PitBull4.Utils.GetBestUnitID(unit) then
 		-- for ids such as npctarget
 		return
@@ -1249,6 +1250,13 @@ function PitBull4:CheckGUIDForUnitID(unit)
 	local update
 	if not guid then
 		update = false
+	elseif is_pet and UnitLevel(unit) ~= 0 then
+		-- force an update for pets if the pet level isn't 0.  We typically
+		-- get the guid before other info about the pet is available such
+		-- as the level, pet experience, etc and this means we have to force
+		-- an update when it becomes available.  This is somewhat ugly but
+		-- it's the only way to have pet frames update properly.
+		update = true
 	end
 
 	-- If the guid is nil we don't want to see hidden frames since
@@ -1261,7 +1269,7 @@ end
 function PitBull4:PLAYER_FOCUS_CHANGED() self:CheckGUIDForUnitID("focus") self:CheckGUIDForUnitID("focustarget") self:CheckGUIDForUnitID("focustargettarget") end
 function PitBull4:PLAYER_TARGET_CHANGED() self:CheckGUIDForUnitID("target") self:CheckGUIDForUnitID("targettarget") self:CheckGUIDForUnitID("targettargettarget") end
 function PitBull4:UNIT_TARGET(_, unit) if unit ~= "player" then self:CheckGUIDForUnitID(unit .. "target") self:CheckGUIDForUnitID(unit .. "targettarget") end end
-function PitBull4:UNIT_PET(_, unit) self:CheckGUIDForUnitID(unit .. "pet") self:CheckGUIDForUnitID(unit .. "pet" .. "target") self:CheckGUIDForUnitID(unit .. "pet" .. "targettarget")  end
+function PitBull4:UNIT_PET(_, unit) self:CheckGUIDForUnitID(unit .. "pet", true) self:CheckGUIDForUnitID(unit .. "pet" .. "target") self:CheckGUIDForUnitID(unit .. "pet" .. "targettarget")  end
 
 local tmp = {}
 function PitBull4:UNIT_ENTERED_VEHICLE(_, unit)
