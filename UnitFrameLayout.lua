@@ -556,7 +556,7 @@ function position_indicator_on_root:out_left_top(indicator)
 end
 function position_indicator_on_root:out_left(indicator)
 	local scale = scale_cache[indicator]
-	indicator:SetPoint("RIGHT", self, "LEFT", self.layout_db.indicator_root_outside_margin / scale, 0)
+	indicator:SetPoint("RIGHT", self, "LEFT", -self.layout_db.indicator_root_outside_margin / scale, 0)
 end
 function position_indicator_on_root:out_left_bottom(indicator)
 	local scale = scale_cache[indicator]
