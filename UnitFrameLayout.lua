@@ -522,10 +522,18 @@ local position_next_indicator_on_bar = {}
 function position_indicator_on_root:out_top_left(indicator)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -self.layout_db.indicator_root_outside_margin / scale, self.layout_db.indicator_root_outside_margin / scale)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("LEFT")
+		indicator:SetJustifyV("BOTTOM")
+	end
 end
 function position_indicator_on_root:out_top_right(indicator)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", self.layout_db.indicator_root_outside_margin / scale, self.layout_db.indicator_root_outside_margin / scale)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("RIGHT")
+		indicator:SetJustifyV("BOTTOM")
+	end
 end
 function position_indicator_on_root:out_top(indicator, _, _, indicators_and_texts)
 	local scale = scale_cache[indicator]
@@ -534,14 +542,26 @@ function position_indicator_on_root:out_top(indicator, _, _, indicators_and_text
 	else
 		indicator:SetPoint("BOTTOMLEFT", self, "TOP", -get_half_width(self, indicators_and_texts) / scale, self.layout_db.indicator_root_outside_margin / scale)
 	end
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("CENTER")
+		indicator:SetJustifyV("BOTTOM")
+	end
 end
 function position_indicator_on_root:out_bottom_left(indicator)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -self.layout_db.indicator_root_outside_margin / scale, -self.layout_db.indicator_root_outside_margin / scale)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("LEFT")
+		indicator:SetJustifyV("TOP")
+	end
 end
 function position_indicator_on_root:out_bottom_right(indicator)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", self.layout_db.indicator_root_outside_margin / scale, -self.layout_db.indicator_root_outside_margin / scale)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("RIGHT")
+		indicator:SetJustifyV("TOP")
+	end
 end
 function position_indicator_on_root:out_bottom(indicator, _, _, indicators_and_texts)
 	local scale = scale_cache[indicator]
@@ -550,30 +570,58 @@ function position_indicator_on_root:out_bottom(indicator, _, _, indicators_and_t
 	else
 		indicator:SetPoint("TOPLEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts) / scale, -self.layout_db.indicator_root_outside_margin / scale)
 	end
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("CENTER")
+		indicator:SetJustifyV("TOP")
+	end
 end
 function position_indicator_on_root:out_left_top(indicator)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("TOPRIGHT", self, "TOPLEFT", -self.layout_db.indicator_root_outside_margin / scale, self.layout_db.indicator_root_outside_margin / scale)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("RIGHT")
+		indicator:SetJustifyV("TOP")
+	end
 end
 function position_indicator_on_root:out_left(indicator)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("RIGHT", self, "LEFT", -self.layout_db.indicator_root_outside_margin / scale, 0)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("RIGHT")
+		indicator:SetJustifyV("MIDDLE")
+	end
 end
 function position_indicator_on_root:out_left_bottom(indicator)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", -self.layout_db.indicator_root_outside_margin / scale, -self.layout_db.indicator_root_outside_margin / scale)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("RIGHT")
+		indicator:SetJustifyV("BOTTOM")
+	end
 end
 function position_indicator_on_root:out_right_top(indicator)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("TOPLEFT", self, "TOPRIGHT", self.layout_db.indicator_root_outside_margin / scale, self.layout_db.indicator_root_outside_margin / scale)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("LEFT")
+		indicator:SetJustifyV("TOP")
+	end
 end
 function position_indicator_on_root:out_right(indicator)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("LEFT", self, "RIGHT", self.layout_db.indicator_root_outside_margin / scale, 0)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("LEFT")
+		indicator:SetJustifyV("MIDDLE")
+	end
 end
 function position_indicator_on_root:out_right_bottom(indicator)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", self.layout_db.indicator_root_outside_margin / scale, -self.layout_db.indicator_root_outside_margin / scale)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("LEFT")
+		indicator:SetJustifyV("BOTTOM")
+	end
 end
 function position_indicator_on_root:in_center(indicator, _, _, indicators_and_texts)
 	if #indicators_and_texts == 1 then
@@ -582,10 +630,18 @@ function position_indicator_on_root:in_center(indicator, _, _, indicators_and_te
 		local scale = scale_cache[indicator]
 		indicator:SetPoint("LEFT", self, "CENTER", -get_half_width(self, indicators_and_texts) / scale, 0)
 	end
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("CENTER")
+		indicator:SetJustifyV("MIDDLE")
+	end
 end
 function position_indicator_on_root:in_top_left(indicator)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("TOPLEFT", self, "TOPLEFT", self.layout_db.indicator_root_inside_horizontal_padding / scale, -self.layout_db.indicator_root_inside_vertical_padding / scale)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("LEFT")
+		indicator:SetJustifyV("TOP")
+	end
 end
 function position_indicator_on_root:in_top(indicator, _, _, indicators_and_texts)
 	local scale = scale_cache[indicator]
@@ -594,14 +650,26 @@ function position_indicator_on_root:in_top(indicator, _, _, indicators_and_texts
 	else
 		indicator:SetPoint("TOPLEFT", self, "TOP", -get_half_width(self, indicators_and_texts) / scale, -self.layout_db.indicator_root_inside_vertical_padding / scale)
 	end
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("CENTER")
+		indicator:SetJustifyV("TOP")
+	end
 end
 function position_indicator_on_root:in_top_right(indicator)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("TOPRIGHT", self, "TOPRIGHT", -self.layout_db.indicator_root_inside_horizontal_padding / scale, -self.layout_db.indicator_root_inside_vertical_padding / scale)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("RIGHT")
+		indicator:SetJustifyV("TOP")
+	end
 end
 function position_indicator_on_root:in_bottom_left(indicator)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", self.layout_db.indicator_root_inside_horizontal_padding / scale, self.layout_db.indicator_root_inside_vertical_padding / scale)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("LEFT")
+		indicator:SetJustifyV("BOTTOM")
+	end
 end
 function position_indicator_on_root:in_bottom(indicator, _, _, indicators_and_texts)
 	local scale = scale_cache[indicator]
@@ -610,21 +678,41 @@ function position_indicator_on_root:in_bottom(indicator, _, _, indicators_and_te
 	else
 		indicator:SetPoint("BOTTOMLEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts) / scale, self.layout_db.indicator_root_inside_vertical_padding / scale)
 	end
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("CENTER")
+		indicator:SetJustifyV("BOTTOM")
+	end
 end
 function position_indicator_on_root:in_bottom_right(indicator)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -self.layout_db.indicator_root_inside_horizontal_padding / scale, self.layout_db.indicator_root_inside_vertical_padding / scale)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("RIGHT")
+		indicator:SetJustifyV("BOTTOM")
+	end
 end
 function position_indicator_on_root:in_left(indicator)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("LEFT", self, "LEFT", self.layout_db.indicator_root_inside_horizontal_padding / scale, 0)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("LEFT")
+		indicator:SetJustifyV("MIDDLE")
+	end
 end
 function position_indicator_on_root:in_right(indicator)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("RIGHT", self, "RIGHT", -self.layout_db.indicator_root_inside_horizontal_padding / scale, 0)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("RIGHT")
+		indicator:SetJustifyV("MIDDLE")
+	end
 end
 function position_indicator_on_root:edge_top_left(indicator)
 	indicator:SetPoint("CENTER", self, "TOPLEFT", 0, 0)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("CENTER")
+		indicator:SetJustifyV("MIDDLE")
+	end
 end
 function position_indicator_on_root:edge_top(indicator, _, _, indicators_and_texts)
 	if #indicators_and_texts == 1 then
@@ -633,18 +721,38 @@ function position_indicator_on_root:edge_top(indicator, _, _, indicators_and_tex
 		local scale = scale_cache[indicator]
 		indicator:SetPoint("LEFT", self, "TOP", -get_half_width(self, indicators_and_texts) / scale, 0)
 	end
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("CENTER")
+		indicator:SetJustifyV("MIDDLE")
+	end
 end
 function position_indicator_on_root:edge_top_right(indicator)
 	indicator:SetPoint("CENTER", self, "TOPRIGHT", 0, 0)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("CENTER")
+		indicator:SetJustifyV("MIDDLE")
+	end
 end
 function position_indicator_on_root:edge_left(indicator)
 	indicator:SetPoint("CENTER", self, "LEFT", 0, 0)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("CENTER")
+		indicator:SetJustifyV("MIDDLE")
+	end
 end
 function position_indicator_on_root:edge_right(indicator)
 	indicator:SetPoint("CENTER", self, "RIGHT", 0, 0)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("CENTER")
+		indicator:SetJustifyV("MIDDLE")
+	end
 end
 function position_indicator_on_root:edge_bottom_left(indicator)
 	indicator:SetPoint("CENTER", self, "BOTTOMLEFT", 0, 0)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("CENTER")
+		indicator:SetJustifyV("MIDDLE")
+	end
 end
 function position_indicator_on_root:edge_bottom(indicator, _, _, indicators_and_texts)
 	if #indicators_and_texts == 1 then
@@ -653,9 +761,17 @@ function position_indicator_on_root:edge_bottom(indicator, _, _, indicators_and_
 		local scale = scale_cache[indicator]
 		indicator:SetPoint("LEFT", self, "BOTTOM", -get_half_width(self, indicators_and_texts) / scale, 0)
 	end
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("CENTER")
+		indicator:SetJustifyV("MIDDLE")
+	end
 end
 function position_indicator_on_root:edge_bottom_right(indicator)
 	indicator:SetPoint("CENTER", self, "BOTTOMRIGHT", 0, 0)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("CENTER")
+		indicator:SetJustifyV("MIDDLE")
+	end
 end
 
 function position_indicator_on_bar:left(indicator, bar)
@@ -671,6 +787,10 @@ function position_indicator_on_bar:left(indicator, bar)
 	
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("LEFT", attach, "LEFT", self.layout_db.indicator_bar_inside_horizontal_padding / scale, 0)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("LEFT")
+		indicator:SetJustifyV("MIDDLE")
+	end
 end
 function position_indicator_on_bar:center(indicator, bar, _, indicators_and_texts)
 	if #indicators_and_texts == 1 then
@@ -678,6 +798,10 @@ function position_indicator_on_bar:center(indicator, bar, _, indicators_and_text
 	else
 		local scale = scale_cache[indicator]
 		indicator:SetPoint("LEFT", bar, "CENTER", -get_half_width(self, indicators_and_texts) / scale, 0)
+	end
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("CENTER")
+		indicator:SetJustifyV("MIDDLE")
 	end
 end
 function position_indicator_on_bar:right(indicator, bar)
@@ -693,6 +817,10 @@ function position_indicator_on_bar:right(indicator, bar)
 	
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("RIGHT", attach, "RIGHT", -self.layout_db.indicator_bar_inside_horizontal_padding / scale, 0)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("RIGHT")
+		indicator:SetJustifyV("MIDDLE")
+	end
 end
 function position_indicator_on_bar:top(indicator, bar, _, indicators_and_texts)
 	local attach
@@ -710,6 +838,10 @@ function position_indicator_on_bar:top(indicator, bar, _, indicators_and_texts)
 	else
 		local scale = scale_cache[indicator]
 		indicator:SetPoint("TOPLEFT", attach, "TOP", -get_half_width(self, indicators_and_texts) / scale, -self.layout_db.indicator_bar_inside_vertical_padding / scale)
+	end
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("CENTER")
+		indicator:SetJustifyV("TOP")
 	end
 end
 function position_indicator_on_bar:bottom(indicator, bar, _, indicators_and_texts)
@@ -729,38 +861,74 @@ function position_indicator_on_bar:bottom(indicator, bar, _, indicators_and_text
 		local scale = scale_cache[indicator]
 		indicator:SetPoint("BOTTOMLEFT", attach, "BOTTOM", -get_half_width(self, indicators_and_texts) / scale, self.layout_db.indicator_bar_inside_vertical_padding / scale)
 	end
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("CENTER")
+		indicator:SetJustifyV("BOTTOM")
+	end
 end
 function position_indicator_on_bar:top_left(indicator, bar)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("TOPLEFT", bar, "TOPLEFT", self.layout_db.indicator_bar_inside_horizontal_padding / scale, -self.layout_db.indicator_bar_inside_vertical_padding / scale)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("LEFT")
+		indicator:SetJustifyV("TOP")
+	end
 end
 function position_indicator_on_bar:top_right(indicator, bar)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("TOPRIGHT", bar, "TOPRIGHT", -self.layout_db.indicator_bar_inside_horizontal_padding / scale, -self.layout_db.indicator_bar_inside_vertical_padding / scale)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("RIGHT")
+		indicator:SetJustifyV("TOP")
+	end
 end
 function position_indicator_on_bar:bottom_left(indicator, bar)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("BOTTOMLEFT", bar, "BOTTOMLEFT", self.layout_db.indicator_bar_inside_horizontal_padding / scale, self.layout_db.indicator_bar_inside_vertical_padding / scale)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("LEFT")
+		indicator:SetJustifyV("BOTTOM")
+	end
 end
 function position_indicator_on_bar:bottom_right(indicator, bar)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", -self.layout_db.indicator_bar_inside_horizontal_padding / scale, self.layout_db.indicator_bar_inside_vertical_padding / scale)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("RIGHT")
+		indicator:SetJustifyV("BOTTOM")
+	end
 end
 function position_indicator_on_bar:out_right(indicator, bar)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("LEFT", bar, "RIGHT", self.layout_db.indicator_bar_outside_margin / scale, 0)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("LEFT")
+		indicator:SetJustifyV("MIDDLE")
+	end
 end
 function position_indicator_on_bar:out_left(indicator, bar)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("RIGHT", bar, "LEFT", -self.layout_db.indicator_bar_outside_margin / scale, 0)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("RIGHT")
+		indicator:SetJustifyV("MIDDLE")
+	end
 end
 function position_indicator_on_bar:out_top(indicator, bar)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("BOTTOM", bar, "TOP", 0, self.layout_db.indicator_bar_outside_margin / scale)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("CENTER")
+		indicator:SetJustifyV("TOP")
+	end
 end
 function position_indicator_on_bar:out_bottom(indicator, bar)
 	local scale = scale_cache[indicator]
 	indicator:SetPoint("TOP", bar, "BOTTOM", 0, -self.layout_db.indicator_bar_outside_margin / scale)
+	if indicator.SetJustifyH then
+		indicator:SetJustifyH("CENTER")
+		indicator:SetJustifyV("BOTTOM")
+	end
 end
 
 function position_next_indicator_on_root:out_top_left(indicator, _, last_indicator)
