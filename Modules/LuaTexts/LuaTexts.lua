@@ -247,7 +247,7 @@ return "-%d",MaxPower(unit) - Power(unit)]],
 			code = [[
 local max = MaxPower(unit)
 if max > 0 then
-  return "%s%%",Percent(Power(unit),MaxPower(unit))
+  return "%s%%",Percent(Power(unit),max)
 end]],
 		},
 		[L["Absolute and percent"]] = {
@@ -303,7 +303,7 @@ end]],
 if UnitPowerType(unit) ~= 0 then
   local max = MaxPower(unit,0)
   if max > 0 then
-    return "%s%%",Percent(Power(unit,0),MaxPower(unit,0))
+    return "%s%%",Percent(Power(unit,0),max)
   end
 end]],
 		},
