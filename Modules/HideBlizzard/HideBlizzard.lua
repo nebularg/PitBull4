@@ -40,7 +40,7 @@ local currently_hidden = {}
 
 function PitBull4_HideBlizzard:UpdateFrames()
 	for name in pairs(showers) do
-		if not self:IsEnabled() or self.db.profile.global[name] then
+		if self:IsEnabled() and self.db.profile.global[name] then
 			if not currently_hidden[name] then
 				currently_hidden[name] = true
 				hiders[name](self)
