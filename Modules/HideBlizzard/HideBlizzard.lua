@@ -185,47 +185,57 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		
 		self:UpdateFrames()
 	end
+	local function hidden(info)
+		return not self:IsEnabled()
+	end
 	return 'player', {
 		type = 'toggle',
 		name = L["Player"],
 		desc = L["Hide the standard player frame."],
 		get = get,
 		set = set,
+		hidden = hidden,	
 	}, 'party', {
 		type = 'toggle',
 		name = L["Party"],
 		desc = L["Hide the standard party frames."],
 		get = get,
 		set = set,
+		hidden = hidden,	
 	}, 'target', {
 		type = 'toggle',
 		name = L["Target"],
 		desc = L["Hide the standard target frame."],
 		get = get,
 		set = set,
+		hidden = hidden,	
 	}, 'focus', {
 		type = 'toggle',
 		name = L["Focus"],
 		desc = L["Hide the standard focus frame."],
 		get = get,
 		set = set,
+		hidden = hidden,	
 	}, 'castbar', {
 		type = 'toggle',
 		name = L["Cast bar"],
 		desc = L["Hides the standard cast bar."],
 		get = get,
 		set = set,
+		hidden = hidden,	
 	}, 'aura', {
 		type = 'toggle',
 		name = L["Buffs/debuffs"],
 		desc = L["Hides the standard buff/debuff frame in the top-right corner of the screen."],
 		get = get,
 		set = set,
+		hidden = hidden,	
 	}, 'runebar', {
 		type = 'toggle',
 		name = L["Rune bar"],
 		desc = L["Hides the standard rune bar in the top-left corner of the screen."],
 		get = get,
 		set = set,
+		hidden = hidden,	
 	}
 end)
