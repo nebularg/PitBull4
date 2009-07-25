@@ -1297,7 +1297,6 @@ local function position_overlapping_texts__helper(frame, attach_frame, left, cen
 		if left then
 			local text = frame[left[#left]]
 		 	if text.SetJustifyH then
-				text:SetJustifyH("LEFT")
 				text:SetPoint("RIGHT", frame[center[1]], "LEFT", -spacing, 0)
 			end
 		end
@@ -1306,14 +1305,12 @@ local function position_overlapping_texts__helper(frame, attach_frame, left, cen
 		if right then
 			local text = frame[right[#right]]
 			if text.SetJustifyH then
-				text:SetJustifyH("RIGHT")
 				text:SetPoint("LEFT", frame[center[#center]], "RIGHT", spacing, 0)
 			end
 		end
 	elseif left then
 		local text = frame[left[#left]]
 		if text.SetJustifyH then	
-			text:SetJustifyH("LEFT")
 			if right then
 				-- clamp left to right
 				text:SetPoint("RIGHT", frame[right[#right]], "LEFT", -spacing, 0)
