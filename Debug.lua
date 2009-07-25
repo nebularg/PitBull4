@@ -106,7 +106,7 @@ for _, k in ipairs(t) do
 	end
 end
 
-function _G.expect(alpha, condition, bravo)
+function _G.PitBull4_expect(alpha, condition, bravo)
 	if not conditions[condition] then
 		error(("Unknown condition %s"):format(pretty_tostring(condition)), 2)
 	end

@@ -204,6 +204,10 @@ PitBull4.DEBUG = _G.PitBull4_DEBUG or false
 _G.PitBull4_DEBUG = nil
 local DEBUG = PitBull4.DEBUG
 
+PitBull4.expect = _G.PitBull4_expect
+_G.PitBull4_expect = nil
+local expect = PitBull4.expect
+
 PitBull4.version = "@project-version@"
 if PitBull4.version:match("@") then
 	PitBull4.version = "Development"

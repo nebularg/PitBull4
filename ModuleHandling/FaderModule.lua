@@ -2,6 +2,7 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 
 local DEBUG = PitBull4.DEBUG
+local expect = PitBull4.expect
 
 -- Constants -----------------------------------------------------------------
 -- how long in seconds it would take to go from 100% to 0% opacity (or the other way around)

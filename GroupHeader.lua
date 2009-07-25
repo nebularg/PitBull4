@@ -2,6 +2,7 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 
 local DEBUG = PitBull4.DEBUG
+local expect = PitBull4.expect
 
 local MAX_PARTY_MEMBERS_WITH_PLAYER = MAX_PARTY_MEMBERS + 1
 local NUM_CLASSES = 0

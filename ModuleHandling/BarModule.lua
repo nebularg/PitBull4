@@ -2,6 +2,7 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 
 local DEBUG = PitBull4.DEBUG
+local expect = PitBull4.expect
 
 local BarModule = PitBull4:NewModuleType("bar", {
 	size = 2,

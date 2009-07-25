@@ -3,6 +3,7 @@ local PitBull4 = _G.PitBull4
 local PitBull4_Controls = {}
 PitBull4.Controls = PitBull4_Controls
 local DEBUG = PitBull4.DEBUG
+local expect = PitBull4.expect
 
 local cache = {}
 

@@ -1,4 +1,5 @@
 local DEBUG = PitBull4.DEBUG
+local expect = PitBull4.expect
 
 -- everything in here will be added to the controls verbatim
 local BetterStatusBar = {

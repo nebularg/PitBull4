@@ -1,5 +1,7 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
+local DEBUG = PitBull4.DEBUG
+local expect = PitBull4.expect
 
 local CustomTextModule = PitBull4:NewModuleType("custom_text", {
 	size = 1,

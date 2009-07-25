@@ -3,6 +3,7 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
 local DEBUG = PitBull4.DEBUG
+local expect = PitBull4.expect
 
 -- CONSTANTS ----------------------------------------------------------------
 
