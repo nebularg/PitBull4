@@ -453,13 +453,19 @@ function UnitFrame:_RefreshLayout()
 		seen_layout_dbs[self.layout_db] = true
 		PitBull4:CallMethodOnModules("OnNewLayout", layout)
 	end
-	
-	if classification_db.click_through then
-		self:EnableMouse(false)
-	else
-		self:EnableMouse(true)
+
+	-- Can't assume that it is safe to do this because sometimes we are called
+	-- inside the initialConfigFunction for a GropuHeader which doesn't allow
+	-- us to Enable/Disable the mouse.  Downside of this is GroupHeader attached
+	-- frames made in combat will have the mouse enabled until you leave combat
+	-- next.  In practice most users will have the mouse enabled anyway.
+	-- TODO: Request an attribute like we have for sizing to be able to set
+	-- this in combat during initialConfigFunction.
+	local mouse_state = not not self:IsMouseEnabled()
+	if not classification_db.click_through ~= mouse_state then
+		PitBull4:RunOnLeaveCombat(self.EnableMouse,self,not mouse_state)
 	end
-	
+
 	self:RefixSizeAndPosition()
 
 	if old_layout then
