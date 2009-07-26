@@ -114,7 +114,8 @@ local PROVIDED_CODES = function() return {
 	[L["Class"]] = {
 		[L["Standard"]]            = "[Classification] [Level:DifficultyColor] [(if (IsPlayer or (IsEnemy and not IsPet)) then Class):ClassColor] [DruidForm:Paren] [SmartRace]",
 		[L["Player classes only"]] = "[Classification] [Level:DifficultyColor] [(if IsPlayer then Class):ClassColor] [DruidForm:Paren] [SmartRace]",
-		[L["Short"]]               = "[(Level (if Classification then '+')):DifficultyColor] [SmartRace]",
+		[L["Short level and race"]]               = "[(Level (if Classification then '+')):DifficultyColor] [SmartRace]",
+		[L["Short"]] = "[(if IsPlayer then Class):ClassColor]",
 	},
 	[L["Health"]] = {
 		[L["Absolute"]]       = "[Status or FractionalHP]",

@@ -86,11 +86,19 @@ else
   end
 end]],
 		},
-		[L["Short"]] = {
+		[L["Short level and race"]] = {
 			events = {['UNIT_CLASSIFICATION_CHANGED']=true,['UNIT_LEVEL']=true},
 			code = [[
 local dr,dg,db = DifficultyColor(unit)
 return "|cff%02x%02x%02x%s%s|r %s",dr,dg,db,Level(unit),Classification(unit) and '+' or '',SmartRace(unit) or '']],
+		},
+		[L["Short"]] = {
+			events = {},
+			code = [[
+if UnitIsPlayer(unit) then
+  local cr,cg,cb = ClassColor(unit)
+  return "|cff%02x%02x%02x%s|r",cr,cg,cb,Class(unit)
+end]],
 		},
 	},
 	[L["Health"]] = {
