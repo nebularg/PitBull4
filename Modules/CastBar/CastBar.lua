@@ -51,10 +51,7 @@ end
 
 function PitBull4_CastBar:FixCastDataAndUpdateAll()
 	self:FixCastData()
-
-	if next(cast_data) then
-		self:UpdateAll(frame)
-	end
+	self:UpdateAll(frame)
 end
 
 local new, del
@@ -185,11 +182,15 @@ function PitBull4_CastBar:UpdateInfo(event, unit)
 		data.channeling = channeling
 		data.fadeOut = false
 		data.stopTime = nil
+		timerFrame:Show()
 		return
 	end
 	
 	if not data.icon then
 		cast_data[guid] = del(data)
+		if not next(cast_data) then
+			timerFrame:Hide()
+		end
 		return
 	end
 	
@@ -246,6 +247,9 @@ function PitBull4_CastBar:FixCastData()
 		if not found then
 			cast_data[guid] = del(data)
 		end
+	end
+	if not next(cast_data) then
+		timerFrame:Hide()
 	end
 	wipe(tmp)
 end
