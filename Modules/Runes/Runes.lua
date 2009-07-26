@@ -143,6 +143,8 @@ function PitBull4_Runes:UpdateFrame(frame)
 		rune:UpdateCooldown()
 	end
 	
+	container:Show()
+
 	return true
 end
 
