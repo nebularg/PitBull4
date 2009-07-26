@@ -73,13 +73,13 @@ do
 end
 
 function PitBull4_CastBar:GetValue(frame)
-	local unit = frame.unit
-	if frame.is_wacky or unit == "target" or unit == "focus" then
-		self:UpdateInfo(nil, unit)
-	end
-	
 	local guid = frame.guid
 	local data = cast_data[guid]
+	if frame.is_wacky or not data then
+		self:UpdateInfo(nil, frame.unit)
+		data = cast_data[guid]
+	end
+	
 	local db = self:GetLayoutDB(frame)
 	if not data then
 		if db.auto_hide then
