@@ -298,6 +298,7 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 			end
 			return not LibDogTag
 		end,
+		width = 'double',
 	}, 'code', {
 		type = 'input',
 		name = L["Code"],

@@ -1259,6 +1259,7 @@ PitBull4_LuaTexts:SetLayoutOptionsFunction(function(self)
 			update()	
 		end,
 		values = values,
+		width = 'double',
 	}, 'code', {
 		type = 'input',
 		name = L["Code"],
@@ -1342,6 +1343,7 @@ PitBull4_LuaTexts:SetGlobalOptionsFunction(function(self)
 			return t
 		end,
 		hidden = hidden, 
+		width = 'double',
 	}, 'new_event', {
 		type = 'input',
 		name = L['New event'],

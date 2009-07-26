@@ -470,7 +470,14 @@ function PitBull4_Aura:GetFilterEditor()
 						end
 						return t
 					end,
+					width = 'double',
 					order = 1,
+				},
+				spacer = {
+					type = 'description',
+					name = '',
+					desc = '',
+					order = 2,
 				},
 				delete_filter = {
 					type = 'execute',
@@ -488,7 +495,7 @@ function PitBull4_Aura:GetFilterEditor()
 						if any_layout_uses_filter(CURRENT_FILTER) then return true end
 						return PitBull4_Aura:AnyFilterReferences(CURRENT_FILTER)
 					end,
-					order = 2,
+					order = 3,
 				},
 				new_filter = {
 					type = 'input',
@@ -513,7 +520,7 @@ function PitBull4_Aura:GetFilterEditor()
 						end
 						return true
 					end,
-					order = 3,
+					order = 4,
 				},
 				filter = {
 					type = 'group',
@@ -521,7 +528,7 @@ function PitBull4_Aura:GetFilterEditor()
 					desc = '',
 					inline = true,
 					args = CURRENT_FILTER_OPTIONS,
-					order = 4,
+					order = 5,
 				},
 			},
 			order = 2,

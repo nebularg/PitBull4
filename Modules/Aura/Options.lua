@@ -1456,6 +1456,12 @@ function PitBull4_Aura.SetHighlightOptions(self, options)
 			local db = PitBull4.Options.GetLayoutDB(self)
 			return not db.enabled or not db.highlight
 		end,
+		width = 'double',
+	}
+	local spacer = {
+		type = 'description',
+		name = '',
+		desc = '',
 	}
 	local color_type_option = {
 		type = 'toggle',
@@ -1506,6 +1512,11 @@ function PitBull4_Aura.SetHighlightOptions(self, options)
 			local highlight_filters = db.highlight_filters
 			return not db.highlight or db.highlight_filters_color_by_type[pos] or not highlight_filters[pos] or highlight_filters[pos] == ""
 		end,
+	}
+	local header = {
+		type = 'header',
+		name = '',
+		desc = '',
 	}
 
 	-- Make sure this table is empty so we can remove entries
@@ -1571,9 +1582,14 @@ function PitBull4_Aura.SetHighlightOptions(self, options)
 	}
 	order = order + 1
 
-	for i = 1, #filters+1 do
+	local max = #filters+1
+	for i = 1, max do
 		local slot = 'filter_'..i
 		options[slot] = copy(filter_option)
+		options[slot].order = order
+		order = order + 1
+		slot = 'spacer_'..i
+		options[slot] = copy(spacer)
 		options[slot].order = order
 		order = order + 1
 		slot = 'color_type_'..i
@@ -1584,6 +1600,12 @@ function PitBull4_Aura.SetHighlightOptions(self, options)
 		options[slot] = copy(custom_color_option)
 		options[slot].order = order
 		order = order + 1
+		if i ~= max then
+			slot = 'header_'..i
+			options[slot] = copy(header)
+			options[slot].order = order
+			order = order + 1
+		end
 	end
 end
 
@@ -2300,6 +2322,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				set = set_layout_filter,
 				values = get_layout_filter_values,
 				disabled = is_aura_disabled,
+				width = 'double',
 				order = 1,
 			},
 			debuff = {
@@ -2310,6 +2333,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				set = set_layout_filter,
 				values = get_layout_filter_values,
 				disabled = is_aura_disabled,
+				width = 'double',
 				order = 2,
 			},
 		},
