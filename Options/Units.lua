@@ -3,7 +3,7 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
 local CURRENT_UNIT = "player"
-local CURRENT_GROUP = nil
+local CURRENT_GROUP = L["Party"] 
 
 function PitBull4.Options.get_unit_options()
 	local unit_options = {
@@ -70,12 +70,6 @@ function PitBull4.Options.get_unit_options()
 			CURRENT_UNIT = value
 		end
 	}
-	
-	CURRENT_GROUP = next(PitBull4.db.profile.groups)
-	if not CURRENT_GROUP then
-		CURRENT_GROUP = L["Party"]
-		local _ = PitBull4.db.profile.groups[CURRENT_GROUP]
-	end
 	
 	group_options.args.current_group = {
 		name = L["Current group"],
