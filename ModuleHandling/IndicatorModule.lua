@@ -67,6 +67,18 @@ local function call_tex_coord_function(self, frame, texture)
 	
 	return c1, c2, c3, c4
 end
+
+--- Call the :GetEnableMouse function on the indicator module regarding the given frame.
+-- @param frame the frame to find out if the mouse should be enabled on
+-- @usage control:EnableMouse(call_enable_mouse_function(self, frame))
+-- @return true if the mouse should be enabled for the indicator
+local function call_enable_mouse_function(self, frame)
+	if not self.GetEnableMouse then
+		return false
+	end
+	return self:GetEnableMouse(frame)
+end
+
 --- Clear the indicator for the current module if it exists.
 -- @param frame the Unit Frame to clear
 -- @usage local update_layout = MyModule:ClearFrame(frame)
@@ -109,6 +121,9 @@ function IndicatorModule:UpdateFrame(frame)
 		frame[id] = control
 		control:SetWidth(INDICATOR_SIZE)
 		control:SetHeight(INDICATOR_SIZE)
+		control:EnableMouse(call_enable_mouse_function(self, frame))
+		control:SetScript("OnEnter",self.OnEnter)
+		control:SetScript("OnLeave",self.OnLeave)
 	end
 	
 	control:SetTexture(tex)

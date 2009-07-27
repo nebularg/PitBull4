@@ -19,6 +19,7 @@ PitBull4_HappinessIcon:SetDefaults({
 	location = "edge_bottom_right",
 	position = 1,
 	size = 1.2,
+	tooltip = true,
 })
 
 function PitBull4_HappinessIcon:OnEnable()
@@ -71,3 +72,44 @@ end
 function PitBull4_HappinessIcon:UNIT_HAPPINESS()
 	self:UpdateForUnitID("pet")
 end
+
+function PitBull4_HappinessIcon:GetEnableMouse(frame)
+	return self:GetLayoutDB(frame).tooltip
+end
+
+function PitBull4_HappinessIcon.OnEnter(icon, motion)
+	local happiness, damage_percentage = GetPetHappiness()
+	if happiness then
+		GameTooltip:SetOwner(icon, "ANCHOR_RIGHT")
+		GameTooltip:SetText(_G["PET_HAPPINESS"..happiness])
+		if damage_percentage then
+			GameTooltip:AddLine(format(PET_DAMAGE_PERCENTAGE, damage_percentage), "", 1, 1, 1)
+		end
+		GameTooltip:Show()
+	end
+end
+
+function PitBull4_HappinessIcon.OnLeave(icon, motion)
+	if GameTooltip:GetOwner() == icon then
+		GameTooltip:Hide()
+	end
+end
+
+PitBull4_HappinessIcon:SetLayoutOptionsFunction(function(self)
+	return 'tooltip', {
+		type = 'toggle',
+		name = L["Tooltip"],
+		desc = L["Show the tooltip for the HappinessIcon."],
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).tooltip
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).tooltip = value
+
+			for frame in PitBull4:IterateFramesForUnitID("pet") do
+				self:Clear(frame)
+				self:Update(frame)
+			end
+		end
+	}
+end)
