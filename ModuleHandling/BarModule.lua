@@ -76,16 +76,20 @@ end
 local function call_color_function(self, frame, value, extra, icon)
 	local layout_db = self:GetLayoutDB(frame)
 	local custom_color = layout_db.custom_color
-	if custom_color then
-		return unpack(custom_color)
-	end
 	
 	if not self.GetColor then
-		return 0.7, 0.7, 0.7, 1
+		if custom_color then
+			return unpack(custom_color)
+		else
+			return 0.7, 0.7, 0.7
+		end
 	end
-	local r, g, b
+	local r, g, b, override
 	if frame.guid then
-		r, g, b = self:GetColor(frame, value, extra, icon)
+		r, g, b, override = self:GetColor(frame, value, extra, icon)
+	end
+	if not override and custom_color then
+		return unpack(custom_color)
 	end
 	if (not r or not g or not b) and frame.force_show and self.GetExampleColor then
 		r, g, b = self:GetExampleColor(frame, value, extra, icon)

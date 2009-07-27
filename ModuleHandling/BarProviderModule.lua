@@ -82,16 +82,20 @@ end
 -- @return alpha value within [0, 1]
 local function call_color_function(self, frame, bar_db, value, extra)
 	local custom_color = bar_db.custom_color
-	if custom_color then
-		return unpack(custom_color)
-	end
-	
+
 	if not self.GetColor then
-		return 0.7, 0.7, 0.7
+		if custom_color then
+			return unpack(custom_color)
+		else
+			return 0.7, 0.7, 0.7
+		end
 	end
-	local r, g, b
+	local r, g, b, override
 	if frame.guid then
-		r, g, b = self:GetColor(frame, bar_db, value, extra)
+		r, g, b, override = self:GetColor(frame, bar_db, value, extra)
+	end
+	if not override and custom_color then
+		return unpack(custom_color)
 	end
 	if (not r or not g or not b) and frame.force_show and self.GetExampleColor then
 		r, g, b = self:GetExampleColor(frame, bar_db, value, extra)
