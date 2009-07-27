@@ -372,8 +372,8 @@ local function update_bar_layout(frame)
 		else
 			bar_width = get_element_db(id, layout).size * bar_width_per_point
 			bar:SetOrientation("VERTICAL")
-			bar:SetPoint("TOPLEFT", frame, "TOPLEFT", last_x, 0)
-			bar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMLEFT", last_x + bar_width, 0)
+			bar:SetPoint("TOPLEFT", frame, "TOPLEFT", last_x, -bar_padding)
+			bar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMLEFT", last_x + bar_width, bar_padding)
 		end	
 		last_x = last_x + bar_width + bar_spacing
 	end
@@ -395,8 +395,8 @@ local function update_bar_layout(frame)
 		else
 			bar_width = get_element_db(id, layout).size * bar_width_per_point
 			bar:SetOrientation("VERTICAL")
-			bar:SetPoint("TOPRIGHT", frame, "TOPRIGHT", last_x, 0)
-			bar:SetPoint("BOTTOMLEFT", frame, "BOTTOMRIGHT", last_x - bar_width, 0)
+			bar:SetPoint("TOPRIGHT", frame, "TOPRIGHT", last_x, -bar_padding)
+			bar:SetPoint("BOTTOMLEFT", frame, "BOTTOMRIGHT", last_x - bar_width, bar_padding)
 		end	
 		last_x = last_x - bar_width - bar_spacing
 	end
