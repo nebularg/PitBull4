@@ -92,7 +92,7 @@ local GetTotemInfo = _G.GetTotemInfo
 
 
 
-local PitBull4_Totems = PitBull4:NewModule("Totems", "AceEvent-3.0", "AceTimer-3.0", "AceConsole-3.0")
+local PitBull4_Totems = PitBull4:NewModule("Totems", "AceEvent-3.0", "AceTimer-3.0")
 local self = PitBull4_Totems
 
 if DEBUG then
