@@ -99,7 +99,7 @@ PitBull4_HappinessIcon:SetLayoutOptionsFunction(function(self)
 	return 'tooltip', {
 		type = 'toggle',
 		name = L["Tooltip"],
-		desc = L["Show the tooltip for the HappinessIcon."],
+		desc = L["Show a tooltip on mouseover with the happiness and damage percent for the pet."],
 		get = function(info)
 			return PitBull4.Options.GetLayoutDB(self).tooltip
 		end,
