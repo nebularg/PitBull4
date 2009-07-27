@@ -13,7 +13,6 @@ PitBull4_Aggro:SetModuleType("custom")
 PitBull4_Aggro:SetName(L["Aggro"])
 PitBull4_Aggro:SetDescription(L["Add aggro coloring to the unit frame."])
 PitBull4_Aggro:SetDefaults({
-	enabled = nil,
 	kind = "HealthBar",
 },{aggro_color = {1, 0, 0, 1}})
 
@@ -24,17 +23,19 @@ local PitBull4_Background
 local function callback(aggro, name, unit)
 	for frame in PitBull4:IterateFramesForGUID(UnitGUID(unit)) do
 		local db = PitBull4_Aggro:GetLayoutDB(frame)
-		if db.kind == "HealthBar" then
-			if PitBull4_HealthBar and PitBull4_HealthBar:IsEnabled() then
-				PitBull4_HealthBar:UpdateFrame(frame)
-			end
-		elseif db.kind == "Border" then
-			if PitBull4_Border and PitBull4_Border:IsEnabled() then
-				PitBull4_Border:UpdateFrame(frame)
-			end
-		elseif db.kind == "Background" then
-			if PitBull4_Background and PitBull4_Background:IsEnabled() then
-				PitBull4_Background:UpdateFrame(frame)
+		if db.enabled then
+			if db.kind == "HealthBar" then
+				if PitBull4_HealthBar and PitBull4_HealthBar:IsEnabled() then
+					PitBull4_HealthBar:UpdateFrame(frame)
+				end
+			elseif db.kind == "Border" then
+				if PitBull4_Border and PitBull4_Border:IsEnabled() then
+					PitBull4_Border:UpdateFrame(frame)
+				end
+			elseif db.kind == "Background" then
+				if PitBull4_Background and PitBull4_Background:IsEnabled() then
+					PitBull4_Background:UpdateFrame(frame)
+				end
 			end
 		end
 	end
@@ -71,7 +72,7 @@ end
 function PitBull4_Aggro:HealthBar_GetColor(module, frame, value)
 	local unit = frame.unit
 	local db = self:GetLayoutDB(frame)
-	if unit and db.kind == "HealthBar" and UnitIsFriend("player", unit) and LibBanzai:GetUnitAggroByUnitId(unit) then
+	if unit and db.enabled and db.kind == "HealthBar" and UnitIsFriend("player", unit) and LibBanzai:GetUnitAggroByUnitId(unit) then
 		local aggro_color = self.db.profile.global.aggro_color
 		return aggro_color[1], aggro_color[2], aggro_color[3], true
 	end
@@ -91,7 +92,7 @@ function PitBull4_Aggro:Border_GetTextureAndColor(module, frame)
 		texture, r, g, b, a = self.hooks[module].GetTextureAndColor(module, frame)
 	end
 	
-	if unit and db.kind == "Border" and UnitIsFriend("player", unit) and LibBanzai:GetUnitAggroByUnitId(unit) then
+	if unit and db.enabled and db.kind == "Border" and UnitIsFriend("player", unit) and LibBanzai:GetUnitAggroByUnitId(unit) then
 		r, g, b, a = unpack(self.db.profile.global.aggro_color)
 		if not texture or texture == "None" then
 			texture = "Blizzard Tooltip"
@@ -113,7 +114,7 @@ function PitBull4_Aggro:Background_GetColor(module, frame)
 		r, g, b, a = self.hooks[module].GetColor(module, frame)
 	end
 	
-	if unit and db.kind == "Background" and UnitIsFriend("player", unit) and LibBanzai:GetUnitAggroByUnitId(unit) then
+	if unit and db.enabled and db.kind == "Background" and UnitIsFriend("player", unit) and LibBanzai:GetUnitAggroByUnitId(unit) then
 		local a2
 		r, g, b, a2 = unpack(self.db.profile.global.aggro_color)
 		if a then
@@ -141,7 +142,7 @@ PitBull4_Aggro:SetLayoutOptionsFunction(function(self)
 		end
 	end
 
-	return 'enable', nil, 'kind', {
+	return 'kind', {
 		type = 'select',
 		name = L["Display"],
 		desc = L["How to display the aggro indication."],
