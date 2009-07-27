@@ -60,11 +60,13 @@ function PitBull4.Options.get_layout_editor_other_options(layout_options)
 		for i = 1, #t, 2 do
 			local k = t[i]
 			local v = t[i+1]
-		
-			v.order = i + 100
-			local v_disabled = v.disabled
-			function v.disabled(info)
-				return not GetLayoutDB(module).enabled or (v_disabled and v_disabled(info))
+	
+			if v then
+				v.order = i + 100
+				local v_disabled = v.disabled
+				function v.disabled(info)
+					return not GetLayoutDB(module).enabled or (v_disabled and v_disabled(info))
+				end
 			end
 		
 			args[id].args[k] = v

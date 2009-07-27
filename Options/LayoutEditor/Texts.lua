@@ -678,17 +678,19 @@ function PitBull4.Options.get_layout_editor_text_options()
 		for i = 1, #t, 2 do
 			local k = t[i]
 			local v = t[i+1]
+		
+			if v then
+				v.order = i + 100
 			
-			v.order = i + 100
+				local old_disabled = v.disabled
+				v.disabled = function(info)
+					return disabled(info) or (old_disabled and old_disabled(info))
+				end
 			
-			local old_disabled = v.disabled
-			v.disabled = function(info)
-				return disabled(info) or (old_disabled and old_disabled(info))
-			end
-			
-			local old_hidden = v.hidden
-			v.hidden = function(info)
-				return module ~= CURRENT_TEXT_PROVIDER_MODULE or (old_hidden and old_hidden(info))
+				local old_hidden = v.hidden
+				v.hidden = function(info)
+					return module ~= CURRENT_TEXT_PROVIDER_MODULE or (old_hidden and old_hidden(info))
+				end
 			end
 			
 			options.args.edit.args[id .. "-" .. k] = v
@@ -713,16 +715,18 @@ function PitBull4.Options.get_layout_editor_text_options()
 
 			order = order + 1
 
-			v.order = order
+			if v then
+				v.order = order
 
-			local old_disabled = v.disabled
-			v.disabled = function(info)
-				return disabled(info) or (old_disabled and old_disabled(info))
-			end
+				local old_disabled = v.disabled
+				v.disabled = function(info)
+					return disabled(info) or (old_disabled and old_disabled(info))
+				end
 
-			local old_hidden = v.hidden
-			v.hidden = function(info)
-				return module ~= CURRENT_CUSTOM_TEXT_MODULE or (old_hidden and old_hidden(info))
+				local old_hidden = v.hidden
+				v.hidden = function(info)
+					return module ~= CURRENT_CUSTOM_TEXT_MODULE or (old_hidden and old_hidden(info))
+				end
 			end
 
 			options.args.edit.args[id .. "-" .. k] = v

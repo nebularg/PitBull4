@@ -758,13 +758,15 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			for i = 1, #data, 2 do
 				local k, v = data[i], data[i+1]
 
-				args[k] = v
-				v.order = 100 + i
+				if v then
+					v.order = 100 + i
 
-				local v_disabled = v.disabled
-				function v.disabled(info)
-					return disabled(info) or (v_disabled and v_disabled(info))
+					local v_disabled = v.disabled
+					function v.disabled(info)
+						return disabled(info) or (v_disabled and v_disabled(info))
+					end
 				end
+				args[k] = v
 			end
 			layout_functions[module] = false
 		end
