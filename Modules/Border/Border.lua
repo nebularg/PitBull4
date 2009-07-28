@@ -34,6 +34,7 @@ function PitBull4_Border:OnEnable()
 	if not LibSharedMedia then
 		error(L["PitBull4_Border requires the library LibSharedMedia-3.0 to be available."])
 	end
+	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED")
 	
 	LibSharedMedia_border_None = LibSharedMedia:Fetch("border", "None")
 
@@ -174,6 +175,10 @@ function PitBull4_Border:ClearFrame(frame)
 	frame.Border = border:Delete()
 	
 	return false
+end
+
+function PitBull4_Border:UNIT_CLASSIFICATION_CHANGED(event, unit)
+	self:UpdateForUnitID(unit)
 end
 
 function PitBull4_Border:OnHide(frame)
