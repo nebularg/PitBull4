@@ -85,9 +85,9 @@ local function call_color_function(self, frame, bar_db, value, extra)
 
 	if not self.GetColor then
 		if custom_color then
-			return unpack(custom_color)
+			return custom_color[1], custom_color[2], custom_color[3], bar_db.alpha 
 		else
-			return 0.7, 0.7, 0.7, 1
+			return 0.7, 0.7, 0.7, bar_db.alpha 
 		end
 	end
 	local r, g, b, a, override
@@ -95,15 +95,15 @@ local function call_color_function(self, frame, bar_db, value, extra)
 		r, g, b, a, override = self:GetColor(frame, bar_db, value, extra)
 	end
 	if not override and custom_color then
-		return unpack(custom_color)
+		return custom_color[1], custom_color[2], custom_color[3], a or bar_db.alpha 
 	end
 	if (not r or not g or not b) and frame.force_show and self.GetExampleColor then
 		r, g, b, a = self:GetExampleColor(frame, bar_db, value, extra)
 	end
 	if not r or not g or not b then
-		return 0.7, 0.7, 0.7, a or 1
+		return 0.7, 0.7, 0.7, a or bar_db.alpha 
 	end
-	return r, g, b, a or 1
+	return r, g, b, a or bar_db.alpha 
 end
 
 --- Call the :GetExtraColor function on the status bar module regarding the given frame.
@@ -121,8 +121,8 @@ end
 local function call_extra_color_function(self, frame, bar_db, value, extra)
 	local custom_color = bar_db.custom_color
 	if custom_color then
-		local r, g, b, a = custom_color
-		return (1 + 2*r) / 3, (1 + 2*g) / 3, (1 + 2*b) / 3, a
+		local r, g, b = custom_color[1], custom_color[2], custom_color[3]
+		return (1 + 2*r) / 3, (1 + 2*g) / 3, (1 + 2*b) / 3, 1 
 	end
 	
 	if not self.GetExtraColor then

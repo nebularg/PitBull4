@@ -80,9 +80,9 @@ local function call_color_function(self, frame, value, extra, icon)
 	
 	if not self.GetColor then
 		if custom_color then
-			return unpack(custom_color)
+			return custom_color[1], custom_color[2], custom_color[3], layout_db.alpha 
 		else
-			return 0.7, 0.7, 0.7
+			return 0.7, 0.7, 0.7, layout_db.alpha 
 		end
 	end
 	local r, g, b, a, override
@@ -90,15 +90,15 @@ local function call_color_function(self, frame, value, extra, icon)
 		r, g, b, a, override = self:GetColor(frame, value, extra, icon)
 	end
 	if not override and custom_color then
-		return unpack(custom_color)
+		return custom_color[1], custom_color[2], custom_color[3], a or layout_db.alpha 
 	end
 	if (not r or not g or not b) and frame.force_show and self.GetExampleColor then
 		r, g, b, a = self:GetExampleColor(frame, value, extra, icon)
 	end
 	if not r or not g or not b then
-		return 0.7, 0.7, 0.7, a or 1
+		return 0.7, 0.7, 0.7, a or layout_db.alpha 
 	end
-	return r, g, b, a or 1
+	return r, g, b, a or layout_db.alpha 
 end
 
 --- Call the :GetBackgroundColor function on the status bar module regarding the given frame.
@@ -117,7 +117,7 @@ local function call_background_color_function(self, frame, value, extra, icon)
 	local layout_db = self:GetLayoutDB(frame)
 	local custom_background = layout_db.custom_background
 	if custom_background then
-		return unpack(custom_background)
+		return custom_background[1], custom_background[2], custom_background[3], layout_db.background_alpha 
 	end
 	
 	if not self.GetBackgroundColor then
@@ -133,7 +133,7 @@ local function call_background_color_function(self, frame, value, extra, icon)
 	if not r or not g or not b then
 		return
 	end
-	return r, g, b, a or 1
+	return r, g, b, a or layout_db.background_alpha
 end
 
 
@@ -153,8 +153,8 @@ local function call_extra_color_function(self, frame, value, extra, icon)
 	local layout_db = self:GetLayoutDB(frame)
 	local custom_color = layout_db.custom_color
 	if custom_color then
-		local r, g, b, a = unpack(custom_color)
-		return (1 + 2*r) / 3, (1 + 2*g) / 3, (1 + 2*b) / 3, a
+		local r, g, b = custom_color[1], custom_color[2], custom_color[3] 
+		return (1 + 2*r) / 3, (1 + 2*g) / 3, (1 + 2*b) / 3, 1 
 	end
 	
 	if not self.GetExtraColor then
