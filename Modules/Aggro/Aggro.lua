@@ -74,7 +74,7 @@ function PitBull4_Aggro:HealthBar_GetColor(module, frame, value)
 	local db = self:GetLayoutDB(frame)
 	if unit and db.enabled and db.kind == "HealthBar" and UnitIsFriend("player", unit) and LibBanzai:GetUnitAggroByUnitId(unit) then
 		local aggro_color = self.db.profile.global.aggro_color
-		return aggro_color[1], aggro_color[2], aggro_color[3], true
+		return aggro_color[1], aggro_color[2], aggro_color[3], nil, true
 	end
 	
 	return self.hooks[module].GetColor(module, frame, value)
