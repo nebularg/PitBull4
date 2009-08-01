@@ -87,23 +87,23 @@ local function call_color_function(self, frame, bar_db, value, extra)
 		if custom_color then
 			return unpack(custom_color)
 		else
-			return 0.7, 0.7, 0.7
+			return 0.7, 0.7, 0.7, 1
 		end
 	end
-	local r, g, b, override
+	local r, g, b, a, override
 	if frame.guid then
-		r, g, b, override = self:GetColor(frame, bar_db, value, extra)
+		r, g, b, a, override = self:GetColor(frame, bar_db, value, extra)
 	end
 	if not override and custom_color then
 		return unpack(custom_color)
 	end
 	if (not r or not g or not b) and frame.force_show and self.GetExampleColor then
-		r, g, b = self:GetExampleColor(frame, bar_db, value, extra)
+		r, g, b, a = self:GetExampleColor(frame, bar_db, value, extra)
 	end
 	if not r or not g or not b then
-		return 0.7, 0.7, 0.7
+		return 0.7, 0.7, 0.7, a or 1
 	end
-	return r, g, b
+	return r, g, b, a or 1
 end
 
 --- Call the :GetExtraColor function on the status bar module regarding the given frame.
@@ -121,24 +121,24 @@ end
 local function call_extra_color_function(self, frame, bar_db, value, extra)
 	local custom_color = bar_db.custom_color
 	if custom_color then
-		local r, g, b = custom_color
+		local r, g, b, a = custom_color
 		return (1 + 2*r) / 3, (1 + 2*g) / 3, (1 + 2*b) / 3, a
 	end
 	
 	if not self.GetExtraColor then
-		return 0.5, 0.5, 0.5
+		return 0.5, 0.5, 0.5, nil
 	end
-	local r, g, b
+	local r, g, b, a
 	if frame.guid then
-		r, g, b = self:GetExtraColor(frame, value, extra)
+		r, g, b, a = self:GetExtraColor(frame, value, extra)
 	end
 	if (not r or not g or not b) and frame.force_show and self.GetExampleExtraColor then
-		r, g, b = self:GetExampleExtraColor(frame, value, extra)
+		r, g, b, a = self:GetExampleExtraColor(frame, value, extra)
 	end
 	if not r or not g or not b then
-		return 0.5, 0.5, 0.5
+		return 0.5, 0.5, 0.5, nil
 	end
-	return r, g, b
+	return r, g, b, a
 end
 
 --- Handle the frame being hidden
@@ -245,14 +245,16 @@ function BarProviderModule:UpdateFrame(frame)
 			bar:SetTexture(texture or [[Interface\TargetingFrame\UI-StatusBar]])
 			bar:SetValue(value)
 			
-			local r, g, b = call_color_function(self, frame, bar_db, value, extra or 0)
+			local r, g, b, a = call_color_function(self, frame, bar_db, value, extra or 0)
 			bar:SetColor(r, g, b)
+			bar:SetAlpha(a)
 			
 			if extra then
 				bar:SetExtraValue(extra)
 
-				local r, g, b = call_extra_color_function(self, frame, bar_db, value, extra)
+				local r, g, b, a = call_extra_color_function(self, frame, bar_db, value, extra)
 				bar:SetExtraColor(r, g, b)
+				bar:SetExtraAlpha(a)
 			else
 				bar:SetExtraValue(0)
 			end
