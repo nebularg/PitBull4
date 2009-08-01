@@ -39,13 +39,45 @@ local function OnUpdate(self)
 		return
 	end
 	last_aura_onUpdate = current_time
-	if self.id > 0 then
+	local id = self.id
+	if id > 0 then
 		-- Real Buffs
-		if self.is_buff then
-			GameTooltip:SetUnitBuff(self:GetUnit(), self.id)
-		else
-			GameTooltip:SetUnitDebuff(self:GetUnit(), self.id)
+		local unit = self:GetUnit()
+		local filter = self.is_buff and "HELPFUL" or "HARMFUL"
+		-- Check that the cached id is still refrencing the same aura.  
+		-- If not walk the aura tree to find one of the same name so the 
+		-- tooltip will match.  UNIT_AURA events are not fired when the
+		-- unit goes out of range but the order of the auras by index change.
+		-- For a more detailed explanation for why this silly hack is necessary see: 
+		-- http://www.wowace.com/addons/pitbull4/tickets/532-aura-tooltips-not-matching-icons/
+		-- or
+		-- http://forums.worldofwarcraft.com/thread.html?topicId=16904201555&sid=1&pageNo=9#166
+		local name = UnitAura(unit, id, filter)
+		if name ~= self.name then
+			local i = 1
+			while true do
+				name = UnitAura(unit,i,filter)
+				if not name then
+					-- Couldn't find a matching aura so do nothing. 
+					return
+				end
+				if name == self.name then
+					-- Use this id, it may not be the right one but if the name
+					-- doesn't match it means we're out of range of the unit so
+					-- it doesn't matter which one we use as long as it is the same
+					-- name to provide the proper tooltip.  Using the wrong one is
+					-- ok since when we're out of range the time left won't be
+					-- available anyway.  It may seem desireable to cache the
+					-- id on the aura frame so we don't have to redo this.  However,
+					-- if there are two of the same aura and we selected the wrong one
+					-- then the time left tooltip will be wrong when we move back in range.
+					id = i
+					break
+				end
+				i = i + 1
+			end
 		end
+		GameTooltip:SetUnitAura(unit, id, filter)
 	elseif self.slot then
 		local has_item = GameTooltip:SetInventoryItem("player", self.slot)
 		if not has_item then
