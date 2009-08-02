@@ -46,6 +46,9 @@ do
 	elseif class == "PALADIN" then
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(635) -- Holy Light
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(62124) -- Hand of Reckoning
+		-- Holy Paladins may have a talent to increase the range of Judgement of Light and
+		-- Judgement of Wisdom to 40yds so put Judgement of Light in long_enemy_spells
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(20271) -- Judgement of Light
 		res_spells[#res_spells+1] = GetSpellInfo(7328) -- Redemption 
 	elseif class == "SHAMAN" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(8042) -- Earth Shock 
