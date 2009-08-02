@@ -864,7 +864,7 @@ function PitBull4_Totems:BuildFrames(frame)
 			elements[i].textFrame = PitBull4.Controls.MakeFrame(frame)
 		end
 		local textFrame = elements[i].textFrame
-		textFrame:SetScale(frm:GetScale())
+		textFrame:SetScale(max(0.01,frm:GetScale()))
 		textFrame:SetAllPoints(frm)
 		textFrame:SetFrameLevel(spiral:GetFrameLevel() + 7)
 		
