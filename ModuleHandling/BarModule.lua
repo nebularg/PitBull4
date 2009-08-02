@@ -121,7 +121,7 @@ local function call_background_color_function(self, frame, value, extra, icon)
 	end
 	
 	if not self.GetBackgroundColor then
-		return 
+		return nil, nil, nil, layout_db.background_alpha 
 	end
 	local r, g, b, a
 	if frame.guid then
@@ -131,7 +131,7 @@ local function call_background_color_function(self, frame, value, extra, icon)
 		r, g, b, a = self:GetExampleBackgroundColor(frame, value, extra, icon)
 	end
 	if not r or not g or not b then
-		return
+		return nil, nil, nil, layout_db.background_alpha 
 	end
 	return r, g, b, a or layout_db.background_alpha
 end
