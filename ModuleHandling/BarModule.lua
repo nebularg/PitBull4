@@ -258,7 +258,7 @@ function BarModule:UpdateFrame(frame)
 	control:SetValue(value)
 	local r, g, b, a = call_color_function(self, frame, value, extra or 0, icon)
 	control:SetColor(r, g, b)
-	control:SetAlpha(a)
+	control:SetNormalAlpha(a)
 
 	r, g, b, a = call_background_color_function(self, frame, value, extra or 0, icon)
 	control:SetBackgroundColor(r, g, b)
