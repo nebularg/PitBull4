@@ -45,6 +45,7 @@ function PitBull4:GetFinalFrameOpacity(frame)
 end
 
 function PitBull4:RecheckAllOpacities()
+	timerFrame:Show()
 	for frame in PitBull4:IterateFrames() do
 		changing_frames[frame] = true
 	end
@@ -83,7 +84,11 @@ timerFrame:SetScript("OnUpdate", function(self, elapsed)
 			end
 		end
 	end
+	if not next(changing_frames) then
+		timerFrame:Hide()
+	end
 end)
+timerFrame:Hide()
 
 --- Handle the frame being hidden
 -- @param frame the Unit Frame hidden.
@@ -115,6 +120,7 @@ function FaderModule:ClearFrame(frame)
 	if frame_to_opacity[frame] then
 		frame_to_opacity[frame] = nil
 		changing_frames[frame] = true
+		timerFrame:Show()
 	end
 	
 	return false
@@ -168,6 +174,7 @@ function FaderModule:UpdateFrame(frame)
 	if frame_to_opacity[frame] ~= opacity then
 		frame_to_opacity[frame] = opacity
 		changing_frames[frame] = true
+		timerFrame:Show()
 	end
 	
 	return false
