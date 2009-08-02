@@ -249,6 +249,7 @@ local function meta_filter_option(self, options)
 			end
 			return t
 		end,
+		width = 'double',
 	}
 	local operator_option = {
 		type = 'select',
@@ -1102,6 +1103,13 @@ local function map_filter_options(self,options)
 		order = 1,
 	}
 
+	options.map_spacer = {
+		type = 'description',
+		name = '',
+		desc = '',
+		order = 2,
+	}
+
 	local option_entry = {
 		type = 'select',
 		get = function(info)
@@ -1126,6 +1134,7 @@ local function map_filter_options(self,options)
 			end
 			return t
 		end,
+		width = 'double',
 	}
 
 	local db = PitBull4_Aura:GetFilterDB(self)
@@ -1145,7 +1154,7 @@ local function map_filter_options(self,options)
 		n = race_names
 		desc = L['Select a filter to use for the race.']
 	end
-	local order = 2
+	local order = 3
 	for i=1,#t do
 		local k = t[i]
 		if not db.map[k] then
