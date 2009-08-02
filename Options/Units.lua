@@ -376,6 +376,7 @@ function PitBull4.Options.get_unit_options()
 		get = get,
 		set = set_with_refresh_group_shown,
 		disabled = disabled,
+		width = 'double',
 	}
 	
 	group_args.include_player = {
@@ -646,6 +647,34 @@ function PitBull4.Options.get_unit_options()
 		up_left = true,
 	}
 	
+	group_layout_args.direction = {
+		name = L["Growth direction"],
+		desc = L["Which way frames should placed."],
+		order = next_order(),
+		type = 'select',
+		values = {
+			down_right = ("%s, %s"):format(L["Rows down"], L["Columns right"]),
+			down_left = ("%s, %s"):format(L["Rows down"], L["Columns left"]),
+			up_right = ("%s, %s"):format(L["Rows up"], L["Columns right"]),
+			up_left = ("%s, %s"):format(L["Rows up"], L["Columns left"]),
+			right_down = ("%s, %s"):format(L["Columns right"], L["Rows down"]),
+			right_up = ("%s, %s"):format(L["Columns right"], L["Rows up"]),
+			left_down = ("%s, %s"):format(L["Columns left"], L["Rows down"]),
+			left_up = ("%s, %s"):format(L["Columns left"], L["Rows up"]),
+		},
+		get = get,
+		set = set_with_refresh_group,
+		disabled = disabled,
+		width = 'double',
+	}
+
+	group_layout_args.spacer = {
+		type = 'description',
+		name = '',
+		desc = '',
+		order = next_order(),
+	}
+
 	group_layout_args.vertical_spacing = {
 		name = L["Vertical spacing"],
 		desc = L["How many pixels between rows in this group."],
@@ -669,26 +698,6 @@ function PitBull4.Options.get_unit_options()
 		max = 300,
 		step = 1,
 		bigStep = 5,
-		get = get,
-		set = set_with_refresh_group,
-		disabled = disabled,
-	}
-	
-	group_layout_args.direction = {
-		name = L["Growth direction"],
-		desc = L["Which way frames should placed."],
-		order = next_order(),
-		type = 'select',
-		values = {
-			down_right = ("%s, %s"):format(L["Rows down"], L["Columns right"]),
-			down_left = ("%s, %s"):format(L["Rows down"], L["Columns left"]),
-			up_right = ("%s, %s"):format(L["Rows up"], L["Columns right"]),
-			up_left = ("%s, %s"):format(L["Rows up"], L["Columns left"]),
-			right_down = ("%s, %s"):format(L["Columns right"], L["Rows down"]),
-			right_up = ("%s, %s"):format(L["Columns right"], L["Rows up"]),
-			left_down = ("%s, %s"):format(L["Columns left"], L["Rows down"]),
-			left_up = ("%s, %s"):format(L["Columns left"], L["Rows up"]),
-		},
 		get = get,
 		set = set_with_refresh_group,
 		disabled = disabled,
