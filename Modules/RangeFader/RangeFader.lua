@@ -59,6 +59,8 @@ do
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(5782) -- Fear
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(172) -- Corruption
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(686) -- Shadow Bolt
+		pet_spells[#pet_spells+1] = GetSpellInfo(755) -- Health Funnel
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(5697) -- Unending Breath
 	elseif class == "MAGE" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(2136) -- Fire Blast
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(133) -- Fireball
