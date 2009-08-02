@@ -264,22 +264,25 @@ PitBull4_VisualHeal:SetColorOptionsFunction(function(self)
 		get = get,
 		set = set,
 		hasAlpha = true,
+		width = 'double',
 	},
 	'outgoing_color', {
 		type = 'color',
-		name = L['Outcoming color (no overheal)'],
+		name = L['Outgoing color (no overheal)'],
 		desc = L['The color of the bar that shows your own heals, when no overhealing is due.'],
 		get = get,
 		set = set,
 		hasAlpha = true,
+		width = 'double',
 	},
 	'outgoing_color_overheal', {
 		type = 'color',
-		name = L['Outcoming color (overheal)'],
+		name = L['Outgoing color (overheal)'],
 		desc = L['The color of the bar that shows your own heals, when full overhealing is due.'],
 		get = get,
 		set = set,
 		hasAlpha = true,
+		width = 'double',
 	},
 	'auto_luminance', {
 		type = 'toggle',
@@ -292,6 +295,7 @@ PitBull4_VisualHeal:SetColorOptionsFunction(function(self)
 			self.db.profile.global.auto_luminance = value
 			self:UpdateAll()
 		end,
+		width = 'double',
 	},
 	function(info)
 		self.db.profile.global.incoming_color = { 0.4, 0.6, 0.4, 0.75 }
