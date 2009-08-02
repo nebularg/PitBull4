@@ -441,8 +441,6 @@ local function update_bar_layout(frame)
 			end
 			bar:SetReverse(reverse)
 			bar:SetDeficit(bar_layout_db.deficit)
-			bar:SetNormalAlpha(bar_layout_db.alpha)
-			bar:SetBackgroundAlpha(bar_layout_db.background_alpha)
 		end
 	end
 
