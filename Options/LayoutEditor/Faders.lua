@@ -62,6 +62,21 @@ function PitBull4.Options.get_layout_editor_fader_options()
 		step = 0.01,
 		bigStep = 0.05,
 	}
+
+	options.args.smooth_opacity = {
+		type = 'toggle',
+		name = L["Smooth opacity change"],
+		desc = L["Change the opacity over time smoothly."],
+		order = 3,
+		get = function(info)
+			return GetLayoutDB(false).opacity_smooth
+		end,
+		set = function(info, value)
+			GetLayoutDB(false).opacity_smooth = value
+			UpdateFrames()
+			PitBull4:RecheckAllOpacities()
+		end,
+	}
 	
 	local layout_functions = PitBull4.Options.layout_functions
 	

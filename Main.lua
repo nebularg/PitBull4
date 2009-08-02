@@ -143,6 +143,7 @@ local DATABASE_DEFAULTS = {
 				size_y = 60,
 				opacity_min = 0.1,
 				opacity_max = 1,
+				opacity_smooth = true,
 				scale = 1,
 				font = DEFAULT_LSM_FONT,
 				font_size = 1,

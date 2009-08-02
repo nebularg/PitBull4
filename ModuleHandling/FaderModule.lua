@@ -56,7 +56,9 @@ timerFrame:SetScript("OnUpdate", function(self, elapsed)
 		
 			if final_opacity ~= current_opacity then
 				local result_opacity
-				if final_opacity < current_opacity then
+				if not frame.layout_db.opacity_smooth then
+					result_opacity = final_opacity
+				elseif final_opacity < current_opacity then
 					result_opacity = current_opacity - opacity_delta
 					if result_opacity < final_opacity then
 						result_opacity = final_opacity
