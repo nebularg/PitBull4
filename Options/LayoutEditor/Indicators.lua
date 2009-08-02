@@ -759,7 +759,9 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 				local k, v = data[i], data[i+1]
 
 				if v then
-					v.order = 100 + i
+					if not v.order then
+						v.order = 100 + i
+					end
 
 					local v_disabled = v.disabled
 					function v.disabled(info)

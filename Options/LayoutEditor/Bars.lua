@@ -651,7 +651,9 @@ function PitBull4.Options.get_layout_editor_bar_options()
 				
 				args[k] = v
 				if v then
-					v.order = 100 + i
+					if not v.order then
+						v.order = 100 + i
+					end
 					local v_disabled = v.disabled
 					function v.disabled(info)
 						return disabled(info) or (v_disabled and v_disabled(info))
@@ -750,7 +752,9 @@ function PitBull4.Options.get_layout_editor_bar_options()
 				
 				args[k] = v
 				if v then
-					v.order = 100 + i
+					if not v.order then
+						v.order = 100 + i
+					end
 					local v_disabled = v.disabled
 					function v.disabled(info)
 						return disabled(info) or (v_disabled and v_disabled(info))

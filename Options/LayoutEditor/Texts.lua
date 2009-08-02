@@ -680,7 +680,9 @@ function PitBull4.Options.get_layout_editor_text_options()
 			local v = t[i+1]
 		
 			if v then
-				v.order = i + 100
+				if not v.order then
+					v.order = i + 100
+				end
 			
 				local old_disabled = v.disabled
 				v.disabled = function(info)
@@ -716,7 +718,9 @@ function PitBull4.Options.get_layout_editor_text_options()
 			order = order + 1
 
 			if v then
-				v.order = order
+				if not v.order then
+					v.order = order
+				end
 
 				local old_disabled = v.disabled
 				v.disabled = function(info)
