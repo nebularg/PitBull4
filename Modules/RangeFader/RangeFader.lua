@@ -64,6 +64,7 @@ do
 	elseif class == "MAGE" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(2136) -- Fire Blast
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(133) -- Fireball
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(475) -- Remove Curse
 	elseif class == "HUNTER" then
 		pet_spells[#pet_spells+1] = GetSpellInfo(136) -- Mend Pet
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(75) -- Auto Shot
