@@ -141,9 +141,9 @@ local function call_background_color_function(self, frame, value, extra, icon)
 	end
 	if not override and custom_background then
 		if a then
-			a = a * layout_db.alpha
+			a = a * layout_db.background_alpha
 		else
-			a = layout_db.alpha
+			a = layout_db.background_alpha
 		end
 		return custom_background[1], custom_background[2], custom_background[3], a
 	end
@@ -151,9 +151,9 @@ local function call_background_color_function(self, frame, value, extra, icon)
 		r, g, b, a = self:GetExampleBackgroundColor(frame, value, extra, icon)
 	end
 	if a then
-		a = a * layout_db.alpha
+		a = a * layout_db.background_alpha
 	else
-		a = layout_db.alpha
+		a = layout_db.background_alpha
 	end
 	if not r or not g or not b then
 		return nil, nil, nil, a 
