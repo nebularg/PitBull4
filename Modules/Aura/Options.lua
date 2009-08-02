@@ -2015,7 +2015,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 
 	return 	true, 'display', {
 		type = 'group',
-		name = 'Display',
+		name = L['Display'],
 		args = {
 			enabled_buffs = {
 				type = 'toggle',
