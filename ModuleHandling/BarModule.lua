@@ -126,24 +126,38 @@ end
 local function call_background_color_function(self, frame, value, extra, icon)
 	local layout_db = self:GetLayoutDB(frame)
 	local custom_background = layout_db.custom_background
-	if custom_background then
-		return custom_background[1], custom_background[2], custom_background[3], layout_db.background_alpha 
-	end
 	
 	if not self.GetBackgroundColor then
-		return nil, nil, nil, layout_db.background_alpha 
+		if custom_background then
+			return custom_background[1], custom_background[2], custom_background[3], layout_db.background_alpha
+		else
+			return nil, nil, nil, layout_db.background_alpha 
+		end
 	end
-	local r, g, b, a
+	local r, g, b, a, override
 	if frame.guid then
-		r, g, b, a = self:GetBackgroundColor(frame, value, extra, icon)
+		r, g, b, a, override = self:GetBackgroundColor(frame, value, extra, icon)
+	end
+	if not override and custom_background then
+		if a then
+			a = a * layout_db.alpha
+		else
+			a = layout_db.alpha
+		end
+		return custom_background[1], custom_background[2], custom_background[3], a
 	end
 	if (not r or not g or not b) and frame.force_show and self.GetExampleBackgroundColor then
 		r, g, b, a = self:GetExampleBackgroundColor(frame, value, extra, icon)
 	end
-	if not r or not g or not b then
-		return nil, nil, nil, layout_db.background_alpha 
+	if a then
+		a = a * layout_db.alpha
+	else
+		a = layout_db.alpha
 	end
-	return r, g, b, a or layout_db.background_alpha
+	if not r or not g or not b then
+		return nil, nil, nil, a 
+	end
+	return r, g, b, a
 end
 
 
