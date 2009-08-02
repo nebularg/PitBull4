@@ -84,7 +84,7 @@ do
 	end
 	
 	function friendly_is_in_range(unit)
-		if CheckInteractDistance(unit, 4) then
+		if CheckInteractDistance(unit, 2) then
 			return true
 		end
 		
@@ -110,7 +110,7 @@ do
 	end
 	
 	function pet_is_in_range(unit)
-		if CheckInteractDistance(unit, 4) then
+		if CheckInteractDistance(unit, 2) then
 			return true
 		end
 		
@@ -129,7 +129,7 @@ do
 	end
 	
 	function enemy_is_in_range(unit)
-		if CheckInteractDistance(unit, 4) then
+		if CheckInteractDistance(unit, 2) then
 			return true
 		end
 		
