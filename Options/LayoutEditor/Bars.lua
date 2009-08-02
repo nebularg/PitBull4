@@ -508,7 +508,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		type = 'toggle',
 		name = L["Custom color"],
 		desc = L["Whether to override the color and use a custom one."],
-		order = -4,
+		order = -6,
 		get = function(info)
 			local db = get_current_layout_db(info)
 			return db and not not db.custom_color
@@ -529,7 +529,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		type = 'color',
 		name = L["Custom color"],
 		desc = L["What color to override the bar with."],
-		order = -3,
+		order = -5,
 		get = function(info)
 			return unpack(get_current_layout_db(info).custom_color)
 		end,
@@ -550,7 +550,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		type = 'toggle',
 		name = L["Custom background"],
 		desc = L["Whether to override the background color and use a custom one."],
-		order = -2,
+		order = -4,
 		get = function(info)
 			local db = get_current_layout_db(info)
 			return db and not not db.custom_background
@@ -571,7 +571,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		type = 'color',
 		name = L["Custom background"],
 		desc = L["What background color to override the bar with."],
-		order = -1,
+		order = -3,
 		get = function(info)
 			return unpack(get_current_layout_db(info).custom_background)
 		end,
@@ -584,6 +584,48 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		hidden = function(info)
 			local db = get_current_layout_db(info)
 			return not db or not db.custom_background
+		end,
+		disabled = disabled,
+	}
+
+	bar_args.toggle_custom_extra = {
+		type = 'toggle',
+		name = L["Custom extra"],
+		desc = L["Whether to override the extra color and use a custom one."],
+		order = -2,
+		get = function(info)
+			local db = get_current_layout_db(info)
+			return db and not not db.custom_extra
+		end,
+		set = function(info, value)
+			if value then
+				get_current_layout_db(info).custom_extra = { 0.31, 0.31, 0.31, 1 }
+			else
+				get_current_layout_db(info).custom_extra = nil
+			end
+			
+			UpdateFrames()
+		end,
+		disabled = disabled,
+	}
+	
+	bar_args.custom_extra = {
+		type = 'color',
+		name = L["Custom extra"],
+		desc = L["What extra color to override the bar with."],
+		order = -1,
+		get = function(info)
+			return unpack(get_current_layout_db(info).custom_extra)
+		end,
+		set = function(info, r, g, b, a)
+			local color = get_current_layout_db(info).custom_extra
+			color[1], color[2], color[3], color[4] = r, g, b, a
+			
+			UpdateFrames()
+		end,
+		hidden = function(info)
+			local db = get_current_layout_db(info)
+			return not db or not db.custom_extra
 		end,
 		disabled = disabled,
 	}

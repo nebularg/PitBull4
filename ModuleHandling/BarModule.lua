@@ -15,6 +15,7 @@ local BarModule = PitBull4:NewModuleType("bar", {
 	enabled = true,
 	custom_color = nil,
 	custom_background = nil,
+	custom_extra = nil,
 	icon_on_left = true,
 }, true)
 
@@ -176,23 +177,42 @@ end
 local function call_extra_color_function(self, frame, value, extra, icon)
 	local layout_db = self:GetLayoutDB(frame)
 	local custom_color = layout_db.custom_color
-	if custom_color then
-		local r, g, b = custom_color[1], custom_color[2], custom_color[3] 
-		return (1 + 2*r) / 3, (1 + 2*g) / 3, (1 + 2*b) / 3, 1 
-	end
+	local custom_extra = layout_db.custom_extra
 	
 	if not self.GetExtraColor then
-		return 0.5, 0.5, 0.5, nil
+		if custom_extra then
+			return custom_extra[1], custom_extra[2], custom_extra[3], nil 
+		elseif custom_color then
+			local r, g, b = custom_color[1], custom_color[2], custom_color[3] 
+			return (1 + 2*r) / 3, (1 + 2*g) / 3, (1 + 2*b) / 3, nil 
+		else
+			return 0.5, 0.5, 0.5, nil
+		end
 	end
-	local r, g, b, a
+
+	local r, g, b, a, override
 	if frame.guid then
-		r, g, b, a = self:GetExtraColor(frame, value, extra)
+		r, g, b, a, override = self:GetExtraColor(frame, value, extra)
+	end
+	if not override then
+		if a then
+			a = a * layout_db.alpha
+		end
+		if custom_extra then
+			return custom_extra[1], custom_extra[2], custom_extra[3], a
+		elseif custom_color then
+			local r, g, b = custom_color[1], custom_color[2], custom_color[3] 
+			return (1 + 2*r) / 3, (1 + 2*g) / 3, (1 + 2*b) / 3, a
+		end
 	end
 	if (not r or not g or not b) and frame.force_show and self.GetExampleExtraColor then
 		r, g, b, a = self:GetExampleExtraColor(frame, value, extra)
 	end
+	if a then
+		a = a * layout_db.alpha
+	end
 	if not r or not g or not b then
-		return 0.5, 0.5, 0.5, nil
+		return 0.5, 0.5, 0.5, a
 	end
 	return r, g, b, a
 end
