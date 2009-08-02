@@ -72,6 +72,15 @@ do
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(49576) -- Death Grip
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(49016) -- Hysteria
 		res_spells[#res_spells+1] = GetSpellInfo(61999) -- Raise Ally 
+	elseif class == "ROGUE" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(2094) -- Blind 
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(1725) -- Distract
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(57934) -- Tricks of the Trade
+	elseif class == "WARRIOR" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(5246) -- Intimidating Shout
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(100) -- Charge
+		long_enemy_spells[#friendly_spells+1] = GetSpellInfo(355) -- Taunt
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(3411) -- Intervene
 	end
 	
 	function friendly_is_in_range(unit)
