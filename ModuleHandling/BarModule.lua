@@ -90,15 +90,25 @@ local function call_color_function(self, frame, value, extra, icon)
 		r, g, b, a, override = self:GetColor(frame, value, extra, icon)
 	end
 	if not override and custom_color then
-		return custom_color[1], custom_color[2], custom_color[3], a or layout_db.alpha 
+		if a then
+			a = a * layout_db.alpha
+		else
+			a = layout_db.alpha
+		end
+		return custom_color[1], custom_color[2], custom_color[3], a
 	end
 	if (not r or not g or not b) and frame.force_show and self.GetExampleColor then
 		r, g, b, a = self:GetExampleColor(frame, value, extra, icon)
 	end
-	if not r or not g or not b then
-		return 0.7, 0.7, 0.7, a or layout_db.alpha 
+	if a then
+		a = a * layout_db.alpha
+	else
+		a = layout_db.alpha
 	end
-	return r, g, b, a or layout_db.alpha 
+	if not r or not g or not b then
+		return 0.7, 0.7, 0.7, a
+	end
+	return r, g, b, a
 end
 
 --- Call the :GetBackgroundColor function on the status bar module regarding the given frame.
