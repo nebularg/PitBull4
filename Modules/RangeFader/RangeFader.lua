@@ -70,6 +70,7 @@ do
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(75) -- Auto Shot
 	elseif class == "DEATHKNIGHT" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(49576) -- Death Grip
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(49016) -- Hysteria
 		res_spells[#res_spells+1] = GetSpellInfo(61999) -- Raise Ally 
 	end
 	
