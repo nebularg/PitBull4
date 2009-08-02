@@ -44,13 +44,6 @@ function PitBull4:GetFinalFrameOpacity(frame)
 	return low
 end
 
-function PitBull4:RecheckAllOpacities()
-	timerFrame:Show()
-	for frame in PitBull4:IterateFrames() do
-		changing_frames[frame] = true
-	end
-end
-
 local timerFrame = CreateFrame("Frame")
 timerFrame:SetScript("OnUpdate", function(self, elapsed)
 	local opacity_delta = elapsed * OPACITY_POINTS_PER_SECOND
@@ -89,6 +82,13 @@ timerFrame:SetScript("OnUpdate", function(self, elapsed)
 	end
 end)
 timerFrame:Hide()
+
+function PitBull4:RecheckAllOpacities()
+	timerFrame:Show()
+	for frame in PitBull4:IterateFrames() do
+		changing_frames[frame] = true
+	end
+end
 
 --- Handle the frame being hidden
 -- @param frame the Unit Frame hidden.
