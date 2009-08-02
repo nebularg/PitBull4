@@ -82,3 +82,43 @@ end
 
 PitBull4_ExperienceBar.UPDATE_EXHAUSTION = PitBull4_ExperienceBar.PLAYER_XP_UPDATE
 PitBull4_ExperienceBar.PLAYER_LEVEL_UP = PitBull4_ExperienceBar.PLAYER_XP_UPDATE
+
+PitBull4_ExperienceBar:SetLayoutOptionsFunction(function(self)
+	return 'toggle_custom_extra', {
+		type = 'toggle',
+		name = L["Custom rested"],
+		desc = L["Whether to override the rested color and use a custom one."],
+		order = -30,
+		get = function(info)
+			local db = PitBull4.Options.GetLayoutDB(self) 
+			return db and not not db.custom_extra
+		end,
+		set = function(info, value)
+			if value then
+				PitBull4.Options.GetLayoutDB(self).custom_extra = { 0.31, 0.31, 0.31, 1 }
+			else
+				PitBull4.Options.GetLayoutDB(self).custom_extra = nil
+			end
+			
+			PitBull4.Options.UpdateFrames()
+		end,
+	}, 'custom_extra', {
+		type = 'color',
+		name = L["Custom rested"],
+		desc = L["What rested color to override the bar with."],
+		order = -29,
+		get = function(info)
+			return unpack(PitBull4.Options.GetLayoutDB(self).custom_extra)
+		end,
+		set = function(info, r, g, b, a)
+			local color = PitBull4.Options.GetLayoutDB(self).custom_extra
+			color[1], color[2], color[3], color[4] = r, g, b, a
+			
+			PitBull4.Options.UpdateFrames()
+		end,
+		hidden = function(info)
+			local db = PitBull4.Options.GetLayoutDB(self)
+			return not db or not db.custom_extra
+		end,
+	}
+end)
