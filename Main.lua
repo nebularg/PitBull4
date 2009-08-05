@@ -964,7 +964,7 @@ function PitBull4:ADDON_LOADED()
 		hooksecurefunc("CT_RAOptions_UpdateMTs",main_tank_update)
 	end
 	
-	self:LoadModules()
+	-- self:LoadModules()
 end
 
 do
@@ -1204,6 +1204,8 @@ function PitBull4:OnEnable()
 	-- show initial frames
 	self:OnProfileChanged()
 	self:RAID_ROSTER_UPDATE()
+	
+	self:LoadModules()
 end
 
 local timer = 0
