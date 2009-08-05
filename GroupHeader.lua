@@ -458,23 +458,6 @@ function GroupHeader:InitialConfigFunction(frame)
 	
 	PitBull4:ConvertIntoUnitFrame(frame)
 	
-	-- This is ugly but functional.  The problem is as follows.  CanChangeProtectedState returns
-	-- nil if we're in combat even though right now in the InitialConfigFunction we can
-	-- SetAttribute.  Clique checks this and as a result doesn't apply click casting attributes
-	-- to the frames made while in combat.  This code basically does the work that Clique
-	-- isn't doing becuase it's protected with CanChangeProtectedState.  
-	if Clique and Clique.Locals and Clique.clicksets and not frame:CanChangeProtectedState() then
-		local l = Clique.Locals
-		if InCombatLockdown() then
-			Clique:ApplyClickSet(l.CLICKSET_DEFAULT, frame)
-			Clique:ApplyClickSet(l.CLICKSET_HELPFUL, frame)
-			Clique:ApplyClickSet(l.CLICKSET_HARMFUL, frame)
-		else
-			Clique:ApplyClickSet(l.CLICKSET_DEFAULT, frame)
-			Clique:ApplyClickSet(Clique.ooc, frame)
-		end
-	end
-
 	if self.unitsuffix then
 		frame:ProxySetAttribute("unitsuffix", self.unitsuffix)
 	end
