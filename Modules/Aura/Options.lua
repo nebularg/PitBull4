@@ -1135,7 +1135,7 @@ PitBull4_Aura:SetDefaults({
 			display_when = "debuff",
 		},
 		['!F'] = {
-			display_name = L['HL: all friend debuffs'],
+			display_name = L['Highlight: all friend debuffs'],
 			filter_type = 'Meta',
 			filters = {'@D','@B'},
 			operators = {'&'},
@@ -1143,7 +1143,7 @@ PitBull4_Aura:SetDefaults({
 			display_when = "highlight",
 		},
 		['!G'] = {
-			display_name = L['HL: dispellable debuffs'],
+			display_name = L['Highlight: dispellable debuffs'],
 			filter_type = 'Meta',
 			filters = {'!F','#F'},
 			operators = {'&'},
@@ -1151,7 +1151,7 @@ PitBull4_Aura:SetDefaults({
 			display_when = "highlight",
 		},
 		['!H'] = {
-			display_name = L['HL: dispellable by me debuffs'],
+			display_name = L['Highlight: dispellable by me debuffs'],
 			filter_type = 'Meta',
 			filters = {'!F','#G'},
 			operators = {'&'},
@@ -1159,7 +1159,7 @@ PitBull4_Aura:SetDefaults({
 			display_when = "highlight",
 		},
 		['!I'] = {
-			display_name = L['HL: Enemy buffs'],
+			display_name = L['Highlight: Enemy buffs'],
 			filter_type = 'Meta',
 			filters = {'@E','@A','*E'},
 			operators = {'&','&'},
