@@ -361,6 +361,11 @@ function PitBull4_Totems:UpdateAllTimes()
 	for frame in PitBull4:IterateFrames() do
 		local unit = frame.unit
 		if unit and UnitIsUnit(unit,"player") and frame.Totems and frame.Totems.elements then
+			-- Workaround for weird Worldmap bug that hides our main frame?!
+			if not frame.Totems:IsShown() then
+				frame.Totems:Show()
+			end
+			
 			local elements = frame.Totems.elements
 			
 			local nowTime = floor(GetTime())
