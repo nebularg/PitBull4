@@ -361,10 +361,6 @@ function PitBull4_Totems:UpdateAllTimes()
 	for frame in PitBull4:IterateFrames() do
 		local unit = frame.unit
 		if unit and UnitIsUnit(unit,"player") and frame.Totems and frame.Totems.elements then
-			-- Workaround for weird Worldmap bug that hides our main frame?!
-			if not frame.Totems:IsShown() then
-				frame.Totems:Show()
-			end
 			
 			local elements = frame.Totems.elements
 			
@@ -967,6 +963,12 @@ function PitBull4_Totems:UpdateFrame(frame)
 	end
 	
 	if frame.Totems then
+		-- Workaround for Worldmap hiding elements the moment it's shown. 
+		-- Basically, if frame.Totems exists, it has no reason to be hidden ever...
+		if not frame.Totems:IsShown() then
+			frame.Totems:Show()
+		end
+		
 		-- make sure the timer is still running (it gets deactivated if the frame is gone for a moment)
 		self:StartTimer()
 		
