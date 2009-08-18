@@ -18,55 +18,23 @@ PitBull4_MasterLooterIcon:SetDefaults({
 	position = 2,
 })
 
+local master_looter_guid
+
 function PitBull4_MasterLooterIcon:OnEnable()
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED")
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED")
 end
 
 function PitBull4_MasterLooterIcon:GetTexture(frame)
-	local unit = frame.unit
-	
-	if unit == "player" then
-		local _, lootmaster = GetLootMethod()
-		if lootmaster ~= 0 then
-			return nil
-		end
+	if frame.guid == master_looter_guid then
+		return [[Interface\GroupFrame\UI-Group-MasterLooter]]
 	else
-		local raid_num = unit:match("^raid(%d%d?)$")
-		if raid_num then
-			local loot_master = select(11, GetRaidRosterInfo(raid_num+0))
-			if not loot_master then
-				return nil
-			end
-		else
-			local party_num = unit:match("^party(%d)$")
-			if not party_num then
-				return nil
-			end
-			
-			local _, loot_master = GetLootMethod()
-			if loot_master ~= (party_num+0) then
-				return nil
-			end
-		end
+		return nil
 	end
-	
-	return [[Interface\GroupFrame\UI-Group-MasterLooter]]
 end
 
 function PitBull4_MasterLooterIcon:GetExampleTexture(frame)
-	local unit = frame.unit
-	if unit then
-		if unit == "player" or unit:match("^raid(%d%d?)$") or unit:match("^party(%d)$") then
-			return [[Interface\GroupFrame\UI-Group-MasterLooter]]
-		end
-		return nil
-	end
-	local classification = frame.classification
-	if classification == "player" or classification == "raid" or classification == "party" then
-		return [[Interface\GroupFrame\UI-Group-MasterLooter]]
-	end
-	return nil
+	return [[Interface\GroupFrame\UI-Group-MasterLooter]]
 end
 
 function PitBull4_MasterLooterIcon:GetTexCoord(frame, texture)
@@ -74,7 +42,35 @@ function PitBull4_MasterLooterIcon:GetTexCoord(frame, texture)
 end
 PitBull4_MasterLooterIcon.GetExampleTexCoord = PitBull4_MasterLooterIcon.GetTexCoord
 
+local function update_master_looter_guid()
+	local _, ml_party, ml_raid = GetLootMethod()
+	if not ml_raid and not ml_party then
+		-- Not in a party or no master looter
+		master_looter_guid = nil
+		PitBull4_MasterLooterIcon:UpdateAll()
+		return
+	end
+
+	local raid_size = GetNumRaidMembers()
+	if raid_size > 0 then
+		-- in a raid
+		if ml_raid == raid_size then
+			master_looter_guid = UnitGUID("player")
+		else
+			master_looter_guid = UnitGUID("raid"..ml_raid)
+		end
+	elseif GetNumPartyMembers() > 0 then
+		-- in a party
+		if ml_party == 0 then
+			master_looter_guid = UnitGUID("player")
+		else
+			master_looter_guid = UnitGUID("party"..ml_party)
+		end
+	end
+	PitBull4_MasterLooterIcon:UpdateAll()
+end
+
 function PitBull4_MasterLooterIcon:PARTY_LOOT_METHOD_CHANGED()
-	self:ScheduleTimer("UpdateAll", 0.1)
+	self:ScheduleTimer(update_master_looter_guid, 0.1)
 end
 PitBull4_MasterLooterIcon.PARTY_MEMBERS_CHANGED = PitBull4_MasterLooterIcon.PARTY_LOOT_METHOD_CHANGED
