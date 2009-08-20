@@ -503,7 +503,68 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		isPercent = true,
 		disabled = disabled,
 	}
-	
+
+	bar_args.color_by_class = {
+		type = 'toggle',
+		name = L["Color by class"],
+		desc = L["Color the bar by unit class"],
+		order = -60,
+		get = function(info)
+			return get_current_layout_db(info).color_by_class
+		end,
+		set = function(info, value)
+			get_current_layout_db(info).color_by_class = value
+			
+			UpdateFrames()
+		end,
+	}
+
+	bar_args.color_pvp_by_class = {
+		type = 'toggle',
+		name = L["Color PvP by class"],
+		desc = L["Color the bar for PvP enemies by unit class."],
+		order = -59,
+		get = function(info)
+			return get_current_layout_db(info).color_pvp_by_class
+		end,
+		set = function(info, value)
+			get_current_layout_db(info).color_pvp_by_class = value
+
+			UpdateFrames()
+		end,
+	}
+
+	bar_args.hostility_color = {
+		type = 'toggle',
+		name = L["Color by hostility"],
+		desc = L["Color the bar by hostility.  Note that color by class takes precedence over this."],
+		order = -58,
+		get = function(info)
+			return get_current_layout_db(info).hostility_color
+		end,
+		set = function(info, value)
+			get_current_layout_db(info).hostility_color = value
+
+			UpdateFrames()
+		end,
+	}
+
+	bar_args.hostility_color_npcs = {
+		type = 'toggle',
+		name = L["Color NPCs by hostility"],
+		desc = L["Color the bar by hostility for NPCs."],
+		order = -57,
+		get = function(info)
+			return get_current_layout_db(info).hostiity_color_npcs
+		end,
+		set = function(info, value)
+			get_current_layout_db(info).hostility_color_npcs = value
+
+			UpdateFrames()
+		end,
+	}
+
+
 	bar_args.toggle_custom_color = {
 		type = 'toggle',
 		name = L["Custom color"],

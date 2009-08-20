@@ -17,6 +17,10 @@ local BarModule = PitBull4:NewModuleType("bar", {
 	custom_background = nil,
 	custom_extra = nil,
 	icon_on_left = true,
+	color_by_class = false,
+	color_pvp_by_class = false,
+	hostility_color = false,
+	hostility_color_npcs = false,
 }, true)
 
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
@@ -76,35 +80,84 @@ end
 -- @return blue value within [0, 1]
 -- @return alpha value within [0, 1]
 local function call_color_function(self, frame, value, extra, icon)
-	local layout_db = self:GetLayoutDB(frame)
-	local custom_color = layout_db.custom_color
+	local db = self:GetLayoutDB(frame)
+	local custom_color = db.custom_color
 	
 	if not self.GetColor then
 		if custom_color then
-			return custom_color[1], custom_color[2], custom_color[3], layout_db.alpha 
+			return custom_color[1], custom_color[2], custom_color[3], db.alpha 
 		else
-			return 0.7, 0.7, 0.7, layout_db.alpha 
+			return 0.7, 0.7, 0.7, db.alpha 
 		end
 	end
 	local r, g, b, a, override
 	if frame.guid then
 		r, g, b, a, override = self:GetColor(frame, value, extra, icon)
 	end
-	if not override and custom_color then
-		if a then
-			a = a * layout_db.alpha
+	if not override then
+		if custom_color then
+			if a then
+				a = a * db.alpha
+			else
+				a = db.alpha
+			end
+			return custom_color[1], custom_color[2], custom_color[3], a
 		else
-			a = layout_db.alpha
+			local unit = frame.unit
+			if UnitIsPlayer(unit) then
+				if db.color_by_class and (db.color_pvp_by_class or UnitIsFriend("player", unit)) then
+					local _, class = UnitClass(unit)
+					local t = PitBull4.ClassColors[class]
+					if t then
+						r, g, b = t[1], t[2], t[3]
+					end
+				elseif db.hostility_color then
+					if UnitCanAttack(unit, "player") then
+						-- they can attack me
+						if UnitCanAttack("player", unit) then
+							-- and I can attack them
+							r, g, b = unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
+						else
+							-- but I can't attack them
+							r, g, b = unpack(PitBull4.ReactionColors.civilian)
+						end
+					elseif UnitCanAttack("player", unit) then
+						-- they can't attack me, but I can attack them
+						r, g, b = unpack(PitBull4.ReactionColors[NEUTRAL_REACTION])
+					elseif UnitIsFriend("player", unit) then
+						-- on my team
+						r, g, b = unpack(PitBull4.ReactionColors[FRIENDLY_REACTION])
+					else
+						-- either enemy or friend, no violence
+						r, g, b = unpack(PitBull4.ReactionColors.civilian)
+					end
+				end
+			elseif db.hostility_color_npcs then
+				local reaction = UnitReaction(unit, "player")
+				if reaction then
+					if reaction >= 5 then
+						r, g, b = unpack(PitBull4.ReactionColors[FRIENDLY_REACTION])
+					elseif reaction == 4 then
+						r, g, b = unpack(PitBull4.ReactionColors[NEUTRAL_REACTION])
+					else
+						r, g, b = unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
+					end
+				else
+					if UnitIsFriend("player", unit) then
+						r, g, b = unpack(PitBull4.ReactionColors[FRIENDLY_REACTION])
+					elseif UnitIsEnemy("player", unit) then
+						r, g, b = unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
+					end
+				end
 		end
-		return custom_color[1], custom_color[2], custom_color[3], a
 	end
 	if (not r or not g or not b) and frame.force_show and self.GetExampleColor then
 		r, g, b, a = self:GetExampleColor(frame, value, extra, icon)
 	end
 	if a then
-		a = a * layout_db.alpha
+		a = a * db.alpha
 	else
-		a = layout_db.alpha
+		a = db.alpha
 	end
 	if not r or not g or not b then
 		return 0.7, 0.7, 0.7, a

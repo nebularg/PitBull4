@@ -18,7 +18,6 @@ PitBull4_HealthBar:SetDescription(L["Show a bar indicating the unit's health."])
 PitBull4_HealthBar:SetDefaults({
 	position = 1,
 	color_by_class = true,
-	color_pvp_by_class = false,
 	hostility_color = true,
 	hostility_color_npcs = true
 }, {
@@ -94,60 +93,18 @@ end
 function PitBull4_HealthBar:GetColor(frame, value)
 	local db = self:GetLayoutDB(frame)
 	local unit = frame.unit
+
 	if not UnitIsConnected(unit) or not unit then
-		return unpack(self.db.profile.global.colors.disconnected)
+		local color = self.db.profile.global.colors.disconnected
+		return color[1], color[2], color[3], nil, true
 	elseif UnitIsDeadOrGhost(unit) then
-		return unpack(self.db.profile.global.colors.dead)
+		local color = self.db.profile.global.colors.dead
+		return color[1], color[2], color[3], nil, true
 	elseif UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) then
-		return unpack(self.db.profile.global.colors.tapped)
-	elseif UnitIsPlayer(unit) then
-		if db.color_by_class and (db.color_pvp_by_class or UnitIsFriend("player", unit)) then
-			local _, class = UnitClass(unit)
-			local t = PitBull4.ClassColors[class]
-			if t then
-				return t[1], t[2], t[3]
-			end
-		elseif db.hostility_color then
-			if UnitCanAttack(unit, "player") then
-				-- they can attack me
-				if UnitCanAttack("player", unit) then
-					-- and I can attack them
-					return unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
-				else
-					-- but I can't attack them
-					return unpack(PitBull4.ReactionColors.civilian)
-				end
-			elseif UnitCanAttack("player", unit) then
-				-- they can't attack me, but I can attack them
-				return unpack(PitBull4.ReactionColors[NEUTRAL_REACTION])
-			elseif UnitIsFriend("player", unit) then
-				-- on my team
-				return unpack(PitBull4.ReactionColors[FRIENDLY_REACTION])
-			else
-				-- either enemy or friend, no violence
-				return unpack(PitBull4.ReactionColors.civilian)
-			end
-		end
-	elseif db.hostility_color_npcs then
-		local reaction = UnitReaction(unit, "player")
-		if reaction then
-			if reaction >= 5 then
-				return unpack(PitBull4.ReactionColors[FRIENDLY_REACTION])
-			elseif reaction == 4 then
-				return unpack(PitBull4.ReactionColors[NEUTRAL_REACTION])
-			else
-				return unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
-			end
-		else
-			if UnitIsFriend("player", unit) then
-				return unpack(PitBull4.ReactionColors[FRIENDLY_REACTION])
-			elseif UnitIsEnemy("player", unit) then
-				return unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
-			else
-				return nil
-			end
-		end
+		local color = self.db.profile.global.colors.tapped
+		return color[1], color[2], color[3], nil, true
 	end
+
 	local high_r, high_g, high_b
 	local low_r, low_g, low_b
 	local colors = self.db.profile.global.colors
@@ -180,58 +137,6 @@ end
 function PitBull4_HealthBar:PLAYER_ALIVE(event)
 	guids_to_update[UnitGUID("player")] = true
 end
-
-PitBull4_HealthBar:SetLayoutOptionsFunction(function(self)
-	return 'color_by_class', {
-		name = L["Color by class"],
-		desc = L["Color the health bar by unit class"],
-		type = 'toggle',
-		get = function(info)
-			return PitBull4.Options.GetLayoutDB(self).color_by_class
-		end,
-		set = function(info, value)
-			PitBull4.Options.GetLayoutDB(self).color_by_class = value
-			
-			PitBull4.Options.UpdateFrames()
-		end,
-	}, 'color_pvp_by_class', {
-		name = L["Color PvP by class"],
-		desc = L["Color the health bar for PvP enemies by unit class."],
-		type = 'toggle',
-		get = function(info)
-			return PitBull4.Options.GetLayoutDB(self).color_pvp_by_class
-		end,
-		set = function(info, value)
-			PitBull4.Options.GetLayoutDB(self).color_pvp_by_class = value
-			
-			PitBull4.Options.UpdateFrames()
-		end,
-	}, 'hostility_color', {
-		name = L["Color by hostility"],
-		desc = L["Color the health bar by hostility.  Note that color by class takes precedence over this."],
-		type = 'toggle',
-		get = function(info)
-			return PitBull4.Options.GetLayoutDB(self).hostility_color
-		end,
-		set = function(info, value)
-			PitBull4.Options.GetLayoutDB(self).hostility_color = value
-
-			PitBull4.Options.UpdateFrames()
-		end,
-	}, 'hostility_color_npcs', {
-		name = L["Color NPCs by hostility"],
-		desc = L["Color the health bar by hostility for NPCs."],
-		type = 'toggle',
-		get = function(info)
-			return PitBull4.Options.GetLayoutDB(self).hostility_color_npcs
-		end,
-		set = function(info, value)
-			PitBull4.Options.GetLayoutDB(self).hostility_color_npcs = value
-
-			PitBull4.Options.UpdateFrames()
-		end,
-	}
-end)
 
 PitBull4_HealthBar:SetColorOptionsFunction(function(self)
 	local function get(info)

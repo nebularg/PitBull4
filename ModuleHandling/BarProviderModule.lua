@@ -16,6 +16,10 @@ local BarProviderModule = PitBull4:NewModuleType("bar_provider", {
 			position = 10,
 			side = 'center',
 			custom_color = nil,
+			color_by_class = false,
+			color_pvp_by_class = false,
+			hostility_color = false,
+			hostility_color_npcs = false,
 			exists = false,
 		}
 	}
@@ -94,8 +98,57 @@ local function call_color_function(self, frame, bar_db, value, extra)
 	if frame.guid then
 		r, g, b, a, override = self:GetColor(frame, bar_db, value, extra)
 	end
-	if not override and custom_color then
-		return custom_color[1], custom_color[2], custom_color[3], a or bar_db.alpha 
+	if not override then
+		if custom_color then
+			return custom_color[1], custom_color[2], custom_color[3], a or bar_db.alpha 
+		else
+			local unit = frame.unit
+			if UnitIsPlayer(unit) then
+				if bar_db.color_by_class and (bar_db.color_pvp_by_class or UnitIsFriend("player", unit)) then
+					local _, class = UnitClass(unit)
+					local t = PitBull4.ClassColors[class]
+					if t then
+						r, g, b = t[1], t[2], t[3]
+					end
+				elseif bar_db.hostility_color then
+					if UnitCanAttack(unit, "player") then
+						-- they can attack me
+						if UnitCanAttack("player", unit) then
+							-- and I can attack them
+							r, g, b = unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
+						else
+							-- but I can't attack them
+							r, g, b = unpack(PitBull4.ReactionColors.civilian)
+						end
+					elseif UnitCanAttack("player", unit) then
+						-- they can't attack me, but I can attack them
+						r, g, b = unpack(PitBull4.ReactionColors[NEUTRAL_REACTION])
+					elseif UnitIsFriend("player", unit) then
+						-- on my team
+						r, g, b = unpack(PitBull4.ReactionColors[FRIENDLY_REACTION])
+					else
+						-- either enemy or friend, no violence
+						r, g, b = unpack(PitBull4.ReactionColors.civilian)
+					end
+				end
+			elseif bar_db.hostility_color_ncps then
+				local reaction = UnitReaction(unit, "player")
+				if reaction then
+					if reaction >= 5 then
+						r, g, b = unpack(PitBull4.ReactionColors[FRIENDLY_REACTION])
+					elseif reaction == 4 then
+						r, g, b = unpack(PitBull4.ReactionColors[NEUTRAL_REACTION])
+					else
+						r, g, b = unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
+					end
+				else
+					if UnitIsFriend("player", unit) then
+						r, g, b = unpack(PitBull4.ReactionColors[FRIENDLY_REACTION])
+					elseif UnitIsEnemy("player", unit) then
+						r, g, b = unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
+					end
+				end
+		end
 	end
 	if (not r or not g or not b) and frame.force_show and self.GetExampleColor then
 		r, g, b, a = self:GetExampleColor(frame, bar_db, value, extra)
