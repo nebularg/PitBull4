@@ -34,10 +34,6 @@ PitBull4_HealthBar:SetDefaults({
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
 
-local HOSTILE_REACTION = 2
-local NEUTRAL_REACTION = 4
-local FRIENDLY_REACTION = 5
-
 local guids_to_update = {}
 
 -- local PLAYER_GUID

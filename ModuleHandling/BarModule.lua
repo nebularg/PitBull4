@@ -29,6 +29,10 @@ if not LibSharedMedia then
 	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 end
 
+local HOSTILE_REACTION = 2
+local NEUTRAL_REACTION = 4
+local FRIENDLY_REACTION = 5
+
 --- Call the :GetValue function on the bar module regarding the given frame.
 -- @param self the module
 -- @param frame the frame to get the value of
@@ -149,6 +153,7 @@ local function call_color_function(self, frame, value, extra, icon)
 						r, g, b = unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
 					end
 				end
+			end
 		end
 	end
 	if (not r or not g or not b) and frame.force_show and self.GetExampleColor then

@@ -555,7 +555,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		desc = L["Color the bar by hostility for NPCs."],
 		order = -57,
 		get = function(info)
-			return get_current_layout_db(info).hostiity_color_npcs
+			return get_current_layout_db(info).hostility_color_npcs
 		end,
 		set = function(info, value)
 			get_current_layout_db(info).hostility_color_npcs = value
