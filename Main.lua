@@ -1178,6 +1178,7 @@ function PitBull4:OnEnable()
 	self:RegisterEvent("PLAYER_FOCUS_CHANGED")
 	self:RegisterEvent("UNIT_TARGET")
 	self:RegisterEvent("UNIT_PET")
+	self:RegisterEvent("UNIT_FACTION")
 	
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE")
@@ -1297,6 +1298,16 @@ function PitBull4:UNIT_PET(_, unit)
 	self:CheckGUIDForUnitID(unit .. "pet", true)
 	self:CheckGUIDForUnitID(unit .. "pettarget")
 	self:CheckGUIDForUnitID(unit .. "pettargettarget")
+end
+
+function PitBull4:UNIT_FACTION(_, unit)
+	-- On UNIT_FACTION changes update bars to allow coloring changes based on
+	-- hostility.
+	for frame in self:IterateFramesForUnitID(unit) do
+		for _, module in self:IterateModulesOfType("bar","bar_provider") do
+			module:Update(frame)
+		end
+	end
 end
 
 local tmp = {}

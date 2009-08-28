@@ -43,7 +43,6 @@ function PitBull4_HealthBar:OnEnable()
 	
 	self:RegisterEvent("UNIT_HEALTH")
 	self:RegisterEvent("UNIT_MAXHEALTH","UNIT_HEALTH")
-	self:RegisterEvent("UNIT_FACTION", "UNIT_HEALTH")
 	self:RegisterEvent("PLAYER_ALIVE")
 	
 	self:UpdateAll()
