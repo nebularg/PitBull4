@@ -1181,6 +1181,7 @@ function PitBull4:OnEnable()
 	
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE")
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 	
 	-- enter/leave combat for :RunOnLeaveCombat
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -1345,6 +1346,14 @@ function PitBull4:UNIT_ENTERED_VEHICLE(_, unit)
 	wipe(tmp)
 end
 PitBull4.UNIT_EXITED_VEHICLE = PitBull4.UNIT_ENTERED_VEHICLE
+
+function PitBull4:ZONE_CHANGED_NEW_AREA()
+	-- When we change zones if we lose the vehicle we don't get events for it.
+	-- So we need to simulate the events for all the relevent units.
+	for unit in pairs(self.unit_id_to_guid) do
+		self:UNIT_EXITED_VEHICLE(_, unit)
+	end
+end
 
 local STATE
 --- Get the current state that the player is in.
