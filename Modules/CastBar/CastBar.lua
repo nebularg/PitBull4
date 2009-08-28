@@ -150,6 +150,17 @@ function PitBull4_CastBar:GetColor(frame, value)
 	end
 	return 0, 0, 0, 0
 end
+
+function PitBull4_CastBar:GetBackgroundColor(frame, value)
+	-- Link the alpha of the Background to the Normal Alpha so
+	-- the unfilled part of the bar fades out along with the filled
+	-- part.
+	local control = frame[self.id]
+	if control then
+		return nil, nil, nil, control:GetNormalAlpha()
+	end
+end
+
 function PitBull4_CastBar:GetExampleColor(frame, value)
 	return 0, 1, 0, 1
 end
