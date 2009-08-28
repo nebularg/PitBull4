@@ -78,6 +78,7 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 	local db = self:GetLayoutDB(frame)
 	
 	if combos and #combos == num_combos then
+		combos:Show()
 		return false
 	end
 	
@@ -121,6 +122,8 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 		end
 	end
 	
+	combos:Show()
+
 	return true
 end
 
