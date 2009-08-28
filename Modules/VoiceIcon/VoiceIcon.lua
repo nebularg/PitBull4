@@ -87,12 +87,14 @@ function PitBull4_VoiceIcon:UpdateFrame(frame)
 	if not UnitIsTalking(frame.unit) and not frame.force_show then
 		return self:ClearFrame(frame)
 	end
-	
-	if frame.VoiceIcon then
+
+	local icon = frame.VoiceIcon
+	if icon then
+		icon:Show()
 		return false
 	end
 	
-	local icon = PitBull4.Controls.MakeFrame(frame)
+	icon = PitBull4.Controls.MakeFrame(frame)
 	frame.VoiceIcon = icon
 	icon:SetFrameLevel(frame:GetFrameLevel() + 3)
 	icon:SetScript("OnUpdate", icon_OnUpdate)
@@ -112,6 +114,8 @@ function PitBull4_VoiceIcon:UpdateFrame(frame)
 	noise:SetAllPoints(icon)
 	
 	icon.elapsed = 0
+	
+	icon:Show()
 	
 	return true
 end
