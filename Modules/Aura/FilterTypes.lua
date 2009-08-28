@@ -1014,30 +1014,12 @@ end)
 -- player race or class
 local _,player_class = UnitClass("player")
 local _,player_race  = UnitRace("player")
-local classes = {
-	'DEATHKNIGHT',
-	'DRUID',
-	'HUNTER',
-	'MAGE',
-	'PALADIN',
-	'PRIEST',
-	'ROGUE',
-	'SHAMAN',
-	'WARLOCK',
-	'WARRIOR',
-}
-local class_names = {
-	L["Death Knight"],
-	L["Druid"],
-	L["Hunter"],
-	L["Mage"],
-	L["Paladin"],
-	L["Priest"],
-	L["Rogue"],
-	L["Shaman"],
-	L["Warlock"],
-	L["Warrior"],
-}
+-- build from Blizzard localized names now
+local classes, class_names = {}, {}
+for eng_name, name in pairs(LOCALIZED_CLASS_NAMES_MALE) do
+	classes[#classes + 1] = eng_name
+  class_names[#class_names + 1] = name
+end
 local races = {
 	'Human',
 	'Dwarf',
