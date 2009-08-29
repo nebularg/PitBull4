@@ -537,7 +537,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 	bar_args.hostility_color = {
 		type = 'toggle',
 		name = L["Color by hostility"],
-		desc = L["Color the bar by hostility.  Note that color by class takes precedence over this."],
+		desc = L["Color the bar by hostility for player characters.  Note that color by class takes precedence over this."],
 		order = -58,
 		get = function(info)
 			return get_current_layout_db(info).hostility_color
