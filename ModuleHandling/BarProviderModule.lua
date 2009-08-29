@@ -135,7 +135,7 @@ local function call_color_function(self, frame, bar_db, value, extra)
 						r, g, b = unpack(PitBull4.ReactionColors.civilian)
 					end
 				end
-			elseif bar_db.hostility_color_ncps then
+			elseif bar_db.hostility_color_npcs then
 				local reaction = UnitReaction(unit, "player")
 				if reaction then
 					if reaction >= 5 then
