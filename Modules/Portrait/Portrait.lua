@@ -154,7 +154,6 @@ function PitBull4_Portrait:UpdateFrame(frame)
 		portrait:SetHeight(60)
 		portrait.height = 4
 		portrait.style = style
-		portrait.falling_back = falling_back
 		
 		if style == "three_dimensional" then
 			local model = PitBull4.Controls.MakePlayerModel(frame)
@@ -177,6 +176,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 		return false
 	end
 	
+	portrait.falling_back = falling_back
 	portrait.guid = frame.guid
 	if style == "three_dimensional" then
 		if not falling_back then
