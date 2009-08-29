@@ -140,7 +140,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 	
 	local portrait = frame.Portrait
 	
-	if portrait and (portrait.style ~= style or portrait.falling_back ~= falling_back) then
+	if portrait and portrait.style ~= style then
 		self:ClearFrame(frame)
 		portrait = nil
 	end
