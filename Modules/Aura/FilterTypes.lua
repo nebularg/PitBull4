@@ -55,6 +55,8 @@ local bool_values = {
 local unit_values = {
 	['=='] = L['is'],
 	['~='] = L['is not'],
+	['known'] = L['is known'],
+	['unknown'] = L['is unknown'],
 	['friend'] = L['is friend'],
 	['enemy'] = L['is enemy'],
 	['is'] = L['is the same as unit'],
@@ -70,6 +72,10 @@ local function compare_unit(unit,op,value)
 		return unit == value
 	elseif op == "~=" then
 		return unit ~= value
+	elseif op == "known" then
+		return not not unit
+	elseif op == "unknown" then
+		return not unit
 	elseif op == "friend" then
 		if not unit then return false end
 		return UnitIsFriend(unit,'player')
