@@ -703,10 +703,10 @@ local function update_cast_data(event, unit)
 		cast_data[guid] = data
 	end
 
-	local spell, rank, name, icon, start_time, end_time = UnitCastingInfo(unit)
+	local spell, rank, name, icon, start_time, end_time, cast_id, interrupt = UnitCastingInfo(unit)
 	local channeling = false
 	if not spell then
-		spell, rank, name, icon, start_time, end_time = UnitChannelInfo(unit)
+		spell, rank, name, icon, start_time, end_time, uninterruptble = UnitChannelInfo(unit)
 		channeling = true
 	end
 	if spell then
@@ -728,6 +728,8 @@ local function update_cast_data(event, unit)
 		data.casting = not channeling
 		data.channeling = channeling
 		data.fade_out = false
+		data.interruptible = not uninterruptible
+		data.cast_id = cast_id
 		data.stop_time = nil
 		data.stop_message = nil
 		return
