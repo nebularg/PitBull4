@@ -21,6 +21,14 @@ local HOSTILE_REACTION = 2
 local NEUTRAL_REACTION = 4
 local FRIENDLY_REACTION = 5
 
+local _,player_class = UnitClass("player")
+local player_is_hunter = player_class == "HUNTER"
+local happiness_map = {
+	"unhappy",
+	"content",
+	"happy",
+}
+
 --- Call the :GetValue function on the bar module regarding the given frame.
 -- @param self the module
 -- @param frame the frame to get the value of
@@ -106,6 +114,15 @@ local function call_color_function(self, frame, bar_db, value, extra, icon)
 			return custom_color[1], custom_color[2], custom_color[3], a
 		else
 			local unit = frame.unit
+
+			local happiness
+			if player_is_hunter and bar_db.color_by_happiness and UnitIsUnit(unit, "pet") then
+				-- If we're configured to color the bar by happiness then capture the pet happiness
+				-- value and save it for later.  It's split like this so that in case the pet doesn't
+				-- have a hapiness value for some reason then it falls through to the normal NPC code.
+				happiness = GetPetHappiness()
+			end
+
 			if UnitIsPlayer(unit) then
 				if bar_db.color_by_class and (bar_db.color_pvp_by_class or UnitIsFriend("player", unit)) then
 					local _, class = UnitClass(unit)
@@ -134,6 +151,9 @@ local function call_color_function(self, frame, bar_db, value, extra, icon)
 						r, g, b = unpack(PitBull4.ReactionColors.civilian)
 					end
 				end
+			elseif happiness then
+				-- Since we have a pet happiness we must be configured to color by that
+				r, g, b = unpack(PitBull4.HappinessColors[happiness_map[happiness]])
 			elseif bar_db.hostility_color_npcs then
 				local reaction = UnitReaction(unit, "player")
 				if reaction then
@@ -320,6 +340,7 @@ local BarModule = PitBull4:NewModuleType("bar", {
 	color_pvp_by_class = false,
 	hostility_color = false,
 	hostility_color_npcs = false,
+	color_by_happiness = false,
 }, true)
 
 --- Handle the frame being hidden
@@ -440,6 +461,7 @@ local BarProviderModule = PitBull4:NewModuleType("bar_provider", {
 			color_pvp_by_class = false,
 			hostility_color = false,
 			hostility_color_npcs = false,
+			color_by_happiness = false,
 			exists = false,
 		}
 	}

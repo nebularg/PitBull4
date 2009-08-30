@@ -166,6 +166,11 @@ local DATABASE_DEFAULTS = {
 			reaction = { -- filled in by FACTION_BAR_COLORS
 				civilian = { 48/255, 113/255, 191/255 }
 			},
+			happiness = {
+				happy = { 0, 1, 0 },
+				content = { 1, 1, 0 },
+				unhappy = { 1, 0, 0 },
+			},
 		}
 	}
 }
@@ -1087,6 +1092,7 @@ function PitBull4:OnProfileChanged()
 	self.ClassColors = PitBull4.db.profile.colors.class
 	self.PowerColors = PitBull4.db.profile.colors.power
 	self.ReactionColors = PitBull4.db.profile.colors.reaction
+	self.HappinessColors = PitBull4.db.profile.colors.happiness
 	
 	-- Notify modules that the profile has changed.
 	for _, module in PitBull4:IterateEnabledModules() do
@@ -1178,7 +1184,10 @@ function PitBull4:OnEnable()
 	self:RegisterEvent("PLAYER_FOCUS_CHANGED")
 	self:RegisterEvent("UNIT_TARGET")
 	self:RegisterEvent("UNIT_PET")
+
+	-- register events for core handled bar coloring
 	self:RegisterEvent("UNIT_FACTION")
+	self:RegisterEvent("UNIT_HAPPINESS")
 	
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE")
@@ -1309,6 +1318,10 @@ function PitBull4:UNIT_FACTION(_, unit)
 		end
 	end
 end
+
+-- Reuse the function for UNIT_FACTION for UNIT_HAPPINESS since we end up
+-- doing the exact same thing
+PitBull4.UNIT_HAPPINESS = PitBull4.UNIT_FACTION
 
 local tmp = {}
 function PitBull4:UNIT_ENTERED_VEHICLE(_, unit)

@@ -3,6 +3,7 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
 local CURRENT_BAR_PROVIDER_ID = {}
+local _, player_class = UnitClass("player")
 
 --- Return the DB dictionary for the current text for the current layout selected in the options frame.
 -- BarProvider modules should be calling this and manipulating data within it.
@@ -562,6 +563,22 @@ function PitBull4.Options.get_layout_editor_bar_options()
 
 			UpdateFrames()
 		end,
+	}
+
+	bar_args.color_by_happiness = {
+		type = 'toggle',
+		name = L["Color by happiness"],
+		desc = L["Color the bar by the units' happiness."],
+		order = -56,
+		get = function(info)
+			return get_current_layout_db(info).color_by_happiness
+		end,
+		set = function(info, value)
+			get_current_layout_db(info).color_by_happiness = value
+
+			UpdateFrames()
+		end,
+		hidden = player_class ~= "HUNTER",
 	}
 
 
