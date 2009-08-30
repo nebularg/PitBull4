@@ -518,6 +518,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			
 			UpdateFrames()
 		end,
+		disabled = disabled,
 	}
 
 	bar_args.color_pvp_by_class = {
@@ -533,6 +534,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 
 			UpdateFrames()
 		end,
+		disabled = disabled,
 	}
 
 	bar_args.hostility_color = {
@@ -548,6 +550,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 
 			UpdateFrames()
 		end,
+		disabled = disabled,
 	}
 
 	bar_args.hostility_color_npcs = {
@@ -563,6 +566,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 
 			UpdateFrames()
 		end,
+		disabled = disabled,
 	}
 
 	bar_args.color_by_happiness = {
@@ -579,6 +583,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			UpdateFrames()
 		end,
 		hidden = player_class ~= "HUNTER",
+		disabled = disabled,
 	}
 
 
