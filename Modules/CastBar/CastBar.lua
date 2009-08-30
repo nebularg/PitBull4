@@ -20,6 +20,11 @@ PitBull4_CastBar:SetDefaults({
 	position = 10,
 	show_icon = true,
 	auto_hide = false,
+},{
+	casting_interruptible_color   = { 0, 1, 0 },
+	casting_uninterruptible_color = { 185/255, 229/255, 160/255},
+	channel_interruptible_color   = { 0, 0, 1 },
+	channel_uninterruptible_color = { 96/255, 180/255, 211/255 },
 })
 
 local cast_data = {}
@@ -41,6 +46,8 @@ function PitBull4_CastBar:OnEnable()
 	self:RegisterEvent("UNIT_SPELLCAST_FAILED")
 	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
 	self:RegisterEvent("UNIT_SPELLCAST_DELAYED")
+	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE")
+	self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE")
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
 end
@@ -119,11 +126,23 @@ function PitBull4_CastBar:GetColor(frame, value)
 	end
 	
 	if data.casting then
-		return 0, 1, 0, 1
+		if data.interruptible then
+			local r, g, b = unpack(self.db.profile.global.casting_interruptible_color)
+			return r, g, b, 1 
+		else
+			local r, g, b = unpack(self.db.profile.global.casting_uninterruptible_color)
+			return r, g, b, 1
+		end
 	elseif data.channeling then
-		return 0, 1, 0, 1
+		if data.interruptible then
+			local r, g, b = unpack(self.db.profile.global.channel_interruptible_color)
+			return r, g, b, 1
+		else
+			local r, g, b = unpack(self.db.profile.global.channel_uninterruptible_color)
+			return r, g, b, 1
+		end
 	elseif data.fadeOut then
-		local alpha
+		local alpha, r, g, b
 		local stopTime = data.stopTime
 		if stopTime then
 			alpha = stopTime - GetTime() + 1
@@ -140,7 +159,21 @@ function PitBull4_CastBar:GetColor(frame, value)
 			end
 			return 0, 0, 0, 0
 		else
-			return 0, 1, 0, alpha
+			-- Decide which color to use
+			if not data.wasChanneling then -- Last cast was a normal one...
+				if data.interruptible then
+					r, g, b = unpack(self.db.profile.global.casting_interruptible_color)
+				else
+					r, g, b = unpack(self.db.profile.global.casting_uninterruptible_color)
+				end
+			else
+				if data.interruptible then -- Last cast was a channel...
+					r, g, b = unpack(self.db.profile.global.channel_interruptible_color)
+				else
+					r, g, b = unpack(self.db.profile.global.channel_uninterruptible_color)
+				end
+			end
+			return r, g, b, alpha
 		end
 	else
 		cast_data[guid] = del(data)
@@ -182,10 +215,10 @@ function PitBull4_CastBar:UpdateInfo(event, unit)
 		cast_data[guid] = data
 	end
 	
-	local spell, rank, displayName, icon, startTime, endTime = UnitCastingInfo(unit)
+	local spell, rank, displayName, icon, startTime, endTime, isTradeSkill, castID, uninterruptible = UnitCastingInfo(unit)
 	local channeling = false
 	if not spell then
-		spell, rank, displayName, icon, startTime, endTime = UnitChannelInfo(unit)
+		spell, rank, displayName, icon, startTime, endTime, isTradeSkill, uninterruptible = UnitChannelInfo(unit)
 		channeling = true
 	end
 	if spell then
@@ -197,7 +230,9 @@ function PitBull4_CastBar:UpdateInfo(event, unit)
 		data.endTime = endTime * 0.001
 		data.casting = not channeling
 		data.channeling = channeling
+		data.interruptible = not uninterruptible
 		data.fadeOut = false
+		data.wasChanneling = channeling -- persistent state even after interrupted
 		data.stopTime = nil
 		timerFrame:Show()
 		return
@@ -277,6 +312,8 @@ PitBull4_CastBar.UNIT_SPELLCAST_STOP = PitBull4_CastBar.UpdateInfo
 PitBull4_CastBar.UNIT_SPELLCAST_FAILED = PitBull4_CastBar.UpdateInfo
 PitBull4_CastBar.UNIT_SPELLCAST_INTERRUPTED = PitBull4_CastBar.UpdateInfo
 PitBull4_CastBar.UNIT_SPELLCAST_DELAYED = PitBull4_CastBar.UpdateInfo
+PitBull4_CastBar.UNIT_SPELLCAST_INTERRUPTIBLE = PitBull4_CastBar.UpdateInfo
+PitBull4_CastBar.UNIT_SPELLCAST_NOT_INTERRUPTIBLE = PitBull4_CastBar.UpdateInfo
 PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_UPDATE = PitBull4_CastBar.UpdateInfo
 PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_STOP = PitBull4_CastBar.UpdateInfo
 
@@ -353,4 +390,65 @@ PitBull4_CastBar:SetLayoutOptionsFunction(function(self)
 			return not PitBull4.Options.GetLayoutDB(self).show_icon
 		end
 	}
+end)
+
+PitBull4_CastBar:SetColorOptionsFunction(function(self)
+	return 'casting_interruptible_color', {
+		type = 'color',
+		name = L['Casting (interruptible)'],
+		desc = L['Sets which color to use on casting bar of casts that are interruptible.'],
+		width = 'full',
+		get = function(info)
+			return unpack(self.db.profile.global.casting_interruptible_color)
+		end,
+		set = function(info, r, g, b)
+			self.db.profile.global.casting_interruptible_color = { r, g, b }
+			self:UpdateAll()
+		end,
+	},
+	'casting_uninterruptible_color', {
+		type = 'color',
+		name = L['Casting (uninterruptible)'],
+		desc = L['Sets which color to use on casting bar of casts that are not interruptible.'],
+		width = 'full',
+		get = function(info)
+			return unpack(self.db.profile.global.casting_uninterruptible_color)
+		end,
+		set = function(info, r, g, b)
+			self.db.profile.global.casting_uninterruptible_color = { r, g, b }
+			self:UpdateAll()
+		end,
+	},
+	'channel_interruptible_color', {
+		type = 'color',
+		name = L['Channeling (interruptible)'],
+		desc = L['Sets which color to use on casting bar of channeled casts that are interruptible.'],
+		width = 'full',
+		get = function(info)
+			return unpack(self.db.profile.global.channel_interruptible_color)
+		end,
+		set = function(info, r, g, b)
+			self.db.profile.global.channel_interruptible_color = { r, g, b }
+			self:UpdateAll()
+		end,
+	},
+	'channel_uninterruptible_color', {
+		type = 'color',
+		name = L['Channeling (uninterruptible)'],
+		desc = L['Sets which color to use on casting bar of channeled casts that are not interruptible.'],
+		width = 'full',
+		get = function(info)
+			return unpack(self.db.profile.global.channel_uninterruptible_color)
+		end,
+		set = function(info, r, g, b)
+			self.db.profile.global.channel_uninterruptible_color = { r, g, b } 
+			self:UpdateAll()
+		end,
+	},
+	function(info)
+		self.db.profile.global.casting_interruptible_color = { 0, 1, 0 }
+		self.db.profile.global.casting_uninterruptible_color = { 185/255, 229/255, 160/255 }
+		self.db.profile.global.channel_interruptible_color = { 0, 0, 1 }
+		self.db.profile.global.channel_uninterruptible_color = { 96/255, 180/255, 211/255 }
+	end
 end)
