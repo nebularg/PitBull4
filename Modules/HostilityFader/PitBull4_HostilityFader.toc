@@ -1,0 +1,24 @@
+## Interface: 30200
+## Title: PitBull4 |r[|cffeda55fHostility fader|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Hostility fader")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Hostility fader")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Hostility fader")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Hostility fader")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Hostility fader")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Hostility fader")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Hostility fader")@|r]
+## Notes: Make the unit frame fade depending on the units hostility.
+## Notes-deDE: @localization(locale="deDE", key="Make the unit frame fade depending on the units hostility.")@
+## Notes-esES: @localization(locale="esES", key="Make the unit frame fade depending on the units hostility.")@
+## Notes-frFR: @localization(locale="frFR", key="Make the unit frame fade depending on the units hostility.")@
+## Notes-koKR: @localization(locale="koKR", key="Make the unit frame fade depending on the units hostility.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Make the unit frame fade depending on the units hostility.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Make the unit frame fade depending on the units hostility.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Make the unit frame fade depending on the units hostility.")@
+## Author: Shefki 
+## DefaultState: enabled 
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## Version: @project-version@
+
+load.xml
