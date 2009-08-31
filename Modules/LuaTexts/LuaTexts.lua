@@ -446,7 +446,7 @@ end]],
 	},
 	[L["Cast"]] = {
 		[L["Standard name"]] = {
-			events = {['UNIT_SPELLCAST_START']=true,['UNIT_SPELLCAST_CHANNEL_START']=true,['UNIT_SPELLCAST_STOP']=true,['UNIT_SPELLCAST_FAILED']=true,['UNIT_SPELLCAST_INTERRUPTED']=true,['UNIT_SPELLCAST_DELAYED']=true,['UNIT_SPELLCAST_CHANNEL_UPDATE']=true,['UNIT_SPELLCAST_CHANNEL_STOP']=true},
+			events = {['UNIT_SPELLCAST_START']=true,['UNIT_SPELLCAST_CHANNEL_START']=true,['UNIT_SPELLCAST_STOP']=true,['UNIT_SPELLCAST_FAILED']=true,['UNIT_SPELLCAST_INTERRUPTED']=true,['UNIT_SPELLCAST_SUCCEEDED']=true,['UNIT_SPELLCAST_DELAYED']=true,['UNIT_SPELLCAST_CHANNEL_UPDATE']=true,['UNIT_SPELLCAST_CHANNEL_STOP']=true},
 			code = [[
 local cast_data = CastData(unit)
 if cast_data then
@@ -694,7 +694,7 @@ local function copy(t)
 	return n
 end
 
-local function update_cast_data(event, unit)
+local function update_cast_data(event, unit, event_spell, event_rank, event_cast_id)
 	local guid = UnitGUID(unit)
 	if not guid then return end
 	local data = cast_data[guid]
@@ -709,7 +709,10 @@ local function update_cast_data(event, unit)
 		spell, rank, name, icon, start_time, end_time, uninterruptble = UnitChannelInfo(unit)
 		channeling = true
 	end
-	if spell then
+	-- Note the castID should always be an increasing integer.  However, inside
+	-- UNIT_SPELLCAST_INTERRUPTED it will be zero.  Everything else returned from
+	-- UnitcastingInfo() will be the same so there's no reason to update it.
+	if spell and cast_id ~= 0 then
 		data.spell = spell
 		rank = rank and tonumber(rank:match("%d+"))
 		data.rank = rank
@@ -739,10 +742,17 @@ local function update_cast_data(event, unit)
 		return
 	end
 
-	if event == "UNIT_SELLCAST_FAILED" then
-		data.stop_message = _G.FAILED
-	elseif event == "UNIT_SPELLCAST_INTERRUPTED" then
-		data.stop_message = _G.INTERRUPTED
+	if data.cast_id == event_cast_id then
+		-- The event was for the cast we're current casting
+		if event == "UNIT_SELLCAST_FAILED" then
+			data.stop_message = _G.FAILED
+		elseif event == "UNIT_SPELLCAST_INTERRUPTED" then
+			data.stop_message = _G.INTERRUPTED
+		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+			-- Sometimes the interrupt event happens just before the
+			-- success event so clear the stop_message if we get succeded.
+			data.stop_message = nil
+		end
 	end
 
 	data.casting = false
@@ -924,7 +934,7 @@ function PitBull4_LuaTexts:PARTY_MEMBERS_CHANGED(event)
 	wipe(tmp)
 end
 
-function PitBull4_LuaTexts:OnEvent(event, unit)
+function PitBull4_LuaTexts:OnEvent(event, unit, ...)
 	local event_entry = event_cache[event]
 	if not event_entry then return end
 	local event_config = self.db.profile.global.events[event]
@@ -946,7 +956,7 @@ function PitBull4_LuaTexts:OnEvent(event, unit)
 		update_timers()
 	elseif string.sub(event,1,15) == "UNIT_SPELLCAST_" then
 		-- spell casting events need to go through
-		update_cast_data(event,unit)
+		update_cast_data(event, unit, ...)
 	end
 
 	for font_string in pairs(event_entry) do
