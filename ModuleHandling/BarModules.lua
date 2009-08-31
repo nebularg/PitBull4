@@ -111,9 +111,9 @@ local function call_color_function(self, frame, bar_db, value, extra, icon)
 			else
 				a = bar_db.alpha
 			end
-			if a < 0 then
+			if a and a < 0 then
 				a = 0
-			elseif a > 1 then
+			elseif a and a > 1 then
 				a = 1
 			end
 			return custom_color[1], custom_color[2], custom_color[3], a
@@ -191,9 +191,9 @@ local function call_color_function(self, frame, bar_db, value, extra, icon)
 	else
 		a = bar_db.alpha
 	end
-	if a < 0 then
+	if a and a < 0 then
 		a = 0
-	elseif a > 1 then
+	elseif a and a > 1 then
 		a = 1
 	end
 	if not r or not g or not b then
@@ -244,9 +244,9 @@ local function call_background_color_function(self, frame, bar_db, value, extra,
 		else
 			a = bar_db.background_alpha
 		end
-		if a < 0 then
+		if a and a < 0 then
 			a = 0
-		elseif a > 1 then
+		elseif a and a > 1 then
 			a = 1
 		end
 		return custom_background[1], custom_background[2], custom_background[3], a
@@ -263,9 +263,9 @@ local function call_background_color_function(self, frame, bar_db, value, extra,
 	else
 		a = bar_db.background_alpha
 	end
-	if a < 0 then
+	if a and a < 0 then
 		a = 0
-	elseif a > 1 then
+	elseif a and a > 1 then
 		a = 1
 	end
 	if not r or not g or not b then
@@ -319,11 +319,11 @@ local function call_extra_color_function(self, frame, bar_db, value, extra, icon
 	if not override then
 		if a then
 			a = a * bar_db.alpha
-		end
-		if a < 0 then
-			a = 0
-		elseif a > 1 then
-			a = 1
+			if a < 0 then
+				a = 0
+			elseif a > 1 then
+				a = 1
+			end
 		end
 		if custom_extra then
 			return custom_extra[1], custom_extra[2], custom_extra[3], a
@@ -337,11 +337,11 @@ local function call_extra_color_function(self, frame, bar_db, value, extra, icon
 	end
 	if a then
 		a = a * bar_db.alpha
-	end
-	if a < 0 then
-		a = 0
-	elseif a > 1 then
-		a = 1
+		if a < 0 then
+			a = 0
+		elseif a > 1 then
+			a = 1
+		end
 	end
 	if not r or not g or not b then
 		return 0.5, 0.5, 0.5, a
