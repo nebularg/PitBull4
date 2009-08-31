@@ -709,10 +709,7 @@ local function update_cast_data(event, unit, event_spell, event_rank, event_cast
 		spell, rank, name, icon, start_time, end_time, uninterruptble = UnitChannelInfo(unit)
 		channeling = true
 	end
-	-- Note the castID should always be an increasing integer.  However, inside
-	-- UNIT_SPELLCAST_INTERRUPTED it will be zero.  Everything else returned from
-	-- UnitcastingInfo() will be the same so there's no reason to update it.
-	if spell and cast_id ~= 0 then
+	if spell then
 		data.spell = spell
 		rank = rank and tonumber(rank:match("%d+"))
 		data.rank = rank
@@ -732,7 +729,11 @@ local function update_cast_data(event, unit, event_spell, event_rank, event_cast
 		data.channeling = channeling
 		data.fade_out = false
 		data.interruptible = not uninterruptible
-		data.cast_id = cast_id
+		if event ~= "UNIT_SPELLCAST_INTERRUPTED" then
+			-- We can't update the cache of the cast_id on UNIT_SPELLCAST_INTERRUPTED  because
+			-- for whatever reason it ends up giving us 0 inside this event.
+			data.cast_id = cast_id
+		end
 		data.stop_time = nil
 		data.stop_message = nil
 		return

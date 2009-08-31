@@ -224,11 +224,7 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_spell, event_rank, event
 		spell, rank, displayName, icon, startTime, endTime, isTradeSkill, uninterruptible = UnitChannelInfo(unit)
 		channeling = true
 	end
-	-- Note the castID should always be an increasing integer.  However, inside
-	-- UNIT_SPELLCAST_INTERRUPTED it will be zero.  Everything else returned from
-	-- UnitCastingInfo() will be the same when the castID is zero so there's no
-	-- reason to update it.
-	if spell and castID ~= 0 then
+	if spell then
 		if icon == CREEPY_HEAD then
 			icon = nil
 		end
@@ -241,7 +237,11 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_spell, event_rank, event
 		data.fadeOut = false
 		data.wasChanneling = channeling -- persistent state even after interrupted
 		data.stopTime = nil
-		data.cast_id = castID
+		if event ~= "UNIT_SPELLCAST_INTERRUPTED" then
+			-- We can't update the cache of teh cast_id on UNIT_SPELLCAST_INTERRUPTED because
+			-- for whatever reason it ends up giving us 0 inside this event.
+			data.cast_id = castID
+		end
 		timerFrame:Show()
 		return
 	end
