@@ -703,7 +703,7 @@ local function update_cast_data(event, unit)
 		cast_data[guid] = data
 	end
 
-	local spell, rank, name, icon, start_time, end_time, cast_id, interrupt = UnitCastingInfo(unit)
+	local spell, rank, name, icon, start_time, end_time, is_trade_skill, cast_id, interrupt = UnitCastingInfo(unit)
 	local channeling = false
 	if not spell then
 		spell, rank, name, icon, start_time, end_time, uninterruptble = UnitChannelInfo(unit)
