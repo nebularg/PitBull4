@@ -109,6 +109,7 @@ local function call_color_function(self, frame, bar_db, value, extra, icon)
 		end
 	end
 	if not override then
+		local unit = frame.unit
 		if custom_color then
 			if a then
 				a = a * bar_db.alpha
@@ -121,9 +122,7 @@ local function call_color_function(self, frame, bar_db, value, extra, icon)
 				a = 1
 			end
 			return custom_color[1], custom_color[2], custom_color[3], a
-		else
-			local unit = frame.unit
-
+		elseif unit then
 			local happiness
 			if player_is_hunter and bar_db.color_by_happiness and UnitIsUnit(unit, "pet") then
 				-- If we're configured to color the bar by happiness then capture the pet happiness
