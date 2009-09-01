@@ -136,6 +136,7 @@ local DATABASE_DEFAULTS = {
 				},
 			}
 		},
+		five_man_raid_is_party = true,
 		made_groups = false,
 		layouts = {
 			['**'] = {
@@ -1429,7 +1430,7 @@ function PitBull4:RAID_ROSTER_UPDATE(force)
 	if raid > 0 then
 		if raid > 25 then
 			STATE = "raid40"
-		elseif raid <= 5 and party == raid - 1 then -- TODO: make it an option to have 5-man raids act as parties.
+		elseif self.db.profile.five_man_raid_is_party and raid <= 5 and party == raid - 1 then
 			STATE = "party"
 		else
 			STATE = get_state_from_groups(raid) 

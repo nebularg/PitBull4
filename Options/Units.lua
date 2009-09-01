@@ -123,6 +123,21 @@ function PitBull4.Options.get_unit_options()
 		end,
 		validate = validate_group,
 	}
+
+	group_options.args.five_man_raid_is_party = {
+		name = L["Small raid as party"],
+		desc = L["Treat a raid group with all members in a single group as a party."],
+		type = 'toggle',
+		order = 3,
+		get = function(info)
+			return PitBull4.db.profile.five_man_raid_is_party
+		end,
+		set = function(info, value)
+			PitBull4.db.profile.five_man_raid_is_party = value
+
+			PitBull4:RAID_ROSTER_UPDATE(true)
+		end,
+	}
 	
 	local next_order
 	do
