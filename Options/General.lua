@@ -8,15 +8,36 @@ function PitBull4.Options.get_general_options()
 	
 	return
 		'config_mode', config_mode, 
-		'lock_movement', {
-			type = 'toggle',
-			name = L["Lock frames"],
-			desc = L["Lock the frames so they cannot be accidentally moved."],
+		'movement', {
+			type = 'select',
+			name = L["Frame movement"],
+			desc = L["Limit how frames may be moved."],
+			values = {
+				["locked"] = L["Locked"],
+				["unlocked"] = L["Unlocked with snap"],
+				["unlocked-snap"] = L["Unlocked without snap"],
+			},
 			get = function(info)
-				return PitBull4.db.profile.lock_movement
+				local db = PitBull4.db.profile
+				if db.lock_movement then
+					return "locked"
+				elseif db.frame_snap then
+					return "unlocked"
+				else
+					return "unlocked-snap"
+				end
 			end,
 			set = function(info, value)
-				PitBull4.db.profile.lock_movement = value
+				local db = PitBull4.db.profile
+				if value == "locked" then
+					db.lock_movement = true
+				elseif value == "unlocked" then
+					db.lock_movement = false
+					db.frame_snap = true
+				else
+					db.lock_movement = false
+					db.frame_snap = false
+				end
 			end,
 		},
 		'minimap_icon', {

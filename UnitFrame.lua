@@ -220,22 +220,31 @@ end
 
 local moving_frame = nil
 function SingletonUnitFrame__scripts:OnDragStart()
-	if PitBull4.db.profile.lock_movement or InCombatLockdown() then
+	local db = PitBull4.db.profile
+	if db.lock_movement or InCombatLockdown() then
 		return
 	end
 	
-	-- this start/stop thing is to make WoW move the frame the initial few pixels between OnMouseDown and OnDragStart
 	self:StartMoving()
-	self:StopMovingOrSizing()
-	
 	moving_frame = self
-	LibStub("LibSimpleSticky-1.0"):StartMoving(self, PitBull4.all_frames_list, 0, 0, 0, 0)
+
+	if db.frame_snap then
+		-- stop thing is to make WoW move the frame the initial few pixels between
+		-- OnMouseDown and OnDragStart
+		self:StopMovingOrSizing()
+	
+		LibStub("LibSimpleSticky-1.0"):StartMoving(self, PitBull4.all_frames_list, 0, 0, 0, 0)
+	end
 end
 
 function SingletonUnitFrame__scripts:OnDragStop()
 	if moving_frame ~= self then return end
 	moving_frame = nil
-	LibStub("LibSimpleSticky-1.0"):StopMoving(self)
+	if PitBull4.db.profile.frame_snap then
+		LibStub("LibSimpleSticky-1.0"):StopMoving(self)
+	else
+		self:StopMovingOrSizing()
+	end
 	
 	local ui_scale = UIParent:GetEffectiveScale()
 	local scale = self:GetEffectiveScale() / ui_scale

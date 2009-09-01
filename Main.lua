@@ -73,6 +73,7 @@ end
 local DATABASE_DEFAULTS = {
 	profile = {
 		lock_movement = false,
+		frame_snap = true,
 		minimap_icon = {
 			hide = false,
 			minimapPos = 200,
@@ -943,7 +944,11 @@ function PitBull4:ADDON_LOADED()
 			icon = [[Interface\AddOns\PitBull4\pitbull]],
 			OnClick = function(clickedframe, button)
 				if button == "RightButton" then 
-					PitBull4.db.profile.lock_movement = not PitBull4.db.profile.lock_movement
+					if IsShiftKeyDown() then
+						PitBull4.db.profile.frame_snap = not PitBull4.db.profile.frame_snap
+					else
+						PitBull4.db.profile.lock_movement = not PitBull4.db.profile.lock_movement
+					end
 					LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
 				else 
 					return PitBull4.Options.OpenConfig() 
@@ -953,6 +958,7 @@ function PitBull4:ADDON_LOADED()
 				tt:AddLine(L["PitBull Unit Frames 4.0"])
 				tt:AddLine("|cffffff00" .. L["%s|r to open the options menu"]:format(L["Click"]), 1, 1, 1)
 				tt:AddLine("|cffffff00" .. L["%s|r to toggle frame lock"]:format(L["Right-click"]), 1, 1, 1)
+				tt:AddLine("|cffffff00" .. L["%s|r to toggle frame snapping"]:format(L["Shift Right-click"]), 1, 1, 1)
 			end,
 		})
 	end

@@ -1014,12 +1014,19 @@ end
 
 local moving_frame = nil
 function MemberUnitFrame__scripts:OnDragStart()
-	if PitBull4.db.profile.lock_movement or InCombatLockdown() then
+	local db = PitBull4.db.profile
+	if db.lock_movement or InCombatLockdown() then
 		return
 	end
+
+	local header = self.header
+	moving_frame = header
 	
-	moving_frame = self.header
-	LibStub("LibSimpleSticky-1.0"):StartMoving(self.header, PitBull4.all_frames_list, 0, 0, 0, 0)
+	if db.frame_snap then
+		LibStub("LibSimpleSticky-1.0"):StartMoving(header, PitBull4.all_frames_list, 0, 0, 0, 0)
+	else
+		header:StartMoving()
+	end
 end
 
 function MemberUnitFrame__scripts:OnDragStop()
@@ -1027,7 +1034,11 @@ function MemberUnitFrame__scripts:OnDragStop()
 	if moving_frame ~= header then return end
 	moving_frame = nil
 
-	LibStub("LibSimpleSticky-1.0"):StopMoving(header)
+	if PitBull4.db.profile.frame_snap then
+		LibStub("LibSimpleSticky-1.0"):StopMoving(header)
+	else
+		header:StopMovingOrSizing()
+	end
 	
 	local ui_scale = UIParent:GetEffectiveScale()
 	local scale = header[1]:GetEffectiveScale() / ui_scale
