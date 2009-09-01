@@ -300,6 +300,13 @@ function UnitFrame__scripts:OnAttributeChanged(key, value)
 		if old_unit == new_unit then
 			return
 		end
+
+		-- debug assertion to help try and track down ticket 475.
+		if DEBUG then
+			if not new_unit then
+				expect(self.guid, '==', nil)
+			end
+		end
 	
 		if old_unit then
 			PitBull4.unit_id_to_frames[old_unit][self] = nil
