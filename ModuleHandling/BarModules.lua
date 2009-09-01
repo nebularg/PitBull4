@@ -41,7 +41,11 @@ local function call_value_function(self, frame, bar_db)
 		return nil, nil
 	end
 	local value, extra, icon
-	if frame.guid then
+	-- The extra frame.unit test here is a workaround for ticket 475.  It's not the
+	-- real fix.  The unit should never end up unset when the guid is set.  However,
+	-- this will stop users from seeing this failure in our state management while
+	-- not causing any real problems.
+	if frame.guid and frame.unit then
 		value, extra, icon = self:GetValue(frame, bar_db)
 	end
 	
