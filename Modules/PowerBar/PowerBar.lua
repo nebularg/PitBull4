@@ -104,11 +104,7 @@ function PitBull4_PowerBar:GetValue(frame)
 		return nil
 	end
 
-	local success,cur = pcall(get_power_and_cache, unit)
-	if not success then
-		geterrorhandler()("frame = "..frame:GetName().."; unit = "..tostring(frame.unit).."; guid = "..tostring(frame.guid).."; is_shown = "..tostring(frame:IsShown()).."\n"..cur)
-	end
-	return cur / UnitPowerMax(unit)
+	return get_power_and_cache(unit) / UnitPowerMax(unit)
 end
 
 function PitBull4_PowerBar:GetExampleValue(frame)
