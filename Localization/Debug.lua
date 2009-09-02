@@ -35,8 +35,27 @@ L["Tauren_short"] = "Ta"
 L["Troll_short"] = "Tr"
 L["Undead_short"] = "Ud"
 
--- classes provided by Blizzard tables:
--- LOCALIZED_CLASS_NAMES_MALE and LOCLAIZED_CLASS_NAMES_FEMALE
+-- classes
+L["Death Knight"] = true 
+L["Warrior"] = true 
+L["Priest"] = true 
+L["Mage"] = true 
+L["Shaman"] = true 
+L["Paladin"] = true 
+L["Warlock"] = true 
+L["Druid"] = true 
+L["Rogue"] = true 
+L["Hunter"] = true 
+L["Death Knight_female"] = "Death Knight"
+L["Warrior_female"] = "Warrior"
+L["Priest_female"] = "Priest"
+L["Mage_female"] = "Mage"
+L["Shaman_female"] = "Shaman"
+L["Paladin_female"] = "Paladin"
+L["Warlock_female"] = "Warlock"
+L["Druid_female"] = "Druid"
+L["Rogue_female"] = "Rogue"
+L["Hunter_female"] = "Hunter"
 	
 -- short classes
 L["Death Knight_short"] = "DK"

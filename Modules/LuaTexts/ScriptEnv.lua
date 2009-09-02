@@ -14,9 +14,6 @@ else
 	GetQuestDifficultyColor = _G.GetQuestDifficultyColor
 end
 
-local LCNM = _G.LOCALIZED_CLASS_NAMES_MALE
-local LCNF = _G.LOCALIZED_CLASS_NAMES_FEMALE
-
 -- The ScriptEnv table serves as the environment that the scripts run
 -- under LuaTexts run under.  The functions included in it are accessible
 -- to this scripts as though they were local functions to it.  Functions
@@ -457,26 +454,26 @@ end
 ScriptEnv.Class = Class
 
 local ShortClass_abbrev = {
-	[LCNM["PRIEST"]] = L["Priest_short"],
-	[LCNM["MAGE"]] = L["Mage_short"],
-	[LCNM["SHAMAN"]] = L["Shaman_short"],
-	[LCNM["PALADIN"]] = L["Paladin_short"],
-	[LCNM["WARLOCK"]] = L["Warlock_short"],
-	[LCNM["DRUID"]] = L["Druid_short"],
-	[LCNM["ROGUE"]] = L["Rogue_short"],
-	[LCNM["HUNTER"]] = L["Hunter_short"],
-	[LCNM["WARRIOR"]] = L["Warrior_short"],
-	[LCNM["DEATHKNIGHT"]] = L["Death Knight_short"],
-	[LCNF["PRIEST"]] = L["Priest_short"],
-	[LCNF["MAGE"]] = L["Mage_short"],
-	[LCNF["SHAMAN"]] = L["Shaman_short"],
-	[LCNF["PALADIN"]] = L["Paladin_short"],
-	[LCNF["WARLOCK"]] = L["Warlock_short"],
-	[LCNF["DRUID"]] = L["Druid_short"],
-	[LCNF["ROGUE"]] = L["Rogue_short"],
-	[LCNF["HUNTER"]] = L["Hunter_short"],
-	[LCNF["WARRIOR"]] = L["Warrior_short"],
-	[LCNF["DEATHKNIGHT"]] = L["Death Knight_short"],
+	[L["Priest"]] = L["Priest_short"],
+	[L["Mage"]] = L["Mage_short"],
+	[L["Shaman"]] = L["Shaman_short"],
+	[L["Paladin"]] = L["Paladin_short"],
+	[L["Warlock"]] = L["Warlock_short"],
+	[L["Druid"]] = L["Druid_short"],
+	[L["Rogue"]] = L["Rogue_short"],
+	[L["Hunter"]] = L["Hunter_short"],
+	[L["Warrior"]] = L["Warrior_short"],
+	[L["Death Knight"]] = L["Death Knight_short"],
+	[L["Priest_female"]] = L["Priest_short"],
+	[L["Mage_female"]] = L["Mage_short"],
+	[L["Shaman_female"]] = L["Shaman_short"],
+	[L["Paladin_female"]] = L["Paladin_short"],
+	[L["Warlock_female"]] = L["Warlock_short"],
+	[L["Druid_female"]] = L["Druid_short"],
+	[L["Rogue_female"]] = L["Rogue_short"],
+	[L["Hunter_female"]] = L["Hunter_short"],
+	[L["Warrior_female"]] = L["Warrior_short"],
+	[L["Death Knight_female"]] = L["Death Knight_short"],
 }
 
 local function ShortClass(arg)
