@@ -34,10 +34,10 @@ externals:
     libs/AceTimer-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceTimer-3.0
         tag: latest
-    libs/LibDogTag-3.0:
+    Modules/DogTagTexts/libs/LibDogTag-3.0:
         url: svn://svn.wowace.com/wow/libdogtag-3-0/mainline/trunk
         tag: latest
-    libs/LibDogTag-Unit-3.0:
+    Modules/DogTagTexts/libs/LibDogTag-Unit-3.0:
         url: svn://svn.wowace.com/wow/libdogtag-unit-3-0/mainline/trunk
         tag: latest
     libs/LibSharedMedia-3.0:
