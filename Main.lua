@@ -909,8 +909,20 @@ function PitBull4:CallMethodOnModules(method_name, ...)
 	end
 end
 
+-- variable to hold the AceTimer3 repeating timer we schedule on startup
+-- to catch the first main tank list update that oRA doesn't bother to
+-- generate an event for.
+local main_tank_timer
+
 -- Callback for when the main tank list updates from oRA or CTRA
 local function main_tank_update()
+	if main_tank_timer and oRA.maintanktable then
+		-- Once oRA.maintanktable isn't nil we know it's loaded from
+		-- the SV and everything after that wll generate a normal event
+		-- so we can pitch our repeating timer.
+		PitBull4:CancelTimer(main_tank_timer)
+		main_tank_timer = nil
+	end
 	for header in PitBull4:IterateHeadersForSuperUnitGroup("raid") do
 		local group_db = header.group_db
 		if group_db and group_db.group_filter == "MAINTANK" then
@@ -1213,8 +1225,8 @@ function PitBull4:OnEnable()
 		LibStub("AceEvent-2.0"):RegisterEvent("oRA_MainTankUpdate",main_tank_update)
 
 		-- Workaround for the fact that oRA loads the MT list from SV's on load but doesn't
-		-- bother to trigger an event.  oRA should get the SV file within 1 second of us loading.
-		self:ScheduleTimer(main_tank_update, 1)
+		-- bother to trigger an event.
+		main_tank_timer = self:ScheduleRepeatingTimer(main_tank_update, 1)
 	end
 	
 	timerFrame:Show()
