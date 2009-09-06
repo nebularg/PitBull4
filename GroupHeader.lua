@@ -295,6 +295,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	local layout_db = PitBull4.db.profile.layouts[layout]
 	self.layout_db = layout_db
 	
+	self.dont_update = true
 	for _, frame in self:IterateMembers() do
 		frame.dont_update = true
 	end
@@ -420,6 +421,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	for _, frame in self:IterateMembers() do
 		frame.dont_update = nil
 	end
+	self.dont_update = nil
 	
 	if changed_units and not dont_refresh_children then
 		for _, frame in self:IterateMembers() do
@@ -998,6 +1000,7 @@ function GroupHeader:ClearFrames()
 end
 
 function GroupHeader__scripts:OnHide()
+	if self.dont_update then return end
 	-- Remove any existing timer so we don't just grow timers endlessly.
 	local clear_timer = self.clear_timer
 	if clear_timer then
@@ -1009,6 +1012,7 @@ function GroupHeader__scripts:OnHide()
 end
 
 function GroupHeader__scripts:OnShow()
+	if self.dont_update then return end
 	local clear_timer = self.clear_timer
 	if clear_timer then
 		PitBull4:CancelTimer(clear_timer, true)
