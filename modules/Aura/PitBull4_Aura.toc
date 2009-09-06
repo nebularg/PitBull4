@@ -1,6 +1,20 @@
 ## Interface: 30200
 ## Title: PitBull4 |r[|cffeda55fAura|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Aura")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Aura")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Aura")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Aura")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Aura")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Aura")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Aura")@|r]
 ## Notes: Shows buffs and debuffs for PitBull4 frames.
+## Notes-deDE: @localization(locale="deDE", key="Shows buffs and debuffs for PitBull4 frames.")@
+## Notes-esES: @localization(locale="esES", key="Shows buffs and debuffs for PitBull4 frames.")@
+## Notes-frFR: @localization(locale="frFR", key="Shows buffs and debuffs for PitBull4 frames.")@
+## Notes-koKR: @localization(locale="koKR", key="Shows buffs and debuffs for PitBull4 frames.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Shows buffs and debuffs for PitBull4 frames.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Shows buffs and debuffs for PitBull4 frames.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Shows buffs and debuffs for PitBull4 frames.")@
 ## Author: ckknight
 ## DefaultState: enabled
 ## LoadOnDemand: 1
