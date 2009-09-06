@@ -909,19 +909,25 @@ function PitBull4:CallMethodOnModules(method_name, ...)
 	end
 end
 
--- variable to hold the AceTimer3 repeating timer we schedule on startup
--- to catch the first main tank list update that oRA doesn't bother to
--- generate an event for.
+-- variable to hold the AceTimer3 repeating timer we use to catch the first
+-- main tank list update that oRA doesn't bother to generate an event for.
 local main_tank_timer
 
 -- Callback for when the main tank list updates from oRA or CTRA
 local function main_tank_update()
-	if main_tank_timer and oRA.maintanktable then
-		-- Once oRA.maintanktable isn't nil we know it's loaded from
-		-- the SV and everything after that wll generate a normal event
-		-- so we can pitch our repeating timer.
-		PitBull4:CancelTimer(main_tank_timer)
-		main_tank_timer = nil
+	if oRA and not oRA.maintanktable then
+		-- if oRA is loaded but there's no maintanktable that means oRA isn't
+		-- fully loaded.  
+		if not main_tank_timer then
+			-- No timer so we start one.
+			main_tank_timer = PitBull4:ScheduleRepeatingTimer(main_tank_update,1)
+		end
+		-- No main tank list means nothing to do.
+		return
+	else
+		-- We have the list, can cancel the timer and normal events will work
+		-- from now on.
+		PitBull4:CancelTimer(main_tank_timer, true)
 	end
 	for header in PitBull4:IterateHeadersForSuperUnitGroup("raid") do
 		local group_db = header.group_db
@@ -1223,10 +1229,11 @@ function PitBull4:OnEnable()
 
 	if oRA then
 		LibStub("AceEvent-2.0"):RegisterEvent("oRA_MainTankUpdate",main_tank_update)
-
-		-- Workaround for the fact that oRA loads the MT list from SV's on load but doesn't
-		-- bother to trigger an event.
-		main_tank_timer = self:ScheduleRepeatingTimer(main_tank_update, 1)
+		-- We register for CoreEnabled to know when oRA loads it's LOD modules in particular
+		-- ParticipantMT so we can then set a timer to watch for the maintanktable to be
+		-- loaded from the savedvariables, because it doesn't bother to generate a
+		-- MainTankUpdate event for this.  *sigh*
+		LibStub("AceEvent-2.0"):RegisterEvent("oRA_CoreEnabled",main_tank_update)
 	end
 	
 	timerFrame:Show()
