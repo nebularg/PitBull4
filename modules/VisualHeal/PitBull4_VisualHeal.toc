@@ -19,6 +19,7 @@
 ## DefaultState: enabled
 ## LoadOnDemand: 1
 ## Dependencies: PitBull4
+## OptionalDeps: LibHealComm-3.0
 ## Version: @project-version@
 
 load.xml

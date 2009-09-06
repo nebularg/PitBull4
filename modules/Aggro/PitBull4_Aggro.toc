@@ -19,6 +19,7 @@
 ## DefaultState: enabled
 ## LoadOnDemand: 1
 ## Dependencies: PitBull4
+## OptionalDeps: LibBanzai-2.0
 ## Version: @project-version@
 
 load.xml
