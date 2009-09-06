@@ -123,12 +123,12 @@ function PitBull4_Portrait:UpdateFrame(frame)
 	local unit = frame.unit
 	
 	if style == "class" then
-		if not UnitIsPlayer(unit) then
+		if not unit or not UnitIsPlayer(unit) then
 			style = layout_db.fallback_style
 			falling_back = true
 		end
 	else
-		if not UnitExists(unit) or not UnitIsConnected(unit) or not UnitIsVisible(unit) then
+		if not unit or not UnitExists(unit) or not UnitIsConnected(unit) or not UnitIsVisible(unit) then
 			style = layout_db.fallback_style
 			falling_back = true
 		end
@@ -190,11 +190,19 @@ function PitBull4_Portrait:UpdateFrame(frame)
 		end
 	elseif style == "two_dimensional" then
 		portrait.texture:SetTexCoord(0.14644660941, 0.85355339059, 0.14644660941, 0.85355339059)
-		SetPortraitTexture(portrait.texture, unit)
+		if unit then
+			SetPortraitTexture(portrait.texture, unit)
+		else
+			-- No unit so just use a blank portrait
+			portrait.texture:SetTexture("")
+		end
 	elseif style == "blank" then
 		portrait.texture:SetTexture("")
 	else -- class	
-		local _, class = UnitClass(unit)
+		local class
+		if unit then
+			_, class = UnitClass(unit)
+		end
 		if class then
 			local tex_coord = CLASS_TEX_COORDS[class]
 			portrait.texture:SetTexture([[Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes]])
