@@ -11,23 +11,6 @@ for _ in pairs(RAID_CLASS_COLORS) do
 end
 local MINIMUM_EXAMPLE_GROUP = 2
 
-local ACCEPTABLE_STATES = {
-	party = {
-		solo = true,
-		party = true,
-		raid10 = true,
-		raid25 = true,
-		raid40 = true,
-	},
-	raid = {
-		solo = false,
-		party = false,
-		raid10 = true,
-		raid25 = true,
-		raid40 = true,
-	}
-}
-
 local CLASS_ORDER = { -- TODO: make this configurable
 	"WARRIOR",
 	"HUNTER",
@@ -82,7 +65,7 @@ function PitBull4:MakeGroupHeader(group)
 		self:ConvertIntoGroupHeader(header)
 	end
 	
-	header:UpdateShownState(self:GetState())
+	header:UpdateShownState()	
 end
 PitBull4.MakeGroupHeader = PitBull4:OutOfCombatWrapper(PitBull4.MakeGroupHeader)
 
@@ -121,13 +104,12 @@ function GroupHeader:ProxySetAttribute(key, value)
 	end
 end
 
-function GroupHeader:UpdateShownState(state)
+function GroupHeader:UpdateShownState()
 	local group_db = self.group_db
-	
-	if group_db and group_db.enabled and group_db.show_when[state] and ACCEPTABLE_STATES[self.super_unit_group][state] and (state ~= "solo" or group_db.include_player) then
-		self:Show()
+	if not group_db or not group_db.enabled then
+		PitBull4:RemoveGroupFromStateHeader(self)
 	else
-		self:Hide()
+		PitBull4:AddGroupToStateHeader(self)
 	end
 end
 GroupHeader.UpdateShownState = PitBull4:OutOfCombatWrapper(GroupHeader.UpdateShownState)
@@ -306,10 +288,12 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	local force_show = self.force_show
 	self:UnforceShow()
 	
+	local enabled = group_db.enabled
 	local unit_group = group_db.unit_group
 	local party_based = unit_group:sub(1, 5) == "party"
 	local include_player = party_based and group_db.include_player
-	local show_solo = include_player and group_db.show_when.solo
+	local show_when = group_db.show_when
+	local show_solo = include_player and show_when.solo
 	local group_filter = not party_based and group_db.group_filter or nil
 	local sort_direction = group_db.sort_direction
 	local sort_method = group_db.sort_method
@@ -408,6 +392,18 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	self:SetAttribute("columnAnchorPoint", DIRECTION_TO_COLUMN_ANCHOR_POINT[direction])
 	self:SetAttribute("useOwnerUnit", 1)
 	
+	-- Set the attributes for the StateHeader to know when to show and hide this 
+	-- group
+	for k,v in pairs(show_when) do
+		if k == "solo" then
+			self:SetAttribute(k, enabled and show_solo and party_based)
+		elseif k == "party" then
+			self:SetAttribute(k, enabled and v and party_based)
+		else
+			self:SetAttribute(k, enabled and v)
+		end
+	end
+
 	self:RefixSizeAndPosition()
 	
 	if is_shown then
@@ -616,9 +612,15 @@ function GroupHeader:AssignFakeUnitIDs()
 
 	-- Limit the number of frames to the config mode for raid
 	if config_mode and config_mode:sub(1,4) == "raid" and super_unit_group == "raid" then
-		local num = config_mode:sub(5)+0 -- raid10, raid25, raid40 => 10, 25, 40
-		if num < finish then
-			finish = num
+		if config_mode == "raid" then
+			if finish > 5 then
+				finish = 5
+			end
+		elseif config_mode:sub(1,4) == "raid" then
+			local num = config_mode:sub(5)+0 -- raid10, raid25, raid40 => 10, 25, 40
+			if num < finish then
+				finish = num
+			end
 		end
 	end
 
@@ -877,7 +879,11 @@ function GroupHeader:IterateMembers(guess_num)
 		elseif config_mode == "party" then
 			num = self.include_player and MAX_PARTY_MEMBERS_WITH_PLAYER or MAX_PARTY_MEMBERS
 		elseif config_mode then
-			num = config_mode:sub(5)+0 -- raid10, raid25, raid40 => 10, 25, 40
+			if config_mode == "raid" then
+				num = 5
+			else
+				num = config_mode:sub(5)+0 -- raid10, raid25, raid40 => 10, 25, 40
+			end
 			-- check filters
 			
 			local filter = self.group_filter

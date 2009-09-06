@@ -131,13 +131,15 @@ local DATABASE_DEFAULTS = {
 				show_when = {
 					solo = false,
 					party = true,
+					raid = false,
 					raid10 = false,
+					raid15 = false,
+					raid20 = false,
 					raid25 = false,
 					raid40 = false,
 				},
 			}
 		},
-		five_man_raid_is_party = true,
 		made_groups = false,
 		layouts = {
 			['**'] = {
@@ -1151,12 +1153,11 @@ function PitBull4:OnProfileChanged()
 		frame:RefreshLayout()
 	end
 
-	local state = self:GetState()
 	for header in PitBull4:IterateHeaders(true) do
 		if header.group_db then
 			header:RefreshGroup(true)
 		end
-		header:UpdateShownState(state)
+		header:UpdateShownState()
 	end
 
 	-- Make sure all frames and groups are made
@@ -1240,7 +1241,6 @@ function PitBull4:OnEnable()
 
 	-- show initial frames
 	self:OnProfileChanged()
-	self:RAID_ROSTER_UPDATE()
 	
 	self:LoadModules()
 end
@@ -1405,74 +1405,120 @@ function PitBull4:ZONE_CHANGED_NEW_AREA()
 	end
 end
 
-local STATE
+local StateHeader = CreateFrame("Frame", nil, nil, "SecureHandlerBaseTemplate")
+PitBull4.StateHeader = StateHeader
+
+-- Note please do not use tabs in the code passed to WrapScript, WoW can't display
+-- tabs in FontStrings and it makes errors inside the below code look like crap.
+StateHeader:WrapScript(StateHeader, "OnAttributeChanged", [[
+  if name ~= "new_group" and name ~= "remove_group" and name ~= "state-group" and name ~= "config_mode" then return end
+
+  local state, header
+  if name == "new_group" then
+    -- value is the name of the new group header to add to our group list
+    if not value then return end
+
+    if not groups then
+      groups = newtable()
+    end
+
+    header = self:GetFrameRef(value)
+    groups[value] = header 
+
+    state = self:GetAttribute("config_mode")
+    if not state then
+      state = self:GetAttribute("state-group")
+    end
+  elseif name == "remove_group" then
+    -- value is the name of the group header to remove from our group list
+    if not value or not groups then return end
+
+    header = groups[value]
+    if header then
+      groups[value] = nil
+    end
+  elseif name == "state-group" then 
+    -- value will be the state id for the current state
+    -- however, override it if config_mode is set
+    if not groups then return end
+
+    local config_mode = self:GetAttribute("config_mode")
+    if config_mode then
+      state = config_mode
+    else
+      state = value
+    end
+  else -- config_mode
+    -- value will be the config_mode state if it's nil we're
+    -- not in config_mode and should use the state drivers
+    -- state
+    if not groups then return end
+    if value then
+      state = value
+    else
+      state = self:GetAttribute("state-group")
+    end
+  end
+
+  if header then
+    -- header is set so this is a single header update
+    if state and header:GetAttribute(state) then
+      header:Show()
+    else
+      -- state won't be set for remove_group calls because
+      -- we don't care about the state we just need to hide it.
+      header:Hide()
+      -- Wipe the unit id off the child frames so the hidden frames
+      -- are ignored by the unit watch system.
+      local children = newtable(header:GetChildren())
+      for i=1,#children do
+        children[i]:SetAttribute("unit", nil)
+      end
+    end
+  else
+    -- No header set so do them all
+    for _, header in pairs(groups) do
+      if header:GetAttribute(state) then
+        header:Show()
+      else
+        header:Hide()
+        -- Wipe the unit id off the child frames so the hidden frames
+        -- are ignored by the unit watch system.
+        local children = newtable(header:GetChildren())
+        for i=1,#children do
+          children[i]:SetAttribute("unit", nil)
+        end
+      end
+    end
+  end
+]])
+RegisterStateDriver(StateHeader, "group", "[target=raid26, exists] raid40; [target=raid21, exists] raid25; [target=raid16, exists] raid20; [target=raid11, exists] raid15; [target=raid6, exists] raid10; [group:raid] raid; [group:party] party; solo")
+
+function PitBull4:AddGroupToStateHeader(header)
+	local header_name = header:GetName()
+	StateHeader:SetFrameRef(header_name, header)
+	StateHeader:SetAttribute("new_group",header_name)
+end
+
+function PitBull4:RemoveGroupFromStateHeader(header)
+	StateHeader:SetAttribute("remove_group",header:GetName())
+end
+
 --- Get the current state that the player is in.
--- This will return one of "solo", "party", "raid10", "raid25", or "raid40".
+-- This will return one of "solo", "party", "raid", "raid10", "raid15", "raid20", "raid25", or "raid40".
 -- Setting config mode does override this.
 -- @usage local state = PitBull4:GetState()
 -- @return the state of the player.
 function PitBull4:GetState()
-	return PitBull4.config_mode or STATE
+	return PitBull4.config_mode or PitBull4.StateHeader:GetAttribute("state-group")	
 end
 
 function PitBull4:PLAYER_ENTERING_WORLD()
 	refresh_all_guids()
 end
 
-local function get_state_from_groups(raid)
-	local state
-	for i=1,raid do
-		local _,_,subgroup = GetRaidRosterInfo(i)
-		if subgroup >= 6 then
-			-- 40 man raid state no point in looking at any other entries
-			state = 40
-			break
-		elseif subgroup >= 3 then
-			if not state or  state < 25 then
-				state = 25 
-			end
-		else
-			if not state or state < 10 then 
-				state = 10
-			end
-		end
-	end
-	return "raid"..state
-end
-
-local last_state = nil
-local last_raid_num = nil
-local last_party_num = nil
-function PitBull4:RAID_ROSTER_UPDATE(force)
+function PitBull4:RAID_ROSTER_UPDATE()
 	refresh_all_guids()
-	local raid = GetNumRaidMembers()
-	local party = GetNumPartyMembers()
-	if not force and last_raid_num == raid and last_party_num == party then
-		return
-	end
-	last_raid_num = raid
-	last_party_num = party
-	if raid > 0 then
-		if raid > 25 then
-			STATE = "raid40"
-		elseif self.db.profile.five_man_raid_is_party and raid <= 5 and party == raid - 1 then
-			STATE = "party"
-		else
-			STATE = get_state_from_groups(raid) 
-		end
-	elseif party > 0 then
-		STATE = "party"
-	else
-		STATE = "solo"
-	end
-	
-	local state = PitBull4:GetState()
-	if last_state ~= state then
-		last_state = state
-		for header in PitBull4:IterateHeaders() do
-			header:UpdateShownState(state)
-		end
-	end
 end
 PitBull4.PARTY_MEMBERS_CHANGED = PitBull4.RAID_ROSTER_UPDATE
 

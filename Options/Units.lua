@@ -124,21 +124,6 @@ function PitBull4.Options.get_unit_options()
 		validate = validate_group,
 	}
 
-	group_options.args.five_man_raid_is_party = {
-		name = L["Small raid as party"],
-		desc = L["Treat a raid group with all members in a single group as a party."],
-		type = 'toggle',
-		order = 3,
-		get = function(info)
-			return PitBull4.db.profile.five_man_raid_is_party
-		end,
-		set = function(info, value)
-			PitBull4.db.profile.five_man_raid_is_party = value
-
-			PitBull4:RAID_ROSTER_UPDATE(true)
-		end,
-	}
-	
 	local next_order
 	do
 		local current = 0
@@ -339,7 +324,7 @@ function PitBull4.Options.get_unit_options()
 		if set(info, value) then
 			refresh_group(info[1])
 			for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do
-				header:UpdateShownState(PitBull4:GetState())
+				header:UpdateShownState()
 			end
 		end
 	end
@@ -762,7 +747,10 @@ function PitBull4.Options.get_unit_options()
 				t.party = L["Party"]
 			end
 			
+			t.raid = L["5-man raid"]
 			t.raid10 = L["10-man raid"]
+			t.raid15 = L["15-man raid"]
+			t.raid20 = L["20-man raid"]
 			t.raid25 = L["25-man raid"]
 			t.raid40 = L["40-man raid"]
 			
@@ -778,10 +766,10 @@ function PitBull4.Options.get_unit_options()
 			
 			db.show_when[key] = value
 			
-			for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do
-				header:UpdateShownState(PitBull4:GetState())
-			end
 			refresh_group('groups')
+			for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do
+				header:UpdateShownState()
+			end
 		end,
 		disabled = disabled,
 	}

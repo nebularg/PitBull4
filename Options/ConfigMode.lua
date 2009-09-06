@@ -6,7 +6,10 @@ local values = {
 	disabled = L["Disable"],
 	solo = L["Solo"],
 	party = L["Party"],
+	raid = L["5-man raid"],
 	raid10 = L["10-man raid"],
+	raid15 = L["15-man raid"],
+	raid20 = L["20-man raid"],
 	raid25 = L["25-man raid"],
 	raid40 = L["40-man raid"],
 }
@@ -60,13 +63,13 @@ function PitBull4:SetConfigMode(kind)
 	end
 	if kind and PitBull4.config_mode then -- swapping between two different types
 		PitBull4.config_mode = nil
+		PitBull4.StateHeader:SetAttribute("config_mode", nil)
 	
 		self:RecheckConfigMode()
 	end
 	
 	PitBull4.config_mode = kind
-	
-	PitBull4:RAID_ROSTER_UPDATE(true)
+	PitBull4.StateHeader:SetAttribute("config_mode", kind)
 	
 	self:RecheckConfigMode()
 end
