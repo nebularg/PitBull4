@@ -59,5 +59,42 @@ externals:
         url: svn://svn.wowace.com/wow/libhealcomm-3-0/mainline/trunk 
         tag: latest
 
+move-folders:
+    Modules/Aggro: PitBull4_Aggro
+    Modules/Aura: PitBull4_Aura
+    Modules/Background: PitBull4_Background
+    Modules/BlankSpace: PitBull4_BlankSpace
+    Modules/Border: PitBull4_Border
+    Modules/CastBar: PitBull4_CastBar
+    Modules/CastBarLatency: PitBull4_CastBarLatency
+    Modules/CombatIcon: PitBull4_CombatIcon
+    Modules/CombatText: PitBull4_CombatText
+    Modules/ComboPoints: PitBull4_ComboPoints
+    Modules/DogTagTexts: PitBull4_DogTagTexts
+    Modules/DruidManaBar: PitBull4_DruidManaBar
+    Modules/ExperienceBar: PitBull4_ExperienceBar
+    Modules/HappinessIcon: PitBull4_HappinessIcon
+    Modules/HealthBar: PitBull4_HealthBar
+    Modules/HideBlizzard: PitBull4_HideBlizzard
+    Modules/HostilityFader: PitBull4_HostilityFader
+    Modules/LeaderIcon: PitBull4_LeaderIcon
+    Modules/LuaTexts: PitBull4_LuaTexts
+    Modules/ManaSpark: PitBull4_ManaSpark
+    Modules/MasterLooterIcon: PitBull4_MasterLooterIcon
+    Modules/Portrait: PitBull4_Portrait
+    Modules/PowerBar: PitBull4_PowerBar
+    Modules/PvPIcon: PitBull4_PvPIcon
+    Modules/RaidTargetIcon: PitBull4_RaidTargetIcon
+    Modules/RangeFader: PitBull4_RangeFader
+    Modules/ReadyCheckIcon: PitBull4_ReadyCheckIcon
+    Modules/ReputationBar: PitBull4_ReputationBar
+    Modules/RestIcon: PitBull4_RestIcon
+    Modules/Runes: PitBull4_Runes
+    Modules/Sounds: PitBull4_Sounds
+    Modules/ThreatBar: PitBull4_ThreatBar
+    Modules/Totems: PitBull4_Totems
+    Modules/VisualHeal: PitBull4_VisualHeal
+    Modules/VoiceIcon: PitBull4_VoiceIcon
+
 ignore:
     - tests
