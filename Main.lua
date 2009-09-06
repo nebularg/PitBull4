@@ -1239,10 +1239,10 @@ function PitBull4:OnEnable()
 	
 	timerFrame:Show()
 
+	self:LoadModules()
+
 	-- show initial frames
 	self:OnProfileChanged()
-	
-	self:LoadModules()
 end
 
 local timer = 0
