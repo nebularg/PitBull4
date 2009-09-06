@@ -998,6 +998,11 @@ function GroupHeader:ClearFrames()
 end
 
 function GroupHeader__scripts:OnHide()
+	-- Remove any existing timer so we don't just grow timers endlessly.
+	local clear_timer = self.clear_timer
+	if clear_timer then
+		PitBull4:CancelTimer(clear_timer)
+	end
 	-- Start clearing the frames in 5 minutes. 
 	self.clear_index = #self
 	self.clear_timer = PitBull4:ScheduleTimer(self.ClearFrames, 300, self)
