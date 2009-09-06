@@ -1,42 +1,5 @@
 package-as: PitBull4
 
-move-folders:
-    PitBull4/Modules/Aggro: PitBull4_Aggro
-    PitBull4/Modules/Aura: PitBull4_Aura
-    PitBull4/Modules/Background: PitBull4_Background
-    PitBull4/Modules/BlankSpace: PitBull4_BlankSpace
-    PitBull4/Modules/Border: PitBull4_Border
-    PitBull4/Modules/CastBar: PitBull4_CastBar
-    PitBull4/Modules/CastBarLatency: PitBull4_CastBarLatency
-    PitBull4/Modules/CombatIcon: PitBull4_CombatIcon
-    PitBull4/Modules/CombatText: PitBull4_CombatText
-    PitBull4/Modules/ComboPoints: PitBull4_ComboPoints
-    PitBull4/Modules/DogTagTexts: PitBull4_DogTagTexts
-    PitBull4/Modules/DruidManaBar: PitBull4_DruidManaBar
-    PitBull4/Modules/ExperienceBar: PitBull4_ExperienceBar
-    PitBull4/Modules/HappinessIcon: PitBull4_HappinessIcon
-    PitBull4/Modules/HealthBar: PitBull4_HealthBar
-    PitBull4/Modules/HideBlizzard: PitBull4_HideBlizzard
-    PitBull4/Modules/HostilityFader: PitBull4_HostilityFader
-    PitBull4/Modules/LeaderIcon: PitBull4_LeaderIcon
-    PitBull4/Modules/LuaTexts: PitBull4_LuaTexts
-    PitBull4/Modules/ManaSpark: PitBull4_ManaSpark
-    PitBull4/Modules/MasterLooterIcon: PitBull4_MasterLooterIcon
-    PitBull4/Modules/Portrait: PitBull4_Portrait
-    PitBull4/Modules/PowerBar: PitBull4_PowerBar
-    PitBull4/Modules/PvPIcon: PitBull4_PvPIcon
-    PitBull4/Modules/RaidTargetIcon: PitBull4_RaidTargetIcon
-    PitBull4/Modules/RangeFader: PitBull4_RangeFader
-    PitBull4/Modules/ReadyCheckIcon: PitBull4_ReadyCheckIcon
-    PitBull4/Modules/ReputationBar: PitBull4_ReputationBar
-    PitBull4/Modules/RestIcon: PitBull4_RestIcon
-    PitBull4/Modules/Runes: PitBull4_Runes
-    PitBull4/Modules/Sounds: PitBull4_Sounds
-    PitBull4/Modules/ThreatBar: PitBull4_ThreatBar
-    PitBull4/Modules/Totems: PitBull4_Totems
-    PitBull4/Modules/VisualHeal: PitBull4_VisualHeal
-    PitBull4/Modules/VoiceIcon: PitBull4_VoiceIcon
-
 externals:
     libs/LibStub:
         url: svn://svn.wowace.com/wow/libstub/mainline/trunk
@@ -95,6 +58,43 @@ externals:
     Modules/VisualHeal/libs/LibHealComm-3.0:
         url: svn://svn.wowace.com/wow/libhealcomm-3-0/mainline/trunk 
         tag: latest
+
+move-folders:
+    PitBull4/Modules/Aggro: PitBull4_Aggro
+    PitBull4/Modules/Aura: PitBull4_Aura
+    PitBull4/Modules/Background: PitBull4_Background
+    PitBull4/Modules/BlankSpace: PitBull4_BlankSpace
+    PitBull4/Modules/Border: PitBull4_Border
+    PitBull4/Modules/CastBar: PitBull4_CastBar
+    PitBull4/Modules/CastBarLatency: PitBull4_CastBarLatency
+    PitBull4/Modules/CombatIcon: PitBull4_CombatIcon
+    PitBull4/Modules/CombatText: PitBull4_CombatText
+    PitBull4/Modules/ComboPoints: PitBull4_ComboPoints
+    PitBull4/Modules/DogTagTexts: PitBull4_DogTagTexts
+    PitBull4/Modules/DruidManaBar: PitBull4_DruidManaBar
+    PitBull4/Modules/ExperienceBar: PitBull4_ExperienceBar
+    PitBull4/Modules/HappinessIcon: PitBull4_HappinessIcon
+    PitBull4/Modules/HealthBar: PitBull4_HealthBar
+    PitBull4/Modules/HideBlizzard: PitBull4_HideBlizzard
+    PitBull4/Modules/HostilityFader: PitBull4_HostilityFader
+    PitBull4/Modules/LeaderIcon: PitBull4_LeaderIcon
+    PitBull4/Modules/LuaTexts: PitBull4_LuaTexts
+    PitBull4/Modules/ManaSpark: PitBull4_ManaSpark
+    PitBull4/Modules/MasterLooterIcon: PitBull4_MasterLooterIcon
+    PitBull4/Modules/Portrait: PitBull4_Portrait
+    PitBull4/Modules/PowerBar: PitBull4_PowerBar
+    PitBull4/Modules/PvPIcon: PitBull4_PvPIcon
+    PitBull4/Modules/RaidTargetIcon: PitBull4_RaidTargetIcon
+    PitBull4/Modules/RangeFader: PitBull4_RangeFader
+    PitBull4/Modules/ReadyCheckIcon: PitBull4_ReadyCheckIcon
+    PitBull4/Modules/ReputationBar: PitBull4_ReputationBar
+    PitBull4/Modules/RestIcon: PitBull4_RestIcon
+    PitBull4/Modules/Runes: PitBull4_Runes
+    PitBull4/Modules/Sounds: PitBull4_Sounds
+    PitBull4/Modules/ThreatBar: PitBull4_ThreatBar
+    PitBull4/Modules/Totems: PitBull4_Totems
+    PitBull4/Modules/VisualHeal: PitBull4_VisualHeal
+    PitBull4/Modules/VoiceIcon: PitBull4_VoiceIcon
 
 ignore:
     - tests
