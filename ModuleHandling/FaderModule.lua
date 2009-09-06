@@ -143,7 +143,9 @@ local function call_opacity_function(self, frame)
 	local opacity_min = layout_db.opacity_min
 	local opacity_max = layout_db.opacity_max
 	
-	local value = frame.guid and self:GetOpacity(frame)
+	-- Extra frame.unit test here is a workaround for the same root issue
+	-- as we have in BarModules.  See ticket 475.
+	local value = frame.guid and frame.unit and self:GetOpacity(frame)
 	if not value or value >= opacity_max or value ~= value then
 		return nil
 	elseif value < opacity_min then
