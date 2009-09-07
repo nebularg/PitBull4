@@ -42,22 +42,36 @@ local function callback(aggro, name, unit)
 end
 
 local function set_hooks()
-	PitBull4_HealthBar = PitBull4:GetModule("HealthBar", true)
-	if PitBull4_HealthBar then
-		PitBull4_Aggro:RawHook(PitBull4_HealthBar, "GetColor", "HealthBar_GetColor")
+	if not PitBull4_HealthBar then
+		PitBull4_HealthBar = PitBull4:GetModule("HealthBar", true)
+		if PitBull4_HealthBar then
+			PitBull4_Aggro:RawHook(PitBull4_HealthBar, "GetColor", "HealthBar_GetColor")
+		end
 	end
-	
-	PitBull4_Border = PitBull4:GetModule("Border", true)
-	if PitBull4_Border then
-		PitBull4_Aggro:RawHook(PitBull4_Border, "GetTextureAndColor", "Border_GetTextureAndColor")
+
+	if not PitBull4_Border then
+		PitBull4_Border = PitBull4:GetModule("Border", true)
+		if PitBull4_Border then
+			PitBull4_Aggro:RawHook(PitBull4_Border, "GetTextureAndColor", "Border_GetTextureAndColor")
+		end
 	end
-	
-	PitBull4_Background = PitBull4:GetModule("Background", true)
-	if PitBull4_Background then
-		PitBull4_Aggro:RawHook(PitBull4_Background, "GetColor", "Background_GetColor")
+
+	if not PitBull4_Background then
+		PitBull4_Background = PitBull4:GetModule("Background", true)
+		if PitBull4_Background then
+			PitBull4_Aggro:RawHook(PitBull4_Background, "GetColor", "Background_GetColor")
+		end
 	end
 end
 
+function PitBull4_Aggro:OnModuleCreated(_,module)
+	local id = module.id
+	if id == "HealthBar" or id == "Border" or id == "Background" then
+		PitBull4_Aggro:ScheduleTimer(set_hooks, 0)
+	end
+end
+
+PitBull4_Aggro:SecureHook(PitBull4,"OnModuleCreated")
 
 function PitBull4_Aggro:OnEnable()
 	LibBanzai = LibStub("LibBanzai-2.0", true)
