@@ -1099,10 +1099,24 @@ end
 
 --- Load the module with the given id and enable it
 function PitBull4:LoadAndEnableModule(id)
-	LoadAddOn('PitBull4_' .. id)
-	local module = self:GetModule(id)
-	assert(module)
-	self:EnableModule(module)
+	local loaded, reason = LoadAddOn('PitBull4_' .. id)
+	if loaded then
+		local module = self:GetModule(id)
+		assert(module)
+		self:EnableModule(module)
+	else
+		if reason then
+			if reason == "DISABLED" then
+				reason = L["Disabled from the Blizzard Addon Interface"]
+			else
+				reason = _G["ADDON_"..reason]
+			end
+		end
+		if not reason then
+			reason = UNKNOWN
+		end
+		DEFAULT_CHAT_FRAME:AddMessage(format(L["%s: Could not load module '%s': %s"],"PitBull4",id,reason))
+	end
 end
 
 local function merge_onto(base, addition)
