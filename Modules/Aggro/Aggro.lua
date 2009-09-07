@@ -8,7 +8,7 @@ local L = PitBull4.L
 
 local LibBanzai
 
-local PitBull4_Aggro = PitBull4:NewModule("Aggro", "AceEvent-3.0", "AceHook-3.0")
+local PitBull4_Aggro = PitBull4:NewModule("Aggro", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
 PitBull4_Aggro:SetModuleType("custom")
 PitBull4_Aggro:SetName(L["Aggro"])
 PitBull4_Aggro:SetDescription(L["Add aggro coloring to the unit frame."])
@@ -41,6 +41,24 @@ local function callback(aggro, name, unit)
 	end
 end
 
+local function set_hooks()
+	PitBull4_HealthBar = PitBull4:GetModule("HealthBar", true)
+	if PitBull4_HealthBar then
+		PitBull4_Aggro:RawHook(PitBull4_HealthBar, "GetColor", "HealthBar_GetColor")
+	end
+	
+	PitBull4_Border = PitBull4:GetModule("Border", true)
+	if PitBull4_Border then
+		PitBull4_Aggro:RawHook(PitBull4_Border, "GetTextureAndColor", "Border_GetTextureAndColor")
+	end
+	
+	PitBull4_Background = PitBull4:GetModule("Background", true)
+	if PitBull4_Background then
+		PitBull4_Aggro:RawHook(PitBull4_Background, "GetColor", "Background_GetColor")
+	end
+end
+
+
 function PitBull4_Aggro:OnEnable()
 	LibBanzai = LibStub("LibBanzai-2.0", true)
 	if not LibBanzai then
@@ -48,21 +66,11 @@ function PitBull4_Aggro:OnEnable()
 	end
 
 	LibBanzai:RegisterCallback(callback)
-	
-	PitBull4_HealthBar = PitBull4:GetModule("HealthBar", true)
-	if PitBull4_HealthBar then
-		self:RawHook(PitBull4_HealthBar, "GetColor", "HealthBar_GetColor")
-	end
-	
-	PitBull4_Border = PitBull4:GetModule("Border", true)
-	if PitBull4_Border then
-		self:RawHook(PitBull4_Border, "GetTextureAndColor", "Border_GetTextureAndColor")
-	end
-	
-	PitBull4_Background = PitBull4:GetModule("Background", true)
-	if PitBull4_Background then
-		self:RawHook(PitBull4_Background, "GetColor", "Background_GetColor")
-	end
+
+	-- Set a timer to set the hooks so that we can pick them up after the other modules
+	-- load, this is better than OptionalDeps because then we don't trigger the disabled
+	-- modules to load just so we can hook a function that will never be called.
+	self:ScheduleTimer(set_hooks, 0)
 end
 
 function PitBull4_Aggro:OnDisable()
