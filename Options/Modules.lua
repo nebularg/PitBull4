@@ -135,8 +135,7 @@ function PitBull4.Options.get_module_options()
 				if not reason then
 					reason = UNKNOWN
 				end
-				format(L["This module can not be loaded: %s"],reason)
-				return reason
+				return format(L["This module can not be loaded: %s"],reason)
 			end
 		end,
 		order = -1,
