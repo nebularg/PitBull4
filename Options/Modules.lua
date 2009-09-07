@@ -127,7 +127,7 @@ function PitBull4.Options.get_module_options()
 			if not loadable then
 				if reason then
 					if reason == "DISABLED" then
-						reason = L["This module is disabled in the Blizzard addon list."]
+						reason = L["Disabled in the Blizzard addon list."]
 					else
 						reason = _G["ADDON_"..reason]
 					end
