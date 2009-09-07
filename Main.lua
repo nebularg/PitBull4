@@ -1106,11 +1106,7 @@ function PitBull4:LoadAndEnableModule(id)
 		self:EnableModule(module)
 	else
 		if reason then
-			if reason == "DISABLED" then
-				reason = L["Disabled from the Blizzard Addon Interface"]
-			else
-				reason = _G["ADDON_"..reason]
-			end
+			reason = _G["ADDON_"..reason]
 		end
 		if not reason then
 			reason = UNKNOWN

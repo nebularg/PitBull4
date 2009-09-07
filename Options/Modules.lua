@@ -88,6 +88,16 @@ function PitBull4.Options.get_module_options()
 	-- and now for disabled modules not yet loaded
 	local modules_not_loaded = PitBull4.modules_not_loaded
 	
+	local function loadable(info)
+		local id = info[#info - 1]
+		local _,_,_,_,loadable = GetAddOnInfo('PitBull4_'..id)
+		return loadable
+	end
+
+	local function unloadable(info)
+		return not loadable(info)
+	end
+
 	local arg_enabled = {
 		type = 'toggle',
 		name = L["Enable"],
@@ -98,13 +108,39 @@ function PitBull4.Options.get_module_options()
 		set = function(info, value)
 			local id = info[#info - 1]
 			PitBull4:LoadAndEnableModule(id)
-		end
+		end,
+		disabled = unloadable,
 	}
 	
 	local no_mem_notice = {
 		type = 'description',
 		name = L["This module is not loaded and will not take up and memory or processing power until enabled."],
 		order = -1,
+		hidden = unloadable,
+	}
+
+	local unloadable_notice = {
+		type = 'description',
+		name = function(info)
+			local id = info[#info - 1]
+			local _,_,_,_,loadable,reason = GetAddOnInfo('PitBull4_'..id)
+			if not loadable then
+				if reason then
+					if reason == "DISABLED" then
+						reason = L["This module is disabled in the Blizzard addon list."]
+					else
+						reason = _G["ADDON_"..reason]
+					end
+				end
+				if not reason then
+					reason = UNKNOWN
+				end
+				format(L["This module can not be loaded: %s"],reason)
+				return reason
+			end
+		end,
+		order = -1,
+		hidden = loadable,
 	}
 	
 	for id in pairs(modules_not_loaded) do
@@ -127,8 +163,10 @@ function PitBull4.Options.get_module_options()
 				args = {
 					enabled = arg_enabled,
 					no_mem_notice = no_mem_notice,
+					unloadable_notice = unloadable_notice,
 				},
 			}
+
 			module_options.args[id] = opt
 		end
 	end
