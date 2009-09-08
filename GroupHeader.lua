@@ -244,7 +244,9 @@ end
 local tank_list = {}
 local function get_main_tank_name_list()
 	local main_tanks
-	if oRA then
+	if oRA3 then
+		main_tanks = oRA3:GetSortedTanks()
+	elseif oRA then
 		main_tanks = oRA.maintanktable
 	else
 		main_tanks = CT_RA_MainTanks

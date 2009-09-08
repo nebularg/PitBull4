@@ -916,13 +916,13 @@ end
 local main_tank_timer
 
 -- Callback for when the main tank list updates from oRA or CTRA
-local function main_tank_update()
+function PitBull4.OnTanksUpdated()
 	if oRA and not oRA.maintanktable then
 		-- if oRA is loaded but there's no maintanktable that means oRA isn't
 		-- fully loaded.  
 		if not main_tank_timer then
 			-- No timer so we start one.
-			main_tank_timer = PitBull4:ScheduleRepeatingTimer(main_tank_update,1)
+			main_tank_timer = PitBull4:ScheduleRepeatingTimer(PitBull4.OnTanksUpdated,1)
 		end
 		-- No main tank list means nothing to do.
 		return
@@ -956,47 +956,64 @@ function PitBull4:OnInitialize()
 	LoadAddOn("LibDBIcon-1.0")
 end
 
+local db_icon_done, ctra_done, ora2_done, ora3_done
 function PitBull4:ADDON_LOADED()
-	local LibDataBroker = LibStub("LibDataBroker-1.1", true)
-	if LibDataBroker and not PitBull4.LibDataBrokerLauncher then
-		PitBull4.LibDataBrokerLauncher = LibDataBroker:NewDataObject("PitBull4", {
-			type = "launcher",
-			icon = [[Interface\AddOns\PitBull4\pitbull]],
-			OnClick = function(clickedframe, button)
-				if button == "RightButton" then 
-					if IsShiftKeyDown() then
-						PitBull4.db.profile.frame_snap = not PitBull4.db.profile.frame_snap
-					else
-						PitBull4.db.profile.lock_movement = not PitBull4.db.profile.lock_movement
+	if not PitBull4.LibDataBrokerLauncher then
+		local LibDataBroker = LibStub("LibDataBroker-1.1", true)
+		if LibDataBroker then
+			PitBull4.LibDataBrokerLauncher = LibDataBroker:NewDataObject("PitBull4", {
+				type = "launcher",
+				icon = [[Interface\AddOns\PitBull4\pitbull]],
+				OnClick = function(clickedframe, button)
+					if button == "RightButton" then 
+						if IsShiftKeyDown() then
+							PitBull4.db.profile.frame_snap = not PitBull4.db.profile.frame_snap
+						else
+							PitBull4.db.profile.lock_movement = not PitBull4.db.profile.lock_movement
+						end
+						LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
+					else 
+						return PitBull4.Options.OpenConfig() 
 					end
-					LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
-				else 
-					return PitBull4.Options.OpenConfig() 
-				end
-			end,
-			OnTooltipShow = function(tt)
-				tt:AddLine(L["PitBull Unit Frames 4.0"])
-				tt:AddLine("|cffffff00" .. L["%s|r to open the options menu"]:format(L["Click"]), 1, 1, 1)
-				tt:AddLine("|cffffff00" .. L["%s|r to toggle frame lock"]:format(L["Right-click"]), 1, 1, 1)
-				tt:AddLine("|cffffff00" .. L["%s|r to toggle frame snapping"]:format(L["Shift Right-click"]), 1, 1, 1)
-			end,
-		})
-	end
-	local LibDBIcon = LibDataBroker and LibStub("LibDBIcon-1.0", true)
-	if not LibDBIcon then
-		return
-	end
-	self:UnregisterEvent("ADDON_LOADED")
-	
-	if LibDBIcon and not IsAddOnLoaded("Broker2FuBar") then
-		LibDBIcon:Register("PitBull4", PitBull4.LibDataBrokerLauncher, PitBull4.db.profile.minimap_icon)
+				end,
+				OnTooltipShow = function(tt)
+					tt:AddLine(L["PitBull Unit Frames 4.0"])
+					tt:AddLine("|cffffff00" .. L["%s|r to open the options menu"]:format(L["Click"]), 1, 1, 1)
+					tt:AddLine("|cffffff00" .. L["%s|r to toggle frame lock"]:format(L["Right-click"]), 1, 1, 1)
+					tt:AddLine("|cffffff00" .. L["%s|r to toggle frame snapping"]:format(L["Shift Right-click"]), 1, 1, 1)
+				end,
+			})
+		end
 	end
 
-	if _G.CT_RAOptions_UpdateMTs then
-		hooksecurefunc("CT_RAOptions_UpdateMTs",main_tank_update)
+	if not db_icon_done and PitBull4.LibDataBrokerLauncher then
+		local LibDBIcon = LibStub("LibDBIcon-1.0", true)
+		if LibDBIcon and not IsAddOnLoaded("Broker2FuBar") then
+			LibDBIcon:Register("PitBull4", PitBull4.LibDataBrokerLauncher, PitBull4.db.profile.minimap_icon)
+			db_icon_done = true
+		end
 	end
-	
-	-- self:LoadModules()
+
+	if not ctra_done and _G.CT_RAOptions_UpdateMTs then
+		hooksecurefunc("CT_RAOptions_UpdateMTs",PitBull4.OnTanksUpdated)
+		ctra_done = true
+	end
+
+	if not ora2_done and oRA then
+		LibStub("AceEvent-2.0"):RegisterEvent("oRA_MainTankUpdate",PitBull4.OnTanksUpdated)
+		-- We register for CoreEnabled to know when oRA loads it's LOD modules in particular
+		-- ParticipantMT so we can then set a timer to watch for the maintanktable to be
+		-- loaded from the savedvariables, because it doesn't bother to generate a
+		-- MainTankUpdate event for this.  *sigh*
+		LibStub("AceEvent-2.0"):RegisterEvent("oRA_CoreEnabled",PitBull4.OnTanksUpdated)
+		ora2_done = true
+	end
+
+	if not ora3_done and oRA3 then
+		oRA3.RegisterCallback(self,"OnTanksUpdated")
+		self.OnTanksUpdated()
+		ora3_done = true
+	end
 end
 
 do
@@ -1237,15 +1254,6 @@ function PitBull4:OnEnable()
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED")
 	
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-
-	if oRA then
-		LibStub("AceEvent-2.0"):RegisterEvent("oRA_MainTankUpdate",main_tank_update)
-		-- We register for CoreEnabled to know when oRA loads it's LOD modules in particular
-		-- ParticipantMT so we can then set a timer to watch for the maintanktable to be
-		-- loaded from the savedvariables, because it doesn't bother to generate a
-		-- MainTankUpdate event for this.  *sigh*
-		LibStub("AceEvent-2.0"):RegisterEvent("oRA_CoreEnabled",main_tank_update)
-	end
 	
 	timerFrame:Show()
 
