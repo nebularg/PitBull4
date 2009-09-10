@@ -197,7 +197,8 @@ local function fix_db_for_module(module, layout_defaults, global_defaults)
 	if global_defaults.enabled == nil then
 		global_defaults.enabled = true
 	end
-	module.db = PitBull4.db:RegisterNamespace(module.id, {
+	local pb4_db = PitBull4.db
+	local db = pb4_db:RegisterNamespace(module.id, {
 		profile = {
 			layouts = {
 				['*'] = layout_defaults,
@@ -205,8 +206,21 @@ local function fix_db_for_module(module, layout_defaults, global_defaults)
 			global = global_defaults
 		}
 	})
-	
-	if not module.db.profile.global.enabled then
+	module.db = db
+
+	-- AceDB-3.0 is supposed to keep the child profiles linked to the
+	-- main db.  However, if a profile change happens while the child namespace
+	-- isn't registered then it won't be kept in sync with the main db's
+	-- profile.  A good example of this is seen with load on demand modules.
+	-- Setup two profiles.  Enable the module in one and then go to the other
+	-- and disable it (the order matters).  Once the module has been disabled
+	-- reload the UI so you load back into the UI with the profile that doesn't have
+	-- the module loaded.  Now select the other profile.  Without the following line
+	-- the profile will change but the module will load with the namespace still
+	-- set to the old profile.  
+	pb4_db.SetProfile(db, pb4_db:GetCurrentProfile())
+
+	if not db.profile.global.enabled then
 		module:Disable()
 	end
 end
