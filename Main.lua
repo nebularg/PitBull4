@@ -1203,6 +1203,8 @@ function PitBull4:OnProfileChanged()
 		end
 	end
 	
+	self:LoadModules()
+
 	-- Enable/Disable modules to match the new profile.
 	for _,module in self:IterateModules() do
 		if module.db.profile.global.enabled then
@@ -1256,8 +1258,6 @@ function PitBull4:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	
 	timerFrame:Show()
-
-	self:LoadModules()
 
 	-- show initial frames
 	self:OnProfileChanged()
