@@ -1247,7 +1247,7 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 			other = {
 				type = 'color',
 				name = L['Others'],
-				desc = L["Color of others' buffs."],
+				desc = L["Color for others' buffs."],
 				get = get,
 				set = set,
 				disabled = is_friendly_disabled,
