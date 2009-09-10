@@ -1103,12 +1103,15 @@ function PitBull4:LoadModules()
 			local default_state = GetAddOnMetadata(name, "X-PitBull4-DefaultState")
 			enabled = (default_state ~= "disabled")
 		end
-		
+
+		local loaded
 		if enabled then
-			-- print(("Found module '%s', loading."):format(module_name))
-			LoadAddOn(name)
-		else
-			-- print(("Found module '%s', not loading."):format(module_name))
+			-- print(("Found module '%s', attempting to load."):format(module_name))
+			loaded = LoadAddOn(name)
+		end
+	
+		if not loaded then
+			-- print(("Found module '%s', not loaded."):format(module_name))
 			modules_not_loaded[module_name] = true
 		end
 	end
