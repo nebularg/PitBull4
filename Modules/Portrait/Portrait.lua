@@ -30,6 +30,17 @@ local L = PitBull4.L
 
 local PitBull4_Portrait = PitBull4:NewModule("Portrait", "AceEvent-3.0")
 
+local pirate_day
+do
+	local month = tonumber(date("%m"))
+	local day = tonumber(date("%d"))
+	if month == 9 and day == 19 then
+		pirate_day = true
+	else
+		pirate_day = false
+	end
+end
+
 PitBull4_Portrait:SetModuleType("indicator")
 PitBull4_Portrait:SetName(L["Portrait"])
 PitBull4_Portrait:SetDescription(L["Show a portrait of the unit."])
@@ -44,11 +55,19 @@ PitBull4_Portrait:SetDefaults({
 	side = "left",
 	bar_size = 4,
 	enabled = false,
+},
+{
+	pirate = true
 })
 PitBull4_Portrait.can_set_side_to_center = true
 
 function PitBull4_Portrait:OnEnable()
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE")
+	if not pirate_day then
+		-- Clear it so it turns on every pirate day and doesn't forever
+		-- chew up a spot in the config file
+		self.db.profile.global.pirate = nil
+	end
 end
 
 function PitBull4_Portrait:OnDisable()
@@ -93,10 +112,36 @@ local function model_OnUpdate(self, elapsed)
 	self:SetScript("OnUpdate", nil)
 	
 	local frame = self:GetParent()
-	
-	local layout_db = PitBull4_Portrait:GetLayoutDB(frame)
-	if not layout_db.full_body then
-		self:SetCamera(0)
+	local style = frame.Portrait.style
+	local full_body = PitBull4_Portrait:GetLayoutDB(frame).full_body
+
+	if style == "pirate" then
+		self:SetUnit(frame.unit)
+		self:Undress()
+		self:TryOn(9636)
+		self:TryOn(6795)
+		self:TryOn(6835)
+		self:TryOn(6836)
+		self:TryOn(10030)
+		self:TryOn(3935)
+		if full_body then
+			self:SetCamera(1)
+		else
+			self:SetCamera(0)
+		end
+	elseif style == "three_dimensional" then
+		if not frame.Portrait.falling_back then
+			self:SetUnit(frame.unit)
+			if full_body then
+				self:SetCamera(1)
+			else
+				self:SetCamera(0)
+			end
+		else
+			self:SetModelScale(4.25)
+			self:SetPosition(0, 0, -1.5)
+			self:SetModel([[Interface\Buttons\talktomequestionmark.mdx]])
+		end
 	end
 	
 	if type(self:GetModel()) ~= "string" then
@@ -118,10 +163,15 @@ end
 function PitBull4_Portrait:UpdateFrame(frame)
 	local layout_db = self:GetLayoutDB(frame)
 	local style = layout_db.style
+	local pirate = pirate_day and self.db.profile.global.pirate
 	local falling_back = false
 	
 	local unit = frame.unit
 	
+	if pirate and unit and UnitIsPlayer(unit) then
+		style = "pirate"
+	end
+
 	if style == "class" then
 		if not unit or not UnitIsPlayer(unit) then
 			style = layout_db.fallback_style
@@ -154,8 +204,12 @@ function PitBull4_Portrait:UpdateFrame(frame)
 		portrait:SetHeight(60)
 		portrait.height = 4
 		portrait.style = style
-		
-		if style == "three_dimensional" then
+	
+		if style == "pirate" then
+			local model = PitBull4.Controls.MakeDressUpModel(frame)
+			portrait.model = model
+			model:SetAllPoints(portrait)
+		elseif style == "three_dimensional" then
 			local model = PitBull4.Controls.MakePlayerModel(frame)
 			portrait.model = model
 			model:SetAllPoints(portrait)
@@ -178,16 +232,11 @@ function PitBull4_Portrait:UpdateFrame(frame)
 	
 	portrait.falling_back = falling_back
 	portrait.guid = frame.guid
-	if style == "three_dimensional" then
-		if not falling_back then
-			portrait.model:SetUnit(unit)
-			portrait.model:SetCamera(1)
-			portrait.model:SetScript("OnUpdate", model_OnUpdate)
-		else	
-			portrait.model:SetModelScale(4.25)
-			portrait.model:SetPosition(0, 0, -1.5)
-			portrait.model:SetModel([[Interface\Buttons\talktomequestionmark.mdx]])
-		end
+	if style == "three_dimensional" or style == "pirate" then
+		-- For 3d portraits we have to set the parameters later, doing
+		-- it immediately after a model frame is created doesn't work
+		-- reliably.
+		portrait.model:SetScript("OnUpdate", model_OnUpdate)
 	elseif style == "two_dimensional" then
 		portrait.texture:SetTexCoord(0.14644660941, 0.85355339059, 0.14644660941, 0.85355339059)
 		if unit then
@@ -218,6 +267,27 @@ function PitBull4_Portrait:UpdateFrame(frame)
 
 	return created
 end
+
+PitBull4_Portrait:SetGlobalOptionsFunction(function(self)
+	return 'pirate', {
+		type = 'select',
+		name = L["Pirate"],
+		desc = L["Happy International Talk Like a Pirate Day!"],
+		get = function(info)
+			return self.db.profile.global.pirate and "pirate" or "~normal"
+		end,
+		set = function(info, value)
+			self.db.profile.global.pirate = value == "pirate"
+			self:UpdateAll()
+		end,
+		values = {
+			["pirate"] = L["Yaaarrr"],
+			["~normal"] = L["Land lubber"], -- ~ to force it after pirate
+		},
+		hidden = not pirate_day,
+	}
+end)
+
 
 PitBull4_Portrait:SetLayoutOptionsFunction(function(self)
 	return 'full_body', {

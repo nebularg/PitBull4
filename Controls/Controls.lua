@@ -223,6 +223,18 @@ function PitBull4.Controls.MakePlayerModel(parent)
 	return fetch_control("PlayerModel", parent)
 end
 
+--- Make a DressUpModel
+-- @param parent frame the frame is parented to
+-- @usage local frame = PitBull4.Controls.MakePlayerModel(someFrame)
+-- @return a PlayerModel object
+function PitBull4.Controls.MakeDressUpModel(parent)
+	if DEBUG then
+		expect(parent, 'typeof', 'frame')
+	end
+	
+	return fetch_control("DressUpModel", parent)
+end
+
 --- Make a Cooldown
 -- @param parent frame the frame is parented to
 -- @usage local frame = PitBull4.Controls.MakeCooldown(someFrame)
