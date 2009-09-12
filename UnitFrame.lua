@@ -432,6 +432,7 @@ end
 
 -- we store layout_db instead of layout, since if a new profile comes up, it'll be a distinct table
 local seen_layout_dbs = setmetatable({}, {__mode='k'})
+PitBull4.seen_layout_dbs = seen_layout_dbs
 
 --- Reheck the toggleForVehicle attribute for the unit frame
 -- @usage frame:RefreshVehicle()

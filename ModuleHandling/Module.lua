@@ -104,8 +104,24 @@ LibStub("AceEvent-3.0"):RegisterEvent("ADDON_LOADED", function(event, addon)
 		if not module then
 			break
 		end
+
+		-- add the options for the newly loaded module to the option panels
 		PitBull4.Options.HandleModuleLoad(module)
+
+		-- tell all the other modules a new module was loaded
 		PitBull4:CallMethodOnModules("OnModuleLoaded",module)
+
+		-- Call the newly loaded modules OnNewLayout for every layout
+		-- that was loaded before it.
+		local seen_layout_dbs = PitBull4.seen_layout_dbs
+		local on_new_layout = module["OnNewLayout"]
+		if on_new_layout and seen_layout_dbs then
+			for layout, layout_db in pairs(PitBull4.db.profile.layouts) do
+				if seen_layout_dbs[layout_db] then
+					on_new_layout(module, layout)
+				end
+			end
+		end
 	end
 end)
 
