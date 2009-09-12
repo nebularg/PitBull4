@@ -105,6 +105,7 @@ LibStub("AceEvent-3.0"):RegisterEvent("ADDON_LOADED", function(event, addon)
 			break
 		end
 		PitBull4.Options.HandleModuleLoad(module)
+		PitBull4:CallMethodOnModules("OnModuleLoaded",module)
 	end
 end)
 
