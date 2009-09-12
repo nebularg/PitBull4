@@ -271,6 +271,7 @@ PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 			PitBull4.Options.UpdateFrames()
 			PitBull4:RecheckAllOpacities()
 		end,
+		width = 'double',
 	}, 'custom_spell', {
 		type = 'input',
 		name = L['Custom spell'],
