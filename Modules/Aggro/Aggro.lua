@@ -8,7 +8,7 @@ local L = PitBull4.L
 
 local LibBanzai
 
-local PitBull4_Aggro = PitBull4:NewModule("Aggro", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
+local PitBull4_Aggro = PitBull4:NewModule("Aggro", "AceEvent-3.0", "AceHook-3.0")
 PitBull4_Aggro:SetModuleType("custom")
 PitBull4_Aggro:SetName(L["Aggro"])
 PitBull4_Aggro:SetDescription(L["Add aggro coloring to the unit frame."])
@@ -64,14 +64,12 @@ local function set_hooks()
 	end
 end
 
-function PitBull4_Aggro:OnModuleCreated(_,module)
+function PitBull4_Aggro:OnModuleLoaded(module)
 	local id = module.id
 	if id == "HealthBar" or id == "Border" or id == "Background" then
-		PitBull4_Aggro:ScheduleTimer(set_hooks, 0)
+		set_hooks()
 	end
 end
-
-PitBull4_Aggro:SecureHook(PitBull4,"OnModuleCreated")
 
 function PitBull4_Aggro:OnEnable()
 	LibBanzai = LibStub("LibBanzai-2.0", true)
@@ -81,10 +79,7 @@ function PitBull4_Aggro:OnEnable()
 
 	LibBanzai:RegisterCallback(callback)
 
-	-- Set a timer to set the hooks so that we can pick them up after the other modules
-	-- load, this is better than OptionalDeps because then we don't trigger the disabled
-	-- modules to load just so we can hook a function that will never be called.
-	self:ScheduleTimer(set_hooks, 0)
+	set_hooks()
 end
 
 function PitBull4_Aggro:OnDisable()
