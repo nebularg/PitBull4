@@ -94,7 +94,7 @@ function PitBull4_Aura:HighlightFilter(db, entry, frame)
 	local highlight_filters = db.highlight_filters
 	local highlight_filters_color_by_type = db.highlight_filters_color_by_type
 	local highlight_filters_custom_color = db.highlight_filters_custom_color
-	local dispel_type_colors = self.db.profile.global.colors.enemy
+	local dispel_type_colors = self.db.profile.global.colors.type
 
 	-- Iterate the highlight filters
 	for id = 1, #highlight_filters do

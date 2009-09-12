@@ -534,25 +534,37 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 		PitBull4_Aura:DisableCooldownText(control)	
 	end
 
-	if db.border[rule] then
+	local border_db
+	if who == "weapon" then
+		border_db = db.borders[rule]
+	else
+		border_db = db.borders[rule][is_friend and "friend" or "enemy"]
+	end
+	if border_db.enabled then
 		local border = control.border
 		local colors = PitBull4_Aura.db.profile.global.colors
 		border:Show()
-		if quality and colors.weapon.quality_color then
+		local color_type = border_db.color_type
+
+		if color_type == "weapon" and quality then
 			local r,g,b = GetItemQualityColor(quality)
 			border:SetVertexColor(r,g,b)
-		elseif slot then
-			border:SetVertexColor(unpack(colors.weapon[who]))
-		elseif ((is_buff and is_friend) or (not is_buff and not is_friend)) and not colors.friend.use_enemy then
-			border:SetVertexColor(unpack(colors.friend[who]))
-		else
-			local color = colors.enemy[tostring(debuff_type)]
+		elseif color_type == "type" then
+			local color = colors.type[tostring(debuff_type)]
 			if not color then
 				-- Use the Other color if there's not
 				-- a color for the specific debuff type.
-				color = colors.enemy["nil"]
+				color = colors.type["nil"]
 			end
 			border:SetVertexColor(unpack(color))
+		elseif color_type == "caster" then
+			border:SetVertexColor(unpack(colors.caster[who]))
+		elseif color_type == "custom" and border_db.custom_color then
+			border:SetVertexColor(unpack(border_db.custom_color))
+		else
+			-- Unknown color type just set it to red, shouldn't actually
+			-- ever get to this code
+			border:SetVertexColor(1,0,0)
 		end
 	else
 		control.border:Hide()

@@ -16,16 +16,11 @@ local enemy_debuffs = PitBull4_Aura.enemy_debuffs
 local extra_buffs = PitBull4_Aura.extra_buffs
 
 local color_defaults = {
-	friend = {
+	caster = {
 		my = {0, 1, 0, 1},
 		other = {1, 0, 0, 1},
-		use_enemy = false,
 	},
-	weapon = {
-		weapon = {1, 0, 0, 1},
-		quality_color = true,
-	},
-	enemy = {
+	type = {
 		Poison = {0, 1, 0, 1},
 		Magic = {0, 0, 1, 1},
 		Disease = {.55, .15, 0, 1},
@@ -63,12 +58,51 @@ PitBull4_Aura:SetDefaults({
 		other_debuffs = false,
 		weapon_buffs = false,
 	},
-	border = {
-		my_buffs = true,
-		my_debuffs = true,
-		other_buffs = true,
-		other_debuffs = true,
-		weapon_buffs = true,
+	borders = {
+		my_buffs = {
+			friend = {
+				enabled = true,
+				color_type = 'caster',
+			},
+			enemy = {
+				enabled = true,
+				color_type = 'type',
+			},
+		},
+		my_debuffs = {
+			friend = {
+				enabled = true,
+				color_type = 'type',
+			},
+			enemy = {
+				enabled = true,
+				color_type = 'caster',
+			},
+		},
+		other_buffs = {
+			friend = {
+				enabled = true,
+				color_type = 'caster',
+			},
+			enemy = {
+				enabled = true,
+				color_type = 'type',
+			},
+		},
+		other_debuffs = {
+			friend = {
+				enabled = true,
+				color_type = 'type',
+			},
+			enemy = {
+				enabled = true,
+				color_type = 'caster',
+			},
+		},
+		weapon_buffs = {
+			enabled = true,
+			color_type = 'weapon',
+		},
 	},
 	highlight = true,
 	highlight_filters = {
@@ -1227,21 +1261,17 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 		self.db.profile.global.colors[group][id] = {r, g, b, a}
 		self:UpdateAll()
 	end
-	local function is_friendly_disabled(info)
-		return self.db.profile.global.colors.friend.use_enemy
-	end
-	return 'friend', {
+	return 'caster', {
 		type = 'group',
-		name = L['Friendly auras'],
+		name = L['Caster'],
 		inline = true,
 		args = {
 			my = {
 				type = 'color',
-				name = L['Own'],
+				name = L['Self'],
 				desc = L['Color for own buffs.'],
 				get = get,
 				set = set,
-				disabled = is_friendly_disabled,
 				order = 0,
 			},
 			other = {
@@ -1250,58 +1280,13 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 				desc = L["Color for others' buffs."],
 				get = get,
 				set = set,
-				disabled = is_friendly_disabled,
 				order = 1,
 			},
-			use_enemy = {
-				type = 'toggle',
-				name = L['Use unfriendly colors'],
-				desc = L['Set the color based on the type of the aura.'],
-				get = function(info)
-					return self.db.profile.global.colors.friend.use_enemy
-				end,
-				set = function(info, value)
-					self.db.profile.global.colors.friend.use_enemy = value
-					self:UpdateAll()
-				end,
-				order = 2,
-			},
 		},
 	},
-	'weapon', {
+	'type', {
 		type = 'group',
-		name = L['Weapon auras'],
-		inline = true,
-		args = {
-			weapon = {
-				type = 'color',
-				name = L['Weapon enchants'],
-				desc = L['Color for temporary weapon enchants.'],
-				get = get,
-				set = set,
-				disabled = function(info)
-					return self.db.profile.global.colors.weapon.quality_color
-				end,
-				order = 3,
-			},
-			quality_color = {
-				type = 'toggle',
-				name = L['Color by quality'],
-				desc = L['Color temporary weapon enchants by weapon quality.'],
-				get = function(info)
-					return self.db.profile.global.colors.weapon.quality_color
-				end,
-				set = function(info, value)
-					self.db.profile.global.colors.weapon.quality_color = value
-					self:UpdateAll()
-				end,
-			},
-		},
-
-	},
-	'enemy', {
-		type = 'group',
-		name = L['Unfriendly auras'],
+		name = L['Dispel type'],
 		inline = true,
 		args = {
 			Poison = {
@@ -1610,6 +1595,7 @@ function PitBull4_Aura.SetHighlightOptions(self, options)
 end
 
 local CURRENT_TEXT
+local CURRENT_BORDER
 PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 
 	-- Functions for use in the options
@@ -1979,6 +1965,9 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 	if not CURRENT_TEXT then
 		CURRENT_TEXT = "my_buffs.cooldown_text"
 	end
+	if not CURRENT_BORDER then
+		CURRENT_BORDER = "my_buffs.friend"
+	end
 	local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 	LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
 	local AceGUI = LibStub("AceGUI-3.0")
@@ -2009,6 +1998,37 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 	local function set_text(info, value)
 		local id = info[#info]
 		GetTextDB()[id] = value
+
+		PitBull4.Options.UpdateFrames()
+	end
+
+	local function split_border()
+		local rule, relationship = string.match(CURRENT_BORDER,"([^$.]*)%.(.*)")
+		if not rule then
+			return CURRENT_BORDER
+		else
+			return rule, relationship
+		end
+	end
+
+	local function GetBorderDB()
+		local db = PitBull4.Options.GetLayoutDB(self)
+		local rule,relationship = split_border()
+		if relationship then
+			return db.borders[rule][relationship]
+		else
+			return db.borders[rule]
+		end
+	end
+
+	local function get_border(info)
+		local id = info[#info]
+		return GetBorderDB()[id]
+	end
+
+	local function set_border(info, value)
+		local id = info[#info]
+		GetBorderDB()[id] = value
 
 		PitBull4.Options.UpdateFrames()
 	end
@@ -2081,16 +2101,6 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 					},
 				},
 			},
-			border = {
-				type = 'multiselect',
-				name = L['Border'],
-				desc = L['Set when the border shows.'],
-				values = show_when_values,
-				get = get_multi,
-				set = set_multi,
-				disabled = is_aura_disabled,
-				order = 5,
-			},
 			cooldown = {
 				type = 'multiselect',
 				name = L['Time remaining spiral'],
@@ -2099,7 +2109,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get_multi,
 				set = set_multi,
 				disabled = is_aura_disabled,
-				order = 6,
+				order = 5,
 			},
 			zoom_aura = {
 				type = 'toggle',
@@ -2108,7 +2118,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get,
 				set = set,
 				disabled = is_aura_disabled,
-				order = 7,
+				order = 6,
 			},
 			click_through = {
 				type = 'toggle',
@@ -2117,7 +2127,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get,
 				set = set,
 				disabled = is_aura_disabled,
-				order = 8,
+				order = 7,
 			},
 		},
 	},
@@ -2306,6 +2316,97 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				end,
 				disabled = disable_text,
 				order = 10,
+			},
+		},
+	},
+	'borders', {
+		type = 'group',
+		name = L['Borders'],
+		desc = L['Configure the borders that are applied around the auras.'],
+		args = {
+			current_text = {
+				type = 'select',
+				name = L['Current border'],
+				desc = L['Choose the border to configure.'],
+				get = function(info)
+					return CURRENT_BORDER
+				end,
+				set = function(info, value)
+					CURRENT_BORDER = value
+				end,
+				values = {
+					['my_buffs.friend'] = L['My own buffs on friendly units'],
+					['my_buffs.enemy'] = L['My own buffs on enemy units'],
+					['my_debuffs.friend'] = L['My own debuffs on friendly units'],
+					['my_debuffs.enemy'] = L['My own debuffs on enemy units'],
+					['other_buffs.friend'] = L["Others' buffs on friendly units"],
+					['other_buffs.enemy'] = L["Others' buffs on enemy"],
+					['other_debuffs.friend'] = L["Others' debuffs on friendly units"],
+					['other_debuffs.enemy'] = L["Others' debuffs on enemy units"],
+					['weapon_buffs'] = L['Weapon buffs'],
+				},
+				width = 'double',
+				order = 1,
+			},
+			div = {
+				type = 'header',
+				name = '',
+				desc = '',
+				order = 2,
+			},
+			enabled = {
+				type = 'toggle',
+				name = L['Enabled'],
+				desc = L['Enable this border.'],
+				get = get_border,
+				set = set_border,
+				order = 3,
+			},
+			color_type = {
+				type = 'select',
+				name = L['Color by'],
+				desc = L['Choose how to color this border.'],
+				get = get_border,
+				set = function(info, value)
+					local border_db = GetBorderDB()
+					border_db.color_type = value
+					if value == "custom" then
+						border_db.custom_color = { 0.75, 0.75, 0.75 }
+					else
+						border_db.custom_color = nil
+					end
+
+					PitBull4.Options.UpdateFrames()
+				end,
+				values = function(info)
+					local t = {}
+					if CURRENT_BORDER == "weapon_buffs" then
+						t.weapon = L['Weapon quality']
+					else
+						t.caster = L['Caster']
+						t.type = L['Dispel type']
+					end
+					t.custom = L['Custom color']
+					return t
+				end,
+				order = 4,
+			},
+			custom_color = {
+				type = 'color',
+				name = L['Custom color'],
+				desc = L['Set the color of the border.'],
+				get = function(info)
+					return unpack(GetBorderDB().custom_color)
+				end,
+				set = function(info, r, g, b, a)
+					local color = GetBorderDB().custom_color
+					color[1], color[2], color[3], color[4] = r, g, b, a
+					PitBull4.Options.UpdateFrames()
+				end,
+				hidden = function(info)
+					return GetBorderDB().color_type ~= "custom"
+				end,
+				order = 5,
 			},
 		},
 	},
