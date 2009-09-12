@@ -357,6 +357,41 @@ function PitBull4.Options.get_layout_editor_text_options()
 			return not not CURRENT_CUSTOM_TEXT_MODULE
 		end
 	}
+
+	local function get_location_list()
+		local attach_to
+		if CURRENT_CUSTOM_TEXT_MODULE then
+			attach_to = GetLayoutDB(CURRENT_CUSTOM_TEXT_MODULE).attach_to
+		elseif CURRENT_TEXT_PROVIDER_MODULE then
+			attach_to = GetTextLayoutDB().attach_to
+		else
+			attach_to = "root"
+		end
+		if attach_to == "root" then
+			return root_locations
+		else
+			local element_id
+			attach_to, element_id = (";"):split(attach_to, 2)
+			local module = PitBull4.modules[attach_to]
+			if module then
+				if module.module_type == "indicator" then
+					return indicator_locations
+				end
+
+				local db = GetLayoutDB(module)
+				if element_id then
+					db = rawget(db.elements, element_id)
+				end
+				local side = db and db.side
+				if not side or side == "center" then
+					return horizontal_bar_locations
+				else
+					return vertical_bar_locations
+				end
+			end
+			return horizontal_bar_locations
+		end
+	end
 	
 	options.args.edit.args.attach_to = {
 		type = 'select',
@@ -373,12 +408,21 @@ function PitBull4.Options.get_layout_editor_text_options()
 			return GetTextLayoutDB().attach_to
 		end,
 		set = function(info, value)
+			local db
 			if CURRENT_CUSTOM_TEXT_MODULE then
-				GetLayoutDB(CURRENT_CUSTOM_TEXT_MODULE).attach_to = value
+				db = GetLayoutDB(CURRENT_CUSTOM_TEXT_MODULE)
 			else
-				GetTextLayoutDB().attach_to = value
+				db = GetTextLayoutDB()
 			end
-			
+			db.attach_to = value
+
+			-- If the current location isn't valid with the new attach_to
+			-- update it to one that is.
+			local locations = get_location_list()
+			if not locations[db.location] then
+				db.location = next(locations)
+			end
+
 			UpdateFrames()
 		end,
 		values = function(info)
@@ -430,40 +474,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 			
 			UpdateFrames()
 		end,
-		values = function(info)
-			local attach_to
-			if CURRENT_CUSTOM_TEXT_MODULE then
-				attach_to = GetLayoutDB(CURRENT_CUSTOM_TEXT_MODULE).attach_to
-			elseif CURRENT_TEXT_PROVIDER_MODULE then
-				attach_to = GetTextLayoutDB().attach_to
-			else
-				attach_to = "root"
-			end
-			if attach_to == "root" then
-				return root_locations
-			else
-				local element_id
-				attach_to, element_id = (";"):split(attach_to, 2)
-				local module = PitBull4.modules[attach_to]
-				if module then
-					if module.module_type == "indicator" then
-						return indicator_locations
-					end
-					
-					local db = GetLayoutDB(module)
-					if element_id then
-						db = rawget(db.elements, element_id)
-					end
-					local side = db and db.side
-					if not side or side == "center" then
-						return horizontal_bar_locations
-					else
-						return vertical_bar_locations
-					end
-				end
-				return horizontal_bar_locations
-			end
-		end,
+		values = get_location_list,
 		disabled = disabled,
 	}
 	
