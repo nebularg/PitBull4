@@ -190,6 +190,12 @@ function PitBull4_RangeFader:GetOpacity(frame)
 		else
 			return db.out_of_range_opacity
 		end
+	elseif check_method == "visible" then
+		if UnitIsVisible(unit) then
+			return 1
+		else
+			return db.out_of_range_opacity
+		end
 	else -- class
 		if UnitIsEnemy("player", unit) then
 			if enemy_is_in_range(unit) then
@@ -250,6 +256,7 @@ PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 			duel = L['Duel (~10 yards)'],
 			custom_spell = L['Custom spell'],
 			custom_item = L['Custom item'],
+			visible = L['Visible (~100 yards)'],
 		},
 		get = function(info)
 			local db = PitBull4.Options.GetLayoutDB(self)
