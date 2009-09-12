@@ -194,14 +194,14 @@ local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 			entry[2] = MAINHAND
 			local link = GetInventoryItemLink("player", OFFHAND)
 			entry[3] = link and select(3,GetItemInfo(link)) or 4 -- quality or epic if no item
-			entry[5] = L["Sample Weapon Buff"] -- name
+			entry[5] = L["Sample Weapon Enchant"] -- name
 			entry[9] = nil -- no debuff type
 			entry[12] = "player" -- treat weapon enchants as yours
 		elseif i == offhand then
 			entry[2] = OFFHAND
 			local link = GetInventoryItemLink("player", OFFHAND)
 			entry[3] = link and select(3,GetItemInfo(link)) or 4 -- quality or epic if no item
-			entry[5] = L["Sample Weapon Buff"] -- name
+			entry[5] = L["Sample Weapon Enchant"] -- name
 			entry[9] = nil -- no debuff type
 			entry[12] = "player" -- treat weapon enchants as yours
 		else

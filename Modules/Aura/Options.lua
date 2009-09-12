@@ -328,7 +328,7 @@ PitBull4_Aura:SetDefaults({
 			built_in = true,
 		},
 		['@C'] = {
-			display_name = L['Weapon buff'],
+			display_name = L['Weapon enchant'],
 			filter_type = 'Weapon Enchant',
 			weapon = true,
 			disabled = true,
@@ -1237,7 +1237,7 @@ local show_when_values = {
 	my_debuffs = L['My own debuffs'],
 	other_buffs = L["Others' buffs"],
 	other_debuffs = L["Others' debuffs"],
-	weapon_buffs = L["Weapon buffs"],
+	weapon_buffs = L["Weapon enchants"],
 }
 
 -- table to decide if the width option is actuually
@@ -2157,8 +2157,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 					['other_buffs.cooldown_text'] = L["Others' buffs time remaining"],
 					['other_debuffs.count'] = L["Others' debuffs count"],
 					['other_debuffs.cooldown_text'] = L["Others' debuffs time remaining"],
-					['weapon_buffs.count'] = L['Weapon buffs count'],
-					['weapon_buffs.cooldown_text'] = L['Weapon buffs time remaining'],
+					['weapon_buffs.count'] = L['Weapon enchants count'],
+					['weapon_buffs.cooldown_text'] = L['Weapon enchants time remaining'],
 				},
 				width = 'double',
 				order = 1,
@@ -2343,7 +2343,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 					['other_buffs.enemy'] = L["Others' buffs on enemy"],
 					['other_debuffs.friend'] = L["Others' debuffs on friendly units"],
 					['other_debuffs.enemy'] = L["Others' debuffs on enemy units"],
-					['weapon_buffs'] = L['Weapon buffs'],
+					['weapon_buffs'] = L['Weapon enchants'],
 				},
 				width = 'double',
 				order = 1,
