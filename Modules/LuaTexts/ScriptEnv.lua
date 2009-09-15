@@ -503,7 +503,7 @@ ScriptEnv.Creature = Creature
 local function SmartRace(unit)
 	if UnitIsPlayer(unit) then
 		local race = UnitRace(unit)
-		return race 
+		return race or UNKNOWN
 	else
 		return Creature(unit)
 	end
