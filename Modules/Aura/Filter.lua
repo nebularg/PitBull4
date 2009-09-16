@@ -521,6 +521,7 @@ self_buffs.ROGUE = {
 	[14177] = true, -- Cold Blood
 	[4086]  = true, -- Evasion
 	[14278] = true, -- Ghostly Strike
+	[51662] = true, -- Hunger For Blood
 	[14143] = true, -- Remorseless
 	[36554] = true, -- Shadowstep
 	[5171]  = true, -- Slice and Dice
