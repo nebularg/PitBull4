@@ -73,7 +73,10 @@ function PitBull4_Aggro:OnModuleLoaded(module)
 end
 
 function PitBull4_Aggro:OnEnable()
-	LibBanzai = LibStub("LibBanzai-2.0", true)
+	if not LibBanzai then
+		LoadAddOn("LibBanzai-2.0")
+		LibBanzai = LibStub("LibBanzai-2.0", true)
+	end
 	if not LibBanzai then
 		error(L["PitBull4_Aggro requires the library LibBanzai-2.0 to be available."])
 	end
