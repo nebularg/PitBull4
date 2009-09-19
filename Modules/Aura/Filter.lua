@@ -407,11 +407,12 @@ self_buffs.PALADIN = {
 	[25780] = true, -- Righteous Fury
 	[31892] = player_race == "BloodElf", -- Seal of Blood
 	[20375] = true, -- Seal of Command
+	[63736] = player_race == "BloodElf", -- Seal of Corruption
 	[20164] = true, -- Seal of Justice
 	[20165] = true, -- Seal of Light
 	[53720] = player_race == "Human" or player_race == "Dwarf" or player_race == "Draenei", -- Seal of the Martyr
 	[20154] = true, -- Seal of Righteousness
-	[31801] = true, -- Seal of Vengeance
+	[31801] = player_race == "Human" or player_race == "Dwarf" or player_race == "Draenei", -- Seal of Vengeance
 	[20166] = true, -- Seal of Wisdom
 	[5502]  = true, -- Sense Undead
 	[23214] = true, -- Summon Charger
