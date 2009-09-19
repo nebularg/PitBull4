@@ -121,7 +121,7 @@ local function model_OnUpdate(self, elapsed)
 		self:TryOn(6795)
 		self:TryOn(6835)
 		self:TryOn(6836)
-		self:TryOn(10030)
+		self:TryOn(2955)
 		self:TryOn(3935)
 		if full_body then
 			self:SetCamera(1)
