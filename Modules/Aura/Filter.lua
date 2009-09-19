@@ -423,10 +423,11 @@ self_debuffs.PALADIN = {}
 pet_buffs.PALADIN = {}
 enemy_debuffs.PALADIN = {
 	[31935] = true, -- Avenger's Shield
+	[53742] = player_race == "BloodElf", -- Dot, from Seal of Corruption (Blood Corruption)
 	[20116] = true, -- Consecration
 	[853]   = true, -- Hammer of Justice
 	[21183]	= true, -- Heart of the Crusader
-	[31803] = true, -- Holy Vengeance
+	[31803] = player_race == "Human" or player_race == "Dwarf" or player_race == "Draenei", -- Dot from, Seal of Vengeance (Holy Vengeance)
 	[20184] = true, -- Judgement of Justice
 	[20185] = true, -- Judgement of Light
 	[20186] = true, -- Judgement of Wisdom
