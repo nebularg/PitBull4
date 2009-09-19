@@ -418,7 +418,6 @@ self_buffs.PALADIN = {
 	[23214] = true, -- Summon Charger
 	[13819] = true, -- Summon Warhorse
 	[53489]	= true, -- The Art of War
-	[8602]  = true, -- Vengeance
 }
 self_debuffs.PALADIN = {}
 pet_buffs.PALADIN = {}
