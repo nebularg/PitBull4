@@ -109,7 +109,6 @@ function PitBull4_Portrait:ClearFrame(frame)
 end
 
 local function model_OnUpdate(self, elapsed)
-	self:SetScript("OnUpdate", nil)
 	
 	local frame = self:GetParent()
 	local style = frame.Portrait.style
@@ -144,11 +143,9 @@ local function model_OnUpdate(self, elapsed)
 		end
 	end
 	
-	if type(self:GetModel()) ~= "string" then
-		-- the portrait wasn't set properly, let's try again
-		
-		PitBull4_Portrait:Clear(frame)
-		PitBull4_Portrait:Update(frame)
+	if type(self:GetModel()) == "string" then
+		-- the portrait was set properly, we can stop trying to set the portrait 
+		self:SetScript("OnUpdate", nil)
 	end
 end
 
