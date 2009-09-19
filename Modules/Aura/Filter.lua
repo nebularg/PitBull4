@@ -886,17 +886,17 @@ local extra_buffs = {
 local function turn(t, shallow)
 	local tmp = {}
 	local function turn(entry)
-		for id in pairs(entry) do
+		for id,v in pairs(entry) do
 			local spell = GetSpellInfo(id)
 			if not spell then
 				DEFAULT_CHAT_FRAME:AddMessage(string.format("PitBull4_Aura: Unknown spell ID: %d",id))
 			else
-				tmp[spell] = true
+				tmp[spell] = v
 			end
 		end
 		wipe(entry)
-		for spell in pairs(tmp) do
-			entry[spell] = true
+		for spell,v in pairs(tmp) do
+			entry[spell] = v
 		end
 	end
 	if shallow then
