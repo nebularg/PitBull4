@@ -65,6 +65,7 @@ local function set_hooks()
 end
 
 function PitBull4_Aggro:OnModuleLoaded(module)
+	if not self.db.profile.global.enabled then return end
 	local id = module.id
 	if id == "HealthBar" or id == "Border" or id == "Background" then
 		set_hooks()
