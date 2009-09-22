@@ -119,7 +119,6 @@ self_buffs.DEATHKNIGHT = {
 	[49206] = true, -- Summon Gargoyle
 	[55233] = true, -- Vampiric Blood
 	[51271] = true, -- Unbreakable Armor
-	[51375] = true, -- Unholy Blight
 }
 self_debuffs.DEATHKNIGHT = {}
 pet_buffs.DEATHKNIGHT = {
@@ -134,6 +133,7 @@ enemy_debuffs.DEATHKNIGHT = {
 	[49203] = true, -- Hungering Cold
 	[49005] = true, -- Mark of Blood
 	[47476] = true, -- Strangulate
+	[50536] = true, -- Unholy Blight
 }
 
 -- DRUID
