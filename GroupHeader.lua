@@ -328,7 +328,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		if party_based then
 			self.super_unit_group = "party"
 			self.unitsuffix = unit_group:sub(6)
-			self:SetAttribute("showRaid", nil)
+			self:SetAttribute("showRaid", true)
 			self:SetAttribute("showParty", true)
 			self:SetAttribute("showPlayer", include_player and true or nil)
 			self:SetAttribute("showSolo", show_solo and true or nil)
