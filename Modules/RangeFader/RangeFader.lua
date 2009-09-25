@@ -60,7 +60,7 @@ do
 		res_spells[#res_spells+1] = GetSpellInfo(7328) -- Redemption 
 	elseif class == "SHAMAN" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(8042) -- Earth Shock 
-		long_enemy_spells[#enemy_spells+1] = GetSpellInfo(403) -- Lightning Bolt
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(403) -- Lightning Bolt
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(331) -- Healing Wave
 		res_spells[#res_spells+1] = GetSpellInfo(2008) -- Ancestral Spirit 
 	elseif class == "WARLOCK" then
@@ -87,7 +87,7 @@ do
 	elseif class == "WARRIOR" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(5246) -- Intimidating Shout
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(100) -- Charge
-		long_enemy_spells[#friendly_spells+1] = GetSpellInfo(355) -- Taunt
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(355) -- Taunt
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(3411) -- Intervene
 	end
 	
