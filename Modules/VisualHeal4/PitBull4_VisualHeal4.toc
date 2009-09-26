@@ -1,0 +1,26 @@
+## Interface: 30200
+## Title: PitBull4 |r[|cffeda55fVisualHeal4|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="VisualHeal4")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="VisualHeal4")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="VisualHeal4")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="VisualHeal4")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="VisualHeal4")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="VisualHeal4")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="VisualHeal4")@|r]
+## Notes: Experimental support for LibHealComm-4.0. 
+## Notes-deDE: @localization(locale="deDE", key="Experimental support for LibHealComm-4.0.")@
+## Notes-esES: @localization(locale="esES", key="Experimental support for LibHealComm-4.0.")@
+## Notes-frFR: @localization(locale="frFR", key="Experimental support for LibHealComm-4.0.")@
+## Notes-koKR: @localization(locale="koKR", key="Experimental support for LibHealComm-4.0.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Experimental support for LibHealComm-4.0.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Experimental support for LibHealComm-4.0.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Experimental support for LibHealComm-4.0.")@
+## Author: ckknight
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## OptionalDeps: LibHealComm-4.0
+## Version: @project-version@
+## X-PitBull4-DefaultState: disabled
+
+load.xml
