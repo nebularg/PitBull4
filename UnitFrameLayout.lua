@@ -706,10 +706,12 @@ function position_indicator_on_root:in_right(indicator)
 	end
 end
 function position_indicator_on_root:edge_top_left(indicator)
-	indicator:SetPoint("CENTER", self, "TOPLEFT", 0, 0)
 	if indicator.SetJustifyH then
+		indicator:SetPoint("LEFT", self, "TOPLEFT", 0, 0)
 		indicator:SetJustifyH("CENTER")
 		indicator:SetJustifyV("MIDDLE")
+	else
+		indicator:SetPoint("CENTER", self, "TOPLEFT", 0, 0)
 	end
 end
 function position_indicator_on_root:edge_top(indicator, _, _, indicators_and_texts)
@@ -725,31 +727,39 @@ function position_indicator_on_root:edge_top(indicator, _, _, indicators_and_tex
 	end
 end
 function position_indicator_on_root:edge_top_right(indicator)
-	indicator:SetPoint("CENTER", self, "TOPRIGHT", 0, 0)
 	if indicator.SetJustifyH then
+		indicator:SetPoint("RIGHT", self, "TOPRIGHT", 0, 0)
 		indicator:SetJustifyH("CENTER")
 		indicator:SetJustifyV("MIDDLE")
+	else
+		indicator:SetPoint("CENTER", self, "TOPRIGHT", 0, 0)
 	end
 end
 function position_indicator_on_root:edge_left(indicator)
-	indicator:SetPoint("CENTER", self, "LEFT", 0, 0)
 	if indicator.SetJustifyH then
+		indicator:SetPoint("RIGHT", self, "LEFT", 0, 0)
 		indicator:SetJustifyH("CENTER")
 		indicator:SetJustifyV("MIDDLE")
+	else
+		indicator:SetPoint("CENTER", self, "LEFT", 0, 0)
 	end
 end
 function position_indicator_on_root:edge_right(indicator)
-	indicator:SetPoint("CENTER", self, "RIGHT", 0, 0)
 	if indicator.SetJustifyH then
+		indicator:SetPoint("LEFT", self, "RIGHT", 0, 0)
 		indicator:SetJustifyH("CENTER")
 		indicator:SetJustifyV("MIDDLE")
+	else
+		indicator:SetPoint("CENTER", self, "RIGHT", 0, 0)
 	end
 end
 function position_indicator_on_root:edge_bottom_left(indicator)
-	indicator:SetPoint("CENTER", self, "BOTTOMLEFT", 0, 0)
 	if indicator.SetJustifyH then
+		indicator:SetPoint("LEFT", self, "BOTTOMLEFT", 0, 0)
 		indicator:SetJustifyH("CENTER")
 		indicator:SetJustifyV("MIDDLE")
+	else
+		indicator:SetPoint("CENTER", self, "BOTTOMLEFT", 0, 0)
 	end
 end
 function position_indicator_on_root:edge_bottom(indicator, _, _, indicators_and_texts)
@@ -765,10 +775,12 @@ function position_indicator_on_root:edge_bottom(indicator, _, _, indicators_and_
 	end
 end
 function position_indicator_on_root:edge_bottom_right(indicator)
-	indicator:SetPoint("CENTER", self, "BOTTOMRIGHT", 0, 0)
 	if indicator.SetJustifyH then
+		indicator:SetPoint("RIGHT", self, "BOTTOMRIGHT", 0, 0)
 		indicator:SetJustifyH("CENTER")
 		indicator:SetJustifyV("MIDDLE")
+	else
+		indicator:SetPoint("CENTER", self, "BOTTOMRIGHT", 0, 0)
 	end
 end
 
