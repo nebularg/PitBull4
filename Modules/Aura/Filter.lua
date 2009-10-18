@@ -126,7 +126,7 @@ pet_buffs.DEATHKNIGHT = {
 }
 enemy_debuffs.DEATHKNIGHT = {
 	[55078] = true, -- Blood Plague
-	[47805] = true, -- Chains of Ice
+	[45524] = true, -- Chains of Ice
 	[50510] = true, -- Crypt Fever
 	[51735] = true, -- Ebon Plague
 	[55095] = true, -- Frost Fever
