@@ -256,10 +256,11 @@ function PitBull4.Options.get_unit_options()
 			
 			if value then
 				PitBull4:MakeGroupHeader(CURRENT_GROUP, nil)
-			else
-				for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do
-					header:Hide()
-				end
+			end
+
+			for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do
+				header:RefreshGroup()
+				header:UpdateShownState()
 			end
 			
 			PitBull4:RecheckConfigMode()
