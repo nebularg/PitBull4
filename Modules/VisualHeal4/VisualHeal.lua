@@ -208,13 +208,13 @@ function PitBull4_VisualHeal:HealComm_HealStarted(event, caster_guid, spell_id, 
 	end
 	
 	for frame in PitBull4:IterateFramesForGUIDs(...) do
-		self:UpdateFrame(frame)
+		self:Update(frame)
 	end
 end
 
 function PitBull4_VisualHeal:HealComm_HealUpdated(event, caster_guid, spell_id, heal_type, end_time, ...)
 	for frame in PitBull4:IterateFramesForGUIDs(...) do
-		self:UpdateFrame(frame)
+		self:Update(frame)
 	end
 end
 
@@ -224,7 +224,7 @@ function PitBull4_VisualHeal:HealComm_HealDelayed(event, caster_guid, spell_id, 
 	end
 	
 	for frame in PitBull4:IterateFramesForGUIDs(...) do
-		self:UpdateFrame(frame)
+		self:Update(frame)
 	end
 end
 
@@ -234,7 +234,7 @@ function PitBull4_VisualHeal:HealComm_HealStopped(event, caster_guid, spell_id, 
 	end
 	
 	for frame in PitBull4:IterateFramesForGUIDs(...) do
-		self:UpdateFrame(frame)
+		self:Update(frame)
 	end
 end
 
