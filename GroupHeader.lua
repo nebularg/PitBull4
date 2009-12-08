@@ -264,7 +264,14 @@ local function get_main_tank_name_list()
 			return s, #tank_list
 		end
 	end
-	return nil, count_returns(GetPartyAssignment("MAINTANK"))
+	if PitBull4.leaving_world or not UnitInRaid("player") or not UnitInParty("player") then
+		-- Not in a raid or a party, so no main tank list.  We have
+		-- to bail out here becuase WoW whines with a You are not in a party
+		-- message to the user now.  /sigh
+		return nil, 0
+	else
+		return nil, count_returns(GetPartyAssignment("MAINTANK"))
+	end
 end
 
 --- Recheck the group-based settings of the group header, including sorting, position, what units are shown.
@@ -564,10 +571,14 @@ local function get_group_roster_info(super_unit_group, index, sort_dir, group_by
 		if UnitExists(unit) then
 			name = UnitName(unit)
 			_, class_name = UnitClass(unit)
-			if GetPartyAssignment("MAINTANK", unit) then
-				role = "MAINTANK"
-			elseif  GetPartyAssignment("MAINASSIST", unit) then
-				role = "MAINASSIST"
+			-- The UnitInParty and UnitInRaid checks are an ugly workaround for thee 
+			-- You are not in a party bug that Blizzard created.
+			if not PitBull4.leaving_world and (UnitInParty(unit) or UnitInRaid(unit)) then
+				if GetPartyAssignment("MAINTANK", unit) then
+					role = "MAINTANK"
+				elseif  GetPartyAssignment("MAINASSIST", unit) then
+					role = "MAINASSIST"
+				end
 			end
 			subgroup = 1
 		end

@@ -1259,6 +1259,7 @@ function PitBull4:OnEnable()
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED")
 	
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	self:RegisterEvent("PLAYER_LEAVING_WORLD")
 	
 	timerFrame:Show()
 
@@ -1534,7 +1535,13 @@ function PitBull4:GetState()
 	return PitBull4.config_mode or PitBull4.StateHeader:GetAttribute("state-group")	
 end
 
+function PitBull4:PLAYER_LEAVING_WORLD()
+	self.leaving_world = true
+end
+
+
 function PitBull4:PLAYER_ENTERING_WORLD()
+	self.leaving_world = nil
 	refresh_all_guids()
 end
 
