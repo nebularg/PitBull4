@@ -2,7 +2,8 @@
 ..\FrameXML\UI.xsd">
 
 <!--@no-lib-strip@-->
-<Include file="libs\LibHealComm-3.0\lib.xml"/>
+<Include file="libs\LibHealComm-4.0\LibHealComm-4.0.xml"/>
+<Include file="libs\LibWrapperHealComm-1.0\LibWrapperHealComm-1.0.xml"/>
 <!--@end-no-lib-strip@-->
 
 <Script file="VisualHeal.lua"/>

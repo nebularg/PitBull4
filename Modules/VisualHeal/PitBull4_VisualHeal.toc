@@ -7,7 +7,7 @@
 ## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="VisualHeal")@|r]
 ## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="VisualHeal")@|r]
 ## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="VisualHeal")@|r]
-## Notes: Visualises healing done by you and your group members before it happens.
+## Notes: Visualises healing done by you and your group members before it happens. 
 ## Notes-deDE: @localization(locale="deDE", key="Visualises healing done by you and your group members before it happens.")@
 ## Notes-esES: @localization(locale="esES", key="Visualises healing done by you and your group members before it happens.")@
 ## Notes-frFR: @localization(locale="frFR", key="Visualises healing done by you and your group members before it happens.")@
@@ -19,7 +19,8 @@
 ## DefaultState: enabled
 ## LoadOnDemand: 1
 ## Dependencies: PitBull4
-## OptionalDeps: LibHealComm-3.0
+## OptionalDeps: LibHealComm-4.0
 ## Version: @project-version@
+## X-PitBull4-DefaultState: disabled
 
 load.xml
