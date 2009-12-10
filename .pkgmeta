@@ -55,13 +55,10 @@ externals:
     Modules/Aggro/libs/LibBanzai-2.0:
         url: svn://svn.wowace.com/wow/libbanzai-2-0/mainline/trunk 
         tag: latest
-    Modules/VisualHeal/libs/LibHealComm-3.0:
-        url: svn://svn.wowace.com/wow/libhealcomm-3-0/mainline/trunk 
-        tag: latest
-    Modules/VisualHeal4/libs/LibHealComm-4.0:
+    Modules/VisualHeal/libs/LibHealComm-4.0:
         url: git://git.wowace.com/wow/libhealcomm-4-0/mainline.git
         tag: latest
-    Modules/VisualHeal4/libs/LibWrapperHealComm-1.0:
+    Modules/VisualHeal/libs/LibWrapperHealComm-1.0:
         url: git://git.wowace.com/wow/libwrapperhealcomm-1-0/mainline.git
         tag: latest
 
