@@ -21,6 +21,5 @@
 ## Dependencies: PitBull4
 ## OptionalDeps: LibHealComm-4.0
 ## Version: @project-version@
-## X-PitBull4-DefaultState: disabled
 
 load.xml
