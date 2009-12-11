@@ -671,6 +671,7 @@ enemy_debuffs.WARLOCK = {
 	[5138]  = true, -- Drain Mana
 	[1120]  = true, -- Drain Soul
 	[5782]  = true, -- Fear
+	[48181] = true, -- Haunt
 	[1949]  = true, -- Hellfire
 	[5484]  = true, -- Howl of Terror
 	[348]   = true, -- Immolate
