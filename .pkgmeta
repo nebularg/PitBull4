@@ -94,6 +94,7 @@ move-folders:
     PitBull4/Modules/ReadyCheckIcon: PitBull4_ReadyCheckIcon
     PitBull4/Modules/ReputationBar: PitBull4_ReputationBar
     PitBull4/Modules/RestIcon: PitBull4_RestIcon
+    PitBull4/Modules/RoleIcon: PitBull4_RoleIcon
     PitBull4/Modules/Runes: PitBull4_Runes
     PitBull4/Modules/Sounds: PitBull4_Sounds
     PitBull4/Modules/ThreatBar: PitBull4_ThreatBar
