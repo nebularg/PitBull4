@@ -843,8 +843,8 @@ function PitBull4_Aura:UpdateWeaponEnchants(force)
 	local old_oh, old_oh_count, old_oh_expiration_time
 	if oh_entry then
 		old_oh = oh_entry[2] ~= nil and 1 or nil
-		old_mh_count = oh_entry[8]
-		old_mh_expiration_time = oh_entry[11]
+		old_oh_count = oh_entry[8]
+		old_oh_expiration_time = oh_entry[11]
 	end
 
 	-- GetWeaponEnchantInfo() briefly returns that there is
