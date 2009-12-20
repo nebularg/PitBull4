@@ -72,6 +72,11 @@ function PitBull4_Aggro:OnModuleLoaded(module)
 	end
 end
 
+function PitBull4_Aggro:OnEmbeddedModulesLoaded()
+	if not self.db.profile.global.enabled then return end
+	set_hooks()
+end
+
 function PitBull4_Aggro:OnEnable()
 	if not LibBanzai then
 		LoadAddOn("LibBanzai-2.0")
