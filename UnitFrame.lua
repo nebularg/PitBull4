@@ -421,7 +421,7 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 			frame:SetMovable(true)
 		end
 		frame:RegisterForDrag("LeftButton")
-		frame:RegisterForClicks("LeftButtonUp","RightButtonUp","MiddleButtonUp","Button4Up","Button5Up")
+		frame:RegisterForClicks("AnyUp")
 		frame:SetAttribute("*type1", "target")
 		frame:SetAttribute("*type2", "menu")
 	end
