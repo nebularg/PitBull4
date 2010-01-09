@@ -15,6 +15,8 @@ PitBull4_Border:SetDescription(L["Show a highlight when hovering or targeting."]
 PitBull4_Border:SetDefaults({
 	normal_color = { 1, 1, 1, 1 },
 	normal_texture = "None",
+	boss_color = { 0.6, 0.3, 0.6, 1 },
+	boss_texture = "Blizzard Tooltip",
 	elite_color = { 1, 1, 0, 1 },
 	elite_texture = "Blizzard Tooltip",
 	rare_color = { 0.7, 0.7, 0.7, 1 },
@@ -53,9 +55,11 @@ end
 -- this is here to allow it to be overridden, by say an aggro module
 function PitBull4_Border:GetTextureAndColor(frame)
 	local unit = frame.unit
-	local classification = unit and UnitClassification(unit)
-
-	if classification == "worldboss" or classification == "elite" then
+	local classification = unit and PitBull4.Utils.BetterUnitClassification(unit)
+	
+    if classification == "worldboss" then
+        classification = "boss"
+	elseif classification == "elite" then
 		classification = "elite"
 	elseif classification == "rare" or classification == "rareelite" then
 		classification = "rare"
@@ -356,33 +360,61 @@ PitBull4_Border:SetLayoutOptionsFunction(function(self)
 				dialogControl = AceGUI.WidgetRegistry["LSM30_Border"] and "LSM30_Border" or nil,
 			}
 		}
-	}, 'rare', {
-		type = 'group',
-		inline = true,
-		name = L["Rare"],
-		args = {
-			rare_color = {
-				type = 'color',
-				name = L["Color"],
-				desc = L["What color should be applied to the border if it is a rare unit."],
-				hasAlpha = true,
-				get = get_color,
-				set = set_color,
-			},
-			rare_texture = {
-				type = 'select',
-				name = L["Texture"],
-				desc = L["What texture should be applied to the border if it is a rare unit."],
-				get = get,
-				set = set,
-				values = function(info)
-					return LibSharedMedia:HashTable("border")
-				end,
-				hidden = function(info)
-					return not LibSharedMedia
-				end,
-				dialogControl = AceGUI.WidgetRegistry["LSM30_Border"] and "LSM30_Border" or nil,
-			}
-		}
+    }, 'rare', {
+        type = 'group',
+        inline = true,
+        name = L["Rare"],
+        args = {
+            rare_color = {
+                type = 'color',
+                name = L["Color"],
+                desc = L["What color should be applied to the border if it is a rare unit."],
+                hasAlpha = true,
+                get = get_color,
+                set = set_color,
+            },
+            rare_texture = {
+                type = 'select',
+                name = L["Texture"],
+                desc = L["What texture should be applied to the border if it is a rare unit."],
+                get = get,
+                set = set,
+                values = function(info)
+                    return LibSharedMedia:HashTable("border")
+                end,
+                hidden = function(info)
+                    return not LibSharedMedia
+                end,
+                dialogControl = AceGUI.WidgetRegistry["LSM30_Border"] and "LSM30_Border" or nil,
+            }
+        }
+    }, 'boss', {
+        type = 'group',
+        inline = true,
+        name = L["Boss"],
+        args = {
+            boss_color = {
+                type = 'color',
+                name = L["Color"],
+                desc = L["What color should be applied to the border if it is a boss unit."],
+                hasAlpha = true,
+                get = get_color,
+                set = set_color,
+            },
+            boss_texture = {
+                type = 'select',
+                name = L["Texture"],
+                desc = L["What texture should be applied to the border if it is a boss unit."],
+                get = get,
+                set = set,
+                values = function(info)
+                    return LibSharedMedia:HashTable("border")
+                end,
+                hidden = function(info)
+                    return not LibSharedMedia
+                end,
+                dialogControl = AceGUI.WidgetRegistry["LSM30_Border"] and "LSM30_Border" or nil,
+            }
+        }
 	}
 end)

@@ -221,3 +221,60 @@ function PitBull4.Utils.ConvertMethodToFunction(namespace, func_name)
 		return namespace[func_name](namespace, ...)
 	end
 end
+
+--- Return the Mob ID of the given GUID.
+-- It doesn't matter if the guid starts with "0x" or not.
+-- This will only work for NPCs, not other types of guids, such as players.
+-- @usage PitBull4.Utils.GetMobIDFromGuid("0xF13000046514911F") == 1125
+-- @usage PitBull4.Utils.GetMobIDFromGuid("F13000046514911F") == 1125
+function PitBull4.Utils.GetMobIDFromGuid(guid)
+    if DEBUG then
+        expect(guid, 'typeof', 'string')
+        assert(#guid == 16 or #guid == 18)
+    end
+    
+    local unit_type = guid:sub(-14, -14)
+    if unit_type ~= "3" and unit_type ~= "B" and unit_type ~= "b" then
+        return nil
+    end
+    
+    return tonumber(guid:sub(-10, -7), 16)
+end
+
+local LibBossIDs = LibStub("LibBossIDs-1.0", true)
+if not LibBossIDs then
+    local old_ADDON_LOADED = PitBull4.ADDON_LOADED
+    function PitBull4:ADDON_LOADED()
+        if not LibBossIDs then
+            LibBossIDs = LibStub("LibBossIDs-1.0", true)
+        end
+        
+        return old_ADDON_LOADED(self)
+    end
+end
+--- Return the unit classification of the given unit.
+-- This acts like UnitClassification(unit), but returns "worldboss" for bosses that match LibBossIDs-1.0
+-- @param unit The unit to check the classification of.
+-- @return one of "worldboss", "elite", "rareelite", "rare", or "normal"
+function PitBull4.Utils.BetterUnitClassification(unit)
+    local classification = UnitClassification(unit)
+    
+    if not LibBossIDs or classification == "worldboss" or classification == "normal" then
+        return classification
+    end
+    local guid = UnitGUID(unit)
+    if not guid then
+        return classification
+    end
+    
+    local mob_id = PitBull4.Utils.GetMobIDFromGuid(guid)
+    if not mob_id then
+        return classification
+    end
+    
+    if LibBossIDs.BossIDs[mob_id] then
+        return "worldboss"
+    end
+    
+    return classification
+end

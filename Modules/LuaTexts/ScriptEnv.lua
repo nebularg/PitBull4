@@ -423,7 +423,7 @@ local classification_lookup = {
 }
 
 local function Classification(unit)
-	return classification_lookup[UnitClassification(unit)]
+	return classification_lookup[PitBull4.Utils.BetterUnitClassification(unit)]
 end
 ScriptEnv.Classification = Classification
 
