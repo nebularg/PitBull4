@@ -243,13 +243,17 @@ end
 
 local LibBossIDs = LibStub("LibBossIDs-1.0", true)
 if not LibBossIDs then
-    local old_ADDON_LOADED = PitBull4.ADDON_LOADED
-    function PitBull4:ADDON_LOADED()
-        if not LibBossIDs then
-            LibBossIDs = LibStub("LibBossIDs-1.0", true)
-        end
+    LoadAddOn("LibBossIDs-1.0")
+    LibBossIDs = LibStub("LibBossIDs-1.0", true)
+    if not LibBossIDs then
+        local old_ADDON_LOADED = PitBull4.ADDON_LOADED
+        function PitBull4:ADDON_LOADED()
+            if not LibBossIDs then
+                LibBossIDs = LibStub("LibBossIDs-1.0", true)
+            end
         
-        return old_ADDON_LOADED(self)
+            return old_ADDON_LOADED(self)
+        end
     end
 end
 --- Return the unit classification of the given unit.
