@@ -276,6 +276,7 @@ function PitBull4.Options.get_unit_options()
 		type = 'execute',
 		func = function(info)
 			for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do
+				header.group_db.enabled = false
 				header:Hide()
 			end
 			
