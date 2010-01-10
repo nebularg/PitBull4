@@ -954,6 +954,7 @@ function PitBull4:OnInitialize()
 	
 	LoadAddOn("LibDataBroker-1.1")
 	LoadAddOn("LibDBIcon-1.0")
+	LoadAddOn("LibBossIDs-1.0", true)
 end
 
 local db_icon_done, ctra_done, ora2_done, ora3_done
@@ -1013,6 +1014,10 @@ function PitBull4:ADDON_LOADED()
 		oRA3.RegisterCallback(self,"OnTanksUpdated")
 		self.OnTanksUpdated()
 		ora3_done = true
+	end
+
+	if not PitBull4.LibBossIDs then
+		PitBull4.LibBossIDs = LibStub("LibBossIDs-1.0", true)
 	end
 end
 
