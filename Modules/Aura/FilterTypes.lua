@@ -1269,3 +1269,140 @@ PitBull4_Aura:RegisterFilterType('Caster',L["Caster"],caster_filter,function(sel
 	}
 end)
 
+-- Should Consolodate, Filter by if the Aura  is eligible for the consolidated aura display 
+local function should_consolidate_filter(self, entry)
+	if PitBull4_Aura:GetFilterDB(self).should_consolidate then
+		return not not entry[14] 
+	else
+		return not entry[14]
+	end
+end
+PitBull4_Aura:RegisterFilterType('Should consolidate',L['Should consolidate'],should_consolidate_filter, function(self,options)
+	options.should_consolidate = {
+		type = 'select',
+		name = L['Should consolidate'],
+		desc = L['Filter by if the aura is eligible for consolidation.'],
+		get = function(info)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			return db.should_consolidate and "yes" or "no"
+		end,
+		set = function(info, value)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			if value == "yes" then
+				db.should_consolidate = true
+			else
+				db.should_consolidate = false
+			end
+			PitBull4_Aura:UpdateAll()
+		end,
+		values = bool_values,
+		order = 1,
+	}
+end)
+
+-- Spell ID, allows filtering by the spell id that created the aura 
+local function id_filter(self, entry)
+	local cfg = PitBull4_Aura:GetFilterDB(self)
+	if cfg.id_list[entry[15]] then
+		if cfg.whitelist then
+			return true
+		else
+			return nil
+		end
+	else
+		if cfg.whitelist then
+			return nil
+		else
+			return true
+		end
+	end
+end
+PitBull4_Aura:RegisterFilterType('Spell id',L["Spell id"],id_filter, function(self, options)
+	options.whitelist = {
+		type = 'select',
+		name = L['List type'],
+		desc = L['Select if the list of ids are treated as a whitelist or blacklist. A whitelist will only display the selected auras and a blacklist will only show unchecked or unlisted auras.'],
+		get = function(info)
+			return PitBull4_Aura:GetFilterDB(self).whitelist and 'wl' or 'bl'
+		end,
+		set = function(info, value)
+			PitBull4_Aura:GetFilterDB(self).whitelist = (value == 'wl')
+			PitBull4_Aura:UpdateAll()
+		end,
+		values = whitelist_values,
+		confirm = function(info)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			if db.built_in then
+				return L["Are you sure you want to change the list type of a built in filter?  Doing so may break the default filtering."]
+			end
+			return false
+		end,
+		order = 1,
+	}
+	options.id_list = {
+		type = 'multiselect',
+		name = L['Aura ids'],
+		desc = L['Ids of the auras you want the filter to include or exclude.'],
+		get = function(info, key)
+			return PitBull4_Aura:GetFilterDB(self).id_list[key]
+		end,
+		set = function(info, key, value)
+			PitBull4_Aura:GetFilterDB(self).id_list[key] = value
+			PitBull4_Aura:UpdateAll()
+		end,
+		values = function(info)
+			local t = {}
+			local db = PitBull4_Aura:GetFilterDB(self)
+			local id_list = db.id_list
+			if not id_list then
+				id_list = {}
+				db.id_list = id_list
+			end
+			for k in pairs(id_list) do
+				local name, rank = GetSpellInfo(k)
+				if not name then
+					name = L["Unknown"]
+				end
+				if not rank then
+					rank = ""
+				end
+				t[k] = format("%s (%s) [%s]",name,rank,k)
+			end
+			return t
+		end,
+		order = 2,
+		width = 'double',
+	}
+	options.new_id = {
+		type = 'input',
+		name = L["New id"],
+		desc = L["Add an id name to the list."],
+		get = function(info) return "" end,
+		set = function(info, value)
+			local id_list = PitBull4_Aura:GetFilterDB(self).id_list
+			id_list[tonumber(value)] = true
+			PitBull4_Aura:UpdateAll()
+		end,
+		validate = function(info, value)
+			if not tonumber(value) then
+				return L["Must be a number."]
+			end
+			if not GetSpellInfo(value) then
+				return L["Must be a valid spell id."]
+			end
+			return true
+		end,
+	}
+	options.delete_id = {
+		type = 'input',
+		name = L["Remove id"],
+		desc = L["Remove an id from the list."],
+		get = function(info) return "" end,
+		set = function(info, value)
+			local id_list = PitBull4_Aura:GetFilterDB(self).id_list
+			id_list[value] = nil
+			PitBull4_Aura:UpdateAll()
+		end,
+	}
+end)
+

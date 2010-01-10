@@ -41,6 +41,8 @@ local wipe = _G.table.wipe
 -- [11] = expiration_time
 -- [12] = caster 
 -- [13] = is_stealable
+-- [14] = should_consolodate
+-- [15] = spell_id
 local list = {}
 
 -- pool of available entries to be used in list
@@ -48,7 +50,7 @@ local pool = {}
 
 -- The final index of the entries.  We need this so we can always
 -- get all values when copying or using unpack.
-local ENTRY_END = 13
+local ENTRY_END = 15
 
 -- Table we store the weapon enchant info in.
 -- This table is never cleared and entries are reused.
@@ -120,7 +122,7 @@ local function get_aura_list(list, unit, db, is_buff, frame)
 		-- Note entry[2] says if the aura is a weapon enchant
 		entry[1], entry[2], entry[3], entry[4], entry[5], entry[6],
 			entry[7], entry[8], entry[9], entry[10], entry[11],
-			entry[12], entry[13] =
+			entry[12], entry[13], entry[14], entry[15] =
 			id, nil, nil, is_buff, UnitAura(unit, id, filter)
 
 		-- Hack to get around a Blizzard bug.  The Enrage debuff_type
@@ -218,6 +220,8 @@ local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 		entry[10]  = 0 -- duration
 		entry[11]  = 0 -- expiration_time
 		entry[13] = nil -- is_stealable
+		entry[14] = nil -- should_consolodate
+		entry[15] = nil -- spell_id
 	end
 end
 
@@ -334,6 +338,8 @@ local function set_weapon_entry(list, is_enchant, time_left, expiration_time, co
 	entry[11] = expiration_time
 	entry[12] = "player" -- treat weapon enchants as always yours
 	entry[13] = nil -- is_stealable
+	entry[14] = nil -- should_consolodate
+	entry[15] = nil -- spell_id
 end
 
 -- If the src table has a valid weapon enchant entry for the slot
