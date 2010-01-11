@@ -433,6 +433,21 @@ function PitBull4.Options.get_unit_options()
 		set = set_with_refresh_layout,
 		disabled = disabled,
 	}
+
+	shared_args.tooltip = {
+		name = L["Tooltip"],
+		desc = L["Show the tooltip for the unit when the mouse is over the frame under the selected condition."],
+		order = next_order(),
+		type = 'select',
+		values = {
+			always = L['Always'],
+			never = L['Never'],
+			ooc = L['Out of combat'],
+		},
+		get = get,
+		set = set,
+		disabled = disabled,
+	}
 	
 	shared_args.size_x = {
 		name = L["Width multiplier"],

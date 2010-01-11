@@ -277,10 +277,13 @@ end
 
 function UnitFrame__scripts:OnEnter()
 	if self.guid then
-		GameTooltip_SetDefaultAnchor(GameTooltip, self)
-		GameTooltip:SetUnit(self.unit)
-		local r, g, b = GameTooltip_UnitColor(self.unit)
-		GameTooltipTextLeft1:SetTextColor(r, g, b)
+		local tooltip = self.classification_db.tooltip
+		if tooltip == "always" or (tooltip == "ooc" and not InCombatLockdown()) then
+			GameTooltip_SetDefaultAnchor(GameTooltip, self)
+			GameTooltip:SetUnit(self.unit)
+			local r, g, b = GameTooltip_UnitColor(self.unit)
+			GameTooltipTextLeft1:SetTextColor(r, g, b)
+		end
 	end
 	
 	PitBull4:RunFrameScriptHooks("OnEnter", self)

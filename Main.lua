@@ -92,6 +92,7 @@ local DATABASE_DEFAULTS = {
 				vertical_mirror = false,
 				vehicle_swap = true,
 				click_through = false,
+				tooltip = 'always',
 			},
 			player = { enabled = true },
 			pet = { enabled = true },
@@ -127,6 +128,7 @@ local DATABASE_DEFAULTS = {
 				vertical_mirror = false,
 				vehicle_swap = true,
 				click_through = false,
+				tooltip = 'always',
 				
 				show_when = {
 					solo = false,
