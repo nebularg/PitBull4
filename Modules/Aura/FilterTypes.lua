@@ -1402,9 +1402,12 @@ PitBull4_Aura:RegisterFilterType('Spell id',L["Spell id"],id_filter, function(se
 		desc = L["Remove an id from the list."],
 		get = function(info) return "" end,
 		set = function(info, value)
-			local id_list = PitBull4_Aura:GetFilterDB(self).id_list
-			id_list[value] = nil
-			PitBull4_Aura:UpdateAll()
+			local id = tonumber(value)
+			if id then
+				local id_list = PitBull4_Aura:GetFilterDB(self).id_list
+				id_list[id] = nil
+				PitBull4_Aura:UpdateAll()
+			end
 		end,
 		order = 4,
 	}
