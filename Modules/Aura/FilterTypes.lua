@@ -393,6 +393,7 @@ PitBull4_Aura:RegisterFilterType('Name',L["Name"],name_filter, function(self, op
 			end
 			return true
 		end,
+		order = 3,
 	}
 	options.delete_name = {
 		type = 'input',
@@ -404,6 +405,7 @@ PitBull4_Aura:RegisterFilterType('Name',L["Name"],name_filter, function(self, op
 			name_list[value] = nil
 			PitBull4_Aura:UpdateAll()
 		end,
+		order = 4,
 	}
 end)
 
@@ -1392,6 +1394,7 @@ PitBull4_Aura:RegisterFilterType('Spell id',L["Spell id"],id_filter, function(se
 			end
 			return true
 		end,
+		order = 3,
 	}
 	options.delete_id = {
 		type = 'input',
@@ -1403,6 +1406,7 @@ PitBull4_Aura:RegisterFilterType('Spell id',L["Spell id"],id_filter, function(se
 			id_list[value] = nil
 			PitBull4_Aura:UpdateAll()
 		end,
+		order = 4,
 	}
 end)
 
