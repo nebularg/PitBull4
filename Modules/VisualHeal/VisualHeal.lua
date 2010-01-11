@@ -122,7 +122,7 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 	bar:SetReverse(deficit ~= reverse)
 	
 	bar:ClearAllPoints()
-	local point, attach
+	local point, attach, attach_frame
 	if orientation == "HORIZONTAL" then
 		point, attach = "LEFT", "RIGHT"
 		bar:SetWidth(health_bar:GetWidth())
@@ -139,13 +139,16 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 	
 	if deficit then
 		point, attach = attach, point
+		attach_frame = health_bar.bg
+	else
+		attach_frame = health_bar.fg
 	end
 	
 	if reverse then
 		point, attach = REVERSE_POINT[point], REVERSE_POINT[attach]
 	end
 	
-	bar:SetPoint(point, health_bar.fg, attach)
+	bar:SetPoint(point, attach_frame, attach)
 	
 	local db = self.db.profile.global
 	
