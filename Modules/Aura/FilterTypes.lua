@@ -1378,7 +1378,7 @@ PitBull4_Aura:RegisterFilterType('Spell id',L["Spell id"],id_filter, function(se
 	options.new_id = {
 		type = 'input',
 		name = L["New id"],
-		desc = L["Add an id name to the list."],
+		desc = L["Add an id to the list."],
 		get = function(info) return "" end,
 		set = function(info, value)
 			local id_list = PitBull4_Aura:GetFilterDB(self).id_list
