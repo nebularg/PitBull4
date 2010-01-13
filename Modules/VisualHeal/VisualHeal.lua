@@ -19,7 +19,9 @@ local PitBull4_VisualHeal = PitBull4:NewModule("VisualHeal", "AceEvent-3.0")
 PitBull4_VisualHeal:SetModuleType("custom")
 PitBull4_VisualHeal:SetName(L["Visual heal"])
 PitBull4_VisualHeal:SetDescription(L["Visualises healing done by you and your group members before it happens."])
-PitBull4_VisualHeal:SetDefaults({}, {
+PitBull4_VisualHeal:SetDefaults({
+	show_overheal = true,
+	}, {
 	incoming_color = { 0.4, 0.6, 0.4, 0.75 },
 	outgoing_color = { 0, 1, 0, 1 },
 	outgoing_color_overheal = { 1, 0, 0, 0.65 },
@@ -111,7 +113,20 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 		frame.VisualHeal = bar
 		bar:SetBackgroundAlpha(0)
 	end
+
+	local show_overheal = PitBull4.Options.GetLayoutDB(self).show_overheal
+
+	-- If the user has selected to not show overheal we make sure to not set a value that goes beyond 100%.
+	if not show_overheal and ((others_percent+current_percent) > 1) then
+		others_percent = 1 - current_percent
+	end
+
 	bar:SetValue(math.min(others_percent, 1))
+
+	if not show_overheal and ((player_percent+others_percent+current_percent) > 1) then
+		player_percent = 1 - (others_percent+current_percent)
+	end
+
 	bar:SetExtraValue(player_percent)
 	bar:SetTexture(health_bar:GetTexture())
 	
@@ -304,4 +319,22 @@ PitBull4_VisualHeal:SetColorOptionsFunction(function(self)
 		self.db.profile.global.auto_luminance = true
 	end
 end)
-PitBull4_VisualHeal:SetLayoutOptionsFunction(function(self) end)
+
+PitBull4_VisualHeal:SetLayoutOptionsFunction(function(self) 
+	local function disabled(info)
+		return not PitBull4.Options.GetLayoutDB(self).enabled
+	end
+
+	return 'show_overheal', {
+		type = 'toggle',
+		name = L['Show overheals'],
+		desc = L['Show overheals past the end of the health bar.'],
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).show_overheal
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).show_overheal = value
+		end,
+		disabled = disabled,
+	}
+end)
