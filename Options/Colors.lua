@@ -134,7 +134,7 @@ local function get_power_options()
 		end
 	}
 	
-	for power_token in pairs(PowerBarColor) do
+	for power_token in pairs(PitBull4.PowerColors) do
 		if type(power_token) == "string" then
 			power_options.args[power_token] = option
 		end

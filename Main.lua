@@ -188,6 +188,12 @@ for power_token, color in pairs(PowerBarColor) do
 		DATABASE_DEFAULTS.profile.colors.power[power_token] = { color.r, color.g, color.b }
 	end
 end
+DATABASE_DEFAULTS.profile.colors.power["POWER_TYPE_PYRITE"] = { 0, 0.79215693473816, 1 }
+DATABASE_DEFAULTS.profile.colors.power["POWER_TYPE_STEAM"] = { 0.94901967048645, 0.94901967048645, 0.94901967048645 }
+DATABASE_DEFAULTS.profile.colors.power["POWER_TYPE_HEAT"] = { 1.000000059139, 0.490019610742107, 0 }
+DATABASE_DEFAULTS.profile.colors.power["POWER_TYPE_BLOOD_POWER"] = { 0.73725494556129, 0, 1.000000059139 }
+DATABASE_DEFAULTS.profile.colors.power["POWER_TYPE_OOZE"] = { 0.75686281919479, 1, 0 }
+
 for reaction, color in pairs(FACTION_BAR_COLORS) do
 	DATABASE_DEFAULTS.profile.colors.reaction[reaction] = { color.r, color.g, color.b }
 end
