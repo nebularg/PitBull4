@@ -1446,9 +1446,10 @@ PitBull4.StateHeader = StateHeader
 -- Note please do not use tabs in the code passed to WrapScript, WoW can't display
 -- tabs in FontStrings and it makes errors inside the below code look like crap.
 StateHeader:WrapScript(StateHeader, "OnAttributeChanged", [[
-  if name ~= "new_group" and name ~= "remove_group" and name ~= "state-group" and name ~= "config_mode" then return end
+  if name ~= "new_group" and name ~= "remove_group" and name ~= "state-group" and name ~= "config_mode" and name ~= "forced_state" then return end
 
-  local state, header
+  -- Special handling for the new_group and remove_group attributes 
+  local header
   if name == "new_group" then
     -- value is the name of the new group header to add to our group list
     if not value then return end
@@ -1459,11 +1460,6 @@ StateHeader:WrapScript(StateHeader, "OnAttributeChanged", [[
 
     header = self:GetFrameRef(value)
     groups[value] = header 
-
-    state = self:GetAttribute("config_mode")
-    if not state then
-      state = self:GetAttribute("state-group")
-    end
   elseif name == "remove_group" then
     -- value is the name of the group header to remove from our group list
     if not value or not groups then return end
@@ -1472,25 +1468,14 @@ StateHeader:WrapScript(StateHeader, "OnAttributeChanged", [[
     if header then
       groups[value] = nil
     end
-  elseif name == "state-group" then 
-    -- value will be the state id for the current state
-    -- however, override it if config_mode is set
-    if not groups then return end
+  end
 
-    local config_mode = self:GetAttribute("config_mode")
-    if config_mode then
-      state = config_mode
-    else
-      state = value
-    end
-  else -- config_mode
-    -- value will be the config_mode state if it's nil we're
-    -- not in config_mode and should use the state drivers
-    -- state
-    if not groups then return end
-    if value then
-      state = value
-    else
+  if not header and not groups then return end -- Nothing to do
+
+  local state = self:GetAttribute("config_mode")
+  if not state then
+    state = self:GetAttribute("forced_state")
+    if not state then
       state = self:GetAttribute("state-group")
     end
   end
@@ -1500,8 +1485,6 @@ StateHeader:WrapScript(StateHeader, "OnAttributeChanged", [[
     if state and header:GetAttribute(state) then
       header:Show()
     else
-      -- state won't be set for remove_group calls because
-      -- we don't care about the state we just need to hide it.
       header:Hide()
       -- Wipe the unit id off the child frames so the hidden frames
       -- are ignored by the unit watch system.
