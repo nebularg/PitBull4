@@ -59,6 +59,8 @@ function PitBull4_CombatText:ClearFrame(frame)
 	return true
 end
 
+PitBull4_CombatText.OnHide = PitBull4_CombatText.ClearFrame
+
 function PitBull4_CombatText:UpdateFrame(frame)
 	local font_string = frame.CombatText
 	local created = not font_string
