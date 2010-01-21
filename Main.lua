@@ -1472,7 +1472,7 @@ StateHeader:WrapScript(StateHeader, "OnAttributeChanged", [[
 
   if not header and not groups then return end -- Nothing to do
 
-  local state = self:GetAttribute("config_mode")
+  state = self:GetAttribute("config_mode")
   if not state then
     state = self:GetAttribute("forced_state")
     if not state then
@@ -1528,7 +1528,7 @@ end
 -- @usage local state = PitBull4:GetState()
 -- @return the state of the player.
 function PitBull4:GetState()
-	return PitBull4.config_mode or PitBull4.StateHeader:GetAttribute("state-group")	
+	return PitBull4.config_mode or GetManagedEnvironment(StateHeader).state 
 end
 
 function PitBull4:PLAYER_LEAVING_WORLD()
