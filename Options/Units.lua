@@ -38,18 +38,7 @@ function PitBull4.Options.get_unit_options()
 		end
 	end
 	
-	local function deep_copy(data)
-		local t = {}
-		for k, v in pairs(data) do
-			if type(v) == "table" then
-				t[k] = deep_copy(v)
-			else
-				t[k] = v
-			end
-		end
-		setmetatable(t,getmetatable(data))
-		return t
-	end
+	local deep_copy = PitBull4.Utils.deep_copy
 	
 	unit_options.args.current_unit = {
 		name = L["Current unit"],

@@ -14,18 +14,7 @@ local PitBull4_Aura = PitBull4:GetModule("Aura")
 local MULTISELECT_CONTROL = "Dropdown"
 -- local MULTISELECT_CONTROL
 
-local function deep_copy(data)
-	local t = {}
-	for k, v in pairs(data) do
-		if type(v) == "table" then
-			t[k] = deep_copy(v)
-		else
-			t[k] = v
-		end
-	end
-	return t
-end
-
+local deep_copy = PitBull4.Utils.deep_copy
 
 local CURRENT_FILTER
 local CURRENT_FILTER_OPTIONS = {}

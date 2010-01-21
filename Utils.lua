@@ -268,3 +268,18 @@ function PitBull4.Utils.BetterUnitClassification(unit)
     
     return classification
 end
+
+local function deep_copy(data)
+	local t = {}
+	for k, v in pairs(data) do
+		if type(v) == "table" then
+			t[k] = deep_copy(v)
+		else
+			t[k] = v
+		end
+	end
+	setmetatable(t,getmetatable(data))
+	return t
+end
+PitBull4.Utils.deep_copy = deep_copy
+
