@@ -348,6 +348,11 @@ function UnitFrame__scripts:OnHide()
 	-- Clear the guid without causing an update unless the frame
 	-- is force_shown in which case force an update.
 	self:UpdateGUID(nil,force_show and true or false)
+	if DEBUG then			
+		-- debug test to help try and track down issue 475.  The
+		-- guid should always end up set to nil after this.
+		expect(self.guid, '==', nil)
+	end
 	if force_show then
 		-- Nothing more to do the frame isn't really being hidden
 		return
