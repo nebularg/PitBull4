@@ -735,6 +735,25 @@ function PitBull4.Options.get_unit_options()
 		disabled = disabled,
 	}
 	
+	group_layout_args.use_pet_header = {
+		name = L["Gaps for missing pets"],
+		desc = L["Leave gaps in the spacing for pets that do not exist."],
+		order = next_order,
+		type = 'toggle',
+		get = function(info)
+			return not get(info)
+		end,
+		set = function(info,value)
+			if set(info, not value) then
+				PitBull4:SwapGroupTemplate(CURRENT_GROUP)
+			end
+		end,
+		disabled = disabled,
+		hidden = function(info)
+			return not get_group_db().unit_group:match("pet")
+		end,
+	}
+
 	group_filtering_args.shown_when = {
 		name = L["Show when in"],
 		desc = L["Which situations to show the unit group in."],

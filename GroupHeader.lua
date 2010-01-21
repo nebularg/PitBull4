@@ -3,6 +3,7 @@ local PitBull4 = _G.PitBull4
 
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
+local deep_copy = PitBull4.Utils.deep_copy
 
 local MAX_PARTY_MEMBERS_WITH_PLAYER = MAX_PARTY_MEMBERS + 1
 local NUM_CLASSES = 0
@@ -48,18 +49,31 @@ function PitBull4:MakeGroupHeader(group)
 		expect(group, 'typeof', 'string')
 	end
 	
-	local header_name = "PitBull4_Groups_" .. group
+	local group_db = PitBull4.db.profile.groups[group]
+	local use_pet_header = group_db.use_pet_header
+	local header_name
 	
+	if use_pet_header then
+		header_name = "PitBull4_PetGroups_" .. group
+	else
+		header_name = "PitBull4_Groups_" .. group
+	end
+
 	local header = _G[header_name]
 	if not header then
-		header = CreateFrame("Frame", header_name, UIParent, "SecureGroupHeaderTemplate")
+		local template
+		if use_pet_header then
+			template = "SecureGroupPetHeaderTemplate"
+		else
+			template = "SecureGroupHeaderTemplate"
+		end
+		header = CreateFrame("Frame", header_name, UIParent, template)
 		header:Hide() -- it will be shown later and attributes being set won't cause lag
 		header:SetFrameStrata(PitBull4.UNITFRAME_STRATA)
 		header:SetFrameLevel(PitBull4.UNITFRAME_LEVEL - 1)
 		
 		header.name = group
 		
-		local group_db = PitBull4.db.profile.groups[group]
 		header.group_db = group_db
 		
 		self:ConvertIntoGroupHeader(header)
@@ -68,6 +82,47 @@ function PitBull4:MakeGroupHeader(group)
 	header:UpdateShownState()	
 end
 PitBull4.MakeGroupHeader = PitBull4:OutOfCombatWrapper(PitBull4.MakeGroupHeader)
+
+--- Swap the group from a Normal and Pet Group Header.
+-- @param group the name for the group.
+-- @usage PitBull4:SwapGroupTemplate("Monkey")
+-- Note that the use_pet_header setting for the group_db is expected to already
+-- be set to the value you're going to.
+function PitBull4:SwapGroupTemplate(group)
+	if DEBUG then
+		expect(group, 'typeof', 'string')
+	end
+
+	local old_header = self.name_to_header[group]
+	local group_db = PitBull4.db.profile.groups[group]
+
+	old_header.group_db = deep_copy(group_db)
+	old_header.group_db.enabled = false
+	old_header:RefreshGroup()
+	old_header:UpdateShownState()
+
+	local new_name
+	if group_db.use_pet_header then
+		new_name = "PitBull4_PetGroups_"..group
+	else
+		new_name = "PitBull4_Groups_"..group
+	end
+	local new_header = _G[new_name]
+
+	if not new_header then
+		-- Doesn't exist so make it.
+		self:MakeGroupHeader(group)
+	else
+		-- already exists so jump through the hoops to reactive it.
+		self.name_to_header[group] = new_header
+		new_header.group_db = group_db 
+		new_header:RefreshGroup()
+		new_header:UpdateShownState()
+	end
+		
+	self:RecheckConfigMode()
+end
+PitBull4.SwapGroupHeader = PitBull4:OutOfCombatWrapper(PitBull4.SwapGroupHeader)
 
 local GroupHeader = {}
 PitBull4.GroupHeader = GroupHeader
@@ -522,7 +577,7 @@ GroupHeader.ForceUnitFrameCreation = PitBull4:OutOfCombatWrapper(GroupHeader.For
 
 local function hook_SecureGroupHeader_Update()
 	hook_SecureGroupHeader_Update = nil
-	hooksecurefunc("SecureGroupHeader_Update", function(self)
+	local function hook(self)
 		if not PitBull4.all_headers[self] then
 			return
 		end
@@ -534,7 +589,9 @@ local function hook_SecureGroupHeader_Update()
 		end
 		self:AssignFakeUnitIDs()
 		PitBull4:RecheckConfigMode()
-	end)
+	end
+	hooksecurefunc("SecureGroupHeader_Update", hook)
+	hooksecurefunc("SecureGroupPetHeader_Update", hook)
 end
 
 -- utility function for AssignFakeUnitIDs
@@ -980,8 +1037,11 @@ function GroupHeader:Rename(name)
 		return
 	end
 	
-	local old_header_name = "PitBull4_Groups_" .. self.name
-	local new_header_name = "PitBull4_Groups_" .. name
+	local use_pet_header = self.group_db.use_pet_header
+	local prefix = use_pet_header and "PitBull4_PetGroups_" or "PitBull4_Groups_"
+
+	local old_header_name = prefix .. self.name
+	local new_header_name = prefix .. name
 	
 	PitBull4.name_to_header[self.name] = nil
 	PitBull4.name_to_header[name] = self

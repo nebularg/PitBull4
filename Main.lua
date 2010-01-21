@@ -117,6 +117,7 @@ local DATABASE_DEFAULTS = {
 				include_player = false,
 				group_filter = nil,
 				group_by = nil,
+				use_pet_header = nil,
 				
 				position_x = 0,
 				position_y = 0,
