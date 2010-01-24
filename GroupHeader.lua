@@ -122,7 +122,7 @@ function PitBull4:SwapGroupTemplate(group)
 		
 	self:RecheckConfigMode()
 end
-PitBull4.SwapGroupHeader = PitBull4:OutOfCombatWrapper(PitBull4.SwapGroupHeader)
+PitBull4.SwapGroupTemplate = PitBull4:OutOfCombatWrapper(PitBull4.SwapGroupTemplate)
 
 local GroupHeader = {}
 PitBull4.GroupHeader = GroupHeader
