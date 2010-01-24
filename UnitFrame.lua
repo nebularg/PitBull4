@@ -584,7 +584,7 @@ function UnitFrame:GetFont(font_override, size_multiplier)
 	if LibSharedMedia then
 		font = LibSharedMedia:Fetch("font", font_override or layout_db.font or "")
 	end
-	return font or DEFAULT_FONT, DEFAULT_FONT_SIZE * layout_db.font_size * (size_multiplier or 1)
+	return font or DEFAULT_FONT, DEFAULT_FONT_SIZE * layout_db.font_size * (size_multiplier or 1) * self.classification_db.font_multiplier
 end
 
 local get_best_unit = PitBull4.get_best_unit

@@ -467,7 +467,22 @@ function PitBull4.Options.get_unit_options()
 		set = set_with_refresh_layout,
 		disabled = disabled,
 	}
-	
+    
+	shared_args.font_multiplier = {
+		name = L["Font size multiplier"],
+		desc = L["A font size multiplier applied to the unit. Every text's font size in your layout will be multiplied against this value."],
+		order = next_order(),
+		type = 'range',
+		min = 0.5,
+		max = 2,
+		isPercent = true,
+		step = 0.01,
+		bigStep = 0.05,
+		get = get,
+		set = set_with_refresh_layout,
+		disabled = disabled,
+	}
+    
 	shared_args.click_through = {
 		name = L["Click-through"],
 		desc = L["Whether the unit should be unclickable, allowing you to use it as a HUD without interfering with the game world."],
