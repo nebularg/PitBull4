@@ -586,10 +586,12 @@ local function fix_unit_healthmax()
 				if elements then
 					for _,text in pairs(elements)	do
 						local events = text.events
-						local old_event = events.UNIT_HEALTHMAX
-						if not events.UNIT_MAXHEALTH and old_event then
-							events.UNIT_MAXHEALTH = old_event
-							events.UNIT_HEALTHMAX = nil
+						if events then
+							local old_event = events.UNIT_HEALTHMAX
+							if not events.UNIT_MAXHEALTH and old_event then
+								events.UNIT_MAXHEALTH = old_event
+								events.UNIT_HEALTHMAX = nil
+							end
 						end
 					end
 				end
