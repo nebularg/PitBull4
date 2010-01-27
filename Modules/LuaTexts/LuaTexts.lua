@@ -103,7 +103,7 @@ end]],
 	},
 	[L["Health"]] = {
 		[L["Absolute"]] = {
-			events = {['UNIT_HEALTH']=true,['UNIT_HEALTHMAX']=true,['UNIT_AURA']=true},
+			events = {['UNIT_HEALTH']=true,['UNIT_MAXHEALTH']=true,['UNIT_AURA']=true},
 			code = [[
 local s = Status(unit)
 if s then
@@ -112,7 +112,7 @@ end
 return "%s/%s",HP(unit),MaxHP(unit)]],
 		},
 		[L["Absolute short"]] = {
-			events = {['UNIT_HEALTH']=true,['UNIT_HEALTHMAX']=true,['UNIT_AURA']=true},
+			events = {['UNIT_HEALTH']=true,['UNIT_MAXHEALTH']=true,['UNIT_AURA']=true},
 			code = [[
 local s = Status(unit)
 if s then
@@ -121,7 +121,7 @@ end
 return "%s/%s",Short(HP(unit),true),Short(MaxHP(unit),true)]],
 		},
 		[L["Difference"]] = {
-			events = {['UNIT_HEALTH']=true,['UNIT_HEALTHMAX']=true,['UNIT_AURA']=true},
+			events = {['UNIT_HEALTH']=true,['UNIT_MAXHEALTH']=true,['UNIT_AURA']=true},
 			code = [[
 local s = Status(unit)
 if s then
@@ -133,7 +133,7 @@ if miss ~= 0 then
 end]],
 		},
 		[L["Percent"]] = {
-			events = {['UNIT_HEALTH']=true,['UNIT_HEALTHMAX']=true,['UNIT_AURA']=true},
+			events = {['UNIT_HEALTH']=true,['UNIT_MAXHEALTH']=true,['UNIT_AURA']=true},
 			code = [[
 local s = Status(unit)
 if s then
@@ -142,12 +142,12 @@ end
 return "%s%%",Percent(HP(unit),MaxHP(unit))]],
 		},
 		[L["Mini"]] = {
-			events = {['UNIT_HEALTH']=true,['UNIT_HEALTHMAX']=true},
+			events = {['UNIT_HEALTH']=true,['UNIT_MAXHEALTH']=true},
 			code = [[
 return VeryShort(HP(unit))]],
 		},
 		[L["Smart"]] = {
-			events = {['UNIT_HEALTH']=true,['UNIT_HEALTHMAX']=true,['UNIT_AURA']=true},
+			events = {['UNIT_HEALTH']=true,['UNIT_MAXHEALTH']=true,['UNIT_AURA']=true},
 			code = [[
 local s = Status(unit)
 if s then
@@ -166,7 +166,7 @@ else
 end]],
 		},
 		[L["Absolute and percent"]] = {
-			events = {['UNIT_HEALTH']=true,['UNIT_HEALTHMAX']=true,['UNIT_AURA']=true},
+			events = {['UNIT_HEALTH']=true,['UNIT_MAXHEALTH']=true,['UNIT_AURA']=true},
 			code = [[
 local s = Status(unit)
 if s then
@@ -176,7 +176,7 @@ local cur, max = HP(unit), MaxHP(unit)
 return "%s/%s || %s%%",Short(cur,true),Short(max,true),Percent(cur,max)]],
 		},
 		[L["Informational"]] = {
-			events = {['UNIT_HEALTH']=true,['UNIT_HEALTHMAX']=true,['UNIT_AURA']=true},
+			events = {['UNIT_HEALTH']=true,['UNIT_MAXHEALTH']=true,['UNIT_AURA']=true},
 			code = [[
 local s = Status(unit)
 if s then
@@ -566,7 +566,41 @@ function PitBull4_LuaTexts:SetCVar()
 	predicted_power = GetCVarBool("predictedPower")
 end
 
+-- Fix a typo in the original default event names. 
+-- s/UNIT_HEALTHMAX/UNIT_MAXHEALTH/
+local function fix_unit_healthmax()
+	local sv = PitBull4.db:GetNamespace("LuaTexts").profiles
+	for _,profile in pairs(sv) do
+		if profile.global then
+			local events = profile.global.events
+			local old_event = events.UNIT_HEALTHMAX
+			if not events.UNIT_MAXHEALTH and old_event then
+				events.UNIT_MAXHEALTH = old_event
+				events.UNIT_HEALTHMAX = nil
+			end
+		end
+		local layouts = profile.layouts
+		if layouts then
+			for _,layout in pairs(layouts) do	
+				local elements = layout.elements
+				if elements then
+					for _,text in pairs(elements)	do
+						local events = text.events
+						local old_event = events.UNIT_HEALTHMAX
+						if not events.UNIT_MAXHEALTH and old_event then
+							events.UNIT_MAXHEALTH = old_event
+							events.UNIT_HEALTHMAX = nil
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
 function PitBull4_LuaTexts:OnEnable()
+	fix_unit_healthmax()
+
 	-- UNIT_SPELLCAST_SENT has to always be registered so we can capture 
 	-- additional data not always available.
 	self:RegisterEvent("UNIT_SPELLCAST_SENT")
