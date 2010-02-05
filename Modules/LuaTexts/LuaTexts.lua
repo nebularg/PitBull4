@@ -573,10 +573,12 @@ local function fix_unit_healthmax()
 	for _,profile in pairs(sv) do
 		if profile.global then
 			local events = profile.global.events
-			local old_event = events.UNIT_HEALTHMAX
-			if not events.UNIT_MAXHEALTH and old_event then
-				events.UNIT_MAXHEALTH = old_event
-				events.UNIT_HEALTHMAX = nil
+			if events then
+				local old_event = events.UNIT_HEALTHMAX
+				if not events.UNIT_MAXHEALTH and old_event then
+					events.UNIT_MAXHEALTH = old_event
+					events.UNIT_HEALTHMAX = nil
+				end
 			end
 		end
 		local layouts = profile.layouts
