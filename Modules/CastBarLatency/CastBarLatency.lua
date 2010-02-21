@@ -4,6 +4,7 @@ if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les
 local ALPHA_MODIFIER = 0.6 -- Multiplied to the main CastBar's alpha at any point of time.
 local DEFAULT_COLOR = {1, 0, 0, 1}
 local ADJUSTMENT_DIVISOR_FOR_EVENTS = 1e3 -- Events return different timestamps than GetTime. GetTime's is more useful.
+local ADJUSTMENT_DIVISOR_FOR_QUEUES = 1e3
 
 -- Pseudo global initialization
 local send_time  = 0
@@ -12,6 +13,8 @@ local end_time   = 0
 local lag_time   = 0
 local max_time   = 0
 local is_channel = nil
+local queue_time = 300
+local show_queue = true
 
 local PitBull4 = _G.PitBull4
 if not PitBull4 then
@@ -27,11 +30,16 @@ if not PitBull4_CastBar then
 end
 
 local PitBull4_CastBarLatency = PitBull4:NewModule("CastBarLatency", "AceEvent-3.0")
+local self = PitBull4_CastBarLatency
 
 PitBull4_CastBarLatency:SetModuleType("custom")
 PitBull4_CastBarLatency:SetName(L["Cast bar latency"])
 PitBull4_CastBarLatency:SetDescription(L["Show a guessed safe zone at the end of the player castbar."])
-PitBull4_CastBarLatency:SetDefaults({},{latency_color = DEFAULT_COLOR})
+PitBull4_CastBarLatency:SetDefaults({},{
+	show_queue = true,
+	queue_time = 300,
+	latency_color = DEFAULT_COLOR
+})
 PitBull4_CastBarLatency:SetLayoutOptionsFunction(function(self) end)
 
 -- Create a timer frame with an onupdate to ensure updates of our bar..
@@ -69,6 +77,10 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, spell, spellr
 	max_time = end_time - start_time
 	lag_time = start_time - send_time
 	is_channel = nil
+	local queue_val = queue_time / ADJUSTMENT_DIVISOR_FOR_QUEUES
+	if show_queue and (lag_time < queue_val) then
+		lag_time = queue_val
+	end
 end
 
 function PitBull4_CastBarLatency:UNIT_SPELLCAST_CHANNEL_START(event, unit, spell, spellrank)
@@ -86,6 +98,11 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_CHANNEL_START(event, unit, spell
 	max_time = end_time - start_time
 	lag_time = start_time - send_time
 	is_channel = true
+	local queue_time = queue_time
+	local queue_val = queue_time / ADJUSTMENT_DIVISOR_FOR_QUEUES
+	if show_queue and (lag_time < queue_val) then
+		lag_time = queue_val
+	end
 end
 
 
@@ -126,6 +143,9 @@ function PitBull4_CastBarLatency:OnEnable()
 	self:RegisterEvent("UNIT_SPELLCAST_FAILED","UNIT_SPELLCAST_STOP")
 	self:RegisterEvent("UNIT_SPELLCAST_FAILED_QUIET","UNIT_SPELLCAST_STOP")
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP","UNIT_SPELLCAST_STOP")
+	
+	queue_time = self.db.profile.global.queue_time 
+	show_queue = self.db.profile.global.show_queue
 end
 
 function PitBull4_CastBarLatency:OnDisable()
@@ -218,6 +238,42 @@ function PitBull4_CastBarLatency:ClearFrame(frame)
 end
 
 PitBull4_CastBarLatency.OnHide = PitBull4_CastBarLatency.ClearFrame
+
+PitBull4_CastBarLatency:SetGlobalOptionsFunction(function(self)
+	return 'show_queue', {
+		type = 'toggle',
+		width = 'full',
+		name = L['Always add spell queue time'],
+		desc = L['Always add the spell queue time to the shown latency.'],
+		get = function(info)
+			local id = info[#info]
+			return self.db.profile.global[id]
+		end,
+		set = function(info, value)
+			local id = info[#info]
+			self.db.profile.global[id] = value
+			show_queue = value
+		end,
+	},
+	'queue_time', {
+		type = 'range',
+		width = 'double',
+		name = L['Queue time'],
+		desc = L["Fixed time at then end of a running cast where you are able to cast the next spell. WARNING: Do not change this unless you know exactly what you're doing."],
+		min = 0,
+		max = 1000,
+		step = 1,
+		get = function(info)
+			local id = info[#info]
+			return self.db.profile.global[id]
+		end,
+		set = function(info, value)
+			local id = info[#info]
+			self.db.profile.global[id] = value
+			queue_time = value
+		end,
+	}
+end)
 
 PitBull4_CastBarLatency:SetColorOptionsFunction(function(self)
 	return 'latency_color', {
