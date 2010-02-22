@@ -1,10 +1,15 @@
 if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
+-- Upvalues
+local min = math.min
+
 -- CONSTANTS
 local ALPHA_MODIFIER = 0.6 -- Multiplied to the main CastBar's alpha at any point of time.
 local DEFAULT_COLOR = {1, 0, 0, 1}
 local ADJUSTMENT_DIVISOR_FOR_EVENTS = 1e3 -- Events return different timestamps than GetTime. GetTime's is more useful.
 local ADJUSTMENT_DIVISOR_FOR_QUEUES = 1e3
+local MAX_GCD_TIME = 1.5
+local DEFAULT_QUEUE_TIME = 300
 
 -- Pseudo global initialization
 local send_time  = 0
@@ -13,8 +18,11 @@ local end_time   = 0
 local lag_time   = 0
 local max_time   = 0
 local is_channel = nil
-local queue_time = 300
+local queue_time = DEFAULT_QUEUE_TIME
+local gcd_time   = 0
+
 local show_queue = true
+local show_gcd   = true
 
 local PitBull4 = _G.PitBull4
 if not PitBull4 then
@@ -37,7 +45,8 @@ PitBull4_CastBarLatency:SetName(L["Cast bar latency"])
 PitBull4_CastBarLatency:SetDescription(L["Show a guessed safe zone at the end of the player castbar."])
 PitBull4_CastBarLatency:SetDefaults({},{
 	show_queue = true,
-	queue_time = 300,
+	queue_time = DEFAULT_QUEUE_TIME,
+	show_gcd = true,
 	latency_color = DEFAULT_COLOR
 })
 PitBull4_CastBarLatency:SetLayoutOptionsFunction(function(self) end)
@@ -67,6 +76,14 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, spell, spellr
 		return
 	end
 	
+	-- Try to determine GCD
+	if show_gcd and spell then
+		local _, duration = GetSpellCooldown(spell)
+		if duration and duration > 0 and duration <= MAX_GCD_TIME then
+			gcd_time = duration
+		end
+	end
+	
 	local name, _, _, _, new_start, new_end, _, _ = UnitCastingInfo(unit)
 	if not name then
 		return
@@ -81,11 +98,27 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, spell, spellr
 	if show_queue and (lag_time < queue_val) then
 		lag_time = queue_val
 	end
+	
+	-- GCD handling
+	if show_gcd then
+		local gcd_rest = max_time - gcd_time
+		if gcd_rest < 0 then gcd_rest = 0 end
+		lag_time = math.min(lag_time, gcd_rest)
+	end
+	--print(string.format("DBG-USStart: GCD_time: %s; MAX_time: %s; LAG_time: %s", tostring(gcd_time), tostring(max_time), tostring(lag_time)))
 end
 
 function PitBull4_CastBarLatency:UNIT_SPELLCAST_CHANNEL_START(event, unit, spell, spellrank)
 	if unit ~= 'player' then
 		return
+	end
+	
+	-- Try to determine GCD
+	if show_gcd and spell then
+		local _, duration = GetSpellCooldown(spell)
+		if duration and duration > 0 and duration <= MAX_GCD_TIME then
+			gcd_time = duration
+		end
 	end
 	
 	local name, _, _, _, new_start, new_end, _, _ = UnitChannelInfo(unit)
@@ -103,6 +136,13 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_CHANNEL_START(event, unit, spell
 	if show_queue and (lag_time < queue_val) then
 		lag_time = queue_val
 	end
+	
+	-- GCD handling
+	if show_gcd then
+		local gcd_rest = max_time - gcd_time
+		if gcd_rest < 0 then gcd_rest = 0 end
+		lag_time = math.min(lag_time, gcd_rest)
+	end
 end
 
 
@@ -113,11 +153,19 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_SENT(event, unit, spell, spellra
 	send_time = GetTime()
 end
 
-function PitBull4_CastBarLatency:UNIT_SPELLCAST_STOP(event, unit)
+function PitBull4_CastBarLatency:UNIT_SPELLCAST_STOP(event, unit, spell)
 	if unit ~= 'player' then
 		return
 	end
 
+	-- Try to determine GCD
+	if show_gcd and spell then
+		local _, duration = GetSpellCooldown(spell)
+		if duration and duration > 0 and duration <= MAX_GCD_TIME then
+			gcd_time = duration
+		end
+	end
+	
 	-- Ignore SPELLCAST_SUCCEEDED when we're channeling
 	if event == 'UNIT_SPELLCAST_SUCCEEDED' and is_channel then
 		return
@@ -144,8 +192,9 @@ function PitBull4_CastBarLatency:OnEnable()
 	self:RegisterEvent("UNIT_SPELLCAST_FAILED_QUIET","UNIT_SPELLCAST_STOP")
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP","UNIT_SPELLCAST_STOP")
 	
-	queue_time = self.db.profile.global.queue_time 
+	queue_time = self.db.profile.global.queue_time
 	show_queue = self.db.profile.global.show_queue
+	show_gcd   = self.db.profile.global.show_gcd
 end
 
 function PitBull4_CastBarLatency:OnDisable()
@@ -240,10 +289,25 @@ end
 PitBull4_CastBarLatency.OnHide = PitBull4_CastBarLatency.ClearFrame
 
 PitBull4_CastBarLatency:SetGlobalOptionsFunction(function(self)
-	return 'show_queue', {
+	return 'show_gcd', {
 		type = 'toggle',
 		width = 'full',
-		name = L['Always add spell queue time'],
+		name = L['Include GCD lockout'],
+		desc = L['This assumes spells cannot be (locally) triggered before the GCD has run out.'],
+		get = function(info)
+			local id = info[#info]
+			return self.db.profile.global[id]
+		end,
+		set = function(info, value)
+			local id = info[#info]
+			self.db.profile.global[id] = value
+			show_gcd = value
+		end,
+	},
+	'show_queue', {
+		type = 'toggle',
+		width = 'full',
+		name = L['Include spell queue time'],
 		desc = L['Always add the spell queue time to the shown latency.'],
 		get = function(info)
 			local id = info[#info]
@@ -259,7 +323,7 @@ PitBull4_CastBarLatency:SetGlobalOptionsFunction(function(self)
 		type = 'range',
 		width = 'double',
 		name = L['Queue time'],
-		desc = L["Fixed time at then end of a running cast where you are able to cast the next spell. WARNING: Do not change this unless you know exactly what you're doing."],
+		desc = string.format(L["Fixed time at then end of a running cast where you are able to cast the next spell. Default is %s\nWARNING: Do not change this unless you know exactly what you're doing!"], tostring(DEFAULT_QUEUE_TIME)),
 		min = 0,
 		max = 1000,
 		step = 1,
