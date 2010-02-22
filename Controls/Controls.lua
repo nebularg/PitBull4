@@ -28,7 +28,9 @@ function delete_funcs:Texture()
 	self:SetBlendMode("BLEND")
 	self:SetDesaturated(false)
 	self:SetTexCoord(0, 1, 0, 1)
-	self:SetTexCoordModifiesRect(false)
+	if self.SetTexCoordModifiesRect then
+		self:SetTexCoordModifiesRect(false)
+	end
 end
 function delete_funcs:StatusBar()
 	self:SetStatusBarColor(1, 1, 1, 1)
