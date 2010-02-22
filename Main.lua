@@ -1534,6 +1534,26 @@ function PitBull4:GetState()
 	return PitBull4.config_mode or GetManagedEnvironment(StateHeader).state 
 end
 
+local valid_states = {
+  solo = true,
+  party = true,
+  raid = true,
+  raid10 = true,
+  raid15 = true,
+  raid20 = true,
+  raid25 = true,
+  raid40 = true,
+}
+
+--- Force the current state that the player is in.
+-- @param state One of the valid states as returned from GetState() e.g. "raid25"
+-- @usage PitBull4:ForceState("raid25")
+function PitBull4:ForceState(state)
+	if valid_states[state] then
+		StateHeader:SetAttribute(state)
+	end
+end
+
 function PitBull4:PLAYER_LEAVING_WORLD()
 	self.leaving_world = true
 end
