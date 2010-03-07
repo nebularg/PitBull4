@@ -20,6 +20,7 @@ PitBull4_CastBar:SetDefaults({
 	position = 10,
 	show_icon = true,
 	auto_hide = false,
+	idle_background = false,
 },{
 	casting_interruptible_color   = { 1, 0.7, 0 },
 	casting_uninterruptible_color = { 1, 222/255, 144/255},
@@ -188,12 +189,28 @@ function PitBull4_CastBar:GetColor(frame, value)
 end
 
 function PitBull4_CastBar:GetBackgroundColor(frame, value)
-	-- Link the alpha of the Background to the Normal Alpha so
-	-- the unfilled part of the bar fades out along with the filled
-	-- part.
-	local control = frame[self.id]
-	if control then
-		return nil, nil, nil, control:GetNormalAlpha()
+	local guid = frame.guid
+	local data = cast_data[guid]
+
+	if not data then
+		if not self:GetLayoutDB(frame).idle_background then
+			return nil, nil, nil, 0
+		end
+	elseif data.fadeOut then
+		local alpha
+		local stopTime = data.stopTime
+		if stopTime then
+			alpha = stopTime - GetTime() + 1
+		else
+			alpha = 0
+		end
+		if alpha >= 1 then
+			alpha = 1
+		end
+		if alpha <= 0 then
+			alpha = 0
+		end
+		return nil, nil, nil, alpha
 	end
 end
 
@@ -410,6 +427,22 @@ PitBull4_CastBar:SetLayoutOptionsFunction(function(self)
 		hidden = function(info)
 			return not PitBull4.Options.GetLayoutDB(self).show_icon
 		end
+	}, 'idle_background', {
+		name = L["Idle background"],
+		desc = L["Show background on the cast bar when nothing is being cast."],
+		type = 'toggle',
+		get = function(info)
+			local db = PitBull4.Options.GetLayoutDB(self)
+			return db.idle_background and not db.auto_hide
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).idle_background = value
+
+			PitBull4.Options.RefreshFrameLayouts()
+		end,
+		disabled = function(info)
+			return PitBull4.Options.GetLayoutDB(self).auto_hide
+		end,
 	}
 end)
 
