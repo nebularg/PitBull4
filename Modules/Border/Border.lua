@@ -28,9 +28,6 @@ PitBull4_Border:SetDefaults({
 local LibSharedMedia
 local LibSharedMedia_border_None = [[Interface\None]]
 
-local enabled = false
-local to_update = {}
-
 function PitBull4_Border:OnEnable()
 	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 	if not LibSharedMedia then
@@ -39,17 +36,6 @@ function PitBull4_Border:OnEnable()
 	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED")
 	
 	LibSharedMedia_border_None = LibSharedMedia:Fetch("border", "None")
-
-	enabled = true
-	self:ExecuteDelayedUpdates()
-end
-
--- Update frames we couldn't when we were asked to.
-function PitBull4_Border:ExecuteDelayedUpdates()
-	for frame in pairs(to_update) do
-		self:Update(frame)
-	end
-	wipe(to_update)
 end
 
 -- this is here to allow it to be overridden, by say an aggro module
@@ -75,12 +61,6 @@ function PitBull4_Border:GetTextureAndColor(frame)
 end
 
 function PitBull4_Border:UpdateFrame(frame)
-	if not enabled then
-		-- due to how we load OnEnable might run after we get asked to UpdateFrame()
-		-- so catch these update requests and execute them from OnEnable.
-		to_update[frame] = true
-		return
-	end
 	if not LibSharedMedia then
 		return self:ClearFrame(frame)
 	end
