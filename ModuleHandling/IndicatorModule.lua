@@ -164,3 +164,15 @@ function IndicatorModule:OnHide(frame)
 	end
 	return
 end
+
+--- Handle a new media key being added to SharedMedia
+-- @param event the event from LibSharedMedia
+-- @param mediatype the type of the media being added (e.g. "font", "statusbar")
+-- @param key the name of the new media
+function IndicatorModule:LibSharedMedia_Registered(event, mediatype, key)
+	-- Only force an update for all our indicators if we are set to show
+	-- a font option.
+	if self.show_font_option and mediatype == "font" then
+		self:UpdateAll()
+	end
+end

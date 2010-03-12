@@ -86,3 +86,9 @@ function PitBull4_Aura:UpdateFrame(frame)
 	self:UpdateAuras(frame)
 	self:LayoutAuras(frame)
 end
+
+function PitBull4_Aura:LibSharedMedia_Registered(event, mediatype, key)
+	if mediatype == "font" then
+		self:UpdateAll()
+	end
+end

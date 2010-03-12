@@ -150,3 +150,13 @@ function TextProviderModule:ForceTextUpdate(frame)
 	self:UpdateFrame(frame)
 	frame:UpdateLayout(false)
 end
+
+--- Handle a new media key being added to SharedMedia
+-- @param event the event from LibSharedMedia
+-- @param mediatype the type of the media being added (e.g. "font", "statusbar")
+-- @param key the name of the new media
+function TextProviderModule:LibSharedMedia_Registered(event, mediatype, key)
+	if mediatype == "font" then
+		self:UpdateAll()
+	end
+end

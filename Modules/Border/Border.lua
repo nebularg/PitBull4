@@ -231,6 +231,12 @@ function PitBull4_Border:PLAYER_TARGET_CHANGED()
 	end
 end
 
+function PitBull4_Border:LibSharedMedia_Registered(event, mediatype, key)
+	if mediatype == "border" then
+		self:UpdateAll()
+	end
+end
+
 PitBull4_Border:SetLayoutOptionsFunction(function(self)
 	LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
 	local AceGUI = LibStub("AceGUI-3.0")

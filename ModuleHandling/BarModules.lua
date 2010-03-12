@@ -474,6 +474,16 @@ function BarModule:GetTexture(frame)
 	return texture or [[Interface\TargetingFrame\UI-StatusBar]]
 end
 
+--- Handle a new media key being added to SharedMedia
+-- @param event the event from LibSharedMedia
+-- @param mediatype the type of the media being added (e.g. "font", "statusbar")
+-- @param key the name of the new media
+function BarModule:LibSharedMedia_Registered(event, mediatype, key)
+	if mediatype == "statusbar" then
+		self:UpdateAll()
+	end
+end
+
 --
 -- bar_provider module implementation
 --
@@ -639,3 +649,6 @@ function BarProviderModule:UpdateFrame(frame)
 	
 	return changed
 end
+
+-- Same code as BarModule
+BarProviderModule.LibSharedMedia_Registered = BarModule.LibSharedMedia_Registered

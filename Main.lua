@@ -1247,6 +1247,15 @@ function PitBull4:OnProfileChanged()
 	end
 end
 
+function PitBull4:LibSharedMedia_Registered(event, mediatype, key)
+	-- Notify modules that a new media has been registered
+	for _, module in PitBull4:IterateEnabledModules() do
+		if module.LibSharedMedia_Registered then
+			module:LibSharedMedia_Registered(event, mediatype, key)
+		end
+	end
+end
+
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
 
@@ -1281,6 +1290,8 @@ function PitBull4:OnEnable()
 
 	-- show initial frames
 	self:OnProfileChanged()
+
+	LibSharedMedia.RegisterCallback(self,"LibSharedMedia_Registered")
 end
 
 local timer = 0
