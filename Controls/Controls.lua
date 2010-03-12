@@ -29,7 +29,12 @@ function delete_funcs:Texture()
 	self:SetDesaturated(false)
 	self:SetTexCoord(0, 1, 0, 1)
 	if self.SetTexCoordModifiesRect then
+		-- pre 3.3.3 texture tiling code
 		self:SetTexCoordModifiesRect(false)
+	else
+		-- 3.3.3 and newer texture tiling code
+		self:SetHorizTile(false)
+		self:SetVertTile(false)
 	end
 end
 function delete_funcs:StatusBar()
