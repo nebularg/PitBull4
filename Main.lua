@@ -167,6 +167,8 @@ local DATABASE_DEFAULTS = {
 				indicator_root_inside_horizontal_padding = 2,
 				indicator_root_inside_vertical_padding = 5,
 				indicator_root_outside_margin = 5,
+				strata = 'MEDIUM',
+				level = 1, -- minimum 1, since 0 needs to be available
 			},
 		},
 		colors = {
@@ -200,9 +202,6 @@ DATABASE_DEFAULTS.profile.colors.power["POWER_TYPE_OOZE"] = { 0.75686281919479, 
 for reaction, color in pairs(FACTION_BAR_COLORS) do
 	DATABASE_DEFAULTS.profile.colors.reaction[reaction] = { color.r, color.g, color.b }
 end
-
-local UNITFRAME_STRATA = "MEDIUM"
-local UNITFRAME_LEVEL = 1 -- minimum 1, since 0 needs to be available
 
 local DEFAULT_GROUPS = {
 	[L["Party"]] = {
@@ -238,8 +237,6 @@ PitBull4.L = L
 
 PitBull4.SINGLETON_CLASSIFICATIONS = SINGLETON_CLASSIFICATIONS
 PitBull4.UNIT_GROUPS = UNIT_GROUPS
-PitBull4.UNITFRAME_STRATA = UNITFRAME_STRATA
-PitBull4.UNITFRAME_LEVEL = UNITFRAME_LEVEL
 
 local db
 

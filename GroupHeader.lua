@@ -69,8 +69,6 @@ function PitBull4:MakeGroupHeader(group)
 		end
 		header = CreateFrame("Frame", header_name, UIParent, template)
 		header:Hide() -- it will be shown later and attributes being set won't cause lag
-		header:SetFrameStrata(PitBull4.UNITFRAME_STRATA)
-		header:SetFrameLevel(PitBull4.UNITFRAME_LEVEL - 1)
 		
 		header.name = group
 		
@@ -254,6 +252,8 @@ function GroupHeader:RefixSizeAndPosition()
 	local updated = false
 	
 	self:SetScale(layout_db.scale * group_db.scale)
+	self:SetFrameStrata(layout_db.strata)
+	self:SetFrameLevel(layout_db.level - 1) -- 1 less than what the unit frame will be at
 
 	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
 	local direction = group_db.direction
@@ -1164,6 +1164,8 @@ function MemberUnitFrame:RefixSizeAndPosition()
 	local layout_db = self.layout_db
 	local classification_db = self.classification_db
 	
+	self:SetFrameStrata(layout_db.strata)
+	self:SetFrameLevel(layout_db.level)
 	self:SetWidth(layout_db.size_x * classification_db.size_x)
 	self:SetHeight(layout_db.size_y * classification_db.size_y)
 end

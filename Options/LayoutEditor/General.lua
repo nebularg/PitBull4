@@ -86,6 +86,61 @@ function PitBull4.Options.get_layout_editor_general_options(layout_options)
 			},
 		}
 	}
+
+	options.args.strata = {
+		type = 'group',
+		name = L["Strata"],
+		desc = L["Layering of the unit frame relative to other frames."],
+		order = 1,
+		args = {
+			strata = {
+				type = 'select',
+				name = L["Strata"],
+				desc = L["Layer the unit frame will be on."],
+				get = function(info)
+					return GetLayoutDB(false).strata
+				end,
+				set = function(info, value)
+					GetLayoutDB(false).strata = value
+
+					RefreshFrameLayouts()
+				end,
+				values = {
+					BACKGROUND = L["Background"],
+					LOW = L["Low"],
+					MEDIUM = L["Medium"],
+					HIGH = L["High"],
+					DIALOG = L["Dialog"],
+					TOOLTIP = L["Tooltip"],
+				},
+				disabled = function(info)
+					return InCombatLockdown()
+				end,
+				order = 1,
+			},
+			level = {
+				type = 'range',
+				name = L["Frame level"],
+				desc = L["Level of the unit frame within the layer."],
+				min = 1,
+				max = 50,
+				step = 1,
+				bigStep = 1,
+				get = function(info)
+					return GetLayoutDB(false).level
+				end,
+				set = function(info, value)
+					GetLayoutDB(false).level = value
+
+					RefreshFrameLayouts()
+				end,
+				disabled = function(info)
+					return InCombatLockdown()
+				end,
+				order = 2,
+			}
+		}
+	}
 	
 	options.args.remove = {
 		type = 'group',

@@ -57,8 +57,6 @@ function PitBull4:MakeSingletonFrame(unit)
 	
 	if not frame then
 		frame = CreateFrame("Button", frame_name, UIParent, "SecureUnitButtonTemplate")
-		frame:SetFrameStrata(PitBull4.UNITFRAME_STRATA)
-		frame:SetFrameLevel(PitBull4.UNITFRAME_LEVEL)
 		
 		frame.is_singleton = true
 		
@@ -508,6 +506,8 @@ function SingletonUnitFrame:RefixSizeAndPosition()
 	self:SetWidth(layout_db.size_x * classification_db.size_x)
 	self:SetHeight(layout_db.size_y * classification_db.size_y)
 	self:SetScale(layout_db.scale * classification_db.scale)
+	self:SetFrameStrata(layout_db.strata)
+	self:SetFrameLevel(layout_db.level)
 	
 	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
 	self:ClearAllPoints()
