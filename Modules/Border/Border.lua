@@ -36,6 +36,10 @@ function PitBull4_Border:OnEnable()
 	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED")
 	
 	LibSharedMedia_border_None = LibSharedMedia:Fetch("border", "None")
+
+	-- Force an update, OnEnable may not have run before PB4 tried to update the frames
+	-- so they'd end up with no border because LSM would not have been available.
+	self:UpdateAll()
 end
 
 -- this is here to allow it to be overridden, by say an aggro module
