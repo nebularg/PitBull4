@@ -41,7 +41,6 @@
 <Include file="Modules\VisualHeal\load.xml"/>
 <Include file="Modules\VisualHeal4\load.xml"/>
 <Include file="Modules\VoiceIcon\load.xml"/>
-<Script file="ModuleHandling\Embedded.lua"/>
 <!--@end-debug@-->
 
 </Ui>
