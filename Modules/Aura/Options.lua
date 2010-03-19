@@ -106,13 +106,14 @@ PitBull4_Aura:SetDefaults({
 	},
 	highlight = true,
 	highlight_filters = {
-		'!H','!I',
+		'!H','!I','!J'
 	},
 	highlight_filters_color_by_type = {
-		true, false,
+		true, false, false
 	},
 	highlight_filters_custom_color = {
 		{ 1, 1, 1, 1},
+		{ 1, 0, 0, 1},
 		{ 1, 0, 0, 1},
 	},
 	highlight_style = "border",
@@ -1187,7 +1188,7 @@ PitBull4_Aura:SetDefaults({
 		['!G'] = {
 			display_name = L['Highlight: dispellable debuffs'],
 			filter_type = 'Meta',
-			filters = {'!F','#F'},
+			filters = {'!F','@K'},
 			operators = {'&'},
 			built_in = true,
 			display_when = "highlight",
@@ -1195,7 +1196,7 @@ PitBull4_Aura:SetDefaults({
 		['!H'] = {
 			display_name = L['Highlight: dispellable by me debuffs'],
 			filter_type = 'Meta',
-			filters = {'!F','#G'},
+			filters = {'!F','&D'},
 			operators = {'&'},
 			built_in = true,
 			display_when = "highlight",
@@ -1205,6 +1206,14 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Meta',
 			filters = {'@E','@A','*E'},
 			operators = {'&','&'},
+			built_in = true,
+			display_when = "highlight",
+		},
+		['!J'] = {
+			display_name = L['Highlight: Friend debuffs'],
+			filter_type = 'Meta',
+			filters = {'!F','*D'},
+			operators = {'&'},
 			built_in = true,
 			display_when = "highlight",
 		},
