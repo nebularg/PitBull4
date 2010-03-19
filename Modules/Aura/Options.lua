@@ -384,6 +384,14 @@ PitBull4_Aura:SetDefaults({
 			},
 			built_in = true,
 		},
+		['@L'] = {
+			display_name = L['Cast by my vehicle'],
+			filter_type = 'Caster',
+			unit_operator = '==',
+			unit = 'vehicle',
+			disabled = true,
+			built_in = true,
+		},
 		[',3'] = {
 			display_name = L['Druid can dispel'],
 			filter_type = 'Aura Type',
@@ -1139,8 +1147,8 @@ PitBull4_Aura:SetDefaults({
 		['!B'] = {
 			display_name = L['Default buffs'],
 			filter_type = 'Meta',
-			filters = {'@G','#A','@F','&B','@D','#B','@E'},
-			operators = {'&','|','&','|','&','|'},
+			filters = {'@G','#A','@F','&B','@D','#B','@E','@L'},
+			operators = {'&','|','&','|','&','|','|'},
 			built_in = true,
 			display_when = "buff",
 		},
@@ -1155,8 +1163,8 @@ PitBull4_Aura:SetDefaults({
 		['!D'] = {
 			display_name = L['Default debuffs'],
 			filter_type = 'Meta',
-			filters = {'@G','#C','@D','#D','#E'},
-			operators = {'&','|','&','|'},
+			filters = {'@G','#C','@D','#D','#E','@L'},
+			operators = {'&','|','&','|','|'},
 			built_in = true,
 			display_when = "debuff",
 		},
