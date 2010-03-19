@@ -6,7 +6,12 @@ local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
-local wrath_310 = select(4,GetBuildInfo()) >= 30100
+local wrath_310, wrath_333
+do
+	local _,wow_build,_,wow_interface = GetBuildInfo()
+	wrath_310 = wow_interface >= 30100
+	wrath_333 = tonumber(wow_build) >= 11599
+end
 
 local _,player_class = UnitClass('player')
 local _,player_race = UnitRace('player')
@@ -99,7 +104,8 @@ local friend_buffs,friend_debuffs,self_buffs,self_debuffs,pet_buffs,enemy_debuff
 
 -- DEATHKNIGHT
 friend_buffs.DEATHKNIGHT = {
-	[53136] = true, -- Abominable Might (Abomination's Might)
+	[53136] = not wrath_333 or nil, -- Abominable Might (Abomination's Might) pre 3.3.3
+	[53137] = wrath_333 or nil, -- Abomination's Might post 3.3.3
 	[57623] = true, -- Horn of Winter
 	[49016] = true, -- Hysteria
 	[3714]  = true, -- Path of Frost
@@ -559,7 +565,7 @@ friend_buffs.SHAMAN = {
 	[2825]  = player_race == "Troll" or player_race == "Tauren" or player_race == "Orc", -- Bloodlust
 	[379]   = true, -- Earth Shield
 	[51945] = true, -- Earthliving
-	[53414] = true, -- Elemental Oath
+	[51466] = true, -- Elemental Oath
 	[4057]  = true, -- Fire Resistance
 	[8227]  = true, -- Flametongue Totem
 	[4077]  = true, -- Frost Resistance
