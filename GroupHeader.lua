@@ -75,6 +75,12 @@ function PitBull4:MakeGroupHeader(group)
 		header.group_db = group_db
 		
 		self:ConvertIntoGroupHeader(header)
+	elseif header.group_db ~= group_db then
+		-- If the frame already exists and the group_db doesn't already match the one
+		-- we expect it to be then it's a recreated frame from one we've previously
+		-- deleted so we need to set the group_db and force an update.
+		header.group_db = group_db
+		header:RefreshGroup()
 	end
 	
 	header:UpdateShownState()	
