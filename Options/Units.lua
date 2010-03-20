@@ -433,9 +433,16 @@ function PitBull4.Options.get_unit_options()
 			never = L['Never'],
 			ooc = L['Out of combat'],
 		},
-		get = get,
+		get = function (info)
+			if get_db(info[1]).click_through then
+				return "never" 
+			end
+			return get(info)
+		end,
 		set = set,
-		disabled = disabled,
+		disabled = function(info)
+			return InCombatLockdown() or get_db(info[1]).click_through
+		end,
 	}
 	
 	shared_args.size_x = {
