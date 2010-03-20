@@ -55,8 +55,6 @@ local bool_values = {
 local unit_values = {
 	['=='] = L['is'],
 	['~='] = L['is not'],
-	['known'] = L['is known'],
-	['unknown'] = L['is unknown'],
 	['friend'] = L['is friend'],
 	['enemy'] = L['is enemy'],
 	['is'] = L['is the same as unit'],
@@ -1218,6 +1216,13 @@ PitBull4_Aura:RegisterFilterType('True',L["True"],false_filter,function(self,opt
 end)
 
 -- Caster 
+local caster_unit_values = {
+	['known'] = L['is known'],
+	['unknown'] = L['is unknown'],
+}
+for k,v in pairs(unit_values) do
+	caster_unit_values[k] = v
+end
 local function caster_filter(self, entry, frame)
 	local db = PitBull4_Aura:GetFilterDB(self)
 	return compare_unit(entry[12],db.unit_operator,db.unit,frame)
@@ -1242,7 +1247,7 @@ PitBull4_Aura:RegisterFilterType('Caster',L["Caster"],caster_filter,function(sel
 			end
 			PitBull4_Aura:UpdateAll()
 		end,
-		values =  unit_values,
+		values = caster_unit_values,
 		order = 1,
 	}
 	options.unit = {
@@ -1263,7 +1268,7 @@ PitBull4_Aura:RegisterFilterType('Caster',L["Caster"],caster_filter,function(sel
 		hidden = function(info, value)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			local unit_operator = db.unit_operator
-			return unit_operator == 'friend' or unit_operator == 'enemy' or unit_operator == "player_controlled" or unit_operator == "not_player_controlled" or unit_operator == "combat" or unit_operator == "nocombat"
+			return unit_operator == 'friend' or unit_operator == 'enemy' or unit_operator == "player_controlled" or unit_operator == "not_player_controlled" or unit_operator == "combat" or unit_operator == "nocombat" or unit_operator == "known" or unit_operator == "unknown"
 		end,
 		validate = function(info, value)
 			local db = PitBull4_Aura:GetFilterDB(self)
