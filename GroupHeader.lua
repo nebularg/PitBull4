@@ -258,28 +258,19 @@ function GroupHeader:RefixSizeAndPosition()
 	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
 	local direction = group_db.direction
 	local anchor = DIRECTION_TO_GROUP_ANCHOR_POINT[direction]
-	local point = self:GetAttribute("point")
 	local unit_width = layout_db.size_x * group_db.size_x 
 	local unit_height = layout_db.size_y * group_db.size_y 
 	local x_diff = unit_width / 2 * -DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction]
 	local y_diff = unit_height / 2 * -DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction]
 
-	-- Set minimum width and/or height depending on the anchor point
-	-- If we don't do this then SecureTemplates will calculate the
-	-- size dynamically and these dimensions will end up being set to
-	-- 0.1 if there are no units to display.  This causes the positioning
-	-- of the group header to move and results in group frames that jump
-	-- when someone joins the group from where they were in config mode.
-	if point == "RIGHT" or point == "LEFT" or point == "CENTER" then
-		updated = self:ProxySetAttribute("minWidth",unit_width) or updated
-	else
-		updated = self:ProxySetAttribute("minWidth",nil) or updated
-	end
-	if point == "TOP" or point == "BOTTOM" or point == "CENTER" then 
-		updated = self:ProxySetAttribute("minHeight",unit_height) or updated
-	else
-		updated = self:ProxySetAttribute("minHeight",nil) or updated
-	end
+	-- Set minimum width and height.  If we don't do this then
+	-- SecureTemplates will calculate the size dynamically and these
+	-- dimensions will end up being set to 0.1 if there are no units to
+	-- display.  This causes the positioning of the group header to move
+	-- and results in group frames that jump when someone joins the group
+	-- from where they were in config mode.
+	updated = self:ProxySetAttribute("minWidth",unit_width) or updated
+	updated = self:ProxySetAttribute("minHeight",unit_height) or updated
 
 	if not updated then
 		-- Update absolutely must be called at least once to ensure the GroupHeader
