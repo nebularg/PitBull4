@@ -126,7 +126,6 @@ end
 
 function showers:focus()
 	FocusFrame:GetScript("OnLoad")(FocusFrame)
-	FocusFrame_Update(FocusFrame)
 end
 
 function hiders:castbar()
