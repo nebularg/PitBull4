@@ -114,7 +114,7 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 		bar:SetBackgroundAlpha(0)
 	end
 
-	local show_overheal = PitBull4.Options.GetLayoutDB(self).show_overheal
+	local show_overheal = self:GetLayoutDB(frame).show_overheal
 
 	-- If the user has selected to not show overheal we make sure to not set a value that goes beyond 100%.
 	if not show_overheal and ((others_percent+current_percent) > 1) then
