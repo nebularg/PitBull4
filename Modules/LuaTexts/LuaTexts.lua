@@ -610,6 +610,10 @@ function PitBull4_LuaTexts:OnEnable()
 	self:RegisterEvent("UNIT_SPELLCAST_SENT")
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED")
 
+	-- Hooks to trap OnEnter/OnLeave for the frames.
+	self:AddFrameScriptHook("OnEnter")
+	self:AddFrameScriptHook("OnLeave")
+
 	-- Cache the player's guid for later use
 	player_guid = UnitGUID("player")
 	PitBull4.LuaTexts.ScriptEnv.player_guid = player_guid
@@ -621,6 +625,8 @@ function PitBull4_LuaTexts:OnEnable()
 end
 
 function PitBull4_LuaTexts:OnDisable()
+	self:RemoveFrameScriptHook("OnEnter")
+	self:RemoveFrameScriptHook("OnLeave")
 	timerframe:Hide()
 end
 
@@ -1006,6 +1012,24 @@ function PitBull4_LuaTexts:OnEvent(event, unit, ...)
 	end
 end
 
+function PitBull4_LuaTexts:OnEnter(frame)
+	self.mouseover = frame
+	for font_string, cache_frame in pairs(mouseover_check_cache) do
+		if frame == cache_frame then
+			update_text(font_string, "_mouseover")
+		end
+	end
+end
+
+function PitBull4_LuaTexts:OnLeave(frame)
+	self.mouseover = nil
+	for font_string, cache_frame in pairs(mouseover_check_cache) do
+		if frame == cache_frame then
+			update_text(font_string, "_mouseover")
+		end
+	end
+end
+
 -- Timed updates 
 local timer = 0
 timerframe:SetScript("OnUpdate", function(self, elapsed)
@@ -1031,20 +1055,6 @@ timerframe:SetScript("OnUpdate", function(self, elapsed)
 
   -- cast text
 	fix_cast_data()
-
-	-- If there are any font_strings with mouseover checks
-	if next(mouseover_check_cache) then
-		local old_mouseover = PitBull4_LuaTexts.mouseover
-		local mouseover = GetMouseFocus()
-		PitBull4_LuaTexts.mouseover = mouseover
-		if old_mouseover ~= mouseover then 
-			for font_string, frame in pairs(mouseover_check_cache) do
-				if mouseover == frame or old_mouseover == frame then
-					to_update[font_string] = 0 
-				end
-			end
-		end
-	end
 
 	-- Update the timers once a second
 	timer = timer + elapsed
