@@ -18,6 +18,7 @@ local FaderModule = PitBull4:NewModuleType("fader", {
 
 -- a dictionary of module to a dictionary of frame to final opacity level
 local module_to_frame_to_opacity = {}
+local module_to_frame_to_priority = {}
 
 -- a set of frames that should be checked for opacity changes
 local changing_frames = {}
@@ -35,9 +36,16 @@ function PitBull4:GetFinalFrameOpacity(frame)
 	local unit = frame.unit
 	
 	local low = layout_db.opacity_max
+	local max_priority = 0
 	for module, frame_to_opacity in pairs(module_to_frame_to_opacity) do
+		local frame_to_priority = module_to_frame_to_priority[module]
+		local priority = frame_to_priority[frame]
 		local opacity = frame_to_opacity[frame]
-		if opacity and opacity < low then
+		if priority and priority > max_priority then
+			low = layout_db.opacity_max
+			max_priority = priority
+		end
+		if opacity and opacity < low and priority and priority >= max_priority then 
 			low = opacity
 		end
 	end
@@ -115,12 +123,24 @@ function FaderModule:ClearFrame(frame)
 	end
 	
 	local frame_to_opacity = module_to_frame_to_opacity[self]
-	if not frame_to_opacity then
+	local frame_to_priority = module_to_frame_to_priority[self]
+	if not frame_to_opacity and not frame_to_priority then
 		return false
 	end
 	
+	local update = false
+
 	if frame_to_opacity[frame] then
 		frame_to_opacity[frame] = nil
+		update = true
+	end
+
+	if frame_to_priority[frame] then
+		frame_to_priority[frame] = nil
+		update = true
+	end
+
+	if update then
 		changing_frames[frame] = true
 		timerFrame:Show()
 	end
@@ -128,11 +148,13 @@ function FaderModule:ClearFrame(frame)
 	return false
 end
 
---- Call the :GetValue function on the status bar module regarding the given frame.
+--- Call the :GetOpacity function on the fader module regarding the given frame.
+-- The lowest opacity from the highest priority module will be used on the frame.
 -- @param the module
--- @param frame the frame to get the value of
--- @usage local value, extra = call_opacity_function(MyModule, someFrame)
--- @return nil or a number within [0, 1)
+-- @param frame the frame to get the opacity of
+-- @usage local opacity, priority = call_opacity_function(MyModule, someFrame)
+-- @return opacity nil or a number within [0, 1]
+-- @return priority nil (treated as zero) or a number greater than equal to zero
 local function call_opacity_function(self, frame)
 	if not self.GetOpacity then
 		return nil, nil
@@ -143,15 +165,18 @@ local function call_opacity_function(self, frame)
 	local opacity_min = layout_db.opacity_min
 	local opacity_max = layout_db.opacity_max
 	
+	local value, priority
 	-- Extra frame.unit test here is a workaround for the same root issue
 	-- as we have in BarModules.  See ticket 475.
-	local value = frame.guid and frame.unit and self:GetOpacity(frame)
+	if frame.guid and frame.unit then
+		value, priority = self:GetOpacity(frame)
+	end
 	if not value or value >= opacity_max or value ~= value then
-		return nil
+		return opacity_max, priority
 	elseif value < opacity_min then
-		return opacity_min
+		return opacity_min, priority
 	else
-		return value
+		return value, priority
 	end
 end
 
@@ -169,14 +194,23 @@ function FaderModule:UpdateFrame(frame)
 		frame_to_opacity = {}
 		module_to_frame_to_opacity[self] = frame_to_opacity
 	end
+	local frame_to_priority = module_to_frame_to_priority[self]
+	if not frame_to_priority then
+		frame_to_priority = {}
+		module_to_frame_to_priority[self] = frame_to_priority
+	end
 	
-	local opacity = call_opacity_function(self, frame)
+	local opacity, priority = call_opacity_function(self, frame)
 	if not opacity then
 		return self:ClearFrame(frame)
 	end
+	if not priority then
+		priority = 0
+	end
 	
-	if frame_to_opacity[frame] ~= opacity then
+	if frame_to_opacity[frame] ~= opacity or frame_to_priority[frame] ~= priority then
 		frame_to_opacity[frame] = opacity
+		frame_to_priority[frame] = priority
 		changing_frames[frame] = true
 		timerFrame:Show()
 	end
