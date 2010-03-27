@@ -50,7 +50,7 @@ local dead_times = PitBull4_LuaTexts.dead_times
 -- A number of these functions are borrowed or adapted from the code implmenting
 -- similar tags in DogTag.  Permission to do so granted by ckknight.
 
-local UnitToLocale = {player = L["Player"], target = L["Target"], pet = L["%s's pet"]:format(L["Player"]), focus = L["Focus-target"], mouseover = L["Mouse-over"]}
+local UnitToLocale = {player = L["Player"], target = L["Target"], pet = L["%s's pet"]:format(L["Player"]), focus = L["Focus"], mouseover = L["Mouse-over"]}
 setmetatable(UnitToLocale, {__index=function(self, unit)
 	if unit:find("pet$") then
 		local nonPet = unit:sub(1, -4)
