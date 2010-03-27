@@ -36,16 +36,16 @@ function PitBull4:GetFinalFrameOpacity(frame)
 	local unit = frame.unit
 	
 	local low = layout_db.opacity_max
-	local max_priority = 0
+	local max_priority
 	for module, frame_to_opacity in pairs(module_to_frame_to_opacity) do
 		local frame_to_priority = module_to_frame_to_priority[module]
 		local priority = frame_to_priority[frame]
 		local opacity = frame_to_opacity[frame]
-		if priority and priority > max_priority then
+		if priority and (not max_priority or priority > max_priority) then
 			low = layout_db.opacity_max
 			max_priority = priority
 		end
-		if opacity and opacity < low and priority and priority >= max_priority then 
+		if opacity and opacity < low and (not priority or not max_priority or priority >= max_priority) then 
 			low = opacity
 		end
 	end
@@ -154,7 +154,7 @@ end
 -- @param frame the frame to get the opacity of
 -- @usage local opacity, priority = call_opacity_function(MyModule, someFrame)
 -- @return opacity nil or a number within [0, 1]
--- @return priority nil (treated as zero) or a number greater than equal to zero
+-- @return priority nil (treated as zero) or a number
 local function call_opacity_function(self, frame)
 	if not self.GetOpacity then
 		return nil, nil
