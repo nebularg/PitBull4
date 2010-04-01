@@ -40,28 +40,31 @@ function PitBull4_Highlight:OnDisable()
 end
 
 function PitBull4_Highlight:UpdateFrame(frame)
-	if frame.Highlight then
-		frame.Highlight.texture:SetVertexColor(unpack(self:GetLayoutDB(frame).color))
+	local highlight = frame.Highlight
+	
+	if not self:ShouldShow(frame) then
+		if highlight then
+			highlight:Hide()
+		end
 		return false
 	end
+
+	if not highlight then
+		highlight = PitBull4.Controls.MakeFrame(frame)
+		frame.Highlight = highlight
+		highlight:SetAllPoints(frame)
+		highlight:SetFrameLevel(highlight:GetFrameLevel() + 5)
 	
-	local highlight = PitBull4.Controls.MakeFrame(frame)
-	frame.Highlight = highlight
-	highlight:SetAllPoints(frame)
-	highlight:SetFrameLevel(highlight:GetFrameLevel() + 5)
-	highlight:Hide()
-	
-	local texture = PitBull4.Controls.MakeTexture(highlight, "OVERLAY")
-	highlight.texture = texture
-	texture:SetTexture([=[Interface\QuestFrame\UI-QuestTitleHighlight]=])
-	texture:SetBlendMode("ADD")
-	texture:SetAlpha(0.5)
-	texture:SetAllPoints(highlight)
-	texture:SetVertexColor(unpack(self:GetLayoutDB(frame).color))
-	
-	if self:ShouldShow(frame) then
-		highlight:Show()
+		local texture = PitBull4.Controls.MakeTexture(highlight, "OVERLAY")
+		highlight.texture = texture
+		texture:SetTexture([=[Interface\QuestFrame\UI-QuestTitleHighlight]=])
+		texture:SetBlendMode("ADD")
+		texture:SetAlpha(0.5)
+		texture:SetAllPoints(highlight)
+		texture:SetVertexColor(unpack(self:GetLayoutDB(frame).color))
 	end
+
+	highlight:Show()
 	
 	return false
 end
@@ -79,24 +82,12 @@ end
 
 function PitBull4_Highlight:OnEnter(frame)
 	mouse_focus = frame
-	if not frame.Highlight then
-		return
-	end
-	if not self:ShouldShow(frame) then
-		frame.Highlight:Hide()
-		return
-	end
-	frame.Highlight:Show()
+	self:Update(frame)
 end
 
 function PitBull4_Highlight:OnLeave(frame)
 	mouse_focus = nil
-	if not frame.Highlight then
-		return
-	end
-	if not self:ShouldShow(frame) then
-		frame.Highlight:Hide()
-	end
+	self:Update(frame)
 end
 
 function PitBull4_Highlight:ShouldShow(frame)
@@ -118,18 +109,9 @@ function PitBull4_Highlight:ShouldShow(frame)
 end
 
 function PitBull4_Highlight:PLAYER_TARGET_CHANGED()
-	mouse_focus = GetMouseFocus()
 	target_guid = UnitGUID("target")
 	
-	for frame in PitBull4:IterateFrames() do
-		if frame.Highlight then
-		 	if self:ShouldShow(frame) then
-				frame.Highlight:Show()
-			else
-				frame.Highlight:Hide()
-			end
-		end
-	end
+	self:UpdateAll()
 end
 
 PitBull4_Highlight:SetLayoutOptionsFunction(function(self)
@@ -144,8 +126,17 @@ PitBull4_Highlight:SetLayoutOptionsFunction(function(self)
 		set = function(info, r, g, b, a)
 			local color = PitBull4.Options.GetLayoutDB(self).color
 			color[1], color[2], color[3], color[4] = r, g, b, a
-			
-			PitBull4.Options.UpdateFrames()
+
+			-- Individually update the color for the layout that's changing color
+			-- since we only bother to set the color on creation of the highlight
+			-- frame.
+			local layout = PitBull4.Options.GetCurrentLayout()
+			for frame in PitBull4:IterateFramesForLayout(layout, true) do
+				local texture = frame.Highlight and frame.Highlight.texture
+				if texture then
+					texture:SetVertexColor(r, g, b, a)
+				end
+			end
 		end,
 	}, 'show_target', {
 		type = 'toggle',
@@ -168,6 +159,8 @@ PitBull4_Highlight:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).while_hover = value
+
+			PitBull4.Options.UpdateFrames()
 		end,
 	}
 end)
