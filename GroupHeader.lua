@@ -50,7 +50,8 @@ function PitBull4:MakeGroupHeader(group)
 	end
 	
 	local group_db = PitBull4.db.profile.groups[group]
-	local use_pet_header = group_db.use_pet_header
+	local pet_based = not not group_db.unit_group:match("pet") -- this feels dirty
+	local use_pet_header = pet_based and group_db.use_pet_header
 	local header_name
 	
 	if use_pet_header then
