@@ -49,6 +49,11 @@ local function clamp(value, min, max)
 	if value > max then
 		return max
 	end
+	-- This looks like it should always be false but it's true if
+	-- value is NaN as in value = 0/0
+	if value ~= value then
+		return min
+	end
 	return value
 end
 
@@ -112,17 +117,11 @@ function BetterStatusBar:SetValue(value)
 		expect(value, 'typeof', 'number')
 	end
 	
-	if value < 0 then
-		value = 0
-	elseif value > 1 then
-		value = 1
-	end
-	
+	value = clamp(value, EPSILON, 1)
 	self.value = value
 	if self.deficit then
 		value = 1 - value
 	end
-	value = clamp(value, EPSILON, 1)
 	local extraValue = clamp(self.extraValue, EPSILON, 1 - value)
 	SetValue_orientation[self.orientation](self, value, extraValue)
 end
@@ -143,10 +142,7 @@ function BetterStatusBar:SetExtraValue(extraValue)
 		expect(extraValue, 'typeof', 'number')
 	end
 	
-	if extraValue < 0 then
-		extraValue = 0
-	end
-	
+	extraValue = clamp(extraValue, 0, 1)
 	self.extraValue = extraValue
 	self:SetValue(self.value)
 end
