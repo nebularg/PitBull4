@@ -122,7 +122,8 @@ function BetterStatusBar:SetValue(value)
 	if self.deficit then
 		value = 1 - value
 	end
-	local extraValue = clamp(self.extraValue, EPSILON, 1 - value)
+	local maxExtraValue = clamp(1 - value, EPSILON, 1)
+	local extraValue = clamp(self.extraValue, EPSILON, maxExtraValue)
 	SetValue_orientation[self.orientation](self, value, extraValue)
 end
 --- Return the current value
@@ -142,7 +143,7 @@ function BetterStatusBar:SetExtraValue(extraValue)
 		expect(extraValue, 'typeof', 'number')
 	end
 	
-	extraValue = clamp(extraValue, 0, 1)
+	extraValue = clamp(extraValue, EPSILON, 1)
 	self.extraValue = extraValue
 	self:SetValue(self.value)
 end
