@@ -157,10 +157,6 @@ function PitBull4_CastBar:GetColor(frame, value)
 			alpha = 1
 		end
 		if alpha <= 0 then
-			cast_data[guid] = del(data)
-			if not next(cast_data) then
-				timerFrame:Hide()
-			end
 			return 0, 0, 0, 0
 		else
 			-- Decide which color to use
@@ -179,12 +175,6 @@ function PitBull4_CastBar:GetColor(frame, value)
 			end
 			return r, g, b, alpha
 		end
-	else
-		cast_data[guid] = del(data)
-		if not next(cast_data) then
-			timerFrame:Hide()
-		end
-	end
 	return 0, 0, 0, 0
 end
 
