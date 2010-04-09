@@ -8,7 +8,7 @@ local L = PitBull4.L
 
 local EXAMPLE_VALUE = 0.4
 local EXAMPLE_ICON = [[Interface\Icons\Spell_Shadow_Teleport]]
-local CREEPY_HEAD = [[Interface\Icons\Temp]]
+local TEMP_ICON = [[Interface\Icons\Temp]]
 
 local PitBull4_CastBar = PitBull4:NewModule("CastBar", "AceEvent-3.0")
 
@@ -33,15 +33,15 @@ PitBull4_CastBar:SetDefaults({
 local cast_data = {}
 PitBull4_CastBar.cast_data = cast_data
 
-local timerFrame = CreateFrame("Frame")
-timerFrame:Hide()
-timerFrame:SetScript("OnUpdate", function() PitBull4_CastBar:FixCastDataAndUpdateAll() end)
+local timer_frame = CreateFrame("Frame")
+timer_frame:Hide()
+timer_frame:SetScript("OnUpdate", function() PitBull4_CastBar:FixCastDataAndUpdateAll() end)
 
 local player_guid
 function PitBull4_CastBar:OnEnable()
 	player_guid = UnitGUID("player")
 	
-	timerFrame:Show()
+	timer_frame:Show()
 	
 	self:RegisterEvent("UNIT_SPELLCAST_START")
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
@@ -57,7 +57,7 @@ function PitBull4_CastBar:OnEnable()
 end
 
 function PitBull4_CastBar:OnDisable()
-	timerFrame:Hide()
+	timer_frame:Hide()
 end
 
 function PitBull4_CastBar:FixCastDataAndUpdateAll()
@@ -102,12 +102,12 @@ function PitBull4_CastBar:GetValue(frame)
 	local icon = db.show_icon and data.icon or nil
 	
 	if data.casting then
-		local startTime = data.startTime
-		return (GetTime() - startTime) / (data.endTime - startTime), nil, icon
+		local start_time = data.start_time
+		return (GetTime() - start_time) / (data.end_time - start_time), nil, icon
 	elseif data.channeling then	
-		local endTime = data.endTime
-		return (endTime - GetTime()) / (endTime - data.startTime), nil, icon
-	elseif data.fadeOut then
+		local end_time = data.end_time
+		return (end_time - GetTime()) / (end_time - data.start_time), nil, icon
+	elseif data.fade_out then
 		return frame.CastBar and frame.CastBar:GetValue() or 0, nil, icon
 	end
 	
@@ -145,11 +145,11 @@ function PitBull4_CastBar:GetColor(frame, value)
 			local r, g, b = unpack(self.db.profile.global.channel_uninterruptible_color)
 			return r, g, b, 1
 		end
-	elseif data.fadeOut then
+	elseif data.fade_out then
 		local alpha, r, g, b
-		local stopTime = data.stopTime
-		if stopTime then
-			alpha = stopTime - GetTime() + 1
+		local stop_time = data.stop_time
+		if stop_time then
+			alpha = stop_time - GetTime() + 1
 		else
 			alpha = 0
 		end
@@ -160,7 +160,7 @@ function PitBull4_CastBar:GetColor(frame, value)
 			return 0, 0, 0, 0
 		else
 			-- Decide which color to use
-			if not data.wasChanneling then -- Last cast was a normal one...
+			if not data.was_channeling then -- Last cast was a normal one...
 				if data.failed then
 					r, g, b = unpack(self.db.profile.global.casting_failed_color)
 				else
@@ -187,11 +187,11 @@ function PitBull4_CastBar:GetBackgroundColor(frame, value)
 		if not self:GetLayoutDB(frame).idle_background then
 			return nil, nil, nil, 0
 		end
-	elseif data.fadeOut then
+	elseif data.fade_out then
 		local alpha
-		local stopTime = data.stopTime
-		if stopTime then
-			alpha = stopTime - GetTime() + 1
+		local stop_time = data.stop_time
+		if stop_time then
+			alpha = stop_time - GetTime() + 1
 		else
 			alpha = 0
 		end
@@ -226,38 +226,38 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_spell, event_rank, event
 		cast_data[guid] = data
 	end
 	
-	local spell, rank, displayName, icon, startTime, endTime, isTradeSkill, castID, uninterruptible = UnitCastingInfo(unit)
+	local spell, rank, display_name, icon, start_time, end_time, is_trade_skill, cast_id, uninterruptible = UnitCastingInfo(unit)
 	local channeling = false
 	if not spell then
-		spell, rank, displayName, icon, startTime, endTime, isTradeSkill, uninterruptible = UnitChannelInfo(unit)
+		spell, rank, display_name, icon, start_time, end_time, is_trade_skill, uninterruptible = UnitChannelInfo(unit)
 		channeling = true
 	end
 	if spell then
-		if icon == CREEPY_HEAD then
+		if icon == TEMP_ICON then
 			icon = nil
 		end
 		data.icon = icon
-		data.startTime = startTime * 0.001
-		data.endTime = endTime * 0.001
+		data.start_time = start_time * 0.001
+		data.end_time = end_time * 0.001
 		data.casting = not channeling
 		data.channeling = channeling
 		data.interruptible = not uninterruptible
-		data.fadeOut = false
-		data.wasChanneling = channeling -- persistent state even after interrupted
-		data.stopTime = nil
+		data.fade_out = false
+		data.was_channeling = channeling -- persistent state even after interrupted
+		data.stop_time = nil
 		if event ~= "UNIT_SPELLCAST_INTERRUPTED" then
 			-- We can't update the cache of teh cast_id on UNIT_SPELLCAST_INTERRUPTED because
 			-- for whatever reason it ends up giving us 0 inside this event.
-			data.cast_id = castID
+			data.cast_id = cast_id
 		end
-		timerFrame:Show()
+		timer_frame:Show()
 		return
 	end
 	
 	if not data.icon then
 		cast_data[guid] = del(data)
 		if not next(cast_data) then
-			timerFrame:Hide()
+			timer_frame:Hide()
 		end
 		return
 	end
@@ -276,16 +276,16 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_spell, event_rank, event
 
 	data.casting = false
 	data.channeling = false
-	data.fadeOut = true
-	if not data.stopTime then
-		data.stopTime = GetTime()
+	data.fade_out = true
+	if not data.stop_time then
+		data.stop_time = GetTime()
 	end
 end
 
 local tmp = {}
 function PitBull4_CastBar:FixCastData()
 	local frame
-	local currentTime = GetTime()
+	local current_time = GetTime()
 	for guid, data in pairs(cast_data) do
 		tmp[guid] = data
 	end
@@ -295,22 +295,22 @@ function PitBull4_CastBar:FixCastData()
 			if self:GetLayoutDB(frame).enabled then
 				found = true
 				if data.casting then
-					if currentTime > data.endTime and player_guid ~= guid then
+					if current_time > data.end_time and player_guid ~= guid then
 						data.casting = false
-						data.fadeOut = true
-						data.stopTime = currentTime
+						data.fade_out = true
+						data.stop_time = current_time
 					end
 				elseif data.channeling then
-					if currentTime > data.endTime then
+					if current_time > data.end_time then
 						data.channeling = false
-						data.fadeOut = true
-						data.stopTime = currentTime
+						data.fade_out = true
+						data.stop_time = current_time
 					end
-				elseif data.fadeOut then
+				elseif data.fade_out then
 					local alpha = 0
-					local stopTime = data.stopTime
-					if stopTime then
-						alpha = stopTime - currentTime + 1
+					local stop_time = data.stop_time
+					if stop_time then
+						alpha = stop_time - current_time + 1
 					end
 					
 					if alpha <= 0 then
@@ -329,7 +329,7 @@ function PitBull4_CastBar:FixCastData()
 		end
 	end
 	if not next(cast_data) then
-		timerFrame:Hide()
+		timer_frame:Hide()
 	end
 	wipe(tmp)
 end
