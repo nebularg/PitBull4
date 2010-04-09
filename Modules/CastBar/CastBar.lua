@@ -62,7 +62,7 @@ end
 
 function PitBull4_CastBar:FixCastDataAndUpdateAll()
 	self:FixCastData()
-	self:UpdateAll(frame)
+	self:UpdateAll()
 end
 
 local new, del
