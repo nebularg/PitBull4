@@ -175,6 +175,7 @@ function PitBull4_CastBar:GetColor(frame, value)
 			end
 			return r, g, b, alpha
 		end
+	end
 	return 0, 0, 0, 0
 end
 
