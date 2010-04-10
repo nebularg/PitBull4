@@ -6,36 +6,8 @@ local expect = PitBull4.expect
 local deep_copy = PitBull4.Utils.deep_copy
 
 local MAX_PARTY_MEMBERS_WITH_PLAYER = MAX_PARTY_MEMBERS + 1
-local NUM_CLASSES = 0
-for _ in pairs(RAID_CLASS_COLORS) do
-	NUM_CLASSES = NUM_CLASSES + 1
-end
+local NUM_CLASSES = #CLASS_SORT_ORDER
 local MINIMUM_EXAMPLE_GROUP = 2
-
-local CLASS_ORDER = { -- TODO: make this configurable
-	"WARRIOR",
-	"HUNTER",
-	"ROGUE",
-	"PALADIN",
-	"SHAMAN",
-	"PRIEST",
-	"MAGE",
-	"WARLOCK",
-	"DRUID",
-	"DEATHKNIGHT"
-}
-for class in pairs(RAID_CLASS_COLORS) do
-	local found = false
-	for i, v in ipairs(CLASS_ORDER) do
-		if v == class then
-			found = true
-			break
-		end
-	end
-	if not found then
-		CLASS_ORDER[#CLASS_ORDER+1] = class
-	end
-end
 
 -- lock to prevent the SecureGroupHeader_Update for doing unnecessary
 -- work when running ForceShow
@@ -237,7 +209,9 @@ do
 	end
 	GROUPING_ORDER.GROUP = table.concat(t, ',')
 end
-GROUPING_ORDER.CLASS = table.concat(CLASS_ORDER, ",")
+GROUPING_ORDER.CLASS = function()
+	return table.concat(PitBull4.ClassOrder, ",")
+end
 
 local function position_label(self, label)
 	label:ClearAllPoints()
@@ -447,7 +421,11 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	self:SetAttribute("template", "SecureUnitButtonTemplate")
 	self:SetAttribute("templateType", "Button")
 	self:SetAttribute("groupBy", group_by)
-	self:SetAttribute("groupingOrder", GROUPING_ORDER[group_db.group_by])
+	local order = GROUPING_ORDER[group_db.group_by]
+	if type(order) == "function" then
+		order = order()
+	end
+	self:SetAttribute("groupingOrder", order)
 	self:SetAttribute("unitsPerColumn", group_db.units_per_column)
 	self:SetAttribute("maxColumns", self:GetMaxUnits())
 	self:SetAttribute("startingIndex", 1)

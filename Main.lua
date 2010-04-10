@@ -182,7 +182,8 @@ local DATABASE_DEFAULTS = {
 				content = { 1, 1, 0 },
 				unhappy = { 1, 0, 0 },
 			},
-		}
+		},
+		class_order = {},
 	}
 }
 for class, color in pairs(RAID_CLASS_COLORS) do
@@ -1163,6 +1164,19 @@ function PitBull4:OnProfileChanged()
 	self.PowerColors = PitBull4.db.profile.colors.power
 	self.ReactionColors = PitBull4.db.profile.colors.reaction
 	self.HappinessColors = PitBull4.db.profile.colors.happiness
+	self.ClassOrder = PitBull4.db.profile.class_order
+	for i, v in ipairs(CLASS_SORT_ORDER) do
+		local found = false
+		for j, u in ipairs(self.ClassOrder) do
+			if v == u then
+				found = true
+				break
+			end
+		end
+		if not found then
+			self.ClassOrder[#self.ClassOrder + 1] = v
+		end
+	end
 	
 	-- Notify modules that the profile has changed.
 	for _, module in PitBull4:IterateEnabledModules() do

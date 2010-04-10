@@ -775,6 +775,81 @@ function PitBull4.Options.get_unit_options()
 			return not get_group_db().unit_group:match("pet")
 		end,
 	}
+	
+	local function colorify(text, class)
+		local color = PitBull4.ClassColors[class]
+		if not color then
+			return text
+		end
+		local r, g, b = unpack(color)
+		return ("|cff%02x%02x%02x%s|r"):format(r * 255, g * 255, b * 255, text)
+	end
+	
+	local sort_values = {}
+	local function refresh_sort_values()
+		wipe(sort_values)
+		for i, class in ipairs(PitBull4.ClassOrder) do
+			sort_values[i] = ("%d. %s"):format(i, colorify(LOCALIZED_CLASS_NAMES_MALE[class], class))
+			
+			group_layout_args.class_order.args[class].order = i
+		end
+	end
+	
+	local last_db = nil
+	group_layout_args.class_order = {
+		name = L["Class order"],
+		type = 'group',
+		inline = true,
+		hidden = function(info)
+			local db = get_group_db()
+			if db ~= last_db then
+				refresh_sort_values()
+				last_db = db
+			end
+			if db.unit_group:sub(1, 5) ~= "party" then
+				local group_by = db.group_by
+				return group_by ~= "CLASS"
+			end
+			return true
+		end,
+		args = {}
+	}
+	
+	for i, class in ipairs(CLASS_SORT_ORDER) do
+		group_layout_args.class_order.args[class] = {
+			name = colorify(LOCALIZED_CLASS_NAMES_MALE[class], class),
+			order = i,
+			type = 'select',
+			style = 'dropdown',
+			values = sort_values,
+			get = function(info)
+				for i, v in ipairs(PitBull4.ClassOrder) do
+					if v == class then
+						return i
+					end
+				end
+			end,
+			set = function(info, value)
+				local current
+				for i, v in ipairs(PitBull4.ClassOrder) do
+					if v == class then
+						current = i
+						break
+					end
+				end
+				if not current then
+					table.insert(PitBull4.ClassOrder, class)
+					return
+				end
+				
+				table.remove(PitBull4.ClassOrder, current)
+				table.insert(PitBull4.ClassOrder, value, class)
+				refresh_sort_values()
+				refresh_group('groups')
+				update('groups')
+			end
+		}
+	end
 
 	group_filtering_args.shown_when = {
 		name = L["Show when in"],
