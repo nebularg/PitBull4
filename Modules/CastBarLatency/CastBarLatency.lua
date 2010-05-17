@@ -19,7 +19,6 @@ local lag_time   = 0
 local max_time   = 0
 local is_channel = nil
 local queue_time = DEFAULT_QUEUE_TIME
-local gcd_time   = 0
 
 local show_queue = true
 local show_gcd   = true
@@ -77,6 +76,7 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, spell, spellr
 	end
 	
 	-- Try to determine GCD
+	local gcd_time = 0
 	if show_gcd and spell then
 		local _, duration = GetSpellCooldown(spell)
 		if duration and duration > 0 and duration <= MAX_GCD_TIME then
@@ -114,6 +114,7 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_CHANNEL_START(event, unit, spell
 	end
 	
 	-- Try to determine GCD
+	local gcd_time = 0
 	if show_gcd and spell then
 		local _, duration = GetSpellCooldown(spell)
 		if duration and duration > 0 and duration <= MAX_GCD_TIME then
@@ -158,14 +159,6 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_STOP(event, unit, spell)
 		return
 	end
 
-	-- Try to determine GCD
-	if show_gcd and spell then
-		local _, duration = GetSpellCooldown(spell)
-		if duration and duration > 0 and duration <= MAX_GCD_TIME then
-			gcd_time = duration
-		end
-	end
-	
 	-- Ignore SPELLCAST_SUCCEEDED when we're channeling
 	if event == 'UNIT_SPELLCAST_SUCCEEDED' and is_channel then
 		return
