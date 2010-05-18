@@ -15,6 +15,7 @@ local PitBull4_HealthBar = PitBull4:NewModule("HealthBar", "AceEvent-3.0", "AceT
 PitBull4_HealthBar:SetModuleType("bar")
 PitBull4_HealthBar:SetName(L["Health bar"])
 PitBull4_HealthBar:SetDescription(L["Show a bar indicating the unit's health."])
+PitBull4_HealthBar.allow_animations = true
 PitBull4_HealthBar:SetDefaults({
 	position = 1,
 	color_by_class = true,

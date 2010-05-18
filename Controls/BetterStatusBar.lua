@@ -8,6 +8,9 @@ local BetterStatusBar = {
 	orientation = "HORIZONTAL",
 	reverse = false,
 	deficit = false,
+	animated = false,
+	anim_duration = 0.5,
+	fade = false,
 	bgR = false,
 	bgG = false,
 	bgB = false,
@@ -67,7 +70,7 @@ local function set_vertical_coord(bar, reverse, alpha, bravo)
 	bar:SetTexCoord(bravo, 0, alpha, 0, bravo, 1, alpha, 1)
 end
 -- set the proper heights for the vertical orientation based on the values provided
-function SetValue_orientation:VERTICAL(value, extraValue)
+function SetValue_orientation:VERTICAL(value, extraValue, run_animation)
 	local height = self:GetHeight()
 	if height == 0 then
 		self:SetScript("OnUpdate", OnUpdate)
@@ -80,8 +83,42 @@ function SetValue_orientation:VERTICAL(value, extraValue)
 	self.extra:SetHeight(height * extraValue)
 	
 	set_vertical_coord(self.fg, self.reverse, 0, value)
-	set_vertical_coord(self.extra, self.reverse, value, value+extraValue)
-	set_vertical_coord(self.bg, self.reverse, value+extraValue, 1)
+
+	if run_animation then
+		local anim = self.anim
+		if anim.value_delta > 0 then
+			if self.animated then
+				anim:SetHeight(EPSILON)
+				local end_value = anim.start_value + EPSILON
+				set_vertical_coord(anim, self.reverse, anim.start_value, end_value)
+				set_vertical_coord(self.extra, self.reverse, end_value, end_value+extraValue)
+				set_vertical_coord(self.bg, self.reverse, end_value+extraValue, 1)
+			else
+				anim:SetHeight(height * anim.value_delta)
+				set_vertical_coord(anim, self.reverse, anim.start_value, anim.dest_value)
+				set_vertical_coord(self.extra, self.reverse, anim.dest_value, anim.dest_value+extraValue)
+				set_vertical_coord(self.bg, self.reverse, anim.dest_value+extraValue, 1)
+			end
+		else
+			anim:SetHeight(height * -anim.value_delta)
+			set_vertical_coord(anim, self.reverse, anim.dest_value, anim.start_value)
+			set_vertical_coord(self.extra, self.reverse, anim.start_value, anim.start_value+extraValue)
+			set_vertical_coord(self.bg, self.reverse, anim.start_value+extraValue, 1)
+		end
+		anim.ag:Play()
+	else
+		-- Not going to run the animation
+		local anim_value = 0
+		if self.anim then
+			-- But the animation texture still exists, so... set the height to a 
+			-- very small value.
+			self.anim:SetHeight(EPSILON)
+			anim_value = EPSILON
+			set_vertical_coord(self.anim, self.reverse, value, value+anim_value)
+		end
+		set_vertical_coord(self.extra, self.reverse, value+anim_value, value+anim_value+extraValue)
+		set_vertical_coord(self.bg, self.reverse, value+anim_value+extraValue, 1)
+	end
 end
 -- helper function for setting texcoords on the horizontal orientation
 local function set_horizontal_coord(bar, reverse, alpha, bravo)
@@ -92,7 +129,7 @@ local function set_horizontal_coord(bar, reverse, alpha, bravo)
 	bar:SetTexCoord(alpha, 0, alpha, 1, bravo, 0, bravo, 1)
 end
 -- set the proper heights for the horizontal orientation based on the values provided
-function SetValue_orientation:HORIZONTAL(value, extraValue)
+function SetValue_orientation:HORIZONTAL(value, extraValue, run_animation)
 	local width = self:GetWidth()
 	if width == 0 then
 		self:SetScript("OnUpdate", OnUpdate)
@@ -105,8 +142,42 @@ function SetValue_orientation:HORIZONTAL(value, extraValue)
 	self.extra:SetWidth(width * extraValue)
 	
 	set_horizontal_coord(self.fg, self.reverse, 0, value)
-	set_horizontal_coord(self.extra, self.reverse, value, value+extraValue)
-	set_horizontal_coord(self.bg, self.reverse, value+extraValue, 1)
+
+	if run_animation then
+		local anim = self.anim
+		if anim.value_delta > 0 then
+			if self.animated then
+				anim:SetWidth(EPSILON)
+				local end_value = anim.start_value + EPSILON
+				set_horizontal_coord(anim, self.reverse, anim.start_value, end_value)
+				set_horizontal_coord(self.extra, self.reverse, end_value, end_value+extraValue)
+				set_horizontal_coord(self.bg, self.reverse, end_value+extraValue, 1)
+			else
+				anim:SetWidth(width * anim.value_delta)
+				set_horizontal_coord(anim, self.reverse, anim.start_value, anim.dest_value)
+				set_horizontal_coord(self.extra, self.reverse, anim.dest_value, anim.dest_value+extraValue)
+				set_horizontal_coord(self.bg, self.reverse, anim.dest_value+extraValue, 1)
+			end
+		else
+			anim:SetWidth(width * -anim.value_delta)
+			set_horizontal_coord(anim, self.reverse, anim.dest_value, anim.start_value)
+			set_horizontal_coord(self.extra, self.reverse, anim.start_value, anim.start_value+extraValue)
+			set_horizontal_coord(self.bg, self.reverse, anim.start_value+extraValue, 1)
+		end
+		anim.ag:Play()
+	else
+		-- Not going to run the animation
+		local anim_value = 0
+		if self.anim then
+			-- But the animation texture still exists, so... set the width to a 
+			-- very small value.
+			self.anim:SetWidth(EPSILON)
+			anim_value = EPSILON
+			set_horizontal_coord(self.anim, self.reverse, value, value+anim_value)
+		end
+		set_horizontal_coord(self.extra, self.reverse, value+anim_value, value+anim_value+extraValue)
+		set_horizontal_coord(self.bg, self.reverse, value+anim_value+extraValue, 1)
+	end
 end
 
 --- Set the current value
@@ -116,6 +187,7 @@ function BetterStatusBar:SetValue(value)
 	if DEBUG then
 		expect(value, 'typeof', 'number')
 	end
+	local run_animation = false
 	
 	value = clamp(value, 0, 1)
 	self.value = value
@@ -123,9 +195,71 @@ function BetterStatusBar:SetValue(value)
 		value = 1 - value
 	end
 	value = clamp(value, EPSILON, 1)
+
+	if self.animated or self.fade then
+		local anim = self.anim
+		local ag = anim.ag
+		local current_value = anim.current_value
+		if current_value or ag:IsPlaying() then
+			if not current_value then
+				-- We were playing but current_value wasn't set.  This happens when
+				-- only the fader is active.  So we must calculate the current_value
+				-- because there is no OnUpdate for the fader.
+				local progress = ag:GetProgress()
+				local value_delta = anim.value_delta
+				if value_delta > 0 then
+					current_value = anim.start_value + value_delta * progress
+				else
+					current_value = anim.dest_value - value_delta * (1 - progress)
+				end
+			end
+			ag:Stop()
+		end
+		local start_value = current_value or anim.dest_value
+
+		local value_delta = value - start_value
+		anim.start_value = start_value
+		anim.dest_value = value
+		anim.value_delta = value_delta
+		if self.animated then
+			anim.current_value = start_value
+		end
+
+		if value_delta > 0 then
+			value = start_value
+			if self.fade then
+				local normal_alpha = self:GetNormalAlpha()
+				local bg_alpha = self:GetBackgroundAlpha()
+				local alpha_delta = 0.7 * (normal_alpha - bg_alpha)
+				if alpha_delta ~= 0 then
+					anim:SetAlpha(bg_alpha)
+				else
+					anim:SetAlpha(0)
+					alpha_delta = 0.7 * normal_alpha
+				end
+				anim.fader:SetChange(alpha_delta)
+			else
+				anim:SetAlpha(self:GetNormalAlpha())
+			end
+			run_animation = true
+		elseif value_delta < 0 then
+			local normal_alpha = self:GetNormalAlpha()
+			anim:SetAlpha(normal_alpha)
+			if self.fade then
+				local bg_alpha = self:GetBackgroundAlpha()
+				local alpha_delta = 0.7 * (bg_alpha - normal_alpha)
+				if alpha_delta == 0 then
+					alpha_delta = -0.7 * bg_alpha
+				end
+				anim.fader:SetChange(alpha_delta)
+			end
+			run_animation = true
+		end
+	end
+
 	local maxExtraValue = clamp(1 - value, EPSILON, 1)
 	local extraValue = clamp(self.extraValue, EPSILON, maxExtraValue)
-	SetValue_orientation[self.orientation](self, value, extraValue)
+	SetValue_orientation[self.orientation](self, value, extraValue, run_animation)
 end
 --- Return the current value
 -- @return the value between [0, 1]
@@ -181,7 +315,11 @@ local function set_bar_points(self, side_point_a, side_point_b, moving_point_a, 
 	-- extra moves with and is attached to the fg.
 	self.extra:SetPoint(side_point_a)
 	self.extra:SetPoint(side_point_b)
-	self.extra:SetPoint(moving_point_a, self.fg, moving_point_b)
+	if self.anim then
+		self.extra:SetPoint(moving_point_a, self.anim, moving_point_b)
+	else
+		self.extra:SetPoint(moving_point_a, self.fg, moving_point_b)
+	end
 	
 	if self.icon and not self.icon_position then
 		-- bg attaches to the icon
@@ -198,6 +336,13 @@ local function set_bar_points(self, side_point_a, side_point_b, moving_point_a, 
 	self.bg:SetPoint(moving_point_a, self.extra, moving_point_b)
 	self.bg:SetPoint(side_point_a)
 	self.bg:SetPoint(side_point_b)
+
+	-- the animation texture is always anchored to the fg
+	if self.anim then
+		self.anim:SetPoint(side_point_a)
+		self.anim:SetPoint(side_point_b)
+		self.anim:SetPoint(moving_point_a, self.fg, moving_point_b)
+	end
 end
 
 local fix_orientation_helper = {}
@@ -205,6 +350,9 @@ local fix_orientation_helper = {}
 function fix_orientation_helper:VERTICAL()
 	self.fg:SetHeight(EPSILON)
 	self.extra:SetHeight(EPSILON)
+	if self.anim then
+		self.anim:SetHeight(EPSILON)
+	end
 	
 	set_bar_points(self, "LEFT", "RIGHT", "BOTTOM", "TOP")
 end
@@ -212,6 +360,9 @@ end
 function fix_orientation_helper:HORIZONTAL()
 	self.fg:SetWidth(EPSILON)
 	self.extra:SetWidth(EPSILON)
+	if self.anim then
+		self.anim:SetWidth(EPSILON)
+	end
 	
 	set_bar_points(self, "BOTTOM", "TOP", "LEFT", "RIGHT")
 end
@@ -228,6 +379,11 @@ local function fix_orientation(self)
 	if self.icon then
 		self.icon:ClearAllPoints()
 		fix_icon_size(self)
+	end
+	if self.anim then
+		self.anim:ClearAllPoints()
+		self.anim:SetWidth(0)
+		self.anim:SetHeight(0)
 	end
 	fix_orientation_helper[self.orientation](self)
 	self:SetValue(self.value)
@@ -303,6 +459,217 @@ function BetterStatusBar:GetDeficit()
 	return self.deficit
 end
 
+local function smoother_OnUpdate(self)
+	local progress = self:GetProgress()
+	local anim = self:GetParent():GetParent()
+	local bar = anim:GetParent()
+	local value_delta = anim.value_delta
+	local current_value, current_delta, fg_position
+	if value_delta > 0 then
+		current_delta = value_delta * progress
+		fg_position = anim.start_value
+	else
+		current_delta = -value_delta * (1 - progress)
+		fg_position = anim.dest_value
+	end
+	local maxExtraValue = clamp(1 - anim.dest_value, EPSILON, 1)
+	local extraValue = clamp(bar.extraValue, EPSILON, maxExtraValue)
+	local current_value = fg_position + current_delta
+	if bar.orientation == "HORIZONTAL" then
+		local width = bar:GetWidth()
+		if bar.icon then
+			width = width - bar:GetHeight()
+		end
+		anim:SetWidth(width * current_delta)
+		set_horizontal_coord(anim, bar.reverse, fg_position, current_value)
+		set_horizontal_coord(bar.extra, bar.reverse, current_value, current_value+extraValue)
+		set_horizontal_coord(bar.bg, bar.reverse, current_value+extraValue, 1)
+	else
+		local height = bar:GetHeight()
+		if bar.icon then
+			height = height - bar:GetWidth()
+		end
+		anim:SetHeight(height * current_delta)
+		set_vertical_coord(anim, bar.reverse, fg_position, current_value)
+		set_vertical_coord(bar.extra, bar.reverse, current_value, current_value+extraValue)
+		set_vertical_coord(bar.bg, bar.reverse, current_value+extraValue, 1)
+	end
+	anim.current_value = current_value 
+end
+
+local function ag_OnFinished(self)
+	local anim = self:GetParent()
+	local bar = anim:GetParent()
+	local maxExtraValue = clamp(1 - anim.dest_value, EPSILON, 1)
+	local extraValue = clamp(bar.extraValue, EPSILON, maxExtraValue)
+	if anim.value_delta > 0 then
+		if bar.orientation == "HORIZONTAL" then
+			local width = bar:GetWidth()
+			if bar.icon then
+				width = width - bar:GetHeight()
+			end
+			local dest_value = anim.dest_value
+			bar.fg:SetWidth(width * dest_value)
+			anim:SetWidth(EPSILON)
+			set_horizontal_coord(bar.fg, bar.reverse, 0, dest_value)
+			set_horizontal_coord(bar.extra, bar.reverse, dest_value, dest_value+extraValue)
+			set_horizontal_coord(bar.bg, bar.reverse, dest_value+extraValue, 1)
+		else
+			local height = bar:GetHeight()
+			if bar.icon then
+				height = height - bar:GetWidth()
+			end
+			local dest_value = anim.dest_value
+			local finished_height = height * dest_value
+			bar.fg:SetHeight(height * dest_value)
+			anim:SetHeight(height * EPSILON)
+			set_vertical_coord(bar.fg, bar.reverse, 0, dest_value)
+			set_vertical_coord(bar.extra, bar.reverse, dest_value, dest_value+extraValue)
+			set_vertical_coord(bar.bg, bar.reverse, dest_value+extraValue, 1)
+		end
+	else
+		if bar.orientation == "HORIZONTAL" then
+			anim:SetWidth(EPSILON)
+			set_horizontal_coord(bar.extra, bar.reverse, anim.dest_value, anim.dest_value+extraValue)
+			set_horizontal_coord(bar.bg, bar.reverse, anim.dest_value+extraValue, 1)
+		else
+			anim:SetHeight(EPSILON)
+			set_vertical_coord(bar.extra, bar.reverse, anim.dest_value, anim.dest_value+extraValue)
+			set_vertical_coord(bar.bg, bar.reverse, anim.dest_value+extraValue, 1)
+		end
+	end
+	anim.current_value = nil
+end
+
+local function smoother_extraDelete(self)
+	self:GetParent():GetParent().smoother = nil
+end
+
+local function fader_extraDelete(self)
+	self:GetParent():GetParent().fader = nil
+end
+
+local function update_animation_objects(bar)
+	local animated = bar.animated
+	local fade = bar.fade
+	local anim = bar.anim
+
+	if not animated and not fade then 
+		if anim then
+			bar.anim = anim:Delete()
+			fix_orientation(bar)
+		end
+		return
+	end
+
+	if not anim then 
+		anim = PitBull4.Controls.MakeAnimatedTexture(bar, "BACKGROUND")
+		bar.anim = anim
+		anim.dest_value = bar.value 
+		anim.current_value = nil
+	end
+	
+	local ag = anim.ag
+	ag:SetScript("OnFinished",ag_OnFinished)
+
+	if animated then
+		local smoother = anim.smoother
+		if not smoother then 
+			smoother = PitBull4.Controls.MakeAnimation(ag)
+			anim.smoother = smoother
+		end
+		smoother.extraDelete = smoother_extraDelete
+		smoother:SetDuration(bar.anim_duration)
+		smoother:SetSmoothing("IN_OUT")
+		smoother:SetScript("OnUpdate",smoother_OnUpdate)
+	else
+		if anim.smoother then
+			anim.smoother:Delete()
+		end
+	end
+
+	if fade then
+		local fader = anim.fader
+		if not fader then
+			fader = PitBull4.Controls.MakeAlpha(ag)
+			anim.fader = fader
+		end
+		fader.extraDelete = fader_extraDelete
+		fader:SetDuration(bar.anim_duration)
+		fader:SetSmoothing("IN_OUT")
+	else
+		if anim.fader then
+			anim.fader:Delete()
+		end
+	end
+
+	fix_orientation(bar)
+	anim:SetTexture(bar:GetTexture())
+	anim:SetVertexColor(bar:GetColor())
+end
+	
+
+--- Set whether the bar updates are animated
+-- If set to true bar updates will be animated
+-- @param animated whether the bar updates are animated
+-- @usage bar:SetAnimated(true)
+function BetterStatusBar:SetAnimated(animated)
+	if DEBUG then
+		expect(animated, 'typeof', 'boolean')
+	end
+
+	animated = not not animated
+	if self.animated == animated then return end
+	self.animated = animated	
+	update_animation_objects(self)
+end
+--- Get whether the bar updates are animated
+-- @usage (assert(bar:GetAnimated() == true))
+-- @return whether the bar is animating updates
+function BetterStatusBar:GetAnimated()
+	return self.animated
+end
+
+--- Set whether the bar updates will be fadded in/out.
+-- If set to true he updated portions of the bar will be faded in/out.
+-- @param fade whether bar updates will be faded in/out.
+-- @usage bar:SetFade(true)
+function BetterStatusBar:SetFade(fade)
+	if DEBUG then
+		expect(fade, 'typeof', 'boolean')
+	end
+
+	fade = not not fade
+	if self.fade == fade then return end
+	self.fade = fade
+	update_animation_objects(self)
+end
+--- Get whether the bar updates will be faded in/out.
+-- @usage (assert(bar:GetFade() == true))
+-- @return whether the bar is fading on update
+function BetterStatusBar:GetFade()
+	return self.fade
+end
+
+--- Set the duration of the animation and/or fade effects.
+-- @param anim_duration the time that the animation effect takes to play.
+-- @usage bar:SetAnimDuration(0.5)
+function BetterStatusBar:SetAnimDuration(anim_duration)
+	if DEUBUG then
+		expect(anim_duration, 'typeof', 'number')
+		expect(anim_duration, '>', 0)
+	end
+
+	self.anim_duration = anim_duration
+	update_animation_objects(self)
+end
+--- Get the duration of the animation and/or fade effects.
+-- @usage local duration = bar:GetAnimDuration()
+-- @return duration of the animation effects.
+function BetterStatusBar:GetAnimDuration()
+	return self.anim_duration
+end
+
 --- Set the texture that the bar is currently using
 -- @param texture the path to the texture
 -- @usage bar:SetTexture([[Interface\TargetingFrame\UI-StatusBar]])
@@ -314,6 +681,9 @@ function BetterStatusBar:SetTexture(texture)
 	self.fg:SetTexture(texture)
 	self.extra:SetTexture(texture)
 	self.bg:SetTexture(texture)
+	if self.anim then
+		self.anim:SetTexture(texture)
+	end
 end
 --- Get the texture that the bar is using
 -- @usage assert(bar:GetTexture() == [[Interface\TargetingFrame\UI-StatusBar]])
@@ -376,6 +746,9 @@ function BetterStatusBar:SetColor(r, g, b)
 	self.fg:SetVertexColor(r, g, b)
 	self.extra:SetVertexColor(get_extra_color(self))
 	self.bg:SetVertexColor(get_bg_color(self))
+	if self.anim then
+		self.anim:SetVertexColor(r, g, b)
+	end
 end
 
 --- Get the color of the bar
@@ -674,7 +1047,14 @@ end, function(control)
 	control:SetNormalAlpha(1)
 	control:SetIcon(nil)
 	control:SetIconPosition(true)
+	control:SetAnimDuration(0.5)
+	control:SetAnimated(false)
+	control:SetFade(false)
 end, function(control)
 	-- onDelete
 	control:SetScript("OnUpdate", nil)
+	local anim = control.anim
+	if anim then
+		control.anim = anim:Delete()
+	end
 end)

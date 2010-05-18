@@ -505,6 +505,74 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		disabled = disabled,
 	}
 
+	bar_args.animated = {
+		type = 'toggle',
+		name = L["Animate"],
+		desc = L["Animate bar changes."],
+		order = 10,
+		get = function(info)
+			local db = get_current_layout_db(info)
+			return db and db.animated
+		end,
+		set = function(info, value)
+			get_current_layout_db(info).animated = value
+
+			UpdateFrames()
+		end,
+		hidden = function(info)
+			local module = PitBull4.modules[info[#info-1]]
+			return not module.allow_animations
+		end,
+		disabled = disabled,
+	}
+
+	bar_args.fade = {
+		type = 'toggle',
+		name = L["Fade"],
+		desc = L["Fade the bar changes."],
+		order = 11,
+		get = function(info)
+			local db = get_current_layout_db(info)
+			return db and db.fade
+		end,
+		set = function(info, value)
+			get_current_layout_db(info).fade = value
+
+			UpdateFrames()
+		end,
+		hidden = function(info)
+			local module = PitBull4.modules[info[#info-1]]
+			return not module.allow_animations
+		end,
+		disabled = disabled,
+	}
+
+	bar_args.anim_duration = {
+		type = 'range',
+		name = L["Animation duration"],
+		desc = L["Time in seconds that the animation and/or fade takes to play."],
+		order = 12,
+		get = function(info)
+			local db = get_current_layout_db(info)
+			return db and db.anim_duration
+		end,
+		set = function(info, value)
+			get_current_layout_db(info).anim_duration = value
+
+			UpdateFrames()
+		end,
+		hidden = function(info)
+			local module = PitBull4.modules[info[#info-1]]
+			local db = get_current_layout_db(info)
+			return not module.allow_animations or not(db.fade or db.animated)
+		end,
+		min = 0.1,
+		max = 1,
+		step = 0.1,
+		bigStep = 0.2,
+		disabled = disabled,
+	}
+
 	bar_args.color_by_class = {
 		type = 'toggle',
 		name = L["Color by class"],

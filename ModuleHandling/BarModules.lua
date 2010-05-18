@@ -374,6 +374,9 @@ local BarModule = PitBull4:NewModuleType("bar", {
 	hostility_color = false,
 	hostility_color_npcs = false,
 	color_by_happiness = false,
+	animated = false,
+	fade = false,
+	anim_duration = 0.5,
 }, true)
 
 --- Handle the frame being hidden
@@ -424,6 +427,7 @@ function BarModule:UpdateFrame(frame)
 		return self:ClearFrame(frame)
 	end
 	
+	local db = self:GetLayoutDB(frame)
 	local id = self.id
 	local control = frame[id]
 	local made_control = not control
@@ -454,7 +458,14 @@ function BarModule:UpdateFrame(frame)
 	end
 	
 	control:SetIcon(icon)
-	control:SetIconPosition(self:GetLayoutDB(frame).icon_on_left)
+	control:SetIconPosition(db.icon_on_left)
+
+	if self.allow_animations then
+		control:SetAnimated(db.animated)
+		control:SetFade(db.fade)
+		control:SetAnimDuration(db.anim_duration)
+	end
+
 	control:Show()
 	
 	return made_control
@@ -509,6 +520,9 @@ local BarProviderModule = PitBull4:NewModuleType("bar_provider", {
 			hostility_color_npcs = false,
 			color_by_happiness = false,
 			exists = false,
+			animated = false,
+			fade = false,
+			anim_duration = 0.5,
 		}
 	}
 }, true)
@@ -637,6 +651,12 @@ function BarProviderModule:UpdateFrame(frame)
 
 			bar:SetIcon(icon)
 			bar:SetIconPosition(bar_db.icon_on_left)
+
+			if self.allow_animations then
+				bar:SetAnimated(bar_db.animated)
+				bar:SetFade(bar_db.fade)
+				bar:SetAnimDuration(bar_db.anim_duration)
+			end
 
 			bar:Show()
 		end

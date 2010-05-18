@@ -16,6 +16,7 @@ local last_pet_power
 PitBull4_PowerBar:SetModuleType("bar")
 PitBull4_PowerBar:SetName(L["Power bar"])
 PitBull4_PowerBar:SetDescription(L["Show a mana, rage, energy, or runic power bar."])
+PitBull4_PowerBar.allow_animations = true
 PitBull4_PowerBar:SetDefaults({
 	position = 2,
 	hide_no_mana = false,

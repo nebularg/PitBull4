@@ -9,6 +9,11 @@ local cache = {}
 
 local control__index = {}
 
+-- animation group to stick unused animation objects since you can't parent
+-- them to anything but an AnimationGroup
+local frame = CreateFrame("Frame")
+local animation_cache = frame:CreateAnimationGroup()
+
 -- functions to call when deleting specific types of controls
 local delete_funcs = {}
 
@@ -36,6 +41,50 @@ function delete_funcs:Texture()
 		self:SetHorizTile(false)
 		self:SetVertTile(false)
 	end
+end
+local function delete_animations(...)
+	for i=1,select('#',...) do
+		local animation = select(i,...)
+		if animation.Delete then
+			animation:Delete()
+		else
+			animation:SetParent(animation_cache)
+			animation:Stop()
+		end
+	end
+end
+function delete_funcs:AnimatedTexture()
+	local ag = self.ag
+	ag:SetScript("OnEvent",nil)
+	ag:SetScript("OnFinished",nil)
+	ag:SetScript("OnLoop",nil)
+	ag:SetScript("OnPause",nil)
+	ag:SetScript("OnPlay",nil)
+	ag:SetScript("OnStop",nil)
+	ag:SetScript("OnUpdate",nil)
+	ag:Stop()
+	delete_animations(ag:GetAnimations())
+	delete_funcs.Texture(self)
+end
+function delete_funcs:Animation()
+	self:SetScript("OnEvent",nil)
+	self:SetScript("OnFinished",nil)
+	self:SetScript("OnPause",nil)
+	self:SetScript("OnPlay",nil)
+	self:SetScript("OnStop",nil)
+	self:SetScript("OnUpdate",nil)
+	self:SetOrder(1)
+	self:SetDuration(0)
+	self:SetMaxFramerate(0)
+	self:SetSmoothing("NONE")
+	self:SetStartDelay(0)
+	self:SetEndDelay(0)
+	self:SetParent(animation_cache)
+	self:Stop()
+end
+function delete_funcs:Alpha()
+	self:SetChange(0)
+	delete_funcs.Animation(self)
 end
 function delete_funcs:StatusBar()
 	self:SetStatusBarColor(1, 1, 1, 1)
@@ -80,17 +129,27 @@ function control__index:Delete()
 		end
 	end
 	]]
-	
-	self:ClearAllPoints()
-	self:SetPoint("LEFT", UIParent, "RIGHT", 1e5, 0)
-	self:Hide()
+
+	if self.ClearAllPoints then
+		self:ClearAllPoints()
+		self:SetPoint("LEFT", UIParent, "RIGHT", 1e5, 0)
+	end
+	if self.Hide then
+		self:Hide()
+	end
 	if self.SetBackdrop then
 		self:SetBackdrop(nil)
 	end
-	self:SetParent(UIParent)
-	self:SetAlpha(0)
-	self:SetHeight(0)
-	self:SetWidth(0)
+	if kind ~= "Alpha" and kind ~= "Animation" and kind ~= "AnimatedTexture" then
+		self:SetParent(UIParent)
+	end
+	if self.SetAlpha then
+		self:SetAlpha(0)
+	end
+	if self.SetHeight then
+		self:SetHeight(0)
+		self:SetWidth(0)
+	end
 	local cache_kind = cache[kind]
 	if cache_kind[self] then
 		error(("Double-free frame syndrome of type %q"):format(kind), 2)
@@ -100,18 +159,26 @@ function control__index:Delete()
 end
 
 -- create a very basic control, properly handling Textures and FontStrings.
-local function create_control(kind, name, inheritTemplate)
+local function create_control(kind, name, inheritTemplate, parent)
 	if kind == "Texture" then
-		return UIParent:CreateTexture(name, "BACKGROUND")
+		return parent:CreateTexture(name, "BACKGROUND")
 	end
 	if kind == "FontString" then
-		return UIParent:CreateFontString(name, "BACKGROUND")
+		return parent:CreateFontString(name, "BACKGROUND")
 	end
-	return CreateFrame(kind, name, UIParent, inheritTemplate)
+	if kind == "AnimatedTexture" then
+		local texture = parent:CreateTexture(name, "BACKGROUND")
+		texture.ag = texture:CreateAnimationGroup()
+		return texture
+	end
+	if kind == "Animation" or kind == "Alpha" then
+		return parent:CreateAnimation(kind, name)
+	end
+	return CreateFrame(kind, name, parent, inheritTemplate)
 end
 
 -- return a control from the cache if possible, otherwise create a new one and return that
-local function get_or_create_control(cache_kind, kind, realKind, inheritTemplate, onCreate)
+local function get_or_create_control(cache_kind, kind, realKind, inheritTemplate, onCreate, parent)
 	local control = next(cache_kind)
 	
 	if control then
@@ -126,7 +193,7 @@ local function get_or_create_control(cache_kind, kind, realKind, inheritTemplate
 		name = "PitBull4_" .. kind .. "_" .. i
 	until not _G[name]
 	
-	local control = create_control(realKind, name, inheritTemplate)
+	local control = create_control(realKind, name, inheritTemplate, parent)
 	if onCreate then
 		onCreate(control)
 	end
@@ -156,21 +223,27 @@ local function fetch_control(kind, parent, isCustom, ...)
 		realKind, onCreate, onRetrieve, onDelete, inheritTemplate = ...
 	end
 	
-	local control = get_or_create_control(cache_kind, kind, realKind, inheritTemplate, onCreate)
+	local control = get_or_create_control(cache_kind, kind, realKind, inheritTemplate, onCreate, parent)
 	control:SetParent(parent)
-	control:ClearAllPoints()
-	control:SetAlpha(1)
-	if kind == "Texture" then
+	if control.ClearAllPoints then
+		control:ClearAllPoints()
+	end
+	if control.SetAlpha then
+		control:SetAlpha(1)
+	end
+	if kind == "Texture" or kind == "AnimatedTexture" then
 		control:SetTexture(nil)
 		control:SetVertexColor(1, 1, 1, 1)
 	end
-	if kind == "Texture" or kind == "FontString" then
+	if kind == "Texture" or kind == "FontString" or kind == "AnimatedTexture" then
 		control:SetDrawLayer((...))
 	end
 	if control.SetScale then
 		control:SetScale(1)
 	end
-	control:Show()
+	if control.Show then
+		control:Show()
+	end
 	if onRetrieve then
 		onRetrieve(control, select(6, ...)) -- onRetrieve
 	end
@@ -202,6 +275,44 @@ function PitBull4.Controls.MakeTexture(parent, layer)
 	end
 
 	return fetch_control("Texture", parent, false, layer)
+end
+
+--- Make an animated texture
+-- @param parent frame the animated texture is parented to
+-- @param layer the art layer of the texture
+-- @usage local texture = PitBull4.Controls.MakeAnimatedTexture(someFrame, "BACKGROUND")
+-- @return a AnimatedTexture object
+function PitBull4.Controls.MakeAnimatedTexture(parent, layer)
+	if DEBUG then
+		expect(parent, 'typeof', 'frame')
+		expect(layer, 'typeof', 'string;nil')
+	end
+
+	return fetch_control("AnimatedTexture", parent, false, layer)
+end
+
+--- Make an Animation object
+-- @param parent animation group the animation is parented to
+-- @usage local anim = PitBull4.Controls.MakeAnimation(self.ag)
+-- @return an Animation object
+function PitBull4.Controls.MakeAnimation(parent)
+	if DEBUG then
+		expect(parent, 'frametype', 'AnimationGroup')
+	end
+
+	return fetch_control('Animation', parent, false)
+end
+
+--- Make an Alpha animation object
+-- @param parent animation group the animation is parented to
+-- @usage local anim = PitBull4.Controls.MakeAlpha(self.ag)
+-- @return an Alpha object
+function PitBull4.Controls.MakeAlpha(parent)
+	if DEBUG then
+		expect(parent, 'frametype', 'AnimationGroup')
+	end
+
+	return fetch_control('Alpha', parent, false)
 end
 
 --- Make a font string
