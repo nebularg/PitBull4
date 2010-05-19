@@ -1047,14 +1047,14 @@ end, function(control)
 	control:SetNormalAlpha(1)
 	control:SetIcon(nil)
 	control:SetIconPosition(true)
-	control:SetAnimDuration(0.5)
-	control:SetAnimated(false)
-	control:SetFade(false)
 end, function(control)
 	-- onDelete
 	control:SetScript("OnUpdate", nil)
 	local anim = control.anim
 	if anim then
 		control.anim = anim:Delete()
+		control.animated = false
+		control.fade = false
+		control.anim_duration = 0.5
 	end
 end)
