@@ -10,6 +10,7 @@ local wrath_310, wrath_333
 do
 	local _,wow_build,_,wow_interface = GetBuildInfo()
 	wrath_310 = wow_interface >= 30100
+	wrath_320 = wow_interface >= 30200
 	wrath_333 = tonumber(wow_build) >= 11599
 end
 
@@ -504,6 +505,7 @@ enemy_debuffs.PRIEST = {
 	[15407] = true, -- Mind Flay
 	[49821]	= true, -- Mind Sear
 	[453]   = true, -- Mind Soothe
+	[48301] = wrath_320 or nil, -- Mind Trauma (debuff from Improved Mind Blast talent)
 	[2096]  = true, -- Mind Vision
 	[33196]	= true, -- Misery
 	[59980]	= not wrath_310 or nil, -- Psychic Horror 3.0.x
