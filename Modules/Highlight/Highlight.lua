@@ -53,7 +53,7 @@ function PitBull4_Highlight:UpdateFrame(frame)
 		highlight = PitBull4.Controls.MakeFrame(frame)
 		frame.Highlight = highlight
 		highlight:SetAllPoints(frame)
-		highlight:SetFrameLevel(highlight:GetFrameLevel() + 5)
+		highlight:SetFrameLevel(frame:GetFrameLevel() + 17)
 	
 		local texture = PitBull4.Controls.MakeTexture(highlight, "OVERLAY")
 		highlight.texture = texture
