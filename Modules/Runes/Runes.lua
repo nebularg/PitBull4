@@ -103,7 +103,7 @@ function PitBull4_Runes:UpdateFrame(frame)
 	if not container then
 		container = PitBull4.Controls.MakeFrame(frame)
 		frame.Runes = container
-		container:SetFrameLevel(frame:GetFrameLevel() + 3)
+		container:SetFrameLevel(frame:GetFrameLevel() + 13)
 		
 		local db = self:GetLayoutDB(frame)
 		local vertical = db.vertical

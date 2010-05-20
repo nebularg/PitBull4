@@ -96,7 +96,7 @@ function PitBull4_VoiceIcon:UpdateFrame(frame)
 	
 	icon = PitBull4.Controls.MakeFrame(frame)
 	frame.VoiceIcon = icon
-	icon:SetFrameLevel(frame:GetFrameLevel() + 3)
+	icon:SetFrameLevel(frame:GetFrameLevel() + 13)
 	icon:SetScript("OnUpdate", icon_OnUpdate)
 	icon:SetWidth(15)
 	icon:SetHeight(15)

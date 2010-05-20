@@ -199,7 +199,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 	if created then
 		portrait = PitBull4.Controls.MakeFrame(frame)
 		frame.Portrait = portrait
-		portrait:SetFrameLevel(frame:GetFrameLevel() + 3)
+		portrait:SetFrameLevel(frame:GetFrameLevel() + 5)
 		portrait:SetWidth(60)
 		portrait:SetHeight(60)
 		portrait.height = 4
@@ -207,10 +207,12 @@ function PitBull4_Portrait:UpdateFrame(frame)
 	
 		if style == "pirate" then
 			local model = PitBull4.Controls.MakeDressUpModel(frame)
+			model:SetFrameLevel(frame:GetFrameLevel() + 5)
 			portrait.model = model
 			model:SetAllPoints(portrait)
 		elseif style == "three_dimensional" then
 			local model = PitBull4.Controls.MakePlayerModel(frame)
+			model:SetFrameLevel(frame:GetFrameLevel() + 5)
 			portrait.model = model
 			model:SetAllPoints(portrait)
 		else -- two_dimensional or class

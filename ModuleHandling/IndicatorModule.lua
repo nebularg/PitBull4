@@ -120,7 +120,7 @@ function IndicatorModule:UpdateFrame(frame)
 	local made_control = not control
 	if made_control then
 		control = PitBull4.Controls.MakeIcon(frame)
-		control:SetFrameLevel(frame:GetFrameLevel() + 3)
+		control:SetFrameLevel(frame:GetFrameLevel() + 13)
 		frame[id] = control
 		control:SetWidth(INDICATOR_SIZE)
 		control:SetHeight(INDICATOR_SIZE)

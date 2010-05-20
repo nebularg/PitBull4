@@ -404,7 +404,7 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 	
 	local overlay = PitBull4.Controls.MakeFrame(frame)
 	frame.overlay = overlay
-	overlay:SetFrameLevel(frame:GetFrameLevel() + 4)
+	overlay:SetFrameLevel(frame:GetFrameLevel() + 17)
 	
 	for k, v in pairs(UnitFrame__scripts) do
 		frame:HookScript(k, v)

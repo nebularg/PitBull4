@@ -817,7 +817,7 @@ function PitBull4_Totems:BuildFrames(frame)
 		
 		frm:SetWidth(TOTEM_SIZE)
 		frm:SetHeight(TOTEM_SIZE)
-		frm:SetFrameLevel(frame:GetFrameLevel() + 3)
+		frm:SetFrameLevel(frame:GetFrameLevel() + 13)
 		frm:Hide()
 		frm.slot = i
 		frm.hide_inactive = layout_option_get(frame,'hide_inactive')
@@ -867,7 +867,7 @@ function PitBull4_Totems:BuildFrames(frame)
 		local textFrame = elements[i].textFrame
 		textFrame:SetScale(max(0.01,frm:GetScale()))
 		textFrame:SetAllPoints(frm)
-		textFrame:SetFrameLevel(spiral:GetFrameLevel() + 7)
+		textFrame:SetFrameLevel(spiral:GetFrameLevel() + 1)
 		
 		if not elements[i].text then
 			elements[i].text = PitBull4.Controls.MakeFontString(textFrame, "OVERLAY")

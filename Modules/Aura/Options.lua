@@ -136,7 +136,7 @@ PitBull4_Aura:SetDefaults({
 			col_spacing = 0,
 			new_row_size = false,
 			filter = "",
-			frame_level = 2,
+			frame_level = 9,
 		},
 		debuff = {
 			size = 16,
@@ -156,7 +156,7 @@ PitBull4_Aura:SetDefaults({
 			row_spacing = 0,
 			new_row_size = false,
 			filter = "",
-			frame_level = 2,
+			frame_level = 9,
 		},
 	},
 	texts = {
@@ -1970,7 +1970,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				set = set_layout,
 				disabled = is_aura_disabled,
 				min = 1,
-				max = 10,
+				max = 30,
 				step = 1,
 				order = 55,
 			},
