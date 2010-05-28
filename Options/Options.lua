@@ -114,6 +114,7 @@ function PitBull4.Options.OpenConfig()
 	options.args.profile.disabled = function(info)
 		return InCombatLockdown() or (old_disabled and old_disabled(info))
 	end
+	LibStub("LibDualSpec-1.0"):EnhanceOptions(options.args.profile, PitBull4.db)
 	
 	AceConfig:RegisterOptionsTable("PitBull4", options)
 	AceConfigDialog:SetDefaultSize("PitBull4", 835, 550)

@@ -956,6 +956,8 @@ function PitBull4:OnInitialize()
 	db.RegisterCallback(self, "OnProfileChanged")
 	db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
 	db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
+
+	LibStub("LibDualSpec-1.0"):EnhanceDatabase(db, "PitBull4")
 	
 	-- used for run-once-only initialization
 	self:RegisterEvent("ADDON_LOADED")

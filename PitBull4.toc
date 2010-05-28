@@ -19,7 +19,7 @@
 ## X-eMail: ckknight AT gmail DOT com
 ## X-Website: http://wow.curseforge.com/projects/pitbull4/
 ## SavedVariables: PitBull4DB
-## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDataBroker-1.1, LibDBIcon-1.0, LibBossIDs-1.0
+## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDataBroker-1.1, LibDBIcon-1.0, LibBossIDs-1.0, LibDualSpec-1.0
 ## Version: @project-version@
 
 libs.xml
