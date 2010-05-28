@@ -66,6 +66,9 @@ do
 		better_unit_ids["arenapet" .. i] = "arenapet" .. i
 		better_unit_ids["arena" .. i .. "pet"] = "arenapet" .. i
 	end
+	for i = 1, MAX_BOSS_FRAMES do
+		better_unit_ids["boss" .. i] = "boss" .. i
+	end
 	setmetatable(better_unit_ids, target_same_with_target_mt)
 	
 	--- Return the best UnitID for the UnitID provided
