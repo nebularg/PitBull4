@@ -520,7 +520,9 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			UpdateFrames()
 		end,
 		hidden = function(info)
-			local module = PitBull4.modules[info[#info-1]]
+			local size = #info
+			local module_index = size == 5 and size - 2 or size - 1 
+			local module = PitBull4.modules[info[module_index]]
 			return not module.allow_animations
 		end,
 		disabled = disabled,
@@ -541,7 +543,9 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			UpdateFrames()
 		end,
 		hidden = function(info)
-			local module = PitBull4.modules[info[#info-1]]
+			local size = #info
+			local module_index = size == 5 and size - 2 or size - 1 
+			local module = PitBull4.modules[info[module_index]]
 			return not module.allow_animations
 		end,
 		disabled = disabled,
@@ -562,7 +566,9 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			UpdateFrames()
 		end,
 		hidden = function(info)
-			local module = PitBull4.modules[info[#info-1]]
+			local size = #info
+			local module_index = size == 5 and size - 2 or size - 1 
+			local module = PitBull4.modules[info[module_index]]
 			local db = get_current_layout_db(info)
 			return not module.allow_animations or not(db.fade or db.animated)
 		end,
