@@ -61,6 +61,11 @@ function PitBull4_RaidTargetIcon:GetExampleTexture(frame)
 	
 	index = (index % 8) + 1
 	
+	-- Disabled
+	if not self:GetLayoutDB(frame)[index] then
+		return nil
+	end
+	
 	return [[Interface\TargetingFrame\UI-RaidTargetingIcon_]] .. index
 end
 
