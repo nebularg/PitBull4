@@ -1249,13 +1249,13 @@ function PitBull4:OnProfileChanged()
 	self:RecheckConfigMode()
 	
 	if not IsAddOnLoaded("Broker2FuBar") then
-		local libdbicon = LibStub("LibDBIcon-1.0")
+		local LibDBIcon = LibStub("LibDBIcon-1.0")
 		local minimap_icon_db = db.profile.minimap_icon
-		libdbicon:Refresh("PitBull4", minimap_icon_db)
+		LibDBIcon:Refresh("PitBull4", minimap_icon_db)
 		if minimap_icon_db.hide then
-			libdbicon:Hide("PitBull4")
+			LibDBIcon:Hide("PitBull4")
 		else
-			libdbicon:Show("PitBull4")
+			LibDBIcon:Show("PitBull4")
 		end
 	end
 end
