@@ -509,6 +509,7 @@ do
 		['PLAYER_XP_UPDATE'] = {player=true},
 		['UNIT_COMBO_POINTS'] = {all=true},
 		['UPDATE_FACTION'] = {all=true},
+		['UNIT_LEVEL'] = {unit=true,player=true},
 
 		-- They pass the unit but they don't provide the pairing (e.g.
 		-- the target changes) so we'll miss updates if we don't update
