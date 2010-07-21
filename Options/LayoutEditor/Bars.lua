@@ -57,11 +57,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			UpdateFrames()
 		end,
 		values = function(info)
-			local t = {}
-			for k in pairs(LibSharedMedia:HashTable("statusbar")) do
-				t[k] = k
-			end
-			return t
+			return LibSharedMedia:HashTable("statusbar")
 		end,
 		hidden = function(info)
 			return not LibSharedMedia
@@ -375,16 +371,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			UpdateFrames()
 		end,
 		values = function(info)
-			local t = {}
-			local default = GetLayoutDB(false).bar_texture
-			for k in pairs(LibSharedMedia:HashTable("statusbar")) do
-				if k == default then
-					t[k] = ("%s (Default)"):format(k)
-				else
-					t[k] = k
-				end
-			end
-			return t
+			return LibSharedMedia:HashTable("statusbar")
 		end,
 		disabled = disabled,
 		hidden = function(info)

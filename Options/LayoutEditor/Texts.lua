@@ -182,11 +182,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 			UpdateFrames()
 		end,
 		values = function(info)
-			local t = {}
-			for k in pairs(LibSharedMedia:HashTable("font")) do
-				t[k] = k
-			end
-			return t
+			return LibSharedMedia:HashTable("font")
 		end,
 		hidden = function(info)
 			return not LibSharedMedia
@@ -627,16 +623,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 			UpdateFrames()
 		end,
 		values = function(info)
-			local t = {}
-			local default = GetLayoutDB(false).font
-			for k in pairs(LibSharedMedia:HashTable("font")) do
-				if k == default then
-					t[k] = ("%s (Default)"):format(k)
-				else
-					t[k] = k
-				end
-			end
-			return t
+			return LibSharedMedia:HashhTable("font")
 		end,
 		disabled = disabled,
 		hidden = function(info)

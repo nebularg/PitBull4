@@ -2224,16 +2224,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 					PitBull4.Options.UpdateFrames()
 				end,
 				values = function(info)
-					local t = {}
-					local default = PitBull4.Options.GetLayoutDB(false).font
-					for k in pairs(LibSharedMedia:HashTable("font")) do
-						if k == default then
-							t[k] = ("%s (Default)"):format(k)
-						else
-							t[k] = k
-						end
-					end
-					return t
+					return LibSharedMedia:HashTable("font")
 				end,
 				hidden = function(info)
 					return not LibSharedMedia
