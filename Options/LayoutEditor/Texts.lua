@@ -623,7 +623,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 			UpdateFrames()
 		end,
 		values = function(info)
-			return LibSharedMedia:HashhTable("font")
+			return LibSharedMedia:HashTable("font")
 		end,
 		disabled = disabled,
 		hidden = function(info)
