@@ -6,11 +6,9 @@ local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
-local wrath_310, wrath_333
+local wrath_333
 do
 	local _,wow_build,_,wow_interface = GetBuildInfo()
-	wrath_310 = wow_interface >= 30100
-	wrath_320 = wow_interface >= 30200
 	wrath_333 = tonumber(wow_build) >= 11599
 end
 
@@ -117,7 +115,6 @@ self_buffs.DEATHKNIGHT = {
 	[55226] = true, -- Blade Barrier
 	[49028] = true, -- Dancing Rune Weapon
 	[49796] = true, -- Deathchill
-	[50466] = not wrath_310 or nil, -- Death Trance! (Sudden Doom)
 	[59052] = true, -- Freezing Fog (Rime)
 	[51124] = true, -- Killing Machine
 	[49039] = true, -- Lichborne
@@ -227,7 +224,7 @@ friend_buffs.HUNTER = {
 	[19578] = true, -- Spirit Bond
 	[19506] = true, -- Trueshot Aura
 	[57669] = true, -- Replenishment
-	[54216] = wrath_310 or nil, -- Master's Call
+	[54216] = true, -- Master's Call
 }
 friend_debuffs.HUNTER = {}
 self_buffs.HUNTER = {
@@ -282,7 +279,6 @@ enemy_debuffs.HUNTER = {
 	[1853]  = true, -- Growl
 	[1130]  = true, -- Hunter's Mark
 	[19407] = true, -- Improved Concussive Shot
-	[19228] = not wrath_310 or nil, -- Improved Wing Clip
 	[7093]  = true, -- Intimidation
 	[5760]  = true, -- Mind-numbing Poison
 	[32093] = true, -- Poison Spit
@@ -309,7 +305,7 @@ friend_buffs.MAGE = {
 	[54648] = true, -- Focus Magic
 	[604]   = true, -- Dampen Magic
 	[130]   = true, -- Slow Fall
-	[57669] = wrath_310 or nil, -- Replenishment
+	[57669] = true, -- Replenishment
 }
 friend_debuffs.MAGE = {}
 self_buffs.MAGE = {
@@ -368,7 +364,7 @@ enemy_debuffs.MAGE = {
 
 -- PALADIN
 friend_buffs.PALADIN = {
-	[64364]	= wrath_310 or nil, -- Aura Mastery
+	[64364]	= true, -- Aura Mastery
 	[53563] = true, -- Beacon of Light
 	[20217] = true, -- Blessing of Kings
 	[19740] = true, -- Blessing of Might
@@ -405,7 +401,7 @@ self_buffs.PALADIN = {
 	[31842] = true, -- Divine Illumination
 	[54428]	= true, -- Divine Plea
 	[498]   = true, -- Divine Protection
-	[64205]	= wrath_310 or nil, -- Divine Sacrifice
+	[64205]	= true, -- Divine Sacrifice
 	[642]   = true, -- Divine Shield
 	[9800]  = true, -- Holy Shield
 	[54149]	= true, -- Infusion of Light
@@ -451,12 +447,13 @@ enemy_debuffs.PALADIN = {
 friend_buffs.PRIEST = {
 	[552]   = true, -- Abolish Disease
 	[47753]	= true, -- Divine Aegis
+	[64843] = true, -- Divine Hymn
 	[14752] = true, -- Divine Spirit
 	[6346]  = true, -- Fear Ward
 	[56161] = true, -- Glyph of Prayer of Healing
 	[47930]	= true, -- Grace
 	[47788]	= true, -- Guardian Spirit
-	[60931] = not wrath_310 or nil, -- Hymn of Hope
+	[64901] = true, -- Hymn of Hope
 	[14892] = true, -- Inspiration
 	[1706]  = true, -- Levitate
 	[7001]	= true, -- Lightwell Renew
@@ -469,7 +466,7 @@ friend_buffs.PRIEST = {
 	[27683] = true, -- Prayer of Shadow Protection
 	[27681] = true, -- Prayer of Spirit
 	[139]   = true, -- Renew
-	[63944] = wrath_310 or nil, -- Renewed Hope
+	[63944] = true, -- Renewed Hope
 	[976]   = true, -- Shadow Protection
 	[57669] = true, -- Replenishment
 }
@@ -487,11 +484,10 @@ self_buffs.PRIEST = {
 	[14743] = true, -- Focused Casting
 	[45237]	= true, -- Focused Will
 	[34753]	= true, -- Holy Concentration
-	[47894]	= not wrath_310 or nil, -- Improved Holy Concentration
 	[588]   = true, -- Inner Fire
 	[14751] = true, -- Inner Focus
 	[2096]  = true, -- Mind Vision
-	[63731]	= wrath_310 or nil, -- Serendipity
+	[63731]	= true, -- Serendipity
 	[15258] = true, -- Shadow Weaving
 	[15473] = true, -- Shadowform
 	[27827] = true, -- Spirit of Redemption
@@ -506,11 +502,10 @@ enemy_debuffs.PRIEST = {
 	[15407] = true, -- Mind Flay
 	[49821]	= true, -- Mind Sear
 	[453]   = true, -- Mind Soothe
-	[48301] = wrath_320 or nil, -- Mind Trauma (debuff from Improved Mind Blast talent)
+	[48301] = true, -- Mind Trauma (debuff from Improved Mind Blast talent)
 	[2096]  = true, -- Mind Vision
 	[33196]	= true, -- Misery
-	[59980]	= not wrath_310 or nil, -- Psychic Horror 3.0.x
-	[64058] = wrath_310 or nil, -- Psychic Horror 3.1.x+
+	[64058] = true, -- Psychic Horror
 	[8122]  = true, -- Psychic Scream
 	[9484]  = true, -- Shackle Undead
 	[589]   = true, -- Shadow Word: Pain
@@ -636,7 +631,7 @@ friend_buffs.WARLOCK = {
 	[54424] = true, -- Fel Intelligence
 	[20707] = true, -- Soulstone Resurrection
 	[5697]  = true, -- Unending Breath
-	[57669] = wrath_310 or nil, -- Replenishment
+	[57669] = true, -- Replenishment
 }
 friend_debuffs.WARLOCK = {}
 self_buffs.WARLOCK = {
@@ -676,7 +671,6 @@ enemy_debuffs.WARLOCK = {
 	[980]   = true, -- Curse of Agony
 	[603]   = true, -- Curse of Doom
 	[18223] = true, -- Curse of Exhaustion
-	[704]   = not wrath_310 or nil, -- Curse of Recklessness
 	[1714]  = true, -- Curse of Tongues
 	[702]   = true, -- Curse of Weakness
 	[1490]  = true, -- Curse of the Elements
@@ -699,7 +693,6 @@ enemy_debuffs.WARLOCK = {
 	[17877] = true, -- Shadowburn
 	[30283] = true, -- Shadowfury
 	[6726]  = true, -- Silence
-	[18265] = not wrath_310 or nil, -- Siphon Life
 	[6360]  = true, -- Soothing Kiss
 	[19244] = true, -- Spell Lock
 	[17735] = true, -- Suffering
