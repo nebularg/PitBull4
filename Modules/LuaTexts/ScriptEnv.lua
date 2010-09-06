@@ -626,7 +626,7 @@ ScriptEnv.DruidForm = DruidForm
 
 local DIVINE_INTERVENTION = GetSpellInfo(19752)
 local function Status(unit)
-	return Offline(unit) or UnitAura(unit,DIVINE_INTERVENTION) or (UnitIsFeignDeath(unit) and L["Feigned Death"]) or Dead(unit)
+	return Offline(unit) or (DIVINE_INTERVENTION and UnitAura(unit,DIVINE_INTERVENTION)) or (UnitIsFeignDeath(unit) and L["Feigned Death"]) or Dead(unit)
 end
 ScriptEnv.Status = Status
 
