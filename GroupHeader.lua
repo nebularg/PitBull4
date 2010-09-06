@@ -13,6 +13,11 @@ local MINIMUM_EXAMPLE_GROUP = 2
 -- work when running ForceShow
 local in_force_show = false
 
+-- Detect if GroupCreations are failing, if they are stop bothering
+-- with them.  This is to avoid problems on the Cata Beta where the
+-- Templates for GroupHeaders are broken.
+PitBull4.GroupCreationStatus = true
+
 --- Make a group header.
 -- @param group the name for the group. Also acts as a unique identifier.
 -- @usage local header = PitBull4:MakeGroupHeader("Monkey")
@@ -20,6 +25,7 @@ function PitBull4:MakeGroupHeader(group)
 	if DEBUG then
 		expect(group, 'typeof', 'string')
 	end
+	if not PitBull4.GroupCreationStatus then return end
 	
 	local group_db = PitBull4.db.profile.groups[group]
 	local pet_based = not not group_db.unit_group:match("pet") -- this feels dirty
@@ -40,7 +46,9 @@ function PitBull4:MakeGroupHeader(group)
 		else
 			template = "SecureGroupHeaderTemplate"
 		end
-		header = CreateFrame("Frame", header_name, UIParent, template)
+		PitBull4.GroupCreationStatus, header = pcall(CreateFrame, "Frame", header_name, UIParent, template)
+		if not PitBull4.GroupCreationStatus then return end
+--		header = CreateFrame("Frame", header_name, UIParent, template)
 		header:Hide() -- it will be shown later and attributes being set won't cause lag
 		
 		header.name = group
