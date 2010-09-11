@@ -10,6 +10,8 @@ local PitBull4_Aura = PitBull4:GetModule("Aura")
 local MAINHAND = PitBull4_Aura.MAINHAND
 local OFFHAND = PitBull4_Aura.OFFHAND
 
+local wow_400 = select(4, GetBuildInfo()) >= 40000
+
 -- Table of functions included into the aura controls
 local Aura = {}
 
@@ -137,8 +139,11 @@ end
 -- Control for the Auras
 PitBull4.Controls.MakeNewControlType("Aura", "Button", function(control)
 	-- onCreate
-	control:RegisterForClicks("RightButtonUp")
-	control:SetScript("OnClick", OnClick)
+	if not wow_400 then
+		-- Disabled in Cataclysm since the functions are all protected now.
+		control:RegisterForClicks("RightButtonUp")
+		control:SetScript("OnClick", OnClick)
+	end
 
 	local texture = PitBull4.Controls.MakeTexture(control, "BACKGROUND")
 	control.texture = texture
