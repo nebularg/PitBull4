@@ -22,8 +22,19 @@ function PitBull4_RoleIcon:OnEnable()
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED")
 end
 
+function PitBull4_RoleIcon:GetRole(unit)
+	local isTank, isHealer, isDamage = UnitGroupRolesAssigned(unit)
+	if type(isTank) == "string" then
+		-- Support for Cataclysm.
+		isDamage = isTank == "DAMAGER"
+		isHealer = isTank == "HEALER"
+		isTank = isTank == "TANK"
+	end
+	return isTank, isHealer, isDamage
+end
+
 function PitBull4_RoleIcon:GetTexture(frame)
-	local isTank, isHealer, isDamage = UnitGroupRolesAssigned(frame.unit)
+	local isTank, isHealer, isDamage = self:GetRole(frame.unit)
 	if not isTank and not isHealer and not isDamage then
 		return nil
 	end
@@ -45,7 +56,7 @@ local tex_coords = {
 }
 
 function PitBull4_RoleIcon:GetTexCoord(frame)
-	local isTank, isHealer, isDamage = UnitGroupRolesAssigned(frame.unit)
+	local isTank, isHealer, isDamage = self:GetRole(frame.unit)
 	if isTank then
 		tex_coord = tex_coords[1]
 	elseif isHealer then
@@ -59,7 +70,7 @@ end
 
 function PitBull4_RoleIcon:GetExampleTexCoord(frame)
 	local tex_coord
-	local isTank, isHealer, isDamage = UnitGroupRolesAssigned(frame.unit)
+	local isTank, isHealer, isDamage = self:GetRole(frame.unit)
 	if isTank then
 		tex_coord = tex_coords[1]
 	elseif isHealer then
