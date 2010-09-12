@@ -13,11 +13,6 @@ local MINIMUM_EXAMPLE_GROUP = 2
 -- work when running ForceShow
 local in_force_show = false
 
--- Detect if GroupCreations are failing, if they are stop bothering
--- with them.  This is to avoid problems on the Cata Beta where the
--- Templates for GroupHeaders are broken.
-PitBull4.GroupCreationStatus = true
-
 --- Make a group header.
 -- @param group the name for the group. Also acts as a unique identifier.
 -- @usage local header = PitBull4:MakeGroupHeader("Monkey")
@@ -25,7 +20,6 @@ function PitBull4:MakeGroupHeader(group)
 	if DEBUG then
 		expect(group, 'typeof', 'string')
 	end
-	if not PitBull4.GroupCreationStatus then return end
 	
 	local group_db = PitBull4.db.profile.groups[group]
 	local pet_based = not not group_db.unit_group:match("pet") -- this feels dirty
@@ -46,9 +40,7 @@ function PitBull4:MakeGroupHeader(group)
 		else
 			template = "SecureGroupHeaderTemplate"
 		end
-		PitBull4.GroupCreationStatus, header = pcall(CreateFrame, "Frame", header_name, UIParent, template)
-		if not PitBull4.GroupCreationStatus then return end
---		header = CreateFrame("Frame", header_name, UIParent, template)
+		header = CreateFrame("Frame", header_name, UIParent, template)
 		header:Hide() -- it will be shown later and attributes being set won't cause lag
 		
 		header.name = group
@@ -251,6 +243,9 @@ function GroupHeader:RefixSizeAndPosition()
 	local unit_height = layout_db.size_y * group_db.size_y 
 	local x_diff = unit_width / 2 * -DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction]
 	local y_diff = unit_height / 2 * -DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction]
+
+	updated = self:ProxySetAttribute('unitWidth',unit_width) or updated
+	updated = self:ProxySetAttribute('unitHeight',unit_height) or updated
 
 	-- Set minimum width and height.  If we don't do this then
 	-- SecureTemplates will calculate the size dynamically and these
@@ -492,7 +487,16 @@ GroupHeader.RefreshLayout = PitBull4:OutOfCombatWrapper(GroupHeader.RefreshLayou
 --- Initialize a member frame. This should be called once per member frame immediately following the frame's creation.
 -- @usage header:InitializeConfigFunction(frame)
 function GroupHeader:InitialConfigFunction(frame)
-	self[#self+1] = frame
+	if not frame then
+		-- Cataclysm, the frame is not passed into us but the new
+		-- GroupHeader does set the 1..n array slots to the frames.
+		-- Since this function is only called on the creation of a new
+		-- frame the newest frame will always be the last array slot
+		frame = self[#self]
+	else
+		-- pre Cataclysm
+		self[#self+1] = frame
+	end
 	frame.header = self
 	frame.is_singleton = false
 	frame.classification = self.name
@@ -503,18 +507,20 @@ function GroupHeader:InitialConfigFunction(frame)
 	frame.layout = layout
 	
 	PitBull4:ConvertIntoUnitFrame(frame)
+
+	if frame:CanChangeAttribute() then
+		if self.unitsuffix then
+			frame:ProxySetAttribute("unitsuffix", self.unitsuffix)
+		end
 	
-	if self.unitsuffix then
-		frame:ProxySetAttribute("unitsuffix", self.unitsuffix)
+		local layout_db = PitBull4.db.profile.layouts[layout]
+		frame.layout_db = layout_db
+	
+		frame:ProxySetAttribute("initial-width", layout_db.size_x * self.group_db.size_x)
+		frame:ProxySetAttribute("initial-height", layout_db.size_y * self.group_db.size_y)
+		frame:ProxySetAttribute("initial-unitWatch", true)
 	end
-	
-	local layout_db = PitBull4.db.profile.layouts[layout]
-	frame.layout_db = layout_db
-	
-	frame:ProxySetAttribute("initial-width", layout_db.size_x * self.group_db.size_x)
-	frame:ProxySetAttribute("initial-height", layout_db.size_y * self.group_db.size_y)
-	frame:ProxySetAttribute("initial-unitWatch", true)
-	
+
 	frame:_RefreshLayout() -- Normally protected by an OutOfCombatWrapper
 end
 
@@ -1148,8 +1154,6 @@ function MemberUnitFrame:RefixSizeAndPosition()
 	local layout_db = self.layout_db
 	local classification_db = self.classification_db
 	
-	self:SetFrameStrata(layout_db.strata)
-	self:SetFrameLevel(layout_db.level)
 	self:SetWidth(layout_db.size_x * classification_db.size_x)
 	self:SetHeight(layout_db.size_y * classification_db.size_y)
 end
@@ -1188,6 +1192,21 @@ function PitBull4:ConvertIntoGroupHeader(header)
 	function header.initialConfigFunction(...)
 		return header:InitialConfigFunction(...)
 	end
+
+	header:SetAttribute("initialConfigFunction",
+	[[
+		local header = self:GetParent()
+		header:CallMethod("InitialConfigFunction")
+		local unitsuffix = header:GetAttribute("unitsuffix")
+		if unitsuffix then
+			self:SetAttribute("unitsuffix",unitsuffix)
+		end
+		self:SetWidth(header:GetAttribute("unitWidth"))
+		self:SetHeight(header:GetAttribute("unitHeight"))
+		RegisterUnitWatch(self)
+		self:SetAttribute("*type1", "target")
+		self:SetAttribute("*type2", "menu")
+	]])
 	
 	header:RefreshGroup(true)
 	
