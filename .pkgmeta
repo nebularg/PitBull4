@@ -84,6 +84,7 @@ move-folders:
     PitBull4/Modules/HealthBar: PitBull4_HealthBar
     PitBull4/Modules/HideBlizzard: PitBull4_HideBlizzard
     PitBull4/Modules/Highlight: PitBull4_Highlight
+    PitBull4/Modules/HolyPower: PitBull4_HolyPower
     PitBull4/Modules/HostilityFader: PitBull4_HostilityFader
     PitBull4/Modules/LeaderIcon: PitBull4_LeaderIcon
     PitBull4/Modules/LuaTexts: PitBull4_LuaTexts
