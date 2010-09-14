@@ -1509,7 +1509,9 @@ StateHeader:WrapScript(StateHeader, "OnAttributeChanged", [[
 
   if header then
     -- header is set so this is a single header update
-    if state and header:GetAttribute(state) then
+    -- We must check groups[value] here so that we don't try to show
+    -- frames that we're removing.
+    if state and groups[value] and header:GetAttribute(state) then
       header:Show()
     else
       header:Hide()
