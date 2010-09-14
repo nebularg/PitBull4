@@ -1,6 +1,6 @@
 if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
-if select(2, UnitClass("player")) ~= "PALADIN" or not PowerBarColor["HOLY_POWER"] then
+if select(2, UnitClass("player")) ~= "WARLOCK" or not PowerBarColor["SOUL_SHARDS"] then
 	return
 end
 
@@ -8,7 +8,7 @@ end
 
 local module_path = _G.debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z0-9]-%.lua")
 
-local ICON_TEXTURE = [[Interface\AddOns\]] .. module_path .. [[\Holy]]
+local ICON_TEXTURE = [[Interface\AddOns\]] .. module_path .. [[\Shard]]
 local SHINE_TEXTURE = [[Interface\AddOns\]] .. module_path .. [[\Shine]]
 
 local STANDARD_SIZE = 15
@@ -20,30 +20,28 @@ local INVERSE_SHINE_HALF_TIME = 1 / SHINE_HALF_TIME
 local UNREADY_ALPHA = 0.6
 local READY_ALPHA = 1
 
+local SOUL_SHARD_COLOR = assert(PowerBarColor["SOUL_SHARDS"])
+
 -----------------------------------------------------------------------------
 
-local HolyIcon = {}
-local HolyIcon_scripts = {}
+local L = PitBull4.L
 
-local tmp_color = { 1, 1, 1, 1 }
-function HolyIcon:UpdateTexture(active_color, inactive_color)
+local SoulShard = {}
+local SoulShard_scripts = {}
+
+function SoulShard:UpdateTexture()
 	self:SetNormalTexture(ICON_TEXTURE)
-	if active_color then
-		self.active_color = active_color
-		self.inactive_color = inactive_color
-	else
-		active_color = self.active_color
-		inactive_color = self.inactive_color
-	end
 	local texture = self:GetNormalTexture()
 	if self.active then
-		texture:SetVertexColor(unpack(active_color or tmp_color))
+		texture:SetDesaturated(false)
+		texture:SetAlpha(READY_ALPHA)
 	else
-		texture:SetVertexColor(unpack(inactive_color or tmp_color))
+		texture:SetDesaturated(true)
+		texture:SetAlpha(UNREADY_ALPHA)
 	end
 end
 
-local function HolyIcon_OnUpdate(self, elapsed)
+local function SoulShard_OnUpdate(self, elapsed)
 	local shine_time = self.shine_time + elapsed
 	
 	if shine_time > SHINE_TIME then
@@ -61,7 +59,7 @@ local function HolyIcon_OnUpdate(self, elapsed)
 	end
 end
 
-function HolyIcon:Activate()
+function SoulShard:Activate()
 	if self.active then
 		return
 	end
@@ -70,7 +68,7 @@ function HolyIcon:Activate()
 	self:UpdateTexture()
 end
 
-function HolyIcon:Deactivate()
+function SoulShard:Deactivate()
 	if not self.active then
 		return
 	end
@@ -78,7 +76,7 @@ function HolyIcon:Deactivate()
 	self:UpdateTexture()
 end
 
-function HolyIcon:Shine()
+function SoulShard:Shine()
 	local shine = self.shine
 	if not shine then
 		shine = PitBull4.Controls.MakeTexture(self, "OVERLAY")
@@ -87,29 +85,29 @@ function HolyIcon:Shine()
 		shine:SetBlendMode("ADD")
 		shine:SetAlpha(0)
 		shine:SetAllPoints(self)
-		shine:SetVertexColor(unpack(self.active_color or tmp_color))
-		self:SetScript("OnUpdate", HolyIcon_OnUpdate)
+		shine:SetVertexColor(SOUL_SHARD_COLOR.r, SOUL_SHARD_COLOR.g, SOUL_SHARD_COLOR.b)
+		self:SetScript("OnUpdate", SoulShard_OnUpdate)
 	end
 	self.shine_time = 0
 end
 
-function HolyIcon_scripts:OnEnter()
+function SoulShard_scripts:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-	GameTooltip:SetText(HOLY_POWER_COST:format(UnitPower("player", SPELL_POWER_HOLY_POWER)))
+	GameTooltip:SetText(L["%d soul shards"]:format(UnitPower("player", SPELL_POWER_SOUL_SHARDS)))
 	GameTooltip:Show()
 end
 
-function HolyIcon_scripts:OnLeave()
+function SoulShard_scripts:OnLeave()
 	GameTooltip:Hide()
 end
 
-PitBull4.Controls.MakeNewControlType("HolyIcon", "Button", function(control)
+PitBull4.Controls.MakeNewControlType("SoulShard", "Button", function(control)
 	-- onCreate
 	
-	for k, v in pairs(HolyIcon) do
+	for k, v in pairs(SoulShard) do
 		control[k] = v
 	end
-	for k, v in pairs(HolyIcon_scripts) do
+	for k, v in pairs(SoulShard_scripts) do
 		control:SetScript(k, v)
 	end
 end, function(control, id)

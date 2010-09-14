@@ -36,6 +36,7 @@
 <Include file="Modules\RestIcon\load.xml"/>
 <Include file="Modules\RoleIcon\load.xml"/>
 <Include file="Modules\Runes\load.xml"/>
+<Include file="Modules\SoulShards\load.xml"/>
 <Include file="Modules\Sounds\load.xml"/>
 <Include file="Modules\ThreatBar\load.xml"/>
 <Include file="Modules\Totems\load.xml"/>
