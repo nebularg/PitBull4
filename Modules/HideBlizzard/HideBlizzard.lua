@@ -7,6 +7,8 @@ end
 
 local L = PitBull4.L
 
+local wow_400 = select(4,GetBuildInfo()) >= 40000
+
 local PitBull4_HideBlizzard = PitBull4:NewModule("HideBlizzard")
 
 PitBull4_HideBlizzard:SetModuleType("custom")
@@ -155,15 +157,26 @@ end
 function hiders:aura()
 	BuffFrame:Hide()
 	TemporaryEnchantFrame:Hide()
+	ConsolidatedBuffs:Hide()
 	BuffFrame:UnregisterAllEvents()
 end
 
 function showers:aura()
 	BuffFrame:Show()
+	if GetCVarBool("consolidateBuffs") then
+		ConsolidatedBuffs:Show()
+	end
 	TemporaryEnchantFrame:Show()
-	BuffFrame:GetScript("OnLoad")(BuffFrame)
 
-	BuffFrame_Update()
+	-- Can't use OnLoad because doing so resets some variables which
+	-- requires an update to get the frame back in the proper state,
+	-- which in Cata causes taint.
+	BuffFrame:RegisterEvent("UNIT_AURA")
+
+	-- This isn't perfect.  It doesn't update the buffs till the next
+	-- aura update.  However, in Cata it causes taint to force the update.
+	-- However, it should work for 99% of peoples use cases, which is toggling
+	-- it on and off to see what it does or setting it and leaving it set.
 end
 
 for k, v in pairs(hiders) do
