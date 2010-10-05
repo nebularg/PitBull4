@@ -191,7 +191,17 @@ for class, color in pairs(RAID_CLASS_COLORS) do
 end
 for power_token, color in pairs(PowerBarColor) do
 	if type(power_token) == "string" then
-		DATABASE_DEFAULTS.profile.colors.power[power_token] = { color.r, color.g, color.b }
+		if color.r then
+			DATABASE_DEFAULTS.profile.colors.power[power_token] = { color.r, color.g, color.b }
+		elseif power_token == "ECLIPSE" then
+			local negative, positive = color.negative, color.positive
+			if negative then
+				DATABASE_DEFAULTS.profile.colors.power["BALANCE_NEGATIVE_ENERGY"] = { negative.r, negative.g, negative.b }
+			end
+			if positive then
+				DATABASE_DEFAULTS.profile.colors.power["BALANCE_POSITIVE_ENERGY"] = { positive.r, positive.g, positive.b }
+			end
+		end
 	end
 end
 DATABASE_DEFAULTS.profile.colors.power["POWER_TYPE_PYRITE"] = { 0, 0.79215693473816, 1 }
