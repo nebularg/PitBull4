@@ -15,6 +15,7 @@
 <Include file="Modules\ComboPoints\load.xml"/>
 <Include file="Modules\DogTagTexts\load.xml"/>
 <Include file="Modules\DruidManaBar\load.xml"/>
+<Include file="Modules\Eclipse\load.xml"/>
 <Include file="Modules\ExperienceBar\load.xml"/>
 <Include file="Modules\HappinessIcon\load.xml"/>
 <Include file="Modules\HealthBar\load.xml"/>

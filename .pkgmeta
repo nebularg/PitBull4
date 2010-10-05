@@ -79,6 +79,7 @@ move-folders:
     PitBull4/Modules/ComboPoints: PitBull4_ComboPoints
     PitBull4/Modules/DogTagTexts: PitBull4_DogTagTexts
     PitBull4/Modules/DruidManaBar: PitBull4_DruidManaBar
+    PitBull4/Modules/Eclipse: PitBull4_Eclipse
     PitBull4/Modules/ExperienceBar: PitBull4_ExperienceBar
     PitBull4/Modules/HappinessIcon: PitBull4_HappinessIcon
     PitBull4/Modules/HealthBar: PitBull4_HealthBar
