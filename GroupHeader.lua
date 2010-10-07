@@ -421,7 +421,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	end
 	self:SetAttribute("sortMethod", sort_method)
 	self:SetAttribute("sortDir", sort_direction)
-	self:SetAttribute("template", "SecureUnitButtonTemplate")
+	self:SetAttribute("template", "PitBull4_UnitTemplate_Clique")
 	self:SetAttribute("templateType", "Button")
 	self:SetAttribute("groupBy", group_by)
 	local order = GROUPING_ORDER[group_db.group_by]
@@ -1187,6 +1187,12 @@ function PitBull4:ConvertIntoGroupHeader(header)
 	for k, v in pairs(GroupHeader) do
 		header[k] = v
 	end
+
+	if Clique and Clique.header then
+		SecureHandler_OnLoad(header)
+		header:SetFrameRef("clickcast_header", Clique.header)
+		PitBull4.CataClique = true
+	end
 	
 	-- this is done to pass self in properly
 	function header.initialConfigFunction(...)
@@ -1195,18 +1201,24 @@ function PitBull4:ConvertIntoGroupHeader(header)
 
 	header:SetAttribute("initialConfigFunction",
 	[[
-		local header = self:GetParent()
-		header:CallMethod("InitialConfigFunction")
-		local unitsuffix = header:GetAttribute("unitsuffix")
-		if unitsuffix then
-			self:SetAttribute("unitsuffix",unitsuffix)
-		end
-		self:SetWidth(header:GetAttribute("unitWidth"))
-		self:SetHeight(header:GetAttribute("unitHeight"))
-		RegisterUnitWatch(self)
-		self:SetAttribute("*type1", "target")
-		self:SetAttribute("*type2", "menu")
-	]])
+  local header = self:GetParent()
+  header:CallMethod("InitialConfigFunction")
+  local unitsuffix = header:GetAttribute("unitsuffix")
+  if unitsuffix then
+    self:SetAttribute("unitsuffix",unitsuffix)
+  end
+  self:SetWidth(header:GetAttribute("unitWidth"))
+  self:SetHeight(header:GetAttribute("unitHeight"))
+  RegisterUnitWatch(self)
+  self:SetAttribute("*type1", "target")
+  self:SetAttribute("*type2", "menu")
+  -- Support for Clique
+    local clickcast_header = header:GetFrameRef("clickcast_header")
+    if clickcast_header then
+      clickcast_header:SetAttribute("clickcast_button", self)
+      clickcast_header:RunAttribute("clickcast_register")
+    end
+  ]])
 	
 	header:RefreshGroup(true)
 	
