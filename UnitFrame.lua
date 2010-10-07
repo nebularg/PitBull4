@@ -399,7 +399,7 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 		_G.ClickCastFrames[frame] = true
 		self.singleton_frames[frame] = true
 	else
-		if not PitBull4.CataClique then
+		if not ClickCastHeader then
 			-- member unit frames are handled differently in cata.
 			-- See the initialConfigFunction attribute on the GroupHeader.
 			_G.ClickCastFrames[frame] = true

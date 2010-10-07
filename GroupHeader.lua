@@ -1188,10 +1188,9 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		header[k] = v
 	end
 
-	if Clique and Clique.header then
+	if ClickCastHeader then
 		SecureHandler_OnLoad(header)
-		header:SetFrameRef("clickcast_header", Clique.header)
-		PitBull4.CataClique = true
+		header:SetFrameRef("clickcast_header", ClickCastHeader)
 	end
 	
 	-- this is done to pass self in properly
@@ -1201,18 +1200,18 @@ function PitBull4:ConvertIntoGroupHeader(header)
 
 	header:SetAttribute("initialConfigFunction",
 	[[
-  local header = self:GetParent()
-  header:CallMethod("InitialConfigFunction")
-  local unitsuffix = header:GetAttribute("unitsuffix")
-  if unitsuffix then
-    self:SetAttribute("unitsuffix",unitsuffix)
-  end
-  self:SetWidth(header:GetAttribute("unitWidth"))
-  self:SetHeight(header:GetAttribute("unitHeight"))
-  RegisterUnitWatch(self)
-  self:SetAttribute("*type1", "target")
-  self:SetAttribute("*type2", "menu")
-  -- Support for Clique
+    local header = self:GetParent()
+    header:CallMethod("InitialConfigFunction")
+    local unitsuffix = header:GetAttribute("unitsuffix")
+    if unitsuffix then
+      self:SetAttribute("unitsuffix",unitsuffix)
+    end
+    self:SetWidth(header:GetAttribute("unitWidth"))
+    self:SetHeight(header:GetAttribute("unitHeight"))
+    RegisterUnitWatch(self)
+    self:SetAttribute("*type1", "target")
+    self:SetAttribute("*type2", "menu")
+    -- Support for Clique
     local clickcast_header = header:GetFrameRef("clickcast_header")
     if clickcast_header then
       clickcast_header:SetAttribute("clickcast_button", self)
