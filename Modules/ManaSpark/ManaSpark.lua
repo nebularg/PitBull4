@@ -9,6 +9,8 @@ end
 
 local L = PitBull4.L
 
+local cata_400 = select(4,GetBuildInfo()) >= 40000
+
 local PitBull4_ManaSpark = PitBull4:NewModule("ManaSpark", "AceEvent-3.0")
 
 PitBull4_ManaSpark:SetModuleType("custom")
@@ -34,8 +36,12 @@ function PitBull4_ManaSpark:OnEnable()
 	timerFrame:Show()
 	
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	self:RegisterEvent("UNIT_MANA")
-	self:RegisterEvent("UNIT_DISPLAYPOWER")
+	if cata_400 then
+		self:RegisterEvent("UNIT_POWER")
+	else
+		self:RegisterEvent("UNIT_MANA","UNIT_POWER")
+	end
+	self:RegisterEvent("UNIT_DISPLAYPOWER","UNIT_POWER")
 	
 	current_mana = UnitPower("player", MANA_TYPE)
 end
@@ -122,8 +128,8 @@ end
 
 PitBull4_ManaSpark.OnHide = PitBull4_ManaSpark.ClearFrame
 
-function PitBull4_ManaSpark:UNIT_MANA(event, unit)
-	if unit ~= 'player' then
+function PitBull4_ManaSpark:UNIT_POWER(event, unit, power_type)
+	if unit ~= 'player' or (event == "UNIT_POWER" and power_type ~= "MANA") then
 		return
 	end
 	local new_mana = UnitPower('player', MANA_TYPE)
@@ -133,8 +139,6 @@ function PitBull4_ManaSpark:UNIT_MANA(event, unit)
 	end
 	current_mana = new_mana
 end
-
-PitBull4_ManaSpark.UNIT_DISPLAYPOWER = PitBull4_ManaSpark.UNIT_MANA
 
 function PitBull4_ManaSpark:UNIT_SPELLCAST_SUCCEEDED(event, unit)
 	if unit ~= 'player' then
