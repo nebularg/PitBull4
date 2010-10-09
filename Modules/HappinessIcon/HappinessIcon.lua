@@ -9,6 +9,8 @@ end
 
 local L = PitBull4.L
 
+local cata_400 = select(4,GetBuildInfo()) >= 40000
+
 local PitBull4_HappinessIcon = PitBull4:NewModule("HappinessIcon", "AceEvent-3.0")
 
 PitBull4_HappinessIcon:SetModuleType("indicator")
@@ -23,7 +25,11 @@ PitBull4_HappinessIcon:SetDefaults({
 })
 
 function PitBull4_HappinessIcon:OnEnable()
-	self:RegisterEvent("UNIT_HAPPINESS")
+	if cata_400 then
+		self:RegisterEvent("UNIT_POWER")
+	else
+		self:RegisterEvent("UNIT_HAPPINESS","UNIT_POWER")
+	end
 end
 
 function PitBull4_HappinessIcon:GetTexture(frame)
@@ -69,7 +75,8 @@ function PitBull4_HappinessIcon:GetExampleTexCoord()
 	return tex_coord[1], tex_coord[2], tex_coord[3], tex_coord[4]
 end
 
-function PitBull4_HappinessIcon:UNIT_HAPPINESS()
+function PitBull4_HappinessIcon:UNIT_POWER(event, power_type)
+	if event == "UNIT_POWER" and power_type ~= "HAPPINESS" then return end
 	self:UpdateForUnitID("pet")
 end
 
