@@ -9,6 +9,8 @@ end
 
 local L = PitBull4.L
 
+local cata_400 = select(4,GetBuildInfo()) >= 40000
+
 local PitBull4_DruidManaBar = PitBull4:NewModule("DruidManaBar", "AceEvent-3.0", "AceTimer-3.0")
 
 PitBull4_DruidManaBar:SetModuleType("bar")
@@ -27,9 +29,14 @@ local MANA_TYPE = 0
 local power_type = nil
 
 function PitBull4_DruidManaBar:OnEnable()
-	PitBull4_DruidManaBar:RegisterEvent("UNIT_MANA")
-	PitBull4_DruidManaBar:RegisterEvent("UNIT_DISPLAYPOWER")
-	PitBull4_DruidManaBar:RegisterEvent("UNIT_MAXMANA")
+	if cata_400 then
+		PitBull4_DruidManaBar:RegisterEvent("UNIT_POWER")
+		PitBull4_DruidManaBar:RegisterEvent("UNIT_MAXPOWER","UNIT_POWER")
+	else
+		PitBull4_DruidManaBar:RegisterEvent("UNIT_MANA","UNIT_POWER")
+		PitBull4_DruidManaBar:RegisterEvent("UNIT_MAXMANA","UNIT_POWER")
+	end
+	PitBull4_DruidManaBar:RegisterEvent("UNIT_DISPLAYPOWER","UNIT_POWER")
 end
 
 function PitBull4_DruidManaBar:GetValue(frame)
@@ -61,8 +68,8 @@ function PitBull4_DruidManaBar:GetColor(frame, value)
 end
 PitBull4_DruidManaBar.GetExampleColor = PitBull4_DruidManaBar.GetColor
 
-function PitBull4_DruidManaBar:UNIT_MANA(event, unit)
-	if unit ~= "player" then
+function PitBull4_DruidManaBar:UNIT_POWER(event, unit, power_type)
+	if unit ~= "player" or ((event == "UNIT_POWER" or event == "UNIT_MAXPOWER") and power_type ~= "MANA") then
 		return
 	end
 
@@ -79,9 +86,6 @@ function PitBull4_DruidManaBar:UNIT_MANA(event, unit)
 		self:Update(frame)
 	end
 end
-
-PitBull4_DruidManaBar.UNIT_MAXMANA = PitBull4_DruidManaBar.UNIT_MANA
-PitBull4_DruidManaBar.UNIT_DISPLAYPOWER = PitBull4_DruidManaBar.UNIT_MANA
 
 PitBull4_DruidManaBar:SetLayoutOptionsFunction(function(self)
 	return 'hide_if_full', {
