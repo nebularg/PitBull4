@@ -7,6 +7,8 @@ end
 
 local L = PitBull4.L
 
+local cata_400 = select(4,GetBuildInfo()) >= 40000
+
 local PitBull4_CombatFader = PitBull4:NewModule("CombatFader", "AceEvent-3.0")
 
 PitBull4_CombatFader:SetModuleType("fader")
@@ -37,11 +39,15 @@ function PitBull4_CombatFader:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterEvent("UNIT_HEALTH")
-	self:RegisterEvent("UNIT_MANA")
-	self:RegisterEvent("UNIT_RAGE")
-	self:RegisterEvent("UNIT_ENERGY")
-	self:RegisterEvent("UNIT_RUNIC_POWER")
-	self:RegisterEvent("UNIT_DISPLAYPOWER")
+	if cata_400 then
+		self:RegisterEvent("UNIT_POWER","UNIT_HEALTH")
+	else
+		self:RegisterEvent("UNIT_MANA","UNIT_HEALTH")
+		self:RegisterEvent("UNIT_RAGE","UNIT_HEALTH")
+		self:RegisterEvent("UNIT_ENERGY","UNIT_HEALTH")
+		self:RegisterEvent("UNIT_RUNIC_POWER","UNIT_HEALTH")
+	end
+	self:RegisterEvent("UNIT_DISPLAYPOWER","UNIT_HEALTH")
 	
 	self:RecalculateState()
 	timerFrame:Show()
@@ -49,17 +55,20 @@ end
 
 local power_check = {
 	MANA = function()
-		return UnitMana('player') < UnitManaMax('player')
+		return UnitPower('player') < UnitPowerMax('player')
 	end,
 	RAGE = function()
 		-- this seems counter-intuitive, but if rage > 0, you're up for fighting
-		return UnitMana('player') > 0
+		return UnitPower('player') > 0
 	end,
 	ENERGY = function()
-		return UnitMana('player') < UnitManaMax('player')
+		return UnitPower('player') < UnitPowerMax('player')
+	end,
+	FOCUS = function()
+		return UnitPower('player') < UnitPowerMax('player')
 	end,
 	RUNICPOWER = function()
-		return UnitMana('player') > 0
+		return UnitPower('player') > 0
 	end,
 }
 
@@ -96,12 +105,6 @@ function PitBull4_CombatFader:UNIT_HEALTH(event, unit)
 	
 	return self:PLAYER_REGEN_ENABLED()
 end
-
-PitBull4_CombatFader.UNIT_MANA = PitBull4_CombatFader.UNIT_HEALTH
-PitBull4_CombatFader.UNIT_RAGE = PitBull4_CombatFader.UNIT_HEALTH
-PitBull4_CombatFader.UNIT_ENERGY = PitBull4_CombatFader.UNIT_HEALTH
-PitBull4_CombatFader.UNIT_RUNIC_POWER = PitBull4_CombatFader.UNIT_HEALTH
-PitBull4_CombatFader.UNIT_DISPLAYPOWER = PitBull4_CombatFader.UNIT_HEALTH
 
 function PitBull4_CombatFader:GetOpacity(frame)
 	local layout_db = self:GetLayoutDB(frame)
