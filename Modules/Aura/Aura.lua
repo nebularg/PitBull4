@@ -50,14 +50,14 @@ function PitBull4_Aura:OnEnable()
 	self:RegisterEvent("UNIT_AURA")
 	timerFrame:Show()
 
-	-- Need to track talents for Shaman since it can change what they
-	-- can dispel.
+	-- Need to track talents for Shaman, Druids and Paladins since it
+	-- can change what they can dispel.
 	local _,player_class = UnitClass('player')
-	if player_class == 'SHAMAN' then
+	if player_class == 'SHAMAN' or player_class == 'DRUID' or player_class == 'PALADIN' then
 		self:RegisterEvent("PLAYER_TALENT_UPDATE")
 		self:RegisterEvent("CHARACTER_POINTS_CHANGED","PLAYER_TALENT_UPDATE")
-		-- Update the Shaman can dispel filter
-		PitBull4_Aura:GetFilterDB('23').aura_type_list.Curse = PitBull4_Aura.can_dispel.SHAMAN.Curse
+		-- Update the can dispel filters
+		PitBull4_Aura:PLAYER_TALENT_UPDATE()
 	end
 end
 

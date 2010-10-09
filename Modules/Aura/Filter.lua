@@ -52,6 +52,7 @@ local can_dispel = {
 	DRUID = {
 		Curse = true,
 		Poison = true,
+		Magic = scan_for_known_talent(88423),
 	},
 	HUNTER = {
 		Magic = true,
@@ -61,7 +62,7 @@ local can_dispel = {
 		Curse = true,
 	},
 	PALADIN = {
-		Magic = true,
+		Magic = not cata_400 or scan_for_known_talent(53551),
 		Poison = true,
 		Disease = true,
 	},
@@ -73,9 +74,10 @@ local can_dispel = {
 		Enrage = true,
 	},
 	SHAMAN = {
-		Poison = true,
-		Disease = true,
-		Curse = scan_for_known_talent(51886),
+		Poison = not cata_400,
+		Disease = not cata_400,
+		Curse = cata_400 or scan_for_known_talent(51886),
+		Magic = cata_400 and scan_for_known_talent(77130),
 	},
 	WARLOCK = {
 		Magic = true,
@@ -87,15 +89,28 @@ local can_dispel = {
 can_dispel.player = can_dispel[player_class]
 PitBull4_Aura.can_dispel = can_dispel
 
--- Handle PLAYER_TALENT_CHANGED and CHARACTER_POINTS_CHANGED events.
--- If the points aren't changed due to leveling, rescan the talents
--- for the relevent talents that change what we can dispel.
-function PitBull4_Aura:PLAYER_TALENT_UPDATE(event, count, levels)
-	-- Not interested in gained points from leveling	
-	if event == "CHARACTER_POINTS_CHANGED" and levels > 0 then return end
-	local curse = scan_for_known_talent(51886)
-	can_dispel.SHAMAN.Curse = curse -- can_dispel table
-	self:GetFilterDB('23').aura_type_list.Curse = curse -- Shaman can dispel filter
+-- Handle PLAYER_TALENT_UPDATE event .
+-- Rescan the talents for the relevent talents that change
+-- what we can dispel.
+function PitBull4_Aura:PLAYER_TALENT_UPDATE(event)
+	if cata_400 then
+		local shaman_magic = scan_for_known_talent(77130)
+		can_dispel.SHAMAN.Magic = shaman_magic 
+		self:GetFilterDB('23').aura_type_list.Magic = shaman_magic
+
+		local druid_magic = scan_for_known_talent(88423)
+		can_dispel.DRUID.Magic = druid_magic
+		self:GetFilterDB(',3').aura_type_list.Magic = druid_magic
+
+		local paladin_magic = scan_for_known_talent(53551)
+		can_dispel.PALADIN.Magic = paladin_magic
+		self:GetFilterDB('/3').aura_type_list.Magic = paladin_magic
+	else
+		-- Wrath support
+		local shaman_curse = scan_for_known_talent(51886)
+		can_dispel.SHAMAN.Curse = shaman_curse
+		self:GetFilterDB('23').aura_type_list.Curse = shaman_curse
+	end
 end
 
 -- Setup the data for which auras belong to whom
