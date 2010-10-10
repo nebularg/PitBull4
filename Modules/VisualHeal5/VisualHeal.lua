@@ -60,12 +60,12 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 
 	local player_healing = UnitGetIncomingHeals(unit, 'player')
 	local all_healing = UnitGetIncomingHeals(unit)
-	local others_healing = all_healing - player_healing
-
 	-- Bail out early if nothing going on for this unit
-	if not player_healing and not others_healing then
+	if not player_healing or not all_healing then
 		return self:ClearFrame(frame)
 	end
+	local others_healing = all_healing - player_healing
+
 
 	local unit_health_max = UnitHealthMax(unit)
 	local current_percent = UnitHealth(unit) / unit_health_max
