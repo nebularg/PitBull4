@@ -7,6 +7,8 @@ end
 
 local L = PitBull4.L
 
+local cata_400 = select(4,GetBuildInfo()) >= 40000
+
 local PitBull4_LuaTexts = PitBull4:NewModule("LuaTexts","AceEvent-3.0","AceHook-3.0")
 
 local texts = {}
@@ -230,7 +232,7 @@ end]],
 	},
 	[L["Power"]] = {
 		[L["Absolute"]] = {
-			events = {['UNIT_MANA']=true,['UNIT_RAGE']=true,['UNIT_FOCUS']=true,['UNIT_ENERGY']=true,['UNIT_RUNIC_POWER']=true,['UNIT_MAXMANA']=true,['UNIT_MAXRAGE']=true,['UNIT_MAXFOCUS']=true,['UNIT_MAXENERGY']=true,['UNIT_MAXRUNIC_POWER']=true,['UNIT_DISPLAYPOWER']=true},
+			events = {['UNIT_POWER']=true,['UNIT_MAXPOWER']=true},
 			code = [[
 local max = MaxPower(unit)
 if max > 0 then
@@ -238,7 +240,7 @@ if max > 0 then
 end]],
 		},
 		[L["Absolute short"]] = {
-			events = {['UNIT_MANA']=true,['UNIT_RAGE']=true,['UNIT_FOCUS']=true,['UNIT_ENERGY']=true,['UNIT_RUNIC_POWER']=true,['UNIT_MAXMANA']=true,['UNIT_MAXRAGE']=true,['UNIT_MAXFOCUS']=true,['UNIT_MAXENERGY']=true,['UNIT_MAXRUNIC_POWER']=true,['UNIT_DISPLAYPOWER']=true},
+			events = {['UNIT_POWER']=true,['UNIT_MAXPOWER']=true},
 			code = [[
 local max = MaxPower(unit)
 if max > 0 then
@@ -246,12 +248,12 @@ if max > 0 then
 end]],
 		},
 		[L["Difference"]] = {
-			events = {['UNIT_MANA']=true,['UNIT_RAGE']=true,['UNIT_FOCUS']=true,['UNIT_ENERGY']=true,['UNIT_RUNIC_POWER']=true,['UNIT_MAXMANA']=true,['UNIT_MAXRAGE']=true,['UNIT_MAXFOCUS']=true,['UNIT_MAXENERGY']=true,['UNIT_MAXRUNIC_POWER']=true,['UNIT_DISPLAYPOWER']=true},
+			events = {['UNIT_POWER']=true,['UNIT_MAXPOWER']=true},
 			code = [[
 return "-%d",MaxPower(unit) - Power(unit)]],
 		},
 		[L["Percent"]] = {
-			events = {['UNIT_MANA']=true,['UNIT_RAGE']=true,['UNIT_FOCUS']=true,['UNIT_ENERGY']=true,['UNIT_RUNIC_POWER']=true,['UNIT_MAXMANA']=true,['UNIT_MAXRAGE']=true,['UNIT_MAXFOCUS']=true,['UNIT_MAXENERGY']=true,['UNIT_MAXRUNIC_POWER']=true,['UNIT_DISPLAYPOWER']=true},
+			events = {['UNIT_POWER']=true,['UNIT_MAXPOWER']=true},
 			code = [[
 local max = MaxPower(unit)
 if max > 0 then
@@ -259,7 +261,7 @@ if max > 0 then
 end]],
 		},
 		[L["Absolute and percent"]] = {
-			events = {['UNIT_MANA']=true,['UNIT_RAGE']=true,['UNIT_FOCUS']=true,['UNIT_ENERGY']=true,['UNIT_RUNIC_POWER']=true,['UNIT_MAXMANA']=true,['UNIT_MAXRAGE']=true,['UNIT_MAXFOCUS']=true,['UNIT_MAXENERGY']=true,['UNIT_MAXRUNIC_POWER']=true,['UNIT_DISPLAYPOWER']=true},
+			events = {['UNIT_POWER']=true,['UNIT_MAXPOWER']=true},
 			code = [[
 local cur,max = Power(unit),MaxPower(unit)
 if max > 0 then
@@ -267,7 +269,7 @@ if max > 0 then
 end]],
 		},
 		[L["Mini"]] = {
-			events = {['UNIT_MANA']=true,['UNIT_RAGE']=true,['UNIT_FOCUS']=true,['UNIT_ENERGY']=true,['UNIT_RUNIC_POWER']=true,['UNIT_MAXMANA']=true,['UNIT_MAXRAGE']=true,['UNIT_MAXFOCUS']=true,['UNIT_MAXENERGY']=true,['UNIT_MAXRUNIC_POWER']=true,['UNIT_DISPLAYPOWER']=true},
+			events = {['UNIT_POWER']=true,['UNIT_MAXPOWER']=true},
 			code = [[
 local max = MaxPower(unit)
 if max > 0 then
@@ -275,7 +277,7 @@ if max > 0 then
 end]],
 		},
 		[L["Smart"]] = {
-			events = {['UNIT_MANA']=true,['UNIT_RAGE']=true,['UNIT_FOCUS']=true,['UNIT_ENERGY']=true,['UNIT_RUNIC_POWER']=true,['UNIT_MAXMANA']=true,['UNIT_MAXRAGE']=true,['UNIT_MAXFOCUS']=true,['UNIT_MAXENERGY']=true,['UNIT_MAXRUNIC_POWER']=true,['UNIT_DISPLAYPOWER']=true},
+			events = {['UNIT_POWER']=true,['UNIT_MAXPOWER']=true},
 			code = [[
 local miss = MaxPower(unit) - Power(unit)
 if miss ~= 0 then
@@ -285,28 +287,28 @@ end]],
 	},
 	[L["Druid mana"]] = {
 		[L["Absolute"]] = {
-			events = {['UNIT_MANA']=true,['UNIT_MAXMANA']=true},
+			events = {['UNIT_POWER']=true,['UNIT_MAXPOWER']=true},
 			code = [[
 if UnitPowerType(unit) ~= 0 then
   return "%s/%s",Power(unit,0),MaxPower(unit,0)
 end]],
 		},
 		[L["Absolute short"]] = {
-			events = {['UNIT_MANA']=true,['UNIT_MAXMANA']=true},
+			events = {['UNIT_POWER']=true,['UNIT_MAXPOWER']=true},
 			code = [[
 if UnitPowerType(unit) ~= 0 then
   return "%s/%s",Short(Power(unit,0),true),Short(MaxPower(unit,0),true)
 end]],
 		},
 		[L["Difference"]] = {
-			events = {['UNIT_MANA']=true,['UNIT_MAXMANA']=true},
+			events = {['UNIT_POWER']=true,['UNIT_MAXPOWER']=true},
 			code = [[
 if UnitPowerType(unit) ~= 0 then
   return -(MaxPower(unit,0) - Power(unit,0))
 end]],
 		},
 		[L["Percent"]] = {
-			events = {['UNIT_MANA']=true,['UNIT_MAXMANA']=true},
+			events = {['UNIT_POWER']=true,['UNIT_MAXPOWER']=true},
 			code = [[
 if UnitPowerType(unit) ~= 0 then
   local max = MaxPower(unit,0)
@@ -316,14 +318,14 @@ if UnitPowerType(unit) ~= 0 then
 end]],
 		},
 		[L["Mini"]] = {
-			events = {['UNIT_MANA']=true,['UNIT_MAXMANA']=true},
+			events = {['UNIT_POWER']=true,['UNIT_MAXPOWER']=true},
 			code = [[
 if UnitPowerType(unit) ~= 0 then
   return VeryShort(Power(unit,0))
 end]],
 		},
 		[L["Smart"]] = {
-			events = {['UNIT_MANA']=true,['UNIT_MAXMANA']=true},
+			events = {['UNIT_POWER']=true,['UNIT_MAXPOWER']=true},
 			code = [[
 if UnitPowerType(unit) ~= 0 then
   local miss = MaxPower(unit,0) - Power(unit,0)
@@ -516,6 +518,19 @@ do
 		-- every text on every one of these events.  /sigh
 		['UNIT_THREAT_LIST_UPDATE'] = {all=true},
 		['UNIT_THREAT_SITUATION_UPDATE'] = {all=true},
+
+		-- Maintain compatability with existing texts that depend on
+		-- these existing, even though they are obsolete.
+		['UNIT_MANA'] = {unit=true},
+		['UNIT_RAGE'] = {unit=true},
+		['UNIT_ENERGY'] = {unit=true},
+		['UNIT_FOCUS'] = {unit=true},
+		['UNIT_RUNIC_POWER'] = {unit=true},
+		['UNIT_MAXMANA'] = {unit=true},
+		['UNIT_MAXRAGE'] = {unit=true},
+		['UNIT_MAXENERGY'] = {unit=true},
+		['UNIT_MAXFOCUS'] = {unit=true},
+		['UNIT_MAXRUNIC_POWER'] = {unit=true},
 	}
 
 	-- Iterate the provided codes to fill in all the rest
@@ -558,6 +573,41 @@ local protected_events = {
 	['UNIT_SPELLCAST_SENT'] = true,
 	['PARTY_MEMBERS_CHANGED'] = true,
 }
+
+-- Provide a way to map changed events so existing LuaTexts configs
+-- continue to work transparently to end users.
+local compat_event_map = {}
+if cata_400 then
+	compat_event_map.UNIT_MANA = 'UNIT_POWER'
+	compat_event_map.UNIT_MAXMANA = 'UNIT_POWER'
+	compat_event_map.UNIT_RAGE = 'UNIT_POWER'
+	compat_event_map.UNIT_MAXRAGE = 'UNIT_POWER'
+	compat_event_map.UNIT_ENERGY = 'UNIT_POWER'
+	compat_event_map.UNIT_MAXENERGY = 'UNIT_POWER'
+	compat_event_map.UNIT_FOCUS = 'UNIT_POWER'
+	compat_event_map.UNIT_MAXFOCUS = 'UNIT_POWER'
+	compat_event_map.UNIT_HAPPINESS = 'UNIT_POWER'
+	compat_event_map.UNIT_MAXHAPPINESS = 'UNIT_POWER'
+	compat_event_map.UNIT_RUNIC_POWER = 'UNIT_POWER'
+	compat_event_map.UNIT_MAXRUNIC_POWER = 'UNIT_POWER'
+else
+	compat_event_map.UNIT_POWER = {
+		'UNIT_MANA',
+		'UNIT_RAGE',
+		'UNIT_ENERGY',
+		'UNIT_FOCUS',
+		'UNIT_HAPPINESS',
+		'UNIT_RUNIC_POWER',
+	}
+	compat_event_map.UNIT_MAXPOWER = {
+		'UNIT_MAXMANA',
+		'UNIT_MAXRAGE',
+		'UNIT_MAXENERGY',
+		'UNIT_MAXFOCUS',
+		'UNIT_MAXHAPPINESS',
+		'UNIT_MAXRUNIC_POWER',
+	}
+end
 
 local timerframe = CreateFrame("Frame")
 PitBull4_LuaTexts.timerframe = timerframe
@@ -1165,6 +1215,16 @@ function PitBull4_LuaTexts:OnNewLayout(layout)
 	end
 end
 
+local function event_cache_insert(event, font_string)
+	local event_entry = event_cache[event]
+	if not event_entry then
+		event_entry = {}
+		event_cache[event] = event_entry
+		PitBull4_LuaTexts:RegisterEvent(event,"OnEvent")
+	end
+	event_entry[font_string] = true
+end
+
 function PitBull4_LuaTexts:AddFontString(frame, font_string, name, data)
 	local db = font_string.db
 
@@ -1189,13 +1249,20 @@ function PitBull4_LuaTexts:AddFontString(frame, font_string, name, data)
 	font_string.luatexts_name = name
 	for event,enabled in pairs(db.events) do
 		if enabled then
-			local event_entry = event_cache[event]
-			if not event_entry then
-				event_entry = {}
-				event_cache[event] = event_entry
-				self:RegisterEvent(event,"OnEvent")
+			-- Check if the event is remaped to one or more events.
+			local mapped_event = compat_event_map[event]
+			if type(mapped_event) == 'string' then
+				-- mapped to a single event.
+				event_cache_insert(mapped_event, font_string)
+			elseif type(mapped_event) == 'table' then
+				-- mapped to multiple events
+				for _,v in ipairs(mapped_event) do
+					event_cache_insert(v, font_string)
+				end
+			else
+				-- not mapped
+				event_cache_insert(event, font_string)
 			end
-			event_entry[font_string] = true
 		end
 	end
 
