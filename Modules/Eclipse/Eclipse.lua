@@ -15,6 +15,15 @@ end
 
 local L = PitBull4.L
 
+local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+if not LibSharedMedia then
+  LoadAddOn("LibSharedMedia-3.0")
+  LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+end
+
+LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
+local AceGUI = LibStub("AceGUI-3.0")
+
 local PitBull4_Eclipse= PitBull4:NewModule("Eclipse", "AceEvent-3.0")
 
 PitBull4_Eclipse:SetModuleType("indicator")
@@ -49,7 +58,12 @@ function PitBull4_Eclipse:UpdateFrame(frame)
     self:UNIT_AURA("UNIT_AURA","player")
   end
 
-  eclipse:SetTexture([[Interface\TargetingFrame\UI-StatusBar]])
+  local layout_db = self:GetLayoutDB(frame)
+  local texture
+  if LibSharedMedia then
+    texture = LibSharedMedia:Fetch("statusbar", layout_db.texture or frame.layout_db.bar_texture or "Blizzard")
+  end
+  eclipse:SetTexture(texture or [[Interface\TargetingFrame\UI-StatusBar]])
   eclipse:SetLunarColor(unpack(PitBull4.PowerColors.BALANCE_NEGATIVE_ENERGY))
   eclipse:SetSolarColor(unpack(PitBull4.PowerColors.BALANCE_POSITIVE_ENERGY))
   eclipse:Show()
@@ -104,6 +118,11 @@ function PitBull4_Eclipse:UNIT_AURA(event, unit)
   end
 end
 
+function PitBull4_Eclipse:LibSharedMedia_Registered(event, mediatype, key)
+  if mediatype == "statusbar" then
+    self:UpdateAll()
+  end
+end
 
 function PitBull4_Eclipse:OnEnable()
   self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
@@ -111,3 +130,31 @@ function PitBull4_Eclipse:OnEnable()
   self:RegisterEvent("MASTERY_UPDATE")
   self:RegisterEvent("UNIT_AURA")
 end
+
+PitBull4_Eclipse:SetLayoutOptionsFunction(function (self)
+  return 'texture', {
+    type = 'select',
+    name = L['Texture'],
+    desc = L["What texture the status bar should use."] .. "\n" .. L["If you want more textures, you should install the addon 'SharedMedia'."],
+    order = 1,
+    get = function(info)
+      return PitBull4.Options.GetLayoutDB(self).texture or PitBull4.Options.GetLayoutDB(false).bar_texture
+    end,
+    set = function(info, value)
+      local default = PitBull4.Options.GetLayoutDB(false).bar_texture
+      if value == default then
+        value = nil
+      end
+      PitBull4.Options.GetLayoutDB(self).texture = value
+
+      PitBull4.Options.UpdateFrames()
+    end,
+    values = function(info)
+      return LibSharedMedia:HashTable("statusbar")
+    end,
+    hidden = function(info)
+      return not LibSharedMedia
+    end,
+    dialogControl = AceGUI.WidgetRegistry["LSM30_Statusbar"] and "LSM30_Statusbar" or nil,
+  }
+end)
