@@ -106,7 +106,7 @@ move-folders:
     PitBull4/Modules/ThreatBar: PitBull4_ThreatBar
     PitBull4/Modules/Totems: PitBull4_Totems
     PitBull4/Modules/VisualHeal: PitBull4_VisualHeal
-    PitBull4/Modules/VisualHeal4: PitBull4_VisualHeal4
+    PitBull4/Modules/VisualHeal5: PitBull4_VisualHeal5
     PitBull4/Modules/VoiceIcon: PitBull4_VoiceIcon
 
 ignore:
