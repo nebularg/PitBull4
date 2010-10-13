@@ -53,6 +53,7 @@ local can_dispel = {
 		Curse = true,
 		Poison = true,
 		Magic = scan_for_known_talent(88423),
+		Enrage = true,
 	},
 	HUNTER = {
 		Magic = true,
