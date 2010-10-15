@@ -992,6 +992,9 @@ function PitBull4_LuaTexts:PARTY_MEMBERS_CHANGED(event)
 		-- not in a raid or a party
 		wipe(group_members)
 		group_members["player"] = player_guid
+		wipe(offline_times)
+		wipe(dead_times)
+		wipe(afk_times)
 		return
 	end
 
