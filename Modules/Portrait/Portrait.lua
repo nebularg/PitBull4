@@ -141,6 +141,13 @@ local function model_OnUpdate(self, elapsed)
 			self:SetPosition(0, 0, -1.5)
 			self:SetModel([[Interface\Buttons\talktomequestionmark.mdx]])
 		end
+
+		-- work around a Blizzard bug that causes model frames not to
+		-- adjust their alpha realtive to their parent frames alpha after
+		-- the model is updated.  So we nudge the alpha down a bit and 
+		-- then back up to get it to update.
+		self:SetAlpha(0.9999999)
+		self:SetAlpha(1)
 	end
 	
 	if type(self:GetModel()) == "string" then
