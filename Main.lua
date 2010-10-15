@@ -4,6 +4,8 @@ LibStub("AceLocale-3.0"):NewLocale("PitBull4", "enUS", true, true)
 --@end-debug@
 local L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
 
+local cata_400 = select(4,GetBuildInfo()) >= 40000
+
 local SINGLETON_CLASSIFICATIONS = {
 	"player",
 	"pet",
@@ -1293,7 +1295,11 @@ function PitBull4:OnEnable()
 
 	-- register events for core handled bar coloring
 	self:RegisterEvent("UNIT_FACTION")
-	self:RegisterEvent("UNIT_HAPPINESS")
+	if not cata_400 then
+		self:RegisterEvent("UNIT_HAPPINESS","UNIT_POWER")
+	else
+		self:RegisterEvent("UNIT_POWER")
+	end
 	
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE")
@@ -1417,9 +1423,15 @@ function PitBull4:UNIT_FACTION(_, unit)
 	end
 end
 
--- Reuse the function for UNIT_FACTION for UNIT_HAPPINESS since we end up
--- doing the exact same thing
-PitBull4.UNIT_HAPPINESS = PitBull4.UNIT_FACTION
+function PitBull4:UNIT_POWER(event, unit, power_type)
+	-- Handle coloring changes based on happiness.
+	if event == "UNIT_POWER" and power_type ~= "HAPPINESS" then return end
+	for frame in self:IterateFramesForUnitID(unit) do
+		for _, module in self:IterateModulesOfType("bar","bar_provider") do
+			module:Update(frame)
+		end
+	end
+end
 
 local tmp = {}
 function PitBull4:UNIT_ENTERED_VEHICLE(_, unit)

@@ -75,7 +75,7 @@ function PitBull4_HappinessIcon:GetExampleTexCoord()
 	return tex_coord[1], tex_coord[2], tex_coord[3], tex_coord[4]
 end
 
-function PitBull4_HappinessIcon:UNIT_POWER(event, power_type)
+function PitBull4_HappinessIcon:UNIT_POWER(event, unit, power_type)
 	if event == "UNIT_POWER" and power_type ~= "HAPPINESS" then return end
 	self:UpdateForUnitID("pet")
 end
