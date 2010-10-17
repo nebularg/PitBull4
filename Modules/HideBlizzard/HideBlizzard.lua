@@ -58,6 +58,15 @@ function PitBull4_HideBlizzard:UpdateFrames()
 end
 PitBull4_HideBlizzard.UpdateFrames = PitBull4:OutOfCombatWrapper(PitBull4_HideBlizzard.UpdateFrames)
 
+local function hook_playerframe()
+	hooksecurefunc("PlayerFrame_HideVehicleTexture",function()
+		if currently_hidden["runebar"] then
+			hiders["runebar"]()
+		end
+	end)
+	hook_playerframe = nil
+end
+
 function hiders:player()
 	-- Only hide the PlayerFrame, do not mess with the events.
 	-- Unfortunately, messing the PlayerFrame ends up spreading
@@ -147,8 +156,11 @@ function showers:castbar()
 end
 
 function hiders:runebar()
-	RuneFrame:Hide()
+	if hook_playerframe then
+		hook_playerframe()
+	end
 	RuneFrame:UnregisterAllEvents()
+	RuneFrame:Hide()
 end
 
 function showers:runebar()
