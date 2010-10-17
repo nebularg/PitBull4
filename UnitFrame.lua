@@ -24,6 +24,10 @@ local BLACKLISTED_UNIT_MENU_OPTIONS = {
 	UNLOCK_FOCUS_FRAME = true,
 }
 
+local INSERT_UNIT_MENU_OPTIONS = {
+	SELF = {"PB4_ROLE_CHECK","PB4_READY_CHECK"},
+}
+
 -----------------------------------------------------------------------------
 
 UnitPopupButtons["PB4_SET_FOCUS"] = {
@@ -37,6 +41,60 @@ UnitPopupButtons["PB4_CLEAR_FOCUS"] = {
 	tooltipText = L["Blizzard currently does not provide a proper way to right-click focus with custom unit frames."],
 	dist = 0,
 }
+
+UnitPopupButtons["PB4_ROLE_CHECK"] = {
+	text = ROLE_POLL, 
+	tooltipText = L["Initiate a role check, asking your group members to specify their roles."],
+	dist = 0,
+}
+
+UnitPopupButtons["PB4_READY_CHECK"] = {
+	text = READY_CHECK,
+	tooltipText = L["Initiate a ready check, asking your group members if they are ready to continue."],
+	dist = 0,
+}
+
+hooksecurefunc("UnitPopup_OnClick",function(self)
+	local button = self.value
+	if button == "PB4_ROLE_CHECK" then
+		InitiateRolePoll()
+	elseif button == "PB4_READY_CHECK" then
+		DoReadyCheck()
+	end
+end)
+
+hooksecurefunc("UnitPopup_HideButtons",function()
+	local dropdownMenu = UIDROPDOWNMENU_INIT_MENU
+	local inParty, inRaid, inBattleground, isLeader, isAssistant
+	if GetNumPartyMembers() > 0 then 
+		inParty = true 
+	end
+	if GetNumRaidMembers() > 0 then
+		inRaid = true 
+		inParty = true
+	end
+	if UnitInBattleground("player") then
+		inBattleground = true
+	end
+	if IsPartyLeader() then
+		isLeader = true
+	end
+	if IsRaidOfficer() then
+		isAssistant = true
+	end
+
+  for index, value in ipairs(UnitPopupMenus[UIDROPDOWNMENU_MENU_VALUE] or UnitPopupMenus[dropdownMenu.which]) do
+		if value == "PB4_ROLE_CHECK" then
+			if (not isLeader and not isAssistant) or inBattleground or (not inParty and not inRaid) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0
+			end
+		elseif value == "PB4_READY_CHECK" then
+			if (not isLeader and not isAssistant) or inBattleground or (not inParty and not inRaid) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0
+			end
+		end
+	end
+end)
 
 --- Make a singleton unit frame.
 -- @param unit the UnitID of the frame in question
@@ -169,9 +227,11 @@ local function munge_unit_menu(menu)
 			break
 		end
 	end
+
+	local insert = INSERT_UNIT_MENU_OPTIONS[menu]
 	
-	if not found then
-		-- nothing to remove, we're all fine here.
+	if not found and not insert then
+		-- nothing to remove or add, we're all fine here.
 		munged_unit_menus[menu] = menu
 		return menu
 	end
@@ -180,6 +240,11 @@ local function munge_unit_menu(menu)
 	for _, v in ipairs(data) do
 		local blacklisted = BLACKLISTED_UNIT_MENU_OPTIONS[v]
 		if not blacklisted then
+			if insert and v == "CANCEL" then
+				for _,extra in ipairs(insert) do
+					new_data[#new_data+1] = extra
+				end
+			end
 			new_data[#new_data+1] = v
 		elseif blacklisted ~= true then
 			new_data[#new_data+1] = blacklisted
