@@ -17,7 +17,7 @@ PitBull4_HideBlizzard:SetDescription(L["Hide Blizzard frames that are no longer 
 PitBull4_HideBlizzard:SetDefaults({}, {
 	player = true,
 	party = true,
-	raid = cata_400 or nil,
+	raid = false,
 	target = true, 
 	focus = true,
 	castbar = true,
@@ -103,24 +103,26 @@ function showers:party()
 	UIParent:RegisterEvent("RAID_ROSTER_UPDATE")
 end
 
+local compact_raid
 function hiders:raid()
 	if not cata_400 then return end
-	CompactRaidFrameManager:UnregisterAllEvents()
+	CompactRaidFrameManager:UnregisterEvent("RAID_ROSTER_UPDATE")
 	CompactRaidFrameManager:Hide()
-	CompactRaidFrameContainer:UnregisterEvent("RAID_ROSTER_UPDATE")
-	CompactRaidFrameContainer:UnregisterEvent("UNIT_PET")
-	CompactRaidFrameContainer:Hide()
+	compact_raid = CompactRaidFrameManager_GetSetting("IsShown")
+	if compact_raid and compact_raid ~= "0" then 
+		CompactRaidFrameManager_SetSetting("IsShown", "0")
+	end
 end
 
 function showers:raid()
 	if not cata_400 then return end
-	CompactRaidFrameManager:GetScript("OnLoad")(CompactRaidFrameManager)
+	CompactRaidFrameManager:RegisterEvent("RAID_ROSTER_UPDATE")	
 	if GetNumRaidMembers() > 0 then
 		CompactRaidFrameManager:Show()
 	end
-	CompactRaidFrameContainer:RegisterEvent("RAID_ROSTER_UPDATE")
-	CompactRaidFrameContainer:RegisterEvent("UNIT_PET")
-	CompactRaidFrameContainer:Show()
+	if compact_raid and compact_raid ~= "0" then
+		CompactRaidFrameManager_SetSetting("IsShown", "1")
+	end
 end
 
 function hiders:target()
@@ -235,7 +237,7 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 	}, 'raid', {
 		type = 'toggle',
 		name = L["Raid"],
-		desc = L["Hide the standard raid frames."],
+		desc = L["Hide the standard raid manager and raid frames."],
 		get = get,
 		set = set,
 		hidden = function (info)
