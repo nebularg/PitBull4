@@ -59,30 +59,15 @@ end
 PitBull4_HideBlizzard.UpdateFrames = PitBull4:OutOfCombatWrapper(PitBull4_HideBlizzard.UpdateFrames)
 
 function hiders:player()
-	PlayerFrame:UnregisterAllEvents()
-	PlayerFrameHealthBar:UnregisterAllEvents()
-	PlayerFrameManaBar:UnregisterAllEvents()
+	-- Only hide the PlayerFrame, do not mess with the events.
+	-- Unfortunately, messing the PlayerFrame ends up spreading
+	-- taint to the BuffFrame which matters now that CancelUnitBuff
+	-- is protected.
 	PlayerFrame:Hide()
-
-	-- Fake a vehicle event to keep the BuffFrame in sync with our player frame.
-	PitBull4:UNIT_ENTERED_VEHICLE(nil, "player")
 end
 
 function showers:player()
-	PlayerFrame:GetScript("OnLoad")(PlayerFrame)
 	PlayerFrame:Show()
-	-- Emulate some events to get the frame setup in a normal state.
-	-- Blizzard doesn't do an update on show for the player frame since
-	-- they never imagine it won't be shown.
-	PlayerFrame:GetScript("OnEvent")(PlayerFrame, "PLAYER_ENTERING_WORLD")
-	PlayerFrame:GetScript("OnEvent")(PlayerFrame, "PARTY_MEMBERS_CHANGED")
-
-	-- Hack to trick PlayerFrame into doing the swap for the vehicle if necessary.
-	-- As a side benefit we end up doing the animation so it's kinda cool.
-	PlayerFrame.animFinished = true
-	PlayerFrame.inSeat = true
-	PlayerFrame.inSequence = true
-	PlayerFrame_UpdateArt(PlayerFrame)
 end
 
 function hiders:party()
