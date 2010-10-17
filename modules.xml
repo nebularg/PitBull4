@@ -43,7 +43,7 @@
 <Include file="Modules\Totems\load.xml"/>
 <Include file="Modules\VisualHeal\load.xml"/>
 <Include file="Modules\VisualHeal5\load.xml"/>
-<Include file="Modules\VoiceIcon\load.xml"/> -->
+<Include file="Modules\VoiceIcon\load.xml"/>
 <!--@end-debug@-->
 
 </Ui>
