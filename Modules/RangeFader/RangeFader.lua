@@ -197,7 +197,7 @@ function PitBull4_RangeFader:GetOpacity(frame)
 			return db.out_of_range_opacity
 		end
 	else -- class
-		if UnitIsEnemy("player", unit) then
+		if UnitCanAttack("player", unit) then
 			if enemy_is_in_range(unit) then
 				return 1
 			elseif enemy_is_in_long_range(unit) then
