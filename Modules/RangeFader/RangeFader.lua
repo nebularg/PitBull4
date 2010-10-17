@@ -7,6 +7,8 @@ end
 
 local L = PitBull4.L
 
+local cata_400 = select(4,GetBuildInfo()) >= 40000
+
 local PitBull4_RangeFader = PitBull4:NewModule("RangeFader", "AceTimer-3.0")
 
 PitBull4_RangeFader:SetModuleType("fader")
@@ -42,8 +44,9 @@ do
 	local _,class = UnitClass("player")
 	
 	if class == "PRIEST" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(589) -- Shadow Word: Pain
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(2050) -- Lesser Heal
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(585) -- Smite
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(589) -- Shadow Word: Pain
+		friendly_spells[#friendly_spells+1] = cata_400 and GetSpellInfo(2061) or GetSpellInfo(2050) -- Flash Heal for Cata, Lesser Heal otherwise
 		res_spells[#res_spells+1] = GetSpellInfo(2006) -- Resurrection
 	elseif class == "DRUID" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(33786) -- Cyclone
@@ -52,11 +55,12 @@ do
 		res_spells[#res_spells+1] = GetSpellInfo(50769) -- Revive 
 		res_spells[#res_spells+1] = GetSpellInfo(20484) -- Rebirth 
 	elseif class == "PALADIN" then
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(635) -- Holy Light
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(62124) -- Hand of Reckoning
-		-- Holy Paladins may have a talent to increase the range of Judgement of Light and
-		-- Judgement of Wisdom to 40yds so put Judgement of Light in long_enemy_spells
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(20271) -- Judgement of Light
+		-- Holy Paladins may have a talent to increase the range of Judgement of
+		-- Light and Judgement of Wisdom to 40yds to so put Judgement of Light
+		-- in long_enemy_spells
+		long_enemy_spells[#long_enemy_spells+1] = not cata_400 and GetSpellInfo(20271) or nil -- Judgement of Light
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(635) -- Holy Light
 		res_spells[#res_spells+1] = GetSpellInfo(7328) -- Redemption 
 	elseif class == "SHAMAN" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(8042) -- Earth Shock 
@@ -70,7 +74,7 @@ do
 		pet_spells[#pet_spells+1] = GetSpellInfo(755) -- Health Funnel
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(5697) -- Unending Breath
 	elseif class == "MAGE" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(2136) -- Fire Blast
+		enemy_spells[#enemy_spells+1] = cata_400 and GetSpellInfo(118) or GetSpellInfo(2136) -- Polymorph for Cata, Fire Blast otherwise
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(133) -- Fireball
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(475) -- Remove Curse
 	elseif class == "HUNTER" then
@@ -78,7 +82,8 @@ do
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(75) -- Auto Shot
 	elseif class == "DEATHKNIGHT" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(49576) -- Death Grip
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(49016) -- Hysteria
+		friendly_spells[#friendly_spells+1] = not cata_400 and GetSpellInfo(49016) or nil -- Hysteria
+		friendly_spells[#friendly_spells+1] = cata_400 and GetSpellInfo(49016) or nil -- Unholy Frenzy
 		res_spells[#res_spells+1] = GetSpellInfo(61999) -- Raise Ally 
 	elseif class == "ROGUE" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(2094) -- Blind 
