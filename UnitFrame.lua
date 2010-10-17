@@ -396,7 +396,10 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 	end
 	
 	if frame.is_singleton then
-		_G.ClickCastFrames[frame] = true
+		if not frame.classification_db.click_through then
+			-- Only enable click casting if the frame isn't click_through.
+			_G.ClickCastFrames[frame] = true
+		end
 		self.singleton_frames[frame] = true
 	else
 		if not ClickCastHeader then
@@ -482,17 +485,7 @@ function UnitFrame:_RefreshLayout()
 		PitBull4:CallMethodOnModules("OnNewLayout", layout)
 	end
 
-	-- Can't assume that it is safe to do this because sometimes we are called
-	-- inside the initialConfigFunction for a GropuHeader which doesn't allow
-	-- us to Enable/Disable the mouse.  Downside of this is GroupHeader attached
-	-- frames made in combat will have the mouse enabled until you leave combat
-	-- next.  In practice most users will have the mouse enabled anyway.
-	-- TODO: Request an attribute like we have for sizing to be able to set
-	-- this in combat during initialConfigFunction.
-	local mouse_state = not not self:IsMouseEnabled()
-	if not classification_db.click_through ~= mouse_state then
-		PitBull4:RunOnLeaveCombat(self.EnableMouse,self,not mouse_state)
-	end
+	self:SetClickThroughState(classification_db.click_through)
 
 	self:RefixSizeAndPosition()
 
@@ -501,6 +494,17 @@ function UnitFrame:_RefreshLayout()
 	end
 end
 UnitFrame.RefreshLayout = PitBull4:OutOfCombatWrapper(UnitFrame._RefreshLayout)
+
+-- Set the frame as able to be clicked through or not.
+-- @usage frame:SetClickThroughState(true)
+function SingletonUnitFrame:SetClickThroughState(state)
+	local mouse_state = not not self:IsMouseEnabled()
+	if not state ~= mouse_state then
+		ClickCastFrames[self] = not mouse_state
+		self:EnableMouse(not mouse_state)
+	end
+end
+SingletonUnitFrame.SetClickThroughState= PitBull4:OutOfCombatWrapper(SingletonUnitFrame.SetClickThroughState)
 
 --- Reset the size and position of the unit frame.
 -- @usage frame:RefixSizeAndPosition()

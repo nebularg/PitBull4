@@ -246,6 +246,7 @@ function GroupHeader:RefixSizeAndPosition()
 
 	updated = self:ProxySetAttribute('unitWidth',unit_width) or updated
 	updated = self:ProxySetAttribute('unitHeight',unit_height) or updated
+	updated = self:ProxySetAttribute('clickThrough',group_db.click_through) or updated
 
 	-- Set minimum width and height.  If we don't do this then
 	-- SecureTemplates will calculate the size dynamically and these
@@ -1147,6 +1148,39 @@ function MemberUnitFrame:PLAYER_REGEN_DISABLED()
 	end
 end
 
+local clickcast_register = [[
+  local button = self:GetFrameRef("pb4_temp")
+  local clickcast_header = self:GetFrameRef("clickcast_header")
+  if clickcast_header:GetAttribute("clickcast_register") then
+    clickcast_header:SetAttribute("clickcast_button",button)
+    clickcast_header:RunAttribute("clickcast_register")
+  end
+]]
+
+local clickcast_unregister = [[
+  local button = self:GetFrameRef("pb4_temp")
+  local clickcast_header = self:GetFrameRef("clickcast_header")
+  if clickcast_header:GetAttribute("clickcast_unregister") then
+    clickcast_header:SetAttribute("clickcast_button",button)
+    clickcast_header:RunAttribute("clickcast_unregister")
+  end
+]]
+
+-- Set the frame as able to be clicked through or not.
+-- @usage frame:SetClickThroughState(true)
+function MemberUnitFrame:SetClickThroughState(state)
+	local mouse_state = not not self:IsMouseEnabled()
+	if not state ~= mouse_state then
+		if ClickCastHeader then
+			local header = self:GetParent()
+			header:SetFrameRef("pb4_temp",self)
+			header:Execute(not mouse_state and clickcast_register or clickcast_unregister)
+		end
+		self:EnableMouse(not mouse_state)
+	end
+end
+MemberUnitFrame.SetClickThroughState = PitBull4:OutOfCombatWrapper(MemberUnitFrame.SetClickThroughState)
+
 --- Reset the size of the unit frame, not position as that is handled through the group header.
 -- @usage frame:RefixSizeAndPosition()
 function MemberUnitFrame:RefixSizeAndPosition()
@@ -1201,7 +1235,6 @@ function PitBull4:ConvertIntoGroupHeader(header)
 	header:SetAttribute("initialConfigFunction",
 	[[
     local header = self:GetParent()
-    header:CallMethod("InitialConfigFunction")
     local unitsuffix = header:GetAttribute("unitsuffix")
     if unitsuffix then
       self:SetAttribute("unitsuffix",unitsuffix)
@@ -1211,12 +1244,21 @@ function PitBull4:ConvertIntoGroupHeader(header)
     RegisterUnitWatch(self)
     self:SetAttribute("*type1", "target")
     self:SetAttribute("*type2", "menu")
-    -- Support for Clique
-    local clickcast_header = header:GetFrameRef("clickcast_header")
-    if clickcast_header then
-      clickcast_header:SetAttribute("clickcast_button", self)
-      clickcast_header:RunAttribute("clickcast_register")
+    local click_through = header:GetAttribute("clickThrough")
+    if not click_through then
+      -- Support for Clique
+      local clickcast_header = header:GetFrameRef("clickcast_header")
+      if clickcast_header then
+        clickcast_header:SetAttribute("clickcast_button", self)
+        clickcast_header:RunAttribute("clickcast_register")
+      end
+    else
+      self:EnableMouse(false)
     end
+    -- Very important that the CallMethod is done AFTER the mouse is
+    -- potentially disabled above becuase otherwise it will create a
+    -- stack overflow.
+    header:CallMethod("InitialConfigFunction")
   ]])
 	
 	header:RefreshGroup(true)
