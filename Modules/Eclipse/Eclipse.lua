@@ -187,7 +187,7 @@ PitBull4_Eclipse:SetLayoutOptionsFunction(function (self)
   }, 'icons', {
     type = 'toggle',
     name = L['Icons'],
-    desc = 'later',
+    desc = L['Display icons for the eclipse buffs on the bar.'], 
     order = 2,
     get = function(info)
       return PitBull4.Options.GetLayoutDB(self).icons
@@ -200,7 +200,7 @@ PitBull4_Eclipse:SetLayoutOptionsFunction(function (self)
   }, 'orientation', {
     type = 'toggle',
     name = L['Vertical'],
-    desc = 'later',
+    desc = L['Display the eclipse bar as a vertical bar instead of a horizontal bar.'],
     order = 3,
     get = function(info)
       return PitBull4.Options.GetLayoutDB(self).orientation == "VERTICAL"
