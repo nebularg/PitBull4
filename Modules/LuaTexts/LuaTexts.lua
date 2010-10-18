@@ -497,6 +497,14 @@ end
 return ConfigMode()]],
 		},
 	},
+	[L["Eclipse"]] = {
+		[L["Absolute"]] = {
+			events = {['UNIT_POWER']=true,['UNIT_MAXPOWER']=true},
+			code = [[
+return math.abs(Power(unit,SPELL_POWER_ECLIPSE))
+]],
+		},
+	},
 }
 
 PitBull4_LuaTexts:SetModuleType("text_provider")
@@ -1208,6 +1216,12 @@ function PitBull4_LuaTexts:OnNewLayout(layout)
 			code = PROVIDED_CODES[L["PVPTimer"]][L["Standard"]].code,
 			events = copy(PROVIDED_CODES[L["PVPTimer"]][L["Standard"]].events),
 			location = "out_right_top"
+		},
+		["Lua:"..L["Eclipse"]] = {
+			code = PROVIDED_CODES[L["Eclipse"]][L["Absolute"]].code,
+			events = copy(PROVIDED_CODES[L["Eclipse"]][L["Absolute"]].events),
+			attach_to = "Eclipse",
+			location = "center"
 		},
 	} do
 		local text_db = texts[name]
