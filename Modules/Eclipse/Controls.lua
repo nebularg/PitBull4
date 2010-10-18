@@ -8,11 +8,16 @@ end
 
 local EPSILON = 1e-5
 
-local border_path
+local border_path, shine_path
 do
   local module_path = _G.debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z0-9]-%.lua")
   border_path = "Interface\\AddOns\\" .. module_path .. "\\border"
+  shine_path = "Interface\\AddOns\\" .. module_path .. "\\shine"
 end
+
+local SHINE_TIME = 1
+local SHINE_HALF_TIME = SHINE_TIME / 2
+local INVERSE_SHINE_HALF_TIME = 1 / SHINE_HALF_TIME
 
 -----------------------------------------------------------------------------
 
@@ -201,9 +206,27 @@ local function set_desaturated(texture, desaturate)
   end
 end
 
+function Eclipse:Shine(icon, r, g, b)
+  local shine = self.shine
+  if not shine then
+    shine = PitBull4.Controls.MakeTexture(self, "OVERLAY")
+    self.shine = shine
+    shine:SetDrawLayer("OVERLAY",-1)
+    shine:SetTexture(shine_path)
+    shine:SetBlendMode("ADD")
+    shine:SetAlpha(0)
+    shine:SetAllPoints(icon)
+    shine:SetVertexColor(r, g, b)
+  end
+  self.shine_time = 0
+end
+
 function Eclipse:UpdateIcons(has_lunar, has_solar)
   local solar_icon, lunar_icon = self.solar_icon, self.lunar_icon
   if not solar_icon or not lunar_icon then return end
+  if self.has_lunar == has_lunar and self.has_solar == has_solar then return end
+  self.has_lunar = has_lunar
+  self.has_solar = has_solar
   local solar_icon_border = self.solar_icon_border
   local lunar_icon_border = self.lunar_icon_border
   if has_lunar then
@@ -212,9 +235,11 @@ function Eclipse:UpdateIcons(has_lunar, has_solar)
     set_desaturated(solar_icon_border,true)
     set_desaturated(lunar_icon,false)
     lunar_icon_border:SetVertexColor(self:GetLunarColor())
+    self:Shine(lunar_icon,self:GetLunarColor())
   elseif has_solar then
     set_desaturated(solar_icon,false)
     solar_icon_border:SetVertexColor(self:GetSolarColor())
+    self:Shine(solar_icon,self:GetSolarColor())
     set_desaturated(lunar_icon,true)
     lunar_icon_border:SetVertexColor(0.5, 0.5, 0.5)
   else
@@ -395,8 +420,25 @@ function Eclipse:SetOrientation(orientation)
   self.orientation = orientation
 end
 
-function Eclipse_scripts:OnUpdate()
+function Eclipse_scripts:OnUpdate(elapsed)
   self:SetValue(UnitPower("player", SPELL_POWER_ECLIPSE)/UnitPowerMax("player",SPELL_POWER_ECLIPSE))
+
+  if self.shine_time then
+    local shine_time = self.shine_time + elapsed
+
+    if shine_time > SHINE_TIME then
+      self.shine_time = nil
+      self.shine = self.shine:Delete()
+      return
+     end
+     self.shine_time = shine_time
+
+     if shine_time < SHINE_HALF_TIME then
+       self.shine:SetAlpha(shine_time * INVERSE_SHINE_HALF_TIME)
+     else
+       self.shine:SetAlpha((SHINE_TIME - shine_time) * INVERSE_SHINE_HALF_TIME)
+     end
+  end
 end
 
 PitBull4.Controls.MakeNewControlType("Eclipse", "Frame", function(control)
