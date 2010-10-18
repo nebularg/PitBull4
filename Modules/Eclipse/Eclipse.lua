@@ -15,6 +15,9 @@ end
 
 local L = PitBull4.L
 
+local WIDTH = 216
+local HEIGHT = 38
+
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 if not LibSharedMedia then
   LoadAddOn("LibSharedMedia-3.0")
@@ -33,8 +36,11 @@ PitBull4_Eclipse:SetDefaults({
   attach_to = "root",
   location = "out_top",
   position = 1,
+  bar_size = 2,
+  icons = true,
+  orientation = "HORIZONTAL",
 })
-
+PitBull4_Eclipse.can_set_side_to_center = true
 
 function PitBull4_Eclipse:UpdateFrame(frame)
 
@@ -52,20 +58,42 @@ function PitBull4_Eclipse:UpdateFrame(frame)
     eclipse = PitBull4.Controls.MakeEclipse(frame)
     frame.Eclipse = eclipse
     eclipse:SetFrameLevel(frame:GetFrameLevel() + 13)
-    eclipse:SetSize(140,38)
-
-    -- Check for buffs on creation
-    self:UNIT_AURA("UNIT_AURA","player")
   end
 
   local layout_db = self:GetLayoutDB(frame)
+
+  eclipse:EnableIcons(layout_db.icons)
+
+  if layout_db.side == "center" then
+    -- When acting as a center bar let the layout engine determine our size,
+    -- since we're treated as a normal bar.
+    eclipse:SetSize(0,0)
+  elseif layout_db.side then -- side is left or right
+    -- left or right sides are treated as indicators but placed as bars,
+    -- so we need to set our side
+    eclipse:SetSize(HEIGHT,WIDTH)
+    eclipse.height = WIDTH / HEIGHT 
+  else
+    -- Not positioned as a bar so we're on our own to update our anchors
+    if layout_db.orientation == "VERTICAL" then
+      eclipse:SetSize(HEIGHT,WIDTH)
+      eclipse:SetOrientation("VERTICAL")
+      eclipse.height = WIDTH / HEIGHT 
+    else
+      eclipse:SetSize(WIDTH,HEIGHT)
+      eclipse:SetOrientation("HORIZONTAL")
+      eclipse.height = 1
+    end
+  end
+
   local texture
   if LibSharedMedia then
     texture = LibSharedMedia:Fetch("statusbar", layout_db.texture or frame.layout_db.bar_texture or "Blizzard")
   end
-  eclipse:SetTexture(texture or [[Interface\TargetingFrame\UI-StatusBar]])
+ eclipse:SetTexture(texture or [[Interface\TargetingFrame\UI-StatusBar]])
   eclipse:SetLunarColor(unpack(PitBull4.PowerColors.BALANCE_NEGATIVE_ENERGY))
   eclipse:SetSolarColor(unpack(PitBull4.PowerColors.BALANCE_POSITIVE_ENERGY))
+
   eclipse:Show()
 
   return true
@@ -156,5 +184,34 @@ PitBull4_Eclipse:SetLayoutOptionsFunction(function (self)
       return not LibSharedMedia
     end,
     dialogControl = AceGUI.WidgetRegistry["LSM30_Statusbar"] and "LSM30_Statusbar" or nil,
+  }, 'icons', {
+    type = 'toggle',
+    name = L['Icons'],
+    desc = 'later',
+    order = 2,
+    get = function(info)
+      return PitBull4.Options.GetLayoutDB(self).icons
+    end,
+    set = function(info, value)
+      PitBull4.Options.GetLayoutDB(self).icons = value
+
+      PitBull4.Options.UpdateFrames()
+    end,
+  }, 'orientation', {
+    type = 'toggle',
+    name = L['Vertical'],
+    desc = 'later',
+    order = 3,
+    get = function(info)
+      return PitBull4.Options.GetLayoutDB(self).orientation == "VERTICAL"
+    end,
+    set = function(info, value)
+      PitBull4.Options.GetLayoutDB(self).orientation = value and "VERTICAL" or "HORIZONTAL"
+
+      PitBull4.Options.UpdateFrames()
+    end,
+    hidden = function(info, value)
+      return not not PitBull4.Options.GetLayoutDB(self).side
+    end,
   }
 end)
