@@ -738,7 +738,8 @@ enemy_debuffs.WARLOCK = {
 
 -- WARRIOR
 friend_buffs.WARRIOR = {
-	[2048]  = not cata_400 or nil, -- Battle Shout
+	[2048]  = not cata_400 or nil, -- Battle Shout (3.x)
+	[6673]  = cata_400 or nil, -- Battle Shout (4.x)
 	[469]   = true, -- Commanding Shout
 	[3411]  = true, -- Intervene
 	[50720] = true, -- Vigilance
