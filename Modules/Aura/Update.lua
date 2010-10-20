@@ -65,8 +65,11 @@ local weapon_list = {}
 local weapon_durations = {}
 
 -- constants for the slot ids
+--
+-- TODO: Remove these from the module when removing pre cata_400 support.
 local MAINHAND = PitBull4_Aura.MAINHAND
 local OFFHAND = PitBull4_Aura.OFFHAND
+local RANGED = GetInventorySlotInfo("RangedSlot")
 
 -- constants for building sample auras
 local sample_buff_icon   = [[Interface\Icons\Spell_ChargePositive]]
@@ -172,13 +175,17 @@ end
 -- Fills up to the maximum number of auras with sample auras
 local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 	-- figure the slot to use for the mainhand and offhand slots
-	local mainhand, offhand
+	local mainhand, offhand, ranged
 	if is_buff and db.enabled_weapons and unit and is_player then
-		if not weapon_list[MAINHAND] then
+		local mh, oh, rs = weapon_list[MAINHAND], weapon_list[OFFHAND], weapon_list[RANGED]
+		if not mh or not mh[2] then
 			mainhand = #list + 1
 		end
-		if not weapon_list[OFFHAND] then
+		if not oh or not oh[2] then
 			offhand = (mainhand and mainhand + 1) or #list + 1
+		end
+		if not rs or not rs[2] then
+			ranged = (offhand and offhand + 1) or (mainhand and mainhand + 1) or #list + 1
 		end
 	end
 
@@ -203,6 +210,13 @@ local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 			entry[2] = OFFHAND
 			local link = GetInventoryItemLink("player", OFFHAND)
 			entry[3] = link and select(3,GetItemInfo(link)) or 4 -- quality or epic if no item
+			entry[5] = L["Sample Weapon Enchant"] -- name
+			entry[9] = nil -- no debuff type
+			entry[12] = "player" -- treat weapon enchants as yours
+		elseif i == ranged then
+			entry[2] = RANGED
+			local link = GetInventoryItemLink("player", RANGED)
+			entry[3] = link and select(3,GetItemInfo(link)) or 4 -- quality or epic if not item
 			entry[5] = L["Sample Weapon Enchant"] -- name
 			entry[9] = nil -- no debuff type
 			entry[12] = "player" -- treat weapon enchants as yours
@@ -614,6 +628,10 @@ local function update_auras(frame, db, is_buff)
 		if list[#list] and not PitBull4_Aura:FilterEntry(filter, list[#list], frame) then
 			list[#list] = del_entry(list[#list])
 		end
+		copy_weapon_entry(weapon_list, list, RANGED)
+		if list[#list] and not PitBull4_Aura:FilterEntry(filter, list[#list], frame) then
+			list[#list] = del_entry(list[#list])
+		end
 	end
 
 	if frame.force_show then
@@ -832,10 +850,11 @@ function PitBull4_Aura:UpdateWeaponEnchants(force)
 	if force then
 		wipe(weapon_list)
 	end
-	local mh, mh_time_left, mh_count, oh, oh_time_left, oh_count = GetWeaponEnchantInfo()
+	local mh, mh_time_left, mh_count, oh, oh_time_left, oh_count, rs, rs_time_left, rs_count = GetWeaponEnchantInfo()
 	local current_time = GetTime()
 	local mh_entry = weapon_list[MAINHAND]
 	local oh_entry = weapon_list[OFFHAND]
+	local rs_entry = weapon_list[RANGED]
 
 	-- Grab the values from the weapon_list entries to use
 	-- to compare against the current values to look for changes.
@@ -853,6 +872,13 @@ function PitBull4_Aura:UpdateWeaponEnchants(force)
 		old_oh_expiration_time = oh_entry[11]
 	end
 
+	local old_rs, old_rs_count, old_rs_expiration_time
+	if rs_entry then
+		old_rs = rs_entry[2] ~= nil and 1 or nil
+		old_rs_count = rs_entry[8]
+		old_rs_expiration_time = rs_entry[11]
+	end
+
 	-- GetWeaponEnchantInfo() briefly returns that there is
 	-- an enchant but with the time_left set to zero.
 	-- When this happens force it to appear to us as though
@@ -863,12 +889,16 @@ function PitBull4_Aura:UpdateWeaponEnchants(force)
 	if oh_time_left == 0 then
 		oh, oh_time_left, oh_count = nil, nil, nil
 	end
+	if rs_time_left == 0 then
+		rs, rs_time_left, rs_count = nil, nil, nil
+	end
 
 	-- Calculate the expiration time from the time left.  We use
 	-- expiration time since the normal Aura system uses it instead
 	-- of time_left.
 	local mh_expiration_time = mh_time_left and mh_time_left / 1000 + current_time
 	local oh_expiration_time = oh_time_left and oh_time_left / 1000 + current_time
+	local rs_expiration_time = rs_time_left and rs_time_left / 1000 + current_time
 
 	-- Test to see if the enchant has changed and if so set the entry for it
 	-- We check that the expiration time is at least 0.2 seconds further
@@ -879,6 +909,10 @@ function PitBull4_Aura:UpdateWeaponEnchants(force)
 	end
 	if oh ~= old_oh or oh_count ~= old_oh_count or (oh_expiration_time and old_oh_expiration_time and oh_expiration_time - old_oh_expiration_time > 0.2) then
 		set_weapon_entry(weapon_list, oh, oh_time_left, oh_expiration_time, oh_count, OFFHAND)
+		updated = true
+	end
+	if rs ~= old_rs or rs_count ~= old_rs_count or (rs_expiration_time and old_rs_expiration_time and rs_expiration_time - old_rs_expiration_time > 0.2) then
+		set_weapon_entry(weapon_list, rs, rs_time_left, rs_expiration_time, rs_count, RANGED)
 		updated = true
 	end
 
