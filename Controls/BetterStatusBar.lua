@@ -461,6 +461,7 @@ end
 
 local function smoother_OnUpdate(self)
 	local progress = self:GetProgress()
+	if progress == 0 then return end -- In 4.0.x OnUpdate gets called straight away.
 	local anim = self:GetParent():GetParent()
 	local bar = anim:GetParent()
 	local value_delta = anim.value_delta
