@@ -284,7 +284,7 @@ end
 -- spells.
 local guess_spell_icon = setmetatable({}, {__index=function(self, key)
 	if not key then return false end
-	for i = 1, 65535 do
+	for i = 1, 120000 do
 		local name, _, texture = GetSpellInfo(i)
 		if name and name:find(key) then
 			self[key] = texture
