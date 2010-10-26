@@ -101,7 +101,9 @@ local function call_color_function(self, frame, bar_db, value, extra, icon)
 		end
 	end
 	local r, g, b, a, override
-	if frame.guid then
+	-- See the comments in call_value_function for why the frame.unit test is here.
+	-- aka ticket 475.
+	if frame.guid and frame.unit then
 		if bar_provider then
 			r, g, b, a, override = self:GetColor(frame, bar_db, value, extra, icon)
 		else
