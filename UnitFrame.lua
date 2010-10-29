@@ -461,17 +461,8 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 	end
 	
 	if frame.is_singleton then
-		if not frame.classification_db.click_through then
-			-- Only enable click casting if the frame isn't click_through.
-			_G.ClickCastFrames[frame] = true
-		end
 		self.singleton_frames[frame] = true
 	else
-		if not ClickCastHeader then
-			-- member unit frames are handled differently in cata.
-			-- See the initialConfigFunction attribute on the GroupHeader.
-			_G.ClickCastFrames[frame] = true
-		end
 		self.member_frames[frame] = true
 	end
 	
@@ -507,6 +498,19 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 	frame:RefreshVehicle()
 	
 	frame:SetClampedToScreen(true)
+
+	if frame.is_singleton then
+		if not frame.classification_db.click_through then
+			-- Only enable click casting if the frame isn't click_through.
+			_G.ClickCastFrames[frame] = true
+		end
+	else
+		if not ClickCastHeader then
+			-- member unit frames are handled differently in cata.
+			-- See the initialConfigFunction attribute on the GroupHeader.
+			_G.ClickCastFrames[frame] = true
+		end
+	end
 end
 
 -- we store layout_db instead of layout, since if a new profile comes up, it'll be a distinct table
@@ -565,7 +569,7 @@ UnitFrame.RefreshLayout = PitBull4:OutOfCombatWrapper(UnitFrame._RefreshLayout)
 function SingletonUnitFrame:SetClickThroughState(state)
 	local mouse_state = not not self:IsMouseEnabled()
 	if not state ~= mouse_state then
-		ClickCastFrames[self] = not mouse_state
+		_G.ClickCastFrames[self] = not mouse_state
 		self:EnableMouse(not mouse_state)
 	end
 end
