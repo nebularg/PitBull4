@@ -1246,6 +1246,10 @@ function PitBull4:ConvertIntoGroupHeader(header)
     self:SetAttribute("*type2", "menu")
     local click_through = header:GetAttribute("clickThrough")
     if not click_through then
+      -- Verify important the CallMethod is done BEFORE the frame is
+      -- registered with Clique so that Clique can override our click
+      -- registrations.
+      header:CallMethod("InitialConfigFunction")
       -- Support for Clique
       local clickcast_header = header:GetFrameRef("clickcast_header")
       if clickcast_header then
@@ -1254,11 +1258,11 @@ function PitBull4:ConvertIntoGroupHeader(header)
       end
     else
       self:EnableMouse(false)
+      -- Very important that the CallMethod is done AFTER the mouse is
+      -- potentially disabled above becuase otherwise it will create a
+      -- stack overflow.
+      header:CallMethod("InitialConfigFunction")
     end
-    -- Very important that the CallMethod is done AFTER the mouse is
-    -- potentially disabled above becuase otherwise it will create a
-    -- stack overflow.
-    header:CallMethod("InitialConfigFunction")
   ]])
 	
 	header:RefreshGroup(true)
