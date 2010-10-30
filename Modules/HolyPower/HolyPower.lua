@@ -50,9 +50,7 @@ end
 
 local function update_player(self)
 	for frame in PitBull4:IterateFramesForUnitID("player") do
-		if frame.HolyPower then
-			self:UpdateFrame(frame)
-		end
+		self:Update(frame)
 	end
 end
 
