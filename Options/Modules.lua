@@ -41,9 +41,9 @@ function PitBull4.Options.get_module_options()
 			end,
 			set = function(info, value)
 				if value then
-					PitBull4:EnableModule(info.handler)
+					PitBull4:EnableModuleAndSaveState(info.handler)
 				else
-					PitBull4:DisableModule(info.handler)
+					PitBull4:DisableModuleAndSaveState(info.handler)
 				end
 			end
 		}

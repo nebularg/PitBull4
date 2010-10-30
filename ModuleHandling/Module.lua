@@ -510,8 +510,8 @@ end
 --- Enable a module properly.
 -- Unlike module:Enable(), this tracks it in the DB as well as updates any frames.
 -- @param module the module to enable
--- @usage PitBull4:EnableModule(MyModule)
-function PitBull4:EnableModule(module)
+-- @usage PitBull4:EnableModuleAndSaveState(MyModule)
+function PitBull4:EnableModuleAndSaveState(module)
 	if module:IsEnabled() then
 		return
 	end
@@ -527,8 +527,8 @@ end
 --- Disable a module properly.
 -- Unlike module:Disable(), this tracks it in the DB as well as cleans up any frames.
 -- @param module the module to disable
--- @usage PitBull4:DisableModule(MyModule)
-function PitBull4:DisableModule(module)
+-- @usage PitBull4:DisableModuleAndSaveState(MyModule)
+function PitBull4:DisableModuleAndSaveState(module)
 	if not module:IsEnabled() then
 		return
 	end

@@ -1151,7 +1151,7 @@ function PitBull4:LoadAndEnableModule(id)
 	if loaded then
 		local module = self:GetModule(id)
 		assert(module)
-		self:EnableModule(module)
+		self:EnableModuleAndSaveState(module)
 	else
 		if reason then
 			reason = _G["ADDON_"..reason]
@@ -1252,9 +1252,9 @@ function PitBull4:OnProfileChanged()
 	-- Enable/Disable modules to match the new profile.
 	for _,module in self:IterateModules() do
 		if module.db.profile.global.enabled then
-			self:EnableModule(module)
+			self:EnableModuleAndSaveState(module)
 		else
-			self:DisableModule(module)
+			self:DisableModuleAndSaveState(module)
 		end
 	end
 
