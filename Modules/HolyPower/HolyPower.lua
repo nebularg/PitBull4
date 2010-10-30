@@ -46,6 +46,7 @@ PitBull4_HolyPower:SetDefaults({
 function PitBull4_HolyPower:OnEnable()
 	self:RegisterEvent("UNIT_POWER")
 	self:RegisterEvent("UNIT_DISPLAYPOWER")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
 local function update_player(self)
@@ -67,6 +68,10 @@ function PitBull4_HolyPower:UNIT_DISPLAYPOWER(event, unit)
 		return
 	end
 	
+	update_player(self)
+end
+
+function PitBull4_HolyPower:PLAYER_ENTERING_WORLD(event)
 	update_player(self)
 end
 
