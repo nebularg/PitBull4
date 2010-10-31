@@ -203,8 +203,8 @@ function PitBull4.Options.get_layout_editor_text_options()
 			
 			UpdateFrames()
 		end,
-		min = 0.5,
-		max = 3,
+		softMin = 0.5,
+		softMax = 3,
 		step = 0.01,
 		bigStep = 0.05,
 		isPercent = true,
@@ -655,8 +655,8 @@ function PitBull4.Options.get_layout_editor_text_options()
 			
 			UpdateFrames()
 		end,
-		min = 0.5,
-		max = 3,
+		softMin = 0.5,
+		softMax = 3,
 		step = 0.01,
 		bigStep = 0.05,
 		isPercent = true,

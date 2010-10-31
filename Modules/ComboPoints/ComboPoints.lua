@@ -158,8 +158,8 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 				self:Update(frame)
 			end
 		end,
-		min = 0,
-		max = 15,
+		softMin = 0,
+		softMax = 15,
 		step = 1,
 	}, 'texture', {
 		type = 'select',

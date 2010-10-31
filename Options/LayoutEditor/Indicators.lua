@@ -98,8 +98,8 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		type = 'range',
 		name = L["Spacing"],
 		desc = L["Spacing between adjacent indicators."],
-		min = 1,
-		max = 20,
+		softMin = 1,
+		softMax = 20,
 		step = 1,
 		order = 1,
 		get = function(info)
@@ -116,8 +116,8 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		type = 'range',
 		name = L["Size"],
 		desc = L["Unscaled size of indicators."],
-		min = 5,
-		max = 50,
+		softMin = 5,
+		softMax = 50,
 		step = 1,
 		bigStep = 5,
 		order = 2,
@@ -143,8 +143,8 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		type = 'range',
 		name = L["Inside horizontal padding"],
 		desc = L["How far in pixels that indicators are horizontally placed inside bars."],
-		min = 0,
-		max = 20,
+		softMin = 0,
+		softMax = 20,
 		step = 1,
 		order = 1,
 		get = function(info)
@@ -161,8 +161,8 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		type = 'range',
 		name = L["Inside vertical padding"],
 		desc = L["How far in pixels that indicators are vertically placed inside bars."],
-		min = 0,
-		max = 20,
+		softMin = 0,
+		softMax = 20,
 		step = 1,
 		order = 2,
 		get = function(info)
@@ -180,8 +180,8 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		type = 'range',
 		name = L["Outside margin"],
 		desc = L["How far in pixels that indicators are placed outside of bars."],
-		min = 0,
-		max = 20,
+		softMin = 0,
+		softMax = 20,
 		step = 1,
 		order = 3,
 		get = function(info)
@@ -206,8 +206,8 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		type = 'range',
 		name = L["Inside horizontal padding"],
 		desc = L["How far in pixels that indicators are horizontally placed inside the unit frame."],
-		min = 0,
-		max = 20,
+		softMin = 0,
+		softMax = 20,
 		step = 1,
 		order = 1,
 		get = function(info)
@@ -224,8 +224,8 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		type = 'range',
 		name = L["Inside vertical padding"],
 		desc = L["How far in pixels that indicators are vertically placed inside the unit frame."],
-		min = 0,
-		max = 20,
+		softMin = 0,
+		softMax = 20,
 		step = 1,
 		order = 2,
 		get = function(info)
@@ -242,8 +242,8 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		type = 'range',
 		name = L["Outside margin"],
 		desc = L["How far in pixels that indicators are placed outside the unit frame."],
-		min = 0,
-		max = 20,
+		softMin = 0,
+		softMax = 20,
 		step = 1,
 		order = 3,
 		get = function(info)
@@ -343,8 +343,8 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 
 			UpdateFrames()
 		end,
-		min = 1,
-		max = 12,
+		softMin = 1,
+		softMax = 12,
 		step = 1,
 		disabled = disabled,
 		hidden = function(info)
@@ -671,8 +671,8 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			
 			UpdateFrames()
 		end,
-		min = 0.5,
-		max = 4,
+		softMin = 0.5,
+		softMax = 4,
 		step = 0.01,
 		bigStep = 0.05,
 		isPercent = true,
@@ -724,8 +724,8 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			
 			UpdateFrames()
 		end,
-		min = 0.5,
-		max = 3,
+		softMin = 0.5,
+		softMax = 3,
 		step = 0.01,
 		bigStep = 0.05,
 		isPercent = true,

@@ -279,8 +279,8 @@ PitBull4_Border:SetLayoutOptionsFunction(function(self)
 			PitBull4.Options.GetLayoutDB(self).size = value
 			clear_and_update()
 		end,
-		min = 4,
-		max = 30,
+		softMin = 4,
+		softMax = 30,
 		step = 1,
 	}, 'padding', {
 		type = 'range',

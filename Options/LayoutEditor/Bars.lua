@@ -70,8 +70,8 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		name = L["Spacing"],
 		desc = L["Spacing in pixels between bars."],
 		order = 2,
-		min = -10,
-		max = 10,
+		softMin = -10,
+		softMax = 10,
 		step = 1,
 		get = function(info)
 			return GetLayoutDB(false).bar_spacing
@@ -88,8 +88,8 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		name = L["Padding"],
 		desc = L["Padding in pixels between bars and the sides of the unit frame."],
 		order = 3,
-		min = 0,
-		max = 10,
+		softMin = 0,
+		softMax = 10,
 		step = 1,
 		get = function(info)
 			return GetLayoutDB(false).bar_padding
@@ -408,8 +408,8 @@ function PitBull4.Options.get_layout_editor_bar_options()
 
 			UpdateFrames()
 		end,
-		min = 1,
-		max = 12,
+		softMin = 1,
+		softMax = 12,
 		step = 1,
 		disabled = disabled,
 	}
