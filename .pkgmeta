@@ -95,6 +95,7 @@ move-folders:
     PitBull4/Modules/PowerBar: PitBull4_PowerBar
     PitBull4/Modules/PvPIcon: PitBull4_PvPIcon
     PitBull4/Modules/RaidTargetIcon: PitBull4_RaidTargetIcon
+    PitBull4/Modules/QuestIcon: PitBull4_QuestIcon
     PitBull4/Modules/RangeFader: PitBull4_RangeFader
     PitBull4/Modules/ReadyCheckIcon: PitBull4_ReadyCheckIcon
     PitBull4/Modules/ReputationBar: PitBull4_ReputationBar

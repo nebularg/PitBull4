@@ -30,6 +30,7 @@
 <Include file="Modules\Portrait\load.xml"/>
 <Include file="Modules\PowerBar\load.xml"/>
 <Include file="Modules\PvPIcon\load.xml"/>
+<Include file="Modules\QuestIcon\load.xml"/>
 <Include file="Modules\RaidTargetIcon\load.xml"/>
 <Include file="Modules\RangeFader\load.xml"/>
 <Include file="Modules\ReadyCheckIcon\load.xml"/>

@@ -1,0 +1,24 @@
+## Interface: 40000
+## Title: PitBull4 |r[|cffeda55fQuest icon|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Quest icon")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Quest icon")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Quest icon")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Quest icon")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Quest icon")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Quest icon")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Quest icon")@|r]
+## Notes: Show an icon based on whether or not the unit is a quest boss.
+## Notes-deDE: @localization(locale="deDE", key="Show an icon based on whether or not the unit is a quest boss.")@
+## Notes-esES: @localization(locale="esES", key="Show an icon based on whether or not the unit is a quest boss.")@
+## Notes-frFR: @localization(locale="frFR", key="Show an icon based on whether or not the unit is a quest boss.")@
+## Notes-koKR: @localization(locale="koKR", key="Show an icon based on whether or not the unit is a quest boss.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Show an icon based on whether or not the unit is a quest boss.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Show an icon based on whether or not the unit is a quest boss.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Show an icon based on whether or not the unit is a quest boss.")@
+## Author: Shefki
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## Version: @project-version@
+
+load.xml
