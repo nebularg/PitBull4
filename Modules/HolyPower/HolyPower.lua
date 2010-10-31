@@ -43,10 +43,14 @@ PitBull4_HolyPower:SetDefaults({
 	background_color = { 0, 0, 0, 0.5 }
 })
 
+local player_level
+
 function PitBull4_HolyPower:OnEnable()
+	player_level = UnitLevel("player")
 	self:RegisterEvent("UNIT_POWER")
 	self:RegisterEvent("UNIT_DISPLAYPOWER")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	self:RegisterEvent("PLAYER_LEVEL_UP")
 end
 
 local function update_player(self)
@@ -75,6 +79,11 @@ function PitBull4_HolyPower:PLAYER_ENTERING_WORLD(event)
 	update_player(self)
 end
 
+function PitBull4_HolyPower:PLAYER_LEVEL_UP(event, level)
+	player_level = level
+	update_player(self)
+end
+
 function PitBull4_HolyPower:ClearFrame(frame)
 	local container = frame.HolyPower
 	if not container then
@@ -91,7 +100,7 @@ function PitBull4_HolyPower:ClearFrame(frame)
 end
 
 function PitBull4_HolyPower:UpdateFrame(frame)
-	if frame.unit ~= "player" then
+	if frame.unit ~= "player" or player_level < PALADINPOWERBAR_SHOW_LEVEL then
 		return self:ClearFrame(frame)
 	end
 	
