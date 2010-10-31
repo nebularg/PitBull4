@@ -7,7 +7,7 @@ end
 
 local L = PitBull4.L
 
-local PitBull4_QuestIcon = PitBull4:NewModule("QuestIcon")
+local PitBull4_QuestIcon = PitBull4:NewModule("QuestIcon","AceEvent-3.0")
 
 PitBull4_QuestIcon:SetModuleType("indicator")
 PitBull4_QuestIcon:SetName(L["Quest icon"])
