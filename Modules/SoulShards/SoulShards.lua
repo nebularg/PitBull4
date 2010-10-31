@@ -43,10 +43,16 @@ PitBull4_SoulShards:SetDefaults({
 	background_color = { 0, 0, 0, 0.5 }
 })
 
+local player_level
+
 function PitBull4_SoulShards:OnEnable()
+	player_level = UnitLevel("player")
 	self:RegisterEvent("UNIT_POWER")
 	self:RegisterEvent("UNIT_DISPLAYPOWER")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	if player_level < SHARDBAR_SHOW_LEVEL then
+		self:RegisterEvent("PLAYER_LEVEL_UP")
+	end
 end
 
 local function update_player(self)
@@ -75,6 +81,14 @@ function PitBull4_SoulShards:PLAYER_ENTERING_WORLD(event)
 	update_player(self)
 end
 
+function PitBull4_SoulShards:PLAYER_LEVEL_UP(event, level)
+	player_level = level
+	if player_level >= SHARDBAR_SHOW_LEVEL then
+		self:UnregisterEvent("PLAYER_LEVEL_UP")
+		update_player(self)
+	end
+end
+
 function PitBull4_SoulShards:ClearFrame(frame)
 	local container = frame.SoulShards
 	if not container then
@@ -91,7 +105,7 @@ function PitBull4_SoulShards:ClearFrame(frame)
 end
 
 function PitBull4_SoulShards:UpdateFrame(frame)
-	if frame.unit ~= "player" then
+	if frame.unit ~= "player" or player_level < SHARDBAR_SHOW_LEVEL then
 		return self:ClearFrame(frame)
 	end
 	
