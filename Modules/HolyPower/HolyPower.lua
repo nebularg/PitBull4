@@ -50,7 +50,9 @@ function PitBull4_HolyPower:OnEnable()
 	self:RegisterEvent("UNIT_POWER")
 	self:RegisterEvent("UNIT_DISPLAYPOWER")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	self:RegisterEvent("PLAYER_LEVEL_UP")
+	if player_level < PALADINPOWERBAR_SHOW_LEVEL then
+		self:RegisterEvent("PLAYER_LEVEL_UP")
+	end
 end
 
 local function update_player(self)
@@ -81,7 +83,10 @@ end
 
 function PitBull4_HolyPower:PLAYER_LEVEL_UP(event, level)
 	player_level = level
-	update_player(self)
+	if player_level >= PALADINPOWERBAR_SHOW_LEVEL then
+		self:UnregisterEvent("PLAYER_LEVEL_UP")
+		update_player(self)
+	end
 end
 
 function PitBull4_HolyPower:ClearFrame(frame)
