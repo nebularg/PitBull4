@@ -57,25 +57,22 @@ function PitBull4_HealthBar:OnDisable()
 end
 
 timerFrame:SetScript("OnUpdate", function()
+	for guid in pairs(guids_to_update) do	
+		for frame in PitBull4:IterateFramesForGUID(guid) do
+			PitBull4_HealthBar:Update(frame)
+		end
+	end
 	if predicted_health then
 		for frame in PitBull4:IterateFrames() do
-			if frame.guid then
+			if frame.guid and not guids_to_update[frame.guid] then
 				local db = PitBull4_HealthBar:GetLayoutDB(frame)
 				if db.fast_updates then
 					PitBull4_HealthBar:Update(frame)
-					guids_to_update[frame.guid] = nil
 				end
 			end
 		end
 	end
-	if next(guids_to_update) then 
-		for frame in PitBull4:IterateFrames() do
-			if guids_to_update[frame.guid] then
-				PitBull4_HealthBar:Update(frame)
-			end
-		end
-		wipe(guids_to_update)
-	end
+	wipe(guids_to_update)
 end)
 
 function PitBull4_HealthBar:GetValue(frame)
@@ -137,6 +134,22 @@ end
 function PitBull4_HealthBar:SetCVar()
 	predicted_health = GetCVarBool("predictedHealth")
 end
+
+PitBull4_HealthBar:SetLayoutOptionsFunction(function(self)
+	return 'fast_updates', {
+		name = L['Fast updates'],
+		desc = L['Update the health bar using the games predicted health method.'],
+		type = 'toggle',
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).fast_updates
+		end,
+		set = function(info,value)
+			PitBull4.Options.GetLayoutDB(self).fast_updates = value
+
+			PitBull4.Options.UpdateFrames()
+		end
+	}
+end)
 
 PitBull4_HealthBar:SetColorOptionsFunction(function(self)
 	local function get(info)
