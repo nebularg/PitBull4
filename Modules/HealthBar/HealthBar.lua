@@ -10,7 +10,7 @@ local EXAMPLE_VALUE = 0.8
 local unpack = _G.unpack
 local L = PitBull4.L
 
-local PitBull4_HealthBar = PitBull4:NewModule("HealthBar", "AceEvent-3.0", "AceTimer-3.0")
+local PitBull4_HealthBar = PitBull4:NewModule("HealthBar", "AceEvent-3.0", "AceHook-3.0")
 
 PitBull4_HealthBar:SetModuleType("bar")
 PitBull4_HealthBar:SetName(L["Health bar"])
@@ -20,7 +20,8 @@ PitBull4_HealthBar:SetDefaults({
 	position = 1,
 	color_by_class = true,
 	hostility_color = true,
-	hostility_color_npcs = true
+	hostility_color_npcs = true,
+	fast_updates = true,
 }, {
 	colors = {
 		dead = { 0.6, 0.6, 0.6 },
@@ -36,16 +37,18 @@ local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
 
 local guids_to_update = {}
+local predicted_health = true
 
--- local PLAYER_GUID
 function PitBull4_HealthBar:OnEnable()
---	PLAYER_GUID = UnitGUID("player")
 	timerFrame:Show()
 	
 	self:RegisterEvent("UNIT_HEALTH")
 	self:RegisterEvent("UNIT_MAXHEALTH","UNIT_HEALTH")
 	self:RegisterEvent("PLAYER_ALIVE")
 	
+	self:SecureHook("SetCVar")
+	self:SetCVar()
+
 	self:UpdateAll()
 end
 
@@ -54,6 +57,17 @@ function PitBull4_HealthBar:OnDisable()
 end
 
 timerFrame:SetScript("OnUpdate", function()
+	if predicted_health then
+		for frame in PitBull4:IterateFrames() do
+			if frame.guid then
+				local db = PitBull4_HealthBar:GetLayoutDB(frame)
+				if db.fast_updates then
+					PitBull4_HealthBar:Update(frame)
+					guids_to_update[frame.guid] = nil
+				end
+			end
+		end
+	end
 	if next(guids_to_update) then 
 		for frame in PitBull4:IterateFrames() do
 			if guids_to_update[frame.guid] then
@@ -62,16 +76,6 @@ timerFrame:SetScript("OnUpdate", function()
 		end
 		wipe(guids_to_update)
 	end
-
---[[ Currently the WoW Client isn't actually doing fast updates for health.
---   It's unclear if this is a bug or a change in feature.  Disabling the
---   code to support this for now since it's a waste of CPU time for no benefit.
-	for frame in PitBull4:IterateFramesForGUIDs(PLAYER_GUID, UnitGUID("pet")) do
-		if not frame.is_wacky then
-			PitBull4_HealthBar:Update(frame)
-		end
-	end
---]]
 end)
 
 function PitBull4_HealthBar:GetValue(frame)
@@ -128,6 +132,10 @@ end
 
 function PitBull4_HealthBar:PLAYER_ALIVE(event)
 	guids_to_update[UnitGUID("player")] = true
+end
+
+function PitBull4_HealthBar:SetCVar()
+	predicted_health = GetCVarBool("predictedHealth")
 end
 
 PitBull4_HealthBar:SetColorOptionsFunction(function(self)

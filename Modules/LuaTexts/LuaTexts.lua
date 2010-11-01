@@ -17,6 +17,8 @@ local event_cache = {}
 local func_cache = {}
 local power_cache = {}
 PitBull4_LuaTexts.power_cache = power_cache
+local hp_cache = {}
+PitBull4_LuaTexts.hp_cache = hp_cache
 local mouseover_check_cache = {}
 PitBull4_LuaTexts.mouseover_check_cache = mouseover_check_cache
 local spell_cast_cache = {}
@@ -43,6 +45,7 @@ local dead_times = {}
 PitBull4_LuaTexts.dead_times = dead_times
 local player_guid
 local predicted_power = true
+local predicted_health = true
 
 local PROVIDED_CODES = {
 	[L["Class"]] = {
@@ -623,6 +626,7 @@ timerframe:Hide()
 
 function PitBull4_LuaTexts:SetCVar()
 	predicted_power = GetCVarBool("predictedPower")
+	predicted_health = GetCVarBool("predictedHealth")
 end
 
 -- Fix a typo in the original default event names. 
@@ -1114,6 +1118,12 @@ timerframe:SetScript("OnUpdate", function(self, elapsed)
 			end
 		end
 	end
+	-- Fast updates for healthbars
+	if predicted_health and next(hp_cache) then
+		for font_string in pairs(hp_cache) do
+			to_update[font_string] = 0
+		end
+	end
 
   -- cast text
 	fix_cast_data()
@@ -1311,6 +1321,7 @@ function PitBull4_LuaTexts:RemoveFontString(font_string)
 	end
 
 	power_cache[font_string] = nil
+	hp_cache[font_string] = nil
 	mouseover_check_cache[font_string] = nil
 	spell_cast_cache[font_string] = nil
 	to_update[font_string] = nil
@@ -1335,6 +1346,7 @@ function PitBull4_LuaTexts:OnHide(frame)
 		if font_string.frame == frame then
 			no_update[font_string] = true
 			power_cache[font_string] = nil
+			hp_cache[font_string] = nil
 			mouseover_check_cache[font_string] = nil
 			spell_cast_cache[font_string] = nil
 			to_update[font_string] = nil

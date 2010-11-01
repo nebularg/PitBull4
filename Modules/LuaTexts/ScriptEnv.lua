@@ -24,6 +24,7 @@ PitBull4_LuaTexts.ScriptEnv = ScriptEnv
 local mouseover_check_cache = PitBull4_LuaTexts.mouseover_check_cache
 local spell_cast_cache = PitBull4_LuaTexts.spell_cast_cache
 local power_cache = PitBull4_LuaTexts.power_cache
+local hp_cache = PitBull4_LuaTexts.hp_cache
 local cast_data = PitBull4_LuaTexts.cast_data
 local to_update = PitBull4_LuaTexts.to_update
 local afk_cache = PitBull4_LuaTexts.afk_cache
@@ -630,8 +631,11 @@ local function Status(unit)
 end
 ScriptEnv.Status = Status
 
-local function HP(unit)
+local function HP(unit, no_fast)
 	local hp = UnitHealth(unit)
+	if not no_fast then
+		hp_cache[ScriptEnv.font_string] = true
+	end
 	if hp == 1 and UnitIsGhost(unit) then
 		return 0
 	end
