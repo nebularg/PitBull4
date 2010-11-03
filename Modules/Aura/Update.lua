@@ -472,7 +472,7 @@ end
 local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	local control = aura_controls[i]
 
-	local id, slot, quality, is_buff, name, rank, icon, count, debuff_type, duration, expiration_time, caster, is_stealable = unpack(aura, 1, ENTRY_END)
+	local id, slot, quality, is_buff, name, rank, icon, count, debuff_type, duration, expiration_time, caster, is_stealable, should_consolidate, spell_id = unpack(aura, 1, ENTRY_END)
 
 	local is_mine = my_units[caster]
 	local who = is_mine and "my" or "other"
@@ -489,6 +489,8 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	local layout = is_buff and db.layout.buff or db.layout.debuff
 	control:SetFrameLevel(frame:GetFrameLevel() + layout.frame_level)
 
+	local unchanged = id == control.id and expiration_time == control.expiration_time and spell_id == control.spell_id and slot == control.slot and is_buff == control.is_buff and caster == control.caster and count == control.count and duration == control.duration
+
 	control.id = id
 	control.is_mine = is_mine
 	control.is_buff = is_buff
@@ -498,6 +500,8 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	control.expiration_time = expiration_time
 	control.debuff_type = debuff_type
 	control.slot = slot
+	control.caster = caster
+	control.spell_id = spell_id
 
 	local class_db = frame.classification_db
 	if not db.click_through and class_db and not class_db.click_through then
@@ -528,8 +532,12 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 
 	if db.cooldown[rule] and duration and duration > 0 then
 		local cooldown = control.cooldown
-		cooldown:Show()
-		cooldown:SetCooldown(expiration_time - duration, duration)
+		-- Avoid updating the cooldown frame if nothing changed to stop the flashing Aura
+		-- problem in 4.0.1.  
+		if not unchanged or not cooldown:IsShown() then
+			cooldown:Show()
+			cooldown:SetCooldown(expiration_time - duration, duration)
+		end
 	else
 		control.cooldown:Hide()
 	end
