@@ -390,7 +390,8 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 			self.unitsuffix = nil
 		end
 	
-		self.is_wacky = PitBull4.Utils.IsWackyUnitGroup(unit_group)
+		local is_wacky = PitBull4.Utils.IsWackyUnitGroup(unit_group)
+		self.is_wacky = is_wacky
 		
 		if old_unit_group then
 			PitBull4.unit_group_to_headers[old_unit_group][self] = nil
@@ -399,6 +400,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		
 		for _, frame in self:IterateMembers() do
 			frame:SetAttribute("unitsuffix", self.unitsuffix)
+			frame.is_wacky = is_wacky
 		end
 		PitBull4.unit_group_to_headers[unit_group][self] = true
 		PitBull4.super_unit_group_to_headers[self.super_unit_group][self] = true
