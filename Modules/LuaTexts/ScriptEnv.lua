@@ -326,7 +326,7 @@ ScriptEnv.AFK = AFK
 
 local function IsDND(unit)
 	dnd_cache[ScriptEnv.font_string] = true
-	return not not dnd_times[UnitGUID(unit)]
+	return not not dnd[UnitGUID(unit)]
 end
 ScriptEnv.IsDND = IsDND
 
