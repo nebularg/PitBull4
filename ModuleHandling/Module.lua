@@ -310,7 +310,7 @@ function Module:Update(frame, return_changed, same_guid)
 		expect(return_changed, 'typeof', 'nil;boolean')
 	end
 	
-	local changed, should_update_texts
+	local changed
 	
 	local layout_db = self:GetLayoutDB(frame)
 	if not layout_db.enabled or (not frame.guid and not frame.force_show) then
