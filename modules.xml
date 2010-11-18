@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 
 <!--@debug@-->
-<!-- <Include file="Modules\Aggro\load.xml"/>
+<Include file="Modules\Aggro\load.xml"/>
 <Include file="Modules\Aura\load.xml"/>
 <Include file="Modules\Background\load.xml"/>
 <Include file="Modules\BlankSpace\load.xml"/>
@@ -44,7 +44,7 @@
 <Include file="Modules\Totems\load.xml"/>
 <Include file="Modules\VisualHeal\load.xml"/>
 <Include file="Modules\VisualHeal5\load.xml"/>
-<Include file="Modules\VoiceIcon\load.xml"/> -->
+<Include file="Modules\VoiceIcon\load.xml"/>
 <!--@end-debug@-->
 
 </Ui>
