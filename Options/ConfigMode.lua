@@ -2,6 +2,8 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local is_13287 = tonumber((select(2,GetBuildInfo()))) == 13287
+
 local values = {
 	disabled = L["Disable"],
 	solo = L["Solo"],
@@ -13,6 +15,15 @@ local values = {
 	raid25 = L["25-man raid"],
 	raid40 = L["40-man raid"],
 }
+if is_13287 then
+	values.party = nil
+	values.raid = nil
+	values.raid10 = nil
+	values.raid15 = nil
+	values.raid20 = nil
+	values.raid25 = nil
+	values.raid40 = nil
+end
 --- Return the select values dictionary used by PitBull4 to choose config mode.
 -- @usage local values = PitBull4:GetConfigModeValues()
 -- @return an AceConfig-3.0-compliant select values dictionary.
@@ -102,7 +113,7 @@ end
 function PitBull4.Options.get_config_mode_options()
 	return {
 		name = L["Config mode"],
-		desc = L["Show all frames that can be shown, for easy configuration."],
+		desc = L["Show all frames that can be shown, for easy configuration."] .. ( is_13287 and "  |cffff0000Group config modes are temporarily disabled for this release until I can fix them with 4.0.3.|r" or ''),
 		type = 'select',
 		values = PitBull4:GetConfigModeValues(),
 		get = function(info)
