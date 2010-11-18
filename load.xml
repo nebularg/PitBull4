@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 
 <!--@debug@--> 
-<Script file="Debug.lua"/>
+<!-- <Script file="Debug.lua"/> -->
 <!--@end-debug@-->
 
 <Include file="Localization\load.xml"/>

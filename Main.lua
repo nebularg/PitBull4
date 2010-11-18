@@ -5,7 +5,6 @@ LibStub("AceLocale-3.0"):NewLocale("PitBull4", "enUS", true, true)
 local L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
 
 local cata_400 = select(4,GetBuildInfo()) >= 40000
-local is_13221 = tonumber((select(2,GetBuildInfo()))) == 13221
 
 local SINGLETON_CLASSIFICATIONS = {
 	"player",
@@ -251,8 +250,6 @@ PitBull4.L = L
 
 PitBull4.SINGLETON_CLASSIFICATIONS = SINGLETON_CLASSIFICATIONS
 PitBull4.UNIT_GROUPS = UNIT_GROUPS
-
-PitBull4.is_13221 = is_13221
 
 local db
 
@@ -1244,11 +1241,9 @@ function PitBull4:OnProfileChanged()
 			end
 		end
 	end
-	if not is_13221 then
-		for group, group_db in pairs(db.profile.groups) do
-			if group_db.enabled then
-				self:MakeGroupHeader(group)
-			end
+	for group, group_db in pairs(db.profile.groups) do
+		if group_db.enabled then
+			self:MakeGroupHeader(group)
 		end
 	end
 	
@@ -1554,9 +1549,7 @@ StateHeader:WrapScript(StateHeader, "OnAttributeChanged", [[
     end
   end
 ]])
-if not is_13221 then
-	RegisterStateDriver(StateHeader, "group", "[target=raid26, exists] raid40; [target=raid21, exists] raid25; [target=raid16, exists] raid20; [target=raid11, exists] raid15; [target=raid6, exists] raid10; [group:raid] raid; [group:party] party; solo")
-end
+RegisterStateDriver(StateHeader, "group", "[target=raid26, exists] raid40; [target=raid21, exists] raid25; [target=raid16, exists] raid20; [target=raid11, exists] raid15; [target=raid6, exists] raid10; [group:raid] raid; [group:party] party; solo")
 
 function PitBull4:AddGroupToStateHeader(header)
 	local header_name = header:GetName()

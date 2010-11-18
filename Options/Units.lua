@@ -20,7 +20,6 @@ function PitBull4.Options.get_unit_options()
 		desc = L["Change settings for unit groups."],
 		args = {},
 		childGroups = "tab",
-		disabled = function() return PitBull4.is_13221 end,
 	}
 	
 	local function get_unit_db()
