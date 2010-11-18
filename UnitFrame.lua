@@ -363,6 +363,22 @@ function UnitFrame__scripts:OnAttributeChanged(key, value)
 		local new_unit = PitBull4.Utils.GetBestUnitID(SecureButton_GetModifiedUnit(self, "LeftButton")) or nil
 	
 		local old_unit = self.unit
+
+		-- As of 4.0.3 the the unit watch state handler no longer calls OnShow
+		-- when the frame is already visible.  So you can't use that to detect
+		-- that the unit on a frame has changed.  So we need to check for the
+		-- GUID changing here.  However, if the frame is not shown we can't update
+		-- the GUID or it hoses the update system.  So only update the GUID if
+		-- we're already visible if we're not then the unit watch will update it
+		-- normally.
+		if self:IsVisible() then
+			local guid = new_unit and UnitGUID(new_unit) or nil
+			if guid ~= self.guid then
+				self.unit = new_unit -- Make sure unit is set before updates happen.
+				self:UpdateGUID(guid)
+			end
+		end
+
 		if old_unit == new_unit then
 			return
 		end
