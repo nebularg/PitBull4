@@ -2,7 +2,7 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local is_13287 = tonumber((select(2,GetBuildInfo()))) == 13287
+local is_13287 = tonumber((select(2,GetBuildInfo()))) >= 13287
 
 local values = {
 	disabled = L["Disable"],
