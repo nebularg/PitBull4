@@ -656,7 +656,7 @@ end
 -- @param anim_duration the time that the animation effect takes to play.
 -- @usage bar:SetAnimDuration(0.5)
 function BetterStatusBar:SetAnimDuration(anim_duration)
-	if DEUBUG then
+	if DEBUG then
 		expect(anim_duration, 'typeof', 'number')
 		expect(anim_duration, '>', 0)
 	end
