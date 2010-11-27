@@ -1,0 +1,25 @@
+## Interface: 40000
+## Title: PitBull4 |r[|cffeda55fPhase icon|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Phase icon")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Phase icon")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Phase icon")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Phase icon")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Phase icon")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Phase icon")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Phase icon")@|r]
+## Notes: Show an icon on the unit frame if the unit is out of phase with you.
+## Notes-deDE: @localization(locale="deDE", key="Show an icon on the unit frame if the unit is out of phase with you.")@
+## Notes-esES: @localization(locale="esES", key="Show an icon on the unit frame if the unit is out of phase with you.")@
+## Notes-frFR: @localization(locale="frFR", key="Show an icon on the unit frame if the unit is out of phase with you.")@
+## Notes-koKR: @localization(locale="koKR", key="Show an icon on the unit frame if the unit is out of phase with you.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Show an icon on the unit frame if the unit is out of phase with you.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Show an icon on the unit frame if the unit is out of phase with you.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Show an icon on the unit frame if the unit is out of phase with you.")@
+## Author: Shefki
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## Version: @project-version@
+## X-PitBull4-Condition: return select(4,GetBuildInfo()) >= 40000
+
+load.xml

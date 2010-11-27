@@ -27,6 +27,7 @@
 <Include file="Modules\LuaTexts\load.xml"/>
 <Include file="Modules\ManaSpark\load.xml"/>
 <Include file="Modules\MasterLooterIcon\load.xml"/>
+<Include file="Modules\PhaseIcon\load.xml"/>
 <Include file="Modules\Portrait\load.xml"/>
 <Include file="Modules\PowerBar\load.xml"/>
 <Include file="Modules\PvPIcon\load.xml"/>

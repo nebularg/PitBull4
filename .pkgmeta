@@ -91,6 +91,7 @@ move-folders:
     PitBull4/Modules/LuaTexts: PitBull4_LuaTexts
     PitBull4/Modules/ManaSpark: PitBull4_ManaSpark
     PitBull4/Modules/MasterLooterIcon: PitBull4_MasterLooterIcon
+    PitBull4/Modules/PhaseIcon: PitBull4_PhaseIcon
     PitBull4/Modules/Portrait: PitBull4_Portrait
     PitBull4/Modules/PowerBar: PitBull4_PowerBar
     PitBull4/Modules/PvPIcon: PitBull4_PvPIcon
