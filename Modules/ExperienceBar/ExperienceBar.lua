@@ -45,7 +45,7 @@ function PitBull4_ExperienceBar:GetValue(frame)
 		end
 		
 	else -- pet
-		if level == UnitLevel("player") then
+		if level == UnitLevel("player") or UnitIsUnit("pet","vehicle") then
 			return nil
 		end
 		
