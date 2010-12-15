@@ -4,6 +4,7 @@ local L = PitBull4.L
 
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
+local cata_400 = select(4,GetBuildInfo()) >= 40000
 
 -- CONSTANTS ----------------------------------------------------------------
 
@@ -453,6 +454,15 @@ function UnitFrame__scripts:OnHide()
 	end
 end
 
+-- Ugly hack function to allow running RegisterForClicks in cata.
+-- This function is currently missing from the RestrictedFrames environment.
+-- Frames created in combat won't have the ability to use the right click
+-- menu on them until you leave combat the next time when this function runs.
+local function register_for_clicks_helper(frame, clicks)
+	frame:RegisterForClicks(clicks)
+end
+register_for_clicks_helper = PitBull4:OutOfCombatWrapper(register_for_clicks_helper)
+
 --- Add the proper functions and scripts to a SecureUnitButton, as well as some various initialization.
 -- @param frame a Button which inherits from SecureUnitButton
 -- @param isExampleFrame whether the button is an example frame, thus not a real unit frame
@@ -511,6 +521,12 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 			frame:RegisterForClicks("AnyUp")
 			frame:SetAttribute("*type1", "target")
 			frame:SetAttribute("*type2", "menu")
+		elseif cata_400 and not ClickCastHeader then
+			-- if we can't set attributes directly and Clique isn't running
+			-- then RegisterForClicks upon leaving combat.  Works around
+			-- the lack of RegisterForClicks in the RestrictedFrames environment
+			-- for cata.
+			register_for_clicks_helper(frame, "AnyUp")
 		end
 	end
 	frame:RefreshVehicle()
