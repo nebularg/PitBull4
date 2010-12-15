@@ -503,13 +503,15 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 	end
 	
 	if not isExampleFrame then
-		if frame.is_singleton then
-			frame:SetMovable(true)
+		if frame:CanChangeAttribute() then
+			if frame.is_singleton then
+				frame:SetMovable(true)
+			end
+			frame:RegisterForDrag("LeftButton")
+			frame:RegisterForClicks("AnyUp")
+			frame:SetAttribute("*type1", "target")
+			frame:SetAttribute("*type2", "menu")
 		end
-		frame:RegisterForDrag("LeftButton")
-		frame:RegisterForClicks("AnyUp")
-		frame:SetAttribute("*type1", "target")
-		frame:SetAttribute("*type2", "menu")
 	end
 	frame:RefreshVehicle()
 	
@@ -543,7 +545,7 @@ function UnitFrame:RefreshVehicle()
 
 	local config_value = classification_db.vehicle_swap or nil 
 	local frame_value = self:GetAttribute("toggleForVehicle")
-	if frame_value ~= config_value then
+	if self:CanChangeAttribute() and frame_value ~= config_value then
 		self:SetAttribute("toggleForVehicle", config_value)
 		local unit = self.unit
 		if unit then
