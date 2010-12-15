@@ -1,6 +1,8 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("PitBull4", "enUS", true, true)
 
 -- races
+L["Goblin"] = true
+L["Worgen"] = true
 L["Blood Elf"] = true
 L["Draenei"] = true 
 L["Dwarf"] = true 
@@ -11,6 +13,8 @@ L["Orc"] = true
 L["Tauren"] = true 
 L["Troll"] = true 
 L["Undead"] = true 
+L["Goblin_female"] = "Goblin" 
+L["Worgen_female"] = "Worgen"
 L["Blood Elf_female"] = "Blood Elf"
 L["Draenei_female"] = "Draenei"
 L["Dwarf_female"] = "Dwarf"
@@ -24,6 +28,8 @@ L["Undead_female"] = "Undead"
 
 
 -- short races
+L["Goblin_short"] = "Gb"
+L["Worgen_short"] = "Wg"
 L["Blood Elf_short"] = "BE"
 L["Draenei_short"] = "Dr"
 L["Dwarf_short"] = "Dw"
