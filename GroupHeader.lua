@@ -389,6 +389,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		if self.unitsuffix == "" then
 			self.unitsuffix = nil
 		end
+		self:SetAttribute("unitsuffix",self.unitsuffix)
 	
 		local is_wacky = PitBull4.Utils.IsWackyUnitGroup(unit_group)
 		self.is_wacky = is_wacky
