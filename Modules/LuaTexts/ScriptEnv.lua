@@ -512,6 +512,8 @@ end
 ScriptEnv.SmartRace = SmartRace
 
 local ShortRace_abbrev = {
+	[L["Goblin"]] = L["Goblin_short"],
+	[L["Worgen"]] = L["Worgen_short"],
 	[L["Blood Elf"]] = L["Blood Elf_short"],
 	[L["Draenei"]] = L["Draenei_short"],
 	[L["Dwarf"]] = L["Dwarf_short"],
@@ -522,6 +524,8 @@ local ShortRace_abbrev = {
 	[L["Tauren"]] = L["Tauren_short"],
 	[L["Troll"]] = L["Troll_short"],
 	[L["Undead"]] = L["Undead_short"],
+	[L["Goblin_female"]] = L["Goblin_short"],
+	[L["Worgen_female"]] = L["Worgen_short"],
 	[L["Blood Elf_female"]] = L["Blood Elf_short"],
 	[L["Draenei_female"]] = L["Draenei_short"],
 	[L["Dwarf_female"]] = L["Dwarf_short"],
