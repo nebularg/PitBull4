@@ -452,7 +452,7 @@ PitBull4.Controls.MakeNewControlType("Eclipse", "Frame", function(control)
   local marker = PitBull4.Controls.MakeTexture(control, "OVERLAY")
   control.marker = marker
   marker:SetTexture([[Interface\PlayerFrame\UI-DruidEclipse]])
-  marker:SetTexCoord(unpack(ECLIPSE_MARKER_COORDS[GetEclipseDirection()]))
+  marker:SetTexCoord(unpack(ECLIPSE_MARKER_COORDS[GetEclipseDirection() or "none"]))
   marker:SetBlendMode("ADD")
   marker:ClearAllPoints()
   marker:SetPoint("CENTER",lunar_fg,"RIGHT",-2,0)
