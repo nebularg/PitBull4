@@ -594,7 +594,11 @@ function PitBull4:IterateFramesForUnitID(unit, also_hidden, dont_include_wacky)
 	
 	local id = PitBull4.Utils.GetBestUnitID(unit)
 	if not id then
-		error(("Bad argument #1 to `IterateFramesForUnitID'. %q is not a valid UnitID"):format(tostring(unit)), 2)
+		if DEBUG then
+			error(("Bad argument #1 to `IterateFramesForUnitID'. %q is not a valid UnitID"):format(tostring(unit)), 2)
+		else
+			return function () end
+		end
 	end
 	
 	return not also_hidden and iterate_shown_frames or half_next, (not dont_include_wacky and unit_id_to_frames_with_wacky or unit_id_to_frames)[id]
