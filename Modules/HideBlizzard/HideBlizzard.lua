@@ -107,6 +107,7 @@ local compact_raid
 function hiders:raid()
 	if not cata_400 then return end
 	CompactRaidFrameManager:UnregisterEvent("RAID_ROSTER_UPDATE")
+	CompactRaidFrameManager:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	CompactRaidFrameManager:Hide()
 	compact_raid = CompactRaidFrameManager_GetSetting("IsShown")
 	if compact_raid and compact_raid ~= "0" then 
@@ -117,6 +118,7 @@ end
 function showers:raid()
 	if not cata_400 then return end
 	CompactRaidFrameManager:RegisterEvent("RAID_ROSTER_UPDATE")	
+	CompactRaidFrameManager:RegisterEvent("PLAYER_ENTERING_WORLD")
 	if GetNumRaidMembers() > 0 then
 		CompactRaidFrameManager:Show()
 	end
