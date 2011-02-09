@@ -7,9 +7,12 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 local cata_400
+local cata_406
 do
 	local _,wow_build,_,wow_interface = GetBuildInfo()
+	wow_build = tonumber(wow_build)
 	cata_400 = wow_interface >= 40000
+	cata_406 = wow_build >= 13596
 end
 
 local _,player_class = UnitClass('player')
@@ -708,7 +711,7 @@ enemy_debuffs.WARLOCK = {
 	[1490]  = true, -- Curse of the Elements
 	[6789]  = true, -- Death Coil
 	[689]   = true, -- Drain Life
-	[5138]  = true, -- Drain Mana
+	[5138]  = not cata_406 or nil, -- Drain Mana
 	[1120]  = true, -- Drain Soul
 	[5782]  = true, -- Fear
 	[48181] = true, -- Haunt
