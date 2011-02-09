@@ -1,7 +1,4 @@
 -- Constants ----------------------------------------------------------------
---@debug@
-LibStub("AceLocale-3.0"):NewLocale("PitBull4", "enUS", true, true)
---@end-debug@
 local L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
 
 local cata_400 = select(4,GetBuildInfo()) >= 40000
