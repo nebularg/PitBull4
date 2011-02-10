@@ -67,6 +67,24 @@ local function hook_playerframe()
 	hook_playerframe = nil
 end
 
+local function hook_raidmanager()
+	hooksecurefunc("CompactRaidFrameManager_UpdateShown",function()
+		if currently_hidden["raid"] then
+			hiders["raid"]()
+		end
+	end)
+	hook_raidmanager = nil
+end
+
+local function hook_compactparty()
+	hooksecurefunc("CompactPartyFrame_UpdateShown",function()
+		if currently_hidden["party"] then
+			hiders["party"]()
+		end
+	end)
+	hook_compactparty = nil
+end
+
 function hiders:player()
 	-- Only hide the PlayerFrame, do not mess with the events.
 	-- Unfortunately, messing the PlayerFrame ends up spreading
@@ -88,6 +106,14 @@ function hiders:party()
 	end
 	
 	UIParent:UnregisterEvent("RAID_ROSTER_UPDATE")
+
+	if not cata_400 then return end
+	CompactPartyFrame:UnregisterEvent("PARTY_MEMBERS_CHANGED")
+	CompactPartyFrame:UnregisterEvent("RAID_ROSTER_UPDATE")
+	CompactPartyFrame:Hide()
+	if hook_compactparty then
+		hook_compactparty()
+	end
 end
 
 function showers:party()
@@ -99,8 +125,19 @@ function showers:party()
 		
 		PartyMemberFrame_UpdateMember(frame)
 	end
-	
+
 	UIParent:RegisterEvent("RAID_ROSTER_UPDATE")
+
+	if not cata_400 then return end
+	CompactPartyFrame:RegisterEvent("PARTY_MEMBERS_CHANGED")
+	CompactPartyFrame:RegisterEvent("RAID_ROSTER_UPDATE")
+	if GetDisplayedAllyFrames then
+		if GetDisplayedAllyFrames() == "compact-party" then
+			CompactPartyFrame:Show()
+		end
+	elseif GetCVarBool("useCompactPartyFrames") and GetNumPartyMembers() > 0 and GetNumRaidMembers() == 0 then
+		CompactPartyFrame:Show()
+	end
 end
 
 local compact_raid
@@ -113,13 +150,20 @@ function hiders:raid()
 	if compact_raid and compact_raid ~= "0" then 
 		CompactRaidFrameManager_SetSetting("IsShown", "0")
 	end
+	if hook_raidmanager then
+		hook_raidmanager()
+	end
 end
 
 function showers:raid()
 	if not cata_400 then return end
 	CompactRaidFrameManager:RegisterEvent("RAID_ROSTER_UPDATE")	
 	CompactRaidFrameManager:RegisterEvent("PLAYER_ENTERING_WORLD")
-	if GetNumRaidMembers() > 0 then
+	if GetDisplayedAllyFrames then
+		if GetDisplayedAllyFrames() == "raid" then
+			CompactRaidFrameManager:Show()
+		end
+	elseif GetNumRaidMembers() > 0 then
 		CompactRaidFrameManager:Show()
 	end
 	if compact_raid and compact_raid ~= "0" then
