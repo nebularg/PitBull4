@@ -1,0 +1,25 @@
+## Interface: 40000
+## Title: PitBull4 |r[|cffeda55fAlternate power bar|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Alternate power bar")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Alternate power bar")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Alternate power bar")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Alternate power bar")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Alternate power bar")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Alternate power bar")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Alternate power bar")@|r]
+## Notes: Show a bar for the alternate power bar as used in some quests and boss encounters.
+## Notes-deDE: @localization(locale="deDE", key="Show a bar for the alternate power bar as used in some quests and boss encounters.")@
+## Notes-esES: @localization(locale="esES", key="Show a bar for the alternate power bar as used in some quests and boss encounters.")@
+## Notes-frFR: @localization(locale="frFR", key="Show a bar for the alternate power bar as used in some quests and boss encounters.")@
+## Notes-koKR: @localization(locale="koKR", key="Show a bar for the alternate power bar as used in some quests and boss encounters.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Show a bar for the alternate power bar as used in some quests and boss encounters.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Show a bar for the alternate power bar as used in some quests and boss encounters.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Show a bar for the alternate power bar as used in some quests and boss encounters.")@
+## Author: Shefki 
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## Version: @project-version@
+## X-PitBull4-Condition: return not not ALTERNATE_POWER_INDEX
+
+load.xml

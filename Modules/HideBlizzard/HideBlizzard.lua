@@ -23,6 +23,7 @@ PitBull4_HideBlizzard:SetDefaults({}, {
 	castbar = true,
 	aura = false,
 	runebar = true,
+	altpower = true,
 })
 
 function PitBull4_HideBlizzard:OnEnable()
@@ -245,6 +246,18 @@ function showers:aura()
 	-- it on and off to see what it does or setting it and leaving it set.
 end
 
+function hiders:altpower()
+	if not cata_400 then return end
+	PlayerPowerBarAlt:UnregisterAllEvents()
+	PlayerPowerBarAlt:Hide()
+end
+
+function showers:altpower()
+	if not cata_400 then return end
+	PlayerPowerBarAlt:GetScript("OnLoad")(PlayerPowerBarAlt)
+	UnitPowerBarAlt_UpdateAll(PlayerPowerBarAlt)
+end
+
 for k, v in pairs(hiders) do
 	hiders[k] = PitBull4:OutOfCombatWrapper(v)
 end
@@ -324,5 +337,14 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		get = get,
 		set = set,
 		hidden = hidden,	
+	}, 'altpower', {
+		type = 'toggle',
+		name = L["Alternate power"],
+		desc = L["Hides the standard alternate power bar shown in some encounters and quests."],
+		get = get,
+		set = set,
+		hidden = function (info)
+			return hidden(info) or not cata_400
+		end,
 	}
 end)

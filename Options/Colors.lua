@@ -114,6 +114,9 @@ local function get_power_options()
 		name = function(info)
 			local power_token = info[#info]
 			
+			if power_token == "PB4_ALTERNATE" then
+				return L["Alternate"]
+			end
 			return _G[power_token] or power_token
 		end,
 		hasAlpha = false,
