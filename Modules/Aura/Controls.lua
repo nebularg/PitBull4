@@ -11,6 +11,7 @@ local MAINHAND = PitBull4_Aura.MAINHAND
 local OFFHAND = PitBull4_Aura.OFFHAND
 
 local wow_400 = select(4, GetBuildInfo()) >= 40000
+local wow_406 = tonumber((select(2, GetBuildInfo()))) >= 13596
 
 -- Table of functions included into the aura controls
 local Aura = {}
@@ -111,6 +112,7 @@ end
 -- Not in the Aura table since it is only active on
 -- buff aura controls.
 local function OnClick(self)
+	if wow_406 and InCombatLockdown() then return end
 	if not self.is_buff or not UnitIsUnit("player",self:GetUnit()) then return end
 	local slot = self.slot
 	if slot then
@@ -139,8 +141,9 @@ end
 -- Control for the Auras
 PitBull4.Controls.MakeNewControlType("Aura", "Button", function(control)
 	-- onCreate
-	if not wow_400 then
+	if wow_406 or not wow_400 then
 		-- Disabled in Cataclysm since the functions are all protected now.
+		-- and re-enabled for out of combat use in 4.0.6
 		control:RegisterForClicks("RightButtonUp")
 		control:SetScript("OnClick", OnClick)
 	end
