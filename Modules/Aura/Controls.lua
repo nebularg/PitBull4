@@ -112,9 +112,9 @@ end
 -- Not in the Aura table since it is only active on
 -- buff aura controls.
 local function OnClick(self)
-	if wow_406 and InCombatLockdown() then return end
 	if not self.is_buff or not UnitIsUnit("player",self:GetUnit()) then return end
 	local slot = self.slot
+	if wow_406 and (InCombatLockdown() or slot) then return end
 	if slot then
 		if slot == MAINHAND then
 			CancelItemTempEnchantment(1)
