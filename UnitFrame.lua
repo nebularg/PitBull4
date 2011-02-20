@@ -363,6 +363,7 @@ function UnitFrame__scripts:OnAttributeChanged(key, value)
 	if key == "unit" or key == "unitsuffix" then
 		local new_unit = PitBull4.Utils.GetBestUnitID(SecureButton_GetModifiedUnit(self, "LeftButton")) or nil
 	
+		local updated = false
 		local old_unit = self.unit
 
 		-- As of 4.0.3 the the unit watch state handler no longer calls OnShow
@@ -376,6 +377,7 @@ function UnitFrame__scripts:OnAttributeChanged(key, value)
 			local guid = new_unit and UnitGUID(new_unit) or nil
 			if guid ~= self.guid then
 				self.unit = new_unit -- Make sure unit is set before updates happen.
+				updated = true
 				self:UpdateGUID(guid)
 			end
 		end
@@ -400,6 +402,10 @@ function UnitFrame__scripts:OnAttributeChanged(key, value)
 		if new_unit then
 			PitBull4.unit_id_to_frames[new_unit][self] = true
 			PitBull4.unit_id_to_frames_with_wacky[new_unit][self] = true
+		end
+
+		if not updated then
+			self:Update(false)
 		end
 	elseif key == "state-unitexists" then
 		if value then
