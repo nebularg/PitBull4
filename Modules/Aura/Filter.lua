@@ -523,7 +523,7 @@ self_buffs.PRIEST = {
 	[15258] = not cata_400 or nil, -- Shadow Weaving
 	[15473] = true, -- Shadowform
 	[27827] = true, -- Spirit of Redemption
-	[33151]	= true, -- Surge of Light
+	[88690]	= true, -- Surge of Light
 }
 self_debuffs.PRIEST = {}
 pet_buffs.PRIEST = {}
