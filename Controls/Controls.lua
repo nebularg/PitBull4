@@ -75,7 +75,9 @@ function delete_funcs:Animation()
 	self:SetScript("OnUpdate",nil)
 	self:SetOrder(1)
 	self:SetDuration(0)
-	self:SetMaxFramerate(0)
+	if self.SetMaxFramerate then
+		self:SetMaxFramerate(0)
+	end
 	self:SetSmoothing("NONE")
 	self:SetStartDelay(0)
 	self:SetEndDelay(0)
