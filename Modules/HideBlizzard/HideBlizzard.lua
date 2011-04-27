@@ -78,7 +78,14 @@ local function hook_raidmanager()
 end
 
 local function hook_compactparty()
-	hooksecurefunc("CompactPartyFrame_UpdateShown",function()
+	if CompactPartyFrame_UpdateShown then
+		hooksecurefunc("CompactPartyFrame_UpdateShown",function()
+			if currently_hidden["party"] then
+				hiders["party"]()
+			end
+		end)
+	end
+	hooksecurefunc("CompactPartyFrame_Generate",function()
 		if currently_hidden["party"] then
 			hiders["party"]()
 		end
@@ -109,12 +116,13 @@ function hiders:party()
 	UIParent:UnregisterEvent("RAID_ROSTER_UPDATE")
 
 	if not cata_400 then return end
-	CompactPartyFrame:UnregisterEvent("PARTY_MEMBERS_CHANGED")
-	CompactPartyFrame:UnregisterEvent("RAID_ROSTER_UPDATE")
-	CompactPartyFrame:Hide()
 	if hook_compactparty then
 		hook_compactparty()
 	end
+	if not CompactPartyFrame then return end
+	CompactPartyFrame:UnregisterEvent("PARTY_MEMBERS_CHANGED")
+	CompactPartyFrame:UnregisterEvent("RAID_ROSTER_UPDATE")
+	CompactPartyFrame:Hide()
 end
 
 function showers:party()
