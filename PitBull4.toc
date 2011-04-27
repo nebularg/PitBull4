@@ -1,4 +1,4 @@
-## Interface: 40000
+## Interface: 40100
 ## Title: PitBull Unit Frames 4.0
 ## Title-deDE: @localization(locale="deDE", key="PitBull Unit Frames 4.0")@
 ## Title-esES: @localization(locale="esES", key="PitBull Unit Frames 4.0")@

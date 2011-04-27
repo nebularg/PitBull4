@@ -1,4 +1,4 @@
-## Interface: 40000
+## Interface: 40100
 ## Title: PitBull4 |r[|cffeda55fPhase icon|r]
 ## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Phase icon")@|r]
 ## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Phase icon")@|r]
