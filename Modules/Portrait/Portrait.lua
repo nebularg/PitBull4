@@ -76,6 +76,7 @@ end
 local guid_demanding_update = nil
 
 function PitBull4_Portrait:UNIT_PORTRAIT_UPDATE(event, unit)
+	if not unit then return end
 	local guid = UnitGUID(unit)
 	guid_demanding_update = guid
 	self:UpdateForGUID(guid)
