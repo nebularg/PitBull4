@@ -22,7 +22,7 @@ local NEUTRAL_REACTION = 4
 local FRIENDLY_REACTION = 5
 
 local _,player_class = UnitClass("player")
-local player_is_hunter = player_class == "HUNTER"
+local enable_happiness = select(4,GetBuildInfo()) < 40100 and player_class == "HUNTER"
 local happiness_map = {
 	"unhappy",
 	"content",
@@ -126,7 +126,7 @@ local function call_color_function(self, frame, bar_db, value, extra, icon)
 			return custom_color[1], custom_color[2], custom_color[3], a
 		elseif unit then
 			local happiness
-			if player_is_hunter and bar_db.color_by_happiness and UnitIsUnit(unit, "pet") then
+			if enable_happiness and bar_db.color_by_happiness and UnitIsUnit(unit, "pet") then
 				-- If we're configured to color the bar by happiness then capture the pet happiness
 				-- value and save it for later.  It's split like this so that in case the pet doesn't
 				-- have a hapiness value for some reason then it falls through to the normal NPC code.

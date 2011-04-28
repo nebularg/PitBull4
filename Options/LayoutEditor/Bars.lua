@@ -643,7 +643,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 
 			UpdateFrames()
 		end,
-		hidden = player_class ~= "HUNTER",
+		hidden = select(4,GetBuildInfo()) >= 40100 or player_class ~= "HUNTER",
 		disabled = disabled,
 	}
 
