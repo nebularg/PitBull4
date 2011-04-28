@@ -8,6 +8,7 @@ end
 local L = PitBull4.L
 
 local cata_400 = select(4,GetBuildInfo()) >= 40000
+local wow_406 = tonumber((select(2, GetBuildInfo()))) >= 13596
 
 local PitBull4_RangeFader = PitBull4:NewModule("RangeFader", "AceTimer-3.0")
 
@@ -51,7 +52,11 @@ do
 	elseif class == "DRUID" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(33786) -- Cyclone
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(5176) -- Wrath
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(5185) -- Healing Touch
+		if cata_406 then
+			friendly_spells[#friendly_spells+1] = GetSpellInfo(50464) -- Nourish
+		else
+			friendly_spells[#friendly_spells+1] = GetSpellInfo(5185) -- Healing Touch
+		end
 		res_spells[#res_spells+1] = GetSpellInfo(50769) -- Revive 
 		res_spells[#res_spells+1] = GetSpellInfo(20484) -- Rebirth 
 	elseif class == "PALADIN" then
