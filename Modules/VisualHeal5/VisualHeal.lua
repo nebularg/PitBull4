@@ -68,10 +68,15 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 
 
 	local unit_health_max = UnitHealthMax(unit)
-	local current_percent = UnitHealth(unit) / unit_health_max
+	local current_percent = 0
+	local others_percent = 0
+	local player_percent = 0
+	if unit_health_max ~= 0 then
+		current_percent = UnitHealth(unit) / unit_health_max
+		others_percent = others_healing and others_healing / unit_health_max or 0
+		player_percent = player_healing and player_healing / unit_health_max or 0
+	end
 
-	local others_percent = others_healing and others_healing / unit_health_max or 0
-	local player_percent = player_healing and player_healing / unit_health_max or 0
 	if others_percent <= 0 and player_percent <= 0 then
 		return self:ClearFrame(frame)
 	end

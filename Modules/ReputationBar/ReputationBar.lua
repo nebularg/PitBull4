@@ -28,8 +28,12 @@ function PitBull4_ReputationBar:GetValue(frame)
 	if not name then
 		return nil
 	end
-	
-	return (value - min) / (max - min)
+
+	local y = max - min
+	if y == 0 then
+		return 0
+	end
+	return (value - min) / y
 end
 function PitBull4_ReputationBar:GetExampleValue(frame)
 	if frame and frame.unit ~= "player" then

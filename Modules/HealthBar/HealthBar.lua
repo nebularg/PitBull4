@@ -76,7 +76,11 @@ timerFrame:SetScript("OnUpdate", function()
 end)
 
 function PitBull4_HealthBar:GetValue(frame)
-	return UnitHealth(frame.unit) / UnitHealthMax(frame.unit)
+	local max = UnitHealthMax(frame.unit)
+	if max == 0 then
+		return 0
+	end
+	return UnitHealth(frame.unit) / max
 end
 
 function PitBull4_HealthBar:GetExampleValue(frame)

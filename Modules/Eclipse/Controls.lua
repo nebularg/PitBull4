@@ -421,7 +421,12 @@ function Eclipse:SetOrientation(orientation)
 end
 
 function Eclipse_scripts:OnUpdate(elapsed)
-  self:SetValue(UnitPower("player", SPELL_POWER_ECLIPSE)/UnitPowerMax("player",SPELL_POWER_ECLIPSE))
+  local max = UnitPowerMax("player",SPELL_POWER_ECLIPSE)
+  if max ~= 0 then
+    self:SetValue(UnitPower("player", SPELL_POWER_ECLIPSE)/max)
+  else
+    self:SetValue(0)
+  end
 
   if self.shine_time then
     local shine_time = self.shine_time + elapsed

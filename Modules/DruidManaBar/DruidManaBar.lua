@@ -48,8 +48,12 @@ function PitBull4_DruidManaBar:GetValue(frame)
 	if power_type == MANA_TYPE then
 		return nil
 	end
-	
-	local percent = UnitPower("player", MANA_TYPE) / UnitPowerMax("player", MANA_TYPE)
+
+	local max = UnitPowerMax("player", MANA_TYPE)
+	local percent = 0
+	if max ~= 0 then
+	  percent = UnitPower("player", MANA_TYPE) / max
+	end
 
 	if percent == 1 and self:GetLayoutDB(frame).hide_if_full then
 		return nil

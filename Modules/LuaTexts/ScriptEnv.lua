@@ -139,7 +139,7 @@ local function FormatDuration(number, format)
 	end
 
 	if format == "e" then
-		if number == 1/0 then
+		if number == math.huge then
 			return negative .. "***"
 		end
 
@@ -199,7 +199,7 @@ local function FormatDuration(number, format)
 		wipe(t)
 		return s
 	elseif format == "f" then
-		if number == 1/0 then
+		if number == math.huge then
 			return negative .. "***"
 		elseif number >= 60*60*24 then
 			return ("%s%.0f%s %02d%s %02d%s %02d%s"):format(negative, math.floor(number/86400), L_DAY_ONELETTER_ABBR, number/3600 % 24, L_HOUR_ONELETTER_ABBR, number/60 % 60, L_MINUTE_ONELETTER_ABBR, number % 60, L_SECOND_ONELETTER_ABBR)
@@ -211,7 +211,7 @@ local function FormatDuration(number, format)
 			return ("%s%d%s"):format(negative, number, L_SECOND_ONELETTER_ABBR)
 		end
 	elseif format == "s" then
-		if number == 1/0 then
+		if number == math.huge then
 			return negative .. "***"
 		elseif number >= 2*60*60*24 then
 			return ("%s%.1f %s"):format(negative, number/86400, L_DAYS_ABBR)
@@ -225,7 +225,7 @@ local function FormatDuration(number, format)
 			return ("%s%.1f %s"):format(negative, number, L_SECONDS_ABBR)
 		end
 	else
-		if number == 1/0 then
+		if number == math.huge then
 			return ("%s**%d **:**:**"):format(negative, L_DAY_ONELETTER_ABBR)
 		elseif number >= 60*60*24 then
 			return ("%s%.0f%s %d:%02d:%02d"):format(negative, math.floor(number/86400), L_DAY_ONELETTER_ABBR, number/3600 % 24, number/60 % 60, number % 60)
@@ -952,7 +952,10 @@ end
 ScriptEnv.PVPDuration = PVPDuration
 
 local function HPColor(cur, max)
-	local perc = cur / max
+	local perc = 0
+	if max ~= 0 then
+		perc = cur / max
+	end
 	local r1, g1, b1
 	local r2, g2, b2
 	if perc <= 0.5 then

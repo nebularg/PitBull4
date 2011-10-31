@@ -33,13 +33,18 @@ function PitBull4_AltPowerBar:GetValue(frame)
 	if not bar_type then
 		return nil
 	end
+
+	local max = UnitPowerMax(unit, ALTERNATIVE_POWER_INDEX)
+	if max == 0 then
+		return 0
+	end
 	
 	local current_power = UnitPower(unit, ALTERNATE_POWER_INDEX)
 	if min_power > current_power then
 		current_power = min_power
 	end
 
-	return current_power / UnitPowerMax(unit, ALTERNATE_POWER_INDEX)
+	return current_power / max
 end
 
 function PitBull4_AltPowerBar:GetExampleValue(frame)
