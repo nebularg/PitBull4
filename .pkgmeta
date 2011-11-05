@@ -58,12 +58,6 @@ externals:
     Modules/Aggro/libs/LibBanzai-2.0:
         url: svn://svn.wowace.com/wow/libbanzai-2-0/mainline/trunk 
         tag: latest
-    Modules/VisualHeal/libs/LibHealComm-4.0:
-        url: git://git.wowace.com/wow/libhealcomm-4-0/mainline.git
-        tag: latest
-    Modules/VisualHeal/libs/LibWrapperHealComm-1.0:
-        url: git://git.wowace.com/wow/libwrapperhealcomm-1-0/mainline.git
-        tag: latest
 
 move-folders:
     PitBull4/Modules/Aggro: PitBull4_Aggro
@@ -90,7 +84,6 @@ move-folders:
     PitBull4/Modules/HostilityFader: PitBull4_HostilityFader
     PitBull4/Modules/LeaderIcon: PitBull4_LeaderIcon
     PitBull4/Modules/LuaTexts: PitBull4_LuaTexts
-    PitBull4/Modules/ManaSpark: PitBull4_ManaSpark
     PitBull4/Modules/MasterLooterIcon: PitBull4_MasterLooterIcon
     PitBull4/Modules/PhaseIcon: PitBull4_PhaseIcon
     PitBull4/Modules/Portrait: PitBull4_Portrait
@@ -109,7 +102,6 @@ move-folders:
     PitBull4/Modules/ThreatBar: PitBull4_ThreatBar
     PitBull4/Modules/Totems: PitBull4_Totems
     PitBull4/Modules/VisualHeal: PitBull4_VisualHeal
-    PitBull4/Modules/VisualHeal5: PitBull4_VisualHeal5
     PitBull4/Modules/VoiceIcon: PitBull4_VoiceIcon
 
 ignore:
