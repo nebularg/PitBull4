@@ -176,11 +176,6 @@ local DATABASE_DEFAULTS = {
 			reaction = { -- filled in by FACTION_BAR_COLORS
 				civilian = { 48/255, 113/255, 191/255 }
 			},
-			happiness = {
-				happy = { 0, 1, 0 },
-				content = { 1, 1, 0 },
-				unhappy = { 1, 0, 0 },
-			},
 		},
 		class_order = {},
 	}
@@ -1179,7 +1174,6 @@ function PitBull4:OnProfileChanged()
 	self.ClassColors = PitBull4.db.profile.colors.class
 	self.PowerColors = PitBull4.db.profile.colors.power
 	self.ReactionColors = PitBull4.db.profile.colors.reaction
-	self.HappinessColors = PitBull4.db.profile.colors.happiness
 	self.ClassOrder = PitBull4.db.profile.class_order
 	for i, v in ipairs(CLASS_SORT_ORDER) do
 		local found = false
@@ -1297,11 +1291,6 @@ function PitBull4:OnEnable()
 
 	-- register events for core handled bar coloring
 	self:RegisterEvent("UNIT_FACTION")
-	if not cata_400 then
-		self:RegisterEvent("UNIT_HAPPINESS","UNIT_POWER")
-	else
-		self:RegisterEvent("UNIT_POWER")
-	end
 	
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE")
@@ -1418,16 +1407,6 @@ end
 function PitBull4:UNIT_FACTION(_, unit)
 	-- On UNIT_FACTION changes update bars to allow coloring changes based on
 	-- hostility.
-	for frame in self:IterateFramesForUnitID(unit) do
-		for _, module in self:IterateModulesOfType("bar","bar_provider") do
-			module:Update(frame)
-		end
-	end
-end
-
-function PitBull4:UNIT_POWER(event, unit, power_type)
-	-- Handle coloring changes based on happiness.
-	if event == "UNIT_POWER" and power_type ~= "HAPPINESS" then return end
 	for frame in self:IterateFramesForUnitID(unit) do
 		for _, module in self:IterateModulesOfType("bar","bar_provider") do
 			module:Update(frame)

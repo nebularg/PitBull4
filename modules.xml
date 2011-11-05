@@ -18,7 +18,6 @@
 <Include file="Modules\DruidManaBar\load.xml"/>
 <Include file="Modules\Eclipse\load.xml"/>
 <Include file="Modules\ExperienceBar\load.xml"/>
-<Include file="Modules\HappinessIcon\load.xml"/>
 <Include file="Modules\HealthBar\load.xml"/>
 <Include file="Modules\HideBlizzard\load.xml"/>
 <Include file="Modules\Highlight\load.xml"/>

@@ -259,100 +259,6 @@ local function get_reaction_options()
 	return reaction_options
 end
 
-local function get_happiness_options()
-	local _,class = UnitClass("player")
-	if class ~= "HUNTER" then
-		return
-	end
-
-	local happiness_options = {
-		type = 'group',
-		name = L["Pet happiness"],
-		args = {},
-	}
-	
-	happiness_options.args.happy = {
-		type = 'color',
-		name = PET_HAPPINESS3,
-		get = function(info)
-			return unpack(PitBull4.db.profile.colors.happiness.happy)
-		end,
-		set = function(info, r, g, b)
-			local color = PitBull4.db.profile.colors.happiness.happy
-			color[1], color[2], color[3] = r, g, b
-			
-			for frame in PitBull4:IterateFrames() do
-				frame:Update()
-			end
-		end,
-		order = 1,
-	}
-
-	happiness_options.args.content = {
-		type = 'color',
-		name = PET_HAPPINESS2,
-		get = function(info)
-			return unpack(PitBull4.db.profile.colors.happiness.content)
-		end,
-		set = function(info, r, g, b)
-			local color = PitBull4.db.profile.colors.happiness.content
-			color[1], color[2], color[3] = r, g, b
-			
-			for frame in PitBull4:IterateFrames() do
-				frame:Update()
-			end
-		end,
-		order = 2,
-	}
-
-	happiness_options.args.unhappy = {
-		type = 'color',
-		name = PET_HAPPINESS1, 
-		get = function(info)
-			return unpack(PitBull4.db.profile.colors.happiness.unhappy)
-		end,
-		set = function(info, r, g, b)
-			local color = PitBull4.db.profile.colors.happiness.unhappy
-			color[1], color[2], color[3] = r, g, b
-			
-			for frame in PitBull4:IterateFrames() do
-				frame:Update()
-			end
-		end,
-		order = 3,
-	}
-	
-	happiness_options.args.reset_sep = {
-		type = 'header',
-		name = '',
-		order = -2,
-	}
-	happiness_options.args.reset = {
-		type = 'execute',
-		name = L["Reset to defaults"],
-		confirm = true,
-		confirmText = L["Are you sure you want to reset to defaults?"],
-		order = -1,
-		func = function(info)
-			local db_color = PitBull4.db.profile.colors.happiness.happy
-			db_color[1], db_color[2], db_color[3] = 0, 1, 0
-
-			db_color = PitBull4.db.profile.colors.happiness.content
-			db_color[1], db_color[2], db_color[3] = 1, 1, 0 
-			
-			db_color = PitBull4.db.profile.colors.happiness.unhappy
-			db_color[1], db_color[2], db_color[3] = 1, 0, 0 
-			
-			for frame in PitBull4:IterateFrames() do
-				frame:Update()
-			end
-		end,
-	}
-	
-	return happiness_options
-end
-
-
 function PitBull4.Options.get_color_options()
 	local color_options = {
 		type = 'group',
@@ -365,7 +271,6 @@ function PitBull4.Options.get_color_options()
 	color_options.args.class = get_class_options()
 	color_options.args.power = get_power_options()
 	color_options.args.reaction = get_reaction_options()
-	color_options.args.happiness = get_happiness_options()
 	
 	function PitBull4.Options.colors_handle_module_load(module)
 		if color_functions[module] then
