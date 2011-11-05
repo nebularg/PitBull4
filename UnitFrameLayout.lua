@@ -353,8 +353,8 @@ local function update_bar_layout(frame)
 	
 	local total_width_of_bars = frame_leftover_width - bar_spacing * (num_vertical_bars - 1) - bar_padding * 2
 	
-	local bar_height_per_point = total_height_of_bars / bar_height_points
-	local bar_width_per_point = total_width_of_bars / bar_width_points
+	local bar_height_per_point = bar_height_points > 0 and total_height_of_bars / bar_height_points or 0
+	local bar_width_per_point = bar_width_points > 0 and total_width_of_bars / bar_width_points or 0
 	
 	-- position all bar-like elements on the left
 	local last_x = bar_padding
