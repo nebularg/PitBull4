@@ -420,7 +420,7 @@ end)
 -- Aura Type, Allows filtering by the type of Aura.
 local function aura_type_filter(self, entry)
 	local cfg = PitBull4_Aura:GetFilterDB(self)
-	if cfg.aura_type_list[entry[9]] then
+	if cfg.aura_type_list[tostring(entry[9])] then
 		if cfg.whitelist then
 			return true
 		else
