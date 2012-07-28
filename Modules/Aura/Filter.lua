@@ -8,12 +8,18 @@ local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 local cata_400
 local cata_406
+local mop_500
 do
 	local _,wow_build,_,wow_interface = GetBuildInfo()
 	wow_build = tonumber(wow_build)
 	cata_400 = wow_interface >= 40000
 	cata_406 = wow_build >= 13596
-	mop = wow_interface >= 50000
+	mop_500 = wow_interface >= 50000
+end
+
+local GetNumSpecializations = GetNumSpecializations
+if not mop_500 then
+	GetNumSpecializations = GetNumTalentTabs
 end
 
 local _,player_class = UnitClass('player')
@@ -33,13 +39,7 @@ end
 local function scan_for_known_talent(spellid)
 	local wanted_name = GetSpellInfo(spellid)
 	if not wanted_name then return nil end
-	local num_tabs
-	if mop then 
-		num_tabs = GetNumSpecializations() 
-	else 
-		num_tabs = GetNumTalentTabs() 
-	end
-	
+	local num_tabs = GetNumSpecializations()
 	for t=1, num_tabs do
 		local num_talents = GetNumTalents(t)
 		for i=1, num_talents do
