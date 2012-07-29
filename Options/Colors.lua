@@ -44,6 +44,7 @@ local function get_class_options()
 		MAGE = L["Mages"],
 		WARLOCK = L["Warlocks"],
 		HUNTER = L["Hunters"],
+		MONK = L["Monks"],
 	}
 	
 	local option = {
