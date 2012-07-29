@@ -9,6 +9,12 @@ if select(2, UnitClass("player")) ~= "DRUID" or not PowerBarColor["ECLIPSE"] the
   return
 end
 
+local mop_500 = select(4,GetBuildInfo()) >= 50000
+local GetSpecialization = GetSpecialization
+if not mop_500 then
+	GetSpecialization = GetPrimaryTalentTree
+end
+
 -- CONSTANTS ----------------------------------------------------------------
 
 -----------------------------------------------------------------------------
@@ -48,7 +54,7 @@ function PitBull4_Eclipse:UpdateFrame(frame)
     return self:ClearFrame(frame)
   else
     local form = GetShapeshiftFormID()
-    if (form and form ~= MOONKIN_FORM) or GetPrimaryTalentTree() ~= 1 then
+    if (form and form ~= MOONKIN_FORM) or GetSpecialization() ~= 1 then
       return self:ClearFrame(frame)
     end
   end
