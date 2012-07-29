@@ -11,7 +11,13 @@ end
 
 -- CONSTANTS ----------------------------------------------------------------
 
-local MAX_HOLY_POWER = assert(_G.MAX_HOLY_POWER)
+local mop_500 = select(4,GetBuildInfo()) >= 50000
+
+local HOLY_POWER_FULL = HOLY_POWER_FULL
+if not mop_500 then
+	HOLY_POWER_FULL = MAX_HOLY_POWER
+end
+assert(HOLY_POWER_FULL)
 local SPELL_POWER_HOLY_POWER = assert(_G.SPELL_POWER_HOLY_POWER)
 
 local STANDARD_SIZE = 15
@@ -20,7 +26,7 @@ local SPACING = 3
 
 local HALF_STANDARD_SIZE = STANDARD_SIZE / 2
 
-local CONTAINER_WIDTH = STANDARD_SIZE * MAX_HOLY_POWER + BORDER_SIZE * 2 + SPACING * (MAX_HOLY_POWER - 1)
+local CONTAINER_WIDTH = STANDARD_SIZE * HOLY_POWER_FULL + BORDER_SIZE * 2 + SPACING * (HOLY_POWER_FULL - 1)
 local CONTAINER_HEIGHT = STANDARD_SIZE + BORDER_SIZE * 2
 
 -----------------------------------------------------------------------------
@@ -95,7 +101,7 @@ function PitBull4_HolyPower:ClearFrame(frame)
 		return false
 	end
 	
-	for i = 1, MAX_HOLY_POWER do
+	for i = 1, HOLY_POWER_FULL do
 		container[i] = container[i]:Delete()
 	end
 	container.bg = container.bg:Delete()
@@ -119,7 +125,7 @@ function PitBull4_HolyPower:UpdateFrame(frame)
 		local vertical = db.vertical
 		
 		local point, attach
-		for i = 1, MAX_HOLY_POWER do
+		for i = 1, HOLY_POWER_FULL do
 			local holy_icon = PitBull4.Controls.MakeHolyIcon(container, i)
 			container[i] = holy_icon
 			holy_icon:UpdateTexture(db.active_color, db.inactive_color)
@@ -148,7 +154,7 @@ function PitBull4_HolyPower:UpdateFrame(frame)
 	end
 	
 	local num_holy_power = UnitPower("player", SPELL_POWER_HOLY_POWER)
-	for i = 1, MAX_HOLY_POWER do
+	for i = 1, HOLY_POWER_FULL do
 		local holy_icon = container[i]
 		if i <= num_holy_power then
 			holy_icon:Activate()
