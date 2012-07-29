@@ -785,7 +785,7 @@ function GroupHeader:ApplyConfigModeState()
 	
 	local super_unit_group = self.super_unit_group
 	local config_mode = PitBull4.config_mode
-	local start, finish, step = 1, self:GetMaxUnits(), 1
+	local start, finish, step = 1, self:GetMaxUnits(true), 1
 
 	if self.include_player then
 		-- start at 0 for the player
@@ -793,25 +793,6 @@ function GroupHeader:ApplyConfigModeState()
 		finish = finish - 1 -- GetMaxUnits already accounts for include_player
 	end
 
-	-- Limit the number of frames to the config mode for raid
-	if config_mode and config_mode:sub(1,4) == "raid" and super_unit_group == "raid" then
-		if config_mode == "raid" then
-			if finish > MEMBERS_PER_RAID_GROUP then
-				finish = MEMBERS_PER_RAID_GROUP
-			end
-		elseif config_mode:sub(1,4) == "raid" then
-			local raid_members = GetNumRaidMembers()
-			-- Increase finish in raid by number of members in the raid so that config mode works for group filters
-			finish = finish + raid_members
-			if finish > MAX_RAID_MEMBERS then
-				finish = MAX_RAID_MEMBERS
-			end
-			local num = config_mode:sub(5)+0 -- raid10, raid25, raid40 => 10, 25, 40
-			if num < finish then
-				finish = num
-			end
-		end
-	end
 
 	local name_list = self:GetAttribute("nameList")
 	local group_filter = self:GetAttribute("groupFilter")
@@ -910,6 +891,23 @@ function GroupHeader:ApplyConfigModeState()
 	end
 
 	start, finish = 1, #sorting_table
+	-- Limit the number of frames to the config mode for raid
+	if config_mode and config_mode:sub(1,4) == "raid" and super_unit_group == "raid" then
+		if config_mode == "raid" then
+			if finish > MEMBERS_PER_RAID_GROUP then
+				finish = MEMBERS_PER_RAID_GROUP
+			end
+		elseif config_mode:sub(1,4) == "raid" then
+			local num = config_mode:sub(5)+0 -- raid10, raid25, raid40 => 10, 25, 40
+			if num < finish then
+				finish = num
+			end
+			local filtered_max = self:GetMaxUnits()
+			if filtered_max < finish then
+				finish = filtered_max
+			end
+		end
+	end
 	if sort_dir == "DESC" then
 		start, finish, step = finish, start, -1
 	end
@@ -991,9 +989,9 @@ local function get_filter_type_count(...)
 	return tonumber(start) and true or false, select('#', ...)
 end
 
-function GroupHeader:GetMaxUnits()
+function GroupHeader:GetMaxUnits(ignore_filters)
 	if self.super_unit_group == "raid" then
-		if self.group_db then
+		if not ignore_filters and self.group_db then
 			local group_filter = self.group_db.group_filter
 			if group_filter then
 				if group_filter == "" then
