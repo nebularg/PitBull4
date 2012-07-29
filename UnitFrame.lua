@@ -6,6 +6,36 @@ local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
 local cata_400 = select(4,GetBuildInfo()) >= 40000
 
+local mop_500 = select(4,GetBuildInfo()) >= 50000
+local IsInGroup = IsInGroup
+local IsInRaid = IsInRaid
+local UnitIsGroupLeader = UnitIsGroupLeader
+local UnitIsGroupAssistant = UnitIsGroupAssistant
+if not mop_500 then
+	IsInGroup = function()
+		return GetNumPartyMembers() > 0
+	end
+	IsInRaid = function()
+		return GetNumRaidMembers() > 0
+	end
+	UnitIsGroupLeader = function(unit)
+		-- shortcutted probably should support full range of functionality
+		-- but I don't need it for now.
+		if unit == "player" then
+			return IsPartyLeader()
+		end
+	end
+	UnitIsGroupAssistant = function(unit)
+		-- shortcutted probably should support full range of functionality
+		-- but I don't need it for now.
+		if unit == "player" then
+			return IsRaidOfficer()
+		end
+	end
+
+end
+
+
 -- CONSTANTS ----------------------------------------------------------------
 
 local MODULE_UPDATE_ORDER = {
@@ -67,20 +97,20 @@ end)
 hooksecurefunc("UnitPopup_HideButtons",function()
 	local dropdownMenu = UIDROPDOWNMENU_INIT_MENU
 	local inParty, inRaid, inBattleground, isLeader, isAssistant
-	if GetNumPartyMembers() > 0 then 
+	if IsInGroup() then 
 		inParty = true 
 	end
-	if GetNumRaidMembers() > 0 then
+	if IsInRaid() then
 		inRaid = true 
 		inParty = true
 	end
 	if UnitInBattleground("player") then
 		inBattleground = true
 	end
-	if IsPartyLeader() then
+	if UnitIsGroupLeader("player") then
 		isLeader = true
 	end
-	if IsRaidOfficer() then
+	if UnitIsGroupAssistant("player") then
 		isAssistant = true
 	end
 

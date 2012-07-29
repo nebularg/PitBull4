@@ -5,6 +5,17 @@ if not PitBull4 then
 	error("PitBull4_ThreatBar requires PitBull4")
 end
 
+local mop_500 = select(4,GetBuildInfo()) >= 50000
+
+local GROUP_UPDATE_EVENT = 'GROUP_ROSTER_UPDATE'
+local IsInGroup = IsInGroup
+if not mop_500 then
+	GROUP_UPDATE_EVENT = 'PARTY_MEMBERS_CHANGED'
+	IsInGroup = function()
+		return GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0
+	end
+end
+
 local EXAMPLE_VALUE = 0.5
 
 local L = PitBull4.L
@@ -23,14 +34,16 @@ function PitBull4_ThreatBar:OnEnable()
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterEvent("UNIT_THREAT_LIST_UPDATE")
 	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE")
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED")
-	self:RegisterEvent("RAID_ROSTER_UPDATE")
-	self:RegisterEvent("PLAYER_PET_CHANGED")
+	self:RegisterEvent(GROUP_UPDATE_EVENT, "GROUP_ROSTER_UPDATE")
+	if not mop_500 then
+		self:RegisterEvent("RAID_ROSTER_UPDATE", "GROUP_ROSTER_UPDATE")
+	end
+	self:RegisterEvent("PLAYER_PET_CHANGED", "GROUP_ROSTER_UPDATE")
 	
-	self:PARTY_MEMBERS_CHANGED()
+	self:GROUP_ROSTER_UPDATE()
 end
 
-local player_in_group = false
+player_in_group = false
 
 local ACCEPTABLE_CLASSIFICATIONS = {
 	player = true,
@@ -39,17 +52,17 @@ local ACCEPTABLE_CLASSIFICATIONS = {
 	raid = true,
 	partypet = true,
 	raidpet = true,
+	Player = true,
+	Party = true,
 }
 
-function PitBull4_ThreatBar:PARTY_MEMBERS_CHANGED()
-	player_in_group = UnitExists("pet") or GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0
+function PitBull4_ThreatBar:GROUP_ROSTER_UPDATE()
+	player_in_group = UnitExists("pet") or IsInGroup()
 	
 	for classification in pairs(ACCEPTABLE_CLASSIFICATIONS) do
 		self:UpdateForClassification(classification)
 	end
 end
-PitBull4_ThreatBar.RAID_ROSTER_UPDATE = PitBull4_ThreatBar.PARTY_MEMBERS_CHANGED
-PitBull4_ThreatBar.PLAYER_PET_CHANGED = PitBull4_ThreatBar.PARTY_MEMBERS_CHANGED
 
 function PitBull4_ThreatBar:GetValue(frame)
 	if not ACCEPTABLE_CLASSIFICATIONS[frame.classification] or not player_in_group then

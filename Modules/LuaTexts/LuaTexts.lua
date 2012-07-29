@@ -8,6 +8,25 @@ end
 local L = PitBull4.L
 
 local cata_400 = select(4,GetBuildInfo()) >= 40000
+local mop_500 = select(4,GetBuildInfo()) >= 50000
+
+local GROUP_UPDATE_EVENT = 'GROUP_ROSTER_UPDATE'
+local IsInRaid = IsInRaid
+local GetNumGroupMembers = GetNumGroupMembers
+if not mop_500 then
+	GROUP_UPDATE_EVENT = 'PARTY_MEMBERS_CHANGED'
+	IsInRaid = function()
+		return GetNumRaidMembers() > 0
+	end
+	GetNumGroupMembers = function()
+		local raid_members = GetNumRaidMembers()
+		if raid_members > 0 then
+			return raid_members
+		else
+			return GetNumPartyMembers()
+		end
+	end
+end
 
 local PitBull4_LuaTexts = PitBull4:NewModule("LuaTexts","AceEvent-3.0","AceHook-3.0")
 
@@ -641,7 +660,7 @@ end
 -- require very little actual processing time.
 local protected_events = {
 	['UNIT_SPELLCAST_SENT'] = true,
-	['PARTY_MEMBERS_CHANGED'] = true,
+	[GROUP_UPDATE_EVENT] = true,
 }
 
 -- Provide a way to map changed events so existing LuaTexts configs
@@ -730,7 +749,7 @@ function PitBull4_LuaTexts:OnEnable()
 	-- UNIT_SPELLCAST_SENT has to always be registered so we can capture 
 	-- additional data not always available.
 	self:RegisterEvent("UNIT_SPELLCAST_SENT")
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED")
+	self:RegisterEvent(GROUP_UPDATE_EVENT, "GROUP_ROSTER_UPDATE")
 
 	-- Hooks to trap OnEnter/OnLeave for the frames.
 	self:AddFrameScriptHook("OnEnter")
@@ -985,7 +1004,7 @@ local first = true
 local function update_timers()
 	if first then
 		first = false
-		PitBull4_LuaTexts:PARTY_MEMBERS_CHANGED()
+		PitBull4_LuaTexts:GROUP_ROSTER_UPDATE()
 	end
 	for unit, guid in pairs(group_members) do 
 		if not UnitIsConnected(unit) then
@@ -1055,10 +1074,10 @@ local function update_timers()
 	end
 end
 
-function PitBull4_LuaTexts:PARTY_MEMBERS_CHANGED(event)
-  local prefix, min, max = "raid", 1, GetNumRaidMembers()
-	if max == 0 then
-		prefix, min, max = "party", 0, GetNumPartyMembers()
+function PitBull4_LuaTexts:GROUP_ROSTER_UPDATE(event)
+  local prefix, min, max = "raid", 1, GetNumGroupMembers()
+	if not IsInRaid() then
+		prefix, min = "party", 0
 	end
 	if max == 0 then
 		-- not in a raid or a party

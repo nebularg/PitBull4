@@ -5,6 +5,11 @@ if not PitBull4 then
 	error("PitBull4_LeaderIcon requires PitBull4")
 end
 
+local mop_500 = select(4,GetBuildInfo()) >= 50000
+local GROUP_UPDATE_EVENT = 'GROUP_ROSTER_UPDATE'
+if not mop_500 then
+	GROUP_UPDATE_EVENT = 'PARTY_MEMBERS_CHANGED'
+end
 local L = PitBull4.L
 
 local PitBull4_LeaderIcon = PitBull4:NewModule("LeaderIcon", "AceEvent-3.0", "AceTimer-3.0")
@@ -22,7 +27,7 @@ local leader_guid
 
 function PitBull4_LeaderIcon:OnEnable()
 	self:RegisterEvent("PARTY_LEADER_CHANGED")
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED")
+	self:RegisterEvent(GROUP_UPDATE_EVENT, "PARTY_LEADER_CHANGED")
 end
 
 function PitBull4_LeaderIcon:GetTexture(frame)
@@ -42,42 +47,65 @@ function PitBull4_LeaderIcon:GetTexCoord(frame, texture)
 end
 PitBull4_LeaderIcon.GetExampleTexCoord = PitBull4_LeaderIcon.GetTexCoord
 
-local function update_leader_guid()
-	local raid_size = GetNumRaidMembers()
-	if raid_size > 0 then
-		-- in a raid
-		if IsRaidLeader() then
-			-- player is the leader
-			leader_guid = UnitGUID("player")
-		else
-			-- find the unit that is the leader
-			for i = 1, raid_size do
-				local _, rank = GetRaidRosterInfo(i)
-				if rank == 2 then
-					leader_guid = UnitGUID("raid"..i)
-					break
-				end
-			end
-		end
-	else
-		local party_size = GetNumPartyMembers()
-		if party_size > 0 then
-			-- in a party
-			if IsPartyLeader() then
+local update_leader_guid
+if not mop_500 then
+	update_leader_guid = function()
+
+		local raid_size = GetNumRaidMembers()
+		if raid_size > 0 then
+			-- in a raid
+			if IsRaidLeader() then
 				-- player is the leader
 				leader_guid = UnitGUID("player")
 			else
-				leader_guid = UnitGUID("party"..GetPartyLeaderIndex())
+				-- find the unit that is the leader
+				for i = 1, raid_size do
+					local _, rank = GetRaidRosterInfo(i)
+					if rank == 2 then
+						leader_guid = UnitGUID("raid"..i)
+						break
+					end
+				end
 			end
 		else
-			-- not in a raid or a party
-			leader_guid = nil
+			local party_size = GetNumPartyMembers()
+			if party_size > 0 then
+				-- in a party
+				if IsPartyLeader() then
+					-- player is the leader
+					leader_guid = UnitGUID("player")
+				else
+					leader_guid = UnitGUID("party"..GetPartyLeaderIndex())
+				end
+			else
+				-- not in a raid or a party
+				leader_guid = nil
+			end
 		end
+		PitBull4_LeaderIcon:UpdateAll()
 	end
-	PitBull4_LeaderIcon:UpdateAll()
+else
+	update_leader_guid = function()
+		local group_size = GetNumGroupMembers()
+		if group_size > 0 then
+			if UnitIsGroupLeader("player") then
+				-- player is the leader
+				leader_guid = UnitGUID("player")
+			else
+				local group_unit_prefix = IsInRaid() and "raid" or "party"
+				for i = 1, group_size do
+					local unit = group_unit_prefix..i
+					if UnitIsGroupLeader(unit) then
+						leader_guid = UnitGUID(unit)
+						break
+					end
+				end
+			end
+		end
+		PitBull4_LeaderIcon:UpdateAll()
+	end
 end
 
 function PitBull4_LeaderIcon:PARTY_LEADER_CHANGED()
 	self:ScheduleTimer(update_leader_guid, 0.1)
 end
-PitBull4_LeaderIcon.PARTY_MEMBERS_CHANGED = PitBull4_LeaderIcon.PARTY_LEADER_CHANGED
