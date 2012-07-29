@@ -948,16 +948,6 @@ function GroupHeader:ApplyConfigModeState()
 			frame:SetPoint(point, current_anchor, relative_point, x_multiplier * x_offset, y_multiplier * y_offset)
 		end
 
-		if DEBUG and frame.guid then
-			-- Spit out errors to chat if our code didn't
-			-- come up with the same unit ids for the real frames
-			-- that the group header did.
-			local unit = frame:GetAttribute("unit")
-			local expected_unit = sorting_table[i]
-			if unit ~= expected_unit then
-				print("PitBull4 expected "..tostring(expected_unit).." but found "..tostring(unit).." for "..frame:GetName())
-			end
-		end
 		local old_unit = frame:GetAttribute("unit")
 		local unit = sorting_table[i]
 		frame:SetAttribute("unit", unit)
