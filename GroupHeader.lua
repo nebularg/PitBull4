@@ -624,7 +624,7 @@ local function fill_table(tbl, ...)
 	for i = 1, select('#', ...), 1 do
 		local key = select(i, ...)
 		key = tonumber(key) or strtrim(key)
-		tbl[key] = 1 
+		tbl[key] = i 
 	end
 end
 
@@ -638,7 +638,7 @@ end
 
 -- utility function for ApplyConfigModeState, it doctors
 -- up some data so don't reuse this elsewhere
-local function get_group_roster_info(super_unit_group, index, sort_dir)
+local function get_group_roster_info(super_unit_group, index)
 	local unit, name, subgroup, class_name, role, _
 	if super_unit_group == "raid" then
 		unit = "raid"..index
@@ -670,8 +670,8 @@ local function get_group_roster_info(super_unit_group, index, sort_dir)
 
 	-- return some bogus data to get our fake unit ids to sort where we want.
 	if not name then
-		name = (sort_dir == "DESC" and "!" or "~")..string.format("%02d",index)
-		subgroup = '!' 
+		name = string.format("~%02d",index)
+		subgroup = 0 
 		class_name = '!' 
 	end
 
@@ -719,16 +719,16 @@ local function sort_on_group_with_names(a, b)
 			return true
 		else
 			if order1 == order2 then
-				return tostring(sorting_table[a]) < tostring(sorting_table[b])
+				return sorting_table[a] < sorting_table[b]
 			else
-				return tostring(order1) < tostring(order2)
+				return order1 < order2
 			end
 		end
 	else
 		if order2 then
 			return false
 		else
-			return tostring(sorting_table[a]) < tostring(sorting_table[b])
+			return sorting_table[a] < sorting_table[b]
 		end
 	end
 end
@@ -741,10 +741,10 @@ local function sort_on_group_with_ids(a, b)
 		if not order2 then
 			return true
 		else
-			if tostring(order1) == tostring(order2) then
+			if order1 == order2 then
 				return tonumber(a:match("%d+") or -1) < tonumber(b:match("%d+") or -1)
 			else
-				return tostring(order1) < tostring(order2)
+				return tonumber(order1) < tonumber(order2)
 			end
 		end
 	else
@@ -825,20 +825,15 @@ function GroupHeader:ApplyConfigModeState()
 
 
 	if group_filter then
-		-- Add in our bogus group to the appropriate
-		-- place on the group_filter.
-		if sort_dir == 'DESC' then
-			group_filter = "!,"..group_filter
-		else
-			group_filter = group_filter..",!"
-		end
+		-- Add in our bogus group and class to the group filter.
+		group_filter = group_filter..',0,!'
 
 		-- filter by a list of group numbers and/or classes
 		fill_table(wipe(token_table), strsplit(",", group_filter))
 		local strict_filter = self:GetAttribute("strictFiltering")
 
 		for i = start, finish, 1 do
-			local unit, name, subgroup, class_name, role = get_group_roster_info(super_unit_group, i, sort_dir)
+			local unit, name, subgroup, class_name, role = get_group_roster_info(super_unit_group, i)
 
 			if name and (not strict_filtering 
 				and (token_table[subgroup] or token_table[class_name] or (role and token_table[role]))) -- non-strict filtering
@@ -860,12 +855,11 @@ function GroupHeader:ApplyConfigModeState()
 			local grouping_order = self:GetAttribute("groupingOrder")
 
 			-- Add in our bogus group token onto the grouping_order
-			-- in the right place to achieve the sorting we want
-			if sort_dir == 'DESC' then
-				grouping_order = "!,"..grouping_order
-			else	
-				grouping_order = grouping_order..',!'
+			local bogus_group = 0
+			if group_by == "CLASS" then
+				bogus_group = '!'
 			end
+			grouping_order = grouping_order..','..bogus_group
 
 			double_fill_table(wipe(token_table), strsplit(",", grouping_order:gsub("%s+", "")))
 			if sort_method == "NAME" then
@@ -880,7 +874,7 @@ function GroupHeader:ApplyConfigModeState()
 		--filtering via a list of names
 		double_fill_table(wipe(token_table), strsplit(",", name_list))
 		for i = start, finish, 1 do
-			local unit, name = get_group_roster_info(super_unit_group, i, sort_dir)
+			local unit, name = get_group_roster_info(super_unit_group, i)
 			if token_table[name] then
 				sorting_table[#sorting_table+1] = unit
 				sorting_table[unit] = name
