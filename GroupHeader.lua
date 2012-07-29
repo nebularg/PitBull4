@@ -608,8 +608,8 @@ end
 
 -- utility function for AssignFakeUnitIDs, it doctors
 -- up some data so don't reuse this elsewhere
-	local unit, name, subgroup, class_name, role
 local function get_group_roster_info(super_unit_group, index, sort_dir)
+	local unit, name, subgroup, class_name, role, _
 	if super_unit_group == "raid" then
 		unit = "raid"..index
 		name, _, subgroup, _, _, class_name, _, _, _, role = GetRaidRosterInfo(index)
