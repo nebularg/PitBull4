@@ -2,8 +2,6 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local is_13287 = tonumber((select(2,GetBuildInfo()))) >= 13287
-
 local values = {
 	disabled = L["Disable"],
 	solo = L["Solo"],
@@ -15,15 +13,7 @@ local values = {
 	raid25 = L["25-man raid"],
 	raid40 = L["40-man raid"],
 }
-if is_13287 then
-	values.party = nil
-	values.raid = nil
-	values.raid10 = nil
-	values.raid15 = nil
-	values.raid20 = nil
-	values.raid25 = nil
-	values.raid40 = nil
-end
+
 --- Return the select values dictionary used by PitBull4 to choose config mode.
 -- @usage local values = PitBull4:GetConfigModeValues()
 -- @return an AceConfig-3.0-compliant select values dictionary.
@@ -36,22 +26,6 @@ end
 -- @return nil meaning disabled or one of the keys from PitBull4:GetConfigModeValues() (except "disabled")
 function PitBull4:IsInConfigMode()
 	return self.config_mode
-end
-
-local function should_show_header(config_mode, header)
-	if not config_mode then
-		return false
-	end
-	
-	if config_mode == "solo" then
-		return header.show_solo
-	end
-	
-	if config_mode == "party" and header.super_unit_group ~= "party" then
-		return false
-	end
-	
-	return true
 end
 
 --- Set the config mode type.
@@ -72,12 +46,6 @@ function PitBull4:SetConfigMode(kind)
 	if PitBull4.config_mode == kind then
 		return
 	end
-	if kind and PitBull4.config_mode then -- swapping between two different types
-		PitBull4.config_mode = nil
-		PitBull4.StateHeader:SetAttribute("config_mode", nil)
-	
-		self:RecheckConfigMode()
-	end
 	
 	PitBull4.config_mode = kind
 	PitBull4.StateHeader:SetAttribute("config_mode", kind)
@@ -86,23 +54,12 @@ function PitBull4:SetConfigMode(kind)
 end
 
 function PitBull4:RecheckConfigMode()
-	local kind = PitBull4.config_mode
-	
 	for frame in self:IterateSingletonFrames(true) do
-		if kind and frame.classification_db.enabled then
-			frame:ForceShow()
-		else
-			frame:UnforceShow()
-		end
-		frame:Update(true, true)
+		frame:RecheckConfigMode()
 	end
 	
 	for header in self:IterateHeaders() do
-		if should_show_header(kind, header) and header.group_db.enabled then
-			header:ForceShow()
-		else
-			header:UnforceShow()
-		end
+		header:RecheckConfigMode()
 	end
 end
 

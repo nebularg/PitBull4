@@ -650,6 +650,15 @@ function SingletonUnitFrame:Deactivate()
 end
 SingletonUnitFrame.Deactivate = PitBull4:OutOfCombatWrapper(SingletonUnitFrame.Deactivate)
 
+function UnitFrame:RecheckConfigMode()
+	if PitBull4.config_mode and self.classification_db.enabled then
+		self:ForceShow()
+	else
+		self:UnforceShow()
+	end
+	self:Update(true, true)
+end
+
 function UnitFrame:ForceShow()
 	if not self.force_show then
 		self.force_show = true
