@@ -52,8 +52,6 @@ local ACCEPTABLE_CLASSIFICATIONS = {
 	raid = true,
 	partypet = true,
 	raidpet = true,
-	Player = true,
-	Party = true,
 }
 
 function PitBull4_ThreatBar:GROUP_ROSTER_UPDATE()
