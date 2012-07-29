@@ -7,6 +7,19 @@ end
 
 local L = PitBull4.L
 
+local mop_500 = select(4,GetBuildInfo()) >= 50000
+local UnitIsGroupLeader = UnitIsGroupLeader
+local UnitIsGroupAssistant = UnitIsGroupAssistant
+if not mop_500 then
+	UnitIsGroupLeader = function(unit)
+		-- shortcut not full functionality of the real function but it's all we need
+		if unit == "player" then
+			return IsRaidLeader() or IsPartyLeader()
+		end
+	end
+	UnitIsGroupAssistant = UnitIsRaidOfficer
+end
+
 local PitBull4_ReadyCheckIcon = PitBull4:NewModule("ReadyCheckIcon", "AceEvent-3.0", "AceTimer-3.0")
 
 PitBull4_ReadyCheckIcon:SetModuleType("indicator")
@@ -78,7 +91,7 @@ end
 
 function PitBull4_ReadyCheckIcon:CacheRaidCheckStatuses()
 	wipe(guid_to_status)
-	if not IsRaidLeader() and not IsRaidOfficer() and not IsPartyLeader() then
+	if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then
 		-- gotta be an officer
 		return
 	end
