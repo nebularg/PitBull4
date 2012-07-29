@@ -613,13 +613,13 @@ local function hook_SecureGroupHeader_Update()
 		if not in_force_show then
 			self:RecheckConfigMode()
 		end
-		PitBull4:ScheduleTimer(self.AssignFakeUnitIDs, 0, self)
+		PitBull4:ScheduleTimer(self.ApplyConfigModeState, 0, self)
 	end
 	hooksecurefunc("SecureGroupHeader_Update", hook)
 	hooksecurefunc("SecureGroupPetHeader_Update", hook)
 end
 
--- utility function for AssignFakeUnitIDs
+-- utility function for ApplyConfigModeState
 local function fill_table(tbl, ...)
 	for i = 1, select('#', ...), 1 do
 		local key = select(i, ...)
@@ -628,7 +628,7 @@ local function fill_table(tbl, ...)
 	end
 end
 
--- utility function for AssignFakeUnitIDs
+-- utility function for ApplyConfigModeState
 local function double_fill_table(tbl, ...)
 	fill_table(tbl, ...)
 	for i = 1, select('#', ...), 1 do
@@ -636,7 +636,7 @@ local function double_fill_table(tbl, ...)
 	end
 end
 
--- utility function for AssignFakeUnitIDs, it doctors
+-- utility function for ApplyConfigModeState, it doctors
 -- up some data so don't reuse this elsewhere
 local function get_group_roster_info(super_unit_group, index, sort_dir)
 	local unit, name, subgroup, class_name, role, _
@@ -678,7 +678,7 @@ local function get_group_roster_info(super_unit_group, index, sort_dir)
 	return unit, name, subgroup, class_name, role
 end
 
--- utility function for AssignFakeUnitIDs
+-- utility function for ApplyConfigModeState
 -- Give a point return the opposite point and which axes the point
 -- depends on.
 local function get_relative_point_anchor(point)
@@ -704,20 +704,13 @@ local function get_relative_point_anchor(point)
 	end
 end
 
--- AssignFakeUnitIDs generates a bunch of fake unit ids for 
--- frames being show in config mode.  It's largely a rework
--- of SecureGroupHeader_Update for our purposes.  We need
--- to generate unit ids in roughly the same order that the
--- group header would for real frames but we want the fake
--- units to always be after the real units.  Sadly that makes
--- this code pretty downright ugly.
-
+-- Tables used by ApplyConfigModeState
 local sorting_table = {}
 local token_table = {}
 local grouping_table = {}
 local temp_table = {}
 
-
+-- utility function for ApplyConfigModeState
 local function sort_on_group_with_names(a, b)
 	local order1 = token_table[ grouping_table[a] ]
 	local order2 = token_table[ grouping_table[b] ]
@@ -740,6 +733,7 @@ local function sort_on_group_with_names(a, b)
 	end
 end
 
+-- utility function for ApplyConfigModeState
 local function sort_on_group_with_ids(a, b)
 	local order1 = token_table[ grouping_table[a] ]
 	local order2 = token_table[ grouping_table[b] ]
@@ -762,15 +756,25 @@ local function sort_on_group_with_ids(a, b)
 	end
 end
 
+-- utility function for ApplyConfigModeState
 local function sort_on_names(a, b)
 	return sorting_table[a] < sorting_table[b]
 end
 
+-- utility function for ApplyConfigModeState
 local function sort_on_name_list(a, b)
 	return token_table[ sorting_table[a] ] < token_table[ sorting_table[b] ]
 end
 
-function GroupHeader:AssignFakeUnitIDs()
+-- ApplyConfigModeState adjusts the member frames of a GroupHeader to allow
+-- them to function in config mode. It generates a bunch of fake unit ids
+-- for frames being show in config mode.  It also positions the frames (since
+-- 4.0.3 WoW removes the anchors from hidden frames).  It's largely a rework
+-- of SecureGroupHeader_Update for our purposes.  We need to generate unit ids
+-- in roughly the same order that the group header would for real frames but we
+-- want the fake units to always be after the real units.  Sadly that makes
+-- this code pretty downright ugly.
+function GroupHeader:ApplyConfigModeState()
 	if not self.force_show then
 		return
 	end
@@ -973,7 +977,7 @@ function GroupHeader:AssignFakeUnitIDs()
 
 	self:SetAttribute("_ignore",nil)
 end
-GroupHeader.AssignFakeUnitIDs = PitBull4:OutOfCombatWrapper(GroupHeader.AssignFakeUnitIDs)
+GroupHeader.ApplyConfigModeState = PitBull4:OutOfCombatWrapper(GroupHeader.ApplyConfigModeState)
 
 local ipairs_upto_num
 do
