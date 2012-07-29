@@ -608,8 +608,8 @@ end
 
 -- utility function for AssignFakeUnitIDs, it doctors
 -- up some data so don't reuse this elsewhere
-local function get_group_roster_info(super_unit_group, index, sort_dir, group_by)
 	local unit, name, subgroup, class_name, role
+local function get_group_roster_info(super_unit_group, index, sort_dir)
 	if super_unit_group == "raid" then
 		unit = "raid"..index
 		name, _, subgroup, _, _, class_name, _, _, _, role = GetRaidRosterInfo(index)
@@ -713,7 +713,7 @@ function GroupHeader:AssignFakeUnitIDs()
 		local strict_filter = self:GetAttribute("strictFiltering")
 
 		for i = start, finish, 1 do
-			local unit, name, subgroup, class_name, role = get_group_roster_info(super_unit_group, i, sort_dir, group_by)
+			local unit, name, subgroup, class_name, role = get_group_roster_info(super_unit_group, i, sort_dir)
 
 			if name and (not strict_filtering 
 				and (token_table[subgroup] or token_table[class_name] or (role and token_table[role]))) -- non-strict filtering
@@ -807,7 +807,7 @@ function GroupHeader:AssignFakeUnitIDs()
 		-- filtering via a list of names
 		double_fill_table(sorting_table, strsplit(",", name_list))
 		for i = start, finish, 1 do
-			local unit, name = get_group_roster_info(super_unit_group, i)
+			local unit, name = get_group_roster_info(super_unit_group, i, sort_dir)
 			if sorting_table[name] then
 				sorting_table[name] = unit
 			end
