@@ -719,16 +719,16 @@ local function sort_on_group_with_names(a, b)
 			return true
 		else
 			if order1 == order2 then
-				return sorting_table[a] < sorting_table[b]
+				return tostring(sorting_table[a]) < tostring(sorting_table[b])
 			else
-				return order1 < order2
+				return tostring(order1) < tostring(order2)
 			end
 		end
 	else
 		if order2 then
 			return false
 		else
-			return sorting_table[a] < sorting_table[b]
+			return tostring(sorting_table[a]) < tostring(sorting_table[b])
 		end
 	end
 end
@@ -741,10 +741,10 @@ local function sort_on_group_with_ids(a, b)
 		if not order2 then
 			return true
 		else
-			if order1 == order2 then
+			if tostring(order1) == tostring(order2) then
 				return tonumber(a:match("%d+") or -1) < tonumber(b:match("%d+") or -1)
 			else
-				return order1 < order2
+				return tostring(order1) < tostring(order2)
 			end
 		end
 	else
