@@ -1,25 +1,25 @@
-## Interface: 40300
-## Title: PitBull4 |r[|cffeda55fDruid mana bar|r]
-## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Druid mana bar")@|r]
-## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Druid mana bar")@|r]
-## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Druid mana bar")@|r]
-## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Druid mana bar")@|r]
-## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Druid mana bar")@|r]
-## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Druid mana bar")@|r]
-## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Druid mana bar")@|r]
-## Notes: Show the mana bar when a druid is in cat or bear form.
-## Notes-deDE: @localization(locale="deDE", key="Show the mana bar when a druid is in cat or bear form.")@
-## Notes-esES: @localization(locale="esES", key="Show the mana bar when a druid is in cat or bear form.")@
-## Notes-frFR: @localization(locale="frFR", key="Show the mana bar when a druid is in cat or bear form.")@
-## Notes-koKR: @localization(locale="koKR", key="Show the mana bar when a druid is in cat or bear form.")@
-## Notes-ruRU: @localization(locale="ruRU", key="Show the mana bar when a druid is in cat or bear form.")@
-## Notes-zhCN: @localization(locale="zhCN", key="Show the mana bar when a druid is in cat or bear form.")@
-## Notes-zhTW: @localization(locale="zhTW", key="Show the mana bar when a druid is in cat or bear form.")@
+## Interface: 50001
+## Title: PitBull4 |r[|cffeda55fDruid/Monk mana bar|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Druid/Monk mana bar")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Druid/Monk mana bar")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Druid/Monk mana bar")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Druid/Monk mana bar")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Druid/Monk mana bar")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Druid/Monk mana bar")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Druid/Monk mana bar")@|r]
+## Notes: Show the mana bar when a druid is in cat or bear form or a mistweaver monk is in stance of the fierce tiger.
+## Notes-deDE: @localization(locale="deDE", key="Show the mana bar when a druid is in cat or bear form or a mistweaver monk is in stance of the fierce tiger.")@
+## Notes-esES: @localization(locale="esES", key="Show the mana bar when a druid is in cat or bear form or a mistweaver monk is in stance of the fierce tiger.")@
+## Notes-frFR: @localization(locale="frFR", key="Show the mana bar when a druid is in cat or bear form or a mistweaver monk is in stance of the fierce tiger.")@
+## Notes-koKR: @localization(locale="koKR", key="Show the mana bar when a druid is in cat or bear form or a mistweaver monk is in stance of the fierce tiger.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Show the mana bar when a druid is in cat or bear form or a mistweaver monk is in stance of the fierce tiger.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Show the mana bar when a druid is in cat or bear form or a mistweaver monk is in stance of the fierce tiger.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Show the mana bar when a druid is in cat or bear form or a mistweaver monk is in stance of the fierce tiger.")@
 ## Author: ckknight
 ## DefaultState: enabled
 ## LoadOnDemand: 1
 ## Dependencies: PitBull4
 ## Version: @project-version@
-## X-PitBull4-Condition: return select(2, UnitClass("player")) == "DRUID"
+## X-PitBull4-Condition: return select(2, UnitClass("player")) == "DRUID" or select(2, UnitClass("player")) == "MONK"
 
 load.xml

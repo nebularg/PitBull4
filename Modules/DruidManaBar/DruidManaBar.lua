@@ -1,6 +1,9 @@
 if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
-if select(2, UnitClass("player")) ~= "DRUID" then return end
+local player_class = select(2, UnitClass("player"))
+if player_class ~= "DRUID" and player_class ~= "MONK" then
+	return
+end
 
 local PitBull4 = _G.PitBull4
 if not PitBull4 then
@@ -9,13 +12,11 @@ end
 
 local L = PitBull4.L
 
-local cata_400 = select(4,GetBuildInfo()) >= 40000
-
 local PitBull4_DruidManaBar = PitBull4:NewModule("DruidManaBar", "AceEvent-3.0", "AceTimer-3.0")
 
 PitBull4_DruidManaBar:SetModuleType("bar")
-PitBull4_DruidManaBar:SetName(L["Druid mana bar"])
-PitBull4_DruidManaBar:SetDescription(L["Show the mana bar when a druid is in cat or bear form."])
+PitBull4_DruidManaBar:SetName(L["Druid/Monk mana bar"])
+PitBull4_DruidManaBar:SetDescription(L["Show the mana bar when a druid is in cat or bear form or a mistweaver monk is in stance of the fierce tiger."])
 PitBull4_DruidManaBar:SetDefaults({
 	size = 1,
 	position = 6,
@@ -29,14 +30,12 @@ local MANA_TYPE = 0
 local power_type = nil
 
 function PitBull4_DruidManaBar:OnEnable()
-	if cata_400 then
-		PitBull4_DruidManaBar:RegisterEvent("UNIT_POWER")
-		PitBull4_DruidManaBar:RegisterEvent("UNIT_MAXPOWER","UNIT_POWER")
-	else
-		PitBull4_DruidManaBar:RegisterEvent("UNIT_MANA","UNIT_POWER")
-		PitBull4_DruidManaBar:RegisterEvent("UNIT_MAXMANA","UNIT_POWER")
-	end
+	PitBull4_DruidManaBar:RegisterEvent("UNIT_POWER")
+	PitBull4_DruidManaBar:RegisterEvent("UNIT_MAXPOWER","UNIT_POWER")
 	PitBull4_DruidManaBar:RegisterEvent("UNIT_DISPLAYPOWER","UNIT_POWER")
+	if player_class == "MONK" then
+		PitBull4_DruidManaBar:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+	end
 end
 
 function PitBull4_DruidManaBar:GetValue(frame)
@@ -46,6 +45,10 @@ function PitBull4_DruidManaBar:GetValue(frame)
  
 	power_type = UnitPowerType("player")
 	if power_type == MANA_TYPE then
+		return nil
+	end
+
+	if player_class == "MONK" and GetSpecialization() ~= SPEC_MONK_MISTWEAVER then
 		return nil
 	end
 
@@ -86,6 +89,12 @@ function PitBull4_DruidManaBar:UNIT_POWER(event, unit, power_type)
 		return
 	end
 
+	for frame in PitBull4:IterateFramesForUnitID("player") do
+		self:Update(frame)
+	end
+end
+
+function PitBull4_DruidManaBar:PLAYER_SPECIALIZATION_CHANGED(event)
 	for frame in PitBull4:IterateFramesForUnitID("player") do
 		self:Update(frame)
 	end
