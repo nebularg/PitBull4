@@ -157,7 +157,6 @@ function PitBull4_Chi:UpdateFrame(frame)
 	if max_chi ~= container.max_chi then
 		update_container_size(container, vertical, max_chi)
 	end
-	print(num_chi,max_chi)
 	for i = 1, 5 do
 		local chi_icon = container[i]
 		if i > max_chi then
