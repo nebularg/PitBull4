@@ -109,6 +109,7 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 	local reverse = health_bar.reverse
 	bar:SetOrientation(orientation)
 	bar:SetReverse(deficit ~= reverse)
+	bar:SetDeficit(false)
 	
 	bar:ClearAllPoints()
 	local point, attach, attach_frame
