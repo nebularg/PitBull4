@@ -1,0 +1,25 @@
+## Interface: 50001
+## Title: PitBull4 |r[|cffeda55fChi|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Chi")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Chi")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Chi")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Chi")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Chi")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Chi")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Chi")@|r]
+## Notes: Show Monk Chi icons.
+## Notes-deDE: @localization(locale="deDE", key="Show Monk Chi icons.")@
+## Notes-esES: @localization(locale="esES", key="Show Monk Chi icons.")@
+## Notes-frFR: @localization(locale="frFR", key="Show Monk Chi icons.")@
+## Notes-koKR: @localization(locale="koKR", key="Show Monk Chi icons.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Show Monk Chi icons.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Show Monk Chi icons.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Show Monk Chi icons.")@
+## Author: ckknight
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## Version: @project-version@
+## X-PitBull4-Condition: return select(2, UnitClass("player")) == "MONK"
+
+load.xml
