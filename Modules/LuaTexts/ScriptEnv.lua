@@ -5,15 +5,6 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_LuaTexts = PitBull4:GetModule("LuaTexts")
 
--- Pre 3.2.0 compatability support
-local wow_320 = select(4, GetBuildInfo()) >= 30200
-local GetQuestDifficultyColor
-if not wow_320 then
-	GetQuestDifficultyColor = _G.GetDifficultyColor
-else
-	GetQuestDifficultyColor = _G.GetQuestDifficultyColor
-end
-
 -- The ScriptEnv table serves as the environment that the scripts run
 -- under LuaTexts run under.  The functions included in it are accessible
 -- to this scripts as though they were local functions to it.  Functions
