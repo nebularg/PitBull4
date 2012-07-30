@@ -57,6 +57,7 @@ move-folders:
     PitBull4/Modules/Border: PitBull4_Border
     PitBull4/Modules/CastBar: PitBull4_CastBar
     PitBull4/Modules/CastBarLatency: PitBull4_CastBarLatency
+    PitBull4/Modules/Chi: PitBull4_Chi
     PitBull4/Modules/CombatFader: PitBull4_CombatFader
     PitBull4/Modules/CombatIcon: PitBull4_CombatIcon
     PitBull4/Modules/CombatText: PitBull4_CombatText
