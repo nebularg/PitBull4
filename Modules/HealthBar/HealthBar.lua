@@ -128,7 +128,10 @@ function PitBull4_HealthBar:GetExampleColor(frame, value)
 end
 
 function PitBull4_HealthBar:UNIT_HEALTH(event, unit)
-	guids_to_update[UnitGUID(unit)] = true
+	local guid = UnitGUID(unit)
+	if guid then
+		guids_to_update[UnitGUID(unit)] = true
+	end
 end
 
 function PitBull4_HealthBar:PLAYER_ALIVE(event)

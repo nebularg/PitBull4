@@ -142,7 +142,10 @@ function PitBull4_PowerBar:GetExampleColor(frame)
 end
 
 function PitBull4_PowerBar:UNIT_POWER(event, unit)
-	guids_to_update[UnitGUID(unit)] = true
+	local guid = UnitGUID(unit)
+	if guid then
+		guids_to_update[UnitGUID(unit)] = true
+	end
 end
 
 function PitBull4_PowerBar:SetCVar()
