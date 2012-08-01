@@ -7,14 +7,14 @@
 ## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Chi")@|r]
 ## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Chi")@|r]
 ## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Chi")@|r]
-## Notes: Show Monk Chi icons.
-## Notes-deDE: @localization(locale="deDE", key="Show Monk Chi icons.")@
-## Notes-esES: @localization(locale="esES", key="Show Monk Chi icons.")@
-## Notes-frFR: @localization(locale="frFR", key="Show Monk Chi icons.")@
-## Notes-koKR: @localization(locale="koKR", key="Show Monk Chi icons.")@
-## Notes-ruRU: @localization(locale="ruRU", key="Show Monk Chi icons.")@
-## Notes-zhCN: @localization(locale="zhCN", key="Show Monk Chi icons.")@
-## Notes-zhTW: @localization(locale="zhTW", key="Show Monk Chi icons.")@
+## Notes: Show Monk chi icons.
+## Notes-deDE: @localization(locale="deDE", key="Show Monk chi icons.")@
+## Notes-esES: @localization(locale="esES", key="Show Monk chi icons.")@
+## Notes-frFR: @localization(locale="frFR", key="Show Monk chi icons.")@
+## Notes-koKR: @localization(locale="koKR", key="Show Monk chi icons.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Show Monk chi icons.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Show Monk chi icons.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Show Monk chi icons.")@
 ## Author: Shefki
 ## DefaultState: enabled
 ## LoadOnDemand: 1
