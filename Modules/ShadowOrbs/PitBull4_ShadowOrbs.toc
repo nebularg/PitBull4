@@ -1,0 +1,25 @@
+## Interface: 50001
+## Title: PitBull4 |r[|cffeda55fShadow orbs|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Shadow orbs")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Shadow orbs")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Shadow orbs")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Shadow orbs")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Shadow orbs")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Shadow orbs")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Shadow orbs")@|r]
+## Notes: Show Priest Shadow orbs.
+## Notes-deDE: @localization(locale="deDE", key="Show Priest Shadow orbs.")@
+## Notes-esES: @localization(locale="esES", key="Show Priest Shadow orbs.")@
+## Notes-frFR: @localization(locale="frFR", key="Show Priest Shadow orbs.")@
+## Notes-koKR: @localization(locale="koKR", key="Show Priest Shadow orbs.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Show Priest Shadow orbs.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Show Priest Shadow orbs.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Show Priest Shadow orbs.")@
+## Author: Shefki
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## Version: @project-version@
+## X-PitBull4-Condition: return select(2, UnitClass("player")) == "PRIEST" and select(4, GetBuildInfo()) >= 50000
+
+load.xml

@@ -86,6 +86,7 @@ move-folders:
     PitBull4/Modules/RestIcon: PitBull4_RestIcon
     PitBull4/Modules/RoleIcon: PitBull4_RoleIcon
     PitBull4/Modules/Runes: PitBull4_Runes
+    PitBull4/Modules/ShadowOrbs: PitBull4_ShadowOrbs
     PitBull4/Modules/SoulShards: PitBull4_SoulShards
     PitBull4/Modules/Sounds: PitBull4_Sounds
     PitBull4/Modules/ThreatBar: PitBull4_ThreatBar
