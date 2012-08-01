@@ -130,7 +130,7 @@ end
 function PitBull4_HealthBar:UNIT_HEALTH(event, unit)
 	local guid = UnitGUID(unit)
 	if guid then
-		guids_to_update[UnitGUID(unit)] = true
+		guids_to_update[guid] = true
 	end
 end
 
