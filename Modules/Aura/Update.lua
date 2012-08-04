@@ -3,6 +3,8 @@
 
 if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
+local mop_500 = select(4,GetBuildInfo())
+
 local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
 local PitBull4_Aura = PitBull4:GetModule("Aura")
@@ -69,7 +71,10 @@ local weapon_durations = {}
 -- TODO: Remove these from the module when removing pre cata_400 support.
 local MAINHAND = PitBull4_Aura.MAINHAND
 local OFFHAND = PitBull4_Aura.OFFHAND
-local RANGED = GetInventorySlotInfo("RangedSlot")
+local RANGED
+if not mop_500 then
+	RANGED = GetInventorySlotInfo("RangedSlot")
+end
 
 -- constants for building sample auras
 local sample_buff_icon   = [[Interface\Icons\Spell_ChargePositive]]
@@ -177,7 +182,7 @@ local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 	-- figure the slot to use for the mainhand and offhand slots
 	local mainhand, offhand, ranged
 	if is_buff and db.enabled_weapons and unit and is_player then
-		local mh, oh, rs = weapon_list[MAINHAND], weapon_list[OFFHAND], weapon_list[RANGED]
+		local mh, oh, rs = weapon_list[MAINHAND], weapon_list[OFFHAND], RANGED and weapon_list[RANGED]
 		if not mh or not mh[2] then
 			mainhand = #list + 1
 		end
@@ -636,9 +641,11 @@ local function update_auras(frame, db, is_buff)
 		if list[#list] and not PitBull4_Aura:FilterEntry(filter, list[#list], frame) then
 			list[#list] = del_entry(list[#list])
 		end
-		copy_weapon_entry(weapon_list, list, RANGED)
-		if list[#list] and not PitBull4_Aura:FilterEntry(filter, list[#list], frame) then
-			list[#list] = del_entry(list[#list])
+		if RANGED then
+			copy_weapon_entry(weapon_list, list, RANGED)
+			if list[#list] and not PitBull4_Aura:FilterEntry(filter, list[#list], frame) then
+				list[#list] = del_entry(list[#list])
+			end
 		end
 	end
 
@@ -862,7 +869,7 @@ function PitBull4_Aura:UpdateWeaponEnchants(force)
 	local current_time = GetTime()
 	local mh_entry = weapon_list[MAINHAND]
 	local oh_entry = weapon_list[OFFHAND]
-	local rs_entry = weapon_list[RANGED]
+	local rs_entry = RANGED and weapon_list[RANGED]
 
 	-- Grab the values from the weapon_list entries to use
 	-- to compare against the current values to look for changes.
