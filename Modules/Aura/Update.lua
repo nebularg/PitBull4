@@ -3,7 +3,7 @@
 
 if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
-local mop_500 = select(4,GetBuildInfo())
+local mop_500 = select(4,GetBuildInfo()) >= 50000
 
 local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
