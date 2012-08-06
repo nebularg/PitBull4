@@ -77,13 +77,27 @@ function PitBull4_BurningEmbers:ClearFrame(frame)
 		return false
 	end
 	
-	for i = 1, 3 do
+	for i = 1, 4 do
 		container[i] = container[i]:Delete()
 	end
 	container.bg = container.bg:Delete()
 	frame.BurningEmbers = container:Delete()
 	
 	return true
+end
+
+local function update_container_size(container, vertical, max_embers)
+	local width = STANDARD_SIZE * max_embers + BORDER_SIZE * 2 + SPACING * (max_embers - 1)
+	if not vertical then
+		container:SetWidth(width)
+		container:SetHeight(CONTAINER_HEIGHT)
+		container.height = 1
+	else
+		container:SetWidth(CONTAINER_HEIGHT)
+		container:SetHeight(width)
+		container.height = width / CONTAINER_HEIGHT
+	end
+	container.max_embers = max_embers
 end
 
 function PitBull4_BurningEmbers:UpdateFrame(frame)
@@ -102,7 +116,7 @@ function PitBull4_BurningEmbers:UpdateFrame(frame)
 		local vertical = db.vertical
 		
 		local point, attach
-		for i = 1, 3  do
+		for i = 1, 4  do
 			local ember = PitBull4.Controls.MakeBurningEmber(container, i)
 			container[i] = ember
 			ember:UpdateTexture()
@@ -114,15 +128,7 @@ function PitBull4_BurningEmbers:UpdateFrame(frame)
 			end
 		end
 
-		if not vertical then
-			container:SetWidth(CONTAINER_WIDTH)
-			container:SetHeight(CONTAINER_HEIGHT)
-			container.height = 1
-		else
-			container:SetWidth(CONTAINER_HEIGHT)
-			container:SetHeight(CONTAINER_WIDTH)
-			container.height = CONTAINER_WIDTH / CONTAINER_HEIGHT
-		end
+		update_container_size(container, vertical, 4)
 
 		local bg = PitBull4.Controls.MakeTexture(container, "BACKGROUND")
 		container.bg = bg
@@ -133,10 +139,18 @@ function PitBull4_BurningEmbers:UpdateFrame(frame)
 	local ember_power = UnitPower("player", SPELL_POWER_BURNING_EMBERS, true)
 	local max_ember_power = UnitPowerMax("player", SPELL_POWER_BURNING_EMBERS, true)
 	local max_embers = floor(max_ember_power / MAX_POWER_PER_EMBER)
-	for i = 1, max_embers  do
+	if max_embers ~= container.max_embers then
+		update_container_size(container, vertical, max_embers)
+	end
+	for i = 1, 4  do
 		local ember = container[i]
-		ember:SetValue(ember_power)
-		ember_power = ember_power - MAX_POWER_PER_EMBER
+		if i > max_embers then
+			ember:Hide()
+		else
+			ember:Show()
+			ember:SetValue(ember_power)
+			ember_power = ember_power - MAX_POWER_PER_EMBER
+		end
 	end
 	
 	container:Show()
