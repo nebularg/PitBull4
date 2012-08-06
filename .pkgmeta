@@ -55,6 +55,7 @@ move-folders:
     PitBull4/Modules/Background: PitBull4_Background
     PitBull4/Modules/BlankSpace: PitBull4_BlankSpace
     PitBull4/Modules/Border: PitBull4_Border
+    PitBull4/Modules/BurningEmbers: PitBull4_BurningEmbers
     PitBull4/Modules/CastBar: PitBull4_CastBar
     PitBull4/Modules/CastBarLatency: PitBull4_CastBarLatency
     PitBull4/Modules/Chi: PitBull4_Chi
@@ -62,6 +63,7 @@ move-folders:
     PitBull4/Modules/CombatIcon: PitBull4_CombatIcon
     PitBull4/Modules/CombatText: PitBull4_CombatText
     PitBull4/Modules/ComboPoints: PitBull4_ComboPoints
+    PitBull4/Modules/DemonicFury: PitBull4_DemonicFury
     PitBull4/Modules/DogTagTexts: PitBull4_DogTagTexts
     PitBull4/Modules/DruidManaBar: PitBull4_DruidManaBar
     PitBull4/Modules/Eclipse: PitBull4_Eclipse
