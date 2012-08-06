@@ -53,6 +53,7 @@ move-folders:
     PitBull4/Modules/AltPowerBar: PitBull4_AltPowerBar
     PitBull4/Modules/Aura: PitBull4_Aura
     PitBull4/Modules/Background: PitBull4_Background
+    PitBull4/Modules/BattlePet: PitBull4_BattlePet
     PitBull4/Modules/BlankSpace: PitBull4_BlankSpace
     PitBull4/Modules/Border: PitBull4_Border
     PitBull4/Modules/BurningEmbers: PitBull4_BurningEmbers
