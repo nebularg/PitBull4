@@ -7,6 +7,13 @@ local PitBull4_LuaTexts = PitBull4:GetModule("LuaTexts")
 
 local mop_500 = select(4,GetBuildInfo()) >= 50000
 
+local UnitIsTappedByAllThreatList = UnitIsTappedByAllThreatList
+if not mop_500 then
+	UnitIsTappedByAllThreatList = function()
+		return false
+	end
+end
+
 -- The ScriptEnv table serves as the environment that the scripts run
 -- under LuaTexts run under.  The functions included in it are accessible
 -- to this scripts as though they were local functions to it.  Functions
@@ -360,7 +367,7 @@ local function HostileColor(unit)
 				-- either enemy or friend, no violance
 				r, g, b = unpack(PitBull4.ReactionColors.civilian)
 			end
-		elseif (UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) or UnitIsDead(unit) then
+		elseif (UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) and not UnitIsTappedByAllThreatList(unit)) or UnitIsDead(unit) then
 			r, g, b = 0.5, 0.5, 0.5 -- TODO: We really need this to be globally configurable. 
 		else
 			local reaction = UnitReaction(unit, "player")
