@@ -1,0 +1,25 @@
+## Interface: 50001
+## Title: PitBull4 |r[|cffeda55fBattle pet|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Battle pet")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Battle pet")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Battle pet")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Battle pet")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Battle pet")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Battle pet")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Battle pet")@|r]
+## Notes: Show icon for the type of a battle pet.
+## Notes-deDE: @localization(locale="deDE", key="Show icon for the type of a battle pet.")@
+## Notes-esES: @localization(locale="esES", key="Show icon for the type of a battle pet.")@
+## Notes-frFR: @localization(locale="frFR", key="Show icon for the type of a battle pet.")@
+## Notes-koKR: @localization(locale="koKR", key="Show icon for the type of a battle pet.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Show icon for the type of a battle pet.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Show icon for the type of a battle pet.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Show icon for the type of a battle pet.")@
+## Author: Shefki
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## Version: @project-version@
+## X-PitBull4-Condition: return select(4,GetBuildInfo()) >= 50000
+
+load.xml
