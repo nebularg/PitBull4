@@ -586,6 +586,50 @@ return math.abs(Power(unit,SPELL_POWER_ECLIPSE))
 ]],
 		},
 	},
+	[L["Demonic fury"]] = {
+		[L["Absolute"]] = {
+			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
+			code = [[
+return "%s/%s",Power(unit,SPELL_POWER_DEMONIC_FURY),MaxPower(unit,SPELL_POWER_DEMONIC_FURY)
+]],
+		},
+		[L["Absolute short"]] = {
+			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
+			code = [[
+return "%s/%s",Short(Power(unit,SPELL_POWER_DEMONIC_FURY),true),Short(MaxPower(unit,SPELL_POWER_DEMONIC_FURY),true)
+]],
+		},
+		[L["Difference"]] = {
+			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
+			code = [[
+return -(MaxPower(unit,SPELL_POWER_DEMONIC_FURY) - Power(unit,SPELL_POWER_DEMONIC_FURY))
+]],
+		},
+		[L["Percent"]] = {
+			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
+			code = [[
+local max = MaxPower(unit,0)
+if max > 0 then
+  return "%s%%",Percent(Power(unit,SPELL_POWER_DEMONIC_FURY),max)
+end
+]],
+		},
+		[L["Mini"]] = {
+			events = {['UNIT_POWER_FRQUENT']=true,['UNIT_MAXPOWER']=true},
+			code = [[
+return VeryShort(Power(unit,SPELL_POWER_DEMONIC_FURY))
+]],
+		},
+		[L["Smart"]] = {
+			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
+			code = [[
+local miss = MaxPower(unit,SPELL_POWER_DEMONIC_FURY) - Power(unit,SPELL_POWER_DEMONIC_FURY)
+if miss ~= 0 then
+  return "|cff7f7fff%s|r",Short(miss,true)
+end
+]],
+		},
+	},
 }
 
 PitBull4_LuaTexts:SetModuleType("text_provider")
@@ -1317,6 +1361,12 @@ function PitBull4_LuaTexts:OnNewLayout(layout)
 			events = copy(PROVIDED_CODES[L['Alternate power']][L['Percent']].events),
 			attach_to = "AltPowerBar",
 			location = "right"
+		},
+		["Lua:"..L["Demonic fury"]] = {
+			code = PROVIDED_CODES[L["Demonic fury"]][L["Absolute"]].code,
+			events = copy(PROVIDED_CODES[L["Demonic fury"]][L["Absolute"]].events),
+			attach_to = "DemonicFury",
+			location = "center"
 		},
 	} do
 		local text_db = texts[name]

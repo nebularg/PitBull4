@@ -205,6 +205,9 @@ DATABASE_DEFAULTS.profile.colors.power["POWER_TYPE_HEAT"] = { 1, 0.4900196107421
 DATABASE_DEFAULTS.profile.colors.power["POWER_TYPE_BLOOD_POWER"] = { 0.73725494556129, 0, 1 }
 DATABASE_DEFAULTS.profile.colors.power["POWER_TYPE_OOZE"] = { 0.75686281919479, 1, 0 }
 DATABASE_DEFAULTS.profile.colors.power["PB4_ALTERNATE"] = { 0.96078431372549, 0.156862745098039, 0.529411764705882 }
+if not DATABASE_DEFAULTS.profile.colors.power["DEMONIC_FURY"] then
+	DATABASE_DEFAULTS.profile.colors.power["DEMONIC_FURY"] = { 0.58431372549, 0.270588235294, 0.78431372549 }
+end
 
 for reaction, color in pairs(FACTION_BAR_COLORS) do
 	DATABASE_DEFAULTS.profile.colors.reaction[reaction] = { color.r, color.g, color.b }
