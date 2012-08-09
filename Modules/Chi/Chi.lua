@@ -48,9 +48,6 @@ function PitBull4_Chi:OnEnable()
 	self:RegisterEvent("UNIT_POWER_FREQUENT")
 	self:RegisterEvent("UNIT_DISPLAYPOWER")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	if player_level < MONKHARMONYBAR_SHOW_LEVEL then
-		self:RegisterEvent("PLAYER_LEVEL_UP")
-	end
 end
 
 local function update_player(self)
@@ -77,14 +74,6 @@ end
 
 function PitBull4_Chi:PLAYER_ENTERING_WORLD(event)
 	update_player(self)
-end
-
-function PitBull4_Chi:PLAYER_LEVEL_UP(event, level)
-	player_level = level
-	if player_level >= MONKHARMONYBAR_SHOW_LEVEL then
-		self:UnregisterEvent("PLAYER_LEVEL_UP")
-		update_player(self)
-	end
 end
 
 function PitBull4_Chi:ClearFrame(frame)
@@ -117,7 +106,7 @@ local function update_container_size(container, vertical, max_chi)
 end
 
 function PitBull4_Chi:UpdateFrame(frame)
-	if frame.unit ~= "player" or player_level < MONKHARMONYBAR_SHOW_LEVEL then
+	if frame.unit ~= "player" then
 		return self:ClearFrame(frame)
 	end
 
