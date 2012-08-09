@@ -17,7 +17,6 @@ local SPACING = 3
 
 local HALF_STANDARD_SIZE = STANDARD_SIZE / 2
 
-local CONTAINER_WIDTH = STANDARD_SIZE * max_embers + BORDER_SIZE * 2 + SPACING * (max_embers - 1)
 local CONTAINER_HEIGHT = STANDARD_SIZE + BORDER_SIZE * 2
 
 -----------------------------------------------------------------------------
