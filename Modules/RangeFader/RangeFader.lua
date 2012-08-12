@@ -7,8 +7,7 @@ end
 
 local L = PitBull4.L
 
-local cata_400 = select(4,GetBuildInfo()) >= 40000
-local wow_406 = tonumber((select(2, GetBuildInfo()))) >= 13596
+local mop_500 = select(4,GetBuildInfo()) >= 50000
 
 local PitBull4_RangeFader = PitBull4:NewModule("RangeFader", "AceTimer-3.0")
 
@@ -47,30 +46,22 @@ do
 	if class == "PRIEST" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(585) -- Smite
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(589) -- Shadow Word: Pain
-		friendly_spells[#friendly_spells+1] = cata_400 and GetSpellInfo(2061) or GetSpellInfo(2050) -- Flash Heal for Cata, Lesser Heal otherwise
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(2061) -- Flash Heal
 		res_spells[#res_spells+1] = GetSpellInfo(2006) -- Resurrection
 	elseif class == "DRUID" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(33786) -- Cyclone
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(5176) -- Wrath
-		if cata_406 then
-			friendly_spells[#friendly_spells+1] = GetSpellInfo(50464) -- Nourish
-		else
-			friendly_spells[#friendly_spells+1] = GetSpellInfo(5185) -- Healing Touch
-		end
+		friendly_spells[#friendly_spells+1] = mop_500 and GetSpellInfo(774) or GetSpellInfo(50464) -- Rejuvenation for MoP or Nourish
 		res_spells[#res_spells+1] = GetSpellInfo(50769) -- Revive 
 		res_spells[#res_spells+1] = GetSpellInfo(20484) -- Rebirth 
 	elseif class == "PALADIN" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(62124) -- Hand of Reckoning
-		-- Holy Paladins may have a talent to increase the range of Judgement of
-		-- Light and Judgement of Wisdom to 40yds to so put Judgement of Light
-		-- in long_enemy_spells
-		long_enemy_spells[#long_enemy_spells+1] = not cata_400 and GetSpellInfo(20271) or nil -- Judgement of Light
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(635) -- Holy Light
+		enemy_spells[#enemy_spells+1] = mop_500 and GetSpellInfo(20271) or GetSpellInfo(62124) -- Judgement for MoP or Hand of Reckoning otherwise
+		friendly_spells[#friendly_spells+1] = mop_500 and GetSpellinfo(19750) or GetSpellInfo(635) -- Flash of Light for MoP or Holy Light otherwise
 		res_spells[#res_spells+1] = GetSpellInfo(7328) -- Redemption 
 	elseif class == "SHAMAN" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(8042) -- Earth Shock 
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(403) -- Lightning Bolt
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(331) -- Healing Wave
+		friendly_spells[#friendly_spells+1] = mop_500 and GetSpellInfo(8004) or GetSpellInfo(331) -- Healing Surge for MoP or Healing Wave
 		res_spells[#res_spells+1] = GetSpellInfo(2008) -- Ancestral Spirit 
 	elseif class == "WARLOCK" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(5782) -- Fear
@@ -79,16 +70,15 @@ do
 		pet_spells[#pet_spells+1] = GetSpellInfo(755) -- Health Funnel
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(5697) -- Unending Breath
 	elseif class == "MAGE" then
-		enemy_spells[#enemy_spells+1] = cata_400 and GetSpellInfo(118) or GetSpellInfo(2136) -- Polymorph for Cata, Fire Blast otherwise
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(133) -- Fireball
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(118) -- Polymorph
+		long_enemy_spells[#long_enemy_spells+1] = mop_500 and GetSpellInfo(44614) or GetSpellInfo(133) -- Frostfire Bolt for MoP or Fireball
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(475) -- Remove Curse
 	elseif class == "HUNTER" then
 		pet_spells[#pet_spells+1] = GetSpellInfo(136) -- Mend Pet
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(75) -- Auto Shot
 	elseif class == "DEATHKNIGHT" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(49576) -- Death Grip
-		friendly_spells[#friendly_spells+1] = not cata_400 and GetSpellInfo(49016) or nil -- Hysteria
-		friendly_spells[#friendly_spells+1] = cata_400 and GetSpellInfo(49016) or nil -- Unholy Frenzy
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(49016) -- Unholy Frenzy
 		res_spells[#res_spells+1] = GetSpellInfo(61999) -- Raise Ally 
 	elseif class == "ROGUE" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(2094) -- Blind 
@@ -99,6 +89,10 @@ do
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(100) -- Charge
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(355) -- Taunt
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(3411) -- Intervene
+	elseif class == "MONK" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(115546) -- Provoke
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(115450) -- Detox
+		res_spells[#res_spells+1] = GetSpellInfo(115178) -- Resuscitate
 	end
 	
 	function friendly_is_in_range(unit)
