@@ -34,8 +34,8 @@ function PitBull4_AltPowerBar:GetValue(frame)
 		return nil
 	end
 
-	local max = UnitPowerMax(unit, ALTERNATE_POWER_INDEX)
-	if max == 0 then
+	local max_power = UnitPowerMax(unit, ALTERNATVE_POWER_INDEX)
+	if max_power == 0 then
 		return 0
 	end
 	
@@ -44,7 +44,7 @@ function PitBull4_AltPowerBar:GetValue(frame)
 		current_power = min_power
 	end
 
-	return current_power / max
+	return current_power / max_power
 end
 
 function PitBull4_AltPowerBar:GetExampleValue(frame)
