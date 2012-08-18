@@ -129,7 +129,7 @@ local friend_buffs,friend_debuffs,self_buffs,self_debuffs,pet_buffs,enemy_debuff
 
 -- DEATHKNIGHT
 friend_buffs.DEATHKNIGHT = {
-	[53137] = not mop_500 or nil, -- Abomination's Might post
+	[53137] = not mop_500 or nil, -- Abomination's Might
 	[57623] = not cata_400 or nil, -- Horn of Winter
 	[49016] = true, -- Hysteria
 	[3714]  = true, -- Path of Frost
