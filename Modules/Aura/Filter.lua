@@ -24,6 +24,7 @@ end
 
 local _,player_class = UnitClass('player')
 local _,player_race = UnitRace('player')
+local player_faction = UnitFactionGroup('player')
 
 --- Return the DB dictionary for the specified filter.
 -- Filter Types should use this to get their db.
@@ -635,7 +636,8 @@ enemy_debuffs.ROGUE = {
 -- SHAMAN
 friend_buffs.SHAMAN = {
 	[16177] = not mop_500 or nil, -- Ancestral Fortitude
-	[2825]  = player_race == "Troll" or player_race == "Tauren" or player_race == "Orc", -- Bloodlust
+	[2825]  = player_race == "Troll" or player_race == "Tauren" or player_race == "Orc" or player_race == "Goblin" or (player_faction == "Horde" and player_race == "Pandaren"), -- Bloodlust
+	[77747] = true, -- Burning Wrath
 	[379]   = true, -- Earth Shield
 	[51945] = true, -- Earthliving
 	[51466] = not mop_500 or nil, -- Elemental Oath
@@ -645,7 +647,7 @@ friend_buffs.SHAMAN = {
 	[8178]  = true, -- Grounding Totem Effect
 	[5672]  = true, -- Healing Stream
 	[29202] = not mop_500 or nil, -- Healing Way
-	[23682] = player_race == "Draenei", -- Heroism
+	[23682] = player_race == "Draenei" or player_race == "Dwarf" or (player_faction == "Alliance" and player_race == "Pandaren"), -- Heroism
 	[5677]  = not mop_500 or nil, -- Mana Spring
 	[16191] = true, -- Mana Tide
 	[4081]  = true, -- Nature Resistance
@@ -659,8 +661,8 @@ friend_buffs.SHAMAN = {
 	[2895]  = not mop_500 or nil, -- Wrath of Air Totem
 }
 friend_debuffs.SHAMAN = {
-	[57723] = player_race == "Draenei", -- Exhaustion
-	[57724] = player_race == "Troll" or player_race == "Tauren" or player_race == "Orc", -- Sated
+	[57723] = player_race == "Draenei" or player_race == "Dawrf" or (player_faction == "Alliance" and player_race == "Pandaren"), -- Exhaustion
+	[57724] = player_race == "Troll" or player_race == "Tauren" or player_race == "Orc" or player_race == "Goblin" or (player_faction == "Horde" and player_race == "Pandaren"), -- Sated
 }
 self_buffs.SHAMAN = {
 	[52179] = not mop_500 or nil, -- Astral Shift
@@ -678,7 +680,7 @@ self_buffs.SHAMAN = {
 	[30823] = true, -- Shamanistic Rage
 	[55166] = not mop_500 or nil, -- Tidal Force
 	[53390] = true, -- Tidal Waves
-	[23575] = not cata_400 or nil, -- Water Shield
+	[52127] = true, -- Water Shield
 	[16257]	= not mop_500 or nil, -- Flurry
 	[58875]	= true, -- Spirit Walk
 }
@@ -687,6 +689,7 @@ pet_buffs.SHAMAN = {
 	[58875]	= true, -- Spirit Walk
 }
 enemy_debuffs.SHAMAN = {
+	[76780] = true, -- Bind Elemental
 	[3600]  = true, -- Earthbind
 	[8050]  = true, -- Flame Shock
 	[8056]  = true, -- Frost Shock
@@ -999,8 +1002,8 @@ enemy_debuffs.Worgen = {}
 
 -- Pandaren
 friend_buffs.Pandaren = {
-	[23335] = UnitFactionGroup("player") == "Horde", -- Silverwing Flag
-	[23333] = UnitFactionGroup("player") == "Alliance", -- Warsong Flag
+	[23335] = player_faction == "Horde", -- Silverwing Flag
+	[23333] = player_faction == "Alliance", -- Warsong Flag
 }
 friend_debuffs.Pandaren = {}
 self_buffs.Pandaren = {}
