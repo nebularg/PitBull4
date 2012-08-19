@@ -289,6 +289,9 @@ PitBull4_Aura:SetDefaults({
 		-- < Taruen
 		-- = Troll
 		-- > Blood Elf
+		-- ?? Goblin (this has two characters for the race since there is no room to add a race otherwise)
+		-- ? Worgen 
+		-- @ Pandaren (shared with the one below, race filters are always followed by a number)
 		-- @ Simple filters
 		--
 		-- The 2nd character places it within the proper order
@@ -780,6 +783,13 @@ PitBull4_Aura:SetDefaults({
 			name_list = self_buffs.BloodElf,
 			built_in = true,
 		},
+		['?0'] = {
+			display_name = L['Worgen self buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.Worgen,
+			built_in = true,
+		},
 		['52'] = {
 			display_name = L['Human friend buffs'],
 			filter_type = 'Name',
@@ -850,6 +860,27 @@ PitBull4_Aura:SetDefaults({
 			name_list = friend_buffs.BloodElf,
 			built_in = true,
 		},
+		['??2'] = {
+			display_name = L['Goblin friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.Goblin,
+			built_in = true,
+		},
+		['?2'] = {
+			display_name = L['Worgen friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.Worgen,
+			built_in = true,
+		},
+		['@2'] = {
+			display_name = L['Pandaren friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.Pandaren,
+			built_in = true,
+		},
 		['<6'] = {
 			display_name = L['Taruen enemy debuffs'],
 			filter_type = 'Name',
@@ -862,6 +893,13 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = enemy_debuffs.BloodElf,
+			built_in = true,
+		},
+		['@6'] = {
+			display_name = L['Pandaren enemy debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = enemy_debuffs.Pandaren,
 			built_in = true,
 		},
 		[':4'] = {
@@ -1040,6 +1078,9 @@ PitBull4_Aura:SetDefaults({
 				['Tauren'] = '@J',
 				['Troll'] = '=0',
 				['BloodElf'] = '>0',
+				['Worgen'] = '?0',
+				['Goblin'] = '@J',
+				['Pandaren'] = '@J',
 			},
 			built_in = true,
 		},
@@ -1058,6 +1099,9 @@ PitBull4_Aura:SetDefaults({
 				['Tauren'] = '<2',
 				['Troll'] = '=2',
 				['BloodElf'] = '>2',
+				['Worgen'] = '?2',
+				['Goblin'] = '??2',
+				['Pandaren'] = '@2',
 			},
 			built_in = true,
 		},
@@ -1076,6 +1120,9 @@ PitBull4_Aura:SetDefaults({
 				['Tauren'] = '<6',
 				['Troll'] = '@J',
 				['BloodElf'] = '>6',
+				['Worgen'] = '@J',
+				['Goblin'] = '@J',
+				['Pandaren'] = '@6',
 			},
 			built_in = true,
 		},
@@ -1094,6 +1141,9 @@ PitBull4_Aura:SetDefaults({
 				['Tauren'] = '@J',
 				['Troll'] = '@J',
 				['BloodElf'] = '@J',
+				['Worgen'] = '@J',
+				['Goblin'] = '@J',
+				['Pandaren'] = '@J',
 			},
 			built_in = true,
 		},

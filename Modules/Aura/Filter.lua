@@ -952,6 +952,42 @@ enemy_debuffs.BloodElf = {
 	[25046] = true, -- Arcane Torrent
 }
 
+-- Goblin
+friend_buffs.Goblin = {
+	[23335] = true, -- Silverwing Flag
+}
+friend_debuffs.Goblin = {}
+self_buffs.Goblin = {}
+self_debuffs.Goblin = {}
+pet_buffs.Goblin = {}
+enemy_debuffs.Goblin = {}
+
+-- Worgen
+friend_buffs.Worgen = {
+	[23333] = true, -- Warsong Flag
+}
+friend_debuffs.Worgen = {}
+self_buffs.Worgen = {
+	[68992] = true, -- Darkflight
+	[87840] = true, -- Running Wild
+}
+self_debuffs.Worgen = {}
+pet_buffs.Worgen = {}
+enemy_debuffs.Worgen = {}
+
+-- Pandaren
+friend_buffs.Pandaren = {
+	[23335] = UnitFactionGroup("player") == "Horde", -- Silverwing Flag
+	[23333] = UnitFactionGroup("player") == "Alliance", -- Warsong Flag
+}
+friend_debuffs.Pandaren = {}
+self_buffs.Pandaren = {}
+self_debuffs.Pandaren = {}
+pet_buffs.Pandaren = {}
+enemy_debuffs.Pandaren = {
+	[107079] = mop_500 or nil, -- Quaking Palm
+}
+
 -- Everyone
 local extra_buffs = {
 	[34976] = true, -- Netherstorm Flag
