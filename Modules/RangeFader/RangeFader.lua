@@ -56,7 +56,7 @@ do
 		res_spells[#res_spells+1] = GetSpellInfo(20484) -- Rebirth 
 	elseif class == "PALADIN" then
 		enemy_spells[#enemy_spells+1] = mop_500 and GetSpellInfo(20271) or GetSpellInfo(62124) -- Judgement for MoP or Hand of Reckoning otherwise
-		friendly_spells[#friendly_spells+1] = mop_500 and GetSpellinfo(19750) or GetSpellInfo(635) -- Flash of Light for MoP or Holy Light otherwise
+		friendly_spells[#friendly_spells+1] = mop_500 and GetSpellInfo(19750) or GetSpellInfo(635) -- Flash of Light for MoP or Holy Light otherwise
 		res_spells[#res_spells+1] = GetSpellInfo(7328) -- Redemption 
 	elseif class == "SHAMAN" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(8042) -- Earth Shock 
