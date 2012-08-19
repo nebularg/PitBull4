@@ -125,7 +125,7 @@ local can_purge = {
 		Magic = true,
 	},
 	WARRIOR = {
-		Magick = true,
+		Magic = true,
 	},
 	MONK = {},
 }
