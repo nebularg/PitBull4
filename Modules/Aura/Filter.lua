@@ -37,6 +37,9 @@ end
 -- Return true if the talent matching the name of the spell given by
 -- spellid has at least one point spent in it or false otherwise
 local function scan_for_known_talent(spellid)
+	if mop_500 then
+		return IsPlayerSpell(spellid)
+	end
 	local wanted_name = GetSpellInfo(spellid)
 	if not wanted_name then return nil end
 	local num_tabs = GetNumSpecializations()
@@ -96,6 +99,11 @@ local can_dispel = {
 	WARRIOR = {
 		Magic = true,
 	},
+	MONK = {
+		Poison = true,
+		Disease = true,
+		Magic = scan_for_known_talent(115451)
+	},
 }
 can_dispel.player = can_dispel[player_class]
 PitBull4_Aura.can_dispel = can_dispel
@@ -116,6 +124,10 @@ function PitBull4_Aura:PLAYER_TALENT_UPDATE(event)
 		local paladin_magic = scan_for_known_talent(53551)
 		can_dispel.PALADIN.Magic = paladin_magic
 		self:GetFilterDB('/3').aura_type_list.Magic = paladin_magic
+
+		local monk_magic = scan_for_known_talent(115451)
+		can_dispel.MONK.Magic = monk_magic
+		self:GetFilterDB('//3').aura_type_list.Magic = monk_magic
 	else
 		-- Wrath support
 		local shaman_curse = scan_for_known_talent(51886)
