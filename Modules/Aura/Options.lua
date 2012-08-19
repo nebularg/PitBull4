@@ -14,6 +14,7 @@ local self_debuffs = PitBull4_Aura.self_debuffs
 local pet_buffs = PitBull4_Aura.pet_buffs
 local enemy_debuffs = PitBull4_Aura.enemy_debuffs
 local extra_buffs = PitBull4_Aura.extra_buffs
+local can_purge = PitBull4_Aura.can_purge
 
 local color_defaults = {
 	caster = {
@@ -106,12 +107,13 @@ PitBull4_Aura:SetDefaults({
 	},
 	highlight = true,
 	highlight_filters = {
-		'!H','!I','!J'
+		'!H','!L','!I','!J'
 	},
 	highlight_filters_color_by_type = {
-		true, false, false
+		true, true, false, false
 	},
 	highlight_filters_custom_color = {
+		{ 1, 1, 1, 1},
 		{ 1, 1, 1, 1},
 		{ 1, 0, 0, 1},
 		{ 1, 0, 0, 1},
@@ -304,6 +306,7 @@ PitBull4_Aura:SetDefaults({
 		-- 4 self buffs
 		-- 5 friend debuffs
 		-- 6 enemy debuffs
+		-- 7 can purge
 		--
 		-- This is necessary to get the sort order proper for the
 		-- drop down boxes while using a value that is not localized
@@ -396,6 +399,16 @@ PitBull4_Aura:SetDefaults({
 			unit_operator = '==',
 			unit = 'vehicle',
 			disabled = true,
+			built_in = true,
+		},
+		['@P'] = {
+			display_name = L['Purgeable'],
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = {
+				Magic = true,
+				Enrage = true,
+			},
 			built_in = true,
 		},
 		['//3'] = {
@@ -930,6 +943,62 @@ PitBull4_Aura:SetDefaults({
 			name_list = self_debuffs.WARRIOR,
 			built_in = true,
 		},
+		[',7'] = {
+			display_name = L['Druid can purge'],
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_purge.DRUID,
+			built_in = true,
+		},
+		['-7'] = {
+			display_name = L['Hunter can purge'],
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_purge.HUNTER,
+			built_in = true,
+		},
+		['.7'] = {
+			display_name = L['Mage can purge'],
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_purge.MAGE,
+			built_in = true,
+		},
+		['07'] = {
+			display_name = L['Priest can purge'],
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_purge.PRIEST,
+			built_in = true,
+		},
+		['17'] = {
+			display_name = L['Rogue can purge'],
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_purge.ROGUE,
+			built_in = true,
+		},
+		['27'] = {
+			display_name = L['Shaman can purge'],
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_purge.SHAMAN,
+			built_in = true,
+		},
+		['37'] = {
+			display_name = L['Warlock can purge'],
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_purge.WARLOCK,
+			built_in = true,
+		},
+		['47'] = {
+			display_name = L['Warrior can purge'],
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_purge.WARRIOR,
+			built_in = true,
+		},
 		['&D'] = {
 			display_name = L['My class can dispel'],
 			filter_type = 'Map',
@@ -1060,6 +1129,25 @@ PitBull4_Aura:SetDefaults({
 				['WARLOCK'] = '@J',
 				['WARRIOR'] = '44',
 				['MONK'] = '@J',
+			},
+			built_in = true,
+		},
+		['&P'] = {
+			display_name = L['My class can purge'],
+			filter_type = 'Map',
+			map_type = 'class',
+			map = {
+				['MONK'] = '@J',
+				['DEATHKNIGHT'] = '@J',
+				['DRUID'] = ',7',
+				['HUNTER'] = '-7',
+				['MAGE'] = '.7',
+				['PALADIN'] = '@J',
+				['PRIEST'] = '07',
+				['ROGUE'] = '17',
+				['SHAMAN'] = '27',
+				['WARLOCK'] = '37',
+				['WARRIOR'] = '47',
 			},
 			built_in = true,
 		},
@@ -1231,6 +1319,13 @@ PitBull4_Aura:SetDefaults({
 			operators = {'|'},
 			built_in = true,
 		},
+		['#H'] = {
+			display_name = L['Purgeable by me or extra enemy'],
+			filter_type = 'Meta',
+			filters = {'&P','*E'},
+			operators = {'|'},
+			built_in = true,
+		},
 		['!B'] = {
 			display_name = L['Default buffs'],
 			filter_type = 'Meta',
@@ -1300,6 +1395,22 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Meta',
 			filters = {'!F','*D'},
 			operators = {'&'},
+			built_in = true,
+			display_when = "highlight",
+		},
+		['!K'] = {
+			display_name = L['Highlight: purgeable buffs'],
+			filter_type = 'Meta',
+			filters = {'@E','@A','@P'},
+			operators = {'&','&','&'},
+			built_in = true,
+			display_when = "highlight",
+		},
+		['!L'] = {
+			display_name = L['Highlight: purgeable by me buffs'],
+			filter_type = 'Meta',
+			filters = {'@E','@A','&P'},
+			operators = {'&','&','&'},
 			built_in = true,
 			display_when = "highlight",
 		},
