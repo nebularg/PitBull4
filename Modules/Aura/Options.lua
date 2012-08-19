@@ -267,10 +267,12 @@ PitBull4_Aura:SetDefaults({
 		-- # Intermediate Filters
 		-- % Race map filters
 		-- & Class map filters
+		-- * Extra filters
 		-- + DeathKnight
 		-- , Druid
 		-- - Hunter
 		-- . Mage
+		-- // Monk (this has two characters for the class since there is no room to add a class otherwise)
 		-- / Paladin
 		-- 0 Priest
 		-- 1 Rogue
@@ -393,6 +395,13 @@ PitBull4_Aura:SetDefaults({
 			disabled = true,
 			built_in = true,
 		},
+		['//3'] = {
+			display_name = L['Monk can dispel'],
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_dispel['MONK'],
+			built_in = true,
+		},
 		[',3'] = {
 			display_name = L['Druid can dispel'],
 			filter_type = 'Aura Type',
@@ -454,6 +463,13 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_dispel['WARRIOR'],
+			built_in = true,
+		},
+		['//0'] = {
+			display_name = L['Monk self buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.MONK,
 			built_in = true,
 		},
 		['+0'] = {
@@ -547,6 +563,13 @@ PitBull4_Aura:SetDefaults({
 			name_list = pet_buffs.WARLOCK,
 			built_in = true,
 		},
+		['//2'] = {
+			display_name = L['Monk friend buffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.MONK,
+			built_in = true,
+		},
 		['+2'] = {
 			display_name = L['Death Knight friend buffs'],
 			filter_type = 'Name',
@@ -615,6 +638,13 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.WARRIOR,
+			built_in = true,
+		},
+		['//6'] = {
+			display_name = L['Monk enemy debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = enemy_debuffs.MONK,
 			built_in = true,
 		},
 		['+6'] = {
@@ -867,6 +897,7 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
+				['MONK'] = '//3',
 				['DEATHKNIGHT'] = '@J',
 				['DRUID'] = ',3',
 				['HUNTER'] = '-3',
@@ -895,6 +926,7 @@ PitBull4_Aura:SetDefaults({
 				['SHAMAN'] = '20',
 				['WARLOCK'] = '30',
 				['WARRIOR'] = '40',
+				['MONK'] = '//0',
 			},
 			built_in = true,
 		},
@@ -913,6 +945,7 @@ PitBull4_Aura:SetDefaults({
 				['SHAMAN'] = '@J',
 				['WARLOCK'] = '31',
 				['WARRIOR'] = '@J',
+				['MONK'] = '@J',
 			},
 			built_in = true,
 		},
@@ -931,6 +964,7 @@ PitBull4_Aura:SetDefaults({
 				['SHAMAN'] = '22',
 				['WARLOCK'] = '32',
 				['WARRIOR'] = '42',
+				['MONK'] = '//2',
 			},
 			built_in = true,
 		},
@@ -949,6 +983,7 @@ PitBull4_Aura:SetDefaults({
 				['SHAMAN'] = '26',
 				['WARLOCK'] = '36',
 				['WARRIOR'] = '46',
+				['MONK'] = '//6',
 			},
 			built_in = true,
 		},
@@ -967,6 +1002,7 @@ PitBull4_Aura:SetDefaults({
 				['SHAMAN'] = '25',
 				['WARLOCK'] = '@J',
 				['WARRIOR'] = '@J',
+				['MONK'] = '@J',
 			},
 			built_in = true,
 		},
@@ -985,7 +1021,7 @@ PitBull4_Aura:SetDefaults({
 				['SHAMAN'] = '@J',
 				['WARLOCK'] = '@J',
 				['WARRIOR'] = '44',
-
+				['MONK'] = '@J',
 			},
 			built_in = true,
 		},

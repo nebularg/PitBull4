@@ -813,6 +813,14 @@ enemy_debuffs.WARRIOR = {
 	[6343]  = true, -- Thunder Clap
 }
 
+-- MONK
+friend_buffs.MONK = {}
+friend_debuffs.MONK= {}
+self_buffs.MONK = {}
+self_debuffs.MONK = {}
+pet_buffs.MONK = {}
+enemy_debuffs.MONK = {}
+
 -- Human
 friend_buffs.Human = {
 	[23333] = true, -- Warsong Flag
