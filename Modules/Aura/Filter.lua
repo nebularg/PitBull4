@@ -491,7 +491,7 @@ self_buffs.PALADIN = {
 	[20165] = true, -- Seal of Light
 	[53720] = not cata_400 and (player_race == "Human" or player_race == "Dwarf" or player_race == "Draenei") or nil, -- Seal of the Martyr
 	[20154] = true, -- Seal of Righteousness
-	[31801] = player_race == "Human" or player_race == "Dwarf" or player_race == "Draenei", -- Seal of Vengeance
+	[31801] = true, -- Seal of Truth 
 	[20166] = not cata_400 or nil, -- Seal of Wisdom
 	[5502]  = not mop_500 or nil, -- Sense Undead
 	[23214] = true, -- Summon Charger
@@ -503,6 +503,7 @@ pet_buffs.PALADIN = {}
 enemy_debuffs.PALADIN = {
 	[31935] = true, -- Avenger's Shield
 	[53742] = not cata_400 and player_race == "BloodElf" or nil, -- Dot, from Seal of Corruption (Blood Corruption)
+	[31803] = true, -- Dot, from Seal of Truth (Censure)
 	[20116] = not mop_500 or nil, -- Consecration
 	[853]   = true, -- Hammer of Justice
 	[21183]	= not cata_400 or nil, -- Heart of the Crusader
@@ -613,12 +614,14 @@ self_buffs.ROGUE = {
 self_debuffs.ROGUE = {}
 pet_buffs.ROGUE = {}
 enemy_debuffs.ROGUE = {
+	[51585] = not mop_500 or nil, -- Blade Twisting
 	[2094]  = true, -- Blind
 	[1833]  = true, -- Cheap Shot
 	[3408]  = true, -- Crippling Poison
 	[2818]  = true, -- Deadly Poison
 	[26679] = true, -- Deadly Throw
 	[8647]  = true, -- Expose Armor
+	[91023] = true, -- Find Weakness
 	[703]   = true, -- Garrote
 	[1330]  = true, -- Garrote - Silence
 	[1776]  = true, -- Gouge
@@ -627,9 +630,11 @@ enemy_debuffs.ROGUE = {
 	[408]   = true, -- Kidney Shot
 	[5530]  = not cata_400 or nil, -- Mace Stun Effect
 	[5760]  = true, -- Mind-numbing Poison
+	[84617] = true, -- Revealing Strike
 	[14251] = not mop_500 or nil, -- Riposte
 	[1943]  = true, -- Rupture
-	[2070]  = not cata_400 or nil, -- Sap
+	[6770]  = true, -- Sap
+	[51693] = not mop_500 or nil, -- Waylay
 	[13218] = not mop_500 or nil, -- Wound Poison
 }
 
