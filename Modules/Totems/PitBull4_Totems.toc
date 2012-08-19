@@ -20,6 +20,6 @@
 ## LoadOnDemand: 1
 ## Dependencies: PitBull4
 ## Version: @project-version@
-## X-PitBull4-Condition: return select(2, UnitClass("player")) == "SHAMAN"
+## X-PitBull4-Condition: return select(2, UnitClass("player")) == "SHAMAN" or select(2, UnitClass("player")) == "DRUID" or select(2,UnitClass("player")) == "DEATHKNIGHT"
 
 load.xml

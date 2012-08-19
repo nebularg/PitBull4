@@ -1,7 +1,7 @@
 if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
-if select(2, UnitClass('player')) ~= "SHAMAN" then
-	-- don't load if player is not a shaman.
+local player_class = select(2,UnitClass('player'))
+if player_class ~= "SHAMAN" and player_class ~= "DRUID" and player_class ~= "DEATHKNIGHT" then
 	return
 end
 
@@ -15,6 +15,11 @@ local DEBUG = PitBull4.DEBUG
 
 -- CONSTANTS ----------------------------------------------------------------
 local MAX_TOTEMS = MAX_TOTEMS or 4 -- comes from blizzard's totem frame lua
+if player_class == 'DRUID' then
+	MAX_TOTEMS = 3
+elseif player_class == 'DEATHKNIGHT' then
+	MAX_TOTEMS = 1
+end
 local FIRE_TOTEM_SLOT  = FIRE_TOTEM_SLOT  or 1
 local EARTH_TOTEM_SLOT = EARTH_TOTEM_SLOT or 2
 local WATER_TOTEM_SLOT = WATER_TOTEM_SLOT or 3
