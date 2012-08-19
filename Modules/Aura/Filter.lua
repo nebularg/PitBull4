@@ -872,7 +872,6 @@ friend_buffs.Dwarf = {
 }
 friend_debuffs.Dwarf = {}
 self_buffs.Dwarf = {
-	[2481] = true, -- Find Treasure
 	[7020] = true, -- Stoneform
 }
 self_debuffs.Dwarf = {}
