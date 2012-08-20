@@ -166,39 +166,56 @@ local friend_buffs,friend_debuffs,self_buffs,self_debuffs,pet_buffs,enemy_debuff
 -- DEATHKNIGHT
 friend_buffs.DEATHKNIGHT = {
 	[53137] = not mop_500 or nil, -- Abomination's Might
-	[57623] = not cata_400 or nil, -- Horn of Winter
+	[57330] = true, -- Horn of Winter
 	[49016] = true, -- Hysteria
 	[3714]  = true, -- Path of Frost
+	[55610] = mop_500 or nil, -- Unholy Aura
+	[49016] = true, -- Unholy Frenzy
 }
 friend_debuffs.DEATHKNIGHT = {}
 self_buffs.DEATHKNIGHT = {
+	[48707] = true, -- Anti-Magic Shell
+	[42650] = true, -- Army of the Dead
 	[49222] = true, -- Bone Shield
-	[55226] = not cata_400 or nil, -- Blade Barrier
+	[81141] = true, -- Crimson Scourge
 	[49028] = true, -- Dancing Rune Weapon
-	[49796] = not cata_400 or nil, -- Deathchill
 	[59052] = true, -- Freezing Fog (Rime)
+	[48266] = true, -- Frost Presence
+	[48792] = true, -- Icebound Fortitude
 	[51124] = true, -- Killing Machine
 	[49039] = true, -- Lichborne
-	[48792] = true, -- Icebound Fortitude
+	[51271] = true, -- Pillar of Frost
 	[50421] = true, -- Scent of Blood
-	[49206] = true, -- Summon Gargoyle
+	[81340] = true, -- Sudden Doom
+	[49206] = true, -- Summon Gargoyle (TODO: Is this an enemy debuff or self buff?)
 	[55233] = true, -- Vampiric Blood
+	[93099] = true, -- Vengeance
 	[51271] = true, -- Unbreakable Armor
+	[48265] = true, -- Unholy Presence
 }
 self_debuffs.DEATHKNIGHT = {}
 pet_buffs.DEATHKNIGHT = {
+	[63560] = true, -- Dark Transformation
+	[91342] = true, -- Shadow Infusion
 	[19705] = true, -- Well Fed
 }
 enemy_debuffs.DEATHKNIGHT = {
 	[55078] = true, -- Blood Plague
+	[48263] = true, -- Blood Presence
 	[45524] = true, -- Chains of Ice
-	[50510] = not cata_400 or nil, -- Crypt Fever
-	[51735] = not cata_400 or nil, -- Ebon Plague
+	[111673] = mop_500 or nil, -- Control Undead (TODO: Check where this really applies, could show on friendly pet as well)
+	[56222] = true, -- Dark Command
+	[77606] = true, -- Dark Simulacrum
+	[43265] = true, -- Death and Decay
 	[55095] = true, -- Frost Fever
 	[49203] = not mop_500 or nil, -- Hungering Cold
-	[49005] = not cata_400 or nil, -- Mark of Blood
+	[73975] = true, -- Necrotic Strike
+	[81326] = mop_500 or nil, -- Physical Vulnerability (from Brittle Bones and Ebon Plaguebringer)
 	[47476] = true, -- Strangulate
+	[130735] = mop_500 or nil, -- Soul Reaper (TODO: Find the 50% haste buff associated with this)
+	[49206] = true, -- Summon Gargoyle
 	[50536] = not mop_500 or nil, -- Unholy Blight
+	[115798] = mop_500 or nil, -- Weakened Blows (from Scarlet Fever)
 }
 
 -- DRUID
