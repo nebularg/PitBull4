@@ -1,8 +1,14 @@
 if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local player_class = select(2,UnitClass('player'))
-if player_class ~= "SHAMAN" and player_class ~= "DRUID" and player_class ~= "DEATHKNIGHT" then
+if player_class ~= "SHAMAN" and player_class ~= "DRUID" and player_class ~= "DEATHKNIGHT" and player_class ~= "MONK" then
 	return
+end
+
+local mop_500 = select(4,GetBuildInfo()) >= 50000
+local GetSpecialization = GetSpecialization
+if not mop_500 then
+	GetSpecialization = GetPrimaryTalentTree
 end
 
 local _G = _G
@@ -15,10 +21,26 @@ local DEBUG = PitBull4.DEBUG
 
 -- CONSTANTS ----------------------------------------------------------------
 local MAX_TOTEMS = MAX_TOTEMS or 4 -- comes from blizzard's totem frame lua
+local REQUIRED_SPEC_1
+local REQUIRED_SPEC_2
+local REQUIRED_LEVEL
 if player_class == 'DRUID' then
 	MAX_TOTEMS = 3
+	REQUIRED_LEVEL = 84
+	if mop_500 then
+		REQUIRED_SPEC_1 = 1
+		REQUIRED_SPEC_2 = 4
+	end
 elseif player_class == 'DEATHKNIGHT' then
 	MAX_TOTEMS = 1
+	REQUIRED_SPEC_1 = 1 
+	REQUIRED_SPEC_2 = 2
+	REQUIRED_LEVEL = 56
+elseif player_class == "MONK" then
+	MAX_TOTEMS = 1
+	REQUIRED_SPEC_1 = 1
+	REQUIRED_SPEC_2 = 2
+	REQUIRED_LEVEL = 70
 end
 local FIRE_TOTEM_SLOT  = FIRE_TOTEM_SLOT  or 1
 local EARTH_TOTEM_SLOT = EARTH_TOTEM_SLOT or 2
@@ -780,6 +802,10 @@ function PitBull4_Totems:PLAYER_ENTERING_WORLD(...)
 	self:ForceSilentTotemUpdate()
 end
 
+function PitBull4_Totems:PLAYER_TALENT_UPDATE()
+	self:UpdateAll()
+end
+
 function PitBull4_Totems:BuildFrames(frame)
 	if not frame then return end -- not enough legit parameters
 	if frame.Totems then return end -- Can't create the frames when they already exist..
@@ -962,7 +988,13 @@ function PitBull4_Totems:UpdateFrame(frame)
 		-- Disable for wacky frames, because something... wacky is going on with their updates.
 		return self:ClearFrame(frame)
 	end
-	
+	if REQUIRED_LEVEL and UnitLevel('player') < REQUIRED_LEVEL then
+		return self:ClearFrame(frame)
+	end
+	if REQUIRED_SPEC_1 and GetSpecialization() ~= REQUIRED_SPEC_1 and REQUIRED_SPEC_2 and GetSpecialization() ~= REQUIRED_SPEC_2 then
+		return self:ClearFrame(frame)
+	end
+
 	if (layout_option_get(frame,'enabled') ~= true) and frame.Totems then
 		return self:ClearFrame(frame)
 	end
@@ -1035,6 +1067,8 @@ end
 function PitBull4_Totems:OnEnable()
 	self:RegisterEvent("PLAYER_TOTEM_UPDATE")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	self:RegisterEvent("PLAYER_TALENT_UPDATE")
+	self:RegisterEvent("CHARACTER_POINTS_CHANGED","PLAYER_TALENT_UPDATE")
 end
 
 function PitBull4_Totems:OnInitialize()
