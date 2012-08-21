@@ -8,10 +8,9 @@ end
 
 local module_path = _G.debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z0-9]-%.lua")
 
-local ICON_TEXTURE = [[Interface\Icons\spell_priest_shadoworbs]]
-local SHINE_TEXTURE = [[Interface\AddOns\]] .. module_path .. [[\Shine]]
+local UI_TEXTURE = [[Interface\PlayerFrame\Priest-ShadowUI]]
 
-local STANDARD_SIZE = 15
+local STANDARD_SIZE = 38 
 
 local SHINE_TIME = 1
 local SHINE_HALF_TIME = SHINE_TIME / 2
@@ -27,7 +26,8 @@ local ShadowOrb_scripts = {}
 
 local tmp_color = { 1, 1, 1, 1 }
 function ShadowOrb:UpdateTexture(active_color, inactive_color)
-	self:SetNormalTexture(ICON_TEXTURE)
+	self:SetNormalTexture(UI_TEXTURE)
+	self:GetNormalTexture():SetTexCoord(0.45703125, 0.60546875, 0.44531250, 0.73437500)
 	if active_color then
 		self.active_color = active_color
 		self.inactive_color = inactive_color
@@ -83,7 +83,8 @@ function ShadowOrb:Shine()
 	if not shine then
 		shine = PitBull4.Controls.MakeTexture(self, "OVERLAY")
 		self.shine = shine
-		shine:SetTexture(SHINE_TEXTURE)
+		shine:SetTexture(UI_TEXTURE)
+		shine:SetTexCoord(0.45703125, 0.60546875, 0.44531250, 0.73475600)
 		shine:SetBlendMode("ADD")
 		shine:SetAlpha(0)
 		shine:SetAllPoints(self)

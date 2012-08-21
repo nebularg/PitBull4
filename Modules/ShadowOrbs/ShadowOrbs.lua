@@ -14,7 +14,7 @@ end
 local PRIEST_BAR_NUM_ORBS = assert(_G.PRIEST_BAR_NUM_ORBS)
 local SPELL_POWER_SHADOW_ORBS = assert(_G.SPELL_POWER_SHADOW_ORBS)
 
-local STANDARD_SIZE = 15
+local STANDARD_SIZE = 38
 local BORDER_SIZE = 3
 local SPACING = 3
 
@@ -39,6 +39,7 @@ PitBull4_ShadowOrbs:SetDefaults({
 	vertical = false,
 	size = 1.5,
 	active_color = { 0.79, 0.19, 1, 1 },
+	active_color = { 1, 1, 1, 1 },
 	inactive_color = { 0.5, 0.5, 0.5, 0.5 },
 	background_color = { 0, 0, 0, 0.5 }
 })
