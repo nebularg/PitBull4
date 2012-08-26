@@ -7,8 +7,6 @@ end
 
 local L = PitBull4.L
 
-local cata_400 = select(4,GetBuildInfo()) >= 40000
-
 local PitBull4_CombatFader = PitBull4:NewModule("CombatFader", "AceEvent-3.0")
 
 PitBull4_CombatFader:SetModuleType("fader")
@@ -39,14 +37,7 @@ function PitBull4_CombatFader:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterEvent("UNIT_HEALTH")
-	if cata_400 then
-		self:RegisterEvent("UNIT_POWER","UNIT_HEALTH")
-	else
-		self:RegisterEvent("UNIT_MANA","UNIT_HEALTH")
-		self:RegisterEvent("UNIT_RAGE","UNIT_HEALTH")
-		self:RegisterEvent("UNIT_ENERGY","UNIT_HEALTH")
-		self:RegisterEvent("UNIT_RUNIC_POWER","UNIT_HEALTH")
-	end
+	self:RegisterEvent("UNIT_POWER","UNIT_HEALTH")
 	self:RegisterEvent("UNIT_DISPLAYPOWER","UNIT_HEALTH")
 	
 	self:RecalculateState()

@@ -1,7 +1,6 @@
 -- Constants ----------------------------------------------------------------
 local L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
 
-local cata_400 = select(4,GetBuildInfo()) >= 40000
 local mop_500 = select(4,GetBuildInfo()) >= 50000
 
 local SINGLETON_CLASSIFICATIONS = {

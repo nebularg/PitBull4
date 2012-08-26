@@ -7,7 +7,6 @@ end
 
 local L = PitBull4.L
 
-local cata_400 = select(4,GetBuildInfo()) >= 40000
 local mop_500 = select(4,GetBuildInfo()) >= 50000
 
 local GROUP_UPDATE_EVENT = 'GROUP_ROSTER_UPDATE'
@@ -710,37 +709,18 @@ local protected_events = {
 -- Provide a way to map changed events so existing LuaTexts configs
 -- continue to work transparently to end users.
 local compat_event_map = {}
-if cata_400 then
-	compat_event_map.UNIT_MANA = 'UNIT_POWER'
-	compat_event_map.UNIT_MAXMANA = 'UNIT_POWER'
-	compat_event_map.UNIT_RAGE = 'UNIT_POWER'
-	compat_event_map.UNIT_MAXRAGE = 'UNIT_POWER'
-	compat_event_map.UNIT_ENERGY = 'UNIT_POWER'
-	compat_event_map.UNIT_MAXENERGY = 'UNIT_POWER'
-	compat_event_map.UNIT_FOCUS = 'UNIT_POWER'
-	compat_event_map.UNIT_MAXFOCUS = 'UNIT_POWER'
-	compat_event_map.UNIT_HAPPINESS = 'UNIT_POWER'
-	compat_event_map.UNIT_MAXHAPPINESS = 'UNIT_POWER'
-	compat_event_map.UNIT_RUNIC_POWER = 'UNIT_POWER'
-	compat_event_map.UNIT_MAXRUNIC_POWER = 'UNIT_POWER'
-else
-	compat_event_map.UNIT_POWER = {
-		'UNIT_MANA',
-		'UNIT_RAGE',
-		'UNIT_ENERGY',
-		'UNIT_FOCUS',
-		'UNIT_HAPPINESS',
-		'UNIT_RUNIC_POWER',
-	}
-	compat_event_map.UNIT_MAXPOWER = {
-		'UNIT_MAXMANA',
-		'UNIT_MAXRAGE',
-		'UNIT_MAXENERGY',
-		'UNIT_MAXFOCUS',
-		'UNIT_MAXHAPPINESS',
-		'UNIT_MAXRUNIC_POWER',
-	}
-end
+compat_event_map.UNIT_MANA = 'UNIT_POWER'
+compat_event_map.UNIT_MAXMANA = 'UNIT_POWER'
+compat_event_map.UNIT_RAGE = 'UNIT_POWER'
+compat_event_map.UNIT_MAXRAGE = 'UNIT_POWER'
+compat_event_map.UNIT_ENERGY = 'UNIT_POWER'
+compat_event_map.UNIT_MAXENERGY = 'UNIT_POWER'
+compat_event_map.UNIT_FOCUS = 'UNIT_POWER'
+compat_event_map.UNIT_MAXFOCUS = 'UNIT_POWER'
+compat_event_map.UNIT_HAPPINESS = 'UNIT_POWER'
+compat_event_map.UNIT_MAXHAPPINESS = 'UNIT_POWER'
+compat_event_map.UNIT_RUNIC_POWER = 'UNIT_POWER'
+compat_event_map.UNIT_MAXRUNIC_POWER = 'UNIT_POWER'
 
 local timerframe = CreateFrame("Frame")
 PitBull4_LuaTexts.timerframe = timerframe

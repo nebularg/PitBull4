@@ -9,8 +9,6 @@ local EXAMPLE_VALUE = 0.6
 
 local L = PitBull4.L
 
-local cata_400 = select(4,GetBuildInfo()) >= 40000
-
 local PitBull4_PowerBar = PitBull4:NewModule("PowerBar", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
 local last_player_power
 local last_pet_power
@@ -35,21 +33,8 @@ local PLAYER_GUID
 function PitBull4_PowerBar:OnEnable()
 	PLAYER_GUID = UnitGUID("player")
 
-	if cata_400 then
-		self:RegisterEvent("UNIT_POWER")
-		self:RegisterEvent("UNIT_MAXPOWER", "UNIT_POWER")
-	else	
-		self:RegisterEvent("UNIT_MANA", "UNIT_POWER")
-		self:RegisterEvent("UNIT_MAXMANA", "UNIT_POWER")
-		self:RegisterEvent("UNIT_RAGE", "UNIT_POWER")
-		self:RegisterEvent("UNIT_MAXRAGE", "UNIT_POWER")
-		self:RegisterEvent("UNIT_FOCUS", "UNIT_POWER")
-		self:RegisterEvent("UNIT_MAXFOCUS", "UNIT_POWER")
-		self:RegisterEvent("UNIT_ENERGY", "UNIT_POWER")
-		self:RegisterEvent("UNIT_MAXENERGY", "UNIT_POWER")
-		self:RegisterEvent("UNIT_RUNIC_POWER", "UNIT_POWER")
-		self:RegisterEvent("UNIT_MAXRUNIC_POWER", "UNIT_POWER")
-	end
+	self:RegisterEvent("UNIT_POWER")
+	self:RegisterEvent("UNIT_MAXPOWER", "UNIT_POWER")
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "UNIT_POWER")
 
 	self:SecureHook("SetCVar")
