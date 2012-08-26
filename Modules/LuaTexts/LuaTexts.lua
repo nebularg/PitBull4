@@ -721,6 +721,10 @@ compat_event_map.UNIT_HAPPINESS = 'UNIT_POWER'
 compat_event_map.UNIT_MAXHAPPINESS = 'UNIT_POWER'
 compat_event_map.UNIT_RUNIC_POWER = 'UNIT_POWER'
 compat_event_map.UNIT_MAXRUNIC_POWER = 'UNIT_POWER'
+if mop_500 then
+	compat_event_map.PARTY_MEMBERS_CHANGED = 'GROUP_ROSTER_UPDATE'
+	compat_event_map.RAID_ROSTER_UPDATE = 'GROUP_ROSTER_UPDATE'
+end
 
 local timerframe = CreateFrame("Frame")
 PitBull4_LuaTexts.timerframe = timerframe
