@@ -327,7 +327,7 @@ friend_buffs.HUNTER = {
 	[57669] = true, -- Replenishment
 	[54216] = true, -- Master's Call
 	[90364] = true, -- Qiraji Fortitude
-	[126309] = true, -- Still Water
+	[126309] = mop_500 or nil, -- Still Water
 }
 friend_debuffs.HUNTER = {}
 self_buffs.HUNTER = {
