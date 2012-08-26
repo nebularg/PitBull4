@@ -303,18 +303,31 @@ enemy_debuffs.DRUID = {
 	[81261] = cata_400 or nil, -- Solar Beam
 	[93402] = cata_400 or nil, -- Sunfire
 	[77758] = cata_400 or nil, -- Thrash
+	[113746] = mop_500 or nil, -- Weakened Armor (Faerie Fire)
+	[115798] = mop_500 or nil, -- Weakened Blows (Thrash)
 }
 
 -- HUNTER
 friend_buffs.HUNTER = {
 	[13159] = true, -- Aspect of the Pack
 	[20043] = not mop_500 or nil, -- Aspect of the Wild
+	[97229] = mop_500 or nil, -- Bellowing Roar
+	[128432] = mop_500 or nil, -- Cackling Howl
+	[90363] = mop_500 or nil, -- Embrace of the Shale Spider
+	[126373] = mop_500 or nil, -- Fearless Roar
 	[34455] = not cata_400 or nil, -- Ferocious Inspiration
+	[24604] = mop_500 or nil, -- Furious Howl
 	[34477] = true, -- Misdirection
+	[93435] = true, -- Roar of Courage
+	[128433] = mop_500 or nil, -- Serpent's Swiftness
+	[128997] = mop_500 or nil, -- Spirit Beast Blessing
 	[19578] = not mop_500 or nil, -- Spirit Bond
+	[90309] = mop_500 or nil, -- Terrifying Roar
 	[19506] = true, -- Trueshot Aura
 	[57669] = true, -- Replenishment
 	[54216] = true, -- Master's Call
+	[90364] = true, -- Qiraji Fortitude
+	[126309] = true, -- Still Water
 }
 friend_debuffs.HUNTER = {}
 self_buffs.HUNTER = {
@@ -350,6 +363,7 @@ pet_buffs.HUNTER = {
 	[19705] = true, -- Well Fed
 }
 enemy_debuffs.HUNTER = {
+	[55749] = true, -- Acid Spit
 	[19434] = true, -- Aimed Shot
 	[1462]  = true, -- Beast Lore
 	[3385]  = true, -- Boar Charge
@@ -359,6 +373,9 @@ enemy_debuffs.HUNTER = {
 	[19306] = not mop_500 or nil, -- Counterattack
 	[3408]  = true, -- Crippling Poison
 	[2818]  = true, -- Deadly Poison
+	[50256] = true, -- Demoralizing Roar
+	[24423] = true, -- Demoralizing Screech
+
 	[19184] = true, -- Entrapment
 	[13812] = true, -- Explosive Trap Effect
 	[7140]  = true, -- Expose Weakness
@@ -366,21 +383,32 @@ enemy_debuffs.HUNTER = {
 	[1543]  = true, -- Flare
 	[3355]  = true, -- Freezing Trap Effect
 	[13810] = true, -- Frost Trap Aura
+	[35290] = true, -- Gore
 	[1853]  = not mop_500 or nil, -- Growl
 	[1130]  = true, -- Hunter's Mark
 	[19407] = not cata_400 or nil, -- Improved Concussive Shot
 	[7093]  = true, -- Intimidation
+	[58604] = true, -- Lava Breath
+	[24844] = true, -- Lightning Breath
 	[5760]  = true, -- Mind-numbing Poison
+	[54680] = true, -- Monstrous Bite
 	[32093] = true, -- Poison Spit
+	[50518] = true, -- Ravage
 	[1513]  = true, -- Scare Beast
 	[19503] = true, -- Scatter Shot
 	[6411]  = true, -- Scorpid Poison
 	[3043]  = not cata_400 or nil, -- Scorpid Sting
 	[24423] = true, -- Screech
 	[1978]  = true, -- Serpent Sting
+	[50274] = true, -- Spore Cloud
 	[34490] = true, -- Silencing Shot
+	[57386] = true, -- Stampede
+	[90314] = true, -- Tailspin
 	[1515]  = true, -- Tame Beast
+	[126402] = mop_500 or nil, -- Trample
 	[3034]  = not cata_400 or nil, -- Viper Sting
+	[113746] = mop_500 or nil, -- Weakened Armor (Dust Cloud/Tear Armor)
+	[82654] = true, -- Widow Venom
 	[2974]  = not mop_500 or nil, -- Wing Clip
 	[19386] = true, -- Wyvern Sting
 }
@@ -388,8 +416,7 @@ enemy_debuffs.HUNTER = {
 -- MAGE
 friend_buffs.MAGE = {
 	[1008]  = not cata_400 or nil, -- Amplify Magic
-	[23028] = not cata_400 or nil, -- Arcane Brilliance
-	[1459]  = true, -- Arcane Intellect
+	[1459]  = true, -- Arcane Brilliance 
 	[61316] = true, -- Dalaran Brilliance
 	[61024] = not cata_400 or nil, -- Dalaran Intellect
 	[54648] = not mop_500 or nil, -- Focus Magic
@@ -528,12 +555,14 @@ enemy_debuffs.PALADIN = {
 	[20184] = not cata_400 or nil, -- Judgement of Justice
 	[20185] = not cata_400 or nil, -- Judgement of Light
 	[20186] = not cata_400 or nil, -- Judgement of Wisdom
+	[81326] = mop_500 or nil, -- Physical Vulnerability (Judgements of the Bold)
 	[20066] = true, -- Repentance
 	[61840] = not cata_400 or nil, -- Righteous Vengeance
 	[25]    = true, -- Stun, from Seal of Justice
 	[10326] = true, -- Turn Evil
 	[67]	= not cata_400 or nil, -- Vindication (pre-Cata)
 	[26017] = cata_400 or nil, -- Vindication (Cataclysm)
+	[115798] = mop_500 or nil, -- Weakened Blows (Hammer of the Righteous)
 }
 
 
@@ -551,6 +580,7 @@ friend_buffs.PRIEST = {
 	[14892] = not mop_500 or nil, -- Inspiration
 	[1706]  = true, -- Levitate
 	[7001]	= true, -- Lightwell Renew
+	[49868] = true, -- Mind Quickening (Shadowform Aura)
 	[10060] = true, -- Power Infusion
 	[1243]  = not cata_400 or nil, -- Power Word: Fortitude
 	[17]    = true, -- Power Word: Shield
@@ -610,6 +640,7 @@ enemy_debuffs.PRIEST = {
 
 -- ROGUE
 friend_buffs.ROGUE = {
+	[113742] = mop_500 or nil, -- Swiftblade's Cunning
 	[57934] = true, -- Tricks of the Trade
 }
 friend_debuffs.ROGUE = {}
@@ -646,13 +677,16 @@ enemy_debuffs.ROGUE = {
 	[18425] = not mop_500 or nil, -- Kick - Silenced
 	[408]   = true, -- Kidney Shot
 	[5530]  = not cata_400 or nil, -- Mace Stun Effect
+	[93068] = mop_500 or nil, -- Master Poisoner
 	[5760]  = true, -- Mind-numbing Poison
 	[84617] = true, -- Revealing Strike
 	[14251] = not mop_500 or nil, -- Riposte
 	[1943]  = true, -- Rupture
 	[6770]  = true, -- Sap
 	[51693] = not mop_500 or nil, -- Waylay
+	[113746] = mop_500 or nil, -- Weakened Armor (Expose Armor)
 	[13218] = not mop_500 or nil, -- Wound Poison
+	[8679] = mop_500 or nil, -- Wound Poison
 }
 
 -- SHAMAN
@@ -663,9 +697,11 @@ friend_buffs.SHAMAN = {
 	[379]   = true, -- Earth Shield
 	[51945] = true, -- Earthliving
 	[51466] = not mop_500 or nil, -- Elemental Oath
+	[51470] = mop_500 or nil, -- Elemental Oath
 	[4057]  = true, -- Fire Resistance
 	[8227]  = not mop_500 or nil, -- Flametongue Totem
 	[4077]  = true, -- Frost Resistance
+	[116956] = mop_500 or nil, -- Grace of Air
 	[8178]  = true, -- Grounding Totem Effect
 	[5672]  = true, -- Healing Stream
 	[29202] = not mop_500 or nil, -- Healing Way
@@ -677,6 +713,7 @@ friend_buffs.SHAMAN = {
 	[8072]  = not mop_500 or nil, -- Stoneskin
 	[8076]  = not mop_500 or nil, -- Strength of Earth
 	[30706] = not cata_400 or nil, -- Totem of Wrath
+	[30809] = mop_500 or nil, -- Unleashed Rage
 	[131]   = not mop_500 or nil, -- Water Breathing
 	[546]   = true, -- Water Walking
 	[27621] = true, -- Windfury Totem
@@ -721,11 +758,13 @@ enemy_debuffs.SHAMAN = {
 	[30708]	= not cata_400 or nil, -- Totem of Wrath
 	[51514]	= true, -- Hex
 	[58861]	= not mop_500 or nil, -- Bash
+	[115798] = mop_500 or nil, -- Weakened Blows (Earth Shock)
 }
 
 -- WARLOCK
 friend_buffs.WARLOCK = {
 	[6307]  = true, -- Blood Pact
+	[109773] = mop_500 or nil, -- Dark Intent
 	[132]   = not cata_400 or nil, -- Detect Invisibility
 	[134]   = true, -- Fire Shield
 	[54424] = not mop_500 or nil, -- Fel Intelligence
@@ -772,6 +811,7 @@ enemy_debuffs.WARLOCK = {
 	[89]    = true, -- Cripple
 	[980]   = true, -- Curse of Agony
 	[603]   = true, -- Curse of Doom
+	[109466] = mop_500 or nil, -- Curse of Enfeeblement
 	[18223] = true, -- Curse of Exhaustion
 	[1714]  = not mop_500 or nil, -- Curse of Tongues
 	[702]   = not mop_500 or nil, -- Curse of Weakness
@@ -808,8 +848,7 @@ enemy_debuffs.WARLOCK = {
 
 -- WARRIOR
 friend_buffs.WARRIOR = {
-	[2048]  = not cata_400 or nil, -- Battle Shout (3.x)
-	[6673]  = cata_400 or nil, -- Battle Shout (4.x)
+	[6673]  = true, -- Battle Shout
 	[469]   = true, -- Commanding Shout
 	[3411]  = true, -- Intervene
 	[50720] = not mop_500 or nil, -- Vigilance
@@ -852,6 +891,7 @@ enemy_debuffs.WARRIOR = {
 	[16952] = not mop_500 or nil, -- Blood Frenzy
 	[1161]  = not mop_500 or nil, -- Challenging Shout
 	[7922]  = true, -- Charge Stun
+	[86346] = true, -- Colossus Smash
 	[12809] = not mop_500 or nil, -- Concussion Blow
 	[1604]  = true, -- Dazed
 	[12721] = not mop_500 or nil, -- Deep Wound
@@ -864,6 +904,8 @@ enemy_debuffs.WARRIOR = {
 	[5530]  = not cata_400 or nil, -- Mace Stun Effect
 	[694]   = not cata_400 or nil, -- Mocking Blow
 	[9347]  = true, -- Mortal Strike
+	[115804] = mop_500 or nil, -- Mortal Wounds (Mortal Strike/Wild Strike)
+	[81326] = mop_500 or nil, -- Physical Vulnerability (Colossus Smash)
 	[10576] = true, -- Piercing Howl
 	[772]   = not mop_500 or nil, -- Rend
 	[12798] = not cata_400 or nil, -- Revenge Stun
@@ -871,15 +913,23 @@ enemy_debuffs.WARRIOR = {
 	[7386]  = true, -- Sunder Armor
 	[355]   = true, -- Taunt
 	[6343]  = true, -- Thunder Clap
+	[113746] = mop_500 or nil, -- Weakened Armor (Sunder Armor/Devastate)
+	[115798] = mop_500 or nil, -- Weakened Blows (Thunder Clap)
 }
 
 -- MONK
-friend_buffs.MONK = {}
+friend_buffs.MONK = {
+	[115921] = mop_500 or nil, -- Legacy of the Emperor
+	[116781] = mop_500 or nil, -- Legacy of the White Tiger
+}
 friend_debuffs.MONK= {}
 self_buffs.MONK = {}
 self_debuffs.MONK = {}
 pet_buffs.MONK = {}
-enemy_debuffs.MONK = {}
+enemy_debuffs.MONK = {
+	[115180] = mop_500 or nil, -- Dizzying Haze (Keg Smash)
+	[115798] = mop_500 or nil, -- Weakened Blows (Keg Smash)
+}
 
 -- Human
 friend_buffs.Human = {
