@@ -529,85 +529,81 @@ enemy_debuffs.MAGE = {
 
 -- PALADIN
 friend_buffs.PALADIN = {
-	[64364]	 = true, -- Aura Mastery
 	[53563]  = true, -- Beacon of Light
 	[20217]  = true, -- Blessing of Kings
 	[19740]  = true, -- Blessing of Might
 	[20911]  = not mop_500 or nil, -- Blessing of Sanctuary
-	[19742]  = not cata_400 or nil, -- Blessing of Wisdom
 	[19746]  = not mop_500 or nil, -- Concentration Aura
-	[32223]  = true, -- Crusader Aura
-	[465]    = not mop_500 or nil, -- Devotion Aura
-	[19752]  = not cata_400 or nil, -- Divine Intervention
+	[32223]  = not mop_500 or nil, -- Crusader Aura
+	[465]    = not mop_500 or nil, -- Devotion Aura (cata)
+	[31821]	 = true, -- Devotion Aura (mop)/Aura Mastery (cata)
+	[114163] = mop_500 or nil, -- Eternal Flame
 	[19891]  = not mop_500 or nil, -- Fire Resistance Aura
-	[19888]  = not cata_400 or nil, -- Frost Resistance Aura
-	[25898]  = not cata_400 or nil, -- Greater Blessing of Kings
-	[25782]  = not cata_400 or nil, -- Greater Blessing of Might
-	[25899]  = not cata_400 or nil, -- Greater Blessing of Sanctuary
-	[25894]  = not cata_400 or nil, -- Greater Blessing of Wisdom
+	[121027] = mop_500 or nil, -- Glyph of Double Jeopardy
+	[54957]  = true, -- Glyph of Flash of Light
 	[1044]   = true, -- Hand of Freedom
 	[1022]   = true, -- Hand of Protection
-	[6940]   = not cata_400 or nil, -- Hand of Sacrifice
-	[20233]	 = not cata_400 or nil, -- Improved Lay on Hands
+	[6940]   = true, -- Hand of Sacrifice
+	[1038]   = true, -- Hand of Salvation
+	[86273]  = true, -- Illuminated Healing
 	[7294]   = not mop_500 or nil, -- Retribution Aura
-	[53659]	 = not cata_400 or nil, -- Sacred Cleansing
-	[53601]  = not cata_400 or nil, -- Sacred Shield
-	[58597]	 = not cata_400 or nil, -- Sacred Shield Proc
-	[19876]  = not cata_400 or nil, -- Shadow Resistance Aura
-	[54203]	 = not cata_400 or nil, -- Sheath of Light
-	[57669]  = true, -- Replenishment
+	[114917] = mop_500 or nil, -- Stay of Execution
+	[57669]  = not mop_500 or nil, -- Replenishment
 }
 friend_debuffs.PALADIN = {
 	[25771]  = true, -- Forbearance
 }
 self_buffs.PALADIN = {
+	[31850]  = true, -- Ardent Defender
 	[31884]  = true, -- Avenging Wrath
-	[20216]  = not cata_400 or nil, -- Divine Favor
+	[114637] = mop_500 or nil, -- Bastion of Glory
+	[121183] = mop_500 or nil, -- Contemplation
+	[88819]  = true, -- Daybreak
+	[31842]  = true, -- Divine Favor
 	[31842]  = true, -- Divine Illumination
 	[54428]	 = true, -- Divine Plea
 	[498]    = true, -- Divine Protection
+	[90174]  = true, -- Divine Purpose
 	[64205]	 = not mop_500 or nil, -- Divine Sacrifice
 	[642]    = true, -- Divine Shield
+	[32223]  = mop_500 or nil, -- Heart of the Crusader
+	[85416]  = true, -- Grand Crusader
+	[86698]  = true, -- Guardian of Ancient Kings
 	[9800]   = true, -- Holy Shield
 	[54149]	 = true, -- Infusion of Light
-	[54153]	 = not cata_400 or nil, -- Judgements of the Pure
-	[31834]	 = not cata_400 or nil, -- Light's Grace
-	[20178]	 = not mop_500 or nil, -- Reckoning
+	[84963]  = true, -- Inquisition
+	[53657]	 = true, -- Judgements of the Pure
+	[86678]  = true, -- Light of the Ancient Kings
+	[62124]	 = true, -- Reckoning
 	[25780]  = true, -- Righteous Fury
-	[31892]  = not cata_400 and player_race == "BloodElf" or nil, -- Seal of Blood
-	[20375]  = not cata_400 or nil, -- Seal of Command
-	[53736]  = not cata_400 and player_race == "BloodElf" or nil, -- Seal of Corruption
+	[105361] = mop_500 or nil, -- Seal of Command
 	[20164]  = true, -- Seal of Justice
-	[20165]  = true, -- Seal of Light
-	[53720]  = not cata_400 and (player_race == "Human" or player_race == "Dwarf" or player_race == "Draenei") or nil, -- Seal of the Martyr
+	[20165]  = true, -- Seal of Insight
 	[20154]  = true, -- Seal of Righteousness
 	[31801]  = true, -- Seal of Truth 
-	[20166]  = not cata_400 or nil, -- Seal of Wisdom
 	[5502]   = not mop_500 or nil, -- Sense Undead
+	[132403] = mop_500 or nil, -- Shield of the Righteous
+	[85499]  = true, -- Speed of Light
 	[23214]  = true, -- Summon Charger
 	[13819]  = true, -- Summon Warhorse
-	[53489]	 = not cata_400 or nil, -- The Art of War
+	[76691]  = true, -- Vengeance
 }
 self_debuffs.PALADIN = {}
 pet_buffs.PALADIN = {}
 enemy_debuffs.PALADIN = {
 	[31935]  = true, -- Avenger's Shield
-	[53742]  = not cata_400 and player_race == "BloodElf" or nil, -- Dot, from Seal of Corruption (Blood Corruption)
+	[105421] = mop_500 or nil, -- Blinding Light
 	[31803]  = true, -- Dot, from Seal of Truth (Censure)
-	[20116]  = not mop_500 or nil, -- Consecration
+	[26573]  = true, -- Consecration
+	[2812]   = true, -- Denounce (MoP) / Holy Wrath (Cata)
+	[114916] = mop_500 or nil, -- Execution Sentence
 	[853]    = true, -- Hammer of Justice
-	[21183]	 = not cata_400 or nil, -- Heart of the Crusader
-	[31803]  = player_race == "Human" or player_race == "Dwarf" or player_race == "Draenei", -- Dot from, Seal of Vengeance (Holy Vengeance)
-	[20184]  = not cata_400 or nil, -- Judgement of Justice
-	[20185]  = not cata_400 or nil, -- Judgement of Light
-	[20186]  = not cata_400 or nil, -- Judgement of Wisdom
+	[119072] = mop_500 or nil, -- Holy Wrath
 	[81326]  = mop_500 or nil, -- Physical Vulnerability (Judgements of the Bold)
 	[20066]  = true, -- Repentance
-	[61840]  = not cata_400 or nil, -- Righteous Vengeance
 	[25]     = true, -- Stun, from Seal of Justice
 	[10326]  = true, -- Turn Evil
-	[67]	   = not cata_400 or nil, -- Vindication (pre-Cata)
-	[26017]  = cata_400 or nil, -- Vindication (Cataclysm)
+	[26017]  = true, -- Vindication
 	[115798] = mop_500 or nil, -- Weakened Blows (Hammer of the Righteous)
 }
 
