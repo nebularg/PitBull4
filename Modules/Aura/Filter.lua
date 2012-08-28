@@ -6,13 +6,11 @@ local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
-local cata_400
 local cata_406
 local mop_500
 do
 	local _,wow_build,_,wow_interface = GetBuildInfo()
 	wow_build = tonumber(wow_build)
-	cata_400 = wow_interface >= 40000
 	cata_406 = wow_build >= 13596
 	mop_500 = wow_interface >= 50000
 end
@@ -444,7 +442,6 @@ enemy_debuffs.HUNTER = {
 	[35346]  = true, -- Time Warp
 	[126402] = mop_500 or nil, -- Trample
 	[54706]  = true, -- Venom Web Spray
-	[3034]   = not cata_400 or nil, -- Viper Sting
 	[113746] = mop_500 or nil, -- Weakened Armor (Dust Cloud/Tear Armor)
 	[4167]   = true, -- Web
 	[96201]  = true, -- Web Wrap
@@ -649,7 +646,6 @@ self_buffs.PRIEST = {
 	[586]    = true, -- Fade
 	[45241]	 = not mop_500 or nil, -- Focused Will
 	[81292]  = true, -- Glyph of Mind Spike
-	[34754]	 = not cata_400 or nil, -- Holy Concentration 
 	[588]    = true, -- Inner Fire
 	[89485]  = true, -- Inner Focus
 	[73413]  = true, -- Inner Will
