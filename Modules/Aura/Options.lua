@@ -685,7 +685,7 @@ PitBull4_Aura:SetDefaults({
 			built_in = true,
 		},
 		['.6'] = {
-			display_name = L['Mage enemey debuffs'],
+			display_name = L['Mage enemy debuffs'],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = enemy_debuffs.MAGE,
