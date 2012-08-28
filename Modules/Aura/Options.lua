@@ -733,6 +733,20 @@ PitBull4_Aura:SetDefaults({
 			name_list = enemy_debuffs.WARRIOR,
 			built_in = true,
 		},
+		['-5'] = {
+			display_name = L['Hunter friend debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_debuffs.HUNTER,
+			built_in = true,
+		},
+		['.5'] = {
+			display_name = L['Mage friend debuffs'],
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_debuffs.MAGE,
+			built_in = true,
+		},
 		['/5'] = {
 			display_name = L['Paladin friend debuffs'],
 			filter_type = 'Name',
@@ -1101,8 +1115,8 @@ PitBull4_Aura:SetDefaults({
 			map = {
 				['DEATHKNIGHT'] = '@J',
 				['DRUID'] = '@J',
-				['HUNTER'] = '@J',
-				['MAGE'] = '@J',
+				['HUNTER'] = '-5',
+				['MAGE'] = '.5',
 				['PALADIN'] = '/5',
 				['PRIEST'] = '05',
 				['ROGUE'] = '@J',
