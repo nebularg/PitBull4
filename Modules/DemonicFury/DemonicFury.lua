@@ -16,7 +16,7 @@ local PitBull4_DemonicFury = PitBull4:NewModule("DemonicFury", "AceEvent-3.0", "
 
 PitBull4_DemonicFury:SetModuleType("bar")
 PitBull4_DemonicFury:SetName(L["Demonic fury"])
-PitBull4_DemonicFury:SetDescription(L["Show a bar for demonic fury for demonlogy warlocks."])
+PitBull4_DemonicFury:SetDescription(L["Show a bar for demonic fury for demonology warlocks."])
 PitBull4_DemonicFury:SetDefaults({
 	size = 1,
 	position = 6,
