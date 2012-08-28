@@ -23,7 +23,6 @@ if not mop_500 then
 end
 
 local _,player_class = UnitClass('player')
-local _,player_race = UnitRace('player')
 local player_faction = UnitFactionGroup('player')
 
 --- Return the DB dictionary for the specified filter.
@@ -752,9 +751,10 @@ enemy_debuffs.ROGUE = {
 -- SHAMAN
 friend_buffs.SHAMAN = {
 	[16177]  = not mop_500 or nil, -- Ancestral Fortitude
-	[2825]   = player_race == "Troll" or player_race == "Tauren" or player_race == "Orc" or player_race == "Goblin" or (player_faction == "Horde" and player_race == "Pandaren"), -- Bloodlust
-	[77747]  = true, -- Burning Wrath
-	[379]    = true, -- Earth Shield
+	[105284] = true, -- Ancesteral Vigor (Purification)
+	[2825]   = player_faction == "Horde", -- Bloodlust
+	[77747]  = true, -- Burning Wrath/Totemic Wrath
+	[974]    = true, -- Earth Shield
 	[51945]  = true, -- Earthliving
 	[51466]  = not mop_500 or nil, -- Elemental Oath
 	[51470]  = mop_500 or nil, -- Elemental Oath
@@ -763,16 +763,18 @@ friend_buffs.SHAMAN = {
 	[4077]   = true, -- Frost Resistance
 	[116956] = mop_500 or nil, -- Grace of Air
 	[8178]   = true, -- Grounding Totem Effect
-	[5672]   = true, -- Healing Stream
+	[73920]  = true, -- Healing Rain
+	[119523] = mop_500 or nil, -- Healing Stream Totem (Glyph of Healing Stream Totem)
 	[29202]  = not mop_500 or nil, -- Healing Way
-	[23682]  = player_race == "Draenei" or player_race == "Dwarf" or (player_faction == "Alliance" and player_race == "Pandaren"), -- Heroism
+	[32182]  = player_faction == "Alliance", -- Heroism
 	[5677]   = not mop_500 or nil, -- Mana Spring
 	[16191]  = true, -- Mana Tide
 	[4081]   = true, -- Nature Resistance
 	[61295]  = true, -- Riptide
+
 	[8072]   = not mop_500 or nil, -- Stoneskin
+	[120676] = mop_500 or nil, -- Stormlash Totem
 	[8076]   = not mop_500 or nil, -- Strength of Earth
-	[30706]  = not cata_400 or nil, -- Totem of Wrath
 	[30809]  = mop_500 or nil, -- Unleashed Rage
 	[131]    = not mop_500 or nil, -- Water Breathing
 	[546]    = true, -- Water Walking
@@ -780,28 +782,33 @@ friend_buffs.SHAMAN = {
 	[2895]   = not mop_500 or nil, -- Wrath of Air Totem
 }
 friend_debuffs.SHAMAN = {
-	[57723]  = player_race == "Draenei" or player_race == "Dawrf" or (player_faction == "Alliance" and player_race == "Pandaren"), -- Exhaustion
-	[57724]  = player_race == "Troll" or player_race == "Tauren" or player_race == "Orc" or player_race == "Goblin" or (player_faction == "Horde" and player_race == "Pandaren"), -- Sated
+	[57723]  = player_faction == "Alliance", -- Exhaustion
+	[57724]  = player_faction == "Horde", -- Sated
 }
 self_buffs.SHAMAN = {
+	[114051] = mop_500 or nil, -- Ascendance
 	[52179]  = not mop_500 or nil, -- Astral Shift
-	[12536]  = not mop_500 or nil, -- Clearcasting
-	[29177]  = not cata_400 or nil, -- Elemental Devastation
+	[16246]  = true, -- Clearcasting
+	[118522] = mop_500 or nil, -- Elemental Blast
+	[29178]  = not mop_500 or nil, -- Elemental Devastation
 	[16166]  = true, -- Elemental Mastery
 	[6196]   = true, -- Far Sight
-	[14743]  = not cata_400 or nil, -- Focused Casting
+	[16278]  = true, -- Flurry
 	[2645]   = true, -- Ghost Wolf
 	[324]    = true, -- Lightning Shield
 	[53817]  = true, -- Maelstrom Weapon
 	[16188]  = true, -- Nature's Swiftness
-	[6495]   = not cata_400 or nil, -- Sentry Totem
 	[43339]  = not mop_500 or nil, -- Shamanistic Focus (Focused)
 	[30823]  = true, -- Shamanistic Rage
+	[98007]  = true, -- Spirit Link Totem 
+	[115356] = mop_500 or nil, -- Stormblast
 	[55166]  = not mop_500 or nil, -- Tidal Force
 	[53390]  = true, -- Tidal Waves
 	[52127]  = true, -- Water Shield
 	[16257]	 = not mop_500 or nil, -- Flurry
+	[79206]  = true, -- Spiritwalker's Grace
 	[58875]	 = true, -- Spirit Walk
+	[73685]  = true, -- Unleash Life
 }
 self_debuffs.SHAMAN = {}
 pet_buffs.SHAMAN = {
@@ -810,12 +817,15 @@ pet_buffs.SHAMAN = {
 enemy_debuffs.SHAMAN = {
 	[76780]  = true, -- Bind Elemental
 	[3600]   = true, -- Earthbind
+	[8377]   = true, -- Earthgrab
+	[61882]  = true, -- Earthquake
 	[8050]   = true, -- Flame Shock
+	[63685]  = true, -- Freeze (Frozen Power)
 	[8056]   = true, -- Frost Shock
 	[8034]   = true, -- Frostbrand Attack
 	[39796]  = not mop_500 or nil, -- Stoneclaw Stun
 	[17364]  = true, -- Stormstrike
-	[30708]	 = not cata_400 or nil, -- Totem of Wrath
+	[51490]  = true, -- Thunderstorm
 	[51514]	 = true, -- Hex
 	[58861]	 = not mop_500 or nil, -- Bash
 	[115798] = mop_500 or nil, -- Weakened Blows (Earth Shock)
