@@ -101,13 +101,27 @@ function PitBull4_HolyPower:ClearFrame(frame)
 		return false
 	end
 	
-	for i = 1, HOLY_POWER_FULL do
+	for i = 1, 5 do
 		container[i] = container[i]:Delete()
 	end
 	container.bg = container.bg:Delete()
 	frame.HolyPower = container:Delete()
 	
 	return true
+end
+
+local function update_container_size(container, vertical, max_holy_power)
+	local width = STANDARD_SIZE * max_holy_power + BORDER_SIZE * 2 + SPACING * (max_holy_power - 1)
+	if not vertical then
+		container:SetWidth(width)
+		container:SetHeight(CONTAINER_HEIGHT)
+		container.height = 1
+	else
+		container:SetWidth(CONTAINER_HEIGHT)
+		container:SetHeight(width)
+		container.height = width / CONTAINER_HEIGHT
+	end
+	container.max_holy_power = max_holy_power
 end
 
 function PitBull4_HolyPower:UpdateFrame(frame)
@@ -125,7 +139,7 @@ function PitBull4_HolyPower:UpdateFrame(frame)
 		local vertical = db.vertical
 		
 		local point, attach
-		for i = 1, HOLY_POWER_FULL do
+		for i = 1, 5 do
 			local holy_icon = PitBull4.Controls.MakeHolyIcon(container, i)
 			container[i] = holy_icon
 			holy_icon:UpdateTexture(db.active_color, db.inactive_color)
@@ -137,16 +151,8 @@ function PitBull4_HolyPower:UpdateFrame(frame)
 			end
 		end
 		
-		if not vertical then
-			container:SetWidth(CONTAINER_WIDTH)
-			container:SetHeight(CONTAINER_HEIGHT)
-			container.height = 1
-		else
-			container:SetWidth(CONTAINER_HEIGHT)
-			container:SetHeight(CONTAINER_WIDTH)
-			container.height = CONTAINER_WIDTH / CONTAINER_HEIGHT
-		end
-		
+		update_container_size(container, vertical, 3)
+
 		local bg = PitBull4.Controls.MakeTexture(container, "BACKGROUND")
 		container.bg = bg
 		bg:SetTexture(unpack(db.background_color))
@@ -154,11 +160,19 @@ function PitBull4_HolyPower:UpdateFrame(frame)
 	end
 	
 	local num_holy_power = UnitPower("player", SPELL_POWER_HOLY_POWER)
-	for i = 1, HOLY_POWER_FULL do
+	local max_holy_power = UnitPowerMax("player", SPELL_POWER_HOLY_POWER)
+	if max_holy_power ~= container.max_holy_power then
+		update_container_size(container, vertical, max_holy_power)
+	end
+	for i = 1, 5 do
 		local holy_icon = container[i]
-		if i <= num_holy_power then
+		if i > max_holy_power then
+			holy_icon:Hide()
+		elseif i <= num_holy_power then
+			holy_icon:Show()
 			holy_icon:Activate()
 		else
+			holy_icon:Show()
 			holy_icon:Deactivate()
 		end
 	end
