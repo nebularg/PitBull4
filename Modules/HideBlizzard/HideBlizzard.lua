@@ -7,8 +7,13 @@ end
 
 local L = PitBull4.L
 
-local cata_400 = select(4,GetBuildInfo()) >= 40000
-local cata_410 = select(4,GetBuildInfo()) >= 40100
+local mop_500 = select(4,GetBuildInfo()) >= 50001
+local RAID_ROSTER_UPDATE = 'GROUP_ROSTER_UPDATE'
+local PARTY_MEMBERS_CHANGED = 'GROUP_ROSTER_UPDATE'
+if not mop_500 then
+	RAID_ROSTER_UPDATE = 'RAID_ROSTER_UPDATE'
+	PARTY_MEMBERS_CHANGED = 'PARTY_MEMBERS_CHANGED'
+end
 
 local PitBull4_HideBlizzard = PitBull4:NewModule("HideBlizzard")
 
@@ -107,15 +112,7 @@ function hiders:party()
 		frame.Show = function() end
 	end
 	
-	UIParent:UnregisterEvent("RAID_ROSTER_UPDATE")
-
-	if not cata_400 or cata_410 then return end
-	CompactPartyFrame:UnregisterEvent("PARTY_MEMBERS_CHANGED")
-	CompactPartyFrame:UnregisterEvent("RAID_ROSTER_UPDATE")
-	CompactPartyFrame:Hide()
-	if hook_compactparty then
-		hook_compactparty()
-	end
+	UIParent:UnregisterEvent(RAID_ROSTER_UPDATE)
 end
 
 function showers:party()
@@ -123,29 +120,17 @@ function showers:party()
 		local frame = _G["PartyMemberFrame"..i]
 		frame.Show = nil
 		frame:GetScript("OnLoad")(frame)
-		frame:GetScript("OnEvent")(frame, "PARTY_MEMBERS_CHANGED")
+		frame:GetScript("OnEvent")(frame, PARTY_MEMBERS_CHANGED)
 		
 		PartyMemberFrame_UpdateMember(frame)
 	end
 
-	UIParent:RegisterEvent("RAID_ROSTER_UPDATE")
-
-	if not cata_400 or cata_410 then return end
-	CompactPartyFrame:RegisterEvent("PARTY_MEMBERS_CHANGED")
-	CompactPartyFrame:RegisterEvent("RAID_ROSTER_UPDATE")
-	if GetDisplayedAllyFrames then
-		if GetDisplayedAllyFrames() == "compact-party" then
-			CompactPartyFrame:Show()
-		end
-	elseif GetCVarBool("useCompactPartyFrames") and GetNumPartyMembers() > 0 and GetNumRaidMembers() == 0 then
-		CompactPartyFrame:Show()
-	end
+	UIParent:RegisterEvent(RAID_ROSTER_UPDATE)
 end
 
 local compact_raid
 function hiders:raid()
-	if not cata_400 then return end
-	CompactRaidFrameManager:UnregisterEvent("RAID_ROSTER_UPDATE")
+	CompactRaidFrameManager:UnregisterEvent(RAID_ROSTER_UPDATE)
 	CompactRaidFrameManager:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	CompactRaidFrameManager:Hide()
 	compact_raid = CompactRaidFrameManager_GetSetting("IsShown")
@@ -158,8 +143,7 @@ function hiders:raid()
 end
 
 function showers:raid()
-	if not cata_400 then return end
-	CompactRaidFrameManager:RegisterEvent("RAID_ROSTER_UPDATE")	
+	CompactRaidFrameManager:RegisterEvent(RAID_ROSTER_UPDATE)	
 	CompactRaidFrameManager:RegisterEvent("PLAYER_ENTERING_WORLD")
 	if GetDisplayedAllyFrames then
 		if GetDisplayedAllyFrames() == "raid" then
@@ -248,13 +232,11 @@ function showers:aura()
 end
 
 function hiders:altpower()
-	if not cata_400 then return end
 	PlayerPowerBarAlt:UnregisterAllEvents()
 	PlayerPowerBarAlt:Hide()
 end
 
 function showers:altpower()
-	if not cata_400 then return end
 	PlayerPowerBarAlt:GetScript("OnLoad")(PlayerPowerBarAlt)
 	UnitPowerBarAlt_UpdateAll(PlayerPowerBarAlt)
 end
@@ -292,7 +274,7 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		name = L["Party"],
 		desc = L["Hide the standard party frames."],
 		get = function (info)
-			if cata_410 and GetDisplayedAllyFrames() == "raid" then
+			if GetDisplayedAllyFrames() == "raid" then
 				return false
 			else
 				return get(info)
@@ -300,16 +282,14 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		end,
 		set = set,
 		hidden = hidden,	
-		disabled = function() return cata_410 and GetDisplayedAllyFrames() == "raid" end,
+		disabled = function() return GetDisplayedAllyFrames() == "raid" end,
 	}, 'raid', {
 		type = 'toggle',
 		name = L["Raid"],
 		desc = L["Hide the standard raid manager and raid frames and party frames (when set to use raid style in blizzard interface options)."],
 		get = get,
 		set = set,
-		hidden = function (info)
-			return hidden(info) or not cata_400
-		end,
+		hidden = hidden,
 	}, 'target', {
 		type = 'toggle',
 		name = L["Target"],
@@ -351,8 +331,6 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		desc = L["Hides the standard alternate power bar shown in some encounters and quests."],
 		get = get,
 		set = set,
-		hidden = function (info)
-			return hidden(info) or not cata_400
-		end,
+		hidden = hidden,
 	}
 end)
