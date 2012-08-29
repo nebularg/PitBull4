@@ -334,6 +334,15 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	local force_show = self.force_show
 	self:UnforceShow()
 	
+	-- Wipe all the points on the member frames before doing
+	-- the work below.  SecureGroupHeader's code does not
+	-- do this for us as it should so if you change directions
+	-- the frames can break since they'll end up with conflicting
+	-- anchors.
+	for _, member in self:IterateMembers() do
+		member:ClearAllPoints()
+	end
+
 	local enabled = group_db.enabled
 	local unit_group = group_db.unit_group
 	local party_based = unit_group:sub(1, 5) == "party"
