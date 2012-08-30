@@ -43,7 +43,7 @@ function PitBull4_ThreatBar:OnEnable()
 	self:GROUP_ROSTER_UPDATE()
 end
 
-player_in_group = false
+local player_in_group = false
 
 local ACCEPTABLE_CLASSIFICATIONS = {
 	player = true,
