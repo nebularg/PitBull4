@@ -488,6 +488,7 @@ self_buffs.MAGE = {
 	[55342]  = true, -- Mirror Image
 	[30482]  = true, -- Molten Armor
 	[12043]  = true, -- Presence of Mind
+	[46989]  = true, -- Rapid Teleportation (Glyph of)
 	[77769]  = true, -- Trap Launcher
 }
 self_debuffs.MAGE = {
