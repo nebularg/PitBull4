@@ -261,7 +261,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 	elseif style == "blank" then
 		portrait.texture:SetTexture("")
 	else -- class	
-		local class
+		local class, _
 		if unit then
 			_, class = UnitClass(unit)
 		end
