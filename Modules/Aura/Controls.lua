@@ -41,7 +41,7 @@ local function OnUpdate(self)
 	if last_aura_OnUpdate+0.2 > current_time then
 		return
 	end
-	last_aura_onUpdate = current_time
+	last_aura_OnUpdate = current_time
 	local id = self.id
 	if id > 0 then
 		-- Real Buffs
