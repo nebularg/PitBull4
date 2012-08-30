@@ -128,15 +128,15 @@ function PitBull4_HolyPower:UpdateFrame(frame)
 	if frame.unit ~= "player" or player_level < PALADINPOWERBAR_SHOW_LEVEL then
 		return self:ClearFrame(frame)
 	end
+
+	local db = self:GetLayoutDB(frame)
+	local vertical = db.vertical
 	
 	local container = frame.HolyPower
 	if not container then
 		container = PitBull4.Controls.MakeFrame(frame)
 		frame.HolyPower = container
 		container:SetFrameLevel(frame:GetFrameLevel() + 13)
-		
-		local db = self:GetLayoutDB(frame)
-		local vertical = db.vertical
 		
 		local point, attach
 		for i = 1, 5 do
