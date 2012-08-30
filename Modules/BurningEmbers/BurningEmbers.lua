@@ -104,15 +104,14 @@ function PitBull4_BurningEmbers:UpdateFrame(frame)
 		return self:ClearFrame(frame)
 	end
 
+	local db = self:GetLayoutDB(frame)
+	local vertical = db.vertical
 	
 	local container = frame.BurningEmbers
 	if not container then
 		container = PitBull4.Controls.MakeFrame(frame)
 		frame.BurningEmbers = container
 		container:SetFrameLevel(frame:GetFrameLevel() + 13)
-		
-		local db = self:GetLayoutDB(frame)
-		local vertical = db.vertical
 		
 		local point, attach
 		for i = 1, 4  do
