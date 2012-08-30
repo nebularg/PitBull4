@@ -36,7 +36,7 @@ PitBull4_MasterLooterIcon:SetDefaults({
 	position = 2,
 })
 
-master_looter_guid = nil
+local master_looter_guid = nil
 
 function PitBull4_MasterLooterIcon:OnEnable()
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED")
