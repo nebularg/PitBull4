@@ -36,7 +36,7 @@ PitBull4_Chi:SetDefaults({
 	position = 1,
 	vertical = false,
 	size = 1.5,
-	active_color = { 0.59, 1, 0, 1 },
+	active_color = { 1, 1, 1, 1 },
 	inactive_color = { 0.5, 0.5, 0.5, 0.5 },
 	background_color = { 0, 0, 0, 0.5 }
 })
