@@ -464,7 +464,6 @@ friend_debuffs.MAGE = {
 }
 self_buffs.MAGE = {
 	[110909] = mop_500 or nil, -- Alter Time
-	[36032]  = mop_500 or nil, -- Arcane Charge
 	[31571]  = not mop_500 or nil, -- Arcane Potency
 	[12042]  = true, -- Arcane Power
 	[31641]  = not mop_500 or nil, -- Blazing Speed
@@ -494,6 +493,7 @@ self_buffs.MAGE = {
 self_debuffs.MAGE = {
 	[10833]  = true, -- Arcane Blast
 	[41425]  = true, -- Hypothermia
+	[36032]  = mop_500 or nil, -- Arcane Charge
 }
 pet_buffs.MAGE = {}
 enemy_debuffs.MAGE = {
