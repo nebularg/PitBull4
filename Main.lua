@@ -1219,15 +1219,15 @@ function PitBull4:OnProfileChanged()
 		frame.classification_db = db.profile.units[frame.classification]
 	end
 	
-	for frame in PitBull4:IterateFrames(true) do
-		frame:RefreshLayout()
-	end
-
 	for header in PitBull4:IterateHeaders(true) do
 		if header.group_db then
 			header:RefreshGroup(true)
 		end
 		header:UpdateShownState()
+	end
+
+	for frame in PitBull4:IterateFrames(true) do
+		frame:RefreshLayout()
 	end
 
 	-- Make sure all frames and groups are made
