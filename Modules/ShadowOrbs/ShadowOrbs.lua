@@ -118,21 +118,22 @@ function PitBull4_ShadowOrbs:UpdateFrame(frame)
 		return self:ClearFrame(frame)
 	end
 
+	local db = self:GetLayoutDB(frame)
 	local container = frame.ShadowOrbs
 	if not container then
 		container = PitBull4.Controls.MakeFrame(frame)
 		frame.ShadowOrbs = container
 		container:SetFrameLevel(frame:GetFrameLevel() + 13)
 		
-		local db = self:GetLayoutDB(frame)
 		local vertical = db.vertical
 		
 		local point, attach
 		for i = 1, PRIEST_BAR_NUM_ORBS do
 			local orb_icon = PitBull4.Controls.MakeShadowOrb(container, i)
 			container[i] = orb_icon
-			orb_icon:UpdateTexture(db.active_color, db.inactive_color)
 			orb_icon:ClearAllPoints()
+			orb_icon:UpdateColors(db.active_color, db.inactive_color)
+			orb_icon:UpdateTexture()
 			if not vertical then
 				orb_icon:SetPoint("CENTER", container, "LEFT", BORDER_SIZE + (i - 1) * (SPACING + STANDARD_SIZE) + HALF_STANDARD_SIZE, 0)
 			else
@@ -159,6 +160,7 @@ function PitBull4_ShadowOrbs:UpdateFrame(frame)
 	local num_orb = UnitPower("player", SPELL_POWER_SHADOW_ORBS)
 	for i = 1, PRIEST_BAR_NUM_ORBS do
 		local orb_icon = container[i]
+		orb_icon:UpdateColors(db.active_color, db.inactive_color)
 		if i <= num_orb then
 			orb_icon:Activate()
 		else

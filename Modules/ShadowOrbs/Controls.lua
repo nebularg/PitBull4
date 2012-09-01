@@ -25,21 +25,19 @@ local ShadowOrb = {}
 local ShadowOrb_scripts = {}
 
 local tmp_color = { 1, 1, 1, 1 }
-function ShadowOrb:UpdateTexture(active_color, inactive_color)
+function ShadowOrb:UpdateColors(active_color, inactive_color)
+	self.active_color = active_color
+	self.inactive_color = inactive_color
+end
+
+function ShadowOrb:UpdateTexture()
 	self:SetNormalTexture(UI_TEXTURE)
 	self:GetNormalTexture():SetTexCoord(0.45703125, 0.60546875, 0.44531250, 0.73437500)
-	if active_color then
-		self.active_color = active_color
-		self.inactive_color = inactive_color
-	else
-		active_color = self.active_color
-		inactive_color = self.inactive_color
-	end
 	local texture = self:GetNormalTexture()
 	if self.active then
-		texture:SetVertexColor(unpack(active_color or tmp_color))
+		texture:SetVertexColor(unpack(self.active_color or tmp_color))
 	else
-		texture:SetVertexColor(unpack(inactive_color or tmp_color))
+		texture:SetVertexColor(unpack(self.inactive_color or tmp_color))
 	end
 end
 
