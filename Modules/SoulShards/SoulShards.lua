@@ -39,8 +39,6 @@ PitBull4_SoulShards:SetDefaults({
 	position = 1,
 	vertical = false,
 	size = 1.5,
-	active_color = { 0.95, 0.9, 0.6, 1 },
-	inactive_color = { 0.5, 0.5, 0.5, 0.5 },
 	background_color = { 0, 0, 0, 0.5 }
 })
 
@@ -138,7 +136,7 @@ function PitBull4_SoulShards:UpdateFrame(frame)
 		for i = 1, 4 do
 			local soul_shard = PitBull4.Controls.MakeSoulShard(container, i)
 			container[i] = soul_shard
-			soul_shard:UpdateTexture(db.active_color, db.inactive_color)
+			soul_shard:UpdateTexture()
 			soul_shard:ClearAllPoints()
 			if not vertical then
 				soul_shard:SetPoint("CENTER", container, "LEFT", BORDER_SIZE + (i - 1) * (SPACING + STANDARD_SIZE) + HALF_STANDARD_SIZE, 0)
@@ -195,44 +193,6 @@ PitBull4_SoulShards:SetLayoutOptionsFunction(function(self)
 			end
 		end,
 		order = 100,
-	},
-	'active_color', {
-		type = 'color',
-		hasAlpha = true,
-		name = L["Active color"],
-		desc = L["The color of the active soul shards."],
-		get = function(info)
-			return unpack(PitBull4.Options.GetLayoutDB(self).active_color)
-		end,
-		set = function(info, r, g, b, a)
-			local color = PitBull4.Options.GetLayoutDB(self).active_color
-			color[1], color[2], color[3], color[4] = r, g, b, a
-			
-			for frame in PitBull4:IterateFramesForUnitID("player") do
-				self:Clear(frame)
-				self:Update(frame)
-			end
-		end,
-		order = 101,
-	},
-	'inactive_color', {
-		type = 'color',
-		hasAlpha = true,
-		name = L["Inactive color"],
-		desc = L["The color of the inactive soul shards."],
-		get = function(info)
-			return unpack(PitBull4.Options.GetLayoutDB(self).inactive_color)
-		end,
-		set = function(info, r, g, b, a)
-			local color = PitBull4.Options.GetLayoutDB(self).inactive_color
-			color[1], color[2], color[3], color[4] = r, g, b, a
-			
-			for frame in PitBull4:IterateFramesForUnitID("player") do
-				self:Clear(frame)
-				self:Update(frame)
-			end
-		end,
-		order = 102,
 	},
 	'background_color', {
 		type = 'color',
