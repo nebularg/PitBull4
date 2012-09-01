@@ -991,7 +991,8 @@ function PitBull4_Totems:UpdateFrame(frame)
 	if REQUIRED_LEVEL and UnitLevel('player') < REQUIRED_LEVEL then
 		return self:ClearFrame(frame)
 	end
-	if REQUIRED_SPEC_1 and GetSpecialization() ~= REQUIRED_SPEC_1 and REQUIRED_SPEC_2 and GetSpecialization() ~= REQUIRED_SPEC_2 then
+	local spec = GetSpecialization()
+	if REQUIRED_SPEC_1 and spec ~= REQUIRED_SPEC_1 and REQUIRED_SPEC_2 and spec ~= REQUIRED_SPEC_2 and (player_class ~= "DEATHKNIGHT" or spec) then
 		return self:ClearFrame(frame)
 	end
 
