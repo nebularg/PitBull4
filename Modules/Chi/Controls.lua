@@ -25,22 +25,20 @@ local ChiIcon = {}
 local ChiIcon_scripts = {}
 
 local tmp_color = { 1, 1, 1, 1 }
-function ChiIcon:UpdateTexture(active_color, inactive_color)
+function ChiIcon:UpdateColors(active_color, inactive_color)
+	self.active_color = active_color
+	self.inactive_color = inactive_color
+end
+
+function ChiIcon:UpdateTexture()
 	self:SetNormalTexture(TEXTURE)
-	if active_color then
-		self.active_color = active_color
-		self.inactive_color = inactive_color
-	else
-		active_color = self.active_color
-		inactive_color = self.inactive_color
-	end
 	local texture = self:GetNormalTexture()
 	if self.active then
 		texture:SetTexCoord(0.00390625, 0.08593750, 0.71093750, 0.87500000)
-		texture:SetVertexColor(unpack(active_color or tmp_color))
+		texture:SetVertexColor(unpack(self.active_color or tmp_color))
 	else
 		texture:SetTexCoord(0.09375000, 0.17578125, 0.71093750, 0.87500000)
-		texture:SetVertexColor(unpack(inactive_color or tmp_color))
+		texture:SetVertexColor(unpack(self.inactive_color or tmp_color))
 	end
 end
 
