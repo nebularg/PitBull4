@@ -142,8 +142,9 @@ function PitBull4_HolyPower:UpdateFrame(frame)
 		for i = 1, 5 do
 			local holy_icon = PitBull4.Controls.MakeHolyIcon(container, i)
 			container[i] = holy_icon
-			holy_icon:UpdateTexture(db.active_color, db.inactive_color)
 			holy_icon:ClearAllPoints()
+			holy_icon:UpdateColors(db.active_color, db.inactive_color)
+			holy_icon:UpdateTexture()
 			if not vertical then
 				holy_icon:SetPoint("CENTER", container, "LEFT", BORDER_SIZE + (i - 1) * (SPACING + STANDARD_SIZE) + HALF_STANDARD_SIZE, 0)
 			else
@@ -166,6 +167,7 @@ function PitBull4_HolyPower:UpdateFrame(frame)
 	end
 	for i = 1, 5 do
 		local holy_icon = container[i]
+		holy_icon:UpdateColors(db.active_color, db.inactive_color)
 		if i > max_holy_power then
 			holy_icon:Hide()
 		elseif i <= num_holy_power then

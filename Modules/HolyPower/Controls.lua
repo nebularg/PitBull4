@@ -26,20 +26,18 @@ local HolyIcon = {}
 local HolyIcon_scripts = {}
 
 local tmp_color = { 1, 1, 1, 1 }
-function HolyIcon:UpdateTexture(active_color, inactive_color)
+function HolyIcon:UpdateColors(active_color, inactive_color)
+	self.active_color = active_color
+	self.inactive_color = inactive_color
+end
+
+function HolyIcon:UpdateTexture()
 	self:SetNormalTexture(ICON_TEXTURE)
-	if active_color then
-		self.active_color = active_color
-		self.inactive_color = inactive_color
-	else
-		active_color = self.active_color
-		inactive_color = self.inactive_color
-	end
 	local texture = self:GetNormalTexture()
 	if self.active then
-		texture:SetVertexColor(unpack(active_color or tmp_color))
+		texture:SetVertexColor(unpack(self.active_color or tmp_color))
 	else
-		texture:SetVertexColor(unpack(inactive_color or tmp_color))
+		texture:SetVertexColor(unpack(self.inactive_color or tmp_color))
 	end
 end
 
