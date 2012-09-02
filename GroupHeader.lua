@@ -1304,6 +1304,38 @@ function MemberUnitFrame:RefixSizeAndPosition()
 	self:SetHeight(layout_db.size_y * classification_db.size_y)
 end
 
+function MemberUnitFrame:ForceShow()
+	if not self.force_show then
+		self.force_show = true
+
+		-- Continue to watch the frame but do the hiding and showing ourself
+		UnregisterUnitWatch(self)
+		RegisterUnitWatch(self, true)
+	end
+
+	-- Always make sure the frame is shown even if we think it already is
+	self:Show()
+end
+MemberUnitFrame.ForceShow = PitBull4:OutOfCombatWrapper(MemberUnitFrame.ForceShow)
+
+function MemberUnitFrame:UnforceShow()
+	if not self.force_show then
+		return
+	end
+	self.force_show = nil
+
+	-- Ask the SecureStateDriver to show/hide the frame for us
+	UnregisterUnitWatch(self)
+	RegisterUnitWatch(self)
+
+	-- If we're visible force an update so everything is properly in a
+	-- non-config mode state
+	if self:IsVisible() then
+		self:Update()
+	end
+end
+MemberUnitFrame.UnforceShow = PitBull4:OutOfCombatWrapper(MemberUnitFrame.UnforceShow)
+
 --- Add the proper functions and scripts to a SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate, as well as some initialization.
 -- @param frame a Frame which inherits from SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate
 -- @usage PitBull4:ConvertIntoGroupHeader(header)
