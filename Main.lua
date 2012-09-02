@@ -1312,6 +1312,8 @@ function PitBull4:OnEnable()
 	
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("PLAYER_LEAVING_WORLD")
+
+	self:RegisterEvent("PET_BATTLE_OPENING_START")
 	
 	timerFrame:Show()
 
@@ -1537,7 +1539,7 @@ StateHeader:WrapScript(StateHeader, "OnAttributeChanged", [[
     end
   end
 ]])
-RegisterStateDriver(StateHeader, "group", "[target=raid26, exists] raid40; [target=raid21, exists] raid25; [target=raid16, exists] raid20; [target=raid11, exists] raid15; [target=raid6, exists] raid10; [group:raid] raid; [group:party] party; solo")
+RegisterStateDriver(StateHeader, "group", (mop_500 and "[petbattle] petbattle; " or "").."[target=raid26, exists] raid40; [target=raid21, exists] raid25; [target=raid16, exists] raid20; [target=raid11, exists] raid15; [target=raid6, exists] raid10; [group:raid] raid; [group:party] party; solo")
 
 function PitBull4:AddGroupToStateHeader(header)
 	local header_name = header:GetName()
@@ -1570,6 +1572,13 @@ end
 
 function PitBull4:GROUP_ROSTER_UPDATE()
 	refresh_all_guids()
+end
+
+function PitBull4:PET_BATTLE_OPENING_START()
+	if PitBull4.config_mode then
+		UIErrorsFrame:AddMessage(L["Disabling PitBull4 config mode, entering pet battle."], 0.5, 1, 0.5, nil, 1)
+		PitBull4:SetConfigMode(nil)
+	end
 end
 
 do

@@ -127,6 +127,32 @@ hooksecurefunc("UnitPopup_HideButtons",function()
 	end
 end)
 
+-- Handles hiding and showing singleton unit frames.  Please no tabs in this code if you edit it.
+-- WoW can't render tabs in FontStrings and it makes the errors from this code look awful.
+local Singleton_OnAttributeChanged = [[
+  if name ~= "state-pb4visibility" and name ~= "state-unitexists" and name ~= "config_mode" then return end
+
+  if name ~= "state-pb4visibility" then
+    -- Replace the value with the state handler state if we weren't called
+    -- on its state change
+    value = self:GetAttribute("state-pb4visibility")
+  end
+
+  if self:GetAttribute("config_mode") then
+    self:Show()
+  elseif value == "show" then
+    self:Show()
+  elseif value == "hide" then
+    self:Hide()
+  else
+    if UnitExists(self:GetAttribute("unit")) then
+      self:Show()
+    else
+      self:Hide()
+    end
+  end
+]]
+
 --- Make a singleton unit frame.
 -- @param unit the UnitID of the frame in question
 -- @usage local frame = PitBull4:MakeSingletonFrame("player")
@@ -145,8 +171,9 @@ function PitBull4:MakeSingletonFrame(unit)
 	local frame = _G[frame_name]
 	
 	if not frame then
-		frame = CreateFrame("Button", frame_name, UIParent, "SecureUnitButtonTemplate")
-		
+		frame = CreateFrame("Button", frame_name, UIParent, "SecureUnitButtonTemplate,SecureHandlerBaseTemplate")
+	
+		frame:WrapScript(frame, "OnAttributeChanged", Singleton_OnAttributeChanged)
 		frame.is_singleton = true
 		
 		-- for singletons, its classification is its UnitID
@@ -664,18 +691,22 @@ end
 SingletonUnitFrame.RefixSizeAndPosition = PitBull4:OutOfCombatWrapper(SingletonUnitFrame.RefixSizeAndPosition)
 
 --- Activate the unit frame.
--- This is just a thin wrapper around RegisterUnitWatch.
+-- This handles UnitWatch and the custom StateDriver 
 -- @usage frame:Activate()
 function SingletonUnitFrame:Activate()
-	RegisterUnitWatch(self)
+	RegisterUnitWatch(self, true)
+	RegisterStateDriver(self, "pb4visibility", mop_500 and "[petbattle] hide; default" or "default")
 end
 SingletonUnitFrame.Activate = PitBull4:OutOfCombatWrapper(SingletonUnitFrame.Activate)
 
 --- Deactivate the unit frame.
--- This is just a thin wrapper around UnregisterUnitWatch.
+-- This handles UnitWatch and the custom StateDriver 
 -- @usage frame:Deactivate()
 function SingletonUnitFrame:Deactivate()
 	UnregisterUnitWatch(self)
+	UnregisterStateDriver(self, "pb4visibility")
+	self:SetAttribute("state-pb4visibility", nil)
+	self:SetAttribute("state-unitexists", nil)
 	self:Hide()
 end
 SingletonUnitFrame.Deactivate = PitBull4:OutOfCombatWrapper(SingletonUnitFrame.Deactivate)
@@ -692,14 +723,8 @@ end
 function UnitFrame:ForceShow()
 	if not self.force_show then
 		self.force_show = true
-	
-		-- Continue to watch the frame but do the hiding and showing ourself
-		UnregisterUnitWatch(self)
-		RegisterUnitWatch(self, true)
+		self:SetAttribute("config_mode", true)
 	end
-
-	-- Always make sure the frame is shown even if we think it already is
-	self:Show()
 end
 UnitFrame.ForceShow = PitBull4:OutOfCombatWrapper(UnitFrame.ForceShow)
 
@@ -708,11 +733,8 @@ function UnitFrame:UnforceShow()
 		return
 	end
 	self.force_show = nil
+	self:SetAttribute("config_mode", nil)
 	
-	-- Ask the SecureStateDriver to show/hide the frame for us
-	UnregisterUnitWatch(self)
-	RegisterUnitWatch(self)
-
 	-- If we're visible force an udpate so everything is properly in a
 	-- non-config mode state
 	if self:IsVisible() then
