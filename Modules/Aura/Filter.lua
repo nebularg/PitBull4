@@ -1032,17 +1032,84 @@ enemy_debuffs.WARRIOR = {
 }
 
 -- MONK
+-- TODO: Glyph of Crackling Jade Lightning
+-- TODO: Transcendence
 friend_buffs.MONK = {
-	[115921]  = mop_500 or nil, -- Legacy of the Emperor
-	[116781]  = mop_500 or nil, -- Legacy of the White Tiger
+	[115213] = mop_500 or nil, -- Avert Harm
+	[132120] = mop_500 or nil, -- Enveloping Mist
+	[118604] = mop_500 or nil, -- Guard
+	[119611] = mop_500 or nil, -- Renewing Mist
+	[115921] = mop_500 or nil, -- Legacy of the Emperor
+	[116781] = mop_500 or nil, -- Legacy of the White Tiger
+	[116849] = mop_500 or nil, -- Life Cocoon
+	[115175] = mop_500 or nil, -- Soothing Mist
+	[116841] = mop_500 or nil, -- Tiger's Lust
+	[124081] = mop_500 or nil, -- Zen Sphere
 }
 friend_debuffs.MONK= {}
-self_buffs.MONK = {}
+self_buffs.MONK = {
+	[126050] = mop_500 or nil, -- Adaptation
+	[116768] = mop_500 or nil, -- Combo Breaker: Blackout Kick
+	[118864] = mop_500 or nil, -- Combo Breaker: Tiger Palm
+	[122278] = mop_500 or nil, -- Dampen Harm
+	[121125] = mop_500 or nil, -- Death Note
+	[122465] = mop_500 or nil, -- Dematerialize
+	[122783] = mop_500 or nil, -- Diffuse Magic
+	[115308] = mop_500 or nil, -- Elusive Brew
+	[115288] = mop_500 or nil, -- Energizing Brew
+	[120954] = mop_500 or nil, -- Fortifying Brew
+	[117431] = mop_500 or nil, -- Grapple Weapon
+	[115295] = mop_500 or nil, -- Guard
+	[124458] = mop_500 or nil, -- Healing Sphere
+	[124273] = mop_500 or nil, -- Heavy Stagger
+	[124275] = mop_500 or nil, -- Light Stagger
+	[115867] = mop_500 or nil, -- Mana Tea
+	[124274] = mop_500 or nil, -- Moderate Stagger
+	[119085] = mop_500 or nil, -- Momentum
+	[118636] = mop_500 or nil, -- Power Guard (Brewmaster Training)
+	[124968] = mop_500 or nil, -- Retreat (Glyph of)
+	[127722] = mop_500 or nil, -- Serpent's Zeal
+	[115307] = mop_500 or nil, -- Shuffle (Brewmaster Training)
+	[116033] = mop_500 or nil, -- Sparring
+	[116705] = mop_500 or nil, -- Spear Hand Strike
+	[107270] = mop_500 or nil, -- Spinning Crane Kick
+	[123407] = mop_500 or nil, -- Spinning Fire Blossom
+	[124255] = mop_500 or nil, -- Stagger
+	[116680] = mop_500 or nil, -- Thunder Focus Tea
+	[116740] = mop_500 or nil, -- Tigereye Brew
+	[125359] = mop_500 or nil, -- Tiger Power
+	[120273] = mop_500 or nil, -- Tiger Strikes
+	[125174] = mop_500 or nil, -- Touch of Karma
+	[120267] = mop_500 or nil, -- Vengeance
+	[118674] = mop_500 or nil, -- Vital Mists
+	[125883] = mop_500 or nil, -- Zen Flight
+	[131523] = mop_500 or nil, -- Zen Meditation
+	[126896] = mop_500 or nil, -- Zen Pilgrimage: Return
+
+}
 self_debuffs.MONK = {}
 pet_buffs.MONK = {}
 enemy_debuffs.MONK = {
-	[115180]  = mop_500 or nil, -- Dizzying Haze (Keg Smash)
-	[115798]  = mop_500 or nil, -- Weakened Blows (Keg Smash)
+	[128531] = mop_500 or nil, -- Blackout Kick (Combat Conditioning)
+	[115181] = mop_500 or nil, -- Breath of Fire
+	[119392] = mop_500 or nil, -- Charging Ox Wax
+	[126451] = mop_500 or nil, -- Clash
+	[117952] = mop_500 or nil, -- Crackling Jade Lightning
+	[123996] = mop_500 or nil, -- Crackling Tiger Lighting (Invoke Xuen, the White Tiger)
+	[116095] = mop_500 or nil, -- Disable
+	[115180] = mop_500 or nil, -- Dizzying Haze (Keg Smash)
+	[117418] = mop_500 or nil, -- Fists of Fury
+	[123586] = mop_500 or nil, -- Flying Serpent Kick
+	[117368] = mop_500 or nil, -- Grapple Weapon
+	[119381] = mop_500 or nil, -- Leg Sweep
+	[118585] = mop_500 or nil, -- Leer of the Ox
+	[115804] = mop_500 or nil, -- Mortal Wounds (Rising Sun Kick)
+	[115078] = mop_500 or nil, -- Paralysis
+	[115546] = mop_500 or nil, -- Provoke
+	[130320] = mop_500 or nil, -- Rising Sun Kick
+	[116847] = mop_500 or nil, -- Rushing Jade Wind
+	[122470] = mop_500 or nil, -- Touch of Karma
+	[115798] = mop_500 or nil, -- Weakened Blows (Keg Smash)
 }
 
 -- Human
