@@ -43,8 +43,11 @@ function PitBull4_AltPowerBar:GetValue(frame)
 	if min_power > current_power then
 		current_power = min_power
 	end
+	if max_power < current_power then
+		current_power = max_power
+	end
 
-	return current_power / max_power
+	return (current_power - min_power) / (max_power - min_power)
 end
 
 function PitBull4_AltPowerBar:GetExampleValue(frame)
