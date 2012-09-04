@@ -1420,7 +1420,16 @@ function PitBull4:UNIT_FACTION(_, unit)
 end
 
 local tmp = {}
-function PitBull4:UNIT_ENTERED_VEHICLE(_, unit)
+function PitBull4:UNIT_ENTERED_VEHICLE(event, unit)
+	if (event == "UNIT_ENTERED_VEHICLE" and unit == "player" and not UnitHasVehiclePlayerFrameUI("player")) then
+		-- Ignore swapping units when the vehicle player frame ui is disabled.
+		-- This is a workaround for the fact that SecureButton_GetModifiedUnit
+		-- is not properly respecting not to swap frames (heck the default
+		-- UI does weird stuff itself).  Clicking on the frame will be
+		-- wrong but we'll at least look right and you can't really target
+		-- the unit inside the vehicle anyway so it's not the end of the world.
+		return
+	end
 	tmp[unit] = true
 	tmp[PitBull4.Utils.GetBestUnitID(unit)] = true
 	local pet = PitBull4.Utils.GetBestUnitID(unit .. "pet")
