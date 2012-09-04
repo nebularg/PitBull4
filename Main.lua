@@ -226,15 +226,11 @@ local DEFAULT_GROUPS = {
 
 local _G = _G
 
-local PitBull4 = LibStub("AceAddon-3.0"):NewAddon("PitBull4", "AceEvent-3.0", "AceTimer-3.0")
+local PitBull4 = select(2, ...)
+PitBull4 = LibStub("AceAddon-3.0"):NewAddon(PitBull4, "PitBull4", "AceEvent-3.0", "AceTimer-3.0")
 _G.PitBull4 = PitBull4
 
-PitBull4.DEBUG = _G.PitBull4_DEBUG or false
-_G.PitBull4_DEBUG = nil
 local DEBUG = PitBull4.DEBUG
-
-PitBull4.expect = _G.PitBull4_expect
-_G.PitBull4_expect = nil
 local expect = PitBull4.expect
 
 PitBull4.version = "@project-version@"

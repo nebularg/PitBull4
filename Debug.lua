@@ -1,4 +1,6 @@
-_G.PitBull4_DEBUG = true
+local PitBull4 = select(2, ...)
+
+PitBull4.DEBUG = true
 
 local function is_list(t)
 	local n = #t
@@ -106,7 +108,7 @@ for _, k in ipairs(t) do
 	end
 end
 
-function _G.PitBull4_expect(alpha, condition, bravo)
+function PitBull4.expect(alpha, condition, bravo)
 	if not conditions[condition] then
 		error(("Unknown condition %s"):format(pretty_tostring(condition)), 2)
 	end
