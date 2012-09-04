@@ -124,11 +124,13 @@ local function model_OnUpdate(self, elapsed)
 		self:TryOn(6836)
 		self:TryOn(2955)
 		self:TryOn(3935)
+		self:SetPosition(0, 0, 0)
 		self:SetPortraitZoom(full_body and 0 or 1)
 	elseif style == "three_dimensional" then
 		if not frame.Portrait.falling_back then
 			self:SetUnit(frame.unit)
 			self:SetPortraitZoom(full_body and 0 or 1)
+			self:SetPosition(0, 0, 0)
 		else
 			self:SetModelScale(4.25)
 			self:SetPosition(0, 0, -1.5)
