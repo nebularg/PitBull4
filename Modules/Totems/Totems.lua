@@ -764,6 +764,7 @@ end
 
 
 function PitBull4_Totems:PLAYER_TOTEM_UPDATE(event, slot)
+	if not slot or slot < 1 or slot > MAX_TOTEMS then return end
 	local sSlot = tostring(slot)
 
 	for frame in PitBull4:IterateFrames() do
