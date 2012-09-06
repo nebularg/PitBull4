@@ -641,7 +641,8 @@ end
 local function double_fill_table(tbl, ...)
 	fill_table(tbl, ...)
 	for i = 1, select('#', ...), 1 do
-		tbl[i] = strtrim(select(i, ...))
+		local key = select(i, ...)
+		tbl[i] = strtrim(key)
 	end
 end
 
