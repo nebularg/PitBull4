@@ -1170,10 +1170,12 @@ local function merge_onto(base, addition)
 end
 
 function PitBull4:OnProfileChanged()
-	self.ClassColors = PitBull4.db.profile.colors.class
-	self.PowerColors = PitBull4.db.profile.colors.power
-	self.ReactionColors = PitBull4.db.profile.colors.reaction
-	self.ClassOrder = PitBull4.db.profile.class_order
+	local db = self.db
+
+	self.ClassColors = db.profile.colors.class
+	self.PowerColors = db.profile.colors.power
+	self.ReactionColors = db.profile.colors.reaction
+	self.ClassOrder = db.profile.class_order
 	for i, v in ipairs(CLASS_SORT_ORDER) do
 		local found = false
 		for j, u in ipairs(self.ClassOrder) do
@@ -1193,8 +1195,6 @@ function PitBull4:OnProfileChanged()
 			module:OnProfileChanged()
 		end
 	end
-
-	local db = self.db
 	
 	if not db.profile.made_groups then
 		db.profile.made_groups = true
