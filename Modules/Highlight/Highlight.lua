@@ -7,6 +7,9 @@ end
 
 local L = PitBull4.L
 
+local LibSharedMedia
+local AceGUI
+
 local PitBull4_Highlight = PitBull4:NewModule("Highlight", "AceEvent-3.0")
 
 PitBull4_Highlight:SetModuleType("custom")
@@ -16,6 +19,7 @@ PitBull4_Highlight:SetDefaults({
 	color = { 1, 1, 1, 1 },
 	show_target = true,
 	while_hover = true,
+	texture = "Blizzard QuestTitleHighlight",
 })
 
 local EXEMPT_UNITS = {}
@@ -26,6 +30,13 @@ end
 local target_guid = nil
 local mouse_focus = nil
 function PitBull4_Highlight:OnEnable()
+	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+	LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
+	AceGUI = LibStub("AceGUI-3.0")
+
+	LibSharedMedia:Register("background","Blizzard QuestTitleHighlight", [[Interface\QuestFrame\UI-QuestTitleHighlight]])
+	LibSharedMedia:Register("background","Blizzard QuestLogTitleHighlight", [[Interface\QuestFrame\UI-QuestLogTitleHighlight]])
+
 	self:AddFrameScriptHook("OnEnter")
 	self:AddFrameScriptHook("OnLeave")
 	
@@ -57,12 +68,15 @@ function PitBull4_Highlight:UpdateFrame(frame)
 	
 		local texture = PitBull4.Controls.MakeTexture(highlight, "OVERLAY")
 		highlight.texture = texture
-		texture:SetTexture([=[Interface\QuestFrame\UI-QuestTitleHighlight]=])
 		texture:SetBlendMode("ADD")
-		texture:SetAlpha(0.5)
 		texture:SetAllPoints(highlight)
-		texture:SetVertexColor(unpack(self:GetLayoutDB(frame).color))
 	end
+		
+	local layout_db = self:GetLayoutDB(frame)
+	local texture = highlight.texture
+	local texture_path = LibSharedMedia:Fetch("background", layout_db.texture)
+	texture:SetTexture(texture_path)
+	texture:SetVertexColor(unpack(layout_db.color))
 
 	highlight:Show()
 	
@@ -127,16 +141,7 @@ PitBull4_Highlight:SetLayoutOptionsFunction(function(self)
 			local color = PitBull4.Options.GetLayoutDB(self).color
 			color[1], color[2], color[3], color[4] = r, g, b, a
 
-			-- Individually update the color for the layout that's changing color
-			-- since we only bother to set the color on creation of the highlight
-			-- frame.
-			local layout = PitBull4.Options.GetCurrentLayout()
-			for frame in PitBull4:IterateFramesForLayout(layout, true) do
-				local texture = frame.Highlight and frame.Highlight.texture
-				if texture then
-					texture:SetVertexColor(r, g, b, a)
-				end
-			end
+			PitBull4.Options.UpdateFrames()
 		end,
 	}, 'show_target', {
 		type = 'toggle',
@@ -162,5 +167,25 @@ PitBull4_Highlight:SetLayoutOptionsFunction(function(self)
 
 			PitBull4.Options.UpdateFrames()
 		end,
+	}, 'texture', {
+		type = 'select',
+		name = L["Texture"],
+		desc = L["What texture the status bar should use."] .. "\n" .. L["If you want more textures, you should install the addon 'SharedMedia'."],
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).texture
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).texture = value
+
+			PitBull4.Options.UpdateFrames()
+		end,
+		values = function(info)
+			return LibSharedMedia:HashTable("background")
+		end,
+		disabled = disabled,
+		hidden = function(info)
+			return not LibSharedMedia
+		end,
+		dialogControl = AceGUI.WidgetRegistry["LSM30_Background"] and "LSM30_Background" or nil,
 	}
 end)
