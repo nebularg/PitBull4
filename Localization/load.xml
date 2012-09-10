@@ -10,6 +10,9 @@
 <Script file="ruRU.lua"/>
 <Script file="zhCN.lua"/>
 <Script file="zhTW.lua"/>
+<Script file="ptBR.lua"/>
+<Script file="itIT.lua"/>
+<Script file="esMX.lua"/>
 @end-non-debug@-->
 <!--@debug@-->
 <Script file="Debug.lua"/>
