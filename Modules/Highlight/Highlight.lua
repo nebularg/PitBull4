@@ -170,7 +170,7 @@ PitBull4_Highlight:SetLayoutOptionsFunction(function(self)
 	}, 'texture', {
 		type = 'select',
 		name = L["Texture"],
-		desc = L["What texture the status bar should use."] .. "\n" .. L["If you want more textures, you should install the addon 'SharedMedia'."],
+		desc = L["What texture the highlight should use."] .. "\n" .. L["If you want more textures, you should install the addon 'SharedMedia'."],
 		get = function(info)
 			return PitBull4.Options.GetLayoutDB(self).texture
 		end,
