@@ -69,6 +69,8 @@ if LibSharedMedia then
 	end
 end
 
+local CURRENT_CONFIG_VERSION = 2
+
 local DATABASE_DEFAULTS = {
 	profile = {
 		lock_movement = false,
@@ -131,6 +133,7 @@ local DATABASE_DEFAULTS = {
 				vehicle_swap = true,
 				click_through = false,
 				tooltip = 'always',
+				exists = false, -- used to force the group to exist even if all values are default
 				
 				show_when = {
 					solo = false,
@@ -168,6 +171,7 @@ local DATABASE_DEFAULTS = {
 				indicator_root_outside_margin = 5,
 				strata = 'MEDIUM',
 				level = 1, -- minimum 1, since 0 needs to be available
+				exists = false, -- used to force the layout to exist even if all values are default
 			},
 		},
 		colors = {
@@ -216,10 +220,12 @@ local DEFAULT_GROUPS = {
 	[L["Party"]] = {
 		enabled = true,
 		unit_group = "party",
+		exists = true,
 	},
 	[L["Party pets"]] = {
 		enabled = true,
 		unit_group = "partypet",
+		exists = true,
 	},
 }
 -----------------------------------------------------------------------------
@@ -956,14 +962,100 @@ function PitBull4.OnTanksUpdated()
 	end
 end
 
+local upgrade_functions = {
+	[1] = function(sv)
+		-- Version 1 (version number used for config files without a version
+		-- tag.  This version is missing the exists key for layouts and groups
+		local function make_layout_exist(profile_db, layout)
+			local layouts = profile_db.layouts
+			if not layouts then
+				layouts = {}
+				profile_db.layouts = layouts
+			end
+			local layout_db = layouts[layout]
+			if not layout_db then
+				layout_db = {}
+				layouts[layout] = layout_db
+			end
+			layout_db.exists = true
+		end
+		local profiles = sv.profiles
+		local namespaces = sv.namespaces
+		if not profiles then return true end
+		for profile, profile_db in pairs(profiles) do
+			local units = profile_db.units
+			if units then
+				for unit, unit_db in pairs(units) do
+					-- Check units for orphaned layouts
+					local layout = unit_db.layout or L["Normal"]
+					make_layout_exist(profile_db, layout)
+				end
+			end
+			local groups = profile_db.groups
+			if groups then
+				for group, group_db in pairs(groups) do
+					-- Add the exists flag to current groups,
+					-- there is no way to recover orphaned groups.
+					group_db.exists = true
+					-- Check groups for orphaned layouts
+					local layout = group_db.layout or L["Normal"]
+					make_layout_exist(profile_db, layout)
+				end
+			end
+			if namespaces then
+				-- Search our modules config entries for orphaned layouts 
+				for namespace, namespace_db in pairs(namespaces) do
+					if namespace_db and namespace_db.profiles and namespace_db.profiles[profile] and namespace_db.profiles[profile].layouts then
+						for layout in pairs(namespace_db.profiles[profile].layouts) do
+							make_layout_exist(profile_db, layout)
+						end
+					end
+				end
+			end
+		end
+		return true
+	end,
+}
+
+local function check_config_version(sv)
+	if not sv then return end
+	local global = sv.global
+	if not global then
+		global = {}
+		sv.global = global
+	end
+	if not global.config_version then
+		-- Existing config without config_version, so set it to 1
+		global.config_version = 1
+	end
+
+	while (global.config_version < CURRENT_CONFIG_VERSION) do
+		if upgrade_functions[global.config_version] then
+			if not upgrade_functions[global.config_version](sv) then
+				error(string.format(L["Problem upgrading PitBull4 config_version %d to %d.  Please file a ticket and attach your WTF/Account/$ACCOUNT/SavedVariables/PitBull4.lua file!"],global.config_version,global.config_version + 1))
+			end
+		end
+		global.config_version = global.config_version + 1
+	end
+end
+
 function PitBull4:OnInitialize()
+	check_config_version(PitBull4DB)
+
+	local fresh_config = not PitBull4DB
+
 	db = LibStub("AceDB-3.0"):New("PitBull4DB", DATABASE_DEFAULTS, 'Default')
 	DATABASE_DEFAULTS = nil
 	self.db = db
 	
+	if fresh_config then
+		db.global.config_version = CURRENT_CONFIG_VERSION
+	end
+		
 	db.RegisterCallback(self, "OnProfileChanged")
+	db.RegisterCallback(self, "OnProfileReset")
+	db.RegisterCallback(self, "OnNewProfile") 
 	db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
-	db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
 
 	LibStub("LibDualSpec-1.0"):EnhanceDatabase(db, "PitBull4")
 	
@@ -1265,6 +1357,15 @@ function PitBull4:OnProfileChanged()
 			LibDBIcon:Show("PitBull4")
 		end
 	end
+end
+
+function PitBull4:OnNewProfile()
+	db.profile.layouts[L["Normal"]].exists = true
+end
+
+function PitBull4:OnProfileReset()
+	self:OnNewProfile()
+	self:OnProfileChanged()
 end
 
 function PitBull4:LibSharedMedia_Registered(event, mediatype, key)
