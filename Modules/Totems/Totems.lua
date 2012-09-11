@@ -765,29 +765,23 @@ end
 
 function PitBull4_Totems:PLAYER_TOTEM_UPDATE(event, slot)
 	if not slot or slot < 1 or slot > MAX_TOTEMS then return end
-	local sSlot = tostring(slot)
 
-	for frame in PitBull4:IterateFrames() do
-		local unit = frame.unit
-		if unit and UnitIsUnit(unit,"player") and self:GetLayoutDB(frame).enabled and frame.Totems then
-			local haveTotem, name, startTime, duration, icon = MyGetTotemInfo(slot,frame)
-			if ( haveTotem and name ~= "") then
-				-- New totem created
-				self:ActivateTotem(slot)
-			elseif ( haveTotem ) then
-				-- Totem just got removed or killed.
-				self:DeactivateTotem(slot)
-				
-				-- Sound functions
-				if global_option_get('death_sound') and not (event == nil) then
-					local soundpath = DEFAULT_SOUND_PATH 
-					if LSM then
-						soundpath = LSM:Fetch('sound', global_option_get('sound_slot'..tostring(slot)))
-					end
-					--dbg('Playing Death sound for slot %s: %s', tostring(slot), tostring(soundpath))
-					PlaySoundFile(soundpath)
-				end
+	local haveTotem, name, startTime, duration, icon = GetTotemInfo(slot)
+	if ( haveTotem and name ~= "") then
+		-- New totem created
+		self:ActivateTotem(slot)
+	else
+		-- Totem just got removed or killed.
+		self:DeactivateTotem(slot)
+			
+		-- Sound functions
+		if global_option_get('death_sound') and not (event == nil) then
+			local soundpath = DEFAULT_SOUND_PATH 
+			if LSM then
+				soundpath = LSM:Fetch('sound', global_option_get('sound_slot'..tostring(slot)))
 			end
+			dbg('Playing Death sound for slot %s: %s', tostring(slot), tostring(soundpath))
+			PlaySoundFile(soundpath)
 		end
 	end
 end
