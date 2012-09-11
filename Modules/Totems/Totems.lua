@@ -780,7 +780,7 @@ function PitBull4_Totems:PLAYER_TOTEM_UPDATE(event, slot)
 			if LSM then
 				soundpath = LSM:Fetch('sound', global_option_get('sound_slot'..tostring(slot)))
 			end
-			dbg('Playing Death sound for slot %s: %s', tostring(slot), tostring(soundpath))
+			--dbg('Playing Death sound for slot %s: %s', tostring(slot), tostring(soundpath))
 			PlaySoundFile(soundpath)
 		end
 	end
