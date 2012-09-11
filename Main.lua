@@ -211,6 +211,7 @@ DATABASE_DEFAULTS.profile.colors.power["PB4_ALTERNATE"] = { 0.7, 0.7, 0.6 }
 if not DATABASE_DEFAULTS.profile.colors.power["DEMONIC_FURY"] then
 	DATABASE_DEFAULTS.profile.colors.power["DEMONIC_FURY"] = { 0.58431372549, 0.270588235294, 0.78431372549 }
 end
+DATABASE_DEFAULTS.profile.colors.power["POWER_TYPE_FEL_ENERGY"] = { 0.87843143939972, 0.98039221763611, 0 }
 
 for reaction, color in pairs(FACTION_BAR_COLORS) do
 	DATABASE_DEFAULTS.profile.colors.reaction[reaction] = { color.r, color.g, color.b }
