@@ -136,7 +136,7 @@ local function model_OnUpdate(self, elapsed)
 		self:TryOn(3935)
 		self:SetPosition(0, 0, 0)
 		self:SetPortraitZoom(full_body and 0 or 1)
-nd
+	end
 
 	-- work around a Blizzard bug that causes model frames not to
 	-- adjust their alpha realtive to their parent frames alpha after
