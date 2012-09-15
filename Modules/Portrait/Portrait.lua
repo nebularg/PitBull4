@@ -165,7 +165,6 @@ end
 function PitBull4_Portrait:UpdateFrame(frame)
 	local layout_db = self:GetLayoutDB(frame)
 	local style = layout_db.style
-	local side = layout_db.side
 	local pirate = pirate_day and self.db.profile.global.pirate
 	local falling_back = false
 	
@@ -193,11 +192,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 	
 	local portrait = frame.Portrait
 	
-	-- rebuild the portrait if:
-	-- the style changes - model frame will be a different type
-	-- the effective scale cahnges - work around blizzard bug not updating zoom when scale changes.
-	-- the side changes - work around similar blizzard bug not updating zoom when frame changes shape.
-	if portrait and (portrait.style ~= style or portrait.effective_scale ~= portrait:GetEffectiveScale() or portrait.side ~= side) then
+	if portrait and portrait.style ~= style then
 		self:ClearFrame(frame)
 		portrait = nil
 	end
@@ -211,7 +206,6 @@ function PitBull4_Portrait:UpdateFrame(frame)
 		portrait:SetHeight(60)
 		portrait.height = 4
 		portrait.style = style
-		portrait.side = side
 	
 		if style == "pirate" then
 			local model = PitBull4.Controls.MakeDressUpModel(frame)
@@ -233,8 +227,6 @@ function PitBull4_Portrait:UpdateFrame(frame)
 		portrait.bg = bg
 		bg:SetAllPoints(portrait)
 		bg:SetTexture(unpack(layout_db.color))
-		
-		portrait.effective_scale = portrait:GetEffectiveScale()
 	end
 	
 	if portrait.guid == frame.guid and guid_demanding_update ~= frame.guid then

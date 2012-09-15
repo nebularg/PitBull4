@@ -365,9 +365,13 @@ local function update_bar_layout(frame)
 		local bar_width
 		if INDICATOR_MODULE_TYPES[element_id_to_module_type[id]] then
 			-- this already has a defined height and width, so we just want to scale it into the right size and position its center
+			-- but first we need to set a bogus point temporarily so that GetHeight/Width calculate the set size not the effective
+			-- size after applying the anchor.  ClearAllPoints does not reposition the frame/put the size back.
+			bar:SetPoint("LEFT")
 			local bar_scale = bar_height / math.max(bar:GetHeight(), bar:GetWidth())
 			bar:SetScale(bar_scale)
 			bar_width = bar_height
+			bar:ClearAllPoints()
 			bar:SetPoint("CENTER", frame, "LEFT", (last_x + bar_width/2) / bar_scale, 0)
 		else
 			bar_width = get_element_db(id, layout).size * bar_width_per_point
@@ -390,9 +394,13 @@ local function update_bar_layout(frame)
 		local bar_width
 		if INDICATOR_MODULE_TYPES[element_id_to_module_type[id]] then
 			-- this already has a defined height and width, so we just want to scale it into the right size and position its center
+			-- but first we need to set a bogus point temporarily so that GetHeight/Width calculate the set size not the effective
+			-- size after applying the anchor.  ClearAllPoints does not reposition the frame/put the size back.
+			bar:SetPoint("RIGHT")
 			local bar_scale = bar_height / math.max(bar:GetHeight(), bar:GetWidth())
 			bar:SetScale(bar_scale)
 			bar_width = bar_height
+			bar:ClearAllPoints()
 			bar:SetPoint("CENTER", frame, "RIGHT", (last_x - bar_width/2) / bar_scale, 0)
 		else
 			bar_width = get_element_db(id, layout).size * bar_width_per_point
