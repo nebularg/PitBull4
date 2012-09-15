@@ -115,7 +115,17 @@ local function model_OnUpdate(self, elapsed)
 	local style = frame.Portrait.style
 	local full_body = PitBull4_Portrait:GetLayoutDB(frame).full_body
 
-	if style == "pirate" then
+	if style == "three_dimensional" then
+		if not frame.Portrait.falling_back then
+			self:SetUnit(frame.unit)
+			self:SetPortraitZoom(full_body and 0 or 1)
+			self:SetPosition(0, 0, 0)
+		else
+			self:SetModelScale(4.25)
+			self:SetPosition(0, 0, -1.5)
+			self:SetModel([[Interface\Buttons\talktomequestionmark.mdx]])
+		end
+	else -- style == "pirate"
 		self:SetUnit(frame.unit)
 		self:Undress()
 		self:TryOn(9636)
@@ -126,17 +136,7 @@ local function model_OnUpdate(self, elapsed)
 		self:TryOn(3935)
 		self:SetPosition(0, 0, 0)
 		self:SetPortraitZoom(full_body and 0 or 1)
-	elseif style == "three_dimensional" then
-		if not frame.Portrait.falling_back then
-			self:SetUnit(frame.unit)
-			self:SetPortraitZoom(full_body and 0 or 1)
-			self:SetPosition(0, 0, 0)
-		else
-			self:SetModelScale(4.25)
-			self:SetPosition(0, 0, -1.5)
-			self:SetModel([[Interface\Buttons\talktomequestionmark.mdx]])
-		end
-	end
+nd
 
 	-- work around a Blizzard bug that causes model frames not to
 	-- adjust their alpha realtive to their parent frames alpha after
@@ -207,13 +207,13 @@ function PitBull4_Portrait:UpdateFrame(frame)
 		portrait.height = 4
 		portrait.style = style
 	
-		if style == "pirate" then
-			local model = PitBull4.Controls.MakeDressUpModel(frame)
+		if style == "three_dimensional" then
+			local model = PitBull4.Controls.MakePlayerModel(frame)
 			model:SetFrameLevel(frame:GetFrameLevel() + 5)
 			portrait.model = model
 			model:SetAllPoints(portrait)
-		elseif style == "three_dimensional" then
-			local model = PitBull4.Controls.MakePlayerModel(frame)
+		elseif style == "pirate" then
+			local model = PitBull4.Controls.MakeDressUpModel(frame)
 			model:SetFrameLevel(frame:GetFrameLevel() + 5)
 			portrait.model = model
 			model:SetAllPoints(portrait)
