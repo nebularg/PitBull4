@@ -165,7 +165,7 @@ end
 function PitBull4_Portrait:UpdateFrame(frame)
 	local layout_db = self:GetLayoutDB(frame)
 	local style = layout_db.style
-	local pirate = pirate_day and self.db.profile.global.pirate
+	local pirate = pirate_day and self.db.profile.global.pirate and not InCombatLockdown()
 	local falling_back = false
 	
 	local unit = frame.unit
