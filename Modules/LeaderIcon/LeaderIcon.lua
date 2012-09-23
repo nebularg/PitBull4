@@ -101,6 +101,9 @@ else
 					end
 				end
 			end
+		else
+			-- not in a raid or a party
+			leader_guid = nil
 		end
 		PitBull4_LeaderIcon:UpdateAll()
 	end
