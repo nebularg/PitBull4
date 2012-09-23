@@ -620,7 +620,7 @@ local function DruidForm(unit)
 		return L["Bear"]
 	elseif power == 3 then
 		return L["Cat"]
-	elseif UnitAura(unit,MOONKIN_FORM,SHAPESHIFT) then
+	elseif UnitAura(unit,MOONKIN_FORM) then
 		return L["Moonkin"]
 	elseif UnitAura(unit,TREE_OF_LIFE,SHAPESHIFT) then
 		return L["Tree"]
@@ -628,7 +628,7 @@ local function DruidForm(unit)
 		return L["Travel"]
 	elseif UnitAura(unit,AQUATIC_FORM,SHAPESHIFT) then
 		return L["Aquatic"]
-	elseif UnitAura(unit,SWIFT_FLIGHT_FORM,SHAPESHIFT) or UnitAura(unit,SWIFT_FLIGHT_FORM,SHAPESHFIT) then
+	elseif UnitAura(unit,SWIFT_FLIGHT_FORM,SHAPESHIFT) or UnitAura(unit,FLIGHT_FORM,SHAPESHFIT) then
 		return L["Flight"]
 	end
 end
