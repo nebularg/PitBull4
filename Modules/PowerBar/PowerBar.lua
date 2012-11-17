@@ -116,6 +116,13 @@ function PitBull4_PowerBar:GetColor(frame, value)
 	if not power_token then
 		power_token = "MANA"
 	end
+	if power_token == "POWER_TYPE_RED_POWER" then
+		-- Apparently they couldn't just reuse the existing
+		-- RAGE type they had to make a new one, just map it
+		-- becuase providing two colors that are both red and 
+		-- translate to Red in the UI is dumb.
+		power_token = "RAGE"
+	end
 	local color = PitBull4.PowerColors[power_token]
 	
 	if color then
