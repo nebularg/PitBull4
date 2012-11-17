@@ -29,7 +29,7 @@ PitBull4_HideBlizzard:SetDefaults({}, {
 	castbar = true,
 	aura = false,
 	runebar = true,
-	altpower = true,
+	altpower = false,
 })
 
 function PitBull4_HideBlizzard:OnEnable()
