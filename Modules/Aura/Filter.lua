@@ -276,6 +276,7 @@ self_buffs.DRUID = {
 	[61336]  = true, -- Survival Instincts
 	[40120]  = true, -- Swift Flight Form
 	[5217]   = true, -- Tiger's Fury
+	[135286] = mop_510 or nil, -- Tooth and Claw
 	[5225]   = true, -- Track Humanoids
 	[783]    = true, -- Travel Form
 	[114282] = mop_500 or nil, -- Treant Form
