@@ -11,7 +11,13 @@ end
 
 -- CONSTANTS ----------------------------------------------------------------
 
-local SPELL_POWER_CHI = assert(_G.SPELL_POWER_CHI)
+local mop_510 = select(4,GetBuildInfo()) >= 50100
+
+local SPELL_POWER_CHI = _G.SPELL_POWER_CHI
+if not mop_510 then
+  SPELL_POWER_CHI = _G.SPELL_POWER_LIGHT_FORCE
+end
+assert(SPELL_POWER_CHI)
 
 local STANDARD_SIZE = 15
 local BORDER_SIZE = 3
