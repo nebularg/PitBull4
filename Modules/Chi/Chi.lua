@@ -11,7 +11,7 @@ end
 
 -- CONSTANTS ----------------------------------------------------------------
 
-local SPELL_POWER_LIGHT_FORCE = assert(_G.SPELL_POWER_LIGHT_FORCE)
+local SPELL_POWER_CHI = assert(_G.SPELL_POWER_CHI)
 
 local STANDARD_SIZE = 15
 local BORDER_SIZE = 3
@@ -57,7 +57,7 @@ local function update_player(self)
 end
 
 function PitBull4_Chi:UNIT_POWER_FREQUENT(event, unit, kind)
-	if unit ~= "player" or kind ~= "LIGHT_FORCE" then
+	if unit ~= "player" or kind ~= "CHI" then
 		return
 	end
 	
@@ -142,8 +142,8 @@ function PitBull4_Chi:UpdateFrame(frame)
 		bg:SetAllPoints(container)
 	end
 	
-	local num_chi = UnitPower("player", SPELL_POWER_LIGHT_FORCE)
-	local max_chi = UnitPowerMax("player", SPELL_POWER_LIGHT_FORCE)
+	local num_chi = UnitPower("player", SPELL_POWER_CHI)
+	local max_chi = UnitPowerMax("player", SPELL_POWER_CHI)
 	if max_chi ~= container.max_chi then
 		update_container_size(container, vertical, max_chi)
 	end
