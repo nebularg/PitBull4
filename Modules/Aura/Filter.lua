@@ -8,11 +8,13 @@ local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 local cata_406
 local mop_500
+local mop_510
 do
 	local _,wow_build,_,wow_interface = GetBuildInfo()
 	wow_build = tonumber(wow_build)
 	cata_406 = wow_build >= 13596
 	mop_500 = wow_interface >= 50000
+	mop_510 = wow_interface >= 50100
 end
 
 local GetNumSpecializations = GetNumSpecializations
@@ -344,7 +346,7 @@ friend_debuffs.HUNTER = {
 self_buffs.HUNTER = {
 	[61648]  = mop_500 or nil, -- Aspect of the Beast
 	[5118]   = true, -- Aspect of the Cheetah
-	[82661]  = true, -- Aspect of the Fox
+	[82661]  = not mop_510 or nil, -- Aspect of the Fox
 	[13165]  = true, -- Aspect of the Hawk
 	[82921]  = true, -- Bombardment
 	[51753]  = true, -- Camouflage
