@@ -55,7 +55,6 @@ local function delete_animations(...)
 end
 function delete_funcs:AnimatedTexture()
 	local ag = self.ag
-	ag:SetScript("OnEvent",nil)
 	ag:SetScript("OnFinished",nil)
 	ag:SetScript("OnLoop",nil)
 	ag:SetScript("OnPause",nil)
@@ -67,7 +66,6 @@ function delete_funcs:AnimatedTexture()
 	delete_funcs.Texture(self)
 end
 function delete_funcs:Animation()
-	self:SetScript("OnEvent",nil)
 	self:SetScript("OnFinished",nil)
 	self:SetScript("OnPause",nil)
 	self:SetScript("OnPlay",nil)
