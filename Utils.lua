@@ -66,10 +66,13 @@ do
 		better_unit_ids["raidpet" .. i] = "raidpet" .. i
 		better_unit_ids["raid" .. i .. "pet"] = "raidpet" .. i
 	end
-	for i = 1, MAX_ARENA_TEAM_MEMBERS do
-		better_unit_ids["arena" .. i] = "arena" .. i
-		better_unit_ids["arenapet" .. i] = "arenapet" .. i
-		better_unit_ids["arena" .. i .. "pet"] = "arenapet" .. i
+	if MAX_ARENA_TEAM_MEMBERS then
+		for i = 1, MAX_ARENA_TEAM_MEMBERS do
+			better_unit_ids["arena" .. i] = "arena" .. i
+			better_unit_ids["arenapet" .. i] = "arenapet" .. i
+			better_unit_ids["arena" .. i .. "pet"] = "arenapet" .. i
+		end
+	else
 	end
 	for i = 1, MAX_BOSS_FRAMES do
 		better_unit_ids["boss" .. i] = "boss" .. i
