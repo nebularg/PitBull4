@@ -99,4 +99,6 @@ move-folders:
     PitBull4/Modules/VoiceIcon: PitBull4_VoiceIcon
 
 ignore:
+    - docs
     - tests
+    - spec.txt
