@@ -10,9 +10,6 @@ local PitBull4_Aura = PitBull4:GetModule("Aura")
 local MAINHAND = PitBull4_Aura.MAINHAND
 local OFFHAND = PitBull4_Aura.OFFHAND
 
-local wow_400 = select(4, GetBuildInfo()) >= 40000
-local wow_406 = tonumber((select(2, GetBuildInfo()))) >= 13596
-
 -- Table of functions included into the aura controls
 local Aura = {}
 
@@ -114,7 +111,7 @@ end
 local function OnClick(self)
 	if not self.is_buff or not UnitIsUnit("player",self:GetUnit()) then return end
 	local slot = self.slot
-	if wow_406 and (InCombatLockdown() or slot) then return end
+	if (InCombatLockdown() or slot) then return end
 	if slot then
 		if slot == MAINHAND then
 			CancelItemTempEnchantment(1)
@@ -141,13 +138,9 @@ end
 -- Control for the Auras
 PitBull4.Controls.MakeNewControlType("Aura", "Button", function(control)
 	-- onCreate
-	if wow_406 or not wow_400 then
-		-- Disabled in Cataclysm since the functions are all protected now.
-		-- and re-enabled for out of combat use in 4.0.6
-		control:RegisterForClicks("RightButtonUp")
-		control:SetScript("OnClick", OnClick)
-	end
-
+	control:RegisterForClicks("RightButtonUp")
+	control:SetScript("OnClick", OnClick)
+	
 	local texture = PitBull4.Controls.MakeTexture(control, "BACKGROUND")
 	control.texture = texture
 	texture:SetAllPoints(control)
