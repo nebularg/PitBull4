@@ -6,21 +6,16 @@ local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
-local cata_406
 local mop_500
 local mop_510
 do
 	local _,wow_build,_,wow_interface = GetBuildInfo()
 	wow_build = tonumber(wow_build)
-	cata_406 = wow_build >= 13596
 	mop_500 = wow_interface >= 50000
 	mop_510 = wow_interface >= 50100
 end
 
 local GetNumSpecializations = GetNumSpecializations
-if not mop_500 then
-	GetNumSpecializations = GetNumTalentTabs
-end
 
 local _,player_class = UnitClass('player')
 local player_faction = UnitFactionGroup('player')
@@ -37,26 +32,7 @@ end
 -- Return true if the talent matching the name of the spell given by
 -- spellid has at least one point spent in it or false otherwise
 local function scan_for_known_talent(spellid)
-	if mop_500 then
-		return IsPlayerSpell(spellid)
-	end
-	local wanted_name = GetSpellInfo(spellid)
-	if not wanted_name then return nil end
-	local num_tabs = GetNumSpecializations()
-	for t=1, num_tabs do
-		local num_talents = GetNumTalents(t)
-		for i=1, num_talents do
-			local name_talent, _, _, _, current_rank = GetTalentInfo(t,i)
-			if name_talent and (name_talent == wanted_name) then
-				if current_rank and (current_rank > 0) then
-					return true
-				else
-					return false
-				end
-			end
-		end
-	end
-	return false
+	return IsPlayerSpell(spellid)	
 end
 
 -- Setup the data for who can dispel what types of auras.
@@ -167,7 +143,7 @@ friend_buffs.DEATHKNIGHT = {
 	[57330]  = true, -- Horn of Winter
 	[49016]  = true, -- Hysteria
 	[3714]   = true, -- Path of Frost
-	[55610]  = mop_500 or nil, -- Unholy Aura
+	[55610]  = true, -- Unholy Aura
 	[49016]  = true, -- Unholy Frenzy
 }
 friend_debuffs.DEATHKNIGHT = {}
@@ -201,26 +177,25 @@ enemy_debuffs.DEATHKNIGHT = {
 	[55078]  = true, -- Blood Plague
 	[48263]  = true, -- Blood Presence
 	[45524]  = true, -- Chains of Ice
-	[111673] = mop_500 or nil, -- Control Undead (TODO: Check where this really applies, could show on friendly pet as well)
+	[111673] = true, -- Control Undead (TODO: Check where this really applies, could show on friendly pet as well)
 	[56222]  = true, -- Dark Command
 	[77606]  = true, -- Dark Simulacrum
 	[43265]  = true, -- Death and Decay
 	[55095]  = true, -- Frost Fever
-	[49203]  = not mop_500 or nil, -- Hungering Cold
+	[49203]  = not true, -- Hungering Cold
 	[73975]  = true, -- Necrotic Strike
-	[81326]  = mop_500 or nil, -- Physical Vulnerability (from Brittle Bones and Ebon Plaguebringer)
+	[81326]  = true, -- Physical Vulnerability (from Brittle Bones and Ebon Plaguebringer)
 	[47476]  = true, -- Strangulate
-	[130735] = mop_500 or nil, -- Soul Reaper (TODO: Find the 50% haste buff associated with this)
+	[130735] = true, -- Soul Reaper (TODO: Find the 50% haste buff associated with this)
 	[49206]  = true, -- Summon Gargoyle
-	[50536]  = not mop_500 or nil, -- Unholy Blight
-	[115798] = mop_500 or nil, -- Weakened Blows (from Scarlet Fever)
+	[115798] = true, -- Weakened Blows (from Scarlet Fever)
 }
 
 -- DRUID
 friend_buffs.DRUID = {
-	[102352] = mop_500 or nil, -- Cenarion Ward
+	[102352] = true, -- Cenarion Ward
 	[29166]  = true, -- Innervate
-	[102342] = mop_500 or nil, -- Ironbark
+	[102342] = true, -- Ironbark
 	[17007]  = true, -- Leader of the Pack
 	[33763]  = true, -- Lifebloom
 	[48504]  = true, -- Living Seed
@@ -229,8 +204,7 @@ friend_buffs.DRUID = {
 	[8936]   = true, -- Regrowth
 	[774]    = true, -- Rejuvenation
 	[77761]  = true, -- Stampeding Roar
-	[110309] = mop_500 or nil, -- Symbiosis
-	[467]    = not mop_500 or nil, -- Thorns
+	[110309] = true, -- Symbiosis
 	[740]    = true, -- Tranquility
 	[5420]   = true, -- Tree of Life TODO:Check this
 	[48438]  = true, -- Wild Growth
@@ -238,12 +212,12 @@ friend_buffs.DRUID = {
 friend_debuffs.DRUID = {}
 self_buffs.DRUID = {
 	[1066]   = true, -- Aquatic Form
-	[127663] = mop_500 or nil, -- Astral Communion
+	[127663] = true, -- Astral Communion
 	[22812]  = true, -- Barkskin
 	[50334]  = true, -- Berserk
 	[5487]   = true, -- Bear Form
 	[768]    = true, -- Cat Form
-	[112071] = mop_500 or nil, -- Celestial Alignment
+	[112071] = true, -- Celestial Alignment
 	[16870]  = true, -- Clearcasting
 	[1850]   = true, -- Dash
 	[48517]  = true, -- Eclipse (Solar)
@@ -282,7 +256,7 @@ self_buffs.DRUID = {
 self_debuffs.DRUID = {}
 pet_buffs.DRUID = {}
 enemy_debuffs.DRUID = {
-	[106996] = mop_500 or nil, -- Astral Storm
+	[106996] = true, -- Astral Storm
 	[5211]   = true, -- Bash
 	[102795] = mop_500 or nil, -- Bear Hug
 	[5209]   = not mop_500 or nil, -- Challenging Roar
@@ -311,8 +285,8 @@ enemy_debuffs.DRUID = {
 	[78675]  = true, -- Solar Beam
 	[93402]  = true, -- Sunfire
 	[77758]  = true, -- Thrash
-	[113746] = mop_500 or nil, -- Weakened Armor (Faerie Fire)
-	[115798] = mop_500 or nil, -- Weakened Blows (Thrash)
+	[113746] = true, -- Weakened Armor (Faerie Fire)
+	[115798] = true, -- Weakened Blows (Thrash)
 }
 
 -- HUNTER
@@ -391,7 +365,6 @@ enemy_debuffs.HUNTER = {
 	[50541]  = true, -- Clench
 	[35101]  = true, -- Concussive Barrage
 	[5116]   = true, -- Concussive Shot
-	[19306]  = not mop_500 or nil, -- Counterattack
 	[3408]   = true, -- Crippling Poison
 	[2818]   = true, -- Deadly Poison
 	[50256]  = true, -- Demoralizing Roar
@@ -408,19 +381,19 @@ enemy_debuffs.HUNTER = {
 	[54644]  = true, -- Frost Breath
 	[13810]  = true, -- Frost Trap Aura
 	[35290]  = true, -- Gore
-	[121414] = mop_500 or nil, -- Glaive Toss
+	[121414] = true, -- Glaive Toss
 	[6795]   = true, -- Growl
 	[1130]   = true, -- Hunter's Mark
 	[19577]  = true, -- Intimidation
 	[58604]  = true, -- Lava Breath
 	[24844]  = true, -- Lightning Breath
 	[90327]  = true, -- Lock Jaw
-	[126246] = mop_500 or nil, -- Lullaby
+	[126246] = true, -- Lullaby
 	[5760]   = true, -- Mind-numbing Poison
 	[54680]  = true, -- Monstrous Bite
 	[50479]  = true, -- Nether Shock
-	[126355] = mop_500 or nil, -- Paralyzing Quill
-	[126423] = mop_500 or nil, -- Petrifying Gaze
+	[126355] = true, -- Paralyzing Quill
+	[126423] = true, -- Petrifying Gaze
 	[63468]  = true, -- Piercing Shots
 	[50245]  = true, -- Pin
 	[32093]  = true, -- Poison Spit
@@ -440,13 +413,12 @@ enemy_debuffs.HUNTER = {
 	[90314]  = true, -- Tailspin
 	[1515]   = true, -- Tame Beast
 	[35346]  = true, -- Time Warp
-	[126402] = mop_500 or nil, -- Trample
+	[126402] = true, -- Trample
 	[54706]  = true, -- Venom Web Spray
-	[113746] = mop_500 or nil, -- Weakened Armor (Dust Cloud/Tear Armor)
+	[113746] = true, -- Weakened Armor (Dust Cloud/Tear Armor)
 	[4167]   = true, -- Web
 	[96201]  = true, -- Web Wrap
 	[82654]  = true, -- Widow Venom
-	[2974]   = not mop_500 or nil, -- Wing Clip
 	[19386]  = true, -- Wyvern Sting
 }
 
@@ -461,13 +433,12 @@ friend_debuffs.MAGE = {
 	[80354]  = true, -- Temporal Displacement
 }
 self_buffs.MAGE = {
-	[110909] = mop_500 or nil, -- Alter Time
+	[110909] = true, -- Alter Time
 	[12042]  = true, -- Arcane Power
 	[31641]  = not mop_500 or nil, -- Blazing Speed
 	[108843] = mop_500 or nil, -- Blazing Speed
 	[1953]   = true, -- Blink
 	[57761]  = true, -- Brain Freeze
-	[12536]  = not mop_500 or nil, -- Clearcasting
 	[12051]  = true, -- Evocation
 	[44544]  = true, -- Fingers of Frost
 	[7302]   = true, -- Frost Armor
@@ -504,11 +475,11 @@ enemy_debuffs.MAGE = {
 	[31661]  = true, -- Dragon's Breath
 	[133]    = true, -- Fireball
 	[2120]   = true, -- Flamestrike
-	[113092] = mop_500 or nil, -- Frost Bomb
+	[113092] = true, -- Frost Bomb
 	[122]    = true, -- Frost Nova
 	[116]    = true, -- Frostbolt
 	[44614]  = true, -- Frostfire Bolt
-	[84714]  = mop_500 or nil, -- Frozen Orb
+	[84714]  = true, -- Frozen Orb
 	[7302]   = true, -- Ice Armor
 	[3261]   = true, -- Ignite
 	[11103]  = not mop_500 or nil, -- Impact
@@ -527,15 +498,15 @@ friend_buffs.PALADIN = {
 	[20217]  = true, -- Blessing of Kings
 	[19740]  = true, -- Blessing of Might
 	[31821]	 = true, -- Devotion Aura (mop)/Aura Mastery (cata)
-	[114163] = mop_500 or nil, -- Eternal Flame
-	[121027] = mop_500 or nil, -- Glyph of Double Jeopardy
+	[114163] = true, -- Eternal Flame
+	[121027] = true, -- Glyph of Double Jeopardy
 	[54957]  = true, -- Glyph of Flash of Light
 	[1044]   = true, -- Hand of Freedom
 	[1022]   = true, -- Hand of Protection
 	[6940]   = true, -- Hand of Sacrifice
 	[1038]   = true, -- Hand of Salvation
 	[86273]  = true, -- Illuminated Healing
-	[114917] = mop_500 or nil, -- Stay of Execution
+	[114917] = true, -- Stay of Execution
 }
 friend_debuffs.PALADIN = {
 	[25771]  = true, -- Forbearance
@@ -600,7 +571,6 @@ friend_buffs.PRIEST = {
 	[47753]	 = true, -- Divine Aegis
 	[64843]  = true, -- Divine Hymn
 	[6346]   = true, -- Fear Ward
-	[56161]  = not mop_500 or nil, -- Glyph of Prayer of Healing
 	[77613]	 = true, -- Grace
 	[47788]	 = true, -- Guardian Spirit
 	[64901]  = true, -- Hymn of Hope
@@ -657,7 +627,6 @@ enemy_debuffs.PRIEST = {
 	[605]    = true, -- Mind Control
 	[15407]  = true, -- Mind Flay
 	[49821]	 = true, -- Mind Sear
-	[48301]  = not mop_500 or nil, -- Mind Trauma (debuff from Improved Mind Blast talent)
 	[2096]   = true, -- Mind Vision
 	[64044]  = true, -- Psychic Horror
 	[8122]   = true, -- Psychic Scream
@@ -670,28 +639,27 @@ enemy_debuffs.PRIEST = {
 
 -- ROGUE
 friend_buffs.ROGUE = {
-	[115834] = mop_500 or nil, -- Shroud of Concealment
-	[113742] = mop_500 or nil, -- Swiftblade's Cunning
+	[115834] = true, -- Shroud of Concealment
+	[113742] = true, -- Swiftblade's Cunning
 	[57934]  = true, -- Tricks of the Trade
 }
 friend_debuffs.ROGUE = {}
 self_buffs.ROGUE = {
 	[13750]  = true, -- Adrenaline Rush
 	[13877]  = true, -- Blade Flurry
-	[121153] = mop_500 or nil, -- Blindside
+	[121153] = true, -- Blindside
 	[31224]  = true, -- Cloak of Shadows
-	[56814]  = mop_500 or nil, -- Detection
+	[56814]  = true, -- Detection
 	[32645]  = true, -- Envenom
 	[5277]   = true, -- Evasion
 	[1966]   = true, -- Feint
 	[51690]  = true, -- Killing Spree
 	[73651]  = true, -- Recuperate
-	[14143]  = not mop_500 or nil, -- Remorseless
-	[121471] = mop_500 or nil, -- Shadow Blades
+	[121471] = true, -- Shadow Blades
 	[51713]  = true, -- Shadow Dance
-	[114842] = mop_500 or nil, -- Shadow Walk
+	[114842] = true -- Shadow Walk
 	[36554]  = true, -- Shadowstep
-	[114018] = mop_500 or nil, -- Shround of Concealment
+	[114018] = true, -- Shround of Concealment
 	[5171]   = true, -- Slice and Dice
 	[76577]  = true, -- Smoke Bomb
 	[2983]   = true, -- Sprint
@@ -713,19 +681,15 @@ enemy_debuffs.ROGUE = {
 	[1330]   = true, -- Garrote - Silence
 	[1776]   = true, -- Gouge
 	[16511]  = true, -- Hemorrhage
-	[18425]  = not mop_500 or nil, -- Kick - Silenced
 	[408]    = true, -- Kidney Shot
-	[93068]  = mop_500 or nil, -- Master Poisoner
+	[93068]  = true, -- Master Poisoner
 	[5760]   = true, -- Mind-numbing Poison
 	[84617]  = true, -- Revealing Strike
-	[14251]  = not mop_500 or nil, -- Riposte
 	[1943]   = true, -- Rupture
 	[6770]   = true, -- Sap
 	[79140]  = true, -- Vendetta
-	[51693]  = not mop_500 or nil, -- Waylay
-	[113746] = mop_500 or nil, -- Weakened Armor (Expose Armor)
-	[13218]  = not mop_500 or nil, -- Wound Poison
-	[8679]  = mop_500 or nil, -- Wound Poison
+	[113746] = true, -- Weakened Armor (Expose Armor)
+	[8679]  = true, -- Wound Poison
 }
 
 -- SHAMAN
@@ -1013,81 +977,81 @@ enemy_debuffs.WARRIOR = {
 -- TODO: Glyph of Crackling Jade Lightning
 -- TODO: Transcendence
 friend_buffs.MONK = {
-	[115213] = mop_500 or nil, -- Avert Harm
-	[132120] = mop_500 or nil, -- Enveloping Mist
-	[118604] = mop_500 or nil, -- Guard
-	[119611] = mop_500 or nil, -- Renewing Mist
-	[115921] = mop_500 or nil, -- Legacy of the Emperor
-	[116781] = mop_500 or nil, -- Legacy of the White Tiger
-	[116849] = mop_500 or nil, -- Life Cocoon
-	[115175] = mop_500 or nil, -- Soothing Mist
-	[116841] = mop_500 or nil, -- Tiger's Lust
-	[124081] = mop_500 or nil, -- Zen Sphere
+	[115213] = true, -- Avert Harm
+	[132120] = true, -- Enveloping Mist
+	[118604] = true, -- Guard
+	[119611] = true, -- Renewing Mist
+	[115921] = true, -- Legacy of the Emperor
+	[116781] = true, -- Legacy of the White Tiger
+	[116849] = true, -- Life Cocoon
+	[115175] = true, -- Soothing Mist
+	[116841] = true, -- Tiger's Lust
+	[124081] = true, -- Zen Sphere
 }
 friend_debuffs.MONK= {}
 self_buffs.MONK = {
-	[126050] = mop_500 or nil, -- Adaptation
-	[116768] = mop_500 or nil, -- Combo Breaker: Blackout Kick
-	[118864] = mop_500 or nil, -- Combo Breaker: Tiger Palm
-	[122278] = mop_500 or nil, -- Dampen Harm
-	[121125] = mop_500 or nil, -- Death Note
-	[122465] = mop_500 or nil, -- Dematerialize
-	[122783] = mop_500 or nil, -- Diffuse Magic
-	[115308] = mop_500 or nil, -- Elusive Brew
-	[115288] = mop_500 or nil, -- Energizing Brew
-	[120954] = mop_500 or nil, -- Fortifying Brew
-	[117431] = mop_500 or nil, -- Grapple Weapon
-	[115295] = mop_500 or nil, -- Guard
-	[124458] = mop_500 or nil, -- Healing Sphere
-	[124273] = mop_500 or nil, -- Heavy Stagger
-	[124275] = mop_500 or nil, -- Light Stagger
-	[115867] = mop_500 or nil, -- Mana Tea
-	[124274] = mop_500 or nil, -- Moderate Stagger
-	[119085] = mop_500 or nil, -- Momentum
-	[118636] = mop_500 or nil, -- Power Guard (Brewmaster Training)
-	[124968] = mop_500 or nil, -- Retreat (Glyph of)
-	[127722] = mop_500 or nil, -- Serpent's Zeal
-	[115307] = mop_500 or nil, -- Shuffle (Brewmaster Training)
-	[116033] = mop_500 or nil, -- Sparring
-	[116705] = mop_500 or nil, -- Spear Hand Strike
-	[107270] = mop_500 or nil, -- Spinning Crane Kick
-	[123407] = mop_500 or nil, -- Spinning Fire Blossom
-	[124255] = mop_500 or nil, -- Stagger
-	[116680] = mop_500 or nil, -- Thunder Focus Tea
-	[116740] = mop_500 or nil, -- Tigereye Brew
-	[125359] = mop_500 or nil, -- Tiger Power
-	[120273] = mop_500 or nil, -- Tiger Strikes
-	[125174] = mop_500 or nil, -- Touch of Karma
-	[120267] = mop_500 or nil, -- Vengeance
-	[118674] = mop_500 or nil, -- Vital Mists
-	[125883] = mop_500 or nil, -- Zen Flight
-	[131523] = mop_500 or nil, -- Zen Meditation
-	[126896] = mop_500 or nil, -- Zen Pilgrimage: Return
+	[126050] = true, -- Adaptation
+	[116768] = true, -- Combo Breaker: Blackout Kick
+	[118864] = true, -- Combo Breaker: Tiger Palm
+	[122278] = true, -- Dampen Harm
+	[121125] = true, -- Death Note
+	[122465] = true, -- Dematerialize
+	[122783] = true, -- Diffuse Magic
+	[115308] = true, -- Elusive Brew
+	[115288] = true, -- Energizing Brew
+	[120954] = true, -- Fortifying Brew
+	[117431] = true, -- Grapple Weapon
+	[115295] = true, -- Guard
+	[124458] = true, -- Healing Sphere
+	[124273] = true, -- Heavy Stagger
+	[124275] = true, -- Light Stagger
+	[115867] = true, -- Mana Tea
+	[124274] = true, -- Moderate Stagger
+	[119085] = true, -- Momentum
+	[118636] = true, -- Power Guard (Brewmaster Training)
+	[124968] = true, -- Retreat (Glyph of)
+	[127722] = true, -- Serpent's Zeal
+	[115307] = true, -- Shuffle (Brewmaster Training)
+	[116033] = true, -- Sparring
+	[116705] = true, -- Spear Hand Strike
+	[107270] = true, -- Spinning Crane Kick
+	[123407] = true, -- Spinning Fire Blossom
+	[124255] = true, -- Stagger
+	[116680] = true, -- Thunder Focus Tea
+	[116740] = true, -- Tigereye Brew
+	[125359] = true, -- Tiger Power
+	[120273] = true, -- Tiger Strikes
+	[125174] = true, -- Touch of Karma
+	[120267] = true, -- Vengeance
+	[118674] = true, -- Vital Mists
+	[125883] = true, -- Zen Flight
+	[131523] = true, -- Zen Meditation
+	[126896] = true, -- Zen Pilgrimage: Return
 
 }
 self_debuffs.MONK = {}
 pet_buffs.MONK = {}
 enemy_debuffs.MONK = {
-	[128531] = mop_500 or nil, -- Blackout Kick (Combat Conditioning)
-	[115181] = mop_500 or nil, -- Breath of Fire
-	[119392] = mop_500 or nil, -- Charging Ox Wax
-	[126451] = mop_500 or nil, -- Clash
-	[117952] = mop_500 or nil, -- Crackling Jade Lightning
-	[123996] = mop_500 or nil, -- Crackling Tiger Lighting (Invoke Xuen, the White Tiger)
-	[116095] = mop_500 or nil, -- Disable
-	[115180] = mop_500 or nil, -- Dizzying Haze (Keg Smash)
-	[117418] = mop_500 or nil, -- Fists of Fury
-	[123586] = mop_500 or nil, -- Flying Serpent Kick
-	[117368] = mop_500 or nil, -- Grapple Weapon
-	[119381] = mop_500 or nil, -- Leg Sweep
-	[118585] = mop_500 or nil, -- Leer of the Ox
-	[115804] = mop_500 or nil, -- Mortal Wounds (Rising Sun Kick)
-	[115078] = mop_500 or nil, -- Paralysis
-	[115546] = mop_500 or nil, -- Provoke
-	[130320] = mop_500 or nil, -- Rising Sun Kick
-	[116847] = mop_500 or nil, -- Rushing Jade Wind
-	[122470] = mop_500 or nil, -- Touch of Karma
-	[115798] = mop_500 or nil, -- Weakened Blows (Keg Smash)
+	[128531] = true, -- Blackout Kick (Combat Conditioning)
+	[115181] = true, -- Breath of Fire
+	[119392] = true, -- Charging Ox Wax
+	[126451] = true, -- Clash
+	[117952] = true, -- Crackling Jade Lightning
+	[123996] = true, -- Crackling Tiger Lighting (Invoke Xuen, the White Tiger)
+	[116095] = true, -- Disable
+	[115180] = true, -- Dizzying Haze (Keg Smash)
+	[117418] = true, -- Fists of Fury
+	[123586] = true, -- Flying Serpent Kick
+	[117368] = true, -- Grapple Weapon
+	[119381] = true, -- Leg Sweep
+	[118585] = true, -- Leer of the Ox
+	[115804] = true, -- Mortal Wounds (Rising Sun Kick)
+	[115078] = true, -- Paralysis
+	[115546] = true, -- Provoke
+	[130320] = true, -- Rising Sun Kick
+	[116847] = true, -- Rushing Jade Wind
+	[122470] = true, -- Touch of Karma
+	[115798] = true, -- Weakened Blows (Keg Smash)
 }
 
 -- Human
