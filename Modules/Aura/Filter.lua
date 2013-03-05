@@ -408,7 +408,7 @@ enemy_debuffs.HUNTER = {
 	[50519]  = true, -- Sonic Blast
 	[50274]  = true, -- Spore Cloud
 	[34490]  = true, -- Silencing Shot
-	[57386]  = true, -- Stampedetrue 
+	[57386]  = true, -- Stampede
 	[56626]  = true, -- Sting
 	[90314]  = true, -- Tailspin
 	[1515]   = true, -- Tame Beast
@@ -689,7 +689,7 @@ enemy_debuffs.ROGUE = {
 	[6770]   = true, -- Sap
 	[79140]  = true, -- Vendetta
 	[113746] = true, -- Weakened Armor (Expose Armor)
-	[8679]  = true, -- Wound Poison
+	[8679]   = true, -- Wound Poison
 }
 
 -- SHAMAN
