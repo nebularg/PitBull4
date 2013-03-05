@@ -111,7 +111,7 @@ end
 local function OnClick(self)
 	if not self.is_buff or not UnitIsUnit("player",self:GetUnit()) then return end
 	local slot = self.slot
-	if (InCombatLockdown() or slot) then return end
+	if InCombatLockdown() or slot then return end
 	if slot then
 		if slot == MAINHAND then
 			CancelItemTempEnchantment(1)
