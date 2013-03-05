@@ -12,6 +12,7 @@ do
 	local _,wow_build,_,wow_interface = GetBuildInfo()
 	wow_build = tonumber(wow_build)
 	mop_510 = wow_interface >= 50100
+	mop_520 = wow_interface >= 50200
 end
 
 local GetNumSpecializations = GetNumSpecializations
@@ -732,7 +733,7 @@ enemy_debuffs.SHAMAN = {
 
 -- WARLOCK
 friend_buffs.WARLOCK = {
-	[6307]   = true, -- Blood Pact
+	[6307]   = not mop_520 or nil, -- Blood Pact
 	[109773] = true, -- Dark Intent
 	[1098]   = true, -- Enslave Demon
 	[134]    = true, -- Fire Shield
@@ -834,13 +835,13 @@ friend_buffs.WARRIOR = {
 friend_debuffs.WARRIOR = {}
 self_buffs.WARRIOR = {
 	[18499]  = true, -- Berserker Rage
-	[85730]  = true, -- Deadly Calm
+	[85730]  = not mop_520 or nil, -- Deadly Calm
 	[118038] = true, -- Die by the Sword
 	[12880]  = true, -- Enrage
 	[55694]	 = true, -- Enraged Regeneration
 	[12968]  = true, -- Flurry
 	[115945] = true, -- Glyph of Hamstring
-	[115940] = true, -- Glyph of Overpower
+	[115940] = not mop_520 or nil, -- Glyph of Overpower
 	[12975]  = true, -- Last Stand
 	[85739]  = true, -- Meat Cleaver
 	[58281]  = true, -- Mighty Victory (Glyph of)
