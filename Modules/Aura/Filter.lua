@@ -7,6 +7,7 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 local mop_510
+local mop_520
 do
 	local _,wow_build,_,wow_interface = GetBuildInfo()
 	wow_build = tonumber(wow_build)
@@ -125,7 +126,6 @@ function PitBull4_Aura:PLAYER_TALENT_UPDATE(event)
 	can_dispel.DRUID.Poison = druid_magic
 	self:GetFilterDB(',3').aura_type_list.Curse = druid_magic
 	self:GetFilterDB(',3').aura_type_list.Poison = druid_magic
-	end
 
 	local paladin_magic = scan_for_known_talent(53551)
 	can_dispel.PALADIN.Magic = paladin_magic
