@@ -1,5 +1,6 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
+local mop_520 = select(4, GetBuildInfo()) >= 50200
 
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
@@ -1337,6 +1338,42 @@ function MemberUnitFrame:UnforceShow()
 end
 MemberUnitFrame.UnforceShow = PitBull4:OutOfCombatWrapper(MemberUnitFrame.UnforceShow)
 
+local initialConfigFunction = [[
+    local header = self:GetParent()
+    local unitsuffix = header:GetAttribute("unitsuffix")
+    if unitsuffix then
+      self:SetAttribute("unitsuffix",unitsuffix)
+    end
+    self:SetWidth(header:GetAttribute("unitWidth"))
+    self:SetHeight(header:GetAttribute("unitHeight"))
+    RegisterUnitWatch(self)
+    self:SetAttribute("*type1", "target")
+    self:SetAttribute("*type2", "togglemenu")
+    local click_through = header:GetAttribute("clickThrough")
+    if not click_through then
+      -- Verify important the CallMethod is done BEFORE the frame is
+      -- registered with Clique so that Clique can override our click
+      -- registrations.
+      header:CallMethod("InitialConfigFunction")
+      -- Support for Clique
+      local clickcast_header = header:GetFrameRef("clickcast_header")
+      if clickcast_header then
+        clickcast_header:SetAttribute("clickcast_button", self)
+        clickcast_header:RunAttribute("clickcast_register")
+      end
+    else
+      self:EnableMouse(false)
+      -- Very important that the CallMethod is done AFTER the mouse is
+      -- potentially disabled above becuase otherwise it will create a
+      -- stack overflow.
+      header:CallMethod("InitialConfigFunction")
+    end
+]]
+if not mop_520 then
+  initialConfigFunction = string.gsub(initialConfigFunction,
+                                      "togglemenu", "menu")
+end
+
 --- Add the proper functions and scripts to a SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate, as well as some initialization.
 -- @param frame a Frame which inherits from SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate
 -- @usage PitBull4:ConvertIntoGroupHeader(header)
@@ -1377,38 +1414,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		return header:InitialConfigFunction(...)
 	end
 
-	header:SetAttribute("initialConfigFunction",
-	[[
-    local header = self:GetParent()
-    local unitsuffix = header:GetAttribute("unitsuffix")
-    if unitsuffix then
-      self:SetAttribute("unitsuffix",unitsuffix)
-    end
-    self:SetWidth(header:GetAttribute("unitWidth"))
-    self:SetHeight(header:GetAttribute("unitHeight"))
-    RegisterUnitWatch(self)
-    self:SetAttribute("*type1", "target")
-    self:SetAttribute("*type2", "menu")
-    local click_through = header:GetAttribute("clickThrough")
-    if not click_through then
-      -- Verify important the CallMethod is done BEFORE the frame is
-      -- registered with Clique so that Clique can override our click
-      -- registrations.
-      header:CallMethod("InitialConfigFunction")
-      -- Support for Clique
-      local clickcast_header = header:GetFrameRef("clickcast_header")
-      if clickcast_header then
-        clickcast_header:SetAttribute("clickcast_button", self)
-        clickcast_header:RunAttribute("clickcast_register")
-      end
-    else
-      self:EnableMouse(false)
-      -- Very important that the CallMethod is done AFTER the mouse is
-      -- potentially disabled above becuase otherwise it will create a
-      -- stack overflow.
-      header:CallMethod("InitialConfigFunction")
-    end
-  ]])
+	header:SetAttribute("initialConfigFunction", initialConfigFunction)
 	
 	header:RefreshGroup(true)
 	
