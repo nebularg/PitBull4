@@ -5,12 +5,6 @@ if not PitBull4 then
 	error("PitBull4_RaidTargetIcon requires PitBull4")
 end
 
-local mop_500 = select(4,GetBuildInfo()) >= 50000
-local GROUP_UPDATE_EVENT = "GROUP_ROSTER_UPDATE"
-if not mop_500 then
-	GROUP_UPDATE_EVENT = "PARTY_MEMBERS_CHANGED"
-end
-
 local L = PitBull4.L
 
 local PitBull4_RaidTargetIcon = PitBull4:NewModule("RaidTargetIcon", "AceEvent-3.0", "AceTimer-3.0")
@@ -34,7 +28,7 @@ PitBull4_RaidTargetIcon:SetDefaults({
 
 function PitBull4_RaidTargetIcon:OnEnable()
 	self:RegisterEvent("RAID_TARGET_UPDATE")
-	self:RegisterEvent(GROUP_UPDATE_EVENT, "GROUP_ROSTER_UPDATE")
+	self:RegisterEvent("GROUP_ROSTER_UPDATE")
 end
 
 function PitBull4_RaidTargetIcon:GetTexture(frame)
