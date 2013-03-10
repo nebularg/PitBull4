@@ -6,15 +6,6 @@ if not PitBull4 then
 end
 
 local L = PitBull4.L
-
-local mop_500 = select(4,GetBuildInfo()) >= 50001
-local RAID_ROSTER_UPDATE = 'GROUP_ROSTER_UPDATE'
-local PARTY_MEMBERS_CHANGED = 'GROUP_ROSTER_UPDATE'
-if not mop_500 then
-	RAID_ROSTER_UPDATE = 'RAID_ROSTER_UPDATE'
-	PARTY_MEMBERS_CHANGED = 'PARTY_MEMBERS_CHANGED'
-end
-
 local PitBull4_HideBlizzard = PitBull4:NewModule("HideBlizzard")
 
 PitBull4_HideBlizzard:SetModuleType("custom")
@@ -112,7 +103,7 @@ function hiders:party()
 		frame.Show = function() end
 	end
 	
-	UIParent:UnregisterEvent(RAID_ROSTER_UPDATE)
+	UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
 end
 
 function showers:party()
@@ -120,17 +111,17 @@ function showers:party()
 		local frame = _G["PartyMemberFrame"..i]
 		frame.Show = nil
 		frame:GetScript("OnLoad")(frame)
-		frame:GetScript("OnEvent")(frame, PARTY_MEMBERS_CHANGED)
+		frame:GetScript("OnEvent")(frame, "GROUP_ROSTER_UPDATE")
 		
 		PartyMemberFrame_UpdateMember(frame)
 	end
 
-	UIParent:RegisterEvent(RAID_ROSTER_UPDATE)
+	UIParent:RegisterEvent("GROUP_ROSTER_UPDATE")
 end
 
 local compact_raid
 function hiders:raid()
-	CompactRaidFrameManager:UnregisterEvent(RAID_ROSTER_UPDATE)
+	CompactRaidFrameManager:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	CompactRaidFrameManager:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	CompactRaidFrameManager:Hide()
 	compact_raid = CompactRaidFrameManager_GetSetting("IsShown")
@@ -143,7 +134,7 @@ function hiders:raid()
 end
 
 function showers:raid()
-	CompactRaidFrameManager:RegisterEvent(RAID_ROSTER_UPDATE)	
+	CompactRaidFrameManager:RegisterEvent("GROUP_ROSTER_UPDATE")	
 	CompactRaidFrameManager:RegisterEvent("PLAYER_ENTERING_WORLD")
 	if GetDisplayedAllyFrames then
 		if GetDisplayedAllyFrames() == "raid" then
