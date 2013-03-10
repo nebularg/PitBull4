@@ -5,7 +5,7 @@ if not PitBull4 then
 	error("PitBull4_ShadowOrbs requires PitBull4")
 end
 
-if select(2, UnitClass("player")) ~= "PRIEST" or select(4, GetBuildInfo()) < 50000 then
+if select(2, UnitClass("player")) ~= "PRIEST" then
 	return
 end
 

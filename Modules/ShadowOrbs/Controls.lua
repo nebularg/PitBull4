@@ -1,6 +1,6 @@
 if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
-if select(2, UnitClass("player")) ~= "PRIEST" or select(4,GetBuildInfo()) < 50000 then
+if select(2, UnitClass("player")) ~= "PRIEST" then
 	return
 end
 
