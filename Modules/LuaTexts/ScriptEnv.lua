@@ -5,15 +5,6 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_LuaTexts = PitBull4:GetModule("LuaTexts")
 
-local mop_500 = select(4,GetBuildInfo()) >= 50000
-
-local UnitIsTappedByAllThreatList = UnitIsTappedByAllThreatList
-if not mop_500 then
-	UnitIsTappedByAllThreatList = function()
-		return false
-	end
-end
-
 -- The ScriptEnv table serves as the environment that the scripts run
 -- under LuaTexts run under.  The functions included in it are accessible
 -- to this scripts as though they were local functions to it.  Functions
@@ -400,7 +391,7 @@ end
 ScriptEnv.ClassColor = ClassColor
 
 local function Level(unit)
-	if mop_500 and (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
+	if UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit) then
 		return UnitBattlePetLevel(unit)
 	end
 	local level = UnitLevel(unit)
@@ -499,7 +490,7 @@ end
 ScriptEnv.ShortClass = ShortClass
 
 local function Creature(unit)
-	if (mop_500 and (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit))) then
+	if UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit) then
 		return _G["BATTLE_PET_NAME_"..UnitBattlePetType(unit)]..' '..TOOLTIP_BATTLE_PET
 	end
 	return UnitCreatureFamily(unit) or UnitCreatureType(unit) or UNKNOWN
