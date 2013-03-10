@@ -7,8 +7,6 @@ end
 
 local L = PitBull4.L
 
-local mop_500 = select(4,GetBuildInfo()) >= 50000
-
 local PitBull4_RangeFader = PitBull4:NewModule("RangeFader", "AceTimer-3.0")
 
 PitBull4_RangeFader:SetModuleType("fader")
@@ -51,17 +49,17 @@ do
 	elseif class == "DRUID" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(33786) -- Cyclone
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(5176) -- Wrath
-		friendly_spells[#friendly_spells+1] = mop_500 and GetSpellInfo(774) or GetSpellInfo(50464) -- Rejuvenation for MoP or Nourish
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(774) -- Rejuvenation for MoP or Nourish
 		res_spells[#res_spells+1] = GetSpellInfo(50769) -- Revive 
 		res_spells[#res_spells+1] = GetSpellInfo(20484) -- Rebirth 
 	elseif class == "PALADIN" then
-		enemy_spells[#enemy_spells+1] = mop_500 and GetSpellInfo(20271) or GetSpellInfo(62124) -- Judgement for MoP or Hand of Reckoning otherwise
-		friendly_spells[#friendly_spells+1] = mop_500 and GetSpellInfo(19750) or GetSpellInfo(635) -- Flash of Light for MoP or Holy Light otherwise
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(20271) -- Judgement for MoP or Hand of Reckoning otherwise
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(19750) -- Flash of Light for MoP or Holy Light otherwise
 		res_spells[#res_spells+1] = GetSpellInfo(7328) -- Redemption 
 	elseif class == "SHAMAN" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(8042) -- Earth Shock 
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(403) -- Lightning Bolt
-		friendly_spells[#friendly_spells+1] = mop_500 and GetSpellInfo(8004) or GetSpellInfo(331) -- Healing Surge for MoP or Healing Wave
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(8004) -- Healing Surge for MoP or Healing Wave
 		res_spells[#res_spells+1] = GetSpellInfo(2008) -- Ancestral Spirit 
 	elseif class == "WARLOCK" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(5782) -- Fear
@@ -71,7 +69,7 @@ do
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(5697) -- Unending Breath
 	elseif class == "MAGE" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(118) -- Polymorph
-		long_enemy_spells[#long_enemy_spells+1] = mop_500 and GetSpellInfo(44614) or GetSpellInfo(133) -- Frostfire Bolt for MoP or Fireball
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(44614) -- Frostfire Bolt for MoP or Fireball
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(475) -- Remove Curse
 	elseif class == "HUNTER" then
 		pet_spells[#pet_spells+1] = GetSpellInfo(136) -- Mend Pet
