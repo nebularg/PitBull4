@@ -11,12 +11,7 @@ end
 
 -- CONSTANTS ----------------------------------------------------------------
 
-local mop_500 = select(4,GetBuildInfo()) >= 50000
-
 local HOLY_POWER_FULL = HOLY_POWER_FULL
-if not mop_500 then
-	HOLY_POWER_FULL = MAX_HOLY_POWER
-end
 assert(HOLY_POWER_FULL)
 local SPELL_POWER_HOLY_POWER = assert(_G.SPELL_POWER_HOLY_POWER)
 
