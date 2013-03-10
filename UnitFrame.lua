@@ -117,196 +117,194 @@ PitBull4.MemberUnitFrame__scripts = MemberUnitFrame__scripts
 -- All the old non-sense to try to work around menus that don't work.
 -- It also injects menu items for ready and roll checks, but we can't
 -- do that with this technique anymore.
-if not mop_520 then
-	local BLACKLISTED_UNIT_MENU_OPTIONS = {
-		SET_FOCUS = "PB4_SET_FOCUS",
-		CLEAR_FOCUS = "PB4_CLEAR_FOCUS",
-		LOCK_FOCUS_FRAME = true,
-		UNLOCK_FOCUS_FRAME = true,
-	}
+local BLACKLISTED_UNIT_MENU_OPTIONS = {
+	SET_FOCUS = "PB4_SET_FOCUS",
+	CLEAR_FOCUS = "PB4_CLEAR_FOCUS",
+	LOCK_FOCUS_FRAME = true,
+	UNLOCK_FOCUS_FRAME = true,
+}
 
-	local INSERT_UNIT_MENU_OPTIONS = {
-		SELF = {"PB4_ROLE_CHECK","PB4_READY_CHECK"},
-	}
+local INSERT_UNIT_MENU_OPTIONS = {
+	SELF = {"PB4_ROLE_CHECK","PB4_READY_CHECK"},
+}
 
-	-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
 
-	UnitPopupButtons["PB4_SET_FOCUS"] = {
-		text = L["Type %s to Set Focus"]:format(SLASH_FOCUS1),
-		tooltipText = L["Blizzard currently does not provide a proper way to right-click focus with custom unit frames."],
-		dist = 0,
-	}
+UnitPopupButtons["PB4_SET_FOCUS"] = {
+	text = L["Type %s to Set Focus"]:format(SLASH_FOCUS1),
+	tooltipText = L["Blizzard currently does not provide a proper way to right-click focus with custom unit frames."],
+	dist = 0,
+}
 
-	UnitPopupButtons["PB4_CLEAR_FOCUS"] = {
-		text = L["Type %s to Clear Focus"]:format(SLASH_CLEARFOCUS1),
-		tooltipText = L["Blizzard currently does not provide a proper way to right-click focus with custom unit frames."],
-		dist = 0,
-	}
+UnitPopupButtons["PB4_CLEAR_FOCUS"] = {
+	text = L["Type %s to Clear Focus"]:format(SLASH_CLEARFOCUS1),
+	tooltipText = L["Blizzard currently does not provide a proper way to right-click focus with custom unit frames."],
+	dist = 0,
+}
 
-	UnitPopupButtons["PB4_ROLE_CHECK"] = {
-		text = ROLE_POLL, 
-		tooltipText = L["Initiate a role check, asking your group members to specify their roles."],
-		dist = 0,
-	}
+UnitPopupButtons["PB4_ROLE_CHECK"] = {
+	text = ROLE_POLL, 
+	tooltipText = L["Initiate a role check, asking your group members to specify their roles."],
+	dist = 0,
+}
 
-	UnitPopupButtons["PB4_READY_CHECK"] = {
-		text = READY_CHECK,
-		tooltipText = L["Initiate a ready check, asking your group members if they are ready to continue."],
-		dist = 0,
-	}
+UnitPopupButtons["PB4_READY_CHECK"] = {
+	text = READY_CHECK,
+	tooltipText = L["Initiate a ready check, asking your group members if they are ready to continue."],
+	dist = 0,
+}
 
-	hooksecurefunc("UnitPopup_OnClick",function(self)
-		local button = self.value
-		if button == "PB4_ROLE_CHECK" then
-			InitiateRolePoll()
-		elseif button == "PB4_READY_CHECK" then
-			DoReadyCheck()
-		end
-	end)
+hooksecurefunc("UnitPopup_OnClick",function(self)
+	local button = self.value
+	if button == "PB4_ROLE_CHECK" then
+		InitiateRolePoll()
+	elseif button == "PB4_READY_CHECK" then
+		DoReadyCheck()
+	end
+end)
 
-	hooksecurefunc("UnitPopup_HideButtons",function()
-		local dropdownMenu = UIDROPDOWNMENU_INIT_MENU
-		local inParty, inRaid, inBattleground, isLeader, isAssistant
-		if IsInGroup() then 
-			inParty = true 
-		end
-		if IsInRaid() then
-			inRaid = true 
-			inParty = true
-		end
-		if UnitInBattleground("player") then
-			inBattleground = true
-		end
-		if UnitIsGroupLeader("player") then
-			isLeader = true
-		end
-		if UnitIsGroupAssistant("player") then
-			isAssistant = true
-		end
-
-		for index, value in ipairs(UnitPopupMenus[UIDROPDOWNMENU_MENU_VALUE] or UnitPopupMenus[dropdownMenu.which]) do
-			if value == "PB4_ROLE_CHECK" then
-				if (not isLeader and not isAssistant) or inBattleground or (not inParty and not inRaid) then
-					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0
-				end
-			elseif value == "PB4_READY_CHECK" then
-				if (not isLeader and not isAssistant) or inBattleground or (not inParty and not inRaid) then
-					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0
-				end
-			end
-		end
-	end)
-
-	local PitBull4_UnitFrame_DropDown = CreateFrame("Frame", "PitBull4_UnitFrame_DropDown", UIParent, "UIDropDownMenuTemplate")
-	UnitPopupFrames[#UnitPopupFrames+1] = "PitBull4_UnitFrame_DropDown"
-
-	-- from a unit, figure out the proper menu and, if appropriate, the corresponding ID
-	local function figure_unit_menu(unit)
-		if unit == "focus" then
-			return "FOCUS"
-		end
-
-		if UnitIsUnit(unit, "player") then
-			return "SELF"
-		end
-
-		if UnitIsUnit(unit, "vehicle") then
-			-- NOTE: vehicle check must come before pet check for accuracy's sake because
-			-- a vehicle may also be considered your pet
-			return "VEHICLE"
-		end
-
-		if UnitIsUnit(unit, "pet") then
-			return "PET"
-		end
-
-		if not UnitIsPlayer(unit) then
-			return "TARGET"
-		end
-
-		local id = UnitInRaid(unit)
-		if id then
-			return "RAID_PLAYER", id
-		end
-
-		if UnitInParty(unit) then
-			return "PARTY"
-		end
-
-		return "PLAYER"
+hooksecurefunc("UnitPopup_HideButtons",function()
+	local dropdownMenu = UIDROPDOWNMENU_INIT_MENU
+	local inParty, inRaid, inBattleground, isLeader, isAssistant
+	if IsInGroup() then 
+		inParty = true 
+	end
+	if IsInRaid() then
+		inRaid = true 
+		inParty = true
+	end
+	if UnitInBattleground("player") then
+		inBattleground = true
+	end
+	if UnitIsGroupLeader("player") then
+		isLeader = true
+	end
+	if UnitIsGroupAssistant("player") then
+		isAssistant = true
 	end
 
-	local munged_unit_menus = {}
-	local function munge_unit_menu(menu)
-		local result = munged_unit_menus[menu]
-		if result then
-			return result
-		end
-
-		if not UnitPopupMenus then
-			munged_unit_menus[menu] = menu
-			return menu
-		end
-
-		local data = UnitPopupMenus[menu]
-		if not data then
-			munged_unit_menus[menu] = menu
-			return menu
-		end
-
-		local found = false
-		for _, v in ipairs(data) do
-			if BLACKLISTED_UNIT_MENU_OPTIONS[v] then
-				found = true
-				break
+	for index, value in ipairs(UnitPopupMenus[UIDROPDOWNMENU_MENU_VALUE] or UnitPopupMenus[dropdownMenu.which]) do
+		if value == "PB4_ROLE_CHECK" then
+			if (not isLeader and not isAssistant) or inBattleground or (not inParty and not inRaid) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0
+			end
+		elseif value == "PB4_READY_CHECK" then
+			if (not isLeader and not isAssistant) or inBattleground or (not inParty and not inRaid) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0
 			end
 		end
+	end
+end)
 
-		local insert = INSERT_UNIT_MENU_OPTIONS[menu]
+local PitBull4_UnitFrame_DropDown = CreateFrame("Frame", "PitBull4_UnitFrame_DropDown", UIParent, "UIDropDownMenuTemplate")
+UnitPopupFrames[#UnitPopupFrames+1] = "PitBull4_UnitFrame_DropDown"
 
-		if not found and not insert then
-			-- nothing to remove or add, we're all fine here.
-			munged_unit_menus[menu] = menu
-			return menu
+-- from a unit, figure out the proper menu and, if appropriate, the corresponding ID
+local function figure_unit_menu(unit)
+	if unit == "focus" then
+		return "FOCUS"
+	end
+
+	if UnitIsUnit(unit, "player") then
+		return "SELF"
+	end
+
+	if UnitIsUnit(unit, "vehicle") then
+		-- NOTE: vehicle check must come before pet check for accuracy's sake because
+		-- a vehicle may also be considered your pet
+		return "VEHICLE"
+	end
+
+	if UnitIsUnit(unit, "pet") then
+		return "PET"
+	end
+
+	if not UnitIsPlayer(unit) then
+		return "TARGET"
+	end
+
+	local id = UnitInRaid(unit)
+	if id then
+		return "RAID_PLAYER", id
+	end
+
+	if UnitInParty(unit) then
+		return "PARTY"
+	end
+
+	return "PLAYER"
+end
+
+local munged_unit_menus = {}
+local function munge_unit_menu(menu)
+	local result = munged_unit_menus[menu]
+	if result then
+		return result
+	end
+
+	if not UnitPopupMenus then
+		munged_unit_menus[menu] = menu
+		return menu
+	end
+
+	local data = UnitPopupMenus[menu]
+	if not data then
+		munged_unit_menus[menu] = menu
+		return menu
+	end
+
+	local found = false
+	for _, v in ipairs(data) do
+		if BLACKLISTED_UNIT_MENU_OPTIONS[v] then
+			found = true
+			break
 		end
+	end
 
-		local new_data = {}
-		for _, v in ipairs(data) do
-			local blacklisted = BLACKLISTED_UNIT_MENU_OPTIONS[v]
-			if not blacklisted then
-				if insert and v == "CANCEL" then
-					for _,extra in ipairs(insert) do
-						new_data[#new_data+1] = extra
-					end
+	local insert = INSERT_UNIT_MENU_OPTIONS[menu]
+
+	if not found and not insert then
+		-- nothing to remove or add, we're all fine here.
+		munged_unit_menus[menu] = menu
+		return menu
+	end
+
+	local new_data = {}
+	for _, v in ipairs(data) do
+		local blacklisted = BLACKLISTED_UNIT_MENU_OPTIONS[v]
+		if not blacklisted then
+			if insert and v == "CANCEL" then
+				for _,extra in ipairs(insert) do
+					new_data[#new_data+1] = extra
 				end
-				new_data[#new_data+1] = v
-			elseif blacklisted ~= true then
-				new_data[#new_data+1] = blacklisted
 			end
+			new_data[#new_data+1] = v
+		elseif blacklisted ~= true then
+			new_data[#new_data+1] = blacklisted
 		end
-		local new_menu_name = "PB4_" .. menu
+	end
+	local new_menu_name = "PB4_" .. menu
 
-		UnitPopupMenus[new_menu_name] = new_data
-		munged_unit_menus[menu] = new_menu_name
-		return new_menu_name
+	UnitPopupMenus[new_menu_name] = new_data
+	munged_unit_menus[menu] = new_menu_name
+	return new_menu_name
+end
+
+local dropdown_unit = nil
+UIDropDownMenu_Initialize(PitBull4_UnitFrame_DropDown, function()
+	if not dropdown_unit then
+		return
 	end
 
-	local dropdown_unit = nil
-	UIDropDownMenu_Initialize(PitBull4_UnitFrame_DropDown, function()
-		if not dropdown_unit then
-			return
-		end
-
-		local menu, id = figure_unit_menu(dropdown_unit)
-		if menu then
-			menu = munge_unit_menu(menu)
-			UnitPopup_ShowMenu(PitBull4_UnitFrame_DropDown, menu, dropdown_unit, nil, id)
-		end
-	end, "MENU", nil)
-	function UnitFrame:menu(unit)
-		dropdown_unit = unit
-		ToggleDropDownMenu(1, nil, PitBull4_UnitFrame_DropDown, "cursor")
+	local menu, id = figure_unit_menu(dropdown_unit)
+	if menu then
+		menu = munge_unit_menu(menu)
+		UnitPopup_ShowMenu(PitBull4_UnitFrame_DropDown, menu, dropdown_unit, nil, id)
 	end
+end, "MENU", nil)
+function UnitFrame:menu(unit)
+	dropdown_unit = unit
+	ToggleDropDownMenu(1, nil, PitBull4_UnitFrame_DropDown, "cursor")
 end
 
 function UnitFrame:ProxySetAttribute(key, value)
@@ -438,6 +436,16 @@ function UnitFrame__scripts:OnAttributeChanged(key, value)
 			PitBull4.unit_id_to_frames_with_wacky[new_unit][self] = true
 		end
 
+		-- Hackaround Clique forcing the frames to use togglemenu, which
+		-- is broken on raid frames.  Idea borrowed from ShadowedUF
+		if new_unit and new_unit:sub(1, 4) == "raid" then
+			self:WrapScript(self, "OnAttributeChanged", [[
+        if value == "togglemenu" and self:GetAttribute("clique-shiv") == "1" then
+          self:SetAttribute(name, "menu")
+        end
+      ]])
+		end
+
 		if not updated then
 			self:Update(false)
 		end
@@ -556,11 +564,11 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 		if frame:CanChangeAttribute() then
 			if frame.is_singleton then
 				frame:SetMovable(true)
+			  frame:SetAttribute("*type1", "target")
+			  frame:SetAttribute("*type2", mop_520 and "togglemenu" or "menu")
 			end
 			frame:RegisterForDrag("LeftButton")
 			frame:RegisterForClicks("AnyUp")
-			frame:SetAttribute("*type1", "target")
-			frame:SetAttribute("*type2", mop_520 and "togglemenu" or "menu")
 		elseif not ClickCastHeader then
 			-- if we can't set attributes directly and Clique isn't running
 			-- then RegisterForClicks upon leaving combat.  Works around

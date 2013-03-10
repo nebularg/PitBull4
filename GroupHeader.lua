@@ -1360,6 +1360,15 @@ local initialConfigFunction = [[
       if clickcast_header then
         clickcast_header:SetAttribute("clickcast_button", self)
         clickcast_header:RunAttribute("clickcast_register")
+        -- Borrowed this idea from ShadowedUF to keep Clique working on
+        -- RAID frames since togglemenu is broken with raid menus.
+        -- this works because we gsub togglemenu -> menu.
+        if "togglemenu" == "menu" then
+          self:SetAttribute("clique-shiv", "1")
+          if self:GetAttribute("type2") == "toggle" .. "menu" then
+            self:SetAttribute("type2", "menu")
+          end
+        end
       end
     else
       self:EnableMouse(false)
@@ -1370,8 +1379,7 @@ local initialConfigFunction = [[
     end
 ]]
 if not mop_520 then
-  initialConfigFunction = string.gsub(initialConfigFunction,
-                                      "togglemenu", "menu")
+  initialConfigFunction = initialConfigFunction:gsub("togglemenu", "menu")
 end
 
 --- Add the proper functions and scripts to a SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate, as well as some initialization.
@@ -1414,7 +1422,11 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		return header:InitialConfigFunction(...)
 	end
 
-	header:SetAttribute("initialConfigFunction", initialConfigFunction)
+	if header.group_db.unit_group:sub(1, 4) == "raid" then
+	  header:SetAttribute("initialConfigFunction", initialConfigFunction:gsub("togglemenu", "menu"))
+	else
+		header:SetAttribute("initialConfigFunction", initialConfigFunction)
+	end
 	
 	header:RefreshGroup(true)
 	
