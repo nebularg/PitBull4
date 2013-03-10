@@ -7,14 +7,6 @@ end
 
 local EXAMPLE_VALUE = 0.8
 
-local mop_500 = select(4,GetBuildInfo()) >= 50000
-local UnitIsTappedByAllThreatList = UnitIsTappedByAllThreatList
-if not mop_500 then
-	UnitIsTappedByAllThreatList = function()
-		return false
-	end
-end
-
 local unpack = _G.unpack
 local L = PitBull4.L
 
