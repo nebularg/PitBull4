@@ -5,12 +5,6 @@ if player_class ~= "SHAMAN" and player_class ~= "DRUID" and player_class ~= "DEA
 	return
 end
 
-local mop_500 = select(4,GetBuildInfo()) >= 50000
-local GetSpecialization = GetSpecialization
-if not mop_500 then
-	GetSpecialization = GetPrimaryTalentTree
-end
-
 local _G = _G
 local PitBull4 = _G.PitBull4
 if not PitBull4 then
@@ -27,10 +21,8 @@ local REQUIRED_LEVEL
 if player_class == 'DRUID' then
 	MAX_TOTEMS = 3
 	REQUIRED_LEVEL = 84
-	if mop_500 then
-		REQUIRED_SPEC_1 = 1
-		REQUIRED_SPEC_2 = 4
-	end
+	REQUIRED_SPEC_1 = 1
+	REQUIRED_SPEC_2 = 4
 elseif player_class == 'DEATHKNIGHT' then
 	MAX_TOTEMS = 1
 	REQUIRED_SPEC_1 = 1 
