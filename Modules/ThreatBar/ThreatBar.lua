@@ -5,17 +5,6 @@ if not PitBull4 then
 	error("PitBull4_ThreatBar requires PitBull4")
 end
 
-local mop_500 = select(4,GetBuildInfo()) >= 50000
-
-local GROUP_UPDATE_EVENT = 'GROUP_ROSTER_UPDATE'
-local IsInGroup = IsInGroup
-if not mop_500 then
-	GROUP_UPDATE_EVENT = 'PARTY_MEMBERS_CHANGED'
-	IsInGroup = function()
-		return GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0
-	end
-end
-
 local EXAMPLE_VALUE = 0.5
 
 local L = PitBull4.L
@@ -34,10 +23,7 @@ function PitBull4_ThreatBar:OnEnable()
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterEvent("UNIT_THREAT_LIST_UPDATE")
 	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE")
-	self:RegisterEvent(GROUP_UPDATE_EVENT, "GROUP_ROSTER_UPDATE")
-	if not mop_500 then
-		self:RegisterEvent("RAID_ROSTER_UPDATE", "GROUP_ROSTER_UPDATE")
-	end
+	self:RegisterEvent("GROUP_ROSTER_UPDATE")
 	self:RegisterEvent("PLAYER_PET_CHANGED", "GROUP_ROSTER_UPDATE")
 	
 	self:GROUP_ROSTER_UPDATE()
