@@ -9,12 +9,6 @@ if select(2, UnitClass("player")) ~= "DRUID" or not PowerBarColor["ECLIPSE"] the
   return
 end
 
-local mop_500 = select(4,GetBuildInfo()) >= 50000
-local GetSpecialization = GetSpecialization
-if not mop_500 then
-	GetSpecialization = GetPrimaryTalentTree
-end
-
 -- CONSTANTS ----------------------------------------------------------------
 
 -----------------------------------------------------------------------------
