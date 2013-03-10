@@ -5,24 +5,6 @@ if not PitBull4 then
 	error("PitBull4_MasterLooterIcon requires PitBull4")
 end
 
-local mop_500 = select(4,GetBuildInfo()) >= 50000
-local IsInRaid = IsInRaid
-local GetNumGroupMembers = GetNumGroupMembers
-local GROUP_UPDATE_EVENT = 'GROUP_ROSTER_UPDATE'
-if not mop_500 then
-	IsInRaid = function()
-		return GetNumRaidMembers() > 0
-	end
-	GetNumGroupMembers = function()
-		local raid_size = GetNumRaidMembers()
-		if raid_size > 0 then
-			return raid_size
-		end
-		return GetNumPartyMembers()
-	end
-	GROUP_UPDATE_EVENT = 'PARTY_MEMBERS_CHANGED'
-end
-
 local L = PitBull4.L
 
 local PitBull4_MasterLooterIcon = PitBull4:NewModule("MasterLooterIcon", "AceEvent-3.0", "AceTimer-3.0")
@@ -40,7 +22,7 @@ local master_looter_guid = nil
 
 function PitBull4_MasterLooterIcon:OnEnable()
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED")
-	self:RegisterEvent(GROUP_UPDATE_EVENT, "PARTY_LOOT_METHOD_CHANGED")
+	self:RegisterEvent("GROUP_ROSTER_UPDATE", "PARTY_LOOT_METHOD_CHANGED")
 end
 
 function PitBull4_MasterLooterIcon:GetTexture(frame)
