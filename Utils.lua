@@ -8,11 +8,6 @@ local expect = PitBull4.expect
 
 PitBull4.Utils = {}
 
--- 12484 is the version that China got the new format, so doing it this way works
--- for both China and 4.0.x
-
-local new_guid_format = tonumber((select(2,GetBuildInfo()))) >= 12484
-
 do
 	local target_same_mt = { __index=function(self, key)
 		if type(key) ~= "string" then
@@ -249,11 +244,7 @@ function PitBull4.Utils.GetMobIDFromGuid(guid)
         return nil
     end
    
-		if new_guid_format then
-			return tonumber(guid:sub(-12, -9), 16)
-		else
-	    return tonumber(guid:sub(-10, -7), 16)
-		end
+		return tonumber(guid:sub(-12, -9), 16)
 end
 
 --- Return the unit classification of the given unit.
