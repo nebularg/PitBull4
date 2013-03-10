@@ -6,14 +6,7 @@ local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
-local mop_510
-local mop_520
-do
-	local _,wow_build,_,wow_interface = GetBuildInfo()
-	wow_build = tonumber(wow_build)
-	mop_510 = wow_interface >= 50100
-	mop_520 = wow_interface >= 50200
-end
+local mop_520 = select(4, GetBuildInfo()) >= 50200
 
 local GetNumSpecializations = GetNumSpecializations
 
@@ -242,7 +235,7 @@ self_buffs.DRUID = {
 	[61336]  = true, -- Survival Instincts
 	[40120]  = true, -- Swift Flight Form
 	[5217]   = true, -- Tiger's Fury
-	[135286] = mop_510 or nil, -- Tooth and Claw
+	[135286] = true, -- Tooth and Claw
 	[5225]   = true, -- Track Humanoids
 	[783]    = true, -- Travel Form
 }
