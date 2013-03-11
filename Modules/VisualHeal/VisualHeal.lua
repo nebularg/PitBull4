@@ -14,16 +14,19 @@ local EPSILON = 1e-5
 local L = PitBull4.L
 
 local PitBull4_VisualHeal = PitBull4:NewModule("VisualHeal", "AceEvent-3.0")
+local mop_520 = select(4, GetBuildInfo()) >= 50200
 
 PitBull4_VisualHeal:SetModuleType("custom")
 PitBull4_VisualHeal:SetName(L["Visual heal"])
 PitBull4_VisualHeal:SetDescription(L["Visualises healing done by you and your group members before it happens."])
 PitBull4_VisualHeal:SetDefaults({
 	show_overheal = true,
+	show_overabsorb = true,
 	}, {
 	incoming_color = { 0.4, 0.6, 0.4, 0.75 },
 	outgoing_color = { 0, 1, 0, 1 },
 	outgoing_color_overheal = { 1, 0, 0, 0.65 },
+	absorb_color = { .4, .258, .619, 1},
 	auto_luminance = true,
 })
 
@@ -31,6 +34,9 @@ function PitBull4_VisualHeal:OnEnable()
 	self:RegisterEvent("UNIT_HEAL_PREDICTION")
 	self:RegisterEvent("UNIT_HEALTH","UNIT_HEAL_PREDICTION")
 	self:RegisterEvent("UNIT_MAXHEALTH", "UNIT_HEAL_PREDICTION")
+	if mop_520 then
+		self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED",  "UNIT_HEAL_PREDICTION")
+	end
 end
 
 local function clamp(value, min, max)
@@ -60,10 +66,17 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 
 	local player_healing = UnitGetIncomingHeals(unit, 'player')
 	local all_healing = UnitGetIncomingHeals(unit)
+	local all_absorbs
+	if mop_520 then
+		all_absorbs = UnitGetTotalAbsorbs(unit)
+	end
 	-- Bail out early if nothing going on for this unit
-	if not player_healing or not all_healing then
+	if not player_healing and not all_healing and not all_absorbs then
 		return self:ClearFrame(frame)
 	end
+	player_healing = player_healing or 0
+	all_healing = all_healing or 0
+	all_absorbs = all_absorbs or 0
 	local others_healing = all_healing - player_healing
 
 
@@ -71,13 +84,15 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 	local current_percent = 0
 	local others_percent = 0
 	local player_percent = 0
+	local absorb_percent = 0
 	if unit_health_max ~= 0 then
 		current_percent = UnitHealth(unit) / unit_health_max
-		others_percent = others_healing and others_healing / unit_health_max or 0
-		player_percent = player_healing and player_healing / unit_health_max or 0
+		others_percent = others_healing and others_healing / unit_health_max 
+		player_percent = player_healing and player_healing / unit_health_max
+		absorb_percent = all_absorbs and all_absorbs / unit_health_max 
 	end
 
-	if others_percent <= 0 and player_percent <= 0 then
+	if others_percent <= 0 and player_percent <= 0 and absorb_percent <= 0 then
 		return self:ClearFrame(frame)
 	end
 	
@@ -89,6 +104,7 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 	end
 
 	local show_overheal = self:GetLayoutDB(frame).show_overheal
+	local show_overabsorb = self:GetLayoutDB(frame).show_overabsorb
 
 	-- If the user has selected to not show overheal we make sure to not set a value that goes beyond 100%.
 	if not show_overheal and ((others_percent+current_percent) > 1) then
@@ -102,6 +118,12 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 	end
 
 	bar:SetExtraValue(player_percent)
+
+	if not show_overabsorb and ((player_percent+others_percent+current_percent+absorb_percent) > 1) then
+		absorb_percent = 1 - (player_percent+others_percent+current_percent)
+	end
+	bar:SetExtra2Value(absorb_percent)
+
 	bar:SetTexture(health_bar:GetTexture())
 	
 	local deficit = health_bar.deficit
@@ -170,6 +192,12 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 		bar:SetExtraColor(r, g, b)
 		bar:SetExtraAlpha(a)
 	end
+
+	if absorb_percent > 0 then
+		local r, g, b, a = unpack(db.absorb_color)
+		bar:SetExtra2Color(r, g, b)
+		bar:SetExtra2Alpha(a)
+	end
 	
 	return true
 end
@@ -225,6 +253,16 @@ PitBull4_VisualHeal:SetColorOptionsFunction(function(self)
 		hasAlpha = true,
 		width = 'double',
 	},
+	'absorb_color', {
+		type = 'color',
+		name = L['Absorb color'],
+		desc = L['The color of the bar that shows absorption shields.'],
+		get = get,
+		set = set,
+		hasAlpha = true,
+		width = 'double',
+		hidden = not mop_520,
+	},
 	'auto_luminance', {
 		type = 'toggle',
 		name = L["Auto-luminance"],
@@ -242,6 +280,7 @@ PitBull4_VisualHeal:SetColorOptionsFunction(function(self)
 		self.db.profile.global.incoming_color = { 0.4, 0.6, 0.4, 0.75 }
 		self.db.profile.global.outgoing_color = { 0, 1, 0, 1 }
 		self.db.profile.global.outgoing_color_overheal = { 1, 0, 0, 0.65 }
+		self.db.profile.global.absorbe_color = { .4, .258, .619, 1}
 		self.db.profile.global.auto_luminance = true
 	end
 end)
@@ -262,5 +301,18 @@ PitBull4_VisualHeal:SetLayoutOptionsFunction(function(self)
 			PitBull4.Options.GetLayoutDB(self).show_overheal = value
 		end,
 		disabled = disabled,
+	}, 'show_overabsorb', {
+		type = 'toggle',
+		name = L['Show overabsorb'],
+		desc = L['Show absorb past the end of the health bar.'],
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).show_overabsorb
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).show_overabsorb = value
+		end,
+		hidden = not mop_520,
+		disabled = disabled,
 	}
+
 end)
