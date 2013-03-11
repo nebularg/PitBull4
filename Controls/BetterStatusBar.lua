@@ -5,6 +5,7 @@ local expect = PitBull4.expect
 local BetterStatusBar = {
 	value = 1,
 	extraValue = 0,
+	extra2Value = 0,
 	orientation = "HORIZONTAL",
 	reverse = false,
 	deficit = false,
@@ -19,6 +20,10 @@ local BetterStatusBar = {
 	extraG = false,
 	extraB = false,
 	extraA = false,
+	extra2R = false,
+	extra2G = false,
+	extra2B = false,
+	extra2A = false,
 	icon_path = nil,
 	icon_position = true,
 }
@@ -68,9 +73,10 @@ local function set_vertical_coord(bar, reverse, alpha, bravo)
 	end
 	
 	bar:SetTexCoord(bravo, 0, alpha, 0, bravo, 1, alpha, 1)
+	return bravo
 end
 -- set the proper heights for the vertical orientation based on the values provided
-function SetValue_orientation:VERTICAL(value, extraValue, run_animation)
+function SetValue_orientation:VERTICAL(value, extraValue, extra2Value, run_animation)
 	local height = self:GetHeight()
 	if height == 0 then
 		self:SetScript("OnUpdate", OnUpdate)
@@ -81,29 +87,31 @@ function SetValue_orientation:VERTICAL(value, extraValue, run_animation)
 	end
 	self.fg:SetHeight(height * value)
 	self.extra:SetHeight(height * extraValue)
+	self.extra2:SetHeight(height * extra2Value)
 	
 	set_vertical_coord(self.fg, self.reverse, 0, value)
 
 	if run_animation then
 		local anim = self.anim
 		if anim.value_delta > 0 then
+			local end_value
 			if self.animated then
 				anim:SetHeight(EPSILON)
-				local end_value = anim.start_value + EPSILON
-				set_vertical_coord(anim, self.reverse, anim.start_value, end_value)
-				set_vertical_coord(self.extra, self.reverse, end_value, end_value+extraValue)
-				set_vertical_coord(self.bg, self.reverse, end_value+extraValue, 1)
+				end_value = anim.start_value + EPSILON
 			else
 				anim:SetHeight(height * anim.value_delta)
-				set_vertical_coord(anim, self.reverse, anim.start_value, anim.dest_value)
-				set_vertical_coord(self.extra, self.reverse, anim.dest_value, anim.dest_value+extraValue)
-				set_vertical_coord(self.bg, self.reverse, anim.dest_value+extraValue, 1)
+ 				end_value = anim.dest_value
 			end
+			local start = set_vertical_coord(anim, self.reverse, anim.start_value, end_value)
+			start = set_vertical_coord(self.extra, self.reverse, start, start+extraValue)
+			start = set_vertical_coord(self.extra2, self.reverse, start, start+extra2Value)
+			set_vertical_coord(self.bg, self.reverse, start, 1)
 		else
 			anim:SetHeight(height * -anim.value_delta)
-			set_vertical_coord(anim, self.reverse, anim.dest_value, anim.start_value)
-			set_vertical_coord(self.extra, self.reverse, anim.start_value, anim.start_value+extraValue)
-			set_vertical_coord(self.bg, self.reverse, anim.start_value+extraValue, 1)
+			local start = set_vertical_coord(anim, self.reverse, anim.dest_value, anim.start_value)
+			start = set_vertical_coord(self.extra, self.reverse, start, start+extraValue)
+			start = set_vertical_coord(self.extra2, self.reverse, start, start+extra2Value)
+			set_vertical_coord(self.bg, self.reverse, start, 1)
 		end
 		anim.ag:Play()
 	else
@@ -116,8 +124,9 @@ function SetValue_orientation:VERTICAL(value, extraValue, run_animation)
 			anim_value = EPSILON
 			set_vertical_coord(self.anim, self.reverse, value, value+anim_value)
 		end
-		set_vertical_coord(self.extra, self.reverse, value+anim_value, value+anim_value+extraValue)
-		set_vertical_coord(self.bg, self.reverse, value+anim_value+extraValue, 1)
+		local start = set_vertical_coord(self.extra, self.reverse, value+anim_value, value+anim_value+extraValue)
+		start = set_vertical_coord(self.extra2, self.reverse, start, start+extra2Value)
+		start = set_vertical_coord(self.bg, self.reverse, start, 1)
 	end
 end
 -- helper function for setting texcoords on the horizontal orientation
@@ -127,9 +136,10 @@ local function set_horizontal_coord(bar, reverse, alpha, bravo)
 	end
 	
 	bar:SetTexCoord(alpha, 0, alpha, 1, bravo, 0, bravo, 1)
+	return bravo
 end
 -- set the proper heights for the horizontal orientation based on the values provided
-function SetValue_orientation:HORIZONTAL(value, extraValue, run_animation)
+function SetValue_orientation:HORIZONTAL(value, extraValue, extra2Value, run_animation)
 	local width = self:GetWidth()
 	if width == 0 then
 		self:SetScript("OnUpdate", OnUpdate)
@@ -140,29 +150,30 @@ function SetValue_orientation:HORIZONTAL(value, extraValue, run_animation)
 	end
 	self.fg:SetWidth(width * value)
 	self.extra:SetWidth(width * extraValue)
+	self.extra2:SetWidth(width * extra2Value)
 	
 	set_horizontal_coord(self.fg, self.reverse, 0, value)
 
 	if run_animation then
 		local anim = self.anim
 		if anim.value_delta > 0 then
+			local end_value
 			if self.animated then
 				anim:SetWidth(EPSILON)
-				local end_value = anim.start_value + EPSILON
-				set_horizontal_coord(anim, self.reverse, anim.start_value, end_value)
-				set_horizontal_coord(self.extra, self.reverse, end_value, end_value+extraValue)
-				set_horizontal_coord(self.bg, self.reverse, end_value+extraValue, 1)
+				end_value = anim.start_value + EPSILON
 			else
 				anim:SetWidth(width * anim.value_delta)
-				set_horizontal_coord(anim, self.reverse, anim.start_value, anim.dest_value)
-				set_horizontal_coord(self.extra, self.reverse, anim.dest_value, anim.dest_value+extraValue)
-				set_horizontal_coord(self.bg, self.reverse, anim.dest_value+extraValue, 1)
+ 				end_value = anim.dest_value
 			end
+			local start = set_horizontal_coord(anim, self.reverse, anim.start_value, end_value)
+			start = set_horizontal_coord(self.extra, self.reverse, start, start+extraValue)
+			start = set_horizontal_coord(self.extra2, self.reverse, start, start+extra2Value)
+			set_horizontal_coord(self.bg, self.reverse, start, 1)
 		else
 			anim:SetWidth(width * -anim.value_delta)
-			set_horizontal_coord(anim, self.reverse, anim.dest_value, anim.start_value)
-			set_horizontal_coord(self.extra, self.reverse, anim.start_value, anim.start_value+extraValue)
-			set_horizontal_coord(self.bg, self.reverse, anim.start_value+extraValue, 1)
+			local start = set_horizontal_coord(anim, self.reverse, anim.dest_value, anim.start_value)
+			start = set_horizontal_coord(self.extra, self.reverse, start, start+extraValue)
+			set_horizontal_coord(self.bg, self.reverse, start, 1)
 		end
 		anim.ag:Play()
 	else
@@ -175,8 +186,9 @@ function SetValue_orientation:HORIZONTAL(value, extraValue, run_animation)
 			anim_value = EPSILON
 			set_horizontal_coord(self.anim, self.reverse, value, value+anim_value)
 		end
-		set_horizontal_coord(self.extra, self.reverse, value+anim_value, value+anim_value+extraValue)
-		set_horizontal_coord(self.bg, self.reverse, value+anim_value+extraValue, 1)
+		local start = set_horizontal_coord(self.extra, self.reverse, value+anim_value, value+anim_value+extraValue)
+		local start = set_horizontal_coord(self.extra2, self.reverse, start, start+extra2Value)
+		set_horizontal_coord(self.bg, self.reverse, start, 1)
 	end
 end
 
@@ -259,7 +271,9 @@ function BetterStatusBar:SetValue(value)
 
 	local maxExtraValue = clamp(1 - value, EPSILON, 1)
 	local extraValue = clamp(self.extraValue, EPSILON, maxExtraValue)
-	SetValue_orientation[self.orientation](self, value, extraValue, run_animation)
+	local maxExtra2Value = clamp(1 - value - extraValue, EPSILON, 1)
+	local extra2Value = clamp(self.extra2Value, EPSILON, maxExtra2Value)
+	SetValue_orientation[self.orientation](self, value, extraValue, extra2Value, run_animation)
 end
 --- Return the current value
 -- @return the value between [0, 1]
@@ -287,6 +301,27 @@ end
 -- @usage assert(bar:GetExtraValue() == 0.25)
 function BetterStatusBar:GetExtraValue()
 	return self.extraValue
+end
+
+--- Set the extra value of a status bar
+-- This is useful if you have a base value and an auxillary value,
+-- such as experience and rested experience.
+-- @param extraValue
+-- @usage bar:SetExtraValue(0.25)
+function BetterStatusBar:SetExtra2Value(extra2Value)
+	if DEBUG then
+		expect(extra2Value, 'typeof', 'number')
+	end
+	
+	extra2Value = clamp(extra2Value, 0, 1)
+	self.extra2Value = extra2Value
+	self:SetValue(self.value)
+end
+--- Return the extra value
+-- @return the extra value
+-- @usage assert(bar:GetExtraValue() == 0.25)
+function BetterStatusBar:GetExtra2Value2()
+	return self.extra2Value
 end
 
 -- set the position of the bar
@@ -320,6 +355,11 @@ local function set_bar_points(self, side_point_a, side_point_b, moving_point_a, 
 	else
 		self.extra:SetPoint(moving_point_a, self.fg, moving_point_b)
 	end
+
+	-- extra2 moves with and is attached to extra.
+	self.extra2:SetPoint(side_point_a)
+	self.extra2:SetPoint(side_point_b)
+	self.extra2:SetPoint(moving_point_a, self.extra, moving_point_b)
 	
 	if self.icon and not self.icon_position then
 		-- bg attaches to the icon
@@ -333,7 +373,7 @@ local function set_bar_points(self, side_point_a, side_point_b, moving_point_a, 
 		-- bg merely fills up the rest of the space
 		self.bg:SetPoint(moving_point_b)
 	end	
-	self.bg:SetPoint(moving_point_a, self.extra, moving_point_b)
+	self.bg:SetPoint(moving_point_a, self.extra2, moving_point_b)
 	self.bg:SetPoint(side_point_a)
 	self.bg:SetPoint(side_point_b)
 
@@ -350,6 +390,7 @@ local fix_orientation_helper = {}
 function fix_orientation_helper:VERTICAL()
 	self.fg:SetHeight(EPSILON)
 	self.extra:SetHeight(EPSILON)
+	self.extra2:SetHeight(EPSILON)
 	if self.anim then
 		self.anim:SetHeight(EPSILON)
 	end
@@ -360,6 +401,7 @@ end
 function fix_orientation_helper:HORIZONTAL()
 	self.fg:SetWidth(EPSILON)
 	self.extra:SetWidth(EPSILON)
+	self.extra2:SetWidth(EPSILON)
 	if self.anim then
 		self.anim:SetWidth(EPSILON)
 	end
@@ -371,11 +413,14 @@ end
 local function fix_orientation(self)
 	self.fg:ClearAllPoints()
 	self.extra:ClearAllPoints()
+	self.extra2:ClearAllPoints()
 	self.bg:ClearAllPoints()
 	self.fg:SetWidth(0)
 	self.fg:SetHeight(0)
 	self.extra:SetWidth(0)
 	self.extra:SetHeight(0)
+	self.extra2:SetWidth(0)
+	self.extra2:SetHeight(0)
 	if self.icon then
 		self.icon:ClearAllPoints()
 		fix_icon_size(self)
@@ -475,6 +520,8 @@ local function smoother_OnUpdate(self)
 	end
 	local maxExtraValue = clamp(1 - anim.dest_value, EPSILON, 1)
 	local extraValue = clamp(bar.extraValue, EPSILON, maxExtraValue)
+	local maxExtra2Value = clamp(1 - anim.dest_value - extraValue, EPSILON, 1)
+	local extra2Value = clamp(bar.extra2Value, EPSILON, maxExtra2Value)
 	local current_value = fg_position + current_delta
 	if bar.orientation == "HORIZONTAL" then
 		local width = bar:GetWidth()
@@ -482,18 +529,20 @@ local function smoother_OnUpdate(self)
 			width = width - bar:GetHeight()
 		end
 		anim:SetWidth(width * current_delta)
-		set_horizontal_coord(anim, bar.reverse, fg_position, current_value)
-		set_horizontal_coord(bar.extra, bar.reverse, current_value, current_value+extraValue)
-		set_horizontal_coord(bar.bg, bar.reverse, current_value+extraValue, 1)
+		local start = set_horizontal_coord(anim, bar.reverse, fg_position, current_value)
+		start = set_horizontal_coord(bar.extra, bar.reverse, start, start+extraValue)
+		start = set_horizontal_coord(bar.extra2, bar.reverse, start, current_value+extra2Value)
+		set_horizontal_coord(bar.bg, bar.reverse, start, 1)
 	else
 		local height = bar:GetHeight()
 		if bar.icon then
 			height = height - bar:GetWidth()
 		end
 		anim:SetHeight(height * current_delta)
-		set_vertical_coord(anim, bar.reverse, fg_position, current_value)
-		set_vertical_coord(bar.extra, bar.reverse, current_value, current_value+extraValue)
-		set_vertical_coord(bar.bg, bar.reverse, current_value+extraValue, 1)
+		local start = set_vertical_coord(anim, bar.reverse, fg_position, current_value)
+		start = set_vertical_coord(bar.extra, bar.reverse, start, start+extraValue)
+		start = set_vertical_coord(bar.extra2, bar.reverse, start, start+extra2Value)
+		set_vertical_coord(bar.bg, bar.reverse, start, 1)
 	end
 	anim.current_value = current_value 
 end
@@ -503,6 +552,8 @@ local function ag_OnFinished(self)
 	local bar = anim:GetParent()
 	local maxExtraValue = clamp(1 - anim.dest_value, EPSILON, 1)
 	local extraValue = clamp(bar.extraValue, EPSILON, maxExtraValue)
+	local maxExtra2Value = clamp(1 - anim.dest_value - extraValue, EPSILON, 1)
+	local extra2Value = clamp(bar.extra2Value, EPSILON, maxExtra2Value)
 	if anim.value_delta > 0 then
 		if bar.orientation == "HORIZONTAL" then
 			local width = bar:GetWidth()
@@ -512,9 +563,10 @@ local function ag_OnFinished(self)
 			local dest_value = anim.dest_value
 			bar.fg:SetWidth(width * dest_value)
 			anim:SetWidth(EPSILON)
-			set_horizontal_coord(bar.fg, bar.reverse, 0, dest_value)
-			set_horizontal_coord(bar.extra, bar.reverse, dest_value, dest_value+extraValue)
-			set_horizontal_coord(bar.bg, bar.reverse, dest_value+extraValue, 1)
+			local start = set_horizontal_coord(bar.fg, bar.reverse, 0, dest_value)
+			start = set_horizontal_coord(bar.extra, bar.reverse, start, start+extraValue)
+			start = set_horizontal_coord(bar.extra2, bar.reverse, start, start+extra2Value)
+			set_horizontal_coord(bar.bg, bar.reverse, start, 1)
 		else
 			local height = bar:GetHeight()
 			if bar.icon then
@@ -524,19 +576,22 @@ local function ag_OnFinished(self)
 			local finished_height = height * dest_value
 			bar.fg:SetHeight(height * dest_value)
 			anim:SetHeight(height * EPSILON)
-			set_vertical_coord(bar.fg, bar.reverse, 0, dest_value)
-			set_vertical_coord(bar.extra, bar.reverse, dest_value, dest_value+extraValue)
-			set_vertical_coord(bar.bg, bar.reverse, dest_value+extraValue, 1)
+			local start = set_vertical_coord(bar.fg, bar.reverse, 0, dest_value)
+			start = set_vertical_coord(bar.extra, bar.reverse, start, start+extraValue)
+			start = set_vertical_coord(bar.extra2, bar.reverse, start, start+extra2Value)
+			set_vertical_coord(bar.bg, bar.reverse, start, 1)
 		end
 	else
 		if bar.orientation == "HORIZONTAL" then
 			anim:SetWidth(EPSILON)
-			set_horizontal_coord(bar.extra, bar.reverse, anim.dest_value, anim.dest_value+extraValue)
-			set_horizontal_coord(bar.bg, bar.reverse, anim.dest_value+extraValue, 1)
+			local start = set_horizontal_coord(bar.extra, bar.reverse, anim.dest_value, anim.dest_value+extraValue)
+			start = set_horizontal_coord(bar.extra2, bar.reverse, start, start+extra2Value)
+			set_horizontal_coord(bar.bg, bar.reverse, start, 1)
 		else
 			anim:SetHeight(EPSILON)
-			set_vertical_coord(bar.extra, bar.reverse, anim.dest_value, anim.dest_value+extraValue)
-			set_vertical_coord(bar.bg, bar.reverse, anim.dest_value+extraValue, 1)
+			local start = set_vertical_coord(bar.extra, bar.reverse, anim.dest_value, anim.dest_value+extraValue)
+			start = set_vertical_coord(bar.extra2, bar.reverse, start, start+extra2Value)
+			set_vertical_coord(bar.bg, bar.reverse, start, 1)
 		end
 	end
 	anim.current_value = nil
@@ -681,6 +736,7 @@ function BetterStatusBar:SetTexture(texture)
 	
 	self.fg:SetTexture(texture)
 	self.extra:SetTexture(texture)
+	self.extra2:SetTexture(texture)
 	self.bg:SetTexture(texture)
 	if self.anim then
 		self.anim:SetTexture(texture)
@@ -699,6 +755,11 @@ local function normal_to_extra_color(r, g, b)
 	return (r + 0.25)/1.5, (g + 0.25)/1.5, (b + 0.25)/1.5
 end
 
+-- if extra2 color is not set, it'll take on this variance of the normal color
+local function normal_to_extra2_color(r, g, b)
+	return (r + 0.25)/1.75, (g + 0.25)/1.75, (b + 0.25)/1.75
+end
+
 -- if bg color is not set, it'll take on this variance of the normal color
 local function normal_to_bg_color(r, g, b)
 	return (r + 0.2)/3, (g + 0.2)/3, (b + 0.2)/3
@@ -714,6 +775,16 @@ local function get_extra_color(self)
 	return normal_to_extra_color(r, g, b)
 end
 
+-- get what the extra2 color should be
+local function get_extra2_color(self)
+	if self.extra2R then
+		return self.extra2R, self.extra2G, self.extra2B
+	end
+	
+	local r, g, b = self.fg:GetVertexColor()
+	return normal_to_extra2_color(r, g, b)
+end
+
 -- get what the bg color should be
 local function get_bg_color(self)
 	if self.bgR then
@@ -725,7 +796,7 @@ local function get_bg_color(self)
 end
 
 --- Set the color of the bar
--- If the background color or the extra color is not set,
+-- If the background, extra or extra2 color is not set,
 -- they will take on a similar color to what is specified here
 -- @param r the red value [0, 1]
 -- @param g the green value [0, 1]
@@ -746,6 +817,7 @@ function BetterStatusBar:SetColor(r, g, b)
 	
 	self.fg:SetVertexColor(r, g, b)
 	self.extra:SetVertexColor(get_extra_color(self))
+	self.extra2:SetVertexColor(get_extra2_color(self))
 	self.bg:SetVertexColor(get_bg_color(self))
 	if self.anim then
 		self.anim:SetVertexColor(r, g, b)
@@ -764,7 +836,7 @@ end
 BetterStatusBar.GetStatusBarColor = BetterStatusBar.GetColor
 
 --- Set the alpha value of the bar
--- If the background or extra alpha is not set,
+-- If the background, extra, extra2 alpha is not set,
 -- they will be the same as the alpha specified here
 -- @param a the alpha value [0, 1]
 -- @usage bar:SetNormalAlpha(0.7)
@@ -778,6 +850,9 @@ function BetterStatusBar:SetNormalAlpha(a)
 	self.fg:SetAlpha(a)
 	if not self.extraA then
 		self.extra:SetAlpha(a)
+	end
+	if not self.extra2A then
+		self.extra2:SetAlpha(a)
 	end
 	if not self.bgA then
 		self.bg:SetAlpha(a)
@@ -928,6 +1003,75 @@ function BetterStatusBar:GetExtraAlpha()
 	return self.extraA or self.fg:GetAlpha()
 end
 
+--- Set the extra2 color of the bar
+-- If you don't specify the colors, then it will come up with a good color
+-- based on the normal color
+-- @param er the red value [0, 1] or nil
+-- @param eg the green value [0, 1] or nil
+-- @param eb the blue value [0, 1] or nil
+-- @usage bar:SetExtra2Color(0.8, 0.6, 0)
+-- @usage bar:SetExtra2Color()
+function BetterStatusBar:SetExtra2Color(er, eg, eb)
+	if DEBUG then
+		expect(er, 'typeof', 'number;nil')
+		if type(er) == "number" then
+			expect(er, '>=', 0)
+			expect(er, '<=', 1)
+			expect(eg, 'typeof', 'number')
+			expect(eg, '>=', 0)
+			expect(eg, '<=', 1)
+			expect(eb, 'typeof', 'number')
+			expect(eb, '>=', 0)
+			expect(eb, '<=', 1)
+		else
+			expect(eg, 'typeof', 'nil')
+			expect(eb, 'typeof', 'nil')
+		end
+	end
+
+	self.extra2R, self.extra2G, self.extra2B = er or false, eg or false, eb or false
+	self.extra2:SetVertexColor(get_extra2_color(self))
+end
+
+--- Get the extra2 color of the bar
+-- @usage local r, g, b = bar:GetExtra2Color()
+-- @return the red value [0, 1]
+-- @return the green value [0, 1]
+-- @return the blue value [0, 1]
+function BetterStatusBar:GetExtra2Color()
+	local r, g, b = self.extra2:GetVertexColor()
+	return r, g, b
+end
+
+--- Set the alpha value of the bar's extra2 portion
+-- If you do not specify the alpha, it will be the same as the bar's normal
+-- alpha
+-- @param a the alpha value [0, 1] or nil
+-- @usage bar:SetExtra2Alpha(0.7)
+-- @usage bar:SetExtra2Alpha()
+function BetterStatusBar:SetExtra2Alpha(a)
+	if DEBUG then
+		expect(a, 'typeof', 'number;nil')
+		if a then
+			expect(a, '>=', 0)
+			expect(a, '<=', 1)
+		end
+	end
+	
+	self.extra2A = a or false
+	if not a then
+		a = self.fg:GetAlpha()
+	end
+	self.extra2:SetAlpha(a)
+end
+
+--- Get the alpha value of the bar's extra2 portion
+-- @usage local alpha = bar:SetExtra2Alpha()
+-- @return the alpha value [0, 1]
+function BetterStatusBar:GetExtra2Alpha()
+	return self.extra2A or self.fg:GetAlpha()
+end
+
 --- Return the minimum and maximum values of the bar
 -- Since this can't be changed, it will always return 0, 1
 -- @usage local min, max = bar:GetMinMaxValues()
@@ -1027,10 +1171,16 @@ PitBull4.Controls.MakeNewControlType("BetterStatusBar", "Button", function(contr
 	control_extra:SetPoint("LEFT", control_fg, "RIGHT")
 	control_extra:SetPoint("TOP")
 	control_extra:SetPoint("BOTTOM")
+
+	local control_extra2 = PitBull4.Controls.MakeTexture(control, "BACKGROUND")
+	control.extra2 = control_extra2
+	control_extra2:SetPoint("LEFT", control_extra, "RIGHT")
+	control_extra2:SetPoint("TOP")
+	control_extra2:SetPoint("BOTTOM")
 	
 	local control_bg = PitBull4.Controls.MakeTexture(control, "BACKGROUND")
 	control.bg = control_bg
-	control_bg:SetPoint("LEFT", control_extra, "RIGHT")
+	control_bg:SetPoint("LEFT", control_extra2, "RIGHT")
 	control_bg:SetPoint("RIGHT")
 	control_bg:SetPoint("TOP")
 	control_bg:SetPoint("BOTTOM")
