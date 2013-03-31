@@ -44,7 +44,6 @@ function PitBull4_BurningEmbers:OnEnable()
 	self:RegisterEvent("UNIT_DISPLAYPOWER")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("PLAYER_TALENT_UPDATE","PLAYER_ENTERING_WORLD")
-	self:RegisterEvent("PLAYER_TALENT_UPDATE","PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("SPELLS_CHANGED","PLAYER_ENTERING_WORLD")
 end
 
