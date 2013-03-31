@@ -86,6 +86,13 @@ function BurningEmber:SetValue(value)
 	end
 end
 
+function BurningEmber:SetGreenFire(value)
+	value = not not value
+	if self.green_fire == value then return end
+	self:SetNormalTexture(ICON_TEXTURE .. (value and "-Green" or ""))
+	self.green_fire = value
+end
+
 function BurningEmber:Shine()
 	local shine = self.shine
 	if not shine then

@@ -9,6 +9,8 @@ if select(2, UnitClass("player")) ~= "WARLOCK" then
 	return
 end
 
+local mop_520 = select(4,GetBuildInfo()) >= 50200
+
 -- CONSTANTS ----------------------------------------------------------------
 
 local STANDARD_SIZE = 15
@@ -42,6 +44,8 @@ function PitBull4_BurningEmbers:OnEnable()
 	self:RegisterEvent("UNIT_DISPLAYPOWER")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("PLAYER_TALENT_UPDATE","PLAYER_ENTERING_WORLD")
+	self:RegisterEvent("PLAYER_TALENT_UPDATE","PLAYER_ENTERING_WORLD")
+	self:RegisterEvent("SPELLS_CHANGED","PLAYER_ENTERING_WORLD")
 end
 
 local function update_player(self)
@@ -140,6 +144,8 @@ function PitBull4_BurningEmbers:UpdateFrame(frame)
 	if max_embers ~= container.max_embers then
 		update_container_size(container, vertical, max_embers)
 	end
+
+	local green_fire = mop_520 and IsSpellKnown(WARLOCK_GREEN_FIRE)
 	for i = 1, 4  do
 		local ember = container[i]
 		if i > max_embers then
@@ -147,6 +153,7 @@ function PitBull4_BurningEmbers:UpdateFrame(frame)
 		else
 			ember:Show()
 			ember:SetValue(ember_power)
+			ember:SetGreenFire(green_fire)
 			ember_power = ember_power - MAX_POWER_PER_EMBER
 		end
 	end
