@@ -485,10 +485,18 @@ end]],
 		[L["Standard"]] = {
 			events = {['UNIT_FACTION']=true,['UPDATE_FACTION']=true},
 			code = [[
-local name,_,min,max,value = GetWatchedFactionInfo()
+local name, _, min , max, value, id = GetWatchedFactionInfo()
 if IsMouseOver() then
   return name or ConfigMode() 
 else
+  local fs_id, fs_rep, _, _, _, _, _, fs_threshold, next_fs_threshold = GetFriendshipReputation(id)
+  if fs_id then
+    if next_fs_threshold then
+      min, max, value = fs_threshold, next_fs_threshold, fs_rep
+    else
+      min, max, value = 0, 1, 1
+    end
+  end
   local bar_cur,bar_max = value-min,max-min
   return "%d/%d (%s%%)",bar_cur,bar_max,Percent(bar_cur,bar_max)
 end]],
@@ -749,8 +757,36 @@ local function fix_unit_healthmax()
 	end
 end
 
+local function fix_rep_std_text()
+	local OLD_CODE = [[
+local name,_,min,max,value = GetWatchedFactionInfo()
+if IsMouseOver() then
+  return name or ConfigMode() 
+else
+  local bar_cur,bar_max = value-min,max-min
+  return "%d/%d (%s%%)",bar_cur,bar_max,Percent(bar_cur,bar_max)
+end]]
+	local sv = PitBull4.db:GetNamespace("LuaTexts").profiles
+	for _,profile in pairs(sv) do
+		local layouts = profile.layouts
+		if layouts then
+			for _,layout in pairs(layouts) do
+				local elements = layout.elements
+				if elements then
+					for _,text in pairs(elements) do
+						if text.code == OLD_CODE then
+							text.code = PROVIDED_CODES[L['Reputation']][L['Standard']].code
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
 function PitBull4_LuaTexts:OnEnable()
 	fix_unit_healthmax()
+	fix_rep_std_text()
 
 	-- UNIT_SPELLCAST_SENT has to always be registered so we can capture 
 	-- additional data not always available.

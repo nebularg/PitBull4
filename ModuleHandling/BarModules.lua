@@ -438,6 +438,7 @@ function BarModule:UpdateFrame(frame)
 	else
 		control:SetExtraValue(0)
 	end
+	control:SetExtra2Value(0)
 	
 	control:SetIcon(icon)
 	control:SetIconPosition(db.icon_on_left)
@@ -629,6 +630,7 @@ function BarProviderModule:UpdateFrame(frame)
 			else
 				bar:SetExtraValue(0)
 			end
+			bar:SetExtra2Value(0)
 
 			bar:SetIcon(icon)
 			bar:SetIconPosition(bar_db.icon_on_left)
