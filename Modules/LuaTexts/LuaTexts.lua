@@ -594,7 +594,7 @@ end
 ]],
 		},
 		[L["Mini"]] = {
-			events = {['UNIT_POWER_FRQUENT']=true,['UNIT_MAXPOWER']=true},
+			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
 			code = [[
 return VeryShort(Power(unit,SPELL_POWER_DEMONIC_FURY))
 ]],
