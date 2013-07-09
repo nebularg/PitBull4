@@ -53,6 +53,10 @@ setmetatable(UnitToLocale, {__index=function(self, unit)
 			local num = unit:match("^party(%d)$")
 			self[unit] = L["Party member #%d"]:format(num)
 			return self[unit]
+		elseif unit:find("^arena%d$") then
+			local num = unit:match("^arena(%d)$")
+			self[unit] = L["Arena enemy #%d"]:format(num)
+			return self[unit]
 		elseif unit:find("^boss%d$") then
 			local num = unit:match("^boss(%d)$")
 			self[unit] = L["Boss #%d"]:format(num)
