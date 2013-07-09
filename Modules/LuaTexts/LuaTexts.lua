@@ -632,6 +632,7 @@ do
 		['UNIT_COMBO_POINTS'] = {all=true},
 		['UPDATE_FACTION'] = {all=true},
 		['UNIT_LEVEL'] = {all=true},
+		['INSTANCE_ENCOUNT_ENGAGE_UNIT'] = {all=true},
 
 		-- They pass the unit but they don't provide the pairing (e.g.
 		-- the target changes) so we'll miss updates if we don't update

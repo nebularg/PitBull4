@@ -20,12 +20,20 @@ local UNIT_GROUPS = {
 	"partypet",
 	"partypettarget",
 	"partypettargettarget",
+	"arenatarget",
+	"arenatargettarget",
+	"arenapet",
+	"arenapettarget",
+	"arenapettargettarget",
 	"raid",
 	"raidtarget",
 	"raidtargettarget",
 	"raidpet",
 	"raidpettarget",
 	"raidpettargettarget",
+	"boss",
+	"bosstarget",
+	"bosstargettarget",
 }
 
 local NORMAL_UNITS = {
@@ -39,8 +47,15 @@ for i = 1, MAX_PARTY_MEMBERS do
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "party" .. i
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "partypet" .. i
 end
+for i = 1, 5 do
+	NORMAL_UNITS[#NORMAL_UNITS+1] = "arena" .. i
+	NORMAL_UNITS[#NORMAL_UNITS+1] = "arenapet" .. i
+end
 for i = 1, MAX_RAID_MEMBERS do
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "raid" .. i
+end
+for i = 1, MAX_RAID_MEMBERS do
+	NORMAL_UNITS[#NORMAL_UNITS+1] = "boss" .. i
 end
 
 do
@@ -863,7 +878,7 @@ end
 function PitBull4:IterateHeadersForSuperUnitGroup(super_unit_group)
 	if DEBUG then
 		expect(super_unit_group, 'typeof', 'string')
-		expect(super_unit_group, 'inset', 'party;raid')
+		expect(super_unit_group, 'inset', 'party;raid;boss;arena')
 	end
 	
 	local headers = rawget(super_unit_group_to_headers, super_unit_group)

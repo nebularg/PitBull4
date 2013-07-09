@@ -1,6 +1,5 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
-local mop_520 = select(4, GetBuildInfo()) >= 50200
 
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
@@ -24,6 +23,7 @@ function PitBull4:MakeGroupHeader(group)
 	
 	local group_db = PitBull4.db.profile.groups[group]
 	local pet_based = not not group_db.unit_group:match("pet") -- this feels dirty
+	local group_based = group_db.unit_group:match("^party") or group_db.unit_group:match("^raid")
 	local use_pet_header = pet_based and group_db.use_pet_header
 	local header_name
 	
@@ -36,17 +36,15 @@ function PitBull4:MakeGroupHeader(group)
 	local header = _G[header_name]
 	if not header then
 		local template
-		if use_pet_header then
-			template = "SecureGroupPetHeaderTemplate"
-		else
-			template = "SecureGroupHeaderTemplate"
+		if group_based then
+			template = use_pet_header and "SecureGroupPetHeaderTemplate" or "SecureGroupHeaderTemplate"
 		end
 		header = CreateFrame("Frame", header_name, UIParent, template)
 		header:Hide() -- it will be shown later and attributes being set won't cause lag
 		
 		header.name = group
-		
 		header.group_db = group_db
+		header.fake = not group_based or nil
 		
 		self:ConvertIntoGroupHeader(header)
 	elseif header.group_db ~= group_db then
@@ -270,6 +268,10 @@ function GroupHeader:RefixSizeAndPosition()
 		self:Update()
 	end
 
+	if self.fake then
+		-- reposition frames on the fake header
+		self:UpdateChildren()
+	end
 
 	self:ClearAllPoints()
 	self:SetPoint(anchor, UIParent, "CENTER", group_db.position_x / scale + x_diff, group_db.position_y / scale + y_diff)
@@ -284,10 +286,6 @@ local function get_main_tank_name_list()
 	local main_tanks
 	if oRA3 then
 		main_tanks = oRA3:GetSortedTanks()
-	elseif oRA then
-		main_tanks = oRA.maintanktable
-	else
-		main_tanks = CT_RA_MainTanks
 	end
 	if main_tanks then
 		wipe(tank_list)
@@ -302,7 +300,7 @@ local function get_main_tank_name_list()
 			return s, #tank_list
 		end
 	end
-	if PitBull4.leaving_world or not UnitInRaid("player") or not UnitInParty("player") then
+	if PitBull4.leaving_world or not IsInGroup() then
 		-- Not in a raid or a party, so no main tank list.  We have
 		-- to bail out here becuase WoW whines with a You are not in a party
 		-- message to the user now.  /sigh
@@ -347,9 +345,10 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	local enabled = group_db.enabled
 	local unit_group = group_db.unit_group
 	local party_based = unit_group:sub(1, 5) == "party"
+	local group_based = party_based or unit_group:sub(1, 4) == "raid"
 	local include_player = party_based and group_db.include_player
 	local show_when = group_db.show_when
-	local show_solo = include_player and show_when.solo
+	local show_solo = include_player and show_when.solo or not group_based
 	local group_filter = not party_based and group_db.group_filter or nil
 	local sort_direction = group_db.sort_direction
 	local sort_method = group_db.sort_method
@@ -374,9 +373,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		self.group_by = group_db.group_by
 		self.name_list = name_list
 		if DEBUG then
-			if not party_based then
-				expect(unit_group:sub(1, 4), '==', "raid")
-			end
+			expect(unit_group, 'typeof', 'string')
 		end
 	
 		if party_based then
@@ -387,6 +384,14 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 			self:SetAttribute("showPlayer", include_player and true or nil)
 			self:SetAttribute("showSolo", show_solo and true or nil)
 			self:SetAttribute("groupFilter", nil)
+		elseif not group_based then
+			if unit_group:sub(1, 4) == "boss" then
+				self.super_unit_group = "boss"
+				self.unitsuffix = unit_group:sub(5)
+			elseif unit_group:sub(1, 5) == "arena" then
+				self.super_unit_group = "arena"
+				self.unitsuffix = unit_group:sub(6)
+			end
 		else
 			self.super_unit_group = "raid"
 			self.unitsuffix = unit_group:sub(5)
@@ -405,7 +410,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		if self.unitsuffix == "" then
 			self.unitsuffix = nil
 		end
-		self:SetAttribute("unitsuffix",self.unitsuffix)
+		self:SetAttribute("unitsuffix", self.unitsuffix)
 	
 		local is_wacky = PitBull4.Utils.IsWackyUnitGroup(unit_group)
 		self.is_wacky = is_wacky
@@ -459,9 +464,17 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	-- group
 	for k,v in pairs(show_when) do
 		if k == "solo" then
-			self:SetAttribute(k, enabled and show_solo and party_based)
+			if group_based then
+				self:SetAttribute(k, enabled and show_solo and party_based)
+			else
+				self:SetAttribute(k, enabled and show_solo)
+			end
 		elseif k == "party" then
-			self:SetAttribute(k, enabled and v and party_based)
+			if group_based then
+				self:SetAttribute(k, enabled and v and party_based)
+			else
+				self:SetAttribute(k, enabled and v)
+			end
 		else
 			self:SetAttribute(k, enabled and v)
 		end
@@ -549,6 +562,10 @@ local function should_show_header(config_mode, header)
 		return false
 	end
 	
+	if header.fake then
+		return true
+	end
+
 	if config_mode == "solo" then
 		return header.show_solo
 	end
@@ -650,10 +667,25 @@ end
 -- utility function for ApplyConfigModeState, it doctors
 -- up some data so don't reuse this elsewhere
 local function get_group_roster_info(super_unit_group, index)
-	local unit, name, subgroup, class_name, role, _
+	local unit, name, subgroup, class_name, role, server, _
 	if super_unit_group == "raid" then
 		unit = "raid"..index
 		name, _, subgroup, _, _, class_name, _, _, _, role = GetRaidRosterInfo(index)
+	elseif super_unit_group == "boss" then
+		if UnitExists(unit) then
+			name = UnitName(unit)
+			_, class_name = UnitClassBase(unit)
+			subgroup = 1
+		end
+	elseif super_unit_group == "arena" then
+		if UnitExists(unit) then
+			name, server = UnitName(unit)
+			if (server and server ~= "") then
+				name = name.."-"..server
+			end
+			_, class_name = UnitClass(unit)
+			subgroup = 1
+		end
 	else
 		if index > 0 then
 			unit = "party"..index
@@ -671,7 +703,7 @@ local function get_group_roster_info(super_unit_group, index)
 			if not PitBull4.leaving_world and (UnitInParty(unit) or UnitInRaid(unit)) then
 				if GetPartyAssignment("MAINTANK", unit) then
 					role = "MAINTANK"
-				elseif  GetPartyAssignment("MAINASSIST", unit) then
+				elseif GetPartyAssignment("MAINASSIST", unit) then
 					role = "MAINASSIST"
 				end
 			end
@@ -790,7 +822,8 @@ function GroupHeader:ApplyConfigModeState()
 		return
 	end
 
-	self:SetAttribute("_ignore",true)
+	local oldIgnore = self:SetAttribute("_ignore")
+	self:SetAttribute("_ignore", "applyConfigModeState")
 
 	wipe(sorting_table)
 	
@@ -822,7 +855,7 @@ function GroupHeader:ApplyConfigModeState()
 
 		-- filter by a list of group numbers and/or classes
 		fill_table(wipe(token_table), strsplit(",", group_filter))
-		local strict_filter = self:GetAttribute("strictFiltering")
+		local strict_filtering = self:GetAttribute("strictFiltering")
 
 		for i = start, finish, 1 do
 			local unit, name, subgroup, class_name, role = get_group_roster_info(super_unit_group, i)
@@ -875,7 +908,7 @@ function GroupHeader:ApplyConfigModeState()
 		if sort_method == "NAME" then
 			table.sort(sorting_table, sort_on_names)
 		elseif sort_method == "NAMELIST" then
-			table.sort(sorting_table, sort_on_namelist)
+			table.sort(sorting_table, sort_on_name_list)
 		end
 	end
 
@@ -967,7 +1000,7 @@ function GroupHeader:ApplyConfigModeState()
 		current_anchor = frame
 	end
 
-	self:SetAttribute("_ignore",nil)
+	self:SetAttribute("_ignore", oldIgnore)
 end
 GroupHeader.ApplyConfigModeState = PitBull4:OutOfCombatWrapper(GroupHeader.ApplyConfigModeState)
 
@@ -1021,6 +1054,10 @@ function GroupHeader:GetMaxUnits(ignore_filters)
 
 		-- Everything else we're gonna have to go by max.
 		return MAX_RAID_MEMBERS
+	elseif self.super_unit_group == "boss" then
+		return MAX_BOSS_FRAMES
+	elseif self.super_unit_group == "arena" then
+		return MAX_PARTY_MEMBERS_WITH_PLAYER
 	else
 		if self.include_player then
 			return MAX_PARTY_MEMBERS_WITH_PLAYER
@@ -1049,7 +1086,9 @@ function GroupHeader:IterateMembers(guess_num)
 	local num
 	if guess_num then
 		local config_mode = PitBull4.config_mode
-		if config_mode == "solo" then
+		if config_mode and self.fake then
+			num = 5
+		elseif config_mode == "solo" then
 			num = self.include_player and 1 or 0
 		elseif config_mode == "party" then
 			num = self.include_player and MAX_PARTY_MEMBERS_WITH_PLAYER or MAX_PARTY_MEMBERS
@@ -1378,9 +1417,24 @@ local initialConfigFunction = [[
       header:CallMethod("InitialConfigFunction")
     end
 ]]
-if not mop_520 then
-  initialConfigFunction = initialConfigFunction:gsub("togglemenu", "menu")
-end
+
+local onAttributeChanged = [[
+  if name ~= "state-unitexists" and name ~= "config_mode" then return end
+
+  if self:GetAttribute("config_mode") then
+    self:Show()
+  elseif value == "show" then
+    self:Show()
+  elseif value == "hide" then
+    self:Hide()
+  else
+    if UnitExists(self:GetAttribute("unit")) then
+      self:Show()
+    else
+      self:Hide()
+    end
+  end
+]]
 
 --- Add the proper functions and scripts to a SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate, as well as some initialization.
 -- @param frame a Frame which inherits from SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate
@@ -1399,7 +1453,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 	-- battlegrounds, pet rezes, etc.  This should prevent some
 	-- stuttering isseus with BGs.  See this post for more details:
 	-- http://forums.wowace.com/showthread.php?p=111494#post111494
-	self:UnregisterEvent("UNIT_NAME_UPDATE")
+	header:UnregisterEvent("UNIT_NAME_UPDATE")
 
 	self.all_headers[header] = true
 	self.name_to_header[header.name] = header
@@ -1412,23 +1466,186 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		header[k] = v
 	end
 
-	if ClickCastHeader then
-		SecureHandler_OnLoad(header)
-		header:SetFrameRef("clickcast_header", ClickCastHeader)
-	end
+	if not header.fake then
+		if ClickCastHeader then
+			SecureHandler_OnLoad(header)
+			header:SetFrameRef("clickcast_header", ClickCastHeader)
+		end
 	
-	-- this is done to pass self in properly
-	function header.initialConfigFunction(...)
-		return header:InitialConfigFunction(...)
-	end
+		-- this is done to pass self in properly
+		function header.initialConfigFunction(...)
+			return header:InitialConfigFunction(...)
+		end
 
-	if header.group_db.unit_group:sub(1, 4) == "raid" then
-	  header:SetAttribute("initialConfigFunction", initialConfigFunction:gsub("togglemenu", "menu"))
+		if header.group_db.unit_group:sub(1, 4) == "raid" then
+			header:SetAttribute("initialConfigFunction", initialConfigFunction:gsub("togglemenu", "menu"))
+		elseif not header.fake then
+			header:SetAttribute("initialConfigFunction", initialConfigFunction)
+		end
+
 	else
-		header:SetAttribute("initialConfigFunction", initialConfigFunction)
+		-- set up our fake header for non party/raid group frames
+
+		-- allow events to force an update
+		header:SetScript("OnEvent", function(self, event, arg1, ...)
+			self:UpdateMembers()
+		end)
+
+		-- set up the unit/unitsuffix now so we know how many frames we need to create
+		-- also register our update events
+		local unit_group = header.group_db.unit_group
+		if unit_group:sub(1, 4) == "boss" then
+			header.super_unit_group = "boss"
+			header.unitsuffix = unit_group:sub(5)
+
+			header:RegisterEvent("INSTANCE_ENCOUNT_ENGAGE_UNIT")
+		elseif unit_group:sub(1, 5) == "arena" then
+			header.super_unit_group = "arena"
+			header.unitsuffix = unit_group:sub(6)
+
+			header:RegisterEvent("ARENA_OPPONENT_UPDATE") -- passes the unit, but meeeeh, FULL UPDATES
+			-- looking at SUF it looks like shenanigens can happen when a unitid disappears (ie, stealth)
+			-- something about hiding the frame fucking with anchoring
+		end
+		if header.unitsuffix == "" then
+			header.unitsuffix = nil
+		end
+
+		for index = 1, header:GetMaxUnits(true) do
+			local unit = header.super_unit_group .. index -- want the base unit as "unit" before getting wacky in "unitsuffix" (seemed awkward to me)
+
+			-- make a singleton unit frame and tack it onto our header
+			local frame_name = header:GetName() .. "UnitButton" .. index
+			local frame = _G[frame_name]
+			if not frame then
+				frame = CreateFrame("Button", frame_name, header, "SecureUnitButtonTemplate,SecureHandlerBaseTemplate")
+
+				frame:WrapScript(frame, "OnAttributeChanged", onAttributeChanged)
+
+				header[index] = frame
+				header:InitialConfigFunction()
+				frame:SetAttribute("*type1", "target")
+				frame:SetAttribute("*type2", "togglemenu")
+
+				frame:SetAttribute("unit", unit)
+				frame:SetAttribute("unitsuffix", header.unitsuffix)
+			end
+
+			RegisterUnitWatch(frame)
+
+			frame:RefreshLayout()
+
+			frame:UpdateGUID(UnitGUID(unit))
+		end
 	end
 	
 	header:RefreshGroup(true)
 	
 	header:SetMovable(true)
 end
+
+
+--- Position all the children of a fake group header.
+-- @usage header:UpdateChildren()
+function GroupHeader:UpdateChildren()
+	-- duplicate code from SecureGroupHeader_Update IN TWO PLACES! FUCK YEA! because it's that awesome.
+	local oldIgnore = self:GetAttribute("_ignore")
+	self:SetAttribute("_ignore", "configureChildren")
+
+	wipe(sorting_table)
+
+	local start, finish, step = 1, self:GetMaxUnits(), 1
+	local super_unit_group = self.super_unit_group
+	for i = start, finish, step do
+		sorting_table[#sorting_table + 1] = super_unit_group .. i
+	end
+
+	local point = self:GetAttribute("point") or "TOP"
+	local relative_point, x_offset_mult, y_offset_mult = get_relative_point_anchor(point)
+	local x_multiplier, y_multiplier = abs(x_offset_mult), abs(y_offset_mult)
+	local x_offset = self:GetAttribute("xOffset") or 0
+	local y_offset = self:GetAttribute("yOffset") or 0
+	local sort_dir = self:GetAttribute("sortDir") or "ASC"
+	local column_spacing = self:GetAttribute("columnSpacing") or 0
+	local units_per_column = self:GetAttribute("unitsPerColumn")
+	local num_displayed = #sorting_table
+	local num_columns
+	if units_per_column and num_displayed > units_per_column then
+		num_columns = min( ceil(num_displayed / units_per_column), (self:GetAttribute("maxColumns") or 1) )
+	else
+		units_per_column = num_displayed
+		num_columns = 1
+	end
+
+	if sort_dir == "DESC" then
+		start, finish, step = finish, start, -1
+	end
+
+	local column_anchor_point, column_rel_point, colx_multi, coly_multi
+	if num_columns > 1 then
+		column_anchor_point = self:GetAttribute("columnAnchorPoint")
+		column_rel_point, colx_multi, coly_multi = get_relative_point_anchor(column_anchor_point)
+	end
+
+	local frame_num = 0
+	local column_num = 1
+	local column_unit_count = 0
+	local current_anchor = self
+	for i = start, finish, step do
+		frame_num = frame_num + 1
+		column_unit_count = column_unit_count + 1
+		if column_unit_count > units_per_column then
+			column_unit_count = 1
+			column_num = column_num + 1
+		end
+
+		local frame = self[frame_num]
+		if not frame then
+			break
+		end
+		if frame_num == 1 then
+			frame:SetPoint(point, current_anchor, point, 0, 0)
+			if column_anchor_point then
+				frame:SetPoint(column_anchor_point, current_anchor, column_anchor_point, 0, 0)
+			end
+		elseif column_unit_count == 1 then
+			local column_anchor = self[frame_num - units_per_column]
+			frame:SetPoint(column_anchor_point, column_anchor, column_rel_point, colx_multi * column_spacing, coly_multi * column_spacing)
+		else
+			frame:SetPoint(point, current_anchor, relative_point, x_multiplier * x_offset, y_multiplier * y_offset)
+		end
+
+		local old_unit = frame:GetAttribute("unit")
+		local unit = sorting_table[i]
+		frame:SetAttribute("unit", unit)
+		if old_unit ~= unit then
+			frame:Update()
+		end
+
+		current_anchor = frame
+	end
+
+	local frame_width = self[1]:GetWidth()
+	local frame_height = self[1]:GetHeight()
+	if num_displayed > 0 then
+		local width = x_multiplier * (units_per_column - 1) * frame_width + ( (units_per_column - 1) * (x_offset * x_offset_mult) ) + frame_width
+		local height = y_multiplier * (units_per_column - 1) * frame_height + ( (units_per_column - 1) * (y_offset * y_offset_mult) ) + frame_height
+
+		if column_num > 1 then
+			width = width + ( (column_num - 1) * abs(colx_multi) * (width + column_spacing) )
+			height = height + ( (column_num - 1) * abs(coly_multi) * (height + column_spacing) )
+		end
+
+		self:SetWidth(width)
+		self:SetHeight(height)
+	else
+		local min_width = self:GetAttribute("minWidth") or (y_multiplier * frame_width)
+		local min_height = self:GetAttribute("minHeight") or (x_multiplier * frame_height)
+		self:SetWidth( max(min_width, 0.1) )
+		self:SetHeight( max(min_height, 0.1) )
+	end
+
+	self:SetAttribute("_ignore", oldIgnore)
+end
+GroupHeader.UpdateChildren = PitBull4:OutOfCombatWrapper(GroupHeader.UpdateChildren)
+

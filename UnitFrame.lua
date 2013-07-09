@@ -5,7 +5,6 @@ local L = PitBull4.L
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
 
-local mop_520 = select(4,GetBuildInfo()) >= 50200
 
 -- CONSTANTS ----------------------------------------------------------------
 
@@ -48,7 +47,7 @@ local Singleton_OnAttributeChanged = [[
 
 --- Make a singleton unit frame.
 -- @param unit the UnitID of the frame in question
--- @usage local frame = PitBull4:MakeSingletonFrame("player")
+-- @usage PitBull4:MakeSingletonFrame("player")
 function PitBull4:MakeSingletonFrame(unit)
 	if DEBUG then
 		expect(unit, 'typeof', 'string')
@@ -199,40 +198,48 @@ end)
 local PitBull4_UnitFrame_DropDown = CreateFrame("Frame", "PitBull4_UnitFrame_DropDown", UIParent, "UIDropDownMenuTemplate")
 UnitPopupFrames[#UnitPopupFrames+1] = "PitBull4_UnitFrame_DropDown"
 
--- from a unit, figure out the proper menu and, if appropriate, the corresponding ID
+-- from a unit, figure out the proper menu and, if appropriate, the corresponding ID (updated from SECURE_ACTIONS.togglemenu)
 local function figure_unit_menu(unit)
-	if unit == "focus" then
-		return "FOCUS"
+	local unitType = string.match(unit, "^([a-z]+)[0-9]+$") or unit
+
+	-- Mimic the default UI and prefer the relevant units menu when possible
+	local menu, id = "PLAYER", nil
+	if unitType == "raid" then
+		menu = "RAID"
+	elseif unitType == "party" then
+		menu = "PARTY"
+	elseif unitType == "boss" then
+		menu = "BOSS"
+	elseif unitType == "focus" then
+		menu = "FOCUS"
+	elseif unitType == "arenapet" or unitType == "arena" then
+		menu = "ARENAENEMY"
+	-- Then try and detect the unit type and show the most relevant menu we can find
+	elseif UnitIsUnit(unit, "player") then
+		menu = "SELF"
+	elseif UnitIsUnit(unit, "vehicle") then
+		menu = "VEHICLE"
+	elseif UnitIsUnit(unit, "pet") then
+		menu = "PET"
+	elseif UnitIsOtherPlayersBattlePet(unit) then
+		menu = "OTHERBATTLEPET"
+	elseif UnitIsOtherPlayersPet(unit) then
+		menu = "OTHERPET"
+	-- Last ditch checks
+	elseif UnitIsPlayer(unit) then
+		id = UnitInRaid(unit)
+		if ( id ) then
+			menu = "RAID_PLAYER"
+		elseif UnitInParty(unit) then
+			menu = "PARTY"
+		else
+			menu = "PLAYER"
+		end
+	elseif UnitIsUnit(unit, "target") then
+		menu = "TARGET"
 	end
 
-	if UnitIsUnit(unit, "player") then
-		return "SELF"
-	end
-
-	if UnitIsUnit(unit, "vehicle") then
-		-- NOTE: vehicle check must come before pet check for accuracy's sake because
-		-- a vehicle may also be considered your pet
-		return "VEHICLE"
-	end
-
-	if UnitIsUnit(unit, "pet") then
-		return "PET"
-	end
-
-	if not UnitIsPlayer(unit) then
-		return "TARGET"
-	end
-
-	local id = UnitInRaid(unit)
-	if id then
-		return "RAID_PLAYER", id
-	end
-
-	if UnitInParty(unit) then
-		return "PARTY"
-	end
-
-	return "PLAYER"
+	return menu, id
 end
 
 local munged_unit_menus = {}
@@ -565,7 +572,7 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 			if frame.is_singleton then
 				frame:SetMovable(true)
 			  frame:SetAttribute("*type1", "target")
-			  frame:SetAttribute("*type2", mop_520 and "togglemenu" or "menu")
+			  frame:SetAttribute("*type2", "togglemenu")
 			end
 			frame:RegisterForDrag("LeftButton")
 			frame:RegisterForClicks("AnyUp")

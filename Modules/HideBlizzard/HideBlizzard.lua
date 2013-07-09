@@ -6,6 +6,7 @@ if not PitBull4 then
 end
 
 local L = PitBull4.L
+
 local PitBull4_HideBlizzard = PitBull4:NewModule("HideBlizzard")
 
 PitBull4_HideBlizzard:SetModuleType("custom")
@@ -21,6 +22,7 @@ PitBull4_HideBlizzard:SetDefaults({}, {
 	aura = false,
 	runebar = true,
 	altpower = false,
+	boss = true,
 })
 
 function PitBull4_HideBlizzard:OnEnable()
@@ -232,6 +234,26 @@ function showers:altpower()
 	UnitPowerBarAlt_UpdateAll(PlayerPowerBarAlt)
 end
 
+function hiders:boss()
+	for i=1, MAX_BOSS_FRAMES do
+		local frame = _G["Boss"..i.."TargetFrame"]
+		frame:UnregisterAllEvents()
+		frame:Hide()
+	end
+end
+
+function showers:boss()
+	for i=1, MAX_BOSS_FRAMES do
+		local frame = _G["Boss"..i.."TargetFrame"]
+		if i == 1 then
+			BossTargetFrame_OnLoad(frame, "boss1", "INSTANCE_ENCOUNTER_ENGAGE_UNIT")
+		else
+			BossTargetFrame_OnLoad(self, "boss"..i)
+		end
+		Target_Spellbar_OnEvent(self, "INSTANCE_ENCOUNTER_ENGAGE_UNIT")
+	end
+end
+
 for k, v in pairs(hiders) do
 	hiders[k] = PitBull4:OutOfCombatWrapper(v)
 end
@@ -320,6 +342,13 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		type = 'toggle',
 		name = L["Alternate power"],
 		desc = L["Hides the standard alternate power bar shown in some encounters and quests."],
+		get = get,
+		set = set,
+		hidden = hidden,
+	}, 'boss', {
+		type = 'toggle',
+		name = L["Boss"],
+		desc = L["Hides the standard boss frames."],
 		get = get,
 		set = set,
 		hidden = hidden,

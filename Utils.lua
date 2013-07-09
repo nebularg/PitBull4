@@ -89,6 +89,13 @@ do
 		focus = true,
 		target = true,
 	}
+	for i = 1, 5 do
+		valid_singleton_unit_ids["arena" .. i] = true
+		valid_singleton_unit_ids["arenapet" .. i] = true
+	end
+	for i = 1, MAX_BOSS_FRAMES do
+		valid_singleton_unit_ids["boss" .. i] = true
+	end
 	setmetatable(valid_singleton_unit_ids, target_same_mt)
 	
 	--- Return whether the UnitID provided is a singleton
@@ -110,6 +117,11 @@ do
 		partypet = true,
 		raid = true,
 		raidpet = true,
+		boss = true,
+		arena = true,
+		arenapet = true,
+		battleground = true,
+		battlegroundpet = true,
 	}
 	setmetatable(valid_classifications, target_same_mt)
 	
@@ -135,6 +147,11 @@ do
 		partypet = true,
 		raid = true,
 		raidpet = true,
+		boss = true,
+		arena = true,
+		arenapet = true,
+		battleground = true,
+		battlegroundpet = true,
 	}
 	
 	--- Return whether the classification provided is considered "wacky"
@@ -157,10 +174,16 @@ do
 		party_sing = L["Party"],
 		partypet = L["Party pets"],
 		partypet_sing = L["Party pet"],
+		arena = L["Arena"],
+		arena_sing = L["Arena"],
+		arenapet = L["Arena pets"],
+		arenapet_sing = L["Arena pet"],
 		raid = L["Raid"],
 		raid_sing = L["Raid"],
 		raidpet = L["Raid pets"],
 		raidpet_sing = L["Raid pet"],
+		boss = L["Boss"],
+		boss_sing = L["Boss"],
 		mouseover = L["Mouse-over"],
 		focus = L["Focus"],
 		maintank = L["Main tanks"],
