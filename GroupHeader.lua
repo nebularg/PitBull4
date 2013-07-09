@@ -359,12 +359,13 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		name_list = get_main_tank_name_list()
 	end
 	
-	local changed_units = self.unit_group ~= unit_group or self.include_player ~= include_player or self.show_solo ~= show_solo or self.group_filter ~= group_filter or self.sort_direction ~= sort_direction or self.sort_method ~= sort_method or self.group_by ~= group_by or self.name_list ~= name_list
+	local changed_units = self.unit_group ~= unit_group or self.include_player ~= include_player or self.show_solo ~= show_solo or self.group_filter ~= group_filter or self.sort_direction ~= sort_direction or self.sort_method ~= sort_method or self.group_by ~= group_by or self.name_list ~= name_list or self.group_based ~= group_based
 	
 	if changed_units then
 		local old_unit_group = self.unit_group
 		local old_super_unit_group = self.super_unit_group
 		self.unit_group = unit_group
+		self.group_based = group_based
 		self.include_player = include_player
 		self.show_solo = show_solo
 		self.group_filter = group_filter
@@ -480,6 +481,8 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		end
 	end
 
+	self.fake = not group_based or nil
+
 	self:RefixSizeAndPosition()
 	
 	if is_shown then
@@ -562,7 +565,7 @@ local function should_show_header(config_mode, header)
 		return false
 	end
 	
-	if header.fake then
+	if header.super_unit_group == "boss" then
 		return true
 	end
 
@@ -570,8 +573,8 @@ local function should_show_header(config_mode, header)
 		return header.show_solo
 	end
 	
-	if config_mode == "party" and header.super_unit_group ~= "party" then
-		return false
+	if config_mode == "party" then
+		return header.super_unit_group == "arena" or header.super_unit_group == "party"
 	end
 	
 	return true
@@ -672,12 +675,14 @@ local function get_group_roster_info(super_unit_group, index)
 		unit = "raid"..index
 		name, _, subgroup, _, _, class_name, _, _, _, role = GetRaidRosterInfo(index)
 	elseif super_unit_group == "boss" then
+		unit = "boss"..index
 		if UnitExists(unit) then
 			name = UnitName(unit)
 			_, class_name = UnitClassBase(unit)
 			subgroup = 1
 		end
 	elseif super_unit_group == "arena" then
+		unit = "arena"..index
 		if UnitExists(unit) then
 			name, server = UnitName(unit)
 			if (server and server ~= "") then
@@ -1479,7 +1484,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 
 		if header.group_db.unit_group:sub(1, 4) == "raid" then
 			header:SetAttribute("initialConfigFunction", initialConfigFunction:gsub("togglemenu", "menu"))
-		elseif not header.fake then
+		else
 			header:SetAttribute("initialConfigFunction", initialConfigFunction)
 		end
 
