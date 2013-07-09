@@ -1355,8 +1355,10 @@ function MemberUnitFrame:ForceShow()
 		self.force_show = true
 
 		-- Continue to watch the frame but do the hiding and showing ourself
-		UnregisterUnitWatch(self)
-		RegisterUnitWatch(self, true)
+		if self.unit and self.unit:match("^arena%d$") then -- arena units already watch state
+			UnregisterUnitWatch(self)
+			RegisterUnitWatch(self, true)
+		end
 	end
 
 	-- Always make sure the frame is shown even if we think it already is
@@ -1371,8 +1373,10 @@ function MemberUnitFrame:UnforceShow()
 	self.force_show = nil
 
 	-- Ask the SecureStateDriver to show/hide the frame for us
-	UnregisterUnitWatch(self)
-	RegisterUnitWatch(self)
+	if self.unit and self.unit:match("^arena%d$") then
+		UnregisterUnitWatch(self)
+		RegisterUnitWatch(self)
+	end
 
 	-- If we're visible force an update so everything is properly in a
 	-- non-config mode state
@@ -1424,20 +1428,21 @@ local initialConfigFunction = [[
 ]]
 
 local onAttributeChanged = [[
-  if name ~= "state-unitexists" and name ~= "config_mode" then return end
-
-  if self:GetAttribute("config_mode") then
-    self:Show()
-  elseif value == "show" then
-    self:Show()
-  elseif value == "hide" then
-    self:Hide()
-  else
-    if UnitExists(self:GetAttribute("unit")) then
-      self:Show()
-    else
-      self:Hide()
+  if name == "state-unitexists" then
+    local unit = self:GetAttribute("unit")
+    if unit:match("^arena%d$") then
+      if value and self:GetAttribute("_disappeared") then
+        self:GetParent():SetAttribute("member_changed", unit)
+        self:SetAttribute("_disappeared", nil)
+      elseif not value and not self:GetAttribute("_disappeared") then
+        self:SetAttribute("_disappeared", true)
+      end
+      if value then
+        self:Show()
+      end 
     end
+	elseif name == "config_mode" and self:GetAttribute("config_mode") then
+    self:Show()
   end
 ]]
 
@@ -1493,7 +1498,20 @@ function PitBull4:ConvertIntoGroupHeader(header)
 
 		-- allow events to force an update
 		header:SetScript("OnEvent", function(self, event, arg1, ...)
-			self:UpdateMembers()
+			if event == "ARENA_PREP_OPPONENT_SPECIALIZATIONS" then
+				self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+			elseif event == "ZONE_CHANGED_NEW_AREA" then
+				-- hide arena frames on leaving arena
+				local _, instanceType = IsInInstance()
+				if instanceType ~= "arena" then
+					self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
+					for _, frame in self:IterateMembers() do
+						frame:Hide()
+					end
+				end
+			else
+				self:UpdateMembers()
+			end
 		end)
 
 		-- set up the unit/unitsuffix now so we know how many frames we need to create
@@ -1508,9 +1526,18 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			header.super_unit_group = "arena"
 			header.unitsuffix = unit_group:sub(6)
 
-			header:RegisterEvent("ARENA_OPPONENT_UPDATE") -- passes the unit, but meeeeh, FULL UPDATES
-			-- looking at SUF it looks like shenanigens can happen when a unitid disappears (ie, stealth)
-			-- something about hiding the frame fucking with anchoring
+			header:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS") -- arena prep event
+			header:RegisterEvent("ARENA_OPPONENT_UPDATE") -- passes the unit
+
+			-- update frames on state changes
+			header:SetScript("OnAttributeChanged", function(self, key, value)
+				if key == "member_changed" and value then
+					local id = value:match("(%d)")
+					if id and self[id] then
+						self[id]:Update()
+					end
+				end
+			end)
 		end
 		if header.unitsuffix == "" then
 			header.unitsuffix = nil
@@ -1536,7 +1563,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 				frame:SetAttribute("unitsuffix", header.unitsuffix)
 			end
 
-			RegisterUnitWatch(frame)
+			RegisterUnitWatch(frame, header.super_unit_group == "arena")
 
 			frame:RefreshLayout()
 

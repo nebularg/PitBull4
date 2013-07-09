@@ -20,6 +20,7 @@ local UNIT_GROUPS = {
 	"partypet",
 	"partypettarget",
 	"partypettargettarget",
+	"arena",
 	"arenatarget",
 	"arenatargettarget",
 	"arenapet",
