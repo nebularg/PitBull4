@@ -52,39 +52,39 @@ function PitBull4:MakeSingletonFrame(unit)
 	if DEBUG then
 		expect(unit, 'typeof', 'string')
 	end
-	
+
 	local id = PitBull4.Utils.GetBestUnitID(unit)
 	if not PitBull4.Utils.IsSingletonUnitID(id) then
 		error(("Bad argument #1 to `MakeSingletonFrame'. %q is not a singleton UnitID"):format(tostring(unit)), 2)
 	end
 	unit = id
-	
+
 	local frame_name = "PitBull4_Frames_" .. unit
 	local frame = _G[frame_name]
-	
+
 	if not frame then
 		frame = CreateFrame("Button", frame_name, UIParent, "SecureUnitButtonTemplate,SecureHandlerBaseTemplate")
-	
+
 		frame:WrapScript(frame, "OnAttributeChanged", Singleton_OnAttributeChanged)
 		frame.is_singleton = true
-		
+
 		-- for singletons, its classification is its UnitID
 		local classification = unit
 		frame.classification = classification
 		frame.classification_db = PitBull4.db.profile.units[classification]
-		
+
 		local is_wacky = PitBull4.Utils.IsWackyUnitGroup(classification)
 		frame.is_wacky = is_wacky
-		
+
 		self:ConvertIntoUnitFrame(frame)
-		
+
 		frame:SetAttribute("unit", unit)
 	end
-	
+
 	frame:Activate()
-	
+
 	frame:RefreshLayout()
-	
+
 	frame:UpdateGUID(UnitGUID(unit))
 end
 PitBull4.MakeSingletonFrame = PitBull4:OutOfCombatWrapper(PitBull4.MakeSingletonFrame)
@@ -142,7 +142,7 @@ UnitPopupButtons["PB4_CLEAR_FOCUS"] = {
 }
 
 UnitPopupButtons["PB4_ROLE_CHECK"] = {
-	text = ROLE_POLL, 
+	text = ROLE_POLL,
 	tooltipText = L["Initiate a role check, asking your group members to specify their roles."],
 	dist = 0,
 }
@@ -165,11 +165,11 @@ end)
 hooksecurefunc("UnitPopup_HideButtons",function()
 	local dropdownMenu = UIDROPDOWNMENU_INIT_MENU
 	local inParty, inRaid, inBattleground, isLeader, isAssistant
-	if IsInGroup() then 
-		inParty = true 
+	if IsInGroup() then
+		inParty = true
 	end
 	if IsInRaid() then
-		inRaid = true 
+		inRaid = true
 		inParty = true
 	end
 	if UnitInBattleground("player") then
@@ -327,7 +327,7 @@ function SingletonUnitFrame__scripts:OnDragStart()
 	if db.lock_movement or InCombatLockdown() then
 		return
 	end
-	
+
 	self:StartMoving()
 	moving_frame = self
 
@@ -335,7 +335,7 @@ function SingletonUnitFrame__scripts:OnDragStart()
 		-- stop thing is to make WoW move the frame the initial few pixels between
 		-- OnMouseDown and OnDragStart
 		self:StopMovingOrSizing()
-	
+
 		LibStub("LibSimpleSticky-1.0"):StartMoving(self, PitBull4.all_frames_list, 0, 0, 0, 0)
 	end
 end
@@ -348,21 +348,21 @@ function SingletonUnitFrame__scripts:OnDragStop()
 	else
 		self:StopMovingOrSizing()
 	end
-	
+
 	local ui_scale = UIParent:GetEffectiveScale()
 	local scale = self:GetEffectiveScale() / ui_scale
-	
+
 	local x, y = self:GetCenter()
 	x, y = x * scale, y * scale
-	
+
 	x = x - GetScreenWidth()/2
 	y = y - GetScreenHeight()/2
-	
+
 	self.classification_db.position_x = x
 	self.classification_db.position_y = y
-	
+
 	LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
-	
+
 	self:RefreshLayout()
 end
 
@@ -388,20 +388,20 @@ function UnitFrame__scripts:OnEnter()
 			GameTooltipTextLeft1:SetTextColor(r, g, b)
 		end
 	end
-	
+
 	PitBull4:RunFrameScriptHooks("OnEnter", self)
 end
 
 function UnitFrame__scripts:OnLeave()
 	GameTooltip:Hide()
-	
+
 	PitBull4:RunFrameScriptHooks("OnLeave", self)
 end
 
 function UnitFrame__scripts:OnAttributeChanged(key, value)
 	if key == "unit" or key == "unitsuffix" then
 		local new_unit = PitBull4.Utils.GetBestUnitID(SecureButton_GetModifiedUnit(self, "LeftButton")) or nil
-	
+
 		local updated = false
 		local old_unit = self.unit
 
@@ -431,12 +431,12 @@ function UnitFrame__scripts:OnAttributeChanged(key, value)
 				expect(self.guid, '==', nil)
 			end
 		end
-	
+
 		if old_unit then
 			PitBull4.unit_id_to_frames[old_unit][self] = nil
 			PitBull4.unit_id_to_frames_with_wacky[old_unit][self] = nil
 		end
-	
+
 		self.unit = new_unit
 		if new_unit then
 			PitBull4.unit_id_to_frames[new_unit][self] = true
@@ -472,7 +472,7 @@ function UnitFrame__scripts:OnShow()
 			self:UpdateGUID(guid)
 		end
 	end
-	
+
 	self:SetAlpha(PitBull4:GetFinalFrameOpacity(self))
 end
 
@@ -483,7 +483,7 @@ function UnitFrame__scripts:OnHide()
 	-- Clear the guid without causing an update unless the frame
 	-- is force_shown in which case force an update.
 	self:UpdateGUID(nil,force_show and true or false)
-	if DEBUG then			
+	if DEBUG then
 		-- debug test to help try and track down issue 475.  The
 		-- guid should always end up set to nil after this.
 		expect(self.guid, '==', nil)
@@ -493,7 +493,7 @@ function UnitFrame__scripts:OnHide()
 		return
 	end
 
-	-- Iterate the modules and call their OnHide function to tell them 
+	-- Iterate the modules and call their OnHide function to tell them
 	-- a frame was hidden.  They may very well be changing the frame and
 	-- causing layout changes.  However, since the frame is hidden we
 	-- do not track this or cause layout updates to happen.  They'll
@@ -528,37 +528,37 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 		expect(frame, 'frametype', 'Button')
 		expect(isExampleFrame, 'typeof', 'nil;boolean')
 	end
-	
+
 	self.all_frames[frame] = true
 	table.insert(self.all_frames_list, frame)
-	
+
 	self.classification_to_frames[frame.classification][frame] = true
-	
+
 	if frame.is_wacky then
 		self.wacky_frames[frame] = true
 		PitBull4.num_wacky_frames = PitBull4.num_wacky_frames + 1
 	else
 		self.non_wacky_frames[frame] = true
 	end
-	
+
 	if frame.is_singleton then
 		self.singleton_frames[frame] = true
 	else
 		self.member_frames[frame] = true
 	end
-	
+
 	local overlay = PitBull4.Controls.MakeFrame(frame)
 	frame.overlay = overlay
 	overlay:SetFrameLevel(frame:GetFrameLevel() + 17)
-	
+
 	for k, v in pairs(UnitFrame__scripts) do
 		frame:HookScript(k, v)
 	end
-	
+
 	for k, v in pairs(frame.is_singleton and SingletonUnitFrame__scripts or MemberUnitFrame__scripts) do
 		frame:HookScript(k, v)
 	end
-	
+
 	for k, v in pairs(UnitFrame) do
 		frame[k] = v
 	end
@@ -566,7 +566,7 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 	for k, v in pairs(frame.is_singleton and SingletonUnitFrame or MemberUnitFrame) do
 		frame[k] = v
 	end
-	
+
 	if not isExampleFrame then
 		if frame:CanChangeAttribute() then
 			if frame.is_singleton then
@@ -585,7 +585,7 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 		end
 	end
 	frame:RefreshVehicle()
-	
+
 	frame:SetClampedToScreen(true)
 
 	if frame.is_singleton then
@@ -614,7 +614,7 @@ function UnitFrame:RefreshVehicle()
 		return
 	end
 
-	local config_value = classification_db.vehicle_swap or nil 
+	local config_value = classification_db.vehicle_swap or nil
 	local frame_value = self:GetAttribute("toggleForVehicle")
 	if self:CanChangeAttribute() and frame_value ~= config_value then
 		self:SetAttribute("toggleForVehicle", config_value)
@@ -629,12 +629,12 @@ end
 -- @usage frame:RefreshLayout()
 function UnitFrame:_RefreshLayout()
 	local old_layout = self.layout
-	
+
 	local classification_db = self.classification_db
 	if not classification_db then
 		return
 	end
-	
+
 	local layout = classification_db.layout
 	self.layout = layout
 	self.layout_db = PitBull4.db.profile.layouts[layout]
@@ -669,13 +669,13 @@ SingletonUnitFrame.SetClickThroughState= PitBull4:OutOfCombatWrapper(SingletonUn
 function SingletonUnitFrame:RefixSizeAndPosition()
 	local layout_db = self.layout_db
 	local classification_db = self.classification_db
-	
+
 	self:SetWidth(layout_db.size_x * classification_db.size_x)
 	self:SetHeight(layout_db.size_y * classification_db.size_y)
 	self:SetScale(layout_db.scale * classification_db.scale)
 	self:SetFrameStrata(layout_db.strata)
 	self:SetFrameLevel(layout_db.level)
-	
+
 	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
 	self:ClearAllPoints()
 	self:SetPoint("CENTER", UIParent, "CENTER", classification_db.position_x / scale, classification_db.position_y / scale)
@@ -683,7 +683,7 @@ end
 SingletonUnitFrame.RefixSizeAndPosition = PitBull4:OutOfCombatWrapper(SingletonUnitFrame.RefixSizeAndPosition)
 
 --- Activate the unit frame.
--- This handles UnitWatch and the custom StateDriver 
+-- This handles UnitWatch and the custom StateDriver
 -- @usage frame:Activate()
 function SingletonUnitFrame:Activate()
 	RegisterUnitWatch(self, true)
@@ -692,7 +692,7 @@ end
 SingletonUnitFrame.Activate = PitBull4:OutOfCombatWrapper(SingletonUnitFrame.Activate)
 
 --- Deactivate the unit frame.
--- This handles UnitWatch and the custom StateDriver 
+-- This handles UnitWatch and the custom StateDriver
 -- @usage frame:Deactivate()
 function SingletonUnitFrame:Deactivate()
 	UnregisterUnitWatch(self)
@@ -717,7 +717,7 @@ function SingletonUnitFrame:UnforceShow()
 	end
 	self.force_show = nil
 	self:SetAttribute("config_mode", nil)
-	
+
 	-- If we're visible force an udpate so everything is properly in a
 	-- non-config mode state
 	if self:IsVisible() then
@@ -765,13 +765,13 @@ function UnitFrame:UpdateBestUnit()
 	if old_best_unit == new_best_unit then
 		return
 	end
-	
+
 	self.best_unit = new_best_unit
-	
+
 	if old_best_unit then
 		PitBull4.unit_id_to_frames_with_wacky[old_best_unit][self] = nil
 	end
-	
+
 	if new_best_unit then
 		PitBull4.unit_id_to_frames_with_wacky[new_best_unit][self] = true
 	end
@@ -790,9 +790,9 @@ function UnitFrame:Update(same_guid, update_layout)
 	if not self.guid and not self.force_show then
 	 	if self.populated then
 			self.populated = nil
-			
+
 			self:UpdateBestUnit()
-			
+
 			for _, module in PitBull4:IterateEnabledModules() do
 				module:Clear(self)
 			end
@@ -800,22 +800,22 @@ function UnitFrame:Update(same_guid, update_layout)
 		return
 	elseif not self.classification_db or not self.layout_db then
 		-- Possibly unused frame made for another profile
-		return	
+		return
 	end
 	self.populated = true
-	
+
 	if not same_guid then
 		self:UpdateBestUnit()
 	end
-	
+
 	local changed = update_layout
-	
+
 	for _, module_type in ipairs(MODULE_UPDATE_ORDER) do
 		for _, module in PitBull4:IterateModulesOfType(module_type) do
 			changed = module:Update(self, true, same_guid) or changed
 		end
 	end
-	
+
 	if changed then
 		self:UpdateLayout(false)
 	end
@@ -830,7 +830,7 @@ function UnitFrame:UpdateGUID(guid, update)
 	if DEBUG then
 		expect(guid, 'typeof', 'string;nil')
 	end
-	
+
 	-- if the guids are the same, cut out, but don't if it's a wacky unit that has a guid.
 	if update ~= true and self.guid == guid and not (guid and self.is_wacky and not self.best_unit) then
 		return

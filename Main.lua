@@ -78,7 +78,7 @@ local DEFAULT_LSM_FONT = "Arial Narrow"
 if LibSharedMedia then
 	if not LibSharedMedia:IsValid("font", DEFAULT_LSM_FONT) then
 		-- non-Western languages
-		
+
 		DEFAULT_LSM_FONT = LibSharedMedia:GetDefault("font")
 	end
 end
@@ -134,7 +134,7 @@ local DATABASE_DEFAULTS = {
 				group_filter = nil,
 				group_by = nil,
 				use_pet_header = nil,
-				
+
 				position_x = 0,
 				position_y = 0,
 				size_x = 1, -- this is a multiplier
@@ -148,7 +148,7 @@ local DATABASE_DEFAULTS = {
 				click_through = false,
 				tooltip = 'always',
 				exists = false, -- used to force the group to exist even if all values are default
-				
+
 				show_when = {
 					solo = false,
 					party = true,
@@ -275,7 +275,7 @@ do
 	-- unused tables go in this set
 	-- if the garbage collector comes around, they'll be collected properly
 	local cache = setmetatable({}, {__mode='k'})
-	
+
 	--- Return a table
 	-- @usage local t = PitBull4.new()
 	-- @return a blank table
@@ -285,12 +285,12 @@ do
 			cache[t] = nil
 			return t
 		end
-		
+
 		return {}
 	end
-	
+
 	local wipe = _G.wipe
-	
+
 	--- Delete a table, clearing it and putting it back into the queue
 	-- @usage local t = PitBull4.new()
 	-- t = del(t)
@@ -300,7 +300,7 @@ do
 			expect(t, 'typeof', 'table')
 			expect(t, 'not_inset', cache)
 		end
-		
+
 		wipe(t)
 		cache[t] = true
 		return nil
@@ -386,12 +386,12 @@ local function get_best_unit(guid)
 	if not guid then
 		return nil
 	end
-	
+
 	local guid_to_unit_ids__guid = guid_to_unit_ids[guid]
 	if not guid_to_unit_ids__guid then
 		return nil
 	end
-	
+
 	return (next(guid_to_unit_ids__guid))
 end
 PitBull4.get_best_unit = get_best_unit
@@ -400,13 +400,13 @@ local function refresh_guid(unit,new_guid)
 	if not NORMAL_UNITS[unit] then
 		return
 	end
-	
+
 	local old_guid = unit_id_to_guid[unit]
 	if new_guid == old_guid then
 		return
 	end
 	unit_id_to_guid[unit] = new_guid
-	
+
 	if old_guid then
 		local guid_to_unit_ids__old_guid = guid_to_unit_ids[old_guid]
 		guid_to_unit_ids__old_guid[unit] = nil
@@ -414,7 +414,7 @@ local function refresh_guid(unit,new_guid)
 			guid_to_unit_ids[old_guid] = del(guid_to_unit_ids__old_guid)
 		end
 	end
-	
+
 	if new_guid then
 		local guid_to_unit_ids__new_guid = guid_to_unit_ids[new_guid]
 		if not guid_to_unit_ids__new_guid then
@@ -423,7 +423,7 @@ local function refresh_guid(unit,new_guid)
 		end
 		guid_to_unit_ids__new_guid[unit] = true
 	end
-	
+
 	for frame in PitBull4:IterateWackyFrames() do
 		if frame.best_unit == unit or frame.guid == new_guid then
 			frame:UpdateBestUnit()
@@ -447,7 +447,7 @@ function PitBull4:OutOfCombatWrapper(func)
 	if DEBUG then
 		expect(func, 'typeof', 'function')
 	end
-	
+
 	return function(...)
 		return PitBull4:RunOnLeaveCombat(func, ...)
 	end
@@ -510,7 +510,7 @@ function PitBull4:IterateFrames(also_hidden)
 	if DEBUG then
 		expect(also_hidden, 'typeof', 'boolean;nil')
 	end
-	
+
 	return not also_hidden and iterate_shown_frames or half_next, all_frames
 end
 
@@ -528,7 +528,7 @@ function PitBull4:IterateWackyFrames(also_hidden)
 	if DEBUG then
 		expect(also_hidden, 'typeof', 'boolean;nil')
 	end
-	
+
 	return not also_hidden and iterate_shown_frames or half_next, wacky_frames
 end
 
@@ -546,7 +546,7 @@ function PitBull4:IterateNonWackyFrames(also_hidden, only_non_wacky)
 	if DEBUG then
 		expect(also_hidden, 'typeof', 'boolean;nil')
 	end
-	
+
 	return not also_hidden and iterate_shown_frames or half_next, non_wacky_frames
 end
 
@@ -564,7 +564,7 @@ function PitBull4:IterateSingletonFrames(also_hidden)
 	if DEBUG then
 		expect(also_hidden, 'typeof', 'boolean;nil')
 	end
-	
+
 	return not also_hidden and iterate_shown_frames or half_next, singleton_frames
 end
 
@@ -582,7 +582,7 @@ function PitBull4:IterateMemberFrames(also_hidden)
 	if DEBUG then
 		expect(also_hidden, 'typeof', 'boolean;nil')
 	end
-	
+
 	return not also_hidden and iterate_shown_frames or half_next, member_frames
 end
 
@@ -607,7 +607,7 @@ function PitBull4:IterateFramesForUnitID(unit, also_hidden, dont_include_wacky)
 		expect(also_hidden, 'typeof', 'boolean;nil')
 		expect(dont_include_wacky, 'typeof', 'boolean;nil')
 	end
-	
+
 	local id = PitBull4.Utils.GetBestUnitID(unit)
 	if not id then
 		if DEBUG then
@@ -616,7 +616,7 @@ function PitBull4:IterateFramesForUnitID(unit, also_hidden, dont_include_wacky)
 			return function () end
 		end
 	end
-	
+
 	return not also_hidden and iterate_shown_frames or half_next, (not dont_include_wacky and unit_id_to_frames_with_wacky or unit_id_to_frames)[id]
 end
 
@@ -633,23 +633,23 @@ end
 function PitBull4:IterateFramesForUnitIDs(...)
 	local t = new()
 	local n = select('#', ...)
-	
+
 	local also_hidden = ((select(n, ...)) == true)
 	if also_hidden then
 		n = n - 1
 	end
-	
+
 	for i = 1, n do
 		local unit = (select(i, ...))
 		local frames = unit_id_to_frames_with_wacky[unit]
-		
+
 		for frame in pairs(frames) do
 			if also_hidden or frame:IsShown() then
 				t[frame] = true
 			end
 		end
 	end
-	
+
 	return half_next_with_del, t
 end
 
@@ -669,12 +669,12 @@ function PitBull4:IterateFramesForClassification(classification, also_hidden)
 		expect(classification, 'typeof', 'string')
 		expect(also_hidden, 'typeof', 'boolean;nil')
 	end
-	
+
 	local frames = rawget(classification_to_frames, classification)
 	if not frames then
 		return do_nothing
 	end
-	
+
 	return not also_hidden and iterate_shown_frames or half_next, frames
 end
 
@@ -716,7 +716,7 @@ function PitBull4:IterateFramesForLayout(layout, also_hidden)
 		expect(layout, 'typeof', 'string')
 		expect(also_hidden, 'typeof', 'boolean;nil')
 	end
-	
+
 	return not also_hidden and layout_shown_iter or layout_iter, layout
 end
 
@@ -753,11 +753,11 @@ function PitBull4:IterateFramesForGUID(guid)
 			expect(guid, 'match', '^0x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x$')
 		end
 	end
-	
+
 	if not guid then
 		return do_nothing
 	end
-	
+
 	return guid_iter, guid, nil
 end
 
@@ -789,17 +789,17 @@ function PitBull4:IterateFramesForGUIDs(...)
 				expect(guid, 'match', '^0x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x$')
 			end
 		end
-		
+
 		if guid then
 			guids[guid] = true
 		end
 	end
-	
+
 	if not next(guids) then
 		guids = del(guids)
 		return do_nothing
 	end
-	
+
 	return guids_iter, guids, nil
 end
 
@@ -861,12 +861,12 @@ function PitBull4:IterateHeadersForUnitGroup(unit_group)
 	if DEBUG then
 		expect(unit_group, 'typeof', 'string')
 	end
-	
+
 	local headers = rawget(unit_group_to_headers, unit_group)
 	if not headers then
 		return do_nothing
 	end
-	
+
 	return not also_hidden and iterate_shown_frames or half_next, headers
 end
 
@@ -881,12 +881,12 @@ function PitBull4:IterateHeadersForSuperUnitGroup(super_unit_group)
 		expect(super_unit_group, 'typeof', 'string')
 		expect(super_unit_group, 'inset', 'party;raid;boss;arena')
 	end
-	
+
 	local headers = rawget(super_unit_group_to_headers, super_unit_group)
 	if not headers then
 		return do_nothing
 	end
-	
+
 	return not also_hidden and iterate_shown_frames or half_next, headers
 end
 
@@ -908,7 +908,7 @@ function PitBull4:IterateHeadersForName(name)
 	if DEBUG then
 		expect(name, 'typeof', 'string')
 	end
-	
+
 	return return_same, name_to_header[name]
 end
 
@@ -933,7 +933,7 @@ function PitBull4:IterateHeadersForLayout(layout, also_hidden)
 	if DEBUG then
 		expect(layout, 'typeof', 'string')
 	end
-	
+
 	return header_layout_iter, layout
 end
 
@@ -957,7 +957,7 @@ local main_tank_timer
 function PitBull4.OnTanksUpdated()
 	if oRA and not oRA.maintanktable then
 		-- if oRA is loaded but there's no maintanktable that means oRA isn't
-		-- fully loaded.  
+		-- fully loaded.
 		if not main_tank_timer then
 			-- No timer so we start one.
 			main_tank_timer = PitBull4:ScheduleRepeatingTimer(PitBull4.OnTanksUpdated,1)
@@ -1018,7 +1018,7 @@ local upgrade_functions = {
 				end
 			end
 			if namespaces then
-				-- Search our modules config entries for orphaned layouts 
+				-- Search our modules config entries for orphaned layouts
 				for namespace, namespace_db in pairs(namespaces) do
 					if namespace_db and namespace_db.profiles and namespace_db.profiles[profile] and namespace_db.profiles[profile].layouts then
 						for layout in pairs(namespace_db.profiles[profile].layouts) do
@@ -1062,22 +1062,22 @@ function PitBull4:OnInitialize()
 	db = LibStub("AceDB-3.0"):New("PitBull4DB", DATABASE_DEFAULTS, 'Default')
 	DATABASE_DEFAULTS = nil
 	self.db = db
-	
+
 	if fresh_config then
 		db.global.config_version = CURRENT_CONFIG_VERSION
 	end
-		
+
 	db.RegisterCallback(self, "OnProfileChanged")
 	db.RegisterCallback(self, "OnProfileReset")
-	db.RegisterCallback(self, "OnNewProfile") 
+	db.RegisterCallback(self, "OnNewProfile")
 	db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
 
 	LibStub("LibDualSpec-1.0"):EnhanceDatabase(db, "PitBull4")
-	
+
 	-- used for run-once-only initialization
 	self:RegisterEvent("ADDON_LOADED")
 	self:ADDON_LOADED()
-	
+
 	LoadAddOn("LibDataBroker-1.1")
 	LoadAddOn("LibDBIcon-1.0")
 	LoadAddOn("LibBossIDs-1.0", true)
@@ -1092,15 +1092,15 @@ function PitBull4:ADDON_LOADED()
 				type = "launcher",
 				icon = [[Interface\AddOns\PitBull4\pitbull]],
 				OnClick = function(clickedframe, button)
-					if button == "RightButton" then 
+					if button == "RightButton" then
 						if IsShiftKeyDown() then
 							PitBull4.db.profile.frame_snap = not PitBull4.db.profile.frame_snap
 						else
 							PitBull4.db.profile.lock_movement = not PitBull4.db.profile.lock_movement
 						end
 						LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
-					else 
-						return PitBull4.Options.OpenConfig() 
+					else
+						return PitBull4.Options.OpenConfig()
 					end
 				end,
 				OnTooltipShow = function(tt)
@@ -1156,32 +1156,32 @@ do
 		end
 		return false
 	end
-	
+
 	local function iter(num_addons, i)
 		i = i + 1
 		if i >= num_addons then
 			-- and we're done
 			return nil
 		end
-		
+
 		-- must be Load-on-demand (obviously)
 		if not IsAddOnLoadOnDemand(i) then
 			return iter(num_addons, i)
 		end
-		
+
 		local name = GetAddOnInfo(i)
-		
+
 		-- must start with PitBull4_
 		local module_name = name:match("^PitBull4_(.*)$")
 		if not module_name then
 			return iter(num_addons, i)
 		end
-		
+
 		-- PitBull4 must be in the Dependency list
 		if not find_PitBull4(GetAddOnDependencies(i)) then
 			return iter(num_addons, i)
 		end
-		
+
 		local condition = GetAddOnMetadata(name, "X-PitBull4-Condition")
 		if condition then
 			local func, err = loadstring(condition)
@@ -1197,11 +1197,11 @@ do
 				end
 			end
 		end
-		
+
 		-- passes all tests
 		return i, name, module_name
 	end
-	
+
 	--- Return a iterator of addon ID, addon name that are modules that PitBull4 can load.
 	-- module_name is the same as name without the "PitBull4_" prefix.
 	-- @usage for i, name, module_name in PitBull4:IterateLoadOnDemandModules() do
@@ -1221,14 +1221,14 @@ PitBull4.modules_not_loaded = modules_not_loaded
 function PitBull4:LoadModules()
 	-- NOTE: this assumes that module profiles are the same as PitBull4's profile.
 	local current_profile = self.db:GetCurrentProfile()
-	
+
 	local sv = self.db.sv
 	local sv_namespaces = sv and sv.namespaces
 	for i, name, module_name in self:IterateLoadOnDemandModules() do
 		local module_sv = sv_namespaces and sv_namespaces[module_name]
 		local module_profile_db = module_sv and module_sv.profiles and module_sv.profiles[current_profile]
 		local enabled = module_profile_db and module_profile_db.global and module_profile_db.global.enabled
-		
+
 		if enabled == nil then
 			-- we have to figure out the default state
 			local default_state = GetAddOnMetadata(name, "X-PitBull4-DefaultState")
@@ -1240,7 +1240,7 @@ function PitBull4:LoadModules()
 			-- print(("Found module '%s', attempting to load."):format(module_name))
 			loaded = LoadAddOn(name)
 		end
-	
+
 		if not loaded then
 			-- print(("Found module '%s', not loaded."):format(module_name))
 			modules_not_loaded[module_name] = true
@@ -1295,14 +1295,14 @@ function PitBull4:OnProfileChanged()
 			self.ClassOrder[#self.ClassOrder + 1] = v
 		end
 	end
-	
+
 	-- Notify modules that the profile has changed.
 	for _, module in PitBull4:IterateEnabledModules() do
 		if module.OnProfileChanged then
 			module:OnProfileChanged()
 		end
 	end
-	
+
 	if not db.profile.made_groups then
 		db.profile.made_groups = true
 		for name, data in pairs(DEFAULT_GROUPS) do
@@ -1310,7 +1310,7 @@ function PitBull4:OnProfileChanged()
 			merge_onto(group_db, data)
 		end
 	end
-	
+
 	for header in PitBull4:IterateHeaders(true) do
 		local group_db = rawget(db.profile.groups, header.name)
 		header.group_db = group_db
@@ -1321,7 +1321,7 @@ function PitBull4:OnProfileChanged()
 	for frame in PitBull4:IterateSingletonFrames(true) do
 		frame.classification_db = db.profile.units[frame.classification]
 	end
-	
+
 	for header in PitBull4:IterateHeaders(true) do
 		if header.group_db then
 			header:RefreshGroup(true)
@@ -1348,7 +1348,7 @@ function PitBull4:OnProfileChanged()
 			self:MakeGroupHeader(group)
 		end
 	end
-	
+
 	self:LoadModules()
 
 	-- Enable/Disable modules to match the new profile.
@@ -1361,7 +1361,7 @@ function PitBull4:OnProfileChanged()
 	end
 
 	self:RecheckConfigMode()
-	
+
 	if db_icon_done then
 		local LibDBIcon = LibStub("LibDBIcon-1.0")
 		local minimap_icon_db = db.profile.minimap_icon
@@ -1397,7 +1397,7 @@ timerFrame:Hide()
 
 function PitBull4:OnEnable()
 	self:ScheduleRepeatingTimer(refresh_all_guids, 15)
-	
+
 	-- register unit change events
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterEvent("PLAYER_FOCUS_CHANGED")
@@ -1406,22 +1406,22 @@ function PitBull4:OnEnable()
 
 	-- register events for core handled bar coloring
 	self:RegisterEvent("UNIT_FACTION")
-	
+
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-	
+
 	-- enter/leave combat for :RunOnLeaveCombat
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 
 	self:RegisterEvent("GROUP_ROSTER_UPDATE")
-	
+
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("PLAYER_LEAVING_WORLD")
 
 	self:RegisterEvent("PET_BATTLE_OPENING_START")
-	
+
 	timerFrame:Show()
 
 	-- show initial frames
@@ -1432,7 +1432,7 @@ end
 
 local timer = 0
 local wacky_update_rate
-local current_wacky_frame 
+local current_wacky_frame
 timerFrame:SetScript("OnUpdate",function(self, elapsed)
 	local num_wacky_frames = PitBull4.num_wacky_frames
 	if num_wacky_frames <= 0 then return end
@@ -1591,7 +1591,7 @@ PitBull4.StateHeader = StateHeader
 StateHeader:WrapScript(StateHeader, "OnAttributeChanged", [[
   if name ~= "new_group" and name ~= "remove_group" and name ~= "state-group" and name ~= "config_mode" and name ~= "forced_state" then return end
 
-  -- Special handling for the new_group and remove_group attributes 
+  -- Special handling for the new_group and remove_group attributes
   local header
   if name == "new_group" then
     -- value is the name of the new group header to add to our group list
@@ -1602,7 +1602,7 @@ StateHeader:WrapScript(StateHeader, "OnAttributeChanged", [[
     end
 
     header = self:GetFrameRef(value)
-    groups[value] = header 
+    groups[value] = header
   elseif name == "remove_group" then
     -- value is the name of the group header to remove from our group list
     if not value or not groups then return end
@@ -1673,7 +1673,7 @@ end
 -- @usage local state = PitBull4:GetState()
 -- @return the state of the player.
 function PitBull4:GetState()
-	return PitBull4.config_mode or GetManagedEnvironment(StateHeader).state 
+	return PitBull4.config_mode or GetManagedEnvironment(StateHeader).state
 end
 
 function PitBull4:PLAYER_LEAVING_WORLD()
@@ -1746,7 +1746,7 @@ do
 		end
 		local t = next(pool) or {}
 		pool[t] = nil
-		
+
 		t.f = func
 		local n = select('#', ...)
 		t.n = n

@@ -13,33 +13,33 @@ do
 		if type(key) ~= "string" then
 			return false
 		end
-		
+
 		if key:sub(-6) == "target" then
 			local value = self[key:sub(1, -7)]
 			self[key] = value
 			return value
 		end
-		
+
 		self[key] = false
 		return false
 	end }
-	
+
 	local target_same_with_target_mt = { __index=function(self, key)
 		if type(key) ~= "string" then
 			return false
 		end
-		
+
 		if key:sub(-6) == "target" then
 			local value = self[key:sub(1, -7)]
 			value = value and value .. "target"
 			self[key] = value
 			return value
 		end
-		
+
 		self[key] = false
 		return false
 	end }
-	
+
 	local better_unit_ids = {
 		player = "player",
 		pet = "pet",
@@ -73,7 +73,7 @@ do
 		better_unit_ids["boss" .. i] = "boss" .. i
 	end
 	setmetatable(better_unit_ids, target_same_with_target_mt)
-	
+
 	--- Return the best UnitID for the UnitID provided
 	-- @param unit the known UnitID
 	-- @usage PitBull4.Utils.GetBestUnitID("playerpet") == "pet"
@@ -81,7 +81,7 @@ do
 	function PitBull4.Utils.GetBestUnitID(unit)
 		return better_unit_ids[unit]
 	end
-	
+
 	local valid_singleton_unit_ids = {
 		player = true,
 		pet = true,
@@ -97,7 +97,7 @@ do
 		valid_singleton_unit_ids["boss" .. i] = true
 	end
 	setmetatable(valid_singleton_unit_ids, target_same_mt)
-	
+
 	--- Return whether the UnitID provided is a singleton
 	-- @param unit the UnitID to check
 	-- @usage PitBull4.Utils.IsSingletonUnitID("player") == true
@@ -106,7 +106,7 @@ do
 	function PitBull4.Utils.IsSingletonUnitID(unit)
 		return valid_singleton_unit_ids[unit]
 	end
-	
+
 	local valid_classifications = {
 		player = true,
 		pet = true,
@@ -124,7 +124,7 @@ do
 		battlegroundpet = true,
 	}
 	setmetatable(valid_classifications, target_same_mt)
-	
+
 	--- Return whether the classification is valid
 	-- @param classification the classification to check
 	-- @usage PitBull4.Utils.IsValidClassification("player") == true
@@ -136,7 +136,7 @@ do
 	function PitBull4.Utils.IsValidClassification(unit)
 		return valid_classifications[unit]
 	end
-	
+
 	local non_wacky_unit_ids = {
 		player = true,
 		pet = true,
@@ -153,7 +153,7 @@ do
 		battleground = true,
 		battlegroundpet = true,
 	}
-	
+
 	--- Return whether the classification provided is considered "wacky"
 	-- @param classification the classification in question
 	-- @usage assert(not PitBull4.Utils.IsWackyUnitGroup("player"))
@@ -214,7 +214,7 @@ do
 		self[group] = good
 		return good
 	end})
-	
+
 	--- Return a localized form of the unit classification.
 	-- @param classification a unit classification, e.g. "player", "party", "partypet"
 	-- @usage PitBull4.Utils.GetLocalizedClassification("player") == "Player"
@@ -226,7 +226,7 @@ do
 			expect(classification, 'typeof', 'string')
 			expect(classification, 'inset', classifications)
 		end
-		
+
 		return classifications[classification]
 	end
 end
@@ -241,11 +241,11 @@ function PitBull4.Utils.ConvertMethodToFunction(namespace, func_name)
 	if type(func_name) == "function" then
 		return func_name
 	end
-	
+
 	if DEBUG then
 		expect(namespace[func_name], 'typeof', 'function')
 	end
-	
+
 	return function(...)
 		return namespace[func_name](namespace, ...)
 	end
@@ -261,12 +261,12 @@ function PitBull4.Utils.GetMobIDFromGuid(guid)
         expect(guid, 'typeof', 'string')
         assert(#guid == 16 or #guid == 18)
     end
-    
+
     local unit_type = guid:sub(-14, -14)
     if unit_type ~= "3" and unit_type ~= "B" and unit_type ~= "b" then
         return nil
     end
-   
+
 		return tonumber(guid:sub(-12, -9), 16)
 end
 
@@ -277,7 +277,7 @@ end
 function PitBull4.Utils.BetterUnitClassification(unit)
     local classification = UnitClassification(unit)
     local LibBossIDs = PitBull4.LibBossIDs
-    
+
     if not LibBossIDs or classification == "worldboss" or classification == "normal" then
         return classification
     end
@@ -285,16 +285,16 @@ function PitBull4.Utils.BetterUnitClassification(unit)
     if not guid then
         return classification
     end
-    
+
     local mob_id = PitBull4.Utils.GetMobIDFromGuid(guid)
     if not mob_id then
         return classification
     end
-    
+
     if LibBossIDs.BossIDs[mob_id] then
         return "worldboss"
     end
-    
+
     return classification
 end
 
