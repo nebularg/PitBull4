@@ -1565,7 +1565,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 				frame:SetAttribute("unitsuffix", header.unitsuffix)
 			end
 
-			RegisterUnitWatch(frame, header.super_unit_group == "arena")
+			RegisterUnitWatch(frame, header.unit_group == "arena")
 
 			frame:RefreshLayout()
 
