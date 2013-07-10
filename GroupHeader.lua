@@ -270,7 +270,7 @@ function GroupHeader:RefixSizeAndPosition()
 
 	if self.fake then
 		-- reposition frames on the fake header
-		self:UpdateChildren()
+		self:PositionMembers()
 	end
 
 	self:ClearAllPoints()
@@ -1355,7 +1355,8 @@ function MemberUnitFrame:ForceShow()
 		self.force_show = true
 
 		-- Continue to watch the frame but do the hiding and showing ourself
-		if self.unit and self.unit:match("^arena%d$") then -- arena units already watch state
+		local unit = self.unit or ""
+		if not unit:match("^arena%d$") then -- arena units already watch state
 			UnregisterUnitWatch(self)
 			RegisterUnitWatch(self, true)
 		end
@@ -1373,7 +1374,8 @@ function MemberUnitFrame:UnforceShow()
 	self.force_show = nil
 
 	-- Ask the SecureStateDriver to show/hide the frame for us
-	if self.unit and self.unit:match("^arena%d$") then
+	local unit = self.unit or ""
+	if not unit:match("^arena%d$") then
 		UnregisterUnitWatch(self)
 		RegisterUnitWatch(self)
 	end
@@ -1578,8 +1580,8 @@ end
 
 
 --- Position all the children of a fake group header.
--- @usage header:UpdateChildren()
-function GroupHeader:UpdateChildren()
+-- @usage header:PositionMembers()
+function GroupHeader:PositionMembers()
 	-- duplicate code from SecureGroupHeader_Update IN TWO PLACES! FUCK YEA! because it's that awesome.
 	local oldIgnore = self:GetAttribute("_ignore")
 	self:SetAttribute("_ignore", "configureChildren")
@@ -1679,5 +1681,5 @@ function GroupHeader:UpdateChildren()
 
 	self:SetAttribute("_ignore", oldIgnore)
 end
-GroupHeader.UpdateChildren = PitBull4:OutOfCombatWrapper(GroupHeader.UpdateChildren)
+GroupHeader.PositionMembers = PitBull4:OutOfCombatWrapper(GroupHeader.PositionMembers)
 
