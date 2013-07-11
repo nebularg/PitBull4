@@ -1365,10 +1365,8 @@ function MemberUnitFrame:ForceShow()
 		self.force_show = true
 
 		-- Continue to watch the frame but do the hiding and showing ourself
-		if self.header.unit_group ~= "arena" then -- arena units already watch state
-			UnregisterUnitWatch(self)
-			RegisterUnitWatch(self, true)
-		end
+		UnregisterUnitWatch(self)
+		RegisterUnitWatch(self, true)
 	end
 
 	-- Always make sure the frame is shown even if we think it already is
@@ -1383,10 +1381,8 @@ function MemberUnitFrame:UnforceShow()
 	self.force_show = nil
 
 	-- Ask the SecureStateDriver to show/hide the frame for us
-	if self.header.unit_group ~= "arena" then
-		UnregisterUnitWatch(self)
-		RegisterUnitWatch(self)
-	end
+	UnregisterUnitWatch(self)
+	RegisterUnitWatch(self, self.header.unit_group == "arena")
 
 	-- If we're visible force an update so everything is properly in a
 	-- non-config mode state
