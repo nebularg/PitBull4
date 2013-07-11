@@ -353,7 +353,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	local group_based = party_based or unit_group:sub(1, 4) == "raid"
 	local include_player = party_based and group_db.include_player
 	local show_when = group_db.show_when
-	local show_solo = include_player and show_when.solo or not group_based
+	local show_solo = include_player and show_when.solo
 	local group_filter = not party_based and group_db.group_filter or nil
 	local sort_direction = group_db.sort_direction
 	local sort_method = group_db.sort_method
@@ -469,21 +469,15 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	-- Set the attributes for the StateHeader to know when to show and hide this
 	-- group
 	for k,v in pairs(show_when) do
-		if k == "solo" then
-			if group_based then
-				self:SetAttribute(k, enabled and show_solo and party_based)
-			else
-				self:SetAttribute(k, enabled and show_solo)
+		local value = enabled and v
+		if group_based then
+			if k == "solo" then
+				value = enabled and show_solo and party_based
+			elseif k == "party" then
+				value = value and party_based
 			end
-		elseif k == "party" then
-			if group_based then
-				self:SetAttribute(k, enabled and v and party_based)
-			else
-				self:SetAttribute(k, enabled and v)
-			end
-		else
-			self:SetAttribute(k, enabled and v)
 		end
+		self:SetAttribute(k, value)
 	end
 
 	self:RefixSizeAndPosition()
@@ -1383,7 +1377,12 @@ function MemberUnitFrame:UnforceShow()
 
 	-- Ask the SecureStateDriver to show/hide the frame for us
 	UnregisterUnitWatch(self)
-	RegisterUnitWatch(self, self.header.unit_group == "arena")
+
+	local as_state = self.header.unit_group == "arena"
+	if as_state then
+		self:Hide()
+	end
+	RegisterUnitWatch(self, as_state)
 
 	-- If we're visible force an update so everything is properly in a
 	-- non-config mode state
@@ -1560,6 +1559,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			local frame = _G[frame_name]
 			if not frame then
 				frame = CreateFrame("Button", frame_name, header, "SecureUnitButtonTemplate,SecureHandlerBaseTemplate")
+				frame:Hide()
 
 				header[index] = frame
 				header:InitialConfigFunction()
