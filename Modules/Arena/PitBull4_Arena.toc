@@ -1,0 +1,24 @@
+## Interface: 50300
+## Title: PitBull4 |r[|cffeda55fArena|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Arena")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Arena")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Arena")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Arena")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Arena")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Arena")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Arena")@|r]
+## Notes: Show icons on the unit frame based on which class and specialization it is.
+## Notes-deDE: @localization(locale="deDE", key="Show icons on the unit frame based on which class and specialization it is.")@
+## Notes-esES: @localization(locale="esES", key="Show icons on the unit frame based on which class and specialization it is.")@
+## Notes-frFR: @localization(locale="frFR", key="Show icons on the unit frame based on which class and specialization it is.")@
+## Notes-koKR: @localization(locale="koKR", key="Show icons on the unit frame based on which class and specialization it is.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Show icons on the unit frame based on which class and specialization it is.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Show icons on the unit frame based on which class and specialization it is.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Show icons on the unit frame based on which class and specialization it is.")@
+## Author: Nebula169
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## Version: @project-version@
+
+load.xml
