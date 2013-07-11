@@ -44,7 +44,7 @@ function PitBull4:MakeGroupHeader(group)
 
 		header.name = group
 		header.group_db = group_db
-		header.fake = not group_based or nil
+		header.group_based = group_based
 
 		self:ConvertIntoGroupHeader(header)
 	elseif header.group_db ~= group_db then
@@ -268,7 +268,7 @@ function GroupHeader:RefixSizeAndPosition()
 		self:Update()
 	end
 
-	if self.fake then
+	if not self.group_based then
 		-- reposition frames on the fake header
 		self:PositionMembers()
 	end
@@ -480,8 +480,6 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 			self:SetAttribute(k, enabled and v)
 		end
 	end
-
-	self.fake = not group_based or nil
 
 	self:RefixSizeAndPosition()
 
@@ -1091,7 +1089,7 @@ function GroupHeader:IterateMembers(guess_num)
 	local num
 	if guess_num then
 		local config_mode = PitBull4.config_mode
-		if config_mode and self.fake then
+		if config_mode and not self.group_based then
 			num = 5
 		elseif config_mode == "solo" then
 			num = self.include_player and 1 or 0
@@ -1355,8 +1353,7 @@ function MemberUnitFrame:ForceShow()
 		self.force_show = true
 
 		-- Continue to watch the frame but do the hiding and showing ourself
-		local unit = self.unit or ""
-		if not unit:match("^arena%d$") then -- arena units already watch state
+		if self.header.unit_group ~= "arena" then -- arena units already watch state
 			UnregisterUnitWatch(self)
 			RegisterUnitWatch(self, true)
 		end
@@ -1374,8 +1371,7 @@ function MemberUnitFrame:UnforceShow()
 	self.force_show = nil
 
 	-- Ask the SecureStateDriver to show/hide the frame for us
-	local unit = self.unit or ""
-	if not unit:match("^arena%d$") then
+	if self.header.unit_group ~= "arena" then
 		UnregisterUnitWatch(self)
 		RegisterUnitWatch(self)
 	end
@@ -1431,10 +1427,11 @@ local initialConfigFunction = [[
 
 local onAttributeChanged = [[
   if name == "state-unitexists" then
-    local unit = self:GetAttribute("unit")
+    local unit = self.unit
     if unit:match("^arena%d$") then
       if value and self:GetAttribute("_disappeared") then
-        self:GetParent():SetAttribute("member_changed", unit)
+        local id = unit:match("(%d)")
+        self:GetParent():SetAttribute("member_changed", id)
         self:SetAttribute("_disappeared", nil)
       elseif not value and not self:GetAttribute("_disappeared") then
         self:SetAttribute("_disappeared", true)
@@ -1478,7 +1475,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		header[k] = v
 	end
 
-	if not header.fake then
+	if header.group_based then
 		if ClickCastHeader then
 			SecureHandler_OnLoad(header)
 			header:SetFrameRef("clickcast_header", ClickCastHeader)
@@ -1528,15 +1525,15 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			header.super_unit_group = "arena"
 			header.unitsuffix = unit_group:sub(6)
 
-			header:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS") -- arena prep event
-			header:RegisterEvent("ARENA_OPPONENT_UPDATE") -- passes the unit
+			header:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS")
+			header:RegisterEvent("ARENA_OPPONENT_UPDATE")
 
 			-- update frames on state changes
 			header:SetScript("OnAttributeChanged", function(self, key, value)
 				if key == "member_changed" and value then
-					local id = value:match("(%d)")
-					if id and self[id] then
-						self[id]:Update()
+					local frame = self[value]
+					if frame then
+						frame:Update()
 					end
 				end
 			end)
@@ -1544,6 +1541,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		if header.unitsuffix == "" then
 			header.unitsuffix = nil
 		end
+		local unitsuffix = header.unitsuffix
 
 		for index = 1, header:GetMaxUnits(true) do
 			local unit = header.super_unit_group .. index -- want the base unit as "unit" before getting wacky in "unitsuffix" (seemed awkward to me)
@@ -1554,22 +1552,23 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			if not frame then
 				frame = CreateFrame("Button", frame_name, header, "SecureUnitButtonTemplate,SecureHandlerBaseTemplate")
 
-				frame:WrapScript(frame, "OnAttributeChanged", onAttributeChanged)
-
 				header[index] = frame
 				header:InitialConfigFunction()
 				frame:SetAttribute("*type1", "target")
 				frame:SetAttribute("*type2", "togglemenu")
 
+				frame.unit = PitBull4.Utils.GetBestUnitID(unit .. (unitsuffix or ""))
 				frame:SetAttribute("unit", unit)
-				frame:SetAttribute("unitsuffix", header.unitsuffix)
+				frame:SetAttribute("unitsuffix", unitsuffix)
+
+				frame:WrapScript(frame, "OnAttributeChanged", onAttributeChanged)
 			end
 
-			RegisterUnitWatch(frame, header.unit_group == "arena")
+			RegisterUnitWatch(frame, unit_group == "arena")
 
 			frame:RefreshLayout()
 
-			frame:UpdateGUID(UnitGUID(unit))
+			frame:UpdateGUID(UnitGUID(frame.unit))
 		end
 	end
 
