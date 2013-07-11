@@ -73,6 +73,7 @@ function PitBull4:SwapGroupTemplate(group)
 
 	local old_header = self.name_to_header[group]
 	local group_db = PitBull4.db.profile.groups[group]
+	local group_based = group_db.unit_group:match("^party") or group_db.unit_group:match("^raid")
 
 	if not group_db.enabled then
 		return
@@ -85,7 +86,7 @@ function PitBull4:SwapGroupTemplate(group)
 	old_header:RecheckConfigMode()
 
 	local new_name
-	if not old_header.group_based then
+	if not group_based then
 		new_name = "PitBull4_EnemyGroups_"..group
 	elseif group_db.use_pet_header then
 		new_name = "PitBull4_PetGroups_"..group
@@ -1192,11 +1193,11 @@ function GroupHeader:Rename(name)
 	local group_based = self.group_db.group_based
 	local prefix
 	if not group_based then
-		prefix = "PitBull4_EnemyGroups_"..group
+		prefix = "PitBull4_EnemyGroups_"
 	elseif use_pet_header then
-		prefix = "PitBull4_PetGroups_" .. group
+		prefix = "PitBull4_PetGroups_"
 	else
-		prefix = "PitBull4_Groups_" .. group
+		prefix = "PitBull4_Groups_"
 	end
 
 	local old_header_name = prefix .. self.name

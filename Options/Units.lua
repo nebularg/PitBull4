@@ -367,7 +367,11 @@ function PitBull4.Options.get_unit_options()
 			return t
 		end,
 		get = get,
-		set = set_with_refresh_group_shown,
+		set = function(info,value)
+			if set(info, value) then
+				PitBull4:SwapGroupTemplate(CURRENT_GROUP)
+			end
+		end,
 		disabled = disabled,
 		width = 'double',
 	}
@@ -780,7 +784,8 @@ function PitBull4.Options.get_unit_options()
 		end,
 		disabled = disabled,
 		hidden = function(info)
-			return not get_group_db().unit_group:match("pet")
+			local unit_group = get_group_db().unit_group
+			return not unit_group:match("pet") or unit_group:match("^arena")
 		end,
 	}
 	
