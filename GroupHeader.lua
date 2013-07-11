@@ -29,6 +29,8 @@ function PitBull4:MakeGroupHeader(group)
 
 	if use_pet_header then
 		header_name = "PitBull4_PetGroups_" .. group
+	elseif not group_based then
+		header_name = "PitBull4_EnemyGroups_"..group
 	else
 		header_name = "PitBull4_Groups_" .. group
 	end
@@ -85,6 +87,8 @@ function PitBull4:SwapGroupTemplate(group)
 	local new_name
 	if group_db.use_pet_header then
 		new_name = "PitBull4_PetGroups_"..group
+	elseif not old_header.group_based then
+		new_name = "PitBull4_EnemyGroups_"..group
 	else
 		new_name = "PitBull4_Groups_"..group
 	end
@@ -1185,7 +1189,15 @@ function GroupHeader:Rename(name)
 	end
 
 	local use_pet_header = self.group_db.use_pet_header
-	local prefix = use_pet_header and "PitBull4_PetGroups_" or "PitBull4_Groups_"
+	local group_based = self.group_db.group_based
+	local prefix
+	if use_pet_header then
+		prefix = "PitBull4_PetGroups_" .. group
+	elseif not group_based then
+		prefix = "PitBull4_EnemyGroups_"..group
+	else
+		prefix = "PitBull4_Groups_" .. group
+	end
 
 	local old_header_name = prefix .. self.name
 	local new_header_name = prefix .. name
