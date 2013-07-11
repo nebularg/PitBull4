@@ -1526,6 +1526,16 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			end
 		end)
 
+		-- update the frame when the unit goes away
+		header:SetScript("OnAttributeChanged", function(self, key, value)
+			if key == "member_changed" and value then
+				local frame = self[value]
+				if frame then
+					frame:Update(true)
+				end
+			end
+		end)
+
 		-- set up the unit/unitsuffix and register update events
 		local unit_group = header.group_db.unit_group
 		if unit_group:sub(1, 4) == "boss" then
@@ -1540,16 +1550,6 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			--header:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS") -- prep frames? is there a way to force class and health values on a frame? other than hacking on modules >.>
 			header:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
 			header:RegisterEvent("ARENA_OPPONENT_UPDATE")
-
-			-- update frames on state changes
-			header:SetScript("OnAttributeChanged", function(self, key, value)
-				if key == "member_changed" and value then
-					local frame = self[value]
-					if frame then
-						frame:Update()
-					end
-				end
-			end)
 		end
 		if header.unitsuffix == "" then
 			header.unitsuffix = nil
