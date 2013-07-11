@@ -1427,7 +1427,8 @@ local initialConfigFunction = [[
 
 local onAttributeChanged = [[
   if name == "state-unitexists" then
-    local id = self.unit:match("^arena(%d)$")
+    local unit = self.unit
+    local id = unit and self.unit:match("^arena(%d)$")
     if id then
       if value and self:GetAttribute("unit_disappeared") then
         self:GetParent():SetAttribute("member_changed", id)
