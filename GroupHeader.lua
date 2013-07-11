@@ -1505,12 +1505,17 @@ function PitBull4:ConvertIntoGroupHeader(header)
 
 		-- allow events to force an update
 		header:SetScript("OnEvent", function(self, event, arg1, ...)
-			if event == "ARENA_PREP_OPPONENT_SPECIALIZATIONS" then
-				self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+			if not self.group_db.enabled then return end
+
+			if event == "UPDATE_BATTLEFIELD_STATUS" then
+				local status, map = GetBattlefieldStatus(arg1)
+				if status == "active" then
+					self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+				end
 			elseif event == "ZONE_CHANGED_NEW_AREA" then
-				-- hide arena frames on leaving arena
+				-- hide arena frames on leaving
 				local _, instanceType = IsInInstance()
-				if instanceType ~= "arena" then
+				if instanceType ~= "arena" and instanceType ~= "pvp" then
 					self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
 					for _, frame in self:IterateMembers() do
 						frame:Hide()
@@ -1521,8 +1526,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			end
 		end)
 
-		-- set up the unit/unitsuffix now so we know how many frames we need to create
-		-- also register our update events
+		-- set up the unit/unitsuffix and register update events
 		local unit_group = header.group_db.unit_group
 		if unit_group:sub(1, 4) == "boss" then
 			header.super_unit_group = "boss"
@@ -1533,7 +1537,8 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			header.super_unit_group = "arena"
 			header.unitsuffix = unit_group:sub(6)
 
-			header:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS")
+			--header:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS") -- prep frames? is there a way to force class and health values on a frame? other than hacking on modules >.>
+			header:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
 			header:RegisterEvent("ARENA_OPPONENT_UPDATE")
 
 			-- update frames on state changes
