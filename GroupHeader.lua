@@ -1523,7 +1523,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			header.super_unit_group = "boss"
 			header.unitsuffix = unit_group:sub(5)
 
-			header:RegisterEvent("INSTANCE_ENCOUNT_ENGAGE_UNIT")
+			header:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
 		elseif unit_group:sub(1, 5) == "arena" then
 			header.super_unit_group = "arena"
 			header.unitsuffix = unit_group:sub(6)
