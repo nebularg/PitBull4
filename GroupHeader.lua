@@ -22,15 +22,15 @@ function PitBull4:MakeGroupHeader(group)
 	end
 
 	local group_db = PitBull4.db.profile.groups[group]
-	local pet_based = not not group_db.unit_group:match("pet") -- this feels dirty
+	local pet_based = group_db.unit_group:match("pet") and true
 	local group_based = group_db.unit_group:match("^party") or group_db.unit_group:match("^raid")
 	local use_pet_header = pet_based and group_db.use_pet_header
 	local header_name
 
-	if use_pet_header then
-		header_name = "PitBull4_PetGroups_" .. group
-	elseif not group_based then
+	if not group_based then
 		header_name = "PitBull4_EnemyGroups_"..group
+	elseif use_pet_header then
+		header_name = "PitBull4_PetGroups_" .. group
 	else
 		header_name = "PitBull4_Groups_" .. group
 	end
@@ -85,10 +85,10 @@ function PitBull4:SwapGroupTemplate(group)
 	old_header:RecheckConfigMode()
 
 	local new_name
-	if group_db.use_pet_header then
-		new_name = "PitBull4_PetGroups_"..group
-	elseif not old_header.group_based then
+	if not old_header.group_based then
 		new_name = "PitBull4_EnemyGroups_"..group
+	elseif group_db.use_pet_header then
+		new_name = "PitBull4_PetGroups_"..group
 	else
 		new_name = "PitBull4_Groups_"..group
 	end
@@ -1191,10 +1191,10 @@ function GroupHeader:Rename(name)
 	local use_pet_header = self.group_db.use_pet_header
 	local group_based = self.group_db.group_based
 	local prefix
-	if use_pet_header then
-		prefix = "PitBull4_PetGroups_" .. group
-	elseif not group_based then
+	if not group_based then
 		prefix = "PitBull4_EnemyGroups_"..group
+	elseif use_pet_header then
+		prefix = "PitBull4_PetGroups_" .. group
 	else
 		prefix = "PitBull4_Groups_" .. group
 	end
