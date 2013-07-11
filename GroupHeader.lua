@@ -1429,12 +1429,12 @@ local onAttributeChanged = [[
   if name == "state-unitexists" then
     local unit = self.unit
     if unit:match("^arena%d$") then
-      if value and self:GetAttribute("_disappeared") then
+      if value and self:GetAttribute("unit_disappeared") then
         local id = unit:match("(%d)")
         self:GetParent():SetAttribute("member_changed", id)
-        self:SetAttribute("_disappeared", nil)
-      elseif not value and not self:GetAttribute("_disappeared") then
-        self:SetAttribute("_disappeared", true)
+        self:SetAttribute("unit_disappeared", nil)
+      elseif not value and not self:GetAttribute("unit_disappeared") then
+        self:SetAttribute("unit_disappeared", true)
       end
       if value then
         self:Show()
