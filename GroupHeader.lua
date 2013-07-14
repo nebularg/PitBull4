@@ -1604,9 +1604,11 @@ end
 
 
 --- Position all the children of a fake group header.
+-- duplicate code from SecureGroupHeader_Update IN TWO PLACES! FUCK YEA! because it's that awesome.
 -- @usage header:PositionMembers()
 function GroupHeader:PositionMembers()
-	-- duplicate code from SecureGroupHeader_Update IN TWO PLACES! FUCK YEA! because it's that awesome.
+	if not self[1] then return end -- frames not set up (:SwapGroupTemplate from a disabled header)
+
 	local oldIgnore = self:GetAttribute("_ignore")
 	self:SetAttribute("_ignore", "configureChildren")
 
