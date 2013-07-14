@@ -1484,6 +1484,16 @@ function PitBull4:ConvertIntoGroupHeader(header)
 	end
 
 	if header.group_based then
+		-- Stop the group header from listening to UNIT_NAME_UPDATE.
+		-- Allowing it to do so is a huge performance drain since the
+		-- GroupHeader's OnEvent updates the header regardless of the unit
+		-- passed in the argument.  Many UNIT_NAME_UPDATE events can be
+		-- generated when zoning into battlegrounds, spirit rezes in
+		-- battlegrounds, pet rezes, etc.  This should prevent some
+		-- stuttering isseus with BGs.  See this post for more details:
+		-- http://forums.wowace.com/showthread.php?p=111494#post111494
+		header:UnregisterEvent("UNIT_NAME_UPDATE")
+
 		if ClickCastHeader then
 			SecureHandler_OnLoad(header)
 			header:SetFrameRef("clickcast_header", ClickCastHeader)
@@ -1502,6 +1512,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 
 	else
 		-- set up our fake header for non party/raid group frames
+		header:RegisterEvent("UNIT_NAME_UPDATE")
 
 		-- allow events to force an update
 		header:SetScript("OnEvent", function(self, event, arg1, ...)
