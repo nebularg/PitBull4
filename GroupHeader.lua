@@ -1564,7 +1564,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			local frame_name = header:GetName() .. "UnitButton" .. index
 			local frame = _G[frame_name]
 			if not frame then
-				frame = CreateFrame("Button", frame_name, header, "SecureUnitButtonTemplate,SecureHandlerBaseTemplate")
+				frame = CreateFrame("Button", frame_name, header, "SecureUnitButtonTemplate,SecureHandlerBaseTemplate,PitBull4_UnitTemplate_Clique")
 				frame:Hide()
 
 				header[index] = frame
