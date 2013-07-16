@@ -353,7 +353,10 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	local group_based = party_based or unit_group:sub(1, 4) == "raid"
 	local include_player = party_based and group_db.include_player
 	local show_when = group_db.show_when
-	local show_solo = include_player and show_when.solo
+	local show_solo = show_when.solo
+	if group_based then
+		show_solo = include_player and show_solo
+	end
 	local group_filter = not party_based and group_db.group_filter or nil
 	local sort_direction = group_db.sort_direction
 	local sort_method = group_db.sort_method
@@ -562,16 +565,12 @@ local function should_show_header(config_mode, header)
 		return false
 	end
 
-	if header.super_unit_group == "boss" then
-		return true
-	end
-
 	if config_mode == "solo" then
 		return header.show_solo
 	end
 
-	if config_mode == "party" then
-		return header.super_unit_group == "arena" or header.super_unit_group == "party"
+	if header.group_based and config_mode == "party" and header.super_unit_group ~= "party" then
+		return false
 	end
 
 	return true
