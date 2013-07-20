@@ -1482,7 +1482,6 @@ function PitBull4:ConvertIntoGroupHeader(header)
 
 	else
 		-- set up our fake header for non party/raid group frames
-		header:RegisterEvent("UNIT_NAME_UPDATE")
 
 		-- allow events to force an update
 		header:SetScript("OnEvent", function(self, event, arg1, ...)
@@ -1511,7 +1510,6 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			header.unitsuffix = unit_group:sub(5)
 
 			header:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
-			header:RegisterEvent("UNIT_TARGETABLE_CHANGED")
 		elseif unit_group:sub(1, 5) == "arena" then
 			header.super_unit_group = "arena"
 			header.unitsuffix = unit_group:sub(6)
@@ -1519,6 +1517,9 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			header:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
 			header:RegisterEvent("ARENA_OPPONENT_UPDATE")
 		end
+		header:RegisterEvent("UNIT_NAME_UPDATE")
+		header:RegisterEvent("UNIT_TARGETABLE_CHANGED")
+		header:RegisterEvent("UNIT_TARGET")
 
 		if header.unitsuffix == "" then
 			header.unitsuffix = nil
