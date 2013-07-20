@@ -1498,6 +1498,12 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			end
 		end)
 
+		header:SetScript("OnAttributeChanged", function(self, name, value)
+			if not self:IsVisible() or name == "_ignore" or self:GetAttribute("_ignore") then return end
+
+			self:UpdateMembers()
+		end)
+
 		-- set up the unit/unitsuffix and register update events
 		local unit_group = header.group_db.unit_group
 		if unit_group:sub(1, 4) == "boss" then
@@ -1556,7 +1562,7 @@ end
 
 
 --- Position all the children of a fake group header.
--- duplicate code from SecureGroupHeader_Update IN TWO PLACES! FUCK YEA! because it's that awesome.
+-- duplicate code from SecureGroupHeader_Update IN TWO PLACES!
 -- @usage header:PositionMembers()
 function GroupHeader:PositionMembers()
 	if not self[1] then return end -- frames not set up (:SwapGroupTemplate from a disabled header)
