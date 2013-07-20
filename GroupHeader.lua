@@ -1376,12 +1376,7 @@ function MemberUnitFrame:UnforceShow()
 
 	-- Ask the SecureStateDriver to show/hide the frame for us
 	UnregisterUnitWatch(self)
-
-	local as_state = self.header.unit_group == "arena"
-	if as_state then
-		self:Hide()
-	end
-	RegisterUnitWatch(self, as_state)
+	RegisterUnitWatch(self)
 
 	-- If we're visible force an update so everything is properly in a
 	-- non-config mode state
@@ -1433,21 +1428,7 @@ local initialConfigFunction = [[
 ]]
 
 local onAttributeChanged = [[
-  if name == "state-unitexists" then
-    local unit = self.unit
-    local id = unit and self.unit:match("^arena(%d)$")
-    if id then
-      if value and self:GetAttribute("unit_disappeared") then
-        self:GetParent():SetAttribute("member_changed", id)
-        self:SetAttribute("unit_disappeared", nil)
-      elseif not value and not self:GetAttribute("unit_disappeared") then
-        self:SetAttribute("unit_disappeared", true)
-      end
-      if value then
-        self:Show()
-      end
-    end
-	elseif name == "config_mode" and self:GetAttribute("config_mode") then
+  if name == "config_mode" and self:GetAttribute("config_mode") then
     self:Show()
   end
 ]]
@@ -1508,31 +1489,12 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			if not self.group_db.enabled then return end
 
 			if event == "UPDATE_BATTLEFIELD_STATUS" then
-				local status, map = GetBattlefieldStatus(arg1)
+				local status = GetBattlefieldStatus(arg1)
 				if status == "active" then
-					self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-				end
-			elseif event == "ZONE_CHANGED_NEW_AREA" then
-				-- hide arena frames on leaving
-				local _, instanceType = IsInInstance()
-				if instanceType ~= "arena" and instanceType ~= "pvp" then
-					self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
-					for _, frame in self:IterateMembers() do
-						frame:Hide()
-					end
+					self:UpdateMembers()
 				end
 			else
 				self:UpdateMembers()
-			end
-		end)
-
-		-- update the frame when the unit goes away
-		header:SetScript("OnAttributeChanged", function(self, key, value)
-			if key == "member_changed" and value then
-				local frame = self[value]
-				if frame then
-					frame:Update(true)
-				end
 			end
 		end)
 
@@ -1543,14 +1505,15 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			header.unitsuffix = unit_group:sub(5)
 
 			header:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
+			header:RegisterEvent("UNIT_TARGETABLE_CHANGED")
 		elseif unit_group:sub(1, 5) == "arena" then
 			header.super_unit_group = "arena"
 			header.unitsuffix = unit_group:sub(6)
 
-			--header:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS") -- prep frames? is there a way to force class and health values on a frame? other than hacking on modules >.>
 			header:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
 			header:RegisterEvent("ARENA_OPPONENT_UPDATE")
 		end
+
 		if header.unitsuffix == "" then
 			header.unitsuffix = nil
 		end
@@ -1578,7 +1541,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 				frame:WrapScript(frame, "OnAttributeChanged", onAttributeChanged)
 			end
 
-			RegisterUnitWatch(frame, unit_group == "arena")
+			RegisterUnitWatch(frame)
 
 			frame:RefreshLayout()
 
