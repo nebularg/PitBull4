@@ -78,8 +78,11 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 		num_combos = MAX_COMBOS
 	end
 	
-	local combos = frame.ComboPoints
 	local db = self:GetLayoutDB(frame)
+	if num_combos == 0 and not db.has_background_color then
+		return self:ClearFrame(frame)
+	end
+	local combos = frame.ComboPoints
 	
 	if combos and #combos == num_combos then
 		combos:Show()
