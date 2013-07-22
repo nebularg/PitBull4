@@ -63,6 +63,12 @@ function PitBull4_PvPIcon:GetExampleTexture(frame)
 	end
 	
 	local player_faction = UnitFactionGroup("player")
+	-- Pandarens start out with a Neutral faction, so just make config mode
+	-- guess that Pandarens are all going to be Alliance so we have something
+	-- to show.
+	if not player_faction or player_faction == "Neutral" then
+		player_faction = "Alliance"
+	end
 	
 	if FRIENDLY_CLASSIFICATIONS[classification] or (frame.guid and frame.unit and UnitIsFriend("player", frame.unit)) then
 		return [[Interface\TargetingFrame\UI-PVP-]] .. player_faction
