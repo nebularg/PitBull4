@@ -15,6 +15,10 @@ local TEXTURES = {
 	default = L["Default"],
 }
 
+local MAX_COMBOS = 5
+local ICON_SIZE = 15
+local BORDER_SIZE = 3
+
 -----------------------------------------------------------------------------
 
 local PitBull4_ComboPoints = PitBull4:NewModule("ComboPoints", "AceEvent-3.0")
@@ -31,6 +35,8 @@ PitBull4_ComboPoints:SetDefaults({
 	color = { 0.7, 0.7, 0 },
 	spacing = 5,
 	texture = "default",
+	has_background_color = false,
+	background_color = { 0, 0, 0, 0.5 }
 })
 
 function PitBull4_ComboPoints:OnEnable()
@@ -52,7 +58,9 @@ function PitBull4_ComboPoints:ClearFrame(frame)
 	for i, combo in ipairs(combos) do
 		combos[i] = combo:Delete()
 	end
-	
+	if combos.bg then
+		combos.bg = combos.bg:Delete()
+	end
 	frame.ComboPoints = combos:Delete()
 	return true
 end
@@ -67,11 +75,7 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 	local num_combos = GetComboPoints(has_vehicle and "vehicle" or "player", "target")
 	
 	if frame.force_show then
-		num_combos = 5
-	end
-	
-	if num_combos == 0 then
-		return self:ClearFrame(frame)
+		num_combos = MAX_COMBOS
 	end
 	
 	local combos = frame.ComboPoints
@@ -82,23 +86,42 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 		return false
 	end
 	
+	local spacing = db.spacing
+	local vertical = db.vertical
+	
 	if not combos then
 		combos = PitBull4.Controls.MakeFrame(frame)
 		frame.ComboPoints = combos
 		combos:SetFrameLevel(frame:GetFrameLevel() + 13)
+
+		if db.has_background_color then
+			local bg = PitBull4.Controls.MakeTexture(combos, "BACKGROUND")
+			combos.bg = bg
+			bg:SetTexture(unpack(db.background_color))
+			bg:SetAllPoints(combos)
+
+			if not vertical then
+				combos:SetHeight(ICON_SIZE + 2*BORDER_SIZE)
+				combos:SetWidth(ICON_SIZE*MAX_COMBOS + BORDER_SIZE*2 + spacing*(MAX_COMBOS-1))
+				combos.height = 1
+			else
+				combos:SetHeight(ICON_SIZE*MAX_COMBOS + BORDER_SIZE*2 + spacing*(MAX_COMBOS-1))
+				combos:SetWidth(ICON_SIZE + 2*BORDER_SIZE)
+				combos.height = MAX_COMBOS
+			end
+		end
 	end
 	
-	local spacing = db.spacing
-	local vertical = db.vertical
-	
-	if not vertical then
-		combos:SetHeight(15)
-		combos:SetWidth(15 + (15 + spacing) * (num_combos - 1))
-		combos.height = 1
-	else
-		combos:SetHeight(15 + (15 + spacing) * (num_combos - 1))
-		combos:SetWidth(15)
-		combos.height = num_combos
+	if not db.has_background_color then
+		if not vertical then
+			combos:SetHeight(ICON_SIZE)
+			combos:SetWidth(ICON_SIZE + (ICON_SIZE + spacing) * (num_combos - 1))
+			combos.height = 1
+		else
+			combos:SetHeight(ICON_SIZE + (ICON_SIZE + spacing) * (num_combos - 1))
+			combos:SetWidth(ICON_SIZE)
+			combos.height = num_combos
+		end
 	end
 	
 	for i = #combos, num_combos + 1, -1 do
@@ -113,12 +136,13 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 		
 		combo:SetTexture(BASE_TEXTURE_PATH .. db.texture)
 		combo:SetVertexColor(unpack(db.color))
-		combo:SetWidth(15)
-		combo:SetHeight(15)
+		combo:SetWidth(ICON_SIZE)
+		combo:SetHeight(ICON_SIZE)
+		local border_size = db.has_background_color and BORDER_SIZE or 0
 		if not vertical then
-			combo:SetPoint("LEFT", combos, "LEFT", (i - 1) * (15 + spacing), 0)
+			combo:SetPoint("LEFT", combos, "LEFT", border_size + (i - 1) * (ICON_SIZE + spacing), 0)
 		else
-			combo:SetPoint("BOTTOM", combos, "BOTTOM", 0, (i - 1) * (15 + spacing))
+			combo:SetPoint("BOTTOM", combos, "BOTTOM", 0, border_size + (i - 1) * (ICON_SIZE + spacing))
 		end
 	end
 	
@@ -203,5 +227,41 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 				self:Update(frame)
 			end
 		end,
+	}, 'has_background_color', {
+		type = 'toggle',
+		name = L["Has background color"],
+		desc = L["Show a background color behind the icons."],
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).has_background_color
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).has_background_color = value
+			
+			for frame in PitBull4:IterateFramesForUnitID("target") do
+				self:Clear(frame)
+				self:Update(frame)
+			end
+		end,
+	}, 'background_color', {
+		type = 'color',
+		hasAlpha = true,
+		name = L["Background color"],
+		desc = L["The background color behind the icons."],
+		get = function(info)
+			return unpack(PitBull4.Options.GetLayoutDB(self).background_color)
+		end,
+		set = function(info, r, g, b, a)
+			local color = PitBull4.Options.GetLayoutDB(self).background_color
+			color[1], color[2], color[3], color[4] = r, g, b, a
+
+			for frame in PitBull4:IterateFramesForUnitID("target") do
+				self:Clear(frame)
+				self:Update(frame)
+			end
+		end,
+		disabled = function(info)
+			return not PitBull4.Options.GetLayoutDB(self).has_background_color or
+				   not PitBull4.Options.GetLayoutDB(self).enabled
+		end
 	}
 end)
