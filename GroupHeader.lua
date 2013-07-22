@@ -1,9 +1,5 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
-<<<<<<< HEAD
-local mop_520 = select(4, GetBuildInfo()) >= 50200
-=======
->>>>>>> bossframes
 
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
@@ -24,15 +20,6 @@ function PitBull4:MakeGroupHeader(group)
 	if DEBUG then
 		expect(group, 'typeof', 'string')
 	end
-<<<<<<< HEAD
-	
-	local group_db = PitBull4.db.profile.groups[group]
-	local pet_based = not not group_db.unit_group:match("pet") -- this feels dirty
-	local use_pet_header = pet_based and group_db.use_pet_header
-	local header_name
-	
-	if use_pet_header then
-=======
 
 	local group_db = PitBull4.db.profile.groups[group]
 	local pet_based = group_db.unit_group:match("pet") and true
@@ -43,7 +30,6 @@ function PitBull4:MakeGroupHeader(group)
 	if not group_based then
 		header_name = "PitBull4_EnemyGroups_"..group
 	elseif use_pet_header then
->>>>>>> bossframes
 		header_name = "PitBull4_PetGroups_" .. group
 	else
 		header_name = "PitBull4_Groups_" .. group
@@ -52,20 +38,6 @@ function PitBull4:MakeGroupHeader(group)
 	local header = _G[header_name]
 	if not header then
 		local template
-<<<<<<< HEAD
-		if use_pet_header then
-			template = "SecureGroupPetHeaderTemplate"
-		else
-			template = "SecureGroupHeaderTemplate"
-		end
-		header = CreateFrame("Frame", header_name, UIParent, template)
-		header:Hide() -- it will be shown later and attributes being set won't cause lag
-		
-		header.name = group
-		
-		header.group_db = group_db
-		
-=======
 		if group_based then
 			template = use_pet_header and "SecureGroupPetHeaderTemplate" or "SecureGroupHeaderTemplate"
 		end
@@ -76,7 +48,6 @@ function PitBull4:MakeGroupHeader(group)
 		header.group_db = group_db
 		header.group_based = group_based
 
->>>>>>> bossframes
 		self:ConvertIntoGroupHeader(header)
 	elseif header.group_db ~= group_db then
 		-- If the frame already exists and the group_db doesn't already match the one
@@ -85,13 +56,8 @@ function PitBull4:MakeGroupHeader(group)
 		header.group_db = group_db
 		header:RefreshGroup()
 	end
-<<<<<<< HEAD
 	
 	header:UpdateShownState()	
-=======
-
-	header:UpdateShownState()
->>>>>>> bossframes
 end
 PitBull4.MakeGroupHeader = PitBull4:OutOfCombatWrapper(PitBull4.MakeGroupHeader)
 
@@ -107,10 +73,7 @@ function PitBull4:SwapGroupTemplate(group)
 
 	local old_header = self.name_to_header[group]
 	local group_db = PitBull4.db.profile.groups[group]
-<<<<<<< HEAD
-=======
 	local group_based = group_db.unit_group:match("^party") or group_db.unit_group:match("^raid")
->>>>>>> bossframes
 
 	if not group_db.enabled then
 		return
@@ -121,17 +84,11 @@ function PitBull4:SwapGroupTemplate(group)
 	old_header:RefreshGroup()
 	old_header:UpdateShownState()
 	old_header:RecheckConfigMode()
-<<<<<<< HEAD
-	
-	local new_name
-	if group_db.use_pet_header then
-=======
 
 	local new_name
 	if not group_based then
 		new_name = "PitBull4_EnemyGroups_"..group
 	elseif group_db.use_pet_header then
->>>>>>> bossframes
 		new_name = "PitBull4_PetGroups_"..group
 	else
 		new_name = "PitBull4_Groups_"..group
@@ -145,19 +102,11 @@ function PitBull4:SwapGroupTemplate(group)
 	else
 		-- already exists so jump through the hoops to reactive it.
 		self.name_to_header[group] = new_header
-<<<<<<< HEAD
 		new_header.group_db = group_db 
 		new_header:RefreshGroup()
 		new_header:UpdateShownState()
 	end
 		
-=======
-		new_header.group_db = group_db
-		new_header:RefreshGroup()
-		new_header:UpdateShownState()
-	end
-
->>>>>>> bossframes
 	new_header:RecheckConfigMode()
 end
 PitBull4.SwapGroupTemplate = PitBull4:OutOfCombatWrapper(PitBull4.SwapGroupTemplate)
@@ -292,11 +241,7 @@ function GroupHeader:RefixSizeAndPosition()
 	local layout = group_db.layout
 	local layout_db = PitBull4.db.profile.layouts[layout]
 	local updated = false
-<<<<<<< HEAD
 	
-=======
-
->>>>>>> bossframes
 	self:SetScale(layout_db.scale * group_db.scale)
 	self:SetFrameStrata(layout_db.strata)
 	self:SetFrameLevel(layout_db.level - 1) -- 1 less than what the unit frame will be at
@@ -304,13 +249,8 @@ function GroupHeader:RefixSizeAndPosition()
 	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
 	local direction = group_db.direction
 	local anchor = DIRECTION_TO_GROUP_ANCHOR_POINT[direction]
-<<<<<<< HEAD
 	local unit_width = layout_db.size_x * group_db.size_x 
 	local unit_height = layout_db.size_y * group_db.size_y 
-=======
-	local unit_width = layout_db.size_x * group_db.size_x
-	local unit_height = layout_db.size_y * group_db.size_y
->>>>>>> bossframes
 	local x_diff = unit_width / 2 * -DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction]
 	local y_diff = unit_height / 2 * -DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction]
 
@@ -333,13 +273,10 @@ function GroupHeader:RefixSizeAndPosition()
 		self:Update()
 	end
 
-<<<<<<< HEAD
-=======
 	if not self.group_based then
 		-- reposition frames on the fake header
 		self:PositionMembers()
 	end
->>>>>>> bossframes
 
 	self:ClearAllPoints()
 	self:SetPoint(anchor, UIParent, "CENTER", group_db.position_x / scale + x_diff, group_db.position_y / scale + y_diff)
@@ -354,13 +291,10 @@ local function get_main_tank_name_list()
 	local main_tanks
 	if oRA3 then
 		main_tanks = oRA3:GetSortedTanks()
-<<<<<<< HEAD
 	elseif oRA then
 		main_tanks = oRA.maintanktable
 	else
 		main_tanks = CT_RA_MainTanks
-=======
->>>>>>> bossframes
 	end
 	if main_tanks then
 		wipe(tank_list)
@@ -375,11 +309,7 @@ local function get_main_tank_name_list()
 			return s, #tank_list
 		end
 	end
-<<<<<<< HEAD
 	if PitBull4.leaving_world or not UnitInRaid("player") or not UnitInParty("player") then
-=======
-	if PitBull4.leaving_world or not IsInGroup() then
->>>>>>> bossframes
 		-- Not in a raid or a party, so no main tank list.  We have
 		-- to bail out here becuase WoW whines with a You are not in a party
 		-- message to the user now.  /sigh
@@ -394,7 +324,6 @@ end
 -- @usage header:RefreshGroup()
 function GroupHeader:RefreshGroup(dont_refresh_children)
 	local group_db = self.group_db
-<<<<<<< HEAD
 	
 	local layout = group_db.layout
 	self.layout = layout
@@ -402,20 +331,10 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	local layout_db = PitBull4.db.profile.layouts[layout]
 	self.layout_db = layout_db
 	
-=======
-
-	local layout = group_db.layout
-	self.layout = layout
-
-	local layout_db = PitBull4.db.profile.layouts[layout]
-	self.layout_db = layout_db
-
->>>>>>> bossframes
 	self.dont_update = true
 	for _, frame in self:IterateMembers() do
 		frame.dont_update = true
 	end
-<<<<<<< HEAD
 	
 	local is_shown = self:IsShown()
 	self:Hide()
@@ -423,15 +342,6 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	local force_show = self.force_show
 	self:UnforceShow()
 	
-=======
-
-	local is_shown = self:IsShown()
-	self:Hide()
-
-	local force_show = self.force_show
-	self:UnforceShow()
-
->>>>>>> bossframes
 	-- Wipe all the points on the member frames before doing
 	-- the work below.  SecureGroupHeader's code does not
 	-- do this for us as it should so if you change directions
@@ -444,11 +354,6 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	local enabled = group_db.enabled
 	local unit_group = group_db.unit_group
 	local party_based = unit_group:sub(1, 5) == "party"
-<<<<<<< HEAD
-	local include_player = party_based and group_db.include_player
-	local show_when = group_db.show_when
-	local show_solo = include_player and show_when.solo
-=======
 	local group_based = party_based or unit_group:sub(1, 4) == "raid"
 	local include_player = party_based and group_db.include_player
 	local show_when = group_db.show_when
@@ -456,7 +361,6 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	if group_based then
 		show_solo = include_player and show_solo
 	end
->>>>>>> bossframes
 	local group_filter = not party_based and group_db.group_filter or nil
 	local sort_direction = group_db.sort_direction
 	local sort_method = group_db.sort_method
@@ -466,23 +370,14 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	if group_filter == "MAINTANK" then
 		name_list = get_main_tank_name_list()
 	end
-<<<<<<< HEAD
-	
-	local changed_units = self.unit_group ~= unit_group or self.include_player ~= include_player or self.show_solo ~= show_solo or self.group_filter ~= group_filter or self.sort_direction ~= sort_direction or self.sort_method ~= sort_method or self.group_by ~= group_by or self.name_list ~= name_list
-	
-=======
 
 	local changed_units = self.unit_group ~= unit_group or self.include_player ~= include_player or self.show_solo ~= show_solo or self.group_filter ~= group_filter or self.sort_direction ~= sort_direction or self.sort_method ~= sort_method or self.group_by ~= group_by or self.name_list ~= name_list or self.group_based ~= group_based
 
->>>>>>> bossframes
 	if changed_units then
 		local old_unit_group = self.unit_group
 		local old_super_unit_group = self.super_unit_group
 		self.unit_group = unit_group
-<<<<<<< HEAD
-=======
 		self.group_based = group_based
->>>>>>> bossframes
 		self.include_player = include_player
 		self.show_solo = show_solo
 		self.group_filter = group_filter
@@ -491,17 +386,9 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		self.group_by = group_db.group_by
 		self.name_list = name_list
 		if DEBUG then
-<<<<<<< HEAD
-			if not party_based then
-				expect(unit_group:sub(1, 4), '==', "raid")
-			end
-		end
-	
-=======
 			expect(unit_group, 'typeof', 'string')
 		end
 
->>>>>>> bossframes
 		if party_based then
 			self.super_unit_group = "party"
 			self.unitsuffix = unit_group:sub(6)
@@ -510,8 +397,6 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 			self:SetAttribute("showPlayer", include_player and true or nil)
 			self:SetAttribute("showSolo", show_solo and true or nil)
 			self:SetAttribute("groupFilter", nil)
-<<<<<<< HEAD
-=======
 		elseif not group_based then
 			if unit_group:sub(1, 4) == "boss" then
 				self.super_unit_group = "boss"
@@ -520,7 +405,6 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 				self.super_unit_group = "arena"
 				self.unitsuffix = unit_group:sub(6)
 			end
->>>>>>> bossframes
 		else
 			self.super_unit_group = "raid"
 			self.unitsuffix = unit_group:sub(5)
@@ -529,11 +413,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 			self:SetAttribute("showSolo", nil)
 			self:SetAttribute("showRaid", true)
 			if name_list then
-<<<<<<< HEAD
 				self:SetAttribute("groupFilter", nil) 
-=======
-				self:SetAttribute("groupFilter", nil)
->>>>>>> bossframes
 				self:SetAttribute("nameList", name_list)
 			else
 				self:SetAttribute("groupFilter", group_filter)
@@ -543,28 +423,16 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		if self.unitsuffix == "" then
 			self.unitsuffix = nil
 		end
-<<<<<<< HEAD
 		self:SetAttribute("unitsuffix",self.unitsuffix)
 	
 		local is_wacky = PitBull4.Utils.IsWackyUnitGroup(unit_group)
 		self.is_wacky = is_wacky
 		
-=======
-		self:SetAttribute("unitsuffix", self.unitsuffix)
-
-		local is_wacky = PitBull4.Utils.IsWackyUnitGroup(unit_group)
-		self.is_wacky = is_wacky
-
->>>>>>> bossframes
 		if old_unit_group then
 			PitBull4.unit_group_to_headers[old_unit_group][self] = nil
 			PitBull4.super_unit_group_to_headers[old_super_unit_group][self] = nil
 		end
-<<<<<<< HEAD
 		
-=======
-
->>>>>>> bossframes
 		for _, frame in self:IterateMembers() do
 			frame:SetAttribute("unitsuffix", self.unitsuffix)
 			frame.is_wacky = is_wacky
@@ -572,17 +440,10 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		PitBull4.unit_group_to_headers[unit_group][self] = true
 		PitBull4.super_unit_group_to_headers[self.super_unit_group][self] = true
 	end
-<<<<<<< HEAD
 	
 	local direction = group_db.direction
 	local point = DIRECTION_TO_POINT[direction]
 	
-=======
-
-	local direction = group_db.direction
-	local point = DIRECTION_TO_POINT[direction]
-
->>>>>>> bossframes
 	self:SetAttribute("point", point)
 	if point == "LEFT" or point == "RIGHT" then
 		self:SetAttribute("xOffset", group_db.horizontal_spacing * DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction])
@@ -611,23 +472,6 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	self:SetAttribute("startingIndex", 1)
 	self:SetAttribute("columnAnchorPoint", DIRECTION_TO_COLUMN_ANCHOR_POINT[direction])
 	self:SetAttribute("useOwnerUnit", 1)
-<<<<<<< HEAD
-	
-	-- Set the attributes for the StateHeader to know when to show and hide this 
-	-- group
-	for k,v in pairs(show_when) do
-		if k == "solo" then
-			self:SetAttribute(k, enabled and show_solo and party_based)
-		elseif k == "party" then
-			self:SetAttribute(k, enabled and v and party_based)
-		else
-			self:SetAttribute(k, enabled and v)
-		end
-	end
-
-	self:RefixSizeAndPosition()
-	
-=======
 
 	-- Set the attributes for the StateHeader to know when to show and hide this
 	-- group
@@ -645,7 +489,6 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 
 	self:RefixSizeAndPosition()
 
->>>>>>> bossframes
 	if is_shown then
 		self:Show()
 	end
@@ -653,20 +496,12 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	if force_show then
 		self:ForceShow()
 	end
-<<<<<<< HEAD
 	
-=======
-
->>>>>>> bossframes
 	for _, frame in self:IterateMembers() do
 		frame.dont_update = nil
 	end
 	self.dont_update = nil
-<<<<<<< HEAD
 	
-=======
-
->>>>>>> bossframes
 	if changed_units and not dont_refresh_children then
 		for _, frame in self:IterateMembers() do
 			frame:RefreshLayout()
@@ -707,34 +542,20 @@ function GroupHeader:InitialConfigFunction(frame)
 	frame.classification = self.name
 	frame.classification_db = self.group_db
 	frame.is_wacky = self.is_wacky
-<<<<<<< HEAD
 	
 	local layout = self.group_db.layout
 	frame.layout = layout
 	
-=======
-
-	local layout = self.group_db.layout
-	frame.layout = layout
-
->>>>>>> bossframes
 	PitBull4:ConvertIntoUnitFrame(frame)
 
 	if frame:CanChangeAttribute() then
 		if self.unitsuffix then
 			frame:ProxySetAttribute("unitsuffix", self.unitsuffix)
 		end
-<<<<<<< HEAD
 	
 		local layout_db = PitBull4.db.profile.layouts[layout]
 		frame.layout_db = layout_db
 	
-=======
-
-		local layout_db = PitBull4.db.profile.layouts[layout]
-		frame.layout_db = layout_db
-
->>>>>>> bossframes
 		frame:ProxySetAttribute("initial-width", layout_db.size_x * self.group_db.size_x)
 		frame:ProxySetAttribute("initial-height", layout_db.size_y * self.group_db.size_y)
 		frame:ProxySetAttribute("initial-unitWatch", true)
@@ -747,17 +568,6 @@ local function should_show_header(config_mode, header)
 	if not config_mode then
 		return false
 	end
-<<<<<<< HEAD
-	
-	if config_mode == "solo" then
-		return header.show_solo
-	end
-	
-	if config_mode == "party" and header.super_unit_group ~= "party" then
-		return false
-	end
-	
-=======
 
 	if config_mode == "solo" then
 		return header.show_solo
@@ -767,7 +577,6 @@ local function should_show_header(config_mode, header)
 		return false
 	end
 
->>>>>>> bossframes
 	return true
 end
 
@@ -802,11 +611,7 @@ function GroupHeader:ForceUnitFrameCreation()
 		rehide = true
 	end
 	self:SetAttribute("startingIndex", -num + 1) -- Not proxied to ensure an Update happens
-<<<<<<< HEAD
 	
-=======
-
->>>>>>> bossframes
 	self:ProxySetAttribute("maxColumns", maxColumns)
 	self:ProxySetAttribute("unitsPerColumn", unitsPerColumn)
 	self:SetAttribute("startingIndex", startingIndex) -- Not proxied to ensure an Update happens
@@ -814,11 +619,7 @@ function GroupHeader:ForceUnitFrameCreation()
 	if rehide then
 		self:Hide()
 	end
-<<<<<<< HEAD
 	
-=======
-
->>>>>>> bossframes
 	-- this is done because the previous hack can mess up some unit references
 	for _, frame in self:IterateMembers() do
 		local unit = SecureButton_GetModifiedUnit(frame, "LeftButton")
@@ -853,11 +654,7 @@ local function fill_table(tbl, ...)
 	for i = 1, select('#', ...), 1 do
 		local key = select(i, ...)
 		key = tonumber(key) or strtrim(key)
-<<<<<<< HEAD
 		tbl[key] = i 
-=======
-		tbl[key] = i
->>>>>>> bossframes
 	end
 end
 
@@ -873,12 +670,6 @@ end
 -- utility function for ApplyConfigModeState, it doctors
 -- up some data so don't reuse this elsewhere
 local function get_group_roster_info(super_unit_group, index)
-<<<<<<< HEAD
-	local unit, name, subgroup, class_name, role, _
-	if super_unit_group == "raid" then
-		unit = "raid"..index
-		name, _, subgroup, _, _, class_name, _, _, _, role = GetRaidRosterInfo(index)
-=======
 	local unit, name, subgroup, class_name, role, server, _
 	if super_unit_group == "raid" then
 		unit = "raid"..index
@@ -900,7 +691,6 @@ local function get_group_roster_info(super_unit_group, index)
 			_, class_name = UnitClass(unit)
 			subgroup = 1
 		end
->>>>>>> bossframes
 	else
 		if index > 0 then
 			unit = "party"..index
@@ -913,20 +703,12 @@ local function get_group_roster_info(super_unit_group, index)
 				name = name.."-"..server
 			end
 			_, class_name = UnitClass(unit)
-<<<<<<< HEAD
 			-- The UnitInParty and UnitInRaid checks are an ugly workaround for thee 
-=======
-			-- The UnitInParty and UnitInRaid checks are an ugly workaround for thee
->>>>>>> bossframes
 			-- You are not in a party bug that Blizzard created.
 			if not PitBull4.leaving_world and (UnitInParty(unit) or UnitInRaid(unit)) then
 				if GetPartyAssignment("MAINTANK", unit) then
 					role = "MAINTANK"
-<<<<<<< HEAD
-				elseif  GetPartyAssignment("MAINASSIST", unit) then
-=======
-				elseif GetPartyAssignment("MAINASSIST", unit) then
->>>>>>> bossframes
+				elseif  GetPartyAssignment("MAINASSIST", unit) 
 					role = "MAINASSIST"
 				end
 			end
@@ -937,13 +719,8 @@ local function get_group_roster_info(super_unit_group, index)
 	-- return some bogus data to get our fake unit ids to sort where we want.
 	if not name then
 		name = string.format("~%02d",index)
-<<<<<<< HEAD
 		subgroup = 0 
 		class_name = '!' 
-=======
-		subgroup = 0
-		class_name = '!'
->>>>>>> bossframes
 	end
 
 	return unit, name, subgroup, class_name, role
@@ -1050,18 +827,11 @@ function GroupHeader:ApplyConfigModeState()
 		return
 	end
 
-<<<<<<< HEAD
-	self:SetAttribute("_ignore",true)
-
-	wipe(sorting_table)
-	
-=======
 	local oldIgnore = self:SetAttribute("_ignore")
 	self:SetAttribute("_ignore", "applyConfigModeState")
 
 	wipe(sorting_table)
 
->>>>>>> bossframes
 	local super_unit_group = self.super_unit_group
 	local config_mode = PitBull4.config_mode
 	local start, finish, step = 1, self:GetMaxUnits(true), 1
@@ -1090,29 +860,17 @@ function GroupHeader:ApplyConfigModeState()
 
 		-- filter by a list of group numbers and/or classes
 		fill_table(wipe(token_table), strsplit(",", group_filter))
-<<<<<<< HEAD
-		local strict_filter = self:GetAttribute("strictFiltering")
-=======
 		local strict_filtering = self:GetAttribute("strictFiltering")
->>>>>>> bossframes
 
 		for i = start, finish, 1 do
 			local unit, name, subgroup, class_name, role = get_group_roster_info(super_unit_group, i)
 
-<<<<<<< HEAD
 			if name and (not strict_filtering 
-=======
-			if name and (not strict_filtering
->>>>>>> bossframes
 				and (token_table[subgroup] or token_table[class_name] or (role and token_table[role]))) -- non-strict filtering
 				or (token_table[subgroup] and token_table[class_name]) -- strict filtering
 				then
 				sorting_table[#sorting_table+1] = unit
-<<<<<<< HEAD
 				sorting_table[unit] = name 
-=======
-				sorting_table[unit] = name
->>>>>>> bossframes
 				if group_by == "GROUP" then
 					grouping_table[unit] = subgroup
 				elseif group_by == "CLASS" then
@@ -1155,11 +913,7 @@ function GroupHeader:ApplyConfigModeState()
 		if sort_method == "NAME" then
 			table.sort(sorting_table, sort_on_names)
 		elseif sort_method == "NAMELIST" then
-<<<<<<< HEAD
-			table.sort(sorting_table, sort_on_namelist)
-=======
 			table.sort(sorting_table, sort_on_name_list)
->>>>>>> bossframes
 		end
 	end
 
@@ -1251,11 +1005,7 @@ function GroupHeader:ApplyConfigModeState()
 		current_anchor = frame
 	end
 
-<<<<<<< HEAD
-	self:SetAttribute("_ignore",nil)
-=======
 	self:SetAttribute("_ignore", oldIgnore)
->>>>>>> bossframes
 end
 GroupHeader.ApplyConfigModeState = PitBull4:OutOfCombatWrapper(GroupHeader.ApplyConfigModeState)
 
@@ -1267,20 +1017,12 @@ do
 			if i > num then
 				return nil
 			end
-<<<<<<< HEAD
 			
-=======
-
->>>>>>> bossframes
 			local v = t[i]
 			if v == nil then
 				return nil
 			end
-<<<<<<< HEAD
 			
-=======
-
->>>>>>> bossframes
 			return i, v
 		end
 		self[num] = f
@@ -1291,11 +1033,7 @@ do
 	end
 end
 
-<<<<<<< HEAD
 local function get_filter_type_count(...) 
-=======
-local function get_filter_type_count(...)
->>>>>>> bossframes
 	local start = select(1, ...)
 	return tonumber(start) and true or false, select('#', ...)
 end
@@ -1307,11 +1045,7 @@ function GroupHeader:GetMaxUnits(ignore_filters)
 			if group_filter then
 				if group_filter == "" then
 				-- Everything filtered, but always have at least one unit
-<<<<<<< HEAD
 					return 1 
-=======
-					return 1
->>>>>>> bossframes
 				end
 
 				-- If we're filtering by raid group we may not need all 40
@@ -1325,13 +1059,10 @@ function GroupHeader:GetMaxUnits(ignore_filters)
 
 		-- Everything else we're gonna have to go by max.
 		return MAX_RAID_MEMBERS
-<<<<<<< HEAD
-=======
 	elseif self.super_unit_group == "boss" then
 		return MAX_BOSS_FRAMES
 	elseif self.super_unit_group == "arena" then
 		return MAX_PARTY_MEMBERS_WITH_PLAYER
->>>>>>> bossframes
 	else
 		if self.include_player then
 			return MAX_PARTY_MEMBERS_WITH_PLAYER
@@ -1350,11 +1081,7 @@ do
 		for i = 1, n do
 			set[select(i, ...)] = true
 		end
-<<<<<<< HEAD
 		
-=======
-
->>>>>>> bossframes
 		return set, n
 	end
 end
@@ -1364,13 +1091,9 @@ function GroupHeader:IterateMembers(guess_num)
 	local num
 	if guess_num then
 		local config_mode = PitBull4.config_mode
-<<<<<<< HEAD
-		if config_mode == "solo" then
-=======
 		if config_mode and not self.group_based then
 			num = 5
 		elseif config_mode == "solo" then
->>>>>>> bossframes
 			num = self.include_player and 1 or 0
 		elseif config_mode == "party" then
 			num = self.include_player and MAX_PARTY_MEMBERS_WITH_PLAYER or MAX_PARTY_MEMBERS
@@ -1381,11 +1104,7 @@ function GroupHeader:IterateMembers(guess_num)
 				num = config_mode:sub(5)+0 -- raid10, raid25, raid40 => 10, 25, 40
 			end
 			-- check filters
-<<<<<<< HEAD
 			
-=======
-
->>>>>>> bossframes
 			local filter = self.group_filter
 			if not filter then
 				-- do nothing, all is shown
@@ -1414,11 +1133,7 @@ function GroupHeader:IterateMembers(guess_num)
 			end
 		end
 	end
-<<<<<<< HEAD
 	
-=======
-
->>>>>>> bossframes
 	if not num or num > max_units then
 		num = max_units
 	end
@@ -1470,15 +1185,6 @@ function GroupHeader:Rename(name)
 	if self.name == name then
 		return
 	end
-<<<<<<< HEAD
-	
-	local use_pet_header = self.group_db.use_pet_header
-	local prefix = use_pet_header and "PitBull4_PetGroups_" or "PitBull4_Groups_"
-
-	local old_header_name = prefix .. self.name
-	local new_header_name = prefix .. name
-	
-=======
 
 	local use_pet_header = self.group_db.use_pet_header
 	local group_based = self.group_db.group_based
@@ -1494,7 +1200,6 @@ function GroupHeader:Rename(name)
 	local old_header_name = prefix .. self.name
 	local new_header_name = prefix .. name
 
->>>>>>> bossframes
 	PitBull4.name_to_header[self.name] = nil
 	PitBull4.name_to_header[name] = self
 	_G[old_header_name] = nil
@@ -1503,22 +1208,14 @@ function GroupHeader:Rename(name)
 	if self.label then
 		self.label:SetText(name)
 	end
-<<<<<<< HEAD
 	
-=======
-
->>>>>>> bossframes
 	for i, frame in ipairs(self) do
 		frame.classification = name
 	end
 end
 
 function GroupHeader:ClearFrames()
-<<<<<<< HEAD
 	-- Clears the frames over a 10 minute period.  Starting from the 
-=======
-	-- Clears the frames over a 10 minute period.  Starting from the
->>>>>>> bossframes
 	-- end working our way to the front
 	local clear_index = self.clear_index
 	-- Frames will have no guid at this point so Update == Clear
@@ -1545,11 +1242,7 @@ function GroupHeader__scripts:OnHide()
 	if clear_timer then
 		PitBull4:CancelTimer(clear_timer)
 	end
-<<<<<<< HEAD
 	-- Start clearing the frames in 5 minutes. 
-=======
-	-- Start clearing the frames in 5 minutes.
->>>>>>> bossframes
 	self.clear_index = #self
 	self.clear_timer = PitBull4:ScheduleTimer(self.ClearFrames, 300, self)
 end
@@ -1573,11 +1266,7 @@ function MemberUnitFrame__scripts:OnDragStart()
 
 	local header = self.header
 	moving_frame = header
-<<<<<<< HEAD
 	
-=======
-
->>>>>>> bossframes
 	if db.frame_snap then
 		LibStub("LibSimpleSticky-1.0"):StartMoving(header, PitBull4.all_frames_list, 0, 0, 0, 0)
 	else
@@ -1595,7 +1284,6 @@ function MemberUnitFrame__scripts:OnDragStop()
 	else
 		header:StopMovingOrSizing()
 	end
-<<<<<<< HEAD
 	
 	local ui_scale = UIParent:GetEffectiveScale()
 	local scale = header[1]:GetEffectiveScale() / ui_scale
@@ -1611,23 +1299,6 @@ function MemberUnitFrame__scripts:OnDragStop()
 	
 	LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
 	
-=======
-
-	local ui_scale = UIParent:GetEffectiveScale()
-	local scale = header[1]:GetEffectiveScale() / ui_scale
-
-	local x, y = header[1]:GetCenter()
-	x, y = x * scale, y * scale
-
-	x = x - GetScreenWidth()/2
-	y = y - GetScreenHeight()/2
-
-	header.group_db.position_x = x
-	header.group_db.position_y = y
-
-	LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
-
->>>>>>> bossframes
 	header:RefreshLayout(true)
 end
 
@@ -1682,11 +1353,7 @@ function MemberUnitFrame:RefixSizeAndPosition()
 	if not self:CanChangeProtectedState() then return end
 	local layout_db = self.layout_db
 	local classification_db = self.classification_db
-<<<<<<< HEAD
 	
-=======
-
->>>>>>> bossframes
 	self:SetWidth(layout_db.size_x * classification_db.size_x)
 	self:SetHeight(layout_db.size_y * classification_db.size_y)
 end
@@ -1763,18 +1430,12 @@ local initialConfigFunction = [[
       header:CallMethod("InitialConfigFunction")
     end
 ]]
-<<<<<<< HEAD
-if not mop_520 then
-  initialConfigFunction = initialConfigFunction:gsub("togglemenu", "menu")
-end
-=======
 
 local onAttributeChanged = [[
   if name == "config_mode" and self:GetAttribute("config_mode") then
     self:Show()
   end
 ]]
->>>>>>> bossframes
 
 --- Add the proper functions and scripts to a SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate, as well as some initialization.
 -- @param frame a Frame which inherits from SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate
@@ -1784,26 +1445,6 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		expect(header, 'typeof', 'frame')
 		expect(header, 'frametype', 'Frame')
 	end
-<<<<<<< HEAD
-	
-	-- Stop the group header from listening to UNIT_NAME_UPDATE.  
-	-- Allowing it to do so is a huge performance drain since the
-	-- GroupHeader's OnEvent updates the header regardless of the unit
-	-- passed in the argument.  Many UNIT_NAME_UPDATE events can be
-	-- generated when zoning into battlegrounds, spirit rezes in 
-	-- battlegrounds, pet rezes, etc.  This should prevent some
-	-- stuttering isseus with BGs.  See this post for more details:
-	-- http://forums.wowace.com/showthread.php?p=111494#post111494
-	self:UnregisterEvent("UNIT_NAME_UPDATE")
-
-	self.all_headers[header] = true
-	self.name_to_header[header.name] = header
-	
-	for k, v in pairs(GroupHeader__scripts) do
-		header:HookScript(k, v)
-	end
-	
-=======
 
 	self.all_headers[header] = true
 	self.name_to_header[header.name] = header
@@ -1812,33 +1453,10 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		header:HookScript(k, v)
 	end
 
->>>>>>> bossframes
 	for k, v in pairs(GroupHeader) do
 		header[k] = v
 	end
 
-<<<<<<< HEAD
-	if ClickCastHeader then
-		SecureHandler_OnLoad(header)
-		header:SetFrameRef("clickcast_header", ClickCastHeader)
-	end
-	
-	-- this is done to pass self in properly
-	function header.initialConfigFunction(...)
-		return header:InitialConfigFunction(...)
-	end
-
-	if header.group_db.unit_group:sub(1, 4) == "raid" then
-	  header:SetAttribute("initialConfigFunction", initialConfigFunction:gsub("togglemenu", "menu"))
-	else
-		header:SetAttribute("initialConfigFunction", initialConfigFunction)
-	end
-	
-	header:RefreshGroup(true)
-	
-	header:SetMovable(true)
-end
-=======
 	if header.group_based then
 		-- Stop the group header from listening to UNIT_NAME_UPDATE.
 		-- Allowing it to do so is a huge performance drain since the
@@ -2054,4 +1672,3 @@ function GroupHeader:PositionMembers()
 end
 GroupHeader.PositionMembers = PitBull4:OutOfCombatWrapper(GroupHeader.PositionMembers)
 
->>>>>>> bossframes

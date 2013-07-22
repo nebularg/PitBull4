@@ -6,10 +6,6 @@ if not PitBull4 then
 end
 
 local L = PitBull4.L
-<<<<<<< HEAD
-=======
-
->>>>>>> bossframes
 local PitBull4_HideBlizzard = PitBull4:NewModule("HideBlizzard")
 
 PitBull4_HideBlizzard:SetModuleType("custom")
@@ -25,10 +21,7 @@ PitBull4_HideBlizzard:SetDefaults({}, {
 	aura = false,
 	runebar = true,
 	altpower = false,
-<<<<<<< HEAD
-=======
 	boss = true,
->>>>>>> bossframes
 })
 
 function PitBull4_HideBlizzard:OnEnable()
@@ -240,8 +233,6 @@ function showers:altpower()
 	UnitPowerBarAlt_UpdateAll(PlayerPowerBarAlt)
 end
 
-<<<<<<< HEAD
-=======
 function hiders:boss()
 	for i=1, MAX_BOSS_FRAMES do
 		local frame = _G["Boss"..i.."TargetFrame"]
@@ -262,7 +253,6 @@ function showers:boss()
 	end
 end
 
->>>>>>> bossframes
 for k, v in pairs(hiders) do
 	hiders[k] = PitBull4:OutOfCombatWrapper(v)
 end
@@ -354,8 +344,6 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		get = get,
 		set = set,
 		hidden = hidden,
-<<<<<<< HEAD
-=======
 	}, 'boss', {
 		type = 'toggle',
 		name = L["Boss"],
@@ -363,6 +351,5 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		get = get,
 		set = set,
 		hidden = hidden,
->>>>>>> bossframes
 	}
 end)
