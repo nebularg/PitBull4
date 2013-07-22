@@ -6,6 +6,7 @@
 <Include file="Modules\AltPowerBar\load.xml"/>
 <Include file="Modules\Aura\load.xml"/>
 <Include file="Modules\Background\load.xml"/>
+<Include file="Modules\BattlePet\load.xml"/>
 <Include file="Modules\BlankSpace\load.xml"/>
 <Include file="Modules\Border\load.xml"/>
 <Include file="Modules\BurningEmbers\load.xml"/>
