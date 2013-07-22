@@ -367,7 +367,11 @@ function PitBull4.Options.get_unit_options()
 			return t
 		end,
 		get = get,
-		set = set_with_refresh_group_shown,
+		set = function(info,value)
+			if set(info, value) then
+				PitBull4:SwapGroupTemplate(CURRENT_GROUP)
+			end
+		end,
 		disabled = disabled,
 		width = 'double',
 	}
@@ -615,6 +619,10 @@ function PitBull4.Options.get_unit_options()
 		GROUP = L["By group"],
 	}
 	
+	local other_values = {
+		INDEX = L["By index"],
+	}
+	
 	group_layout_args.sort_method = {
 		name = L["Sort method"],
 		desc = L["How to sort the frames within the group."],
@@ -622,15 +630,17 @@ function PitBull4.Options.get_unit_options()
 		order = next_order(),
 		values = function(info)
 			local unit_group = get_group_db().unit_group
-			if unit_group:sub(1, 5) == "party" then
+			if unit_group:sub(1, 4) == "raid" then
+				return raid_values
+			elseif unit_group:sub(1, 5) == "party" then
 				return party_values
 			else
-				return raid_values
+				return other_values
 			end
 		end,
 		get = function(info)
 			local db = get_group_db()
-			if db.unit_group:sub(1, 5) ~= "party" then
+			if db.unit_group:sub(1, 4) == "raid" then
 				local group_by = db.group_by
 				if group_by == "CLASS" or group_by == "GROUP" then
 					return group_by
@@ -774,7 +784,8 @@ function PitBull4.Options.get_unit_options()
 		end,
 		disabled = disabled,
 		hidden = function(info)
-			return not get_group_db().unit_group:match("pet")
+			local unit_group = get_group_db().unit_group
+			return not unit_group:match("pet") or unit_group:match("^arena")
 		end,
 	}
 	
@@ -862,6 +873,7 @@ function PitBull4.Options.get_unit_options()
 			local unit_group = get_group_db().unit_group
 			
 			local party_based = unit_group:sub(1, 5) == "party"
+			local group_based = party_based or unit_group:sub(1, 4) == "raid"
 			
 			local t = {}
 			
@@ -869,6 +881,10 @@ function PitBull4.Options.get_unit_options()
 				if get_group_db().include_player then
 					t.solo = L["Solo"]
 				end
+				t.party = L["Party"]
+			end
+			if not group_based then
+				t.solo = L["Solo"]
 				t.party = L["Party"]
 			end
 			
@@ -970,9 +986,9 @@ function PitBull4.Options.get_unit_options()
 			local db = get_group_db()
 			
 			local unit_group = db.unit_group
-			local party_based = unit_group:sub(1, 5) == "party"
+			local raid_based = unit_group:sub(1, 4) == "raid"
 			
-		 	return party_based -- only show in raid
+		 	return not raid_based -- only show in raid
 		end
 	}
 	
