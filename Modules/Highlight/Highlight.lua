@@ -186,6 +186,6 @@ PitBull4_Highlight:SetLayoutOptionsFunction(function(self)
 		hidden = function(info)
 			return not LibSharedMedia
 		end,
-		dialogControl = AceGUI.WidgetRegistry["LSM30_Background"] and "LSM30_Background" or nil,
+		dialogControl = AceGUI and AceGUI.WidgetRegistry["LSM30_Background"] and "LSM30_Background" or nil,
 	}
 end)

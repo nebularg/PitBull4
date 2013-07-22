@@ -44,7 +44,7 @@ PitBull4_HolyPower:SetDefaults({
 	background_color = { 0, 0, 0, 0.5 }
 })
 
-local player_level
+local player_level = UnitLevel("player")
 
 function PitBull4_HolyPower:OnEnable()
 	player_level = UnitLevel("player")
