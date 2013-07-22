@@ -103,15 +103,17 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 			bg:SetTexture(unpack(db.background_color))
 			bg:SetAllPoints(combos)
 
+			local height
 			if not vertical then
-				combos:SetHeight(ICON_SIZE + 2*BORDER_SIZE)
+				height = ICON_SIZE + 2*BORDER_SIZE
+				combos:SetHeight(height)
 				combos:SetWidth(ICON_SIZE*MAX_COMBOS + BORDER_SIZE*2 + spacing*(MAX_COMBOS-1))
-				combos.height = 1
 			else
-				combos:SetHeight(ICON_SIZE*MAX_COMBOS + BORDER_SIZE*2 + spacing*(MAX_COMBOS-1))
+				height = ICON_SIZE*MAX_COMBOS + BORDER_SIZE*2 + spacing*(MAX_COMBOS-1)
+				combos:SetHeight(height)
 				combos:SetWidth(ICON_SIZE + 2*BORDER_SIZE)
-				combos.height = MAX_COMBOS
 			end
+			combos.height = height / ICON_SIZE
 		end
 	end
 	
@@ -121,9 +123,10 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 			combos:SetWidth(ICON_SIZE + (ICON_SIZE + spacing) * (num_combos - 1))
 			combos.height = 1
 		else
-			combos:SetHeight(ICON_SIZE + (ICON_SIZE + spacing) * (num_combos - 1))
+			local height = ICON_SIZE + (ICON_SIZE + spacing) * (num_combos - 1)
+			combos:SetHeight(height)
 			combos:SetWidth(ICON_SIZE)
-			combos.height = num_combos
+			combos.height = height / ICON_SIZE
 		end
 	end
 	
