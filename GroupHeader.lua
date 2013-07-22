@@ -708,7 +708,7 @@ local function get_group_roster_info(super_unit_group, index)
 			if not PitBull4.leaving_world and (UnitInParty(unit) or UnitInRaid(unit)) then
 				if GetPartyAssignment("MAINTANK", unit) then
 					role = "MAINTANK"
-				elseif  GetPartyAssignment("MAINASSIST", unit) 
+				elseif  GetPartyAssignment("MAINASSIST", unit) then
 					role = "MAINASSIST"
 				end
 			end
