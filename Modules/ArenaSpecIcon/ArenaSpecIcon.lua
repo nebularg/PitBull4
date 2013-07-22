@@ -24,7 +24,7 @@ end
 
 function PitBull4_ArenaSpecIcon:GetTexture(frame)
 	local id = frame.unit:match("^arena(%d)$")
-	local spec = id and GetArenaOpponentSpec(id)
+	local spec = id and GetArenaOpponentSpec(id) or 0
 	if spec > 0 then
 		local _, _, _, icon = GetSpecializationInfoByID(spec)
 		return icon
