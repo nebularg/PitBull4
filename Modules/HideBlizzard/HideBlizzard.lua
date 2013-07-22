@@ -247,9 +247,9 @@ function showers:boss()
 		if i == 1 then
 			BossTargetFrame_OnLoad(frame, "boss1", "INSTANCE_ENCOUNTER_ENGAGE_UNIT")
 		else
-			BossTargetFrame_OnLoad(self, "boss"..i)
+			BossTargetFrame_OnLoad(frame, "boss"..i)
 		end
-		Target_Spellbar_OnEvent(self, "INSTANCE_ENCOUNTER_ENGAGE_UNIT")
+		Target_Spellbar_OnEvent(frame.spellbar, "INSTANCE_ENCOUNTER_ENGAGE_UNIT")
 	end
 end
 
