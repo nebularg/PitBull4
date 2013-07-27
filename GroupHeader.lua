@@ -989,7 +989,8 @@ function GroupHeader:ApplyConfigModeState()
 				frame:SetPoint(column_anchor_point, current_anchor, column_anchor_point, 0, 0)
 			end
 		elseif column_unit_count == 1 then
-			local column_anchor = self:GetAttribute("child"..(frame_num - units_per_column))
+			local child_num = frame_num - units_per_column
+			local column_anchor = self[child_num]
 			frame:SetPoint(column_anchor_point, column_anchor, column_rel_point, colx_multi * column_spacing, coly_multi * column_spacing)
 		else
 			frame:SetPoint(point, current_anchor, relative_point, x_multiplier * x_offset, y_multiplier * y_offset)
