@@ -1491,14 +1491,11 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		header:SetScript("OnEvent", function(self, event, arg1, ...)
 			if not self.group_db.enabled then return end
 
-			if event == "UPDATE_BATTLEFIELD_STATUS" then
-				local status = GetBattlefieldStatus(arg1)
-				if status == "active" then
-					self:UpdateMembers()
-				end
-			else
-				self:UpdateMembers()
+			if event == "UPDATE_BATTLEFIELD_STATUS" and GetBattlefieldStatus(arg1) ~= "active" then
+				return
 			end
+
+			self:UpdateMembers()
 		end)
 
 		header:SetScript("OnAttributeChanged", function(self, name, value)
@@ -1521,9 +1518,6 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			header:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
 			header:RegisterEvent("ARENA_OPPONENT_UPDATE")
 		end
-		header:RegisterEvent("UNIT_NAME_UPDATE")
-		header:RegisterEvent("UNIT_TARGETABLE_CHANGED")
-		header:RegisterEvent("UNIT_TARGET")
 
 		if header.unitsuffix == "" then
 			header.unitsuffix = nil
@@ -1548,6 +1542,11 @@ function PitBull4:ConvertIntoGroupHeader(header)
 				frame.unit = PitBull4.Utils.GetBestUnitID(unit .. (unitsuffix or ""))
 				frame:SetAttribute("unit", unit)
 				frame:SetAttribute("unitsuffix", unitsuffix)
+
+				frame:SetScript("OnEvent", frame.Update)
+				frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
+				frame:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", unit)
+				frame:RegisterUnitEvent("UNIT_TARGET", unit)
 
 				frame:WrapScript(frame, "OnAttributeChanged", onAttributeChanged)
 			end
