@@ -42,7 +42,7 @@ PitBull4_SoulShards:SetDefaults({
 	background_color = { 0, 0, 0, 0.5 }
 })
 
-local player_level
+local player_level = UnitLevel("player")
 
 function PitBull4_SoulShards:OnEnable()
 	player_level = UnitLevel("player")
