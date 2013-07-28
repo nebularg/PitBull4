@@ -1000,6 +1000,7 @@ function GroupHeader:ApplyConfigModeState()
 		local unit = sorting_table[i]
 		frame:SetAttribute("unit", unit)
 		if old_unit ~= unit then
+			frame.unit = SecureButton_GetModifiedUnit(frame, "LeftButton")
 			frame:Update()
 		end
 
@@ -1432,11 +1433,6 @@ local initialConfigFunction = [[
     end
 ]]
 
-local onAttributeChanged = [[
-  if name == "config_mode" and self:GetAttribute("config_mode") then
-    self:Show()
-  end
-]]
 
 --- Add the proper functions and scripts to a SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate, as well as some initialization.
 -- @param frame a Frame which inherits from SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate
@@ -1490,17 +1486,11 @@ function PitBull4:ConvertIntoGroupHeader(header)
 
 		-- allow events to force an update
 		header:SetScript("OnEvent", function(self, event, arg1, ...)
-			if not self.group_db.enabled then return end
+			if not self:IsVisible() or not self.group_db.enabled then return end
 
 			if event == "UPDATE_BATTLEFIELD_STATUS" and GetBattlefieldStatus(arg1) ~= "active" then
 				return
 			end
-
-			self:UpdateMembers()
-		end)
-
-		header:SetScript("OnAttributeChanged", function(self, name, value)
-			if not self:IsVisible() or name == "_ignore" or self:GetAttribute("_ignore") then return end
 
 			self:UpdateMembers()
 		end)
@@ -1525,6 +1515,10 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		end
 		local unitsuffix = header.unitsuffix
 
+		local update_OnEvent = function(self, event, ...)
+			self:Update()
+		end
+
 		for index = 1, header:GetMaxUnits(true) do
 			local unit = header.super_unit_group .. index -- want the base unit as "unit" before getting wacky in "unitsuffix" (seemed awkward to me)
 
@@ -1540,16 +1534,19 @@ function PitBull4:ConvertIntoGroupHeader(header)
 				frame:SetAttribute("*type1", "target")
 				frame:SetAttribute("*type2", "togglemenu")
 
-				frame.unit = PitBull4.Utils.GetBestUnitID(unit .. (unitsuffix or ""))
 				frame:SetAttribute("unit", unit)
 				frame:SetAttribute("unitsuffix", unitsuffix)
+				frame.unit = SecureButton_GetModifiedUnit(frame, "LeftButton")
 
-				frame:SetScript("OnEvent", frame.Update)
+				frame:SetScript("OnEvent", update_OnEvent)
 				frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
 				frame:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", unit)
-				frame:RegisterUnitEvent("UNIT_TARGET", unit)
 
-				frame:WrapScript(frame, "OnAttributeChanged", onAttributeChanged)
+				frame:WrapScript(frame, "OnAttributeChanged", [[
+          if name == "config_mode" and self:GetAttribute("config_mode") then
+            self:Show()
+          end
+        ]])
 			end
 
 			RegisterUnitWatch(frame)
@@ -1642,6 +1639,12 @@ function GroupHeader:PositionMembers()
 		local unit = sorting_table[i]
 		frame:SetAttribute("unit", unit)
 		if old_unit ~= unit then
+			-- update our unit event references
+			frame:UnregisterEvent("UNIT_NAME_UPDATE")
+			frame:UnregisterEvent("UNIT_TARGETABLE_CHANGED")
+			frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
+			frame:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", unit)
+
 			frame:Update()
 		end
 
