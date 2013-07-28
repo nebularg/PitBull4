@@ -1000,7 +1000,6 @@ function GroupHeader:ApplyConfigModeState()
 		local unit = sorting_table[i]
 		frame:SetAttribute("unit", unit)
 		if old_unit ~= unit then
-			frame.unit = SecureButton_GetModifiedUnit(frame, "LeftButton")
 			frame:Update()
 		end
 
@@ -1536,7 +1535,6 @@ function PitBull4:ConvertIntoGroupHeader(header)
 
 				frame:SetAttribute("unit", unit)
 				frame:SetAttribute("unitsuffix", unitsuffix)
-				frame.unit = SecureButton_GetModifiedUnit(frame, "LeftButton")
 
 				frame:SetScript("OnEvent", update_OnEvent)
 				frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
