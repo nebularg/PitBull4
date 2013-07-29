@@ -871,9 +871,9 @@ function PitBull4.Options.get_unit_options()
 		type = 'multiselect',
 		values = function(info)
 			local unit_group = get_group_db().unit_group
+			local group_based = get_group_db().group_based
 			
 			local party_based = unit_group:sub(1, 5) == "party"
-			local group_based = party_based or unit_group:sub(1, 4) == "raid"
 			
 			local t = {}
 			
@@ -884,7 +884,9 @@ function PitBull4.Options.get_unit_options()
 				t.party = L["Party"]
 			end
 			if not group_based then
-				t.solo = L["Solo"]
+				if unit_group:sub(1, 5) ~= "arena" then
+					t.solo = L["Solo"]
+				end
 				t.party = L["Party"]
 			end
 			
@@ -907,8 +909,8 @@ function PitBull4.Options.get_unit_options()
 			
 			db.show_when[key] = value
 			
-			refresh_group('groups')
 			for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do
+				header:RefreshGroup(true)
 				header:UpdateShownState()
 			end
 		end,
