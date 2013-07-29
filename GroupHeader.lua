@@ -1514,7 +1514,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		end
 		local unitsuffix = header.unitsuffix
 
-		local update_OnEvent = function(self, event, ...)
+		local frame_OnEvent = function(self, event, ...)
 			self:Update()
 		end
 
@@ -1536,7 +1536,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 				frame:SetAttribute("unit", unit)
 				frame:SetAttribute("unitsuffix", unitsuffix)
 
-				frame:SetScript("OnEvent", update_OnEvent)
+				frame:SetScript("OnEvent", frame_OnEvent)
 				frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
 				frame:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", unit)
 
