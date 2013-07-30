@@ -55,7 +55,7 @@ end
 for i = 1, MAX_RAID_MEMBERS do
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "raid" .. i
 end
-for i = 1, MAX_RAID_MEMBERS do
+for i = 1, MAX_BOSS_FRAMES do
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "boss" .. i
 end
 
