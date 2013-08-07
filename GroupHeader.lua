@@ -1489,6 +1489,8 @@ function PitBull4:ConvertIntoGroupHeader(header)
 
 			if event == "UPDATE_BATTLEFIELD_STATUS" and GetBattlefieldStatus(arg1) ~= "active" then
 				return
+			elseif event == "UNIT_TARGETABLE_CHANGED" and not arg1:match(self.super_unit_group) then
+				return
 			end
 
 			self:UpdateMembers()
@@ -1501,6 +1503,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			header.unitsuffix = unit_group:sub(5)
 
 			header:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
+			header:RegisterEvent("UNIT_TARGETABLE_CHANGED")
 		elseif unit_group:sub(1, 5) == "arena" then
 			header.super_unit_group = "arena"
 			header.unitsuffix = unit_group:sub(6)
@@ -1537,7 +1540,6 @@ function PitBull4:ConvertIntoGroupHeader(header)
 
 				frame:SetScript("OnEvent", frame_OnEvent)
 				frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
-				frame:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", unit)
 				frame:RegisterUnitEvent("ARENA_OPPONENT_UPDATE", unit)
 
 				frame:WrapScript(frame, "OnAttributeChanged", [[
@@ -1639,10 +1641,8 @@ function GroupHeader:PositionMembers()
 		if old_unit ~= unit then
 			-- update our unit event references
 			frame:UnregisterEvent("UNIT_NAME_UPDATE")
-			frame:UnregisterEvent("UNIT_TARGETABLE_CHANGED")
 			frame:UnregisterEvent("ARENA_OPPONENT_UPDATE")
 			frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
-			frame:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", unit)
 			frame:RegisterUnitEvent("ARENA_OPPONENT_UPDATE", unit)
 
 			frame:Update()
