@@ -835,6 +835,19 @@ local function set_text(font_string, ...)
 	end
 end
 
+local DEFAULT_FONT, DEFAULT_FONT_SIZE = ChatFontNormal:GetFont()
+local function set_font(font_string)
+	local font, size = font_string:GetFont()
+	if not font or not size then
+		-- Just in case GetFont doesn't give us something, repeat the effort to figure
+		-- out the right font and size to set just like the code from the 
+		-- ModuleHandling/TextProviderModule:UpdateFrame() code would.
+		local db = font_string.db
+		font, size = font_string.frame:GetFont(db.font, db.size)
+	end
+	font_string:SetFont(font,size,PitBull4_LuaTexts.outline)
+end
+
 local lua_name = "Lua:"..L["Name"]
 local function update_text(font_string, event)
 	if not texts[font_string] then return end
@@ -882,8 +895,7 @@ local function update_text(font_string, event)
 	PitBull4_LuaTexts.outline = nil
 
 	set_text(font_string,pcall(func,unit))
-	local font,size = font_string:GetFont()
-	font_string:SetFont(font,size,PitBull4_LuaTexts.outline)
+	set_font(font_string)
 	font_string:SetAlpha(PitBull4_LuaTexts.alpha)
 end
 
