@@ -835,7 +835,6 @@ local function set_text(font_string, ...)
 	end
 end
 
-local DEFAULT_FONT, DEFAULT_FONT_SIZE = ChatFontNormal:GetFont()
 local function set_font(font_string)
 	local font, size = font_string:GetFont()
 	if not font or not size then
