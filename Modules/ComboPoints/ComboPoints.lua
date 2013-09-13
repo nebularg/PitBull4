@@ -5,6 +5,9 @@ if not PitBull4 then
 	error("PitBull4_ComboPoints requires PitBull4")
 end
 
+local is_rogue = select(2, UnitClass("player")) == "ROGUE"
+local is_druid = select(2, UnitClass("player")) == "DRUID"
+
 -- CONSTANTS ----------------------------------------------------------------
 
 local BASE_TEXTURE_PATH = [[Interface\AddOns\]] .. debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z]-%.lua") .. [[\]]
@@ -41,9 +44,16 @@ PitBull4_ComboPoints:SetDefaults({
 
 function PitBull4_ComboPoints:OnEnable()
 	self:RegisterEvent("UNIT_COMBO_POINTS")
+	if is_druid then
+		self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
+	end
 end
 
 function PitBull4_ComboPoints:UNIT_COMBO_POINTS(event, unit)
+	self:UpdateForUnitID("target")
+end
+
+function PitBull4_ComboPoints:UPDATE_SHAPESHIFT_FORM(event)
 	self:UpdateForUnitID("target")
 end
 
@@ -73,6 +83,20 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 	local has_vehicle = UnitHasVehicleUI("player")
 	
 	local num_combos = GetComboPoints(has_vehicle and "vehicle" or "player", "target")
+	
+	-- While non-rogues and non-druids typically don't have combo points, certain game
+	-- mechanics may add them anyway (e.g. Malygos vehicles). Always show the combo
+	-- point indicator if there are combo points.
+	if num_combos == 0 then
+		if not (is_rogue or is_druid) then
+			-- class doesn't normally use combo points
+			return self:ClearFrame(frame)
+		end
+		if is_druid and GetShapeshiftFormID() ~= CAT_FORM then
+			-- druid in non-cat form, don't show the bar
+			return self:ClearFrame(frame)
+		end
+	end
 	
 	if frame.force_show then
 		num_combos = MAX_COMBOS

@@ -182,7 +182,6 @@ PitBull4_Highlight:SetLayoutOptionsFunction(function(self)
 		values = function(info)
 			return LibSharedMedia:HashTable("background")
 		end,
-		disabled = disabled,
 		hidden = function(info)
 			return not LibSharedMedia
 		end,
