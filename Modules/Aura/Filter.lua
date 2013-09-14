@@ -514,7 +514,7 @@ self_buffs.PALADIN = {
 	[85499]  = true, -- Speed of Light
 	[23214]  = true, -- Summon Charger
 	[13819]  = true, -- Summon Warhorse
-	[76691]  = true, -- Vengeance
+	[93098]  = true, -- Vengeance
 }
 self_debuffs.PALADIN = {}
 pet_buffs.PALADIN = {}
