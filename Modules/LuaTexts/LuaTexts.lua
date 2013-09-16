@@ -837,14 +837,19 @@ end
 
 local function set_font(font_string)
 	local font, size = font_string:GetFont()
-	if not font or not size then
-		-- Just in case GetFont doesn't give us something, repeat the effort to figure
-		-- out the right font and size to set just like the code from the 
-		-- ModuleHandling/TextProviderModule:UpdateFrame() code would.
-		local db = font_string.db
-		font, size = font_string.frame:GetFont(db.font, db.size)
+	local success, err = pcall(font_string.SetFont,font_string,font,size,PitBull4_LuaTexts.outline)
+	if not success then
+		local output = "PitBull4_LuaTexts:"..font_string.frame.layout..":"..font_string.luatexts_name.." caused the following error when calling SetFont("..tostring(font)..","..tostring(size)..","..tostring(PitBull4_LuaTexts.outline).."):\n"..err:gsub("'%?'","'SetFont)'")
+		geterrorhandler()(output)
 	end
-	font_string:SetFont(font,size,PitBull4_LuaTexts.outline)
+end
+
+local function set_alpha(font_string)
+	local success, err = pcall(font_string.SetAlpha,font_string,PitBull4_LuaTexts.alpha)
+	if not success then
+		local output = "PitBull4_LuaTexts:"..font_string.frame.layout..":"..font_string.luatexts_name.." caused the following error when calling SetAlpha("..tostring(PitBull4_LuaTexts.alpha).."):\n"..err:gsub("'%?'","'SetAlpha)'")
+		geterrorhandler()(output)
+	end
 end
 
 local lua_name = "Lua:"..L["Name"]
@@ -895,7 +900,7 @@ local function update_text(font_string, event)
 
 	set_text(font_string,pcall(func,unit))
 	set_font(font_string)
-	font_string:SetAlpha(PitBull4_LuaTexts.alpha)
+	set_alpha(font_string)
 end
 
 local next_spell, next_rank, next_target
