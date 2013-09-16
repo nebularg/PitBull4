@@ -7,6 +7,7 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 local mop_520 = select(4, GetBuildInfo()) >= 50200
+local mop_540 = select(4, GetBuildInfo()) >= 50400
 
 local GetNumSpecializations = GetNumSpecializations
 
@@ -514,7 +515,8 @@ self_buffs.PALADIN = {
 	[85499]  = true, -- Speed of Light
 	[23214]  = true, -- Summon Charger
 	[13819]  = true, -- Summon Warhorse
-	[93098]  = true, -- Vengeance
+	[76691]  = not mop_540 or nil, -- Vengeance
+	[93098]  = mop_540 or nil, -- Vengeance
 }
 self_debuffs.PALADIN = {}
 pet_buffs.PALADIN = {}
