@@ -96,6 +96,29 @@ function delete_funcs:Cooldown()
 	self:SetReverse(false)
 end
 
+-- Wrappers since GetFont doesn't always work right after
+-- a SetFont.  By wrapping this, it fixes DogTagTexts
+-- which can't just know to look for font and size on
+-- the font_string table.
+local original_setfont
+local original_getfont
+function setfont(font_string, font, size, flags)
+	font_string.font = font
+	font_string.size = size
+	return original_setfont(font_string, font, size, flags)
+end
+
+function getfont(font_string, ...)
+	local font, size, flags = original_getfont(font_string)
+	if not font then
+		font = font_string.font
+	end
+	if not size then
+		size = font_string.size
+	end
+	return font, size, flags
+end
+
 --- Delete a frame, putting it back in the pool to be recycled.
 -- Don't hold onto a frame after you've deleted it, there could be double-free
 -- issues later
@@ -164,7 +187,16 @@ local function create_control(kind, name, inheritTemplate, parent)
 		return parent:CreateTexture(name, "BACKGROUND")
 	end
 	if kind == "FontString" then
-		return parent:CreateFontString(name, "BACKGROUND")
+		local font_string = parent:CreateFontString(name, "BACKGROUND")
+		if not original_getfont then
+			original_getfont = font_string.GetFont
+		end
+		if not original_setfont then
+			original_setfont = font_string.SetFont
+		end
+		font_string.GetFont = getfont
+		font_string.SetFont = setfont
+		return font_string
 	end
 	if kind == "AnimatedTexture" then
 		local texture = parent:CreateTexture(name, "BACKGROUND")
