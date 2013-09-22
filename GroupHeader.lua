@@ -41,7 +41,7 @@ function PitBull4:MakeGroupHeader(group)
 		if group_based then
 			template = use_pet_header and "SecureGroupPetHeaderTemplate" or "SecureGroupHeaderTemplate"
 		end
-		header = CreateFrame("Frame", header_name, UIParent, template)
+		header = CreateFrame("Frame", header_name, UIParent, template or "SecureFrameTemplate")
 		header:Hide() -- it will be shown later and attributes being set won't cause lag
 
 		header.name = group
@@ -1453,6 +1453,11 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		header[k] = v
 	end
 
+	if ClickCastHeader then
+		SecureHandler_OnLoad(header)
+		header:SetFrameRef("clickcast_header", ClickCastHeader)
+	end
+
 	if header.group_based then
 		-- Stop the group header from listening to UNIT_NAME_UPDATE.
 		-- Allowing it to do so is a huge performance drain since the
@@ -1463,11 +1468,6 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		-- stuttering isseus with BGs.  See this post for more details:
 		-- http://forums.wowace.com/showthread.php?p=111494#post111494
 		header:UnregisterEvent("UNIT_NAME_UPDATE")
-
-		if ClickCastHeader then
-			SecureHandler_OnLoad(header)
-			header:SetFrameRef("clickcast_header", ClickCastHeader)
-		end
 
 		-- this is done to pass self in properly
 		function header.initialConfigFunction(...)
@@ -1646,6 +1646,10 @@ function GroupHeader:PositionMembers()
 			frame:RegisterUnitEvent("ARENA_OPPONENT_UPDATE", unit)
 
 			frame:Update()
+		end
+		local classification_db = self.classification_db
+		if classification_db then
+			frame:SetClickThroughState(classification_db.click_through)
 		end
 
 		current_anchor = frame
