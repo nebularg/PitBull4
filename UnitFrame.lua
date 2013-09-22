@@ -740,8 +740,6 @@ if not LibSharedMedia then
 	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 end
 local DEFAULT_FONT, DEFAULT_FONT_SIZE = ChatFontNormal:GetFont()
-PitBull4.DEFAULT_FONT = DEFAULT_FONT
-PitBull4.DEFAULT_FONT_SIZE = DEFAULT_FONT_SIZE
 
 --- Get the font of the unit frame.
 -- @param font_override nil or the LibSharedMedia name of a font
