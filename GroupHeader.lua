@@ -1649,7 +1649,7 @@ function GroupHeader:PositionMembers()
 
 			frame:Update()
 		end
-		local classification_db = self.classification_db
+		local classification_db = frame.classification_db
 		if classification_db then
 			frame:SetClickThroughState(classification_db.click_through)
 		end
