@@ -39,7 +39,11 @@ function PitBull4:MakeGroupHeader(group)
 	if not header then
 		local template
 		if group_based then
-			template = use_pet_header and "SecureGroupPetHeaderTemplate" or "SecureGroupHeaderTemplate"
+			if use_pet_header then
+				template = "SecureGroupPetHeaderTemplate"
+			else
+				template = "SecureGroupHeaderTemplate"
+			end
 		end
 		header = CreateFrame("Frame", header_name, UIParent, template or "SecureFrameTemplate")
 		header:Hide() -- it will be shown later and attributes being set won't cause lag
