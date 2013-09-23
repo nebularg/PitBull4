@@ -822,7 +822,7 @@ function GroupHeader:ApplyConfigModeState()
 
 		-- filter by a list of group numbers and/or classes
 		fill_table(wipe(token_table), strsplit(",", group_filter))
-		local strict_filter = self:GetAttribute("strictFiltering")
+		local strict_filtering = self:GetAttribute("strictFiltering")
 
 		for i = start, finish, 1 do
 			local unit, name, subgroup, class_name, role = get_group_roster_info(super_unit_group, i)
@@ -875,7 +875,7 @@ function GroupHeader:ApplyConfigModeState()
 		if sort_method == "NAME" then
 			table.sort(sorting_table, sort_on_names)
 		elseif sort_method == "NAMELIST" then
-			table.sort(sorting_table, sort_on_namelist)
+			table.sort(sorting_table, sort_on_name_list)
 		end
 	end
 
