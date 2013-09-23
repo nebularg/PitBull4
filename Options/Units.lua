@@ -619,7 +619,7 @@ function PitBull4.Options.get_unit_options()
 		GROUP = L["By group"],
 	}
 	
-	local other_values = {
+	local enemy_values = {
 		INDEX = L["By index"],
 	}
 	
@@ -635,7 +635,7 @@ function PitBull4.Options.get_unit_options()
 			elseif unit_group:sub(1, 5) == "party" then
 				return party_values
 			else
-				return other_values
+				return enemy_values
 			end
 		end,
 		get = function(info)
