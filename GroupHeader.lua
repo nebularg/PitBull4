@@ -819,7 +819,7 @@ function GroupHeader:ApplyConfigModeState()
 		return
 	end
 
-	local oldIgnore = self:SetAttribute("_ignore")
+	local old_ignore = self:SetAttribute("_ignore")
 	self:SetAttribute("_ignore", "applyConfigModeState")
 
 	wipe(sorting_table)
@@ -998,7 +998,7 @@ function GroupHeader:ApplyConfigModeState()
 		current_anchor = frame
 	end
 
-	self:SetAttribute("_ignore", oldIgnore)
+	self:SetAttribute("_ignore", old_ignore)
 end
 GroupHeader.ApplyConfigModeState = PitBull4:OutOfCombatWrapper(GroupHeader.ApplyConfigModeState)
 
@@ -1567,7 +1567,7 @@ end
 function GroupHeader:PositionMembers()
 	if not self[1] then return end -- frames not set up (:SwapGroupTemplate from a disabled header)
 
-	local oldIgnore = self:GetAttribute("_ignore")
+	local old_ignore = self:GetAttribute("_ignore")
 	self:SetAttribute("_ignore", "configureChildren")
 
 	wipe(sorting_table)
@@ -1678,7 +1678,7 @@ function GroupHeader:PositionMembers()
 		self:SetHeight( max(min_height, 0.1) )
 	end
 
-	self:SetAttribute("_ignore", oldIgnore)
+	self:SetAttribute("_ignore", old_ignore)
 end
 GroupHeader.PositionMembers = PitBull4:OutOfCombatWrapper(GroupHeader.PositionMembers)
 
