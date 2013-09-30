@@ -110,10 +110,12 @@ end
 
 function getfont(font_string, ...)
 	local font, size, flags = original_getfont(font_string)
+	-- the retrieved font can be nil if the font we set is not available.
+	-- size will be possibly uninitalized so it can be any value including 0 or
+	-- negative values.  So whenever font is nil use the font and size we stored
+	-- in setfont above. 
 	if not font then
 		font = font_string.font
-	end
-	if not size then
 		size = font_string.size
 	end
 	return font, size, flags
