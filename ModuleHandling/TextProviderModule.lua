@@ -99,6 +99,8 @@ function TextProviderModule:UpdateFrame(frame)
 				enabled = false
 			end
 		end
+
+		local font, size = frame:GetFont(text_db.font, text_db.size)
 		
 		if enabled then
 			if not font_string then
@@ -108,12 +110,13 @@ function TextProviderModule:UpdateFrame(frame)
 				font_string:SetShadowColor(0, 0, 0, 1)
 				font_string:SetShadowOffset(0.8, -0.8)
 				font_string:SetNonSpaceWrap(false)
+				font_string:SetFont(font, size, "")
 				changed = true
+			else
+				local _, _, modifier = font_string:GetFont()
+				font_string:SetFont(font, size, modifier)
 			end
 			
-			local font, size = frame:GetFont(text_db.font, text_db.size)
-			local _, _, modifier = font_string:GetFont()
-			font_string:SetFont(font, size, modifier)
 			font_string.db = text_db
 			if not self:AddFontString(frame, font_string, name, text_db) then
 				self:RemoveFontString(font_string)
