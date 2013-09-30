@@ -56,8 +56,8 @@ function PitBull4:MakeGroupHeader(group)
 		header.group_db = group_db
 		header:RefreshGroup()
 	end
-	
-	header:UpdateShownState()	
+
+	header:UpdateShownState()
 end
 PitBull4.MakeGroupHeader = PitBull4:OutOfCombatWrapper(PitBull4.MakeGroupHeader)
 
@@ -102,11 +102,11 @@ function PitBull4:SwapGroupTemplate(group)
 	else
 		-- already exists so jump through the hoops to reactive it.
 		self.name_to_header[group] = new_header
-		new_header.group_db = group_db 
+		new_header.group_db = group_db
 		new_header:RefreshGroup()
 		new_header:UpdateShownState()
 	end
-		
+
 	new_header:RecheckConfigMode()
 end
 PitBull4.SwapGroupTemplate = PitBull4:OutOfCombatWrapper(PitBull4.SwapGroupTemplate)
@@ -241,7 +241,7 @@ function GroupHeader:RefixSizeAndPosition()
 	local layout = group_db.layout
 	local layout_db = PitBull4.db.profile.layouts[layout]
 	local updated = false
-	
+
 	self:SetScale(layout_db.scale * group_db.scale)
 	self:SetFrameStrata(layout_db.strata)
 	self:SetFrameLevel(layout_db.level - 1) -- 1 less than what the unit frame will be at
@@ -249,8 +249,8 @@ function GroupHeader:RefixSizeAndPosition()
 	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
 	local direction = group_db.direction
 	local anchor = DIRECTION_TO_GROUP_ANCHOR_POINT[direction]
-	local unit_width = layout_db.size_x * group_db.size_x 
-	local unit_height = layout_db.size_y * group_db.size_y 
+	local unit_width = layout_db.size_x * group_db.size_x
+	local unit_height = layout_db.size_y * group_db.size_y
 	local x_diff = unit_width / 2 * -DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction]
 	local y_diff = unit_height / 2 * -DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction]
 
@@ -324,24 +324,24 @@ end
 -- @usage header:RefreshGroup()
 function GroupHeader:RefreshGroup(dont_refresh_children)
 	local group_db = self.group_db
-	
+
 	local layout = group_db.layout
 	self.layout = layout
-	
+
 	local layout_db = PitBull4.db.profile.layouts[layout]
 	self.layout_db = layout_db
-	
+
 	self.dont_update = true
 	for _, frame in self:IterateMembers() do
 		frame.dont_update = true
 	end
-	
+
 	local is_shown = self:IsShown()
 	self:Hide()
-	
+
 	local force_show = self.force_show
 	self:UnforceShow()
-	
+
 	-- Wipe all the points on the member frames before doing
 	-- the work below.  SecureGroupHeader's code does not
 	-- do this for us as it should so if you change directions
@@ -365,11 +365,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	local sort_direction = group_db.sort_direction
 	local sort_method = group_db.sort_method
 	local group_by = group_db.group_by
-	local name_list
-
-	if group_filter == "MAINTANK" then
-		name_list = get_main_tank_name_list()
-	end
+	local name_list = group_filter == "MAINTANK" and get_main_tank_name_list() or nil
 
 	local changed_units = self.unit_group ~= unit_group or self.include_player ~= include_player or self.show_solo ~= show_solo or self.group_filter ~= group_filter or self.sort_direction ~= sort_direction or self.sort_method ~= sort_method or self.group_by ~= group_by or self.name_list ~= name_list or self.group_based ~= group_based
 
@@ -413,7 +409,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 			self:SetAttribute("showSolo", nil)
 			self:SetAttribute("showRaid", true)
 			if name_list then
-				self:SetAttribute("groupFilter", nil) 
+				self:SetAttribute("groupFilter", nil)
 				self:SetAttribute("nameList", name_list)
 			else
 				self:SetAttribute("groupFilter", group_filter)
@@ -423,16 +419,16 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		if self.unitsuffix == "" then
 			self.unitsuffix = nil
 		end
-		self:SetAttribute("unitsuffix",self.unitsuffix)
-	
+		self:SetAttribute("unitsuffix", self.unitsuffix)
+
 		local is_wacky = PitBull4.Utils.IsWackyUnitGroup(unit_group)
 		self.is_wacky = is_wacky
-		
+
 		if old_unit_group then
 			PitBull4.unit_group_to_headers[old_unit_group][self] = nil
 			PitBull4.super_unit_group_to_headers[old_super_unit_group][self] = nil
 		end
-		
+
 		for _, frame in self:IterateMembers() do
 			frame:SetAttribute("unitsuffix", self.unitsuffix)
 			frame.is_wacky = is_wacky
@@ -440,10 +436,10 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 		PitBull4.unit_group_to_headers[unit_group][self] = true
 		PitBull4.super_unit_group_to_headers[self.super_unit_group][self] = true
 	end
-	
+
 	local direction = group_db.direction
 	local point = DIRECTION_TO_POINT[direction]
-	
+
 	self:SetAttribute("point", point)
 	if point == "LEFT" or point == "RIGHT" then
 		self:SetAttribute("xOffset", group_db.horizontal_spacing * DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction])
@@ -496,12 +492,12 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	if force_show then
 		self:ForceShow()
 	end
-	
+
 	for _, frame in self:IterateMembers() do
 		frame.dont_update = nil
 	end
 	self.dont_update = nil
-	
+
 	if changed_units and not dont_refresh_children then
 		for _, frame in self:IterateMembers() do
 			frame:RefreshLayout()
@@ -525,37 +521,33 @@ end
 GroupHeader.RefreshLayout = PitBull4:OutOfCombatWrapper(GroupHeader.RefreshLayout)
 
 --- Initialize a member frame. This should be called once per member frame immediately following the frame's creation.
--- @usage header:InitializeConfigFunction(frame)
-function GroupHeader:InitialConfigFunction(frame)
-	if not frame then
-		-- Cataclysm, the frame is not passed into us but the new
+-- @usage header:InitializeConfigFunction()
+function GroupHeader:InitialConfigFunction()
+	-- Since Cataclysm, the frame is not passed into us but the new
 		-- GroupHeader does set the 1..n array slots to the frames.
 		-- Since this function is only called on the creation of a new
 		-- frame the newest frame will always be the last array slot
-		frame = self[#self]
-	else
-		-- pre Cataclysm
-		self[#self+1] = frame
-	end
+	local frame = self[#self]
+
 	frame.header = self
 	frame.is_singleton = false
 	frame.classification = self.name
 	frame.classification_db = self.group_db
 	frame.is_wacky = self.is_wacky
-	
+
 	local layout = self.group_db.layout
 	frame.layout = layout
-	
+
 	PitBull4:ConvertIntoUnitFrame(frame)
 
 	if frame:CanChangeAttribute() then
 		if self.unitsuffix then
 			frame:ProxySetAttribute("unitsuffix", self.unitsuffix)
 		end
-	
+
 		local layout_db = PitBull4.db.profile.layouts[layout]
 		frame.layout_db = layout_db
-	
+
 		frame:ProxySetAttribute("initial-width", layout_db.size_x * self.group_db.size_x)
 		frame:ProxySetAttribute("initial-height", layout_db.size_y * self.group_db.size_y)
 		frame:ProxySetAttribute("initial-unitWatch", true)
@@ -611,7 +603,7 @@ function GroupHeader:ForceUnitFrameCreation()
 		rehide = true
 	end
 	self:SetAttribute("startingIndex", -num + 1) -- Not proxied to ensure an Update happens
-	
+
 	self:ProxySetAttribute("maxColumns", maxColumns)
 	self:ProxySetAttribute("unitsPerColumn", unitsPerColumn)
 	self:SetAttribute("startingIndex", startingIndex) -- Not proxied to ensure an Update happens
@@ -619,7 +611,7 @@ function GroupHeader:ForceUnitFrameCreation()
 	if rehide then
 		self:Hide()
 	end
-	
+
 	-- this is done because the previous hack can mess up some unit references
 	for _, frame in self:IterateMembers() do
 		local unit = SecureButton_GetModifiedUnit(frame, "LeftButton")
@@ -654,7 +646,7 @@ local function fill_table(tbl, ...)
 	for i = 1, select('#', ...), 1 do
 		local key = select(i, ...)
 		key = tonumber(key) or strtrim(key)
-		tbl[key] = i 
+		tbl[key] = i
 	end
 end
 
@@ -703,7 +695,7 @@ local function get_group_roster_info(super_unit_group, index)
 				name = name.."-"..server
 			end
 			_, class_name = UnitClass(unit)
-			-- The UnitInParty and UnitInRaid checks are an ugly workaround for thee 
+			-- The UnitInParty and UnitInRaid checks are an ugly workaround for thee
 			-- You are not in a party bug that Blizzard created.
 			if not PitBull4.leaving_world and (UnitInParty(unit) or UnitInRaid(unit)) then
 				if GetPartyAssignment("MAINTANK", unit) then
@@ -719,8 +711,8 @@ local function get_group_roster_info(super_unit_group, index)
 	-- return some bogus data to get our fake unit ids to sort where we want.
 	if not name then
 		name = string.format("~%02d",index)
-		subgroup = 0 
-		class_name = '!' 
+		subgroup = 0
+		class_name = '!'
 	end
 
 	return unit, name, subgroup, class_name, role
@@ -865,12 +857,12 @@ function GroupHeader:ApplyConfigModeState()
 		for i = start, finish, 1 do
 			local unit, name, subgroup, class_name, role = get_group_roster_info(super_unit_group, i)
 
-			if name and (not strict_filtering 
+			if name and (not strict_filtering
 				and (token_table[subgroup] or token_table[class_name] or (role and token_table[role]))) -- non-strict filtering
 				or (token_table[subgroup] and token_table[class_name]) -- strict filtering
 				then
 				sorting_table[#sorting_table+1] = unit
-				sorting_table[unit] = name 
+				sorting_table[unit] = name
 				if group_by == "GROUP" then
 					grouping_table[unit] = subgroup
 				elseif group_by == "CLASS" then
@@ -1018,12 +1010,12 @@ do
 			if i > num then
 				return nil
 			end
-			
+
 			local v = t[i]
 			if v == nil then
 				return nil
 			end
-			
+
 			return i, v
 		end
 		self[num] = f
@@ -1034,7 +1026,7 @@ do
 	end
 end
 
-local function get_filter_type_count(...) 
+local function get_filter_type_count(...)
 	local start = select(1, ...)
 	return tonumber(start) and true or false, select('#', ...)
 end
@@ -1046,7 +1038,7 @@ function GroupHeader:GetMaxUnits(ignore_filters)
 			if group_filter then
 				if group_filter == "" then
 				-- Everything filtered, but always have at least one unit
-					return 1 
+					return 1
 				end
 
 				-- If we're filtering by raid group we may not need all 40
@@ -1082,7 +1074,7 @@ do
 		for i = 1, n do
 			set[select(i, ...)] = true
 		end
-		
+
 		return set, n
 	end
 end
@@ -1105,7 +1097,7 @@ function GroupHeader:IterateMembers(guess_num)
 				num = config_mode:sub(5)+0 -- raid10, raid25, raid40 => 10, 25, 40
 			end
 			-- check filters
-			
+
 			local filter = self.group_filter
 			if not filter then
 				-- do nothing, all is shown
@@ -1134,7 +1126,7 @@ function GroupHeader:IterateMembers(guess_num)
 			end
 		end
 	end
-	
+
 	if not num or num > max_units then
 		num = max_units
 	end
@@ -1209,14 +1201,14 @@ function GroupHeader:Rename(name)
 	if self.label then
 		self.label:SetText(name)
 	end
-	
+
 	for i, frame in ipairs(self) do
 		frame.classification = name
 	end
 end
 
 function GroupHeader:ClearFrames()
-	-- Clears the frames over a 10 minute period.  Starting from the 
+	-- Clears the frames over a 10 minute period.  Starting from the
 	-- end working our way to the front
 	local clear_index = self.clear_index
 	-- Frames will have no guid at this point so Update == Clear
@@ -1243,7 +1235,7 @@ function GroupHeader__scripts:OnHide()
 	if clear_timer then
 		PitBull4:CancelTimer(clear_timer)
 	end
-	-- Start clearing the frames in 5 minutes. 
+	-- Start clearing the frames in 5 minutes.
 	self.clear_index = #self
 	self.clear_timer = PitBull4:ScheduleTimer(self.ClearFrames, 300, self)
 end
@@ -1267,7 +1259,7 @@ function MemberUnitFrame__scripts:OnDragStart()
 
 	local header = self.header
 	moving_frame = header
-	
+
 	if db.frame_snap then
 		LibStub("LibSimpleSticky-1.0"):StartMoving(header, PitBull4.all_frames_list, 0, 0, 0, 0)
 	else
@@ -1285,21 +1277,21 @@ function MemberUnitFrame__scripts:OnDragStop()
 	else
 		header:StopMovingOrSizing()
 	end
-	
+
 	local ui_scale = UIParent:GetEffectiveScale()
 	local scale = header[1]:GetEffectiveScale() / ui_scale
-	
+
 	local x, y = header[1]:GetCenter()
 	x, y = x * scale, y * scale
-	
+
 	x = x - GetScreenWidth()/2
 	y = y - GetScreenHeight()/2
-	
+
 	header.group_db.position_x = x
 	header.group_db.position_y = y
-	
+
 	LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
-	
+
 	header:RefreshLayout(true)
 end
 
@@ -1354,7 +1346,7 @@ function MemberUnitFrame:RefixSizeAndPosition()
 	if not self:CanChangeProtectedState() then return end
 	local layout_db = self.layout_db
 	local classification_db = self.classification_db
-	
+
 	self:SetWidth(layout_db.size_x * classification_db.size_x)
 	self:SetHeight(layout_db.size_y * classification_db.size_y)
 end
@@ -1649,6 +1641,7 @@ function GroupHeader:PositionMembers()
 
 			frame:Update()
 		end
+
 		local classification_db = frame.classification_db
 		if classification_db then
 			frame:SetClickThroughState(classification_db.click_through)
