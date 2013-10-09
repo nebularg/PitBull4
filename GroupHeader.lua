@@ -1501,9 +1501,10 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			header.unitsuffix = unit_group:sub(6)
 
 			header:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
-			header:RegisterEvent("ARENA_OPPONENT_UPDATE")
+			if header.unitsuffix ~= "" then
+				header:RegisterEvent("ARENA_OPPONENT_UPDATE")
+			end
 		end
-		header:RegisterEvent("UNIT_NAME_UPDATE")
 
 		if header.unitsuffix == "" then
 			header.unitsuffix = nil
@@ -1532,9 +1533,12 @@ function PitBull4:ConvertIntoGroupHeader(header)
 				frame:SetAttribute("unit", unit)
 				frame:SetAttribute("unitsuffix", unitsuffix)
 
-				--frame:SetScript("OnEvent", frame_OnEvent)
-				--frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
-				--frame:RegisterUnitEvent("ARENA_OPPONENT_UPDATE", unit)
+				frame:SetScript("OnEvent", frame_OnEvent)
+				frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
+				frame:RegisterUnitEvent("ARENA_OPPONENT_UPDATE", unit)
+				if unitsuffix == "pet" then
+					frame:RegisterUnitEvent("UNIT_PET", unit)
+				end
 
 				frame:WrapScript(frame, "OnAttributeChanged", [[
           if name == "config_mode" and self:GetAttribute("config_mode") then
@@ -1634,10 +1638,14 @@ function GroupHeader:PositionMembers()
 		frame:SetAttribute("unit", unit)
 		if old_unit ~= unit then
 			-- update our unit event references
-			--frame:UnregisterEvent("UNIT_NAME_UPDATE")
-			--frame:UnregisterEvent("ARENA_OPPONENT_UPDATE")
-			--frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
-			--frame:RegisterUnitEvent("ARENA_OPPONENT_UPDATE", unit)
+			frame:UnregisterEvent("UNIT_NAME_UPDATE")
+			frame:UnregisterEvent("ARENA_OPPONENT_UPDATE")
+			frame:UnregisterEvent("UNIT_PET")
+			frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
+			frame:RegisterUnitEvent("ARENA_OPPONENT_UPDATE", unit)
+			if frame:GetAttribute("unitsuffix") == "pet" then
+				frame:RegisterUnitEvent("UNIT_PET", unit)
+			end
 
 			frame:Update()
 		end
