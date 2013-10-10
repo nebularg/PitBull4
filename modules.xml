@@ -5,7 +5,6 @@
 <Include file="Modules\Aggro\load.xml"/>
 <Include file="Modules\AltPowerBar\load.xml"/>
 <Include file="Modules\Aura\load.xml"/>
-<Include file="Modules\ArenaSpecIcon\load.xml"/>
 <Include file="Modules\Background\load.xml"/>
 <Include file="Modules\BattlePet\load.xml"/>
 <Include file="Modules\BlankSpace\load.xml"/>
