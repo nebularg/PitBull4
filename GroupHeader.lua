@@ -1518,7 +1518,11 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		local unitsuffix = header.unitsuffix
 
 		local frame_OnEvent = function(self, event, ...)
-			self:Update()
+			if event == "UNIT_NAME_UPDATE" then
+				self:Update()
+			else
+				self:UpdateGUID(UnitGUID(frame.unit), true)
+			end
 		end
 
 		for index = 1, header:GetMaxUnits(true) do
