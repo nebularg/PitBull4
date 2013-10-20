@@ -1521,7 +1521,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			if event == "UNIT_NAME_UPDATE" then
 				self:Update()
 			else
-				self:UpdateGUID(UnitGUID(frame.unit), true)
+				self:UpdateGUID(UnitGUID(self.unit), true)
 			end
 		end
 
