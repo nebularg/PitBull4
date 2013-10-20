@@ -1489,7 +1489,9 @@ function PitBull4:ConvertIntoGroupHeader(header)
 				return
 			end
 
-			self:UpdateMembers()
+			for _, frame in self:IterateMembers() do
+				frame:UpdateGUID(UnitGUID(frame.unit), true)
+			end
 		end)
 
 		-- set up the unit/unitsuffix and register update events
@@ -1528,10 +1530,10 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			if not frame then
 				frame = CreateFrame("Button", frame_name, header, "SecureUnitButtonTemplate,SecureHandlerBaseTemplate,PitBull4_UnitTemplate_Clique")
 				frame:Hide()
+				frame:EnableMouse(false) -- start disabled so the state change registers the button with Clique
 
 				header[index] = frame
 				header:InitialConfigFunction()
-				frame:EnableMouse(false)
 				frame:SetAttribute("*type1", "target")
 				frame:SetAttribute("*type2", "togglemenu")
 
