@@ -1531,6 +1531,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 
 				header[index] = frame
 				header:InitialConfigFunction()
+				frame:EnableMouse(false)
 				frame:SetAttribute("*type1", "target")
 				frame:SetAttribute("*type2", "togglemenu")
 
