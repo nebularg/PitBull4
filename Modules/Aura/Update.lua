@@ -267,25 +267,6 @@ do
 	end
 end
 
--- Looks for a spell with the name of the temporary weapon enchant
--- in its name.  This let's use display the spell icon instead of
--- the weapon icon for things like rogue poisons and shaman enchant
--- spells.
-local guess_spell_icon = setmetatable({}, {__index=function(self, key)
-	if not key then return false end
-	for i = 1, 120000 do
-		local name, _, texture = GetSpellInfo(i)
-		if name and name:find(key) then
-			self[key] = texture
-			return texture
-		end
-	end
-
-	-- Remember that we can't find it
-	self[key] = false
-	return false
-end})
-
 -- Takes the data for a weapon enchant and builds an aura entry
 local function set_weapon_entry(list, is_enchant, time_left, expiration_time, count, slot)
 	local entry = list[i]
@@ -312,10 +293,6 @@ local function set_weapon_entry(list, is_enchant, time_left, expiration_time, co
 	if not name then 
 		wipe(entry)
 		return
-	end
-
-	if PitBull4_Aura.db.profile.global.guess_weapon_enchant_icon then
-		texture = guess_spell_icon[name] or texture
 	end
 
 	-- Figure the duration by keeping track of the longest

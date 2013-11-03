@@ -261,7 +261,6 @@ PitBull4_Aura:SetDefaults({
 {
 	-- Global defaults
 	colors = color_defaults,
-	guess_weapon_enchant_icon = true,
 	filters = {
 		-- default filters are indexed by two character codes.
 		-- The first character follows the following format:
@@ -1585,18 +1584,7 @@ end)
 
 
 PitBull4_Aura:SetGlobalOptionsFunction(function(self)
-	return 'guess_weapon_enchant_icon', {
-		type = 'toggle',
-		name = L['Use spell icon'],
-		desc = L['Use the spell icon for the weapon enchant rather than the icon for the weapon.'],
-		get = function(info)
-			return self.db.profile.global.guess_weapon_enchant_icon
-		end,
-		set = function(info, value)
-			self.db.profile.global.guess_weapon_enchant_icon = value
-			self:UpdateWeaponEnchants(true)
-		end,
-	}, 'filter_editor', {
+	return 'filter_editor', {
 		type = 'group',
 		childGroups = 'tab',
 		name = L['Aura filter editor'],
