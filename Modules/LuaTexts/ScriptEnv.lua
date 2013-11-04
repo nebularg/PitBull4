@@ -53,6 +53,14 @@ setmetatable(UnitToLocale, {__index=function(self, unit)
 			local num = unit:match("^party(%d)$")
 			self[unit] = L["Party member #%d"]:format(num)
 			return self[unit]
+		elseif unit:find("^arena%d$") then
+			local num = unit:match("^arena(%d)$")
+			self[unit] = L["Arena enemy #%d"]:format(num)
+			return self[unit]
+		elseif unit:find("^boss%d$") then
+			local num = unit:match("^boss(%d)$")
+			self[unit] = L["Boss #%d"]:format(num)
+			return self[unit]
 		elseif unit:find("^raid%d%d?$") then
 			local num = unit:match("^raid(%d%d?)$")
 			self[unit] = L["Raid member #%d"]:format(num)
@@ -60,6 +68,10 @@ setmetatable(UnitToLocale, {__index=function(self, unit)
 		elseif unit:find("^partypet%d$") then
 			local num = unit:match("^partypet(%d)$")
 			self[unit] = UnitToLocale["party" .. num .. "pet"]
+			return self[unit]
+		elseif unit:find("^arenapet%d$") then
+			local num = unit:match("^arenapet(%d)$")
+			self[unit] = UnitToLocale["arena" .. num .. "pet"]
 			return self[unit]
 		elseif unit:find("^raidpet%d%d?$") then
 			local num = unit:match("^raidpet(%d%d?)$")
