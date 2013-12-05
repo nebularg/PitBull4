@@ -1512,6 +1512,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		local unitsuffix = header.unitsuffix
 
 		local frame_OnEvent = function(self, event, ...)
+			if not self:GetParent().group_db.enabled then return end
 			if event == "UNIT_NAME_UPDATE" then
 				self:Update()
 			else
@@ -1542,10 +1543,13 @@ function PitBull4:ConvertIntoGroupHeader(header)
 				frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
 				frame:RegisterUnitEvent("ARENA_OPPONENT_UPDATE", unit)
 				frame:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", unit)
-				if unitsuffix == "pet" then
-					frame:RegisterUnitEvent("UNIT_PET", unit)
-				elseif unitsuffix == "target" then
-					frame:RegisterUnitEvent("UNIT_TARGET", unit)
+				if unitsuffix then
+					if unitsuffix:match("pet") then
+						frame:RegisterUnitEvent("UNIT_PET", unit)
+					end
+					if unitsuffix:match("target") then
+						frame:RegisterUnitEvent("UNIT_TARGET", unit)
+					end
 				end
 
 				frame:WrapScript(frame, "OnAttributeChanged", [[
@@ -1655,10 +1659,13 @@ function GroupHeader:PositionMembers()
 			frame:RegisterUnitEvent("ARENA_OPPONENT_UPDATE", unit)
 			frame:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", unit)
 			local unitsuffix = frame:GetAttribute("unitsuffix")
-			if unitsuffix == "pet" then
-				frame:RegisterUnitEvent("UNIT_PET", unit)
-			elseif unitsuffix == "target" then
-				frame:RegisterUnitEvent("UNIT_TARGET", unit)
+			if unitsuffix then
+				if unitsuffix:match("pet") then
+					frame:RegisterUnitEvent("UNIT_PET", unit)
+				end
+				if unitsuffix:match("target") then
+					frame:RegisterUnitEvent("UNIT_TARGET", unit)
+				end
 			end
 
 			frame:Update()
