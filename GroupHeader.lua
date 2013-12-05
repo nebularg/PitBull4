@@ -1480,12 +1480,10 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		-- set up our fake header for non party/raid group frames
 
 		-- allow events to force an update
-		header:SetScript("OnEvent", function(self, event, arg1, ...)
+		header:SetScript("OnEvent", function(self, event, arg1)
 			if not self:IsVisible() or not self.group_db.enabled then return end
 
 			if event == "UPDATE_BATTLEFIELD_STATUS" and GetBattlefieldStatus(arg1) ~= "active" then
-				return
-			elseif event == "UNIT_TARGETABLE_CHANGED" and not arg1:match(self.super_unit_group) then
 				return
 			end
 
@@ -1501,15 +1499,11 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			header.unitsuffix = unit_group:sub(5)
 
 			header:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
-			header:RegisterEvent("UNIT_TARGETABLE_CHANGED")
 		elseif unit_group:sub(1, 5) == "arena" then
 			header.super_unit_group = "arena"
 			header.unitsuffix = unit_group:sub(6)
 
 			header:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
-			if header.unitsuffix ~= "" then
-				header:RegisterEvent("ARENA_OPPONENT_UPDATE")
-			end
 		end
 
 		if header.unitsuffix == "" then
@@ -1547,8 +1541,11 @@ function PitBull4:ConvertIntoGroupHeader(header)
 				frame:SetScript("OnEvent", frame_OnEvent)
 				frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
 				frame:RegisterUnitEvent("ARENA_OPPONENT_UPDATE", unit)
+				frame:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", unit)
 				if unitsuffix == "pet" then
 					frame:RegisterUnitEvent("UNIT_PET", unit)
+				elseif unitsuffix == "target" then
+					frame:RegisterUnitEvent("UNIT_TARGET", unit)
 				end
 
 				frame:WrapScript(frame, "OnAttributeChanged", [[
@@ -1651,11 +1648,17 @@ function GroupHeader:PositionMembers()
 			-- update our unit event references
 			frame:UnregisterEvent("UNIT_NAME_UPDATE")
 			frame:UnregisterEvent("ARENA_OPPONENT_UPDATE")
+			frame:UnregisterEvent("UNIT_TARGETABLE_CHANGED")
 			frame:UnregisterEvent("UNIT_PET")
+			frame:UnregisterEvent("UNIT_TARGET")
 			frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
 			frame:RegisterUnitEvent("ARENA_OPPONENT_UPDATE", unit)
-			if frame:GetAttribute("unitsuffix") == "pet" then
+			frame:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", unit)
+			local unitsuffix = frame:GetAttribute("unitsuffix")
+			if unitsuffix == "pet" then
 				frame:RegisterUnitEvent("UNIT_PET", unit)
+			elseif unitsuffix == "target" then
+				frame:RegisterUnitEvent("UNIT_TARGET", unit)
 			end
 
 			frame:Update()
