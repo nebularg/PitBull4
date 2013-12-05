@@ -1428,6 +1428,47 @@ local initialConfigFunction = [[
     end
 ]]
 
+local function frame_OnEvent(self, event, unit)
+	if not self:GetParent().group_db.enabled then return end
+	if event == "UNIT_NAME_UPDATE" then
+		self:Update(true)
+	else
+		self:UpdateGUID(UnitGUID(self.unit), true)
+	end
+end
+
+local function frame_OnUpdate(self, elapsed)
+	self.elapsed = self.elapsed + elapsed
+	if self.elapsed < 0.5 then return end
+	self.elapsed = 0
+
+	self:UpdateGUID(UnitGUID(self.unit), true)
+end
+
+local function registerFrameUpdates(frame)
+	local unit = frame:GetAttribute("unit")
+	frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
+	frame:RegisterUnitEvent("ARENA_OPPONENT_UPDATE", unit)
+	frame:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", unit)
+
+	local unitsuffix = frame:GetAttribute("unitsuffix")
+	if unitsuffix then
+		local isPet = unitsuffix:match("pet")
+		local eventUnit = isPet and unit.."pet" or unit
+
+		if unitsuffix:match("targettarget") then
+			-- poll for updates since events don't fire for wacky units and finding a unit to UNIT_TARGET from isn't guaranteed
+			frame.elapsed = 0
+			frame:SetScript("OnUpdate", frame_OnUpdate)
+		elseif unitsuffix:match("target") then
+			frame:RegisterUnitEvent("UNIT_TARGET", eventUnit)
+		end
+		if isPet then
+			frame:RegisterUnitEvent("UNIT_PET", eventUnit)
+		end
+	end
+end
+
 
 --- Add the proper functions and scripts to a SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate, as well as some initialization.
 -- @param frame a Frame which inherits from SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate
@@ -1511,15 +1552,6 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		end
 		local unitsuffix = header.unitsuffix
 
-		local frame_OnEvent = function(self, event, ...)
-			if not self:GetParent().group_db.enabled then return end
-			if event == "UNIT_NAME_UPDATE" then
-				self:Update()
-			else
-				self:UpdateGUID(UnitGUID(self.unit), true)
-			end
-		end
-
 		for index = 1, header:GetMaxUnits(true) do
 			local unit = header.super_unit_group .. index -- want the base unit as "unit" before getting wacky in "unitsuffix" (seemed awkward to me)
 
@@ -1540,19 +1572,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 				frame:SetAttribute("unitsuffix", unitsuffix)
 
 				frame:SetScript("OnEvent", frame_OnEvent)
-				frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
-				frame:RegisterUnitEvent("ARENA_OPPONENT_UPDATE", unit)
-				frame:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", unit)
-				if unitsuffix then -- XXX is there a better way to update these? >.>
-					if unitsuffix:match("pet") then
-						frame:RegisterUnitEvent("UNIT_PET", unit.."pet")
-						if unitsuffix:match("target") then
-							frame:RegisterUnitEvent("UNIT_TARGET", unit.."pet")
-						end
-					elseif unitsuffix:match("target") then
-						frame:RegisterUnitEvent("UNIT_TARGET", unit)
-					end
-				end
+				registerFrameUpdates(frame)
 
 				frame:WrapScript(frame, "OnAttributeChanged", [[
           if name == "config_mode" and self:GetAttribute("config_mode") then
@@ -1657,20 +1677,9 @@ function GroupHeader:PositionMembers()
 			frame:UnregisterEvent("UNIT_TARGETABLE_CHANGED")
 			frame:UnregisterEvent("UNIT_PET")
 			frame:UnregisterEvent("UNIT_TARGET")
-			frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
-			frame:RegisterUnitEvent("ARENA_OPPONENT_UPDATE", unit)
-			frame:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", unit)
-			local unitsuffix = frame:GetAttribute("unitsuffix")
-			if unitsuffix then
-				if unitsuffix:match("pet") then
-					frame:RegisterUnitEvent("UNIT_PET", unit.."pet")
-					if unitsuffix:match("target") then
-						frame:RegisterUnitEvent("UNIT_TARGET", unit.."pet")
-					end
-				elseif unitsuffix:match("target") then
-					frame:RegisterUnitEvent("UNIT_TARGET", unit)
-				end
-			end
+			frame:SetScript("OnUpdate", nil)
+
+			registerFrameUpdates(frame)
 
 			frame:Update()
 		end
