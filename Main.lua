@@ -22,10 +22,10 @@ local UNIT_GROUPS = {
 	"partypettargettarget",
 	"arena",
 	"arenatarget",
-	"arenatargettarget",
+	--"arenatargettarget",
 	"arenapet",
 	"arenapettarget",
-	"arenapettargettarget",
+	--"arenapettargettarget",
 	"raid",
 	"raidtarget",
 	"raidtargettarget",
@@ -34,7 +34,7 @@ local UNIT_GROUPS = {
 	"raidpettargettarget",
 	"boss",
 	"bosstarget",
-	"bosstargettarget",
+	--"bosstargettarget",
 }
 
 local NORMAL_UNITS = {
