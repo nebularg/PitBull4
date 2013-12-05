@@ -1543,11 +1543,13 @@ function PitBull4:ConvertIntoGroupHeader(header)
 				frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
 				frame:RegisterUnitEvent("ARENA_OPPONENT_UPDATE", unit)
 				frame:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", unit)
-				if unitsuffix then
+				if unitsuffix then -- XXX is there a better way to update these? >.>
 					if unitsuffix:match("pet") then
-						frame:RegisterUnitEvent("UNIT_PET", unit)
-					end
-					if unitsuffix:match("target") then
+						frame:RegisterUnitEvent("UNIT_PET", unit.."pet")
+						if unitsuffix:match("target") then
+							frame:RegisterUnitEvent("UNIT_TARGET", unit.."pet")
+						end
+					elseif unitsuffix:match("target") then
 						frame:RegisterUnitEvent("UNIT_TARGET", unit)
 					end
 				end
@@ -1661,9 +1663,11 @@ function GroupHeader:PositionMembers()
 			local unitsuffix = frame:GetAttribute("unitsuffix")
 			if unitsuffix then
 				if unitsuffix:match("pet") then
-					frame:RegisterUnitEvent("UNIT_PET", unit)
-				end
-				if unitsuffix:match("target") then
+					frame:RegisterUnitEvent("UNIT_PET", unit.."pet")
+					if unitsuffix:match("target") then
+						frame:RegisterUnitEvent("UNIT_TARGET", unit.."pet")
+					end
+				elseif unitsuffix:match("target") then
 					frame:RegisterUnitEvent("UNIT_TARGET", unit)
 				end
 			end
