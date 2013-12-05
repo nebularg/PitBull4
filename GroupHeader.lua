@@ -1428,6 +1428,15 @@ local initialConfigFunction = [[
     end
 ]]
 
+local function header_OnEvent(self, event, arg1)
+	if not self:IsVisible() or not self.group_db.enabled then return end
+	if event == "UPDATE_BATTLEFIELD_STATUS" and GetBattlefieldStatus(arg1) ~= "active" then return end
+
+	for _, frame in self:IterateMembers() do
+		frame:UpdateGUID(UnitGUID(frame.unit), true)
+	end
+end
+
 local function frame_OnEvent(self, event, unit)
 	if not self:GetParent().group_db.enabled then return end
 	if event == "UNIT_NAME_UPDATE" then
@@ -1521,17 +1530,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		-- set up our fake header for non party/raid group frames
 
 		-- allow events to force an update
-		header:SetScript("OnEvent", function(self, event, arg1)
-			if not self:IsVisible() or not self.group_db.enabled then return end
-
-			if event == "UPDATE_BATTLEFIELD_STATUS" and GetBattlefieldStatus(arg1) ~= "active" then
-				return
-			end
-
-			for _, frame in self:IterateMembers() do
-				frame:UpdateGUID(UnitGUID(frame.unit), true)
-			end
-		end)
+		header:SetScript("OnEvent", header_OnEvent)
 
 		-- set up the unit/unitsuffix and register update events
 		local unit_group = header.group_db.unit_group
