@@ -1462,18 +1462,18 @@ local function registerFrameUpdates(frame)
 
 	local unitsuffix = frame:GetAttribute("unitsuffix")
 	if unitsuffix then
-		local isPet = unitsuffix:match("pet")
-		local eventUnit = isPet and unit.."pet" or unit
+		local is_pet = unitsuffix:match("pet")
+		local event_unit = is_pet and unit.."pet" or unit
 
 		if unitsuffix:match("targettarget") then
 			-- poll for updates since events don't fire for wacky units and finding a unit to UNIT_TARGET from isn't guaranteed
 			frame.elapsed = 0
 			frame:SetScript("OnUpdate", frame_OnUpdate)
 		elseif unitsuffix:match("target") then
-			frame:RegisterUnitEvent("UNIT_TARGET", eventUnit)
+			frame:RegisterUnitEvent("UNIT_TARGET", event_unit)
 		end
-		if isPet then
-			frame:RegisterUnitEvent("UNIT_PET", eventUnit)
+		if is_pet then
+			frame:RegisterUnitEvent("UNIT_PET", event_unit)
 		end
 	end
 end
