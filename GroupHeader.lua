@@ -1441,7 +1441,7 @@ local function frame_OnEvent(self, event, unit)
 	if not self:GetParent().group_db.enabled then return end
 	if event == "UNIT_NAME_UPDATE" then
 		self:Update(true)
-	else
+	elseif UnitExists(self.unit) then
 		self:UpdateGUID(UnitGUID(self.unit), true)
 	end
 end
@@ -1449,9 +1449,11 @@ end
 local function frame_OnUpdate(self, elapsed)
 	self.elapsed = self.elapsed + elapsed
 	if self.elapsed < 0.5 then return end
-	self.elapsed = 0
+	self.elapsed = self.elapsed - 0.5
 
-	self:UpdateGUID(UnitGUID(self.unit), true)
+	if UnitExists(self.unit) then
+		self:UpdateGUID(UnitGUID(self.unit), true)
+	end
 end
 
 local function registerFrameUpdates(frame)
