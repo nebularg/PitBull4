@@ -1467,17 +1467,22 @@ local function registerFrameUpdates(frame)
 		local is_pet = unitsuffix:match("pet")
 		local event_unit = is_pet and unit.."pet" or unit
 
-		if unitsuffix:match("targettarget") then
-			-- poll for updates since events don't fire for wacky units and finding a unit to UNIT_TARGET from isn't guaranteed
+		if unitsuffix:match("target") then
 			frame.elapsed = 0
 			frame:SetScript("OnUpdate", frame_OnUpdate)
-		elseif unitsuffix:match("target") then
-			frame:RegisterUnitEvent("UNIT_TARGET", event_unit)
 		end
 		if is_pet then
 			frame:RegisterUnitEvent("UNIT_PET", event_unit)
 		end
 	end
+end
+
+local function unregisterFrameUpdates(frame)
+	frame:SetScript("OnUpdate", nil)
+	frame:UnregisterEvent("UNIT_NAME_UPDATE")
+	frame:UnregisterEvent("ARENA_OPPONENT_UPDATE")
+	frame:UnregisterEvent("UNIT_TARGETABLE_CHANGED")
+	frame:UnregisterEvent("UNIT_PET")
 end
 
 
@@ -1673,13 +1678,7 @@ function GroupHeader:PositionMembers()
 		frame:SetAttribute("unit", unit)
 		if old_unit ~= unit then
 			-- update our unit event references
-			frame:UnregisterEvent("UNIT_NAME_UPDATE")
-			frame:UnregisterEvent("ARENA_OPPONENT_UPDATE")
-			frame:UnregisterEvent("UNIT_TARGETABLE_CHANGED")
-			frame:UnregisterEvent("UNIT_PET")
-			frame:UnregisterEvent("UNIT_TARGET")
-			frame:SetScript("OnUpdate", nil)
-
+			unregisterFrameUpdates(frame)
 			registerFrameUpdates(frame)
 
 			frame:Update()
