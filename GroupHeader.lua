@@ -1452,7 +1452,7 @@ local function frame_OnUpdate(self, elapsed)
 	self.elapsed = self.elapsed - 0.5
 
 	if UnitExists(self.unit) then
-		self:UpdateGUID(UnitGUID(self.unit), true)
+		self:UpdateGUID(UnitGUID(self.unit))
 	end
 end
 
@@ -1468,6 +1468,7 @@ local function registerFrameUpdates(frame)
 		local event_unit = is_pet and unit.."pet" or unit
 
 		if unitsuffix:match("target") then
+			frame:RegisterUnitEvent("UNIT_TARGET", event_unit)
 			frame.elapsed = 0
 			frame:SetScript("OnUpdate", frame_OnUpdate)
 		end
@@ -1482,6 +1483,7 @@ local function unregisterFrameUpdates(frame)
 	frame:UnregisterEvent("UNIT_NAME_UPDATE")
 	frame:UnregisterEvent("ARENA_OPPONENT_UPDATE")
 	frame:UnregisterEvent("UNIT_TARGETABLE_CHANGED")
+	frame:UnregisterEvent("UNIT_TARGET")
 	frame:UnregisterEvent("UNIT_PET")
 end
 
