@@ -398,12 +398,16 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 			self:SetAttribute("showSolo", show_solo and true or nil)
 			self:SetAttribute("groupFilter", nil)
 		elseif not group_based then
+			self:UnregisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
+			self:UnregisterEvent("UPDATE_BATTLEFIELD_STATUS")
 			if unit_group:sub(1, 4) == "boss" then
 				self.super_unit_group = "boss"
 				self.unitsuffix = unit_group:sub(5)
+				self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
 			elseif unit_group:sub(1, 5) == "arena" then
 				self.super_unit_group = "arena"
 				self.unitsuffix = unit_group:sub(6)
+				self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
 			end
 		else
 			self.super_unit_group = "raid"
@@ -1433,15 +1437,15 @@ local function header_OnEvent(self, event, arg1)
 	if event == "UPDATE_BATTLEFIELD_STATUS" and GetBattlefieldStatus(arg1) ~= "active" then return end
 
 	for _, frame in self:IterateMembers() do
-		frame:UpdateGUID(UnitGUID(frame.unit), true)
+		local update = not not UnitExists(frame.unit) -- want true/false
+		frame:UpdateGUID(UnitGUID(frame.unit), update)
 	end
 end
 
 local function frame_OnEvent(self, event, unit)
 	if not self:GetParent().group_db.enabled then return end
-	if event == "UNIT_NAME_UPDATE" then
-		self:Update(true)
-	elseif UnitExists(self.unit) then
+
+	if UnitExists(self.unit) then
 		self:UpdateGUID(UnitGUID(self.unit), true)
 	end
 end
@@ -1454,37 +1458,6 @@ local function frame_OnUpdate(self, elapsed)
 	if UnitExists(self.unit) then
 		self:UpdateGUID(UnitGUID(self.unit))
 	end
-end
-
-local function registerFrameUpdates(frame)
-	local unit = frame:GetAttribute("unit")
-	frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
-	frame:RegisterUnitEvent("ARENA_OPPONENT_UPDATE", unit)
-	frame:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", unit)
-
-	local unitsuffix = frame:GetAttribute("unitsuffix")
-	if unitsuffix then
-		local is_pet = unitsuffix:match("pet")
-		local event_unit = is_pet and unit.."pet" or unit
-
-		if unitsuffix:match("target") then
-			frame:RegisterUnitEvent("UNIT_TARGET", event_unit)
-			frame.elapsed = 0
-			frame:SetScript("OnUpdate", frame_OnUpdate)
-		end
-		if is_pet then
-			frame:RegisterUnitEvent("UNIT_PET", event_unit)
-		end
-	end
-end
-
-local function unregisterFrameUpdates(frame)
-	frame:SetScript("OnUpdate", nil)
-	frame:UnregisterEvent("UNIT_NAME_UPDATE")
-	frame:UnregisterEvent("ARENA_OPPONENT_UPDATE")
-	frame:UnregisterEvent("UNIT_TARGETABLE_CHANGED")
-	frame:UnregisterEvent("UNIT_TARGET")
-	frame:UnregisterEvent("UNIT_PET")
 end
 
 
@@ -1534,67 +1507,8 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		else
 			header:SetAttribute("initialConfigFunction", initialConfigFunction)
 		end
-
 	else
-		-- set up our fake header for non party/raid group frames
-
-		-- allow events to force an update
 		header:SetScript("OnEvent", header_OnEvent)
-
-		-- set up the unit/unitsuffix and register update events
-		local unit_group = header.group_db.unit_group
-		if unit_group:sub(1, 4) == "boss" then
-			header.super_unit_group = "boss"
-			header.unitsuffix = unit_group:sub(5)
-
-			header:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
-		elseif unit_group:sub(1, 5) == "arena" then
-			header.super_unit_group = "arena"
-			header.unitsuffix = unit_group:sub(6)
-
-			header:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
-		end
-
-		if header.unitsuffix == "" then
-			header.unitsuffix = nil
-		end
-		local unitsuffix = header.unitsuffix
-
-		for index = 1, header:GetMaxUnits(true) do
-			local unit = header.super_unit_group .. index -- want the base unit as "unit" before getting wacky in "unitsuffix" (seemed awkward to me)
-
-			-- make a singleton unit frame and tack it onto our header
-			local frame_name = header:GetName() .. "UnitButton" .. index
-			local frame = _G[frame_name]
-			if not frame then
-				frame = CreateFrame("Button", frame_name, header, "SecureUnitButtonTemplate,SecureHandlerBaseTemplate,PitBull4_UnitTemplate_Clique")
-				frame:Hide()
-				frame:EnableMouse(false) -- start disabled so the state change registers the button with Clique
-
-				header[index] = frame
-				header:InitialConfigFunction()
-				frame:SetAttribute("*type1", "target")
-				frame:SetAttribute("*type2", "togglemenu")
-
-				frame:SetAttribute("unit", unit)
-				frame:SetAttribute("unitsuffix", unitsuffix)
-
-				frame:SetScript("OnEvent", frame_OnEvent)
-				registerFrameUpdates(frame)
-
-				frame:WrapScript(frame, "OnAttributeChanged", [[
-          if name == "config_mode" and self:GetAttribute("config_mode") then
-            self:Show()
-          end
-        ]])
-			end
-
-			RegisterUnitWatch(frame)
-
-			frame:RefreshLayout()
-
-			frame:UpdateGUID(UnitGUID(frame.unit))
-		end
 	end
 
 	header:RefreshGroup(true)
@@ -1607,7 +1521,7 @@ end
 -- duplicate code from SecureGroupHeader_Update IN TWO PLACES!
 -- @usage header:PositionMembers()
 function GroupHeader:PositionMembers()
-	if not self[1] then return end -- frames not set up (:SwapGroupTemplate from a disabled header)
+	if not self.group_db.enabled then return end
 
 	local old_ignore = self:GetAttribute("_ignore")
 	self:SetAttribute("_ignore", "configureChildren")
@@ -1661,7 +1575,26 @@ function GroupHeader:PositionMembers()
 
 		local frame = self[frame_num]
 		if not frame then
-			break
+			-- make a singleton unit frame and tack it onto our header
+			local frame_name = self:GetName() .. "UnitButton" .. i
+			frame = CreateFrame("Button", frame_name, self, "SecureUnitButtonTemplate,SecureHandlerBaseTemplate,PitBull4_UnitTemplate_Clique")
+			frame:Hide()
+			frame:EnableMouse(false) -- start disabled so the state change registers the button with Clique
+
+			self[i] = frame
+			self:InitialConfigFunction()
+			frame:SetAttribute("*type1", "target")
+			frame:SetAttribute("*type2", "togglemenu")
+
+			frame:SetScript("OnEvent", frame_OnEvent)
+
+			frame:WrapScript(frame, "OnAttributeChanged", [[
+				if name == "config_mode" and self:GetAttribute("config_mode") then
+					self:Show()
+				end
+			]])
+
+			RegisterUnitWatch(frame)
 		end
 		if frame_num == 1 then
 			frame:SetPoint(point, current_anchor, point, 0, 0)
@@ -1680,8 +1613,31 @@ function GroupHeader:PositionMembers()
 		frame:SetAttribute("unit", unit)
 		if old_unit ~= unit then
 			-- update our unit event references
-			unregisterFrameUpdates(frame)
-			registerFrameUpdates(frame)
+			frame:SetScript("OnUpdate", nil)
+			frame:UnregisterEvent("UNIT_NAME_UPDATE")
+			frame:UnregisterEvent("ARENA_OPPONENT_UPDATE")
+			frame:UnregisterEvent("UNIT_TARGETABLE_CHANGED")
+			frame:UnregisterEvent("UNIT_TARGET")
+			frame:UnregisterEvent("UNIT_PET")
+
+			frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
+			frame:RegisterUnitEvent("ARENA_OPPONENT_UPDATE", unit)
+			frame:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", unit)
+
+			local unitsuffix = frame:GetAttribute("unitsuffix")
+			if unitsuffix then
+				local is_pet = unitsuffix:match("pet")
+				local event_unit = is_pet and unit.."pet" or unit
+
+				if unitsuffix:match("target") then
+					frame:RegisterUnitEvent("UNIT_TARGET", event_unit)
+					frame.elapsed = 0
+					frame:SetScript("OnUpdate", frame_OnUpdate)
+				end
+				if is_pet then
+					frame:RegisterUnitEvent("UNIT_PET", event_unit)
+				end
+			end
 
 			frame:Update()
 		end
