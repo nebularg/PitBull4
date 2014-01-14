@@ -1581,7 +1581,7 @@ function GroupHeader:PositionMembers()
 			frame:Hide()
 			frame:EnableMouse(false) -- start disabled so the state change registers the button with Clique
 
-			self[i] = frame
+			self[frame_num] = frame
 			self:InitialConfigFunction()
 			frame:SetAttribute("*type1", "target")
 			frame:SetAttribute("*type2", "togglemenu")
