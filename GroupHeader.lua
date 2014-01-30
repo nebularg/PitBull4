@@ -1589,10 +1589,10 @@ function GroupHeader:PositionMembers()
 			frame:SetScript("OnEvent", frame_OnEvent)
 
 			frame:WrapScript(frame, "OnAttributeChanged", [[
-				if name == "config_mode" and self:GetAttribute("config_mode") then
-					self:Show()
-				end
-			]])
+        if name == "config_mode" and self:GetAttribute("config_mode") then
+          self:Show()
+        end
+      ]])
 
 			RegisterUnitWatch(frame)
 		end
