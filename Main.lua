@@ -866,7 +866,7 @@ function PitBull4:IterateHeadersForUnitGroup(unit_group)
 		return do_nothing
 	end
 	
-	return not also_hidden and iterate_shown_frames or half_next, headers
+	return iterate_shown_frames or half_next, headers
 end
 
 --- Iterate over all headers with the given super-classification.
@@ -886,7 +886,7 @@ function PitBull4:IterateHeadersForSuperUnitGroup(super_unit_group)
 		return do_nothing
 	end
 	
-	return not also_hidden and iterate_shown_frames or half_next, headers
+	return iterate_shown_frames or half_next, headers
 end
 
 local function return_same(object, key)
@@ -1577,7 +1577,7 @@ function PitBull4:ZONE_CHANGED_NEW_AREA()
 	-- When we change zones if we lose the vehicle we don't get events for it.
 	-- So we need to simulate the events for all the relevent units.
 	for unit in pairs(self.unit_id_to_guid) do
-		self:UNIT_EXITED_VEHICLE(_, unit)
+		self:UNIT_EXITED_VEHICLE(nil, unit)
 	end
 end
 
