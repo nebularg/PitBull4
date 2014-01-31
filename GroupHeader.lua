@@ -221,11 +221,12 @@ do
 	for i = 1, NUM_RAID_GROUPS do
 		t[i] = i..""
 	end
-	GROUPING_ORDER.GROUP = table.concat(t, ',')
+	GROUPING_ORDER.GROUP = table.concat(t, ",")
 end
 GROUPING_ORDER.CLASS = function()
 	return table.concat(PitBull4.ClassOrder, ",")
 end
+GROUPING_ORDER.ROLE = "TANK,HEALER,DAMAGER,NONE"
 
 local function position_label(self, label)
 	label:ClearAllPoints()
@@ -286,41 +287,28 @@ function GroupHeader:RefixSizeAndPosition()
 	self:SetPoint(anchor, UIParent, "CENTER", group_db.position_x / scale + x_diff, group_db.position_y / scale + y_diff)
 end
 
-local function count_returns(...)
-	return select('#', ...)
-end
-
 local tank_list = {}
 local function get_main_tank_name_list()
-	local main_tanks
+	wipe(tank_list)
 	if oRA3 then
-		main_tanks = oRA3:GetSortedTanks()
-	elseif oRA then
-		main_tanks = oRA.maintanktable
-	else
-		main_tanks = CT_RA_MainTanks
-	end
-	if main_tanks then
-		wipe(tank_list)
-		for i = 1, 10 do
-			local v = main_tanks[i]
-			if v then
-				tank_list[#tank_list+1] = v
+		for i, v in next, oRA3:GetSortedTanks() do
+			tank_list[#tank_list+1] = v
+		end
+	elseif IsInRaid() then
+		for i = 1, GetNumGroupMembers() do
+			local name, _, _, _, _, _, _, _, _, role = GetRaidRosterInfo(i)
+			if name and role == "MAINTANK" then
+				tank_list[#tank_list+1] = name
 			end
 		end
-		local s = table.concat(tank_list, ',')
-		if s ~= "" then
-			return s, #tank_list
-		end
 	end
-	if PitBull4.leaving_world or not UnitInRaid("player") or not UnitInParty("player") then
-		-- Not in a raid or a party, so no main tank list.  We have
-		-- to bail out here becuase WoW whines with a You are not in a party
-		-- message to the user now.  /sigh
-		return nil, 0
-	else
-		return nil, count_returns(GetPartyAssignment("MAINTANK"))
+
+	if #tank_list > 0 then
+		local s = table.concat(tank_list, ",")
+		return s, #tank_list
 	end
+
+	return nil, 0
 end
 
 --- Recheck the group-based settings of the group header, including sorting, position, what units are shown.
@@ -365,7 +353,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	if group_based then
 		show_solo = include_player and show_solo
 	end
-	local group_filter = not party_based and group_db.group_filter or nil
+	local group_filter = unit_group:sub(1, 4) == "raid" and group_db.group_filter or nil
 	local sort_direction = group_db.sort_direction
 	local sort_method = group_db.sort_method
 	local group_by = group_db.group_by

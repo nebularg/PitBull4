@@ -618,6 +618,7 @@ function PitBull4.Options.get_unit_options()
 		NAME = L["By name"],
 		CLASS = L["By class"],
 		GROUP = L["By group"],
+		ROLE = L["By role"],
 	}
 	
 	local enemy_values = {
@@ -643,7 +644,7 @@ function PitBull4.Options.get_unit_options()
 			local db = get_group_db()
 			if db.unit_group:sub(1, 4) == "raid" then
 				local group_by = db.group_by
-				if group_by == "CLASS" or group_by == "GROUP" then
+				if group_by == "CLASS" or group_by == "GROUP" or group_by == "ROLE" then
 					return group_by
 				end
 			end
@@ -658,6 +659,9 @@ function PitBull4.Options.get_unit_options()
 			elseif value == "CLASS" then
 				db.sort_method = "NAME"
 				db.group_by = "CLASS"
+			elseif value == "ROLE" then
+				db.sort_method = "NAME"
+				db.group_by = "ROLE"
 			else
 				db.sort_method = "INDEX"
 				db.group_by = "GROUP"
@@ -923,6 +927,7 @@ function PitBull4.Options.get_unit_options()
 			ALL = L["Show all"],
 			NUMBER = L["By raid group"],
 			CLASS = L["By class"],
+			ROLE = L["By role"],
 			MAINTANK = L["Main tanks"],
 			MAINASSIST = L["Main assists"],
 		},
@@ -953,6 +958,10 @@ function PitBull4.Options.get_unit_options()
 				return start
 			end
 			
+			if start == 'TANK' or start == 'HEALER' or start == 'DAMAGER' or start == 'NONE' then
+				return 'ROLE'
+			end
+
 			-- WTF here, should never happen
 			db.group_filter = nil
 			return 'ALL'
@@ -974,6 +983,8 @@ function PitBull4.Options.get_unit_options()
 					t[#t+1] = class
 				end
 				db.group_filter = table.concat(t, ",")
+			elseif value == 'ROLE' then
+				db.group_filter = "TANK,HEALER,DAMAGER,NONE"
 			else--if value == 'MAINTANK' or value == 'MAINASSIST' then
 				db.group_filter = value
 			end
@@ -1025,6 +1036,44 @@ function PitBull4.Options.get_unit_options()
 		refresh_group('groups')
 	end
 	
+	local group_filter_roles = {
+		TANK = TANK,
+		HEALER = HEALER,
+		DAMAGER = DAMAGER,
+		NONE = NONE,
+	}
+	group_filtering_args.group_filter_role = {
+		name = L["Filter roles"],
+		desc = L["Which roles should show in this unit group"],
+		order = next_order(),
+		type = 'multiselect',
+		values = group_filter_roles,
+		get = get_filter,
+		set = set_filter,
+		disabled = disabled,
+		hidden = function(info)
+			local db = get_group_db()
+
+			local unit_group = db.unit_group
+			local party_based = unit_group:sub(1, 5) == "party"
+
+			if party_based then
+				-- only show in raid
+				return true
+			end
+			
+			local group_filter = db.group_filter
+			
+			if not group_filter or group_filter == "" then
+				return true
+			end
+			
+			local start = ((","):split(group_filter))
+			
+			return not group_filter_roles[start]
+		end
+	}
+
 	group_filtering_args.group_filter_number = {
 		name = L["Filter groups"],
 		desc = L["Which raid groups should show in this unit group"],
