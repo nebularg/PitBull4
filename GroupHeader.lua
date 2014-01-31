@@ -226,7 +226,9 @@ end
 GROUPING_ORDER.CLASS = function()
 	return table.concat(PitBull4.ClassOrder, ",")
 end
-GROUPING_ORDER.ROLE = "TANK,HEALER,DAMAGER,NONE"
+GROUPING_ORDER.ROLE = function()
+	return table.concat(PitBull4.RoleOrder, ",")
+end
 
 local function position_label(self, label)
 	label:ClearAllPoints()
