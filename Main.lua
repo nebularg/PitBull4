@@ -949,26 +949,8 @@ function PitBull4:CallMethodOnModules(method_name, ...)
 	end
 end
 
--- variable to hold the AceTimer3 repeating timer we use to catch the first
--- main tank list update that oRA doesn't bother to generate an event for.
-local main_tank_timer
-
--- Callback for when the main tank list updates from oRA or CTRA
+-- Callback for when the main tank list updates from oRA
 function PitBull4.OnTanksUpdated()
-	if oRA and not oRA.maintanktable then
-		-- if oRA is loaded but there's no maintanktable that means oRA isn't
-		-- fully loaded.  
-		if not main_tank_timer then
-			-- No timer so we start one.
-			main_tank_timer = PitBull4:ScheduleRepeatingTimer(PitBull4.OnTanksUpdated,1)
-		end
-		-- No main tank list means nothing to do.
-		return
-	else
-		-- We have the list, can cancel the timer and normal events will work
-		-- from now on.
-		PitBull4:CancelTimer(main_tank_timer, true)
-	end
 	for header in PitBull4:IterateHeadersForSuperUnitGroup("raid") do
 		local group_db = header.group_db
 		if group_db and group_db.group_filter == "MAINTANK" then
@@ -1083,7 +1065,7 @@ function PitBull4:OnInitialize()
 	LoadAddOn("LibBossIDs-1.0", true)
 end
 
-local db_icon_done, ctra_done, ora2_done, ora3_done
+local db_icon_done, ora3_done
 function PitBull4:ADDON_LOADED()
 	if not PitBull4.LibDataBrokerLauncher then
 		local LibDataBroker = LibStub("LibDataBroker-1.1", true)
@@ -1121,23 +1103,8 @@ function PitBull4:ADDON_LOADED()
 		end
 	end
 
-	if not ctra_done and _G.CT_RAOptions_UpdateMTs then
-		hooksecurefunc("CT_RAOptions_UpdateMTs",PitBull4.OnTanksUpdated)
-		ctra_done = true
-	end
-
-	if not ora2_done and oRA then
-		LibStub("AceEvent-2.0"):RegisterEvent("oRA_MainTankUpdate",PitBull4.OnTanksUpdated)
-		-- We register for CoreEnabled to know when oRA loads it's LOD modules in particular
-		-- ParticipantMT so we can then set a timer to watch for the maintanktable to be
-		-- loaded from the savedvariables, because it doesn't bother to generate a
-		-- MainTankUpdate event for this.  *sigh*
-		LibStub("AceEvent-2.0"):RegisterEvent("oRA_CoreEnabled",PitBull4.OnTanksUpdated)
-		ora2_done = true
-	end
-
 	if not ora3_done and oRA3 then
-		oRA3.RegisterCallback(self,"OnTanksUpdated")
+		oRA3.RegisterCallback(self, "OnTanksUpdated")
 		self.OnTanksUpdated()
 		ora3_done = true
 	end
