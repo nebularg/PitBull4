@@ -618,7 +618,7 @@ function PitBull4.Options.get_unit_options()
 		NAME = L["By name"],
 		CLASS = L["By class"],
 		GROUP = L["By group"],
-		ROLE = L["By role"],
+		ASSIGNEDROLE = L["By role"],
 	}
 	
 	local enemy_values = {
@@ -644,7 +644,7 @@ function PitBull4.Options.get_unit_options()
 			local db = get_group_db()
 			if db.unit_group:sub(1, 4) == "raid" then
 				local group_by = db.group_by
-				if group_by == "CLASS" or group_by == "GROUP" or group_by == "ROLE" then
+				if group_by == "CLASS" or group_by == "GROUP" or group_by == "ASSIGNEDROLE" then
 					return group_by
 				end
 			end
@@ -659,9 +659,9 @@ function PitBull4.Options.get_unit_options()
 			elseif value == "CLASS" then
 				db.sort_method = "NAME"
 				db.group_by = "CLASS"
-			elseif value == "ROLE" then
+			elseif value == "ASSIGNEDROLE" then
 				db.sort_method = "NAME"
-				db.group_by = "ROLE"
+				db.group_by = "ASSIGNEDROLE"
 			else
 				db.sort_method = "INDEX"
 				db.group_by = "GROUP"
@@ -888,7 +888,7 @@ function PitBull4.Options.get_unit_options()
 			end
 			if db.unit_group:sub(1, 5) ~= "party" then
 				local group_by = db.group_by
-				return group_by ~= "ROLE"
+				return group_by ~= "ASSIGNEDROLE"
 			end
 			return true
 		end,

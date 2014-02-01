@@ -226,7 +226,7 @@ end
 GROUPING_ORDER.CLASS = function()
 	return table.concat(PitBull4.ClassOrder, ",")
 end
-GROUPING_ORDER.ROLE = function()
+GROUPING_ORDER.ASSIGNEDROLE = function()
 	return table.concat(PitBull4.RoleOrder, ",")
 end
 
