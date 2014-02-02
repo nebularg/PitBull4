@@ -289,30 +289,6 @@ function GroupHeader:RefixSizeAndPosition()
 	self:SetPoint(anchor, UIParent, "CENTER", group_db.position_x / scale + x_diff, group_db.position_y / scale + y_diff)
 end
 
-local tank_list = {}
-local function get_main_tank_name_list()
-	wipe(tank_list)
-	if oRA3 then
-		for i, v in next, oRA3:GetSortedTanks() do
-			tank_list[#tank_list+1] = v
-		end
-	elseif IsInRaid() then
-		for i = 1, GetNumGroupMembers() do
-			local name, _, _, _, _, _, _, _, _, role = GetRaidRosterInfo(i)
-			if name and role == "MAINTANK" then
-				tank_list[#tank_list+1] = name
-			end
-		end
-	end
-
-	if #tank_list > 0 then
-		local s = table.concat(tank_list, ",")
-		return s, #tank_list
-	end
-
-	return nil, 0
-end
-
 --- Recheck the group-based settings of the group header, including sorting, position, what units are shown.
 -- @param dont_refresh_children don't call :RefreshLayout on the child frames
 -- @usage header:RefreshGroup()
@@ -359,7 +335,12 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	local sort_direction = group_db.sort_direction
 	local sort_method = group_db.sort_method
 	local group_by = group_db.group_by
-	local name_list = group_filter == "MAINTANK" and get_main_tank_name_list() or nil
+	local name_list = nil
+	-- If using oRA3, override the MAINTANK groupFilter and use oRA3's tanks (even if empty)
+	if group_filter == "MAINTANK" and oRA3 then
+		local main_tanks = oRA3:GetSortedTanks()
+		name_list = table.concat(main_tanks, ",")
+	end
 
 	local changed_units = self.unit_group ~= unit_group or self.include_player ~= include_player or self.show_solo ~= show_solo or self.group_filter ~= group_filter or self.sort_direction ~= sort_direction or self.sort_method ~= sort_method or self.group_by ~= group_by or self.name_list ~= name_list or self.group_based ~= group_based
 
