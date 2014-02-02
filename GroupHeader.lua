@@ -641,10 +641,10 @@ end
 -- utility function for ApplyConfigModeState, it doctors
 -- up some data so don't reuse this elsewhere
 local function get_group_roster_info(super_unit_group, index)
-	local unit, name, subgroup, class_name, role, server, _
+	local unit, name, subgroup, class_name, role, assigned_role, server, _
 	if super_unit_group == "raid" then
 		unit = "raid"..index
-		name, _, subgroup, _, _, class_name, _, _, _, role = GetRaidRosterInfo(index)
+		name, _, subgroup, _, _, class_name, _, _, _, role, _, assigned_role = GetRaidRosterInfo(index)
 	elseif super_unit_group == "boss" then
 		unit = "boss"..index
 		if UnitExists(unit) then
@@ -656,7 +656,7 @@ local function get_group_roster_info(super_unit_group, index)
 		unit = "arena"..index
 		if UnitExists(unit) then
 			name, server = UnitName(unit)
-			if (server and server ~= "") then
+			if server and server ~= "" then
 				name = name.."-"..server
 			end
 			_, class_name = UnitClass(unit)
@@ -670,7 +670,7 @@ local function get_group_roster_info(super_unit_group, index)
 		end
 		if UnitExists(unit) then
 			name, server = UnitName(unit)
-			if (server and server ~= "") then
+			if server and server ~= "" then
 				name = name.."-"..server
 			end
 			_, class_name = UnitClass(unit)
@@ -679,10 +679,11 @@ local function get_group_roster_info(super_unit_group, index)
 			if not PitBull4.leaving_world and (UnitInParty(unit) or UnitInRaid(unit)) then
 				if GetPartyAssignment("MAINTANK", unit) then
 					role = "MAINTANK"
-				elseif  GetPartyAssignment("MAINASSIST", unit) then
+				elseif GetPartyAssignment("MAINASSIST", unit) then
 					role = "MAINASSIST"
 				end
 			end
+			assigned_role = UnitGroupRolesAssigned(unit)
 			subgroup = 1
 		end
 	end
@@ -694,7 +695,7 @@ local function get_group_roster_info(super_unit_group, index)
 		class_name = '!'
 	end
 
-	return unit, name, subgroup, class_name, role
+	return unit, name, subgroup, class_name, role, assigned_role
 end
 
 -- utility function for ApplyConfigModeState
@@ -826,19 +827,24 @@ function GroupHeader:ApplyConfigModeState()
 
 
 	if group_filter then
+		local strict_filtering = self:GetAttribute("strictFiltering")
+
 		-- Add in our bogus group and class to the group filter.
 		group_filter = group_filter..',0,!'
 
 		-- filter by a list of group numbers and/or classes
 		fill_table(wipe(token_table), strsplit(",", group_filter))
-		local strict_filtering = self:GetAttribute("strictFiltering")
+
+		if strict_filtering then
+			fill_table(token_table, "MAINTANK", "MAINASSIST", "TANK", "HEALER", "DAMAGER", "NONE")
+		end
 
 		for i = start, finish, 1 do
-			local unit, name, subgroup, class_name, role = get_group_roster_info(super_unit_group, i)
+			local unit, name, subgroup, class_name, role, assigned_role = get_group_roster_info(super_unit_group, i)
 
 			if name and (not strict_filtering
-				and (token_table[subgroup] or token_table[class_name] or (role and token_table[role]))) -- non-strict filtering
-				or (token_table[subgroup] and token_table[class_name]) -- strict filtering
+				and (token_table[subgroup] or token_table[class_name] or (role and token_table[role]) or token_table[assigned_role])) -- non-strict filtering
+				or (token_table[subgroup] and token_table[class_name] and ((role and token_table[role]) or token_table[assigned_role])) -- strict filtering
 				then
 				sorting_table[#sorting_table+1] = unit
 				sorting_table[unit] = name
@@ -848,6 +854,8 @@ function GroupHeader:ApplyConfigModeState()
 					grouping_table[unit] = class_name
 				elseif group_by == "ROLE" then
 					grouping_table[unit] = role
+				elseif group_by == "ASSIGNEDROLE" then
+					grouping_table[unit] = assigned_role
 				end
 			end
 		end
