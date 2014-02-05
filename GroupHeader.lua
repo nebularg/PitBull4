@@ -641,7 +641,7 @@ end
 -- utility function for ApplyConfigModeState, it doctors
 -- up some data so don't reuse this elsewhere
 local function get_group_roster_info(super_unit_group, index)
-	local unit, name, subgroup, class_name, role, assigned_role, server, _
+	local _, unit, name, subgroup, class_name, role, server, assigned_role
 	if super_unit_group == "raid" then
 		unit = "raid"..index
 		name, _, subgroup, _, _, class_name, _, _, _, role, _, assigned_role = GetRaidRosterInfo(index)
@@ -788,12 +788,11 @@ end
 
 -- ApplyConfigModeState adjusts the member frames of a GroupHeader to allow
 -- them to function in config mode. It generates a bunch of fake unit ids
--- for frames being show in config mode.  It also positions the frames (since
--- 4.0.3 WoW removes the anchors from hidden frames).  It's largely a rework
--- of SecureGroupHeader_Update for our purposes.  We need to generate unit ids
--- in roughly the same order that the group header would for real frames but we
--- want the fake units to always be after the real units.  Sadly that makes
--- this code pretty downright ugly.
+-- for frames being show in config mode.  It also positions the frames. It's
+-- largely a rework of SecureGroupHeader_Update for our purposes.  We need to
+-- generate unit ids in roughly the same order that the group header would for
+-- real frames but we want the fake units to always be after the real units.
+-- Sadly that makes this code pretty downright ugly.
 function GroupHeader:ApplyConfigModeState()
 	if not self.force_show then
 		return
@@ -1392,15 +1391,6 @@ local initialConfigFunction = [[
       if clickcast_header then
         clickcast_header:SetAttribute("clickcast_button", self)
         clickcast_header:RunAttribute("clickcast_register")
-        -- Borrowed this idea from ShadowedUF to keep Clique working on
-        -- RAID frames since togglemenu is broken with raid menus.
-        -- this works because we gsub togglemenu -> menu.
-        if "togglemenu" == "menu" then
-          self:SetAttribute("clique-shiv", "1")
-          if self:GetAttribute("type2") == "toggle" .. "menu" then
-            self:SetAttribute("type2", "menu")
-          end
-        end
       end
     else
       self:EnableMouse(false)
@@ -1481,11 +1471,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 			return header:InitialConfigFunction(...)
 		end
 
-		if header.group_db.unit_group:sub(1, 4) == "raid" then
-			header:SetAttribute("initialConfigFunction", initialConfigFunction:gsub("togglemenu", "menu"))
-		else
-			header:SetAttribute("initialConfigFunction", initialConfigFunction)
-		end
+		header:SetAttribute("initialConfigFunction", initialConfigFunction)
 	else
 		header:SetScript("OnEvent", header_OnEvent)
 	end
@@ -1497,7 +1483,7 @@ end
 
 
 --- Position all the children of a fake group header.
--- duplicate code from SecureGroupHeader_Update IN TWO PLACES!
+-- duplicate code from SecureGroupHeaders IN TWO PLACES!
 -- @usage header:PositionMembers()
 function GroupHeader:PositionMembers()
 	if not self.group_db.enabled then return end
