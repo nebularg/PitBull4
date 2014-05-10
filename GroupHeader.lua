@@ -281,8 +281,7 @@ function GroupHeader:RefixSizeAndPosition()
 	end
 
 	if not self.group_based then
-		-- reposition frames on the fake header
-		self:PositionMembers()
+		self:ConfigureChildren()
 	end
 
 	self:ClearAllPoints()
@@ -1482,17 +1481,12 @@ function PitBull4:ConvertIntoGroupHeader(header)
 end
 
 
---- Position all the children of a fake group header.
--- duplicate code from SecureGroupHeaders IN TWO PLACES!
--- @usage header:PositionMembers()
-function GroupHeader:PositionMembers()
+--- Creates child frames for an enemy group header and finish configuring them.
+-- @usage header:ConfigureChildren()
+function GroupHeader:ConfigureChildren()
 	if not self.group_db.enabled then return end
 
-	local old_ignore = self:GetAttribute("_ignore")
-	self:SetAttribute("_ignore", "configureChildren")
-
 	wipe(sorting_table)
-
 	local start, finish, step = 1, self:GetMaxUnits(), 1
 	local super_unit_group = self.super_unit_group
 	for i = start, finish, step do
@@ -1541,7 +1535,7 @@ function GroupHeader:PositionMembers()
 		local frame = self[frame_num]
 		if not frame then
 			-- make a singleton unit frame and tack it onto our header
-			local frame_name = self:GetName() .. "UnitButton" .. i
+			local frame_name = self:GetName() .. "UnitButton" .. frame_num
 			frame = CreateFrame("Button", frame_name, self, "SecureUnitButtonTemplate,SecureHandlerBaseTemplate,PitBull4_UnitTemplate_Clique")
 			frame:Hide()
 			frame:EnableMouse(false) -- start disabled so the state change registers the button with Clique
@@ -1634,8 +1628,6 @@ function GroupHeader:PositionMembers()
 		self:SetWidth( max(min_width, 0.1) )
 		self:SetHeight( max(min_height, 0.1) )
 	end
-
-	self:SetAttribute("_ignore", old_ignore)
 end
-GroupHeader.PositionMembers = PitBull4:OutOfCombatWrapper(GroupHeader.PositionMembers)
+GroupHeader.ConfigureChildren = PitBull4:OutOfCombatWrapper(GroupHeader.ConfigureChildren)
 
