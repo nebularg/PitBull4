@@ -7,8 +7,6 @@ if select(2, UnitClass("player")) ~= "WARLOCK" then
 	return
 end
 
-local mop_520 = select(4,GetBuildInfo()) >= 50200
-
 -- CONSTANTS ----------------------------------------------------------------
 
 local STANDARD_SIZE = 15
@@ -142,7 +140,7 @@ function PitBull4_BurningEmbers:UpdateFrame(frame)
 		update_container_size(container, vertical, max_embers)
 	end
 
-	local green_fire = mop_520 and IsSpellKnown(WARLOCK_GREEN_FIRE)
+	local green_fire = IsSpellKnown(WARLOCK_GREEN_FIRE)
 	for i = 1, 4  do
 		local ember = container[i]
 		if i > max_embers then
