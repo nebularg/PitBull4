@@ -23,6 +23,14 @@ PitBull4_Border:SetDefaults({
 	padding = 3,
 })
 
+local EXEMPT_UNITS = {}
+for i = 1, 5 do
+	EXEMPT_UNITS[("target"):rep(i)] = true
+end
+
+local target_guid = nil
+local mouse_focus = nil
+
 local LibSharedMedia
 local LibSharedMedia_border_None = [[Interface\None]]
 

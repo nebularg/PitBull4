@@ -27,6 +27,7 @@ end
 
 local target_guid = nil
 local mouse_focus = nil
+
 function PitBull4_Highlight:OnEnable()
 	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 	LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
