@@ -1,5 +1,3 @@
-if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
-
 local CLASS_TEX_COORDS = {
 	WARRIOR     = {0, 0.25, 0, 0.25},
 	MAGE        = {0.25, 0.49609375, 0, 0.25},
