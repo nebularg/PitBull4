@@ -620,9 +620,9 @@ local function duration_filter(self, entry)
 	local value = cfg.value
 	local units = cfg.time_unit
 	local duration = entry[10]
-	if time_unit == 'h' then
+	if units == 'h' then
 		value = value * 3600
-	elseif time_unit == 'm' then
+	elseif units == 'm' then
 		value = value * 60
 	end
 	if operator == '>' then
@@ -733,9 +733,9 @@ local function time_left_filter(self, entry, frame)
 	end
 
 	local time_left = math.floor(expiration_time - GetTime())
-	if time_unit == 'h' then
+	if units == 'h' then
 		value = value * 3600
-	elseif time_unit == 'm' then
+	elseif units == 'm' then
 		value = value * 60
 	end
 

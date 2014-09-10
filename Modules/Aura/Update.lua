@@ -267,7 +267,7 @@ end
 
 -- Takes the data for a weapon enchant and builds an aura entry
 local function set_weapon_entry(list, is_enchant, time_left, expiration_time, count, slot)
-	local entry = list[i]
+	local entry = list[slot]
 	if not entry then
 		entry = {}
 		list[slot] = entry

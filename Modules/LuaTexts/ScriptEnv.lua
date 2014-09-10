@@ -156,7 +156,7 @@ local function FormatDuration(number, format)
 			number = number % (60*60*24)
 			t[#t+1] = ("%.0f"):format(days)
 			t[#t+1] = " "
-			t[#t+1] = _L_DAYS_ABBR
+			t[#t+1] = L_DAYS_ABBR
 			first = false
 		end
 
@@ -610,7 +610,7 @@ local AQUATIC_FORM = GetSpellInfo(1066)
 local FLIGHT_FORM = GetSpellInfo(33943)
 local SWIFT_FLIGHT_FORM = GetSpellInfo(40120)
 local TRAVEL_FORM = GetSpellInfo(783)
-local TREE_OF_LIFE, SHAPESHIFT = GetSpellInfo(33891)
+local TREE_OF_LIFE = GetSpellInfo(33891)
 
 local function DruidForm(unit)
 	local _, class = UnitClass(unit)
@@ -624,21 +624,20 @@ local function DruidForm(unit)
 		return L["Cat"]
 	elseif UnitAura(unit,MOONKIN_FORM) then
 		return L["Moonkin"]
-	elseif UnitAura(unit,TREE_OF_LIFE,SHAPESHIFT) then
+	elseif UnitAura(unit,TREE_OF_LIFE) then
 		return L["Tree"]
-	elseif UnitAura(unit,TRAVEL_FORM,SHAPESHIFT) then
+	elseif UnitAura(unit,TRAVEL_FORM) then
 		return L["Travel"]
-	elseif UnitAura(unit,AQUATIC_FORM,SHAPESHIFT) then
+	elseif UnitAura(unit,AQUATIC_FORM) then
 		return L["Aquatic"]
-	elseif UnitAura(unit,SWIFT_FLIGHT_FORM,SHAPESHIFT) or UnitAura(unit,FLIGHT_FORM,SHAPESHFIT) then
+	elseif UnitAura(unit,SWIFT_FLIGHT_FORM) or UnitAura(unit,FLIGHT_FORM) then
 		return L["Flight"]
 	end
 end
 ScriptEnv.DruidForm = DruidForm
 
-local DIVINE_INTERVENTION = GetSpellInfo(19752)
 local function Status(unit)
-	return Offline(unit) or (DIVINE_INTERVENTION and UnitAura(unit,DIVINE_INTERVENTION)) or (UnitIsFeignDeath(unit) and L["Feigned Death"]) or Dead(unit)
+	return Offline(unit) or (UnitIsFeignDeath(unit) and L["Feigned Death"]) or Dead(unit)
 end
 ScriptEnv.Status = Status
 

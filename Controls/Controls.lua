@@ -102,13 +102,13 @@ end
 -- the font_string table.
 local original_setfont
 local original_getfont
-function setfont(font_string, font, size, flags)
+local function setfont(font_string, font, size, flags)
 	font_string.font = font
 	font_string.size = size
 	return original_setfont(font_string, font, size, flags)
 end
 
-function getfont(font_string, ...)
+local function getfont(font_string, ...)
 	local font, size, flags = original_getfont(font_string)
 	-- the retrieved font can be nil if the font we set is not available.
 	-- size will be possibly uninitalized so it can be any value including 0 or

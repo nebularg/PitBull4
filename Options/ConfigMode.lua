@@ -70,7 +70,7 @@ end
 function PitBull4.Options.get_config_mode_options()
 	return {
 		name = L["Config mode"],
-		desc = L["Show all frames that can be shown, for easy configuration."] .. ( is_13287 and "  |cffff0000Group config modes are temporarily disabled for this release until I can fix them with 4.0.3+.|r" or ''),
+		desc = L["Show all frames that can be shown, for easy configuration."],
 		type = 'select',
 		values = PitBull4:GetConfigModeValues(),
 		get = function(info)

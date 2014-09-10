@@ -117,10 +117,6 @@ local GetTotemInfo = _G.GetTotemInfo
 local PitBull4_Totems = PitBull4:NewModule("Totems", "AceEvent-3.0", "AceTimer-3.0")
 local self = PitBull4_Totems
 
-if DEBUG then
-	PBTDBG = PitBull4_Totems
-end
-
 -- Load LibSharedMedia
 local LSM = LibStub("LibSharedMedia-3.0", true)
 if not LSM then
@@ -171,7 +167,7 @@ end
 --------------------------------------------------------------------------------
 -- this function is borrowed from Got Wood which got it from neronix. 
 function PitBull4_Totems:SecondsToTimeAbbrev(time)
-	local m, s
+	local text, m, s
 	if( time < 0 ) then
 		text = ""
 	elseif( time < 3600 ) then
@@ -458,7 +454,7 @@ function PitBull4_Totems:ActivateTotem(slot)
 			
 			local haveTotem, name, startTime, duration, icon = MyGetTotemInfo(slot, frame)
 			-- queried seperately because GetTotemInfo apprears to give less reliable results (wtf?!)
-			local timeleft = MyGetTotemTimeLeft(slot, frame)
+			local timeLeft = MyGetTotemTimeLeft(slot, frame)
 			
 			if ( name == "" ) then
 				--dbg("WARNING: Can't activate a nondropped totem")
@@ -480,7 +476,7 @@ function PitBull4_Totems:ActivateTotem(slot)
 			
 			tframe.border:Show()
 			if ( layout_option_get(frame,'timer_text') ) then
-				ttext:SetText(self:SecondsToTimeAbbrev(timeleft))
+				ttext:SetText(self:SecondsToTimeAbbrev(timeLeft))
 			end
 			self:SpiralUpdate(frame, slot, startTime, timeLeft)
 			
