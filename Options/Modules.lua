@@ -90,12 +90,8 @@ function PitBull4.Options.get_module_options()
 	
 	local function loadable(info)
 		local id = info[#info - 1]
-		for i = 1, GetNumAddOns() do
-			local name,_,_,_,loadable = GetAddOnInfo(i)
-			if name == 'PitBull4_'..id then
-				return loadable
-			end
-		end
+		local _,_,_,_,loadable = GetAddOnInfo('PitBull4_'..id)
+		return loadable
 	end
 
 	local function unloadable(info)
