@@ -135,11 +135,7 @@ end
 function showers:raid()
 	CompactRaidFrameManager:RegisterEvent("GROUP_ROSTER_UPDATE")	
 	CompactRaidFrameManager:RegisterEvent("PLAYER_ENTERING_WORLD")
-	if GetDisplayedAllyFrames then
-		if GetDisplayedAllyFrames() == "raid" then
-			CompactRaidFrameManager:Show()
-		end
-	elseif GetNumRaidMembers() > 0 then
+	if GetDisplayedAllyFrames() == "raid" then
 		CompactRaidFrameManager:Show()
 	end
 	if compact_raid and compact_raid ~= "0" then
