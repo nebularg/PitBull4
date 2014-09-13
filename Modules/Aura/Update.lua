@@ -914,7 +914,7 @@ function PitBull4_Aura:UNIT_AURA(event, unit)
 	-- once every 0.2 seconds.  We capture the GUID at the event
 	-- time because the unit ids can change between when we receive
 	-- the event and do the throttled update
-	local guid = UnitGUID(unit)
+	local guid = unit and UnitGUID(unit)
 	if guid then
 		guids_to_update[guid] = true
 	end
