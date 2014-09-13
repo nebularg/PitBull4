@@ -1,6 +1,7 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
+local wod_600 = select(4, GetBuildInfo()) >= 60000
 
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
@@ -90,7 +91,7 @@ function PitBull4.Options.get_module_options()
 	
 	local function loadable(info)
 		local id = info[#info - 1]
-		local _,_,_,_,loadable = GetAddOnInfo('PitBull4_'..id)
+		local loadable = select(wod_600 and 4 or 5, GetAddOnInfo('PitBull4_'..id))
 		return loadable
 	end
 
@@ -123,7 +124,7 @@ function PitBull4.Options.get_module_options()
 		type = 'description',
 		name = function(info)
 			local id = info[#info - 1]
-			local _,_,_,_,loadable,reason = GetAddOnInfo('PitBull4_'..id)
+			local loadable,reason = select(wod_600 and 4 or 5, GetAddOnInfo('PitBull4_'..id))
 			if not loadable then
 				if reason then
 					if reason == "DISABLED" then
