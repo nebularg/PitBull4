@@ -875,14 +875,7 @@ function PitBull4_Totems:BuildFrames(frame)
 		end
 		spiral:SetAllPoints(frm)
 		spiral:Show()
-		if ( layout_option_get(frame,'suppress_occ') ) then
-			-- user wishes to suppress omnicc on his timer spiral, requires recent (post-2.4) omnicc version!
-			if OMNICC_VERSION and OMNICC_VERSION < 210 then
-				spiral.noomnicc = true
-			else
-				spiral.noCooldownCount = true
-			end
-		end
+		spiral.noCooldownCount = layout_option_get(frame,'suppress_occ') or nil
 		
 		--------------------
 		-- Text frame
@@ -1046,6 +1039,7 @@ function PitBull4_Totems:ClearFrame(frame)
 			element.textFrame = element.textFrame:Delete()
 		end
 		if element.spiral then
+			element.spiral.noCooldownCount = nil
 			element.spiral = element.spiral:Delete()
 		end
 		if element.border then
@@ -1166,9 +1160,22 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 				name = L["Suppress Cooldown Counts"],
 				desc = L["Tries to suppress CooldownCount-like addons on the spiral timer. (Requires UI reload to change the setting!)"],
 				get = get,
-				set = set,
+				set = function(info, value)
+					PitBull4.Options.GetLayoutDB(self).suppress_occ = value
+					for frame in PitBull4:IterateFrames() do
+						if PitBull4_Totems:GetLayoutDB(frame).enabled and frame.Totems then
+							for _, element in ipairs(frame.Totems) do
+								element.spiral.noCooldownCount = value
+							end
+						end
+					end
+					PitBull4.Options.UpdateFrames()
+				end,
 				width = 'full',
-				disabled = function() return not get({'timer_spiral'}) or disabled() end,
+				disabled = function()
+					local db = PitBull4.Options.GetLayoutDB(self)
+					return not db.timer_spiral or not db.enabled
+				end,
 				order = 2,
 			},
 		},
@@ -1205,7 +1212,10 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 				},
 				get = get,
 				set = set,
-				disabled = function() return not get({'timer_text'}) or disabled()  end,
+				disabled = function()
+					local db = PitBull4.Options.GetLayoutDB(self)
+					return not db.timer_spiral or not db.enabled
+				end,
 				order = 3,
 			},
 		}
