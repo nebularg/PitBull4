@@ -2,6 +2,8 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local EPSILON = 1e-5
+
 local CURRENT_BAR_PROVIDER_ID = {}
 local _, player_class = UnitClass("player")
 
@@ -255,7 +257,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 				if side == other_db.side and other_db.enabled then
 					local position = other_db.position
 					while t[position] do
-						position = position + 1e-5
+						position = position + EPSILON
 						other_db.position = position
 					end
 					t[position] = other_module.name
@@ -269,7 +271,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 						if side == bar_db.side then
 							local position = bar_db.position
 							while t[position] do
-								position = position + 1e-5
+								position = position + EPSILON
 								bar_db.position = position
 							end
 							t[position] = ("%s: %s"):format(other_module.name, name)

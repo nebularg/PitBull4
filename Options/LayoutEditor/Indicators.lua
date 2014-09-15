@@ -2,6 +2,8 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local EPSILON = 1e-5
+
 local root_locations = {
 	out_top_left = ("%s, %s"):format(L["Outside"], L["Above-left"]),
 	out_top = ("%s, %s"):format(L["Outside"], L["Above"]),
@@ -455,7 +457,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 				if side == other_db.side and other_db.enabled then
 					local position = other_db.position
 					while t[position] do
-						position = position + 1e-5
+						position = position + EPSILON
 						other_db.position = position
 					end
 					t[position] = other_module.name
@@ -469,7 +471,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 						if side == bar_db.side then
 							local position = bar_db.position
 							while t[position] do
-								position = position + 1e-5
+								position = position + EPSILON
 								bar_db.position = position
 							end
 							t[position] = ("%s: %s"):format(other_module.name, name)
@@ -566,7 +568,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 				if attach_to == other_db.attach_to and location == other_db.location and not other_db.side then
 					local position = other_db.position
 					while t[position] do
-						position = position + 1e-5
+						position = position + EPSILON
 						other_db.position = position
 					end
 					t[position] = other_module.name
@@ -578,7 +580,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 					if attach_to == element_db.attach_to and location == element_db.location then
 						local position = element_db.position
 						while t[position] do
-							position = position + 1e-5
+							position = position + EPSILON
 							element_db.position = position
 						end
 						t[position] = element_id

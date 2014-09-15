@@ -2,6 +2,8 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local EPSILON = 1e-5
+
 local CURRENT_CUSTOM_TEXT_MODULE
 local CURRENT_TEXT_PROVIDER_MODULE
 local CURRENT_TEXT_PROVIDER_ID
@@ -497,7 +499,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 				if attach_to == other_db.attach_to and location == other_db.location then
 					local position = other_db.position
 					while t[position] do
-						position = position + 1e-5
+						position = position + EPSILON
 						other_db.position = position
 					end
 					t[position] = other_module.name
@@ -509,7 +511,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 					if attach_to == element_db.attach_to and location == element_db.location then
 						local position = element_db.position
 						while t[position] do
-							position = position + 1e-5
+							position = position + EPSILON
 							element_db.position = position
 						end
 						t[position] = element_id
