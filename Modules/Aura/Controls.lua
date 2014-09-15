@@ -4,6 +4,7 @@ local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
+local wod_600 = select(4, GetBuildInfo()) >= 60000
 
 local MAINHAND = PitBull4_Aura.MAINHAND
 local OFFHAND = PitBull4_Aura.OFFHAND
@@ -161,6 +162,11 @@ PitBull4.Controls.MakeNewControlType("Aura", "Button", function(control)
 	local cooldown = PitBull4.Controls.MakeCooldown(control)
 	control.cooldown = cooldown
 	cooldown:SetReverse(true)
+	if wod_600 then
+		cooldown:SetDrawEdge(false)
+		cooldown:SetDrawSwipe(true)
+		cooldown:SetHideCountdownNumbers(true)
+	end
 	cooldown:SetAllPoints(control)
 
 	-- Set the overlay above the cooldown spinner so the fonts will be over it.

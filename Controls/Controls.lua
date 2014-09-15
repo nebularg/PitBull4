@@ -208,6 +208,9 @@ local function create_control(kind, name, inheritTemplate, parent)
 	if kind == "Animation" or kind == "Alpha" then
 		return parent:CreateAnimation(kind, name)
 	end
+	if kind == "Cooldown" then
+		return CreateFrame(kind, name, parent, "CooldownFrameTemplate")
+	end
 	return CreateFrame(kind, name, parent, inheritTemplate)
 end
 
@@ -395,7 +398,6 @@ function PitBull4.Controls.MakeCooldown(parent)
 	if DEBUG then
 		expect(parent, 'typeof', 'frame')
 	end
-	
 	return fetch_control("Cooldown", parent)
 end
 

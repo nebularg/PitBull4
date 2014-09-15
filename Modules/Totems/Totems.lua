@@ -10,8 +10,10 @@ if not PitBull4 then
 end
 
 local DEBUG = PitBull4.DEBUG
+local wod_600 = select(4, GetBuildInfo()) >= 60000
 
 -- CONSTANTS ----------------------------------------------------------------
+
 local MAX_TOTEMS = MAX_TOTEMS or 4 -- comes from blizzard's totem frame lua
 local REQUIRED_SPEC_1
 local REQUIRED_SPEC_2
@@ -866,7 +868,13 @@ function PitBull4_Totems:BuildFrames(frame)
 		end
 		local spiral = elements[i].spiral
 		spiral:SetReverse(true)
+		if wod_600 then
+			spiral:SetDrawEdge(false)
+			spiral:SetDrawSwipe(true)
+			spiral:SetHideCountdownNumbers(true)
+		end
 		spiral:SetAllPoints(frm)
+		spiral:Show()
 		if ( layout_option_get(frame,'suppress_occ') ) then
 			-- user wishes to suppress omnicc on his timer spiral, requires recent (post-2.4) omnicc version!
 			if OMNICC_VERSION and OMNICC_VERSION < 210 then
