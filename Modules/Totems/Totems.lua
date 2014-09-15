@@ -48,8 +48,10 @@ local TOTEM_SIZE = 50 -- fixed value used for internal frame creation, change th
 
 local UPDATE_FREQUENCY = 0.25 -- delay this many second between timer updates
 
+local module_path = _G.debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z0-9]-%.lua")
+
 local CONFIG_MODE_ICON = [[Interface\Icons\Spell_Fire_TotemOfWrath]]
-local BORDER_PATH  = [[Interface\AddOns\]] .. debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z]-%.lua") .. [[\border]]
+local BORDER_PATH  = [[Interface\AddOns\]] .. module_path .. [[\border]]
 local DEFAULT_SOUND_NAME = 'Drop'
 local DEFAULT_SOUND_PATH =  [[Sound\interface\DropOnGround.wav]]
 
@@ -1093,7 +1095,7 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 
 	return 'totem_spacing', {
 		type = 'range',
-		name = L["Totem Spacing"],
+		name = L["Totem spacing"],
 		desc = L["Sets the size of the gap between the totem icons."],
 		softMin = 0,
 		softMax = 100,
@@ -1105,7 +1107,7 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 	},
 	'totem_direction', {
 		type = 'select',
-		name = L["Totem Direction"],
+		name = L["Totem direction"],
 		desc = L["Choose wether to grow horizontally or vertically."],
 		get = get,
 		set = set,
@@ -1113,7 +1115,6 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 			["h"] = L["Horizontal"],
 			["v"] = L["Vertical"]
 		},
-		style = "radio",
 		disabled = disabled,
 		order = 13,
 	},
@@ -1140,7 +1141,7 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 	},
 	'group_timer_spiral', {
 		type = 'group',
-		name = L["Spiral Timer"],
+		name = L["Spiral timer"],
 		desc = L["Options relating to the spiral display timer."],
 		inline = true,
 		order = 18,
@@ -1149,7 +1150,7 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 			timer_spiral = {
 				type = 'toggle',
 				name = L["Enabled"],
-				desc = L["Shows the pie-like cooldown spiral on the icons."],
+				desc = L["Shows a cooldown spiral on the totem icons."],
 				get = get,
 				set = set,
 				disabled = disabled,
@@ -1157,8 +1158,8 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 			},
 			suppress_occ = {
 				type = 'toggle',
-				name = L["Suppress Cooldown Counts"],
-				desc = L["Tries to suppress CooldownCount-like addons on the spiral timer. (Requires UI reload to change the setting!)"],
+				name = L["Suppress cooldown numbers"],
+				desc = L["Try to stop addons from showing cooldown numbers on the spiral timer."],
 				get = get,
 				set = function(info, value)
 					PitBull4.Options.GetLayoutDB(self).suppress_occ = value
@@ -1171,7 +1172,7 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 					end
 					PitBull4.Options.UpdateFrames()
 				end,
-				width = 'full',
+				width = 'double',
 				disabled = function()
 					local db = PitBull4.Options.GetLayoutDB(self)
 					return not db.timer_spiral or not db.enabled
@@ -1182,7 +1183,7 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 	},
 	'group_timer_text', {
 		type = 'group',
-		name = L["Text Timer"],
+		name = L["Text timer"],
 		desc = L["Options relating to the text display timer."],
 		inline = true,
 		order = 19,
@@ -1230,14 +1231,9 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 		name = L["There are more options for this module in the Modules -> Totems section."],
 		order = 31,
 	},
-	'header_player_only', {
-		type = 'header',
-		name = L["Note"],
-		order = 33,
-	},
 	'description_player_only', {
 		type = 'description',
-		name = L["Totems only show for the Player. On all other units the frame will not be there, even when enabled in the layout of the frame."],
+		name = "\n"..L["Totems only show for the Player. On all other units the frame will not be there, even when enabled in the layout of the frame."],
 		order = 34,
 	}
 end)
@@ -1365,7 +1361,7 @@ PitBull4_Totems:SetGlobalOptionsFunction(function(self)
 	'totem_tooltips', {
 		type = 'toggle',
 		width = 'full',
-		name = L["Totem Tooltips"],
+		name = L["Totem tooltips"],
 		desc = L["Enables tooltips when hovering over the icons."],
 		get = global_option_get,
 		set = gOptSet,
@@ -1438,7 +1434,7 @@ PitBull4_Totems:SetColorOptionsFunction(function(self)
 		args = {
 			main_background = { -- color option
 				type = 'color',
-				name = L["Main Background"],
+				name = L["Main background"],
 				desc = L["Sets the color and transparency of the background of the timers."],
 				hasAlpha = true,
 				get = get,
@@ -1465,7 +1461,7 @@ PitBull4_Totems:SetColorOptionsFunction(function(self)
 			},
 			totem_borders_per_element = { -- global option
 				type = 'toggle',
-				name = L["Color Icon by Element"],
+				name = L["Color icon by element"],
 				get = global_option_get,
 				set = gOptSet,
 				order = 2,
@@ -1489,7 +1485,7 @@ PitBull4_Totems:SetColorOptionsFunction(function(self)
 			},
 			text_color_per_element = { --global option
 				type = 'toggle',
-				name = L["Color Text by Element"],
+				name = L["Color text by element"],
 				get = global_option_get,
 				set = gOptSet,
 				order = 2,
