@@ -43,6 +43,7 @@ PitBull4_Aura:SetDefaults({
 	max_debuffs = 6,
 	zoom_aura = false,
 	click_through = false,
+	suppress_occ = true,
 	cooldown = {
 		my_buffs = true,
 		my_debuffs = true,
@@ -2325,6 +2326,24 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				disabled = is_aura_disabled,
 				order = 5,
 			},
+			suppress_occ = {
+				type = 'toggle',
+				name = L['Suppress cooldown numbers'],
+				desc = L['Try to stop addons from showing cooldown numbers on the spiral timer.'],
+				get = get,
+				set = function(info, value)
+					PitBull4.Options.GetLayoutDB(self).suppress_occ = value
+					for frame in PitBull4:IterateFrames() do
+						if PitBull4_Aura:GetLayoutDB(frame).enabled then
+							PitBull4_Aura:ClearFrame(frame)
+							PitBull4_Aura:UpdateFrame(frame)
+						end
+					end
+				end,
+				width = 'full',
+				disabled = is_aura_disabled,
+				order = 6,
+			},
 			zoom_aura = {
 				type = 'toggle',
 				name = L['Zoom icon'],
@@ -2332,7 +2351,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get,
 				set = set,
 				disabled = is_aura_disabled,
-				order = 6,
+				order = 7,
 			},
 			click_through = {
 				type = 'toggle',
@@ -2341,7 +2360,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get,
 				set = set,
 				disabled = is_aura_disabled,
-				order = 7,
+				order = 8,
 			},
 		},
 	},

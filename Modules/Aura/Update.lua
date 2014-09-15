@@ -447,6 +447,7 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 
 	if not control then
 		control = PitBull4.Controls.MakeAura(frame)
+		control.cooldown.noCooldownCount = db.suppress_occ or nil
 		aura_controls[i] = control
 	end
 
@@ -707,6 +708,7 @@ local function clear_auras(frame, is_buff)
 	end
 
 	for i = 1, #controls do
+		controls[i].cooldown.noCooldownCount = nil
 		controls[i] = controls[i]:Delete()
 	end
 end
