@@ -36,6 +36,7 @@ PitBull4_HolyPower:SetDefaults({
 	location = "out_top",
 	position = 1,
 	vertical = false,
+	click_through = false,
 	size = 1.5,
 	active_color = { 0.95, 0.9, 0.6, 1 },
 	inactive_color = { 0.5, 0.5, 0.5, 0.5 },
@@ -138,6 +139,7 @@ function PitBull4_HolyPower:UpdateFrame(frame)
 			holy_icon:ClearAllPoints()
 			holy_icon:UpdateColors(db.active_color, db.inactive_color)
 			holy_icon:UpdateTexture()
+			holy_icon:EnableMouse(not db.click_through)
 			if not vertical then
 				holy_icon:SetPoint("CENTER", container, "LEFT", BORDER_SIZE + (i - 1) * (SPACING + STANDARD_SIZE) + HALF_STANDARD_SIZE, 0)
 			else
@@ -195,6 +197,23 @@ PitBull4_HolyPower:SetLayoutOptionsFunction(function(self)
 		end,
 		order = 100,
 	},
+	'click_through', {
+		type = 'toggle',
+		name = L["Click-through"],
+		desc = L['Disable capturing clicks on indicators allowing the clicks to fall through to the window underneath the indicator.'],
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).click_through
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).click_through = value
+			
+			for frame in PitBull4:IterateFramesForUnitID("player") do
+				self:Clear(frame)
+				self:Update(frame)
+			end
+		end,
+		order = 101,
+	},
 	'active_color', {
 		type = 'color',
 		hasAlpha = true,
@@ -212,7 +231,7 @@ PitBull4_HolyPower:SetLayoutOptionsFunction(function(self)
 				self:Update(frame)
 			end
 		end,
-		order = 101,
+		order = 102,
 	},
 	'inactive_color', {
 		type = 'color',
@@ -231,7 +250,7 @@ PitBull4_HolyPower:SetLayoutOptionsFunction(function(self)
 				self:Update(frame)
 			end
 		end,
-		order = 102,
+		order = 103,
 	},
 	'background_color', {
 		type = 'color',
@@ -250,6 +269,6 @@ PitBull4_HolyPower:SetLayoutOptionsFunction(function(self)
 				self:Update(frame)
 			end
 		end,
-		order = 103,
+		order = 104,
 	}
 end)

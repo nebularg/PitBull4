@@ -31,6 +31,7 @@ PitBull4_BurningEmbers:SetDefaults({
 	location = "out_top",
 	position = 1,
 	vertical = false,
+	click_through = false,
 	size = 1.5,
 	background_color = { 0, 0, 0, 0.5 }
 })
@@ -118,6 +119,7 @@ function PitBull4_BurningEmbers:UpdateFrame(frame)
 			container[i] = ember
 			ember:UpdateTexture()
 			ember:ClearAllPoints()
+			ember:EnableMouse(not db.click_through)
 			if not vertical then
 				ember:SetPoint("CENTER", container, "LEFT", BORDER_SIZE + (i - 1) * (SPACING + STANDARD_SIZE) + HALF_STANDARD_SIZE, 0)
 			else
@@ -175,6 +177,23 @@ PitBull4_BurningEmbers:SetLayoutOptionsFunction(function(self)
 			end
 		end,
 		order = 100,
+	},
+	'click_through', {
+		type = 'toggle',
+		name = L["Click-through"],
+		desc = L['Disable capturing clicks on indicators allowing the clicks to fall through to the window underneath the indicator.'],
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).click_through
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).click_through = value
+			
+			for frame in PitBull4:IterateFramesForUnitID("player") do
+				self:Clear(frame)
+				self:Update(frame)
+			end
+		end,
+		order = 101,
 	},
 	'background_color', {
 		type = 'color',
