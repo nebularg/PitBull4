@@ -286,28 +286,28 @@ end]],
 	},
 	[L["Druid mana"]] = {
 		[L["Absolute"]] = {
-			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
+			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true,['UNIT_DISPLAYPOWER']=true},
 			code = [[
 if UnitPowerType(unit) ~= 0 then
   return "%s/%s",Power(unit,0),MaxPower(unit,0)
 end]],
 		},
 		[L["Absolute short"]] = {
-			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
+			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true,['UNIT_DISPLAYPOWER']=true},
 			code = [[
 if UnitPowerType(unit) ~= 0 then
   return "%s/%s",Short(Power(unit,0),true),Short(MaxPower(unit,0),true)
 end]],
 		},
 		[L["Difference"]] = {
-			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
+			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true,['UNIT_DISPLAYPOWER']=true},
 			code = [[
 if UnitPowerType(unit) ~= 0 then
   return -(MaxPower(unit,0) - Power(unit,0))
 end]],
 		},
 		[L["Percent"]] = {
-			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
+			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true,['UNIT_DISPLAYPOWER']=true},
 			code = [[
 if UnitPowerType(unit) ~= 0 then
   local max = MaxPower(unit,0)
@@ -317,14 +317,14 @@ if UnitPowerType(unit) ~= 0 then
 end]],
 		},
 		[L["Mini"]] = {
-			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
+			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true,['UNIT_DISPLAYPOWER']=true},
 			code = [[
 if UnitPowerType(unit) ~= 0 then
   return VeryShort(Power(unit,0))
 end]],
 		},
 		[L["Smart"]] = {
-			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
+			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true,['UNIT_DISPLAYPOWER']=true},
 			code = [[
 if UnitPowerType(unit) ~= 0 then
   local miss = MaxPower(unit,0) - Power(unit,0)
