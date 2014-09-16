@@ -1052,77 +1052,55 @@ function PitBull4:OnInitialize()
 
 	local fresh_config = not PitBull4DB
 
-	db = LibStub("AceDB-3.0"):New("PitBull4DB", DATABASE_DEFAULTS, 'Default')
+	db = LibStub("AceDB-3.0"):New("PitBull4DB", DATABASE_DEFAULTS, "Default")
 	DATABASE_DEFAULTS = nil
 	self.db = db
-	
+
 	if fresh_config then
 		db.global.config_version = CURRENT_CONFIG_VERSION
 	end
-		
+
 	db.RegisterCallback(self, "OnProfileChanged")
 	db.RegisterCallback(self, "OnProfileReset")
 	db.RegisterCallback(self, "OnNewProfile") 
 	db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
 
 	LibStub("LibDualSpec-1.0"):EnhanceDatabase(db, "PitBull4")
-	
-	-- used for run-once-only initialization
-	self:RegisterEvent("ADDON_LOADED")
-	self:ADDON_LOADED()
-	
-	LoadAddOn("LibDataBroker-1.1")
-	LoadAddOn("LibDBIcon-1.0")
-	LoadAddOn("LibBossIDs-1.0", true)
-end
 
-local db_icon_done, ora3_done
-function PitBull4:ADDON_LOADED()
-	if not PitBull4.LibDataBrokerLauncher then
-		local LibDataBroker = LibStub("LibDataBroker-1.1", true)
-		if LibDataBroker then
-			PitBull4.LibDataBrokerLauncher = LibDataBroker:NewDataObject("PitBull4", {
-				type = "launcher",
-				icon = [[Interface\AddOns\PitBull4\pitbull]],
-				OnClick = function(clickedframe, button)
-					if button == "RightButton" then 
-						if IsShiftKeyDown() then
-							PitBull4.db.profile.frame_snap = not PitBull4.db.profile.frame_snap
-						else
-							PitBull4.db.profile.lock_movement = not PitBull4.db.profile.lock_movement
-						end
-						LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
-					else 
-						return PitBull4.Options.OpenConfig() 
-					end
-				end,
-				OnTooltipShow = function(tt)
-					tt:AddLine(L["PitBull Unit Frames 4.0"])
-					tt:AddLine("|cffffff00" .. L["%s|r to open the options menu"]:format(L["Click"]), 1, 1, 1)
-					tt:AddLine("|cffffff00" .. L["%s|r to toggle frame lock"]:format(L["Right-click"]), 1, 1, 1)
-					tt:AddLine("|cffffff00" .. L["%s|r to toggle frame snapping"]:format(L["Shift Right-click"]), 1, 1, 1)
-				end,
-			})
-		end
+	local LibDataBrokerLauncher = LibStub("LibDataBroker-1.1"):NewDataObject("PitBull4", {
+		type = "launcher",
+		icon = [[Interface\AddOns\PitBull4\pitbull]],
+		OnClick = function(frame, button)
+			if button == "RightButton" then 
+				if IsShiftKeyDown() then
+					self.db.profile.frame_snap = not self.db.profile.frame_snap
+				else
+					self.db.profile.lock_movement = not self.db.profile.lock_movement
+				end
+				LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
+			else 
+				return self.Options.OpenConfig() 
+			end
+		end,
+		OnTooltipShow = function(tt)
+			tt:AddLine(L["PitBull Unit Frames 4.0"])
+			tt:AddLine("|cffffff00" .. L["%s|r to open the options menu"]:format(L["Click"]), 1, 1, 1)
+			tt:AddLine("|cffffff00" .. L["%s|r to toggle frame lock"]:format(L["Right-click"]), 1, 1, 1)
+			tt:AddLine("|cffffff00" .. L["%s|r to toggle frame snapping"]:format(L["Shift Right-click"]), 1, 1, 1)
+		end,
+	})
+
+	local LibDBIcon = LibStub("LibDBIcon-1.0", true)
+	if LibDBIcon then
+		LibDBIcon:Register("PitBull4", LibDataBrokerLauncher, self.db.profile.minimap_icon)
 	end
 
-	if not db_icon_done and PitBull4.LibDataBrokerLauncher then
-		local LibDBIcon = LibStub("LibDBIcon-1.0", true)
-		if LibDBIcon and not IsAddOnLoaded("Broker2FuBar") then
-			LibDBIcon:Register("PitBull4", PitBull4.LibDataBrokerLauncher, PitBull4.db.profile.minimap_icon)
-			db_icon_done = true
-		end
-	end
-
-	if not ora3_done and oRA3 then
+	if oRA3 then
 		oRA3.RegisterCallback(self, "OnTanksUpdated")
 		self.OnTanksUpdated()
-		ora3_done = true
 	end
 
-	if not PitBull4.LibBossIDs then
-		PitBull4.LibBossIDs = LibStub("LibBossIDs-1.0", true)
-	end
+	self.LibBossIDs = LibStub("LibBossIDs-1.0", true)
 end
 
 do

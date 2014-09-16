@@ -37,9 +37,6 @@ externals:
     libs/AceGUI-3.0-SharedMediaWidgets:
         url: svn://svn.wowace.com/wow/ace-gui-3-0-shared-media-widgets/mainline/trunk/AceGUI-3.0-SharedMediaWidgets
         tag: latest
-    libs/LibDataBroker-1.1:
-        url: git://github.com/tekkub/libdatabroker-1-1.git
-        tag: v1.1.4
     libs/LibDBIcon-1.0:
         url: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/trunk/LibDBIcon-1.0
         tag: latest
@@ -102,3 +99,6 @@ ignore:
     - docs
     - tests
     - spec.txt
+
+tools-used:
+    - libdatabroker-1-1
