@@ -8,7 +8,7 @@ end
 
 local L = PitBull4.L
 
-local PitBull4_DruidManaBar = PitBull4:NewModule("DruidManaBar", "AceEvent-3.0", "AceTimer-3.0")
+local PitBull4_DruidManaBar = PitBull4:NewModule("DruidManaBar", "AceEvent-3.0")
 
 PitBull4_DruidManaBar:SetModuleType("bar")
 PitBull4_DruidManaBar:SetName(L["Druid/Monk mana bar"])
@@ -26,9 +26,9 @@ local MANA_TYPE = 0
 local power_type = nil
 
 function PitBull4_DruidManaBar:OnEnable()
-	PitBull4_DruidManaBar:RegisterEvent("UNIT_POWER")
-	PitBull4_DruidManaBar:RegisterEvent("UNIT_MAXPOWER","UNIT_POWER")
-	PitBull4_DruidManaBar:RegisterEvent("UNIT_DISPLAYPOWER","UNIT_POWER")
+	PitBull4_DruidManaBar:RegisterEvent("UNIT_POWER_FREQUENT")
+	PitBull4_DruidManaBar:RegisterEvent("UNIT_MAXPOWER","UNIT_POWER_FREQUENT")
+	PitBull4_DruidManaBar:RegisterEvent("UNIT_DISPLAYPOWER","UNIT_POWER_FREQUENT")
 	if player_class == "MONK" then
 		PitBull4_DruidManaBar:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	end
@@ -71,8 +71,8 @@ function PitBull4_DruidManaBar:GetColor(frame, value)
 end
 PitBull4_DruidManaBar.GetExampleColor = PitBull4_DruidManaBar.GetColor
 
-function PitBull4_DruidManaBar:UNIT_POWER(event, unit, power_type)
-	if unit ~= "player" or ((event == "UNIT_POWER" or event == "UNIT_MAXPOWER") and power_type ~= "MANA") then
+function PitBull4_DruidManaBar:UNIT_POWER_FREQUENT(event, unit, power_type)
+	if unit ~= "player" or ((event == "UNIT_POWER_FREQUENT" or event == "UNIT_MAXPOWER") and power_type ~= "MANA") then
 		return
 	end
 

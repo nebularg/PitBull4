@@ -49,8 +49,8 @@ local function update_player(self)
 	end
 end
 
-function PitBull4_BurningEmbers:UNIT_POWER_FREQUENT(event, unit, kind)
-	if unit ~= "player" or kind ~= "BURNING_EMBERS" then
+function PitBull4_BurningEmbers:UNIT_POWER_FREQUENT(event, unit, power_type)
+	if unit ~= "player" or power_type ~= "BURNING_EMBERS" then
 		return
 	end
 	

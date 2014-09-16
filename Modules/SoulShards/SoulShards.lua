@@ -44,7 +44,7 @@ local player_level = UnitLevel("player")
 
 function PitBull4_SoulShards:OnEnable()
 	player_level = UnitLevel("player")
-	self:RegisterEvent("UNIT_POWER")
+	self:RegisterEvent("UNIT_POWER_FREQUENT")
 	self:RegisterEvent("UNIT_DISPLAYPOWER")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("PLAYER_TALENT_UPDATE","PLAYER_ENTERING_WORLD")
@@ -59,8 +59,8 @@ local function update_player(self)
 	end
 end
 
-function PitBull4_SoulShards:UNIT_POWER(event, unit, kind)
-	if unit ~= "player" or kind ~= "SOUL_SHARDS" then
+function PitBull4_SoulShards:UNIT_POWER_FREQUENT(event, unit, power_type)
+	if unit ~= "player" or power_type ~= "SOUL_SHARDS" then
 		return
 	end
 	

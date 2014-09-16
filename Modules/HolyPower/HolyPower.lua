@@ -46,7 +46,7 @@ local player_level = UnitLevel("player")
 
 function PitBull4_HolyPower:OnEnable()
 	player_level = UnitLevel("player")
-	self:RegisterEvent("UNIT_POWER")
+	self:RegisterEvent("UNIT_POWER_FREQUENT")
 	self:RegisterEvent("UNIT_DISPLAYPOWER")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	if player_level < PALADINPOWERBAR_SHOW_LEVEL then
@@ -60,8 +60,8 @@ local function update_player(self)
 	end
 end
 
-function PitBull4_HolyPower:UNIT_POWER(event, unit, kind)
-	if unit ~= "player" or kind ~= "HOLY_POWER" then
+function PitBull4_HolyPower:UNIT_POWER_FREQUENT(event, unit, power_type)
+	if unit ~= "player" or power_type ~= "HOLY_POWER" then
 		return
 	end
 	

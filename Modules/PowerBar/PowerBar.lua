@@ -7,9 +7,7 @@ local EXAMPLE_VALUE = 0.6
 
 local L = PitBull4.L
 
-local PitBull4_PowerBar = PitBull4:NewModule("PowerBar", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
-local last_player_power
-local last_pet_power
+local PitBull4_PowerBar = PitBull4:NewModule("PowerBar", "AceEvent-3.0")
 
 PitBull4_PowerBar:SetModuleType("bar")
 PitBull4_PowerBar:SetName(L["Power bar"])
@@ -22,21 +20,14 @@ PitBull4_PowerBar:SetDefaults({
 })
 
 local guids_to_update = {}
-local predicted_power = true
 
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
 
-local PLAYER_GUID
 function PitBull4_PowerBar:OnEnable()
-	PLAYER_GUID = UnitGUID("player")
-
-	self:RegisterEvent("UNIT_POWER")
-	self:RegisterEvent("UNIT_MAXPOWER", "UNIT_POWER")
-	self:RegisterEvent("UNIT_DISPLAYPOWER", "UNIT_POWER")
-
-	self:SecureHook("SetCVar")
-	self:SetCVar()
+	self:RegisterEvent("UNIT_POWER_FREQUENT")
+	self:RegisterEvent("UNIT_MAXPOWER", "UNIT_POWER_FREQUENT")
+	self:RegisterEvent("UNIT_DISPLAYPOWER", "UNIT_POWER_FREQUENT")
 
 	timerFrame:Show()
 end
@@ -46,25 +37,6 @@ function PitBull4_PowerBar:OnDisable()
 end
 
 timerFrame:SetScript("OnUpdate", function()
-	if predicted_power and UnitPower("player") ~= last_player_power then
-		for frame in PitBull4:IterateFramesForGUID(PLAYER_GUID) do
-			if not frame.is_wacky then
-				PitBull4_PowerBar:Update(frame)
-			end
-		end
-		guids_to_update[PLAYER_GUID] = nil
-	end
-	if predicted_power and UnitPower("pet") ~= last_pet_power then
-		local pet_guid = UnitGUID("pet")
-		if pet_guid then
-			for frame in PitBull4:IterateFramesForGUID(pet_guid) do
-				if not frame.is_wacky then
-					PitBull4_PowerBar:Update(frame)
-				end
-			end
-			guids_to_update[pet_guid] = nil
-		end
-	end
 	if next(guids_to_update) then
 		for frame in PitBull4:IterateFrames() do
 			if guids_to_update[frame.guid] then
@@ -74,16 +46,6 @@ timerFrame:SetScript("OnUpdate", function()
 		wipe(guids_to_update)
 	end
 end)
-
-local function get_power_and_cache(unit)
-	local power = UnitPower(unit)
-	if unit == "player" then
-		last_player_power = power
-	elseif unit == "pet" then
-		last_pet_power = power
-	end
-	return power
-end
 
 function PitBull4_PowerBar:GetValue(frame)	
 	local unit = frame.unit
@@ -100,7 +62,7 @@ function PitBull4_PowerBar:GetValue(frame)
 		return 0
 	end
 
-	return get_power_and_cache(unit) / max
+	return UnitPower(unit) / max
 end
 
 function PitBull4_PowerBar:GetExampleValue(frame)
@@ -131,15 +93,11 @@ function PitBull4_PowerBar:GetExampleColor(frame)
 	return unpack(PitBull4.PowerColors.MANA)
 end
 
-function PitBull4_PowerBar:UNIT_POWER(event, unit)
+function PitBull4_PowerBar:UNIT_POWER_FREQUENT(event, unit)
 	local guid = UnitGUID(unit)
 	if guid then
 		guids_to_update[guid] = true
 	end
-end
-
-function PitBull4_PowerBar:SetCVar()
-	predicted_power = GetCVarBool("predictedPower")
 end
 
 PitBull4_PowerBar:SetLayoutOptionsFunction(function(self)

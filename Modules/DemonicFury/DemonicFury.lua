@@ -53,7 +53,7 @@ end
 PitBull4_DemonicFury.GetExampleColor = PitBull4_DemonicFury.GetColor
 
 function PitBull4_DemonicFury:UNIT_POWER_FREQUENT(event, unit, power_type)
-	if unit ~= "player" or ((event == "UNIT_POWER" or event == "UNIT_MAXPOWER") and power_type ~= "DEMONIC_FURY") then
+	if unit ~= "player" or ((event == "UNIT_POWER_FREQUENT" or event == "UNIT_MAXPOWER") and power_type ~= "DEMONIC_FURY") then
 		return
 	end
 

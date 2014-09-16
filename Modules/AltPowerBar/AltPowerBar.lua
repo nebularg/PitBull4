@@ -19,13 +19,12 @@ PitBull4_AltPowerBar:SetDefaults({
 function PitBull4_AltPowerBar:OnEnable()
 	self:RegisterEvent("UNIT_POWER_BAR_SHOW")
 	self:RegisterEvent("UNIT_POWER_BAR_HIDE", "UNIT_POWER_BAR_SHOW")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	self:RegisterEvent("UNIT_POWER")
-	self:RegisterEvent("UNIT_MAXPOWER", "UNIT_POWER")
-	
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateAll")
+	self:RegisterEvent("UNIT_POWER_FREQUENT")
+	self:RegisterEvent("UNIT_MAXPOWER", "UNIT_POWER_FREQUENT")
 end
 
-function PitBull4_AltPowerBar:GetValue(frame)	
+function PitBull4_AltPowerBar:GetValue(frame)
 	local unit = frame.unit
 	local bar_type, min_power, _, _, _, hide_from_others, show_on_raid = UnitAlternatePowerInfo(unit)
 	local visible = false
@@ -42,7 +41,7 @@ function PitBull4_AltPowerBar:GetValue(frame)
 	if max_power == 0 then
 		return 0
 	end
-	
+
 	local current_power = UnitPower(unit, ALTERNATE_POWER_INDEX)
 	if min_power > current_power then
 		current_power = min_power
@@ -67,12 +66,11 @@ function PitBull4_AltPowerBar:UNIT_POWER_BAR_SHOW(event, unit)
 	self:UpdateForUnitID(unit)
 end
 
-function PitBull4_AltPowerBar:PLAYER_ENTERING_WORLD(event)
-	self:UpdateAll()
-end
+function PitBull4_AltPowerBar:UNIT_POWER_FREQUENT(event, unit, power_type)
+	if power_type ~= "ALTERNATE" then
+		return
+	end
 
-function PitBull4_AltPowerBar:UNIT_POWER(event, unit, power_type)
-	if power_type ~= "ALTERNATE" then return end
 	self:UpdateForUnitID(unit)
 end
 
