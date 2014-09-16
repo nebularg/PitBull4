@@ -1163,14 +1163,15 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 				get = get,
 				set = function(info, value)
 					PitBull4.Options.GetLayoutDB(self).suppress_occ = value
+					
 					for frame in PitBull4:IterateFrames() do
-						if PitBull4_Totems:GetLayoutDB(frame).enabled and frame.Totems then
+						if self:GetLayoutDB(frame).enabled and frame.Totems then
 							for _, element in ipairs(frame.Totems) do
 								element.spiral.noCooldownCount = value
 							end
+							self:Update(frame)
 						end
 					end
-					PitBull4.Options.UpdateFrames()
 				end,
 				width = 'double',
 				disabled = function()

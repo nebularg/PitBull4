@@ -2333,10 +2333,11 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get,
 				set = function(info, value)
 					PitBull4.Options.GetLayoutDB(self).suppress_occ = value
+					
 					for frame in PitBull4:IterateFrames() do
-						if PitBull4_Aura:GetLayoutDB(frame).enabled then
-							PitBull4_Aura:ClearFrame(frame)
-							PitBull4_Aura:UpdateFrame(frame)
+						if self:GetLayoutDB(frame).enabled then
+							self:Clear(frame)
+							self:Update(frame)
 						end
 					end
 				end,
