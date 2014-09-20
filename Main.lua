@@ -750,14 +750,6 @@ end
 function PitBull4:IterateFramesForGUID(guid)
 	if DEBUG then
 		expect(guid, 'typeof', 'string;nil')
-		if guid then
-			if not wod_600 then
-				expect(guid, 'match', '^0x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x$')
-			else
-				local unit_type = strsplit(":", guid)
-				expect(unit_type, 'inset', 'Player;Creature;Pet;Vehicle;GameObject')
-			end
-		end
 	end
 	
 	if not guid then
@@ -791,14 +783,6 @@ function PitBull4:IterateFramesForGUIDs(...)
 		local guid = (select(i, ...))
 		if DEBUG then
 			expect(guid, 'typeof', 'string;nil')
-			if guid then
-				if not wod_600 then
-					expect(guid, 'match', '^0x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x$')
-				else
-					local unit_type = strsplit(":", guid)
-					expect(unit_type, 'inset', 'Player;Creature;Pet;Vehicle;GameObject')
-				end
-			end
 		end
 		
 		if guid then
