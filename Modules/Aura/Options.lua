@@ -43,7 +43,7 @@ PitBull4_Aura:SetDefaults({
 	max_debuffs = 6,
 	zoom_aura = false,
 	click_through = false,
-	suppress_occ = true,
+	suppress_occ = false,
 	cooldown = {
 		my_buffs = true,
 		my_debuffs = true,
