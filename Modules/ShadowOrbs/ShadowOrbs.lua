@@ -12,6 +12,24 @@ end
 local PRIEST_BAR_NUM_ORBS = assert(_G.PRIEST_BAR_NUM_ORBS)
 local SPELL_POWER_SHADOW_ORBS = assert(_G.SPELL_POWER_SHADOW_ORBS)
 
+local wod = select(4, GetBuildInfo()) >= 60000
+
+local function max_orbs()
+  if wod then
+    assert(SHADOW_ORB_MINOR_TALENT_ID)
+    assert(PRIEST_BAR_NUM_LARGE_ORBS)
+    assert(PRIEST_BAR_NUM_SMALL_ORBS)
+    if IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID) then
+      return PRIEST_BAR_NUM_LARGE_ORBS
+    else
+      return PRIEST_BAR_NUM_SMALL_ORBS
+    end
+  else
+    assert(PRIEST_BAR_NUM_ORBS)
+    return PRIEST_BAR_NUM_ORBS
+  end
+end
+
 local STANDARD_SIZE = 38
 local BORDER_SIZE = 3
 local SPACING = 3
