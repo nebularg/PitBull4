@@ -121,7 +121,7 @@ function PitBull4_ShadowOrbs:ClearFrame(frame)
 		return false
 	end
 	
-	for i = 1, PRIEST_BAR_NUM_ORBS do
+	for i = 1, max_orbs() do
 		container[i] = container[i]:Delete()
 	end
 	container.bg = container.bg:Delete()
@@ -145,7 +145,7 @@ function PitBull4_ShadowOrbs:UpdateFrame(frame)
 		local vertical = db.vertical
 		
 		local point, attach
-		for i = 1, PRIEST_BAR_NUM_ORBS do
+		for i = 1, max_orbs() do
 			local orb_icon = PitBull4.Controls.MakeShadowOrb(container, i)
 			container[i] = orb_icon
 			orb_icon:ClearAllPoints()
@@ -176,7 +176,7 @@ function PitBull4_ShadowOrbs:UpdateFrame(frame)
 	end
 
 	local num_orb = UnitPower("player", SPELL_POWER_SHADOW_ORBS)
-	for i = 1, PRIEST_BAR_NUM_ORBS do
+	for i = 1, max_orbs() do
 		local orb_icon = container[i]
 		orb_icon:UpdateColors(db.active_color, db.inactive_color)
 		if i <= num_orb then
