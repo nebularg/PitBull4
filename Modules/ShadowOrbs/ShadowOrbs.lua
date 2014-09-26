@@ -9,26 +9,10 @@ end
 
 -- CONSTANTS ----------------------------------------------------------------
 
-local PRIEST_BAR_NUM_ORBS = assert(_G.PRIEST_BAR_NUM_ORBS)
+local wod_600 = select(4, GetBuildInfo()) >= 60000
+
 local SPELL_POWER_SHADOW_ORBS = assert(_G.SPELL_POWER_SHADOW_ORBS)
-
-local wod = select(4, GetBuildInfo()) >= 60000
-
-local function max_orbs()
-  if wod then
-    assert(SHADOW_ORB_MINOR_TALENT_ID)
-    assert(PRIEST_BAR_NUM_LARGE_ORBS)
-    assert(PRIEST_BAR_NUM_SMALL_ORBS)
-    if IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID) then
-      return PRIEST_BAR_NUM_LARGE_ORBS
-    else
-      return PRIEST_BAR_NUM_SMALL_ORBS
-    end
-  else
-    assert(PRIEST_BAR_NUM_ORBS)
-    return PRIEST_BAR_NUM_ORBS
-  end
-end
+local SHADOW_ORB_MINOR_TALENT_ID = _G.SHADOW_ORB_MINOR_TALENT_ID
 
 local STANDARD_SIZE = 38
 local BORDER_SIZE = 3
@@ -36,7 +20,6 @@ local SPACING = 3
 
 local HALF_STANDARD_SIZE = STANDARD_SIZE / 2
 
-local CONTAINER_WIDTH = STANDARD_SIZE * PRIEST_BAR_NUM_ORBS + BORDER_SIZE * 2 + SPACING * (PRIEST_BAR_NUM_ORBS - 1)
 local CONTAINER_HEIGHT = STANDARD_SIZE + BORDER_SIZE * 2
 
 -----------------------------------------------------------------------------
@@ -71,7 +54,7 @@ function PitBull4_ShadowOrbs:OnEnable()
 	self:RegisterEvent("UNIT_DISPLAYPOWER")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("PLAYER_TALENT_UPDATE")
-	if player_level < SHADOW_ORBS_SHOW_LEVEL then
+	if player_level < SHADOW_ORBS_SHOW_LEVEL or (wod_600 and not IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID)) then
 		self:RegisterEvent("PLAYER_LEVEL_UP")
 	end
 end
@@ -105,7 +88,9 @@ end
 function PitBull4_ShadowOrbs:PLAYER_LEVEL_UP(event, level)
 	player_level = level
 	if player_level >= SHADOW_ORBS_SHOW_LEVEL then
-		self:UnregisterEvent("PLAYER_LEVEL_UP")
+		if not wod_600 or IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID) then
+			self:UnregisterEvent("PLAYER_LEVEL_UP")
+		end
 		update_player(self)
 	end
 end
@@ -121,7 +106,7 @@ function PitBull4_ShadowOrbs:ClearFrame(frame)
 		return false
 	end
 	
-	for i = 1, max_orbs() do
+	for i = 1, 5 do
 		container[i] = container[i]:Delete()
 	end
 	container.bg = container.bg:Delete()
@@ -130,22 +115,36 @@ function PitBull4_ShadowOrbs:ClearFrame(frame)
 	return true
 end
 
+local function update_container_size(container, vertical, max_orb)
+	local width = STANDARD_SIZE * max_orb + BORDER_SIZE * 2 + SPACING * (max_orb - 1)
+	if not vertical then
+		container:SetWidth(width)
+		container:SetHeight(CONTAINER_HEIGHT)
+		container.height = 1
+	else
+		container:SetWidth(CONTAINER_HEIGHT)
+		container:SetHeight(width)
+		container.height = width / CONTAINER_HEIGHT
+	end
+	container.max_orb = max_orb
+end
+
 function PitBull4_ShadowOrbs:UpdateFrame(frame)
 	if frame.unit ~= "player" or player_spec ~= SPEC_PRIEST_SHADOW or player_level < SHADOW_ORBS_SHOW_LEVEL then
 		return self:ClearFrame(frame)
 	end
 
 	local db = self:GetLayoutDB(frame)
+	local vertical = db.vertical
+
 	local container = frame.ShadowOrbs
 	if not container then
 		container = PitBull4.Controls.MakeFrame(frame)
 		frame.ShadowOrbs = container
 		container:SetFrameLevel(frame:GetFrameLevel() + 13)
-		
-		local vertical = db.vertical
-		
+
 		local point, attach
-		for i = 1, max_orbs() do
+		for i = 1, 5 do
 			local orb_icon = PitBull4.Controls.MakeShadowOrb(container, i)
 			container[i] = orb_icon
 			orb_icon:ClearAllPoints()
@@ -159,15 +158,7 @@ function PitBull4_ShadowOrbs:UpdateFrame(frame)
 			end
 		end
 
-		if not vertical then
-			container:SetWidth(CONTAINER_WIDTH)
-			container:SetHeight(CONTAINER_HEIGHT)
-			container.height = 1
-		else
-			container:SetWidth(CONTAINER_HEIGHT)
-			container:SetHeight(CONTAINER_WIDTH)
-			container.height = CONTAINER_WIDTH / CONTAINER_HEIGHT
-		end
+		update_container_size(container, vertical, 3)
 
 		local bg = PitBull4.Controls.MakeTexture(container, "BACKGROUND")
 		container.bg = bg
@@ -176,12 +167,20 @@ function PitBull4_ShadowOrbs:UpdateFrame(frame)
 	end
 
 	local num_orb = UnitPower("player", SPELL_POWER_SHADOW_ORBS)
-	for i = 1, max_orbs() do
+	local max_orb = UnitPowerMax("player", SPELL_POWER_SHADOW_ORBS)
+	if max_orb ~= container.max_orb then
+		update_container_size(container, vertical, max_orb)
+	end
+	for i = 1, 5 do
 		local orb_icon = container[i]
 		orb_icon:UpdateColors(db.active_color, db.inactive_color)
-		if i <= num_orb then
+		if i > max_orb then
+			orb_icon:Hide()
+		elseif i <= num_orb then
+			orb_icon:Show()
 			orb_icon:Activate()
 		else
+			orb_icon:Show()
 			orb_icon:Deactivate()
 		end
 	end
