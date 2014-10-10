@@ -1420,7 +1420,8 @@ local function header_OnEvent(self, event, arg1)
 end
 
 local function frame_OnEvent(self, event, unit)
-	if not self:GetParent().group_db.enabled then return end
+	local group_db = self:GetParent().group_db -- XXX somehow group_db isn't set sometimes
+	if not group_db or not group_db.enabled then return end
 
 	if UnitExists(self.unit) then
 		self:UpdateGUID(UnitGUID(self.unit), true)
