@@ -450,7 +450,6 @@ self_buffs.PALADIN = {
 	[85499]  = true, -- Speed of Light
 	[23214]  = true, -- Summon Charger
 	[13819]  = true, -- Summon Warhorse
-	[93098]  = not wod_600 or nil, -- Vengeance
 }
 self_debuffs.PALADIN = {}
 pet_buffs.PALADIN = {}
@@ -575,7 +574,6 @@ enemy_debuffs.ROGUE = {
 	[1943]   = true, -- Rupture
 	[6770]   = true, -- Sap
 	[79140]  = true, -- Vendetta
-	[113746] = not wod_600 or nil, -- Weakened Armor (Expose Armor)
 	[8679]   = true, -- Wound Poison
 }
 
@@ -590,7 +588,6 @@ friend_buffs.SHAMAN = {
 	[73920]  = true, -- Healing Rain
 	[119523] = true, -- Healing Stream Totem (Glyph of Healing Stream Totem)
 	[32182]  = player_faction == "Alliance", -- Heroism
-	[16191]  = not wod_600 or nil, -- Mana Tide
 	[61295]  = true, -- Riptide
 	[546]    = true, -- Water Walking
 	[27621]  = true, -- Windfury Totem
