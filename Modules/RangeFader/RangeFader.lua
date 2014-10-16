@@ -165,7 +165,11 @@ function PitBull4_RangeFader:GetOpacity(frame)
 	local unit = frame.unit
 	local db = self:GetLayoutDB(frame)
 	local check_method = db.check_method
-
+	
+	if UnitIsUnit(unit, "player") then
+		return 1
+	end
+	
 	if check_method== "follow" or check_method == "trade" or check_method == "duel" or check_method == "follow" then
 		if CheckInteractDistance(unit, check_method_to_dist_index[check_method]) then
 			return 1
