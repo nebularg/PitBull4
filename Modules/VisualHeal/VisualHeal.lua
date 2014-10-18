@@ -1,3 +1,5 @@
+if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
+
 local PitBull4 = _G.PitBull4
 if not PitBull4 then
 	error("PitBull4_VisualHeal requires PitBull4")

@@ -1,5 +1,7 @@
 -- Filter.lua : Code to handle Filtering the Auras.
 
+if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
+
 local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L

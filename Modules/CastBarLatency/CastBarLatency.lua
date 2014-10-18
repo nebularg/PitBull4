@@ -1,3 +1,5 @@
+if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
+
 -- Upvalues
 local min = math.min
 

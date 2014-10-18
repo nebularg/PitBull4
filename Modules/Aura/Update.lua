@@ -1,6 +1,8 @@
 -- Update.lua : Code to collect the auras on a unit, create the
 -- aura frames and set the data to display the auras.
 
+if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
+
 local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
 local PitBull4_Aura = PitBull4:GetModule("Aura")
