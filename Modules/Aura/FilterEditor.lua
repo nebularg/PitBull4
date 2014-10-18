@@ -1,6 +1,6 @@
 -- FilterEditor.lua: Code to implement the Filter Editor.
 
-if select(6, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
+if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
