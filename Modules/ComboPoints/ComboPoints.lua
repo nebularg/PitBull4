@@ -5,8 +5,9 @@ if not PitBull4 then
 	error("PitBull4_ComboPoints requires PitBull4")
 end
 
-local is_rogue = select(2, UnitClass("player")) == "ROGUE"
-local is_druid = select(2, UnitClass("player")) == "DRUID"
+local _, class = UnitClass("player")
+local is_rogue = class == "ROGUE"
+local is_druid = class == "DRUID"
 
 -- CONSTANTS ----------------------------------------------------------------
 
@@ -50,11 +51,17 @@ function PitBull4_ComboPoints:OnEnable()
 end
 
 function PitBull4_ComboPoints:UNIT_COMBO_POINTS(event, unit)
-	self:UpdateForUnitID("target")
+	if unit ~= "player" and unit ~= "pet" then return end
+
+	for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
+		self:Update(frame)
+	end
 end
 
 function PitBull4_ComboPoints:UPDATE_SHAPESHIFT_FORM(event)
-	self:UpdateForUnitID("target")
+	for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
+		self:Update(frame)
+	end
 end
 
 function PitBull4_ComboPoints:ClearFrame(frame)
@@ -76,19 +83,22 @@ function PitBull4_ComboPoints:ClearFrame(frame)
 end
 
 function PitBull4_ComboPoints:UpdateFrame(frame)
-	if frame.unit ~= "target" then
+	if frame.unit ~= "target" and frame.unit ~= "player" and frame.unit ~= "pet" then
 		return self:ClearFrame(frame)
 	end
 	
 	local has_vehicle = UnitHasVehicleUI("player")
+	if frame.unit == "pet" and not has_vehicle then
+		return self:ClearFrame(frame)
+	end
 	
-	local num_combos = GetComboPoints(has_vehicle and "vehicle" or "player", "target")
+	local num_combos = has_vehicle and GetComboPoints("vehicle", "target") or UnitPower("player", 4)
 	
 	-- While non-rogues and non-druids typically don't have combo points, certain game
 	-- mechanics may add them anyway (e.g. Malygos vehicles). Always show the combo
 	-- point indicator if there are combo points.
 	if num_combos == 0 then
-		if not (is_rogue or is_druid) then
+		if not is_rogue and not is_druid then
 			-- class doesn't normally use combo points
 			return self:ClearFrame(frame)
 		end
