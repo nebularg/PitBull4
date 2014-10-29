@@ -11,8 +11,6 @@ end
 
 -- CONSTANTS ----------------------------------------------------------------
 
-local wod_600 = select(4, GetBuildInfo()) >= 60000
-
 local SPELL_POWER_SHADOW_ORBS = assert(_G.SPELL_POWER_SHADOW_ORBS)
 local SHADOW_ORB_MINOR_TALENT_ID = _G.SHADOW_ORB_MINOR_TALENT_ID
 
@@ -56,7 +54,7 @@ function PitBull4_ShadowOrbs:OnEnable()
 	self:RegisterEvent("UNIT_DISPLAYPOWER")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("PLAYER_TALENT_UPDATE")
-	if player_level < SHADOW_ORBS_SHOW_LEVEL or (wod_600 and not IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID)) then
+	if player_level < SHADOW_ORBS_SHOW_LEVEL or not IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID) then
 		self:RegisterEvent("PLAYER_LEVEL_UP")
 	end
 end
@@ -90,7 +88,7 @@ end
 function PitBull4_ShadowOrbs:PLAYER_LEVEL_UP(event, level)
 	player_level = level
 	if player_level >= SHADOW_ORBS_SHOW_LEVEL then
-		if not wod_600 or IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID) then
+		if IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID) then
 			self:UnregisterEvent("PLAYER_LEVEL_UP")
 		end
 		update_player(self)

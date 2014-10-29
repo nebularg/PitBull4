@@ -1,6 +1,5 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
-local wod_600 = select(4, GetBuildInfo()) >= 60000
 
 local L = PitBull4.L
 
@@ -261,21 +260,9 @@ function PitBull4.Utils.GetMobIDFromGuid(guid)
     if DEBUG then
         expect(guid, 'typeof', 'string')
     end
-    if not wod_600 then
-        local unit_type = guid:sub(-14, -14)
-        if unit_type ~= "3" and unit_type ~= "B" and unit_type ~= "b" then
-            return nil
-        end
 
-        return tonumber(guid:sub(-13, -9), 16)
-    else
-        local unit_type, _, _, _, _, mob_id = strsplit('-', guid)
-        if unit_type ~= "Creature" and unit_type ~= "Vehicle" then
-            return nil
-        end
-
-        return tonumber(mob_id)
-    end
+    local _, _, _, _, _, mob_id = strsplit('-', guid)
+    return tonumber(mob_id)
 end
 
 --- Return the unit classification of the given unit.

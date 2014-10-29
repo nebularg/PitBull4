@@ -251,7 +251,6 @@ local _G = _G
 local PitBull4 = select(2, ...)
 PitBull4 = LibStub("AceAddon-3.0"):NewAddon(PitBull4, "PitBull4", "AceEvent-3.0", "AceTimer-3.0")
 _G.PitBull4 = PitBull4
-local wod_600 = select(4, GetBuildInfo()) >= 60000
 
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
