@@ -1414,8 +1414,13 @@ local function header_OnEvent(self, event, arg1)
 	if event == "UPDATE_BATTLEFIELD_STATUS" and GetBattlefieldStatus(arg1) ~= "active" then return end
 
 	for _, frame in self:IterateMembers() do
-		local update = not not UnitExists(frame.unit) -- want true/false
-		frame:UpdateGUID(UnitGUID(frame.unit), update)
+		local unit = frame.unit
+		if unit then -- XXX need to track down how the frame is created but it doesn't have a unit set
+			local update = not not UnitExists(unit) -- want true/false
+			frame:UpdateGUID(UnitGUID(unit), update)
+		else
+			frame:UpdateGUID(nil, false)
+		end
 	end
 end
 
