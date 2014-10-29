@@ -91,8 +91,8 @@ function PitBull4.Options.get_module_options()
 	
 	local function loadable(info)
 		local id = info[#info - 1]
-		local loadable = select(wod_600 and 4 or 5, GetAddOnInfo('PitBull4_'..id))
-		return loadable
+		local addon_name = 'PitBull4_'..id
+		return GetAddOnEnableState(UnitName("player"), addon_name) > 0 and IsAddOnLoadOnDemand(addon_name)
 	end
 
 	local function unloadable(info)
@@ -123,9 +123,9 @@ function PitBull4.Options.get_module_options()
 	local unloadable_notice = {
 		type = 'description',
 		name = function(info)
-			local id = info[#info - 1]
-			local loadable,reason = select(wod_600 and 4 or 5, GetAddOnInfo('PitBull4_'..id))
-			if not loadable then
+			if not loadable(info) then
+				local id = info[#info - 1]
+				local _, _, _, _, reason = GetAddOnInfo('PitBull4_'..id)
 				if reason then
 					if reason == "DISABLED" then
 						reason = L["Disabled in the Blizzard addon list."]
@@ -136,7 +136,7 @@ function PitBull4.Options.get_module_options()
 				if not reason then
 					reason = UNKNOWN
 				end
-				return format(L["This module can not be loaded: %s"],reason)
+				return format(L["This module can not be loaded: %s"], reason)
 			end
 		end,
 		order = -1,
