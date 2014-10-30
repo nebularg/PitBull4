@@ -443,7 +443,7 @@ function PitBull4_Totems:SpiralUpdate(frame,slot,start,left)
 	local startTime = start or select(3, MyGetTotemInfo(slot,frame))
 	local timeLeft = left or MyGetTotemTimeLeft(slot,frame)
 	
-	tspiral:SetCooldown(startTime, timeLeft)
+	CooldownFrame_SetTimer(tspiral, startTime, timeLeft, 1)
 	if self.totem_is_down[slot] == true and layout_option_get(frame,'timer_spiral') then
 		tspiral:Show()
 	else

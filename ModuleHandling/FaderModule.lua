@@ -85,6 +85,12 @@ timerFrame:SetScript("OnUpdate", function(self, elapsed)
 			else
 				changing_frames[frame] = nil
 			end
+
+			-- Workaround the alpha bug in cooldown swipes
+			local PitBull4_Aura = PitBull4:GetModule("Aura")
+			if PitBull4_Aura then
+				PitBull4_Aura:UpdateFrame(frame)
+			end
 		end
 	end
 	if not next(changing_frames) then

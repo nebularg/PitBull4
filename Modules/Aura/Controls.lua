@@ -163,8 +163,6 @@ PitBull4.Controls.MakeNewControlType("Aura", "Button", function(control)
 	local cooldown = PitBull4.Controls.MakeCooldown(control)
 	control.cooldown = cooldown
 	cooldown:SetReverse(true)
-	cooldown:SetDrawEdge(false)
-	cooldown:SetDrawSwipe(true)
 	cooldown:SetHideCountdownNumbers(true)
 	cooldown:SetAllPoints(control)
 

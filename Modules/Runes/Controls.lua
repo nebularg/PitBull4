@@ -76,7 +76,7 @@ function Rune:UpdateCooldown()
 		self:GetNormalTexture():SetAlpha(READY_ALPHA)
 	else
 		cooldown:Show()
-		cooldown:SetCooldown(start, duration)
+		CooldownFrame_SetTimer(cooldown, start, duration, 1)
 		self:GetNormalTexture():SetAlpha(UNREADY_ALPHA)
 	end
 end

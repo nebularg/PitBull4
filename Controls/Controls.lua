@@ -183,6 +183,38 @@ function control__index:Delete()
 	return nil
 end
 
+-- Workaround the alpha bug in cooldown swipes (Thanks nevcairiel)
+local function SetCooldownHook(cooldown, ...)
+	local effectiveAlpha = cooldown:GetEffectiveAlpha()
+	local start, duration = ...
+
+	if start ~= 0 or duration ~= 0 then
+		-- update swipe alpha
+		cooldown.__metaPB.SetSwipeColor(cooldown, cooldown.__SwipeR, cooldown.__SwipeG, cooldown.__SwipeB, cooldown.__SwipeA * effectiveAlpha)
+
+		-- ensure the swipe isn't drawn on fully faded bars
+		if effectiveAlpha <= 0.0 then
+			cooldown:SetDrawSwipe(false)
+		end
+	end
+
+	return cooldown.__metaPB.SetCooldown(cooldown, ...)
+end
+
+local function SetSwipeColorHook(cooldown, r, g, b, a)
+	local effectiveAlpha = cooldown:GetEffectiveAlpha()
+	cooldown.__SwipeR, cooldown.__SwipeG, cooldown.__SwipeB, cooldown.__SwipeA = r, g, b, (a or 1)
+	return cooldown.__metaPB.SetSwipeColor(cooldown, r, g, b, a * effectiveAlpha)
+end
+
+local function HookCooldown(cooldown)
+	cooldown.__metaPB = getmetatable(cooldown).__index
+	cooldown.__SwipeR, cooldown.__SwipeG, cooldown.__SwipeB, cooldown.__SwipeA = 0, 0, 0, 0.8
+
+	cooldown.SetCooldown = SetCooldownHook
+	cooldown.SetSwipeColor = SetSwipeColorHook
+end
+
 -- create a very basic control, properly handling Textures and FontStrings.
 local function create_control(kind, name, inheritTemplate, parent)
 	if kind == "Texture" then
@@ -209,7 +241,9 @@ local function create_control(kind, name, inheritTemplate, parent)
 		return parent:CreateAnimation(kind, name)
 	end
 	if kind == "Cooldown" then
-		return CreateFrame(kind, name, parent, "CooldownFrameTemplate")
+		local cooldown = CreateFrame(kind, name, parent, "CooldownFrameTemplate")
+		HookCooldown(cooldown)
+		return cooldown
 	end
 	return CreateFrame(kind, name, parent, inheritTemplate)
 end
