@@ -144,8 +144,6 @@ PitBull4.Controls.MakeNewControlType("Rune", "Button", function(control)
 	
 	local cooldown = PitBull4.Controls.MakeCooldown(control)
 	control.cooldown = cooldown
-	cooldown:SetDrawEdge(false)
-	cooldown:SetDrawSwipe(true)
 	cooldown:SetHideCountdownNumbers(true)
 	cooldown:SetAllPoints(control)
 	cooldown:Show()

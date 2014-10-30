@@ -1,7 +1,7 @@
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local player_class = select(2,UnitClass('player'))
-if player_class ~= "SHAMAN" and player_class ~= "DRUID" and player_class ~= "DEATHKNIGHT" and player_class ~= "MONK" and player_class ~= "MAGE" then
+if player_class ~= "SHAMAN" and player_class ~= "DRUID" and player_class ~= "MONK" and player_class ~= "MAGE" then
 	return
 end
 
@@ -25,11 +25,6 @@ if player_class == 'DRUID' then
 	REQUIRED_LEVEL = 84
 	REQUIRED_SPEC_1 = 1
 	REQUIRED_SPEC_2 = 4
-elseif player_class == 'DEATHKNIGHT' then
-	MAX_TOTEMS = 1
-	REQUIRED_SPEC_1 = 1 
-	REQUIRED_SPEC_2 = 2
-	REQUIRED_LEVEL = 56
 elseif player_class == "MONK" then
 	MAX_TOTEMS = 1
 	REQUIRED_SPEC_1 = 1
