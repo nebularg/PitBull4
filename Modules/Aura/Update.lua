@@ -817,7 +817,7 @@ function PitBull4_Aura:UpdateWeaponEnchants(force)
 	if force then
 		wipe(weapon_list)
 	end
-	local mh, mh_time_left, mh_count, oh, oh_time_left, oh_count = GetWeaponEnchantInfo()
+	local mh, mh_time_left, mh_count, _, oh, oh_time_left, oh_count = GetWeaponEnchantInfo()
 	local current_time = GetTime()
 	local mh_entry = weapon_list[MAINHAND]
 	local oh_entry = weapon_list[OFFHAND]
