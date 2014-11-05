@@ -184,6 +184,7 @@ function control__index:Delete()
 end
 
 -- Workaround the alpha bug in cooldown swipes (Thanks nevcairiel)
+-- Fixes #1084 until the Blizzard fix goes live
 local function SetCooldownHook(cooldown, ...)
 	local effectiveAlpha = cooldown:GetEffectiveAlpha()
 	local start, duration = ...
