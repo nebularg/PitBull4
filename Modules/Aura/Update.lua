@@ -498,8 +498,13 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	count_text:SetText(count > 1 and count or "")
 
 	if db.cooldown[rule] and duration and duration > 0 then
-		CooldownFrame_SetTimer(control.cooldown, expiration_time - duration, duration, 1)
-		control.cooldown:Show()
+		local cooldown = control.cooldown
+		-- Avoid updating the cooldown frame if nothing changed to stop the flashing Aura
+		-- problem since 4.0.1.
+		if not unchanged or not cooldown:IsShown() then
+			cooldown:Show()
+			CooldownFrame_SetTimer(cooldown, expiration_time - duration, duration, 1)
+		end
 	else
 		control.cooldown:Hide()
 	end
