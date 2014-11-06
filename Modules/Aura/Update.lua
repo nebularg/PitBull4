@@ -505,7 +505,10 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 			cooldown:Show()
 			CooldownFrame_SetTimer(cooldown, expiration_time - duration, duration, 1)
 		end
+		-- Force the effective alpha to update (Ticket 1084)
+		cooldown:SetSwipeColor(0, 0, 0, 0.8)
 	else
+		control.cooldown:SetCooldown(0, 0)
 		control.cooldown:Hide()
 	end
 
