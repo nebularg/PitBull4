@@ -1,6 +1,5 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
-local PitBull4_Aura = nil
 
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
@@ -83,14 +82,15 @@ timerFrame:SetScript("OnUpdate", function(self, elapsed)
 				if result_opacity == final_opacity then
 					changing_frames[frame] = nil
 				end
+
+				-- Workaround the alpha bug in cooldown swipes
+				-- Fixes #1084 until the Blizzard fix goes live
+				local PitBull4_Aura = PitBull4:GetModule("Aura", true)
+				if PitBull4_Aura then
+					PitBull4_Aura:UpdateFrame(frame)
+				end
 			else
 				changing_frames[frame] = nil
-			end
-
-			-- Workaround the alpha bug in cooldown swipes
-			-- Fixes #1084 until the Blizzard fix goes live
-			if PitBull4_Aura then
-				PitBull4_Aura:UpdateFrame(frame)
 			end
 		end
 	end
@@ -101,7 +101,6 @@ end)
 timerFrame:Hide()
 
 function PitBull4:RecheckAllOpacities()
-	local PitBull4_Aura = PitBull4:GetModule("Aura", true)
 	timerFrame:Show()
 	for frame in PitBull4:IterateFrames() do
 		changing_frames[frame] = true
