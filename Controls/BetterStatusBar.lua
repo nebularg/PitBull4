@@ -30,7 +30,7 @@ local BetterStatusBar = {
 -- every script in here will be added to the control through :SetScript
 local BetterStatusBar_scripts = {}
 
-local EPSILON = 1e-9 -- small positive number close to 0.
+local EPSILON = 1e-5 -- small positive number close to 0.
 local function fix_icon_size(self)
 	local icon = self.icon
 	if not icon then

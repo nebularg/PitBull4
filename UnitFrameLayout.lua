@@ -800,10 +800,12 @@ end
 
 function position_indicator_on_bar:left(indicator, bar)
 	local attach
-	if bar.reverse then
-		attach = bar.bg
-	else
-		attach = bar.fg
+	if bar.icon then
+		if bar.reverse then
+			attach = bar.bg
+		else
+			attach = bar.fg
+		end
 	end
 	if not attach then
 		attach = bar
@@ -830,10 +832,12 @@ function position_indicator_on_bar:center(indicator, bar, _, indicators_and_text
 end
 function position_indicator_on_bar:right(indicator, bar)
 	local attach
-	if bar.reverse then
-		attach = bar.fg
-	else
-		attach = bar.bg
+	if bar.icon then
+		if bar.reverse then
+			attach = bar.fg
+		else
+			attach = bar.bg
+		end
 	end
 	if not attach then
 		attach = bar
@@ -848,10 +852,12 @@ function position_indicator_on_bar:right(indicator, bar)
 end
 function position_indicator_on_bar:top(indicator, bar, _, indicators_and_texts)
 	local attach
-	if bar.reverse then
-		attach = bar.fg
-	else
-		attach = bar.bg
+	if bar.icon then
+		if bar.reverse then
+			attach = bar.fg
+		else
+			attach = bar.bg
+		end
 	end
 	if not attach then
 		attach = bar
@@ -870,10 +876,12 @@ function position_indicator_on_bar:top(indicator, bar, _, indicators_and_texts)
 end
 function position_indicator_on_bar:bottom(indicator, bar, _, indicators_and_texts)
 	local attach
-	if bar.reverse then
-		attach = bar.bg
-	else
-		attach = bar.fg
+	if bar.icon then
+		if bar.reverse then
+			attach = bar.bg
+		else
+			attach = bar.fg
+		end
 	end
 	if not attach then
 		attach = bar
