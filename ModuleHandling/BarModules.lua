@@ -451,7 +451,7 @@ function BarModule:UpdateFrame(frame)
 
 	control:Show()
 	
-	return made_control or icon
+	return made_control or not not icon
 end
 
 --- Return the texture path to use for the given frame.
