@@ -84,7 +84,7 @@ function PitBull4_Chi:ClearFrame(frame)
 		return false
 	end
 	
-	for i = 1, 5 do
+	for i = 1, 6 do
 		container[i] = container[i]:Delete()
 	end
 	container.bg = container.bg:Delete()
@@ -122,7 +122,7 @@ function PitBull4_Chi:UpdateFrame(frame)
 		container:SetFrameLevel(frame:GetFrameLevel() + 13)
 		
 		local point, attach
-		for i = 1, 5 do
+		for i = 1, 6 do
 			local chi_icon = PitBull4.Controls.MakeChiIcon(container, i)
 			container[i] = chi_icon
 			chi_icon:ClearAllPoints()
@@ -149,7 +149,7 @@ function PitBull4_Chi:UpdateFrame(frame)
 	if max_chi ~= container.max_chi then
 		update_container_size(container, vertical, max_chi)
 	end
-	for i = 1, 5 do
+	for i = 1, 6 do
 		local chi_icon = container[i]
 		chi_icon:UpdateColors(db.active_color, db.inactive_color)
 		if i > max_chi then
