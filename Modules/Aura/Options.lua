@@ -958,7 +958,7 @@ PitBull4_Aura:SetDefaults({
 			built_in = true,
 		},
 		['+7'] = {
-			display_name = L['Deathknight can purge'],
+			display_name = L['Death Knight can purge'],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_purge.DEATHKNIGHT,
@@ -1159,7 +1159,7 @@ PitBull4_Aura:SetDefaults({
 			map_type = 'class',
 			map = {
 				['MONK'] = '@J',
-				['DEATHKNIGHT'] = '@J',
+				['DEATHKNIGHT'] = '+7',
 				['DRUID'] = ',7',
 				['HUNTER'] = '-7',
 				['MAGE'] = '.7',
