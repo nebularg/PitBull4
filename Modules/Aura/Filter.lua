@@ -21,10 +21,18 @@ function PitBull4_Aura:GetFilterDB(filter)
 	return self.db.profile.global.filters[filter]
 end
 
--- Return true if the talent matching the name of the spell given by
--- spellid has at least one point spent in it or false otherwise
 local function scan_for_known_talent(spellid)
 	return IsPlayerSpell(spellid)	
+end
+
+local function scan_for_known_glyph(spellid)
+	for index = 1, NUM_GLYPH_SLOTS do
+		local _, _, _, gylph_spellid = GetGlyphSocketInfo(index)
+		if gylph_spellid == spellid then
+			return true
+		end
+	end
+	return false
 end
 
 -- Setup the data for who can dispel what types of auras.
@@ -32,8 +40,8 @@ end
 local can_dispel = {
 	DEATHKNIGHT = {},
 	DRUID = {
-		Curse = scan_for_known_talent(88423),
-		Poison = scan_for_known_talent(88423),
+		Curse = true,
+		Poison = true,
 		Magic = scan_for_known_talent(88423),
 	},
 	HUNTER = {},
@@ -68,7 +76,9 @@ PitBull4_Aura.can_dispel = can_dispel
 -- Setup the data for who can purge what types of auras.
 -- purge in this context means remove from enemies.
 local can_purge = {
-	DEATHKNIGHT = {},
+	DEATHKNIGHT = {
+		Magic = scan_for_known_glyph(58631),
+	},
 	DRUID = {
 		Enrage = true,
 	},
@@ -93,7 +103,7 @@ local can_purge = {
 		Magic = true,
 	},
 	WARRIOR = {
-		Magic = true,
+		Magic = scan_for_known_glyph(58375),
 	},
 	MONK = {},
 }
@@ -115,14 +125,18 @@ function PitBull4_Aura:PLAYER_TALENT_UPDATE(event)
 	local druid_magic = scan_for_known_talent(88423)
 	can_dispel.DRUID.Magic = druid_magic
 	self:GetFilterDB(',3').aura_type_list.Magic = druid_magic
-	can_dispel.DRUID.Curse = druid_magic
-	can_dispel.DRUID.Poison = druid_magic
-	self:GetFilterDB(',3').aura_type_list.Curse = druid_magic
-	self:GetFilterDB(',3').aura_type_list.Poison = druid_magic
 
 	local paladin_magic = scan_for_known_talent(53551)
 	can_dispel.PALADIN.Magic = paladin_magic
 	self:GetFilterDB('/3').aura_type_list.Magic = paladin_magic
+
+	local deathknight_magic = scan_for_known_glyph(58631)
+	can_purge.DEATHKNIGHT.Magic = deathknight_magic
+	self:GetFilterDB('+7').aura_type_list.Magic = deathknight_magic
+
+	local warrior_magic = scan_for_known_glyph(58375)
+	can_purge.WARRIOR.Magic = warrior_magic
+	self:GetFilterDB('47').aura_type_list.Magic = warrior_magic
 end
 
 -- Setup the data for which auras belong to whom

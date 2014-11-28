@@ -957,6 +957,13 @@ PitBull4_Aura:SetDefaults({
 			name_list = self_debuffs.WARRIOR,
 			built_in = true,
 		},
+		['+7'] = {
+			display_name = L['Deathknight can purge'],
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_purge.DEATHKNIGHT,
+			built_in = true,
+		},
 		[',7'] = {
 			display_name = L['Druid can purge'],
 			filter_type = 'Aura Type',
