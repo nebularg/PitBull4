@@ -777,63 +777,71 @@ friend_buffs.WARRIOR = {
 	[6673]   = true, -- Battle Shout
 	[469]    = true, -- Commanding Shout
 	[3411]   = true, -- Intervene
+	[114029] = true, -- Safeguard
 	[97463]  = true, -- Rallying Cry
+	[114030] = true, -- Vigilance
 }
 friend_debuffs.WARRIOR = {}
 self_buffs.WARRIOR = {
+	[107574] = true, -- Avatar
+	[2457]   = true, -- Battle Stance
 	[18499]  = true, -- Berserker Rage
+	[46924]  = true, -- Bladestorm
+	[12292]  = true, -- Bloodbath
+	[46916]  = true, -- Bloodsurge
+	[71]     = true, -- Defensive Stance
+	[125565] = true, -- Demoralizing Shout
 	[118038] = true, -- Die by the Sword
 	[12880]  = true, -- Enrage
 	[55694]	 = true, -- Enraged Regeneration
-	[115945] = true, -- Glyph of Hamstring
+	[156291] = true, -- Gladiator Stance
+	[133278] = true, -- Heroic Leap (Glyph of)
 	[12975]  = true, -- Last Stand
+	[114028] = true, -- Mass Spell Reflect
 	[85739]  = true, -- Meat Cleaver
-	[58281]  = true, -- Mighty Victory (Glyph of)
-	[114192] = true, -- Mocking Banner TODO: Verify
-	[9347]   = true, -- Mortal Strike (Glyph of)
+	[114192] = true, -- Mocking Banner
+	[12294]  = true, -- Mortal Strike (Glyph of)
+	[131116] = true, -- Raging Blow
 	[115317] = true, -- Raging Wind
-	[8285]   = true, -- Rampage
 	[1719]   = true, -- Recklessness
-	[15604]  = true, -- Second Wind
+	[125667] = true, -- Second Wind
 	[112048] = true, -- Shield Barrier
 	[2565]   = true, -- Shield Block
+	[169667] = true, -- Shield Charge
 	[871]    = true, -- Shield Wall
 	[23920]  = true, -- Spell Reflection
+	[52437]  = true, -- Sudden Death
 	[12328]  = true, -- Sweeping Strikes
-	-- T4, Tank, 2/4 piece bonus
-	[37514]  = true, -- Blade Turning
-	[6572]   = true, -- Revenge
-	-- T5, Tank, 2/4 piece bonus
-	[37525]  = true, -- Battle Rush
-	[37523]  = true, -- Reinforced Shield
-	-- T5, DPS, 2 piece bonus
-	[40729]  = true, -- Heightened Reflexes
-	[61571]  = true, -- Spirits of the Lost
-	[46916]  = true, -- Slam!
+	[152277] = true, -- Ravager
 	[122510] = true, -- Ultimatum
+	[169686] = true, -- Unyielding Strikes
 }
 self_debuffs.WARRIOR = {
-	[12292]  = true, -- Death Wish
+	[1464]   = true, -- Slam
 }
 pet_buffs.WARRIOR = {}
 enemy_debuffs.WARRIOR = {
-	[23690]  = true, -- Bloodcurdling Shout (Glyph of)
-	[7922]   = true, -- Warbringer
+	[113344] = true, -- Bloodbath
+	[105771] = true, -- Charge
 	[86346]  = true, -- Colossus Smash
 	[1604]   = true, -- Dazed
-	[115768] = true, -- Deep Wounds (Blood and Thunder)
+	[115768] = true, -- Deep Wounds
 	[1160]   = true, -- Demoralizing Shout
+	[118895] = true, -- Dragon Roar
 	[1715]   = true, -- Hamstring
-	[58407]  = true, -- Hindering Strikes (Glyph of) TODO: Verify
 	[5246]   = true, -- Intimidating Shout
-	[115804] = true, -- Mortal Wounds (Mortal Strike/Wild Strike)
-	[10576]  = true, -- Piercing Howl
+	[115804] = true, -- Mortal Wounds
+	[12323]  = true, -- Piercing Howl
 	[64382]  = true, -- Shattering Throw
-	[18498]  = true, -- Shield Bash - Silenced
+	[132168] = true, -- Shockwave
+	[176289] = true, -- Siegebreaker
 	[18498]  = true, -- Silenced - Gag Order
+	[129923] = true, -- Sluggish (Glyph of Hindering Strikes)
+	[107570] = true, -- Storm Bolt
 	[355]    = true, -- Taunt
-	[105771] = true, -- Charge Root
+	[6343]   = true, -- Thunder Clap
 	[772]    = true, -- Rend
+	[7922]   = true, -- Warbringer
 }
 
 -- MONK
