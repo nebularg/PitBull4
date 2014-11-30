@@ -148,13 +148,22 @@ friend_buffs.DEATHKNIGHT = {
 	[3714]   = true, -- Path of Frost
 	[55610]  = true, -- Unholy Aura
 }
-friend_debuffs.DEATHKNIGHT = {}
+friend_debuffs.DEATHKNIGHT = {
+	[111673] = true, -- Control Undead (pet debuff)
+	[97821]  = true, -- Void-Touched
+}
 self_buffs.DEATHKNIGHT = {
 	[48707]  = true, -- Anti-Magic Shell
+	[145629] = true, -- Anti-Magic Zone
 	[42650]  = true, -- Army of the Dead
+	[114851] = true, -- Blood Charge (Blood Tap)
 	[49222]  = true, -- Bone Shield
+	[119975] = true, -- Conversion
 	[81141]  = true, -- Crimson Scourge
 	[49028]  = true, -- Dancing Rune Weapon
+	[101568] = true, -- Dark Succor
+	[96268]  = true, -- Death's Advance
+	[115018] = true, -- Desecrated Ground
 	[59052]  = true, -- Freezing Fog (Rime)
 	[48266]  = true, -- Frost Presence
 	[48792]  = true, -- Icebound Fortitude
@@ -162,30 +171,39 @@ self_buffs.DEATHKNIGHT = {
 	[49039]  = true, -- Lichborne
 	[51271]  = true, -- Pillar of Frost
 	[50421]  = true, -- Scent of Blood
+	[91342]  = true, -- Shadow Infusion
+	[114868] = true, -- Soul Reaper
 	[81340]  = true, -- Sudden Doom
-	[49206]  = true, -- Summon Gargoyle (TODO: Is this an enemy debuff or self buff?)
 	[55233]  = true, -- Vampiric Blood
-	[51271]  = true, -- Unbreakable Armor
+	[115989] = true, -- Unholy Blight
 	[48265]  = true, -- Unholy Presence
 }
-self_debuffs.DEATHKNIGHT = {}
+self_debuffs.DEATHKNIGHT = {
+	[48743]  = true, -- Death Pact
+	[116888] = true, -- Purgatory
+	[157335] = true, -- Will of the Necropolis
+}
 pet_buffs.DEATHKNIGHT = {
 	[63560]  = true, -- Dark Transformation
 	[91342]  = true, -- Shadow Infusion
-	[19705]  = true, -- Well Fed
 }
 enemy_debuffs.DEATHKNIGHT = {
+	[108194] = true, -- Asphyxiate
 	[55078]  = true, -- Blood Plague
 	[48263]  = true, -- Blood Presence
+	[155166] = true, -- Breath of Sindragosa
 	[45524]  = true, -- Chains of Ice
-	[111673] = true, -- Control Undead (TODO: Check where this really applies, could show on friendly pet as well)
+	[50435]  = true, -- Chilblains
 	[56222]  = true, -- Dark Command
 	[77606]  = true, -- Dark Simulacrum
 	[43265]  = true, -- Death and Decay
+	[156004] = true, -- Defile
 	[55095]  = true, -- Frost Fever
+	[91800]  = true, -- Gnaw
+	[155159] = true, -- Necrotic Plague
 	[108200] = true, -- Remorseless Winter
 	[47476]  = true, -- Strangulate
-	[130735] = true, -- Soul Reaper (TODO: Find the 50% haste buff associated with this)
+	[130735] = true, -- Soul Reaper
 	[49206]  = true, -- Summon Gargoyle
 }
 
