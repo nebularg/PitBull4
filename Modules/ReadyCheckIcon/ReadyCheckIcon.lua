@@ -78,10 +78,6 @@ end
 
 function PitBull4_ReadyCheckIcon:CacheRaidCheckStatuses()
 	wipe(guid_to_status)
-	if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then
-		-- gotta be an officer
-		return
-	end
 	if UnitInRaid("player") then
 		for i = 1, MAX_RAID_MEMBERS do
 			local unit = "raid" .. i
