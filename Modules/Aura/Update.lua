@@ -276,7 +276,7 @@ local function set_weapon_entry(list, is_enchant, time_left, expiration_time, co
 	end
 
 	-- No such enchant, clear the table
-	if is_enchant ~= 1 then
+	if not is_enchant then
 		wipe(entry)
 		return
 	end
@@ -834,14 +834,14 @@ function PitBull4_Aura:UpdateWeaponEnchants(force)
 	-- to compare against the current values to look for changes.
 	local old_mh, old_mh_count, old_mh_expiration_time
 	if mh_entry then
-		old_mh = mh_entry[2] ~= nil and 1 or nil
+		old_mh = mh_entry[2] ~= nil and true or false
 		old_mh_count = mh_entry[8]
 		old_mh_expiration_time = mh_entry[11]
 	end
 
 	local old_oh, old_oh_count, old_oh_expiration_time
 	if oh_entry then
-		old_oh = oh_entry[2] ~= nil and 1 or nil
+		old_oh = oh_entry[2] ~= nil and true or false
 		old_oh_count = oh_entry[8]
 		old_oh_expiration_time = oh_entry[11]
 	end
