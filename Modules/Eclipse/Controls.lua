@@ -281,7 +281,7 @@ function Eclipse:CreateIcons()
   if not solar_icon then
     solar_icon = PitBull4.Controls.MakeTexture(self, "BACKGROUND")
     self.solar_icon = solar_icon
-    solar_icon:SetTexture(GetSpellTexture(ECLIPSE_BAR_SOLAR_BUFF_ID))
+    solar_icon:SetTexture(GetSpellTexture(PitBull4_Eclipse.ECLIPSE_BAR_SOLAR_BUFF_ID))
     solar_icon:SetDesaturated(true)
   end
 
@@ -297,7 +297,7 @@ function Eclipse:CreateIcons()
   if not lunar_icon then
     lunar_icon = PitBull4.Controls.MakeTexture(self, "BACKGROUND")
     self.lunar_icon = lunar_icon
-    lunar_icon:SetTexture(GetSpellTexture(ECLIPSE_BAR_LUNAR_BUFF_ID))
+    lunar_icon:SetTexture(GetSpellTexture(PitBull4_Eclipse.ECLIPSE_BAR_LUNAR_BUFF_ID))
     lunar_icon:SetDesaturated(true)
   end
 

@@ -9,8 +9,6 @@ if select(2, UnitClass("player")) ~= "DRUID" or not PowerBarColor["ECLIPSE"] the
   return
 end
 
--- CONSTANTS ----------------------------------------------------------------
-
 -----------------------------------------------------------------------------
 
 local L = PitBull4.L
@@ -41,6 +39,11 @@ PitBull4_Eclipse:SetDefaults({
   orientation = "HORIZONTAL",
 })
 PitBull4_Eclipse.can_set_side_to_center = true
+
+-- These used to be Blizzard constsants and at least as of right now they're
+-- still defined but they're defined to a spell that doesn't exist anymore.
+PitBull4_Eclipse.ECLIPSE_BAR_LUNAR_BUFF_ID = 171743
+PitBull4_Eclipse.ECLIPSE_BAR_SOLAR_BUFF_ID = 171744
 
 function PitBull4_Eclipse:UpdateFrame(frame)
 
@@ -123,9 +126,9 @@ function PitBull4_Eclipse:CheckForBuffs()
   while true do
     local name, _, _, _, _, _, _, _, _, _, spellID = UnitBuff("player", i)
     if not name then break end
-    if spellID == ECLIPSE_BAR_SOLAR_BUFF_ID then
+    if spellID == self.ECLIPSE_BAR_SOLAR_BUFF_ID then
       has_solar = true
-    elseif spellID == ECLIPSE_BAR_LUNAR_BUFF_ID then
+    elseif spellID == self.ECLIPSE_BAR_LUNAR_BUFF_ID then
       has_lunar = true
     end
     i = i + 1
