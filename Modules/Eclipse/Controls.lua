@@ -105,7 +105,10 @@ function SetValue_orientation:VERTICAL(value, direction, lunar_value, solar_valu
   self.solar_fg:SetTexCoord(0.5, 1, 0.5 + solar_value, 1, 0.5, 0, 0.5 + solar_value, 0)
   self.solar_bg:SetTexCoord(0.5 + solar_value, 1, 1, 1, 0.5 + solar_value, 0, 1, 0)
 
-  if direction then
+  if not direction or direction == "none" then
+    self.marker:SetAtlas("DruidEclipse-Diamond")
+  else
+    self.marker:SetAtlas("DruidEclipse-Arrow")
     self.marker:SetTexCoord(rotate_to_vert(unpack(ECLIPSE_MARKER_COORDS[direction])))
   end
 end
@@ -130,7 +133,10 @@ function SetValue_orientation:HORIZONTAL(value, direction, lunar_value, solar_va
   self.solar_fg:SetTexCoord(0.5, 0, 0.5, 1, 0.5 + solar_value, 0, 0.5 + solar_value, 1)
   self.solar_bg:SetTexCoord(0.5 + solar_value, 0, 0.5 + solar_value, 1, 1, 0, 1, 1)
 
-  if direction then
+  if not direction or direction == "none" then
+    self.marker:SetAtlas("DruidEclipse-Diamond")
+  else
+    self.marker:SetAtlas("DruidEclipse-Arrow")
     self.marker:SetTexCoord(unpack(ECLIPSE_MARKER_COORDS[direction]))
   end
 end
@@ -456,8 +462,7 @@ PitBull4.Controls.MakeNewControlType("Eclipse", "Frame", function(control)
 
   local marker = PitBull4.Controls.MakeTexture(control, "OVERLAY")
   control.marker = marker
-  marker:SetTexture([[Interface\PlayerFrame\UI-DruidEclipse]])
-  marker:SetTexCoord(unpack(ECLIPSE_MARKER_COORDS[GetEclipseDirection() or "none"]))
+  marker:SetAtlas("DruidEclipse-Diamond")
   marker:SetBlendMode("ADD")
   marker:ClearAllPoints()
   marker:SetPoint("CENTER",lunar_fg,"RIGHT",-2,0)
