@@ -560,6 +560,7 @@ enemy_debuffs.PALADIN = {
 
 -- PRIEST
 friend_buffs.PRIEST = {
+	[152118] = true, -- Clarity of Will
 	[47753]	 = true, -- Divine Aegis
 	[64843]  = true, -- Divine Hymn
 	[77489]  = true, -- Echo of Light
