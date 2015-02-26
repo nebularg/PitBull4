@@ -507,7 +507,6 @@ friend_debuffs.PALADIN = {
 	[157131] = true, -- Recently Saved by the Light
 }
 self_buffs.PALADIN = {
-	[121467] = true, -- Alabaster Shield
 	[31850]  = true, -- Ardent Defender
 	[31842]  = true, -- Avenging Wrath (Holy)
 	[31884]  = true, -- Avenging Wrath (Retribution)
