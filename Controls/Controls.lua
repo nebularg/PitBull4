@@ -231,6 +231,7 @@ local function create_control(kind, name, inheritTemplate, parent)
 		end
 		font_string.GetFont = getfont
 		font_string.SetFont = setfont
+		font_string:SetWordWrap(false) -- XXX 6.1 fix
 		return font_string
 	end
 	if kind == "AnimatedTexture" then
