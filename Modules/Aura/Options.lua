@@ -411,6 +411,13 @@ PitBull4_Aura:SetDefaults({
 			},
 			built_in = true,
 		},
+		['@Q'] = {
+			display_name = L['Boss debuff'],
+			filter_type = 'Boss debuff',
+			boss_debuff = true,
+			disabled = true,
+			built_in = true,
+		},
 		['//3'] = {
 			display_name = L['Monk can dispel'],
 			filter_type = 'Aura Type',

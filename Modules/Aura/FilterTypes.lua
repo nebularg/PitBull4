@@ -1294,7 +1294,7 @@ PitBull4_Aura:RegisterFilterType('Caster',L["Caster"],caster_filter,function(sel
 	}
 end)
 
--- Should Consolodate, Filter by if the Aura  is eligible for the consolidated aura display 
+-- Should Consolidate, Filter by if the Aura is eligible for the consolidated aura display
 local function should_consolidate_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).should_consolidate then
 		return not not entry[14] 
@@ -1433,6 +1433,33 @@ PitBull4_Aura:RegisterFilterType('Spell id',L["Spell id"],id_filter, function(se
 			end
 		end,
 		order = 4,
+	}
+end)
+
+-- Boss debuff, filter by if the aura is a debuff applied by a boss
+local function boss_debuff_filter(self, entry)
+	if PitBull4_Aura:GetFilterDB(self).boss_debuff then
+		return not not entry[17]
+	else
+		return not entry[17]
+	end
+end
+PitBull4_Aura:RegisterFilterType('Boss debuff',L['Boss debuff'],boss_debuff_filter,function(self, options)
+	options.boss_debuff = {
+		type = 'select',
+		name = L['Boss debuff'],
+		desc = L['Filter by if the aura is a boss debuff.'],
+		get = function(info)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			return db.boss_debuff and "yes" or "no"
+		end,
+		set = function(info, value)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			db.boss_debuff = value == "yes"
+			PitBull4_Aura:UpdateAll()
+		end,
+		values = bool_values,
+		order = 1,
 	}
 end)
 
