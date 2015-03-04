@@ -928,6 +928,11 @@ local function ThickOutline()
 end
 ScriptEnv.ThickOutline = ThickOutline
 
+local function WordWrap()
+	PitBull4_LuaTexts.word_wrap = true
+end
+ScriptEnv.WordWrap = WordWrap
+
 local function abbreviate(text)
 	local b = text:byte(1)
 	if b <= 127 then

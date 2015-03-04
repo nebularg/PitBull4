@@ -897,10 +897,12 @@ local function update_text(font_string, event)
 	-- Set alpha and outline to default values
 	PitBull4_LuaTexts.alpha = 1
 	PitBull4_LuaTexts.outline = nil
+	PitBull4_LuaTexts.word_wrap = nil
 
 	set_text(font_string,pcall(func,unit))
 	set_font(font_string)
 	set_alpha(font_string)
+	font_string:SetWordWrap(not not PitBull4_LuaTexts.word_wrap)
 end
 
 local next_spell, next_rank, next_target

@@ -26,6 +26,7 @@ function delete_funcs:FontString()
 	self:SetTextColor(1, 1, 1, 1)
 	self:SetFont(default_font, default_font_size, nil)
 	self:SetFontObject(nil)
+	self:SetWordWrap(false)
 end
 function delete_funcs:Texture()
 	self:SetTexture([[Interface\Buttons\WHITE8X8]])
@@ -231,7 +232,7 @@ local function create_control(kind, name, inheritTemplate, parent)
 		end
 		font_string.GetFont = getfont
 		font_string.SetFont = setfont
-		font_string:SetWordWrap(false) -- XXX 6.1 fix
+		font_string:SetWordWrap(false)
 		return font_string
 	end
 	if kind == "AnimatedTexture" then
