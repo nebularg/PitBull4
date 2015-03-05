@@ -22,7 +22,7 @@ function PitBull4_Aura:GetFilterDB(filter)
 end
 
 local function scan_for_known_talent(spellid)
-	return IsPlayerSpell(spellid)	
+	return IsPlayerSpell(spellid)
 end
 
 local function scan_for_known_glyph(spellid)
@@ -119,7 +119,7 @@ function PitBull4_Aura:PLAYER_TALENT_UPDATE(event)
 	self:GetFilterDB('//3').aura_type_list.Magic = monk_magic
 
 	local shaman_magic = scan_for_known_talent(77130)
-	can_dispel.SHAMAN.Magic = shaman_magic 
+	can_dispel.SHAMAN.Magic = shaman_magic
 	self:GetFilterDB('23').aura_type_list.Magic = shaman_magic
 
 	local druid_magic = scan_for_known_talent(88423)
@@ -246,7 +246,7 @@ self_buffs.DRUID = {
 	[69369]  = true, -- Predator's Swiftness
 	[5215]   = true, -- Prowl
 	[62606]  = true, -- Savage Defense
-	[52610]	 = true, -- Savage Roar
+	[52610]  = true, -- Savage Roar
 	[93400]  = true, -- Shooting Stars
 	[48505]  = true, -- Starfall
 	[61336]  = true, -- Survival Instincts
@@ -415,7 +415,7 @@ enemy_debuffs.HUNTER = {
 -- MAGE
 friend_buffs.MAGE = {
 	[159916] = true, -- Amplify Magic
-	[1459]   = true, -- Arcane Brilliance 
+	[1459]   = true, -- Arcane Brilliance
 	[61316]  = true, -- Dalaran Brilliance
 	[130]    = true, -- Slow Fall
 	[80353]  = true, -- Time Warp
@@ -487,7 +487,7 @@ friend_buffs.PALADIN = {
 	[157007] = true, -- Beacon of Insight
 	[20217]  = true, -- Blessing of Kings
 	[19740]  = true, -- Blessing of Might
-	[31821]	 = true, -- Devotion Aura
+	[31821]  = true, -- Devotion Aura
 	[114163] = true, -- Eternal Flame
 	[54957]  = true, -- Glyph of Flash of Light
 	[1044]   = true, -- Hand of Freedom
@@ -526,15 +526,15 @@ self_buffs.PALADIN = {
 	[115668] = true, -- Glyph of Templar's Verdict
 	[85416]  = true, -- Grand Crusader
 	[86659]  = true, -- Guardian of the Ancient Kings
-	[54149]	 = true, -- Infusion of Light
+	[54149]  = true, -- Infusion of Light
 	[114695] = true, -- Pursuit of Justice
-	[62124]	 = true, -- Reckoning
+	[62124]  = true, -- Reckoning
 	[25780]  = true, -- Righteous Fury
 	[105361] = true, -- Seal of Command
 	[20164]  = true, -- Seal of Justice
 	[20165]  = true, -- Seal of Insight
 	[20154]  = true, -- Seal of Righteousness
-	[31801]  = true, -- Seal of Truth 
+	[31801]  = true, -- Seal of Truth
 	[114250] = true, -- Selfless Healer
 	[132403] = true, -- Shield of the Righteous
 	[85499]  = true, -- Speed of Light
@@ -561,14 +561,14 @@ enemy_debuffs.PALADIN = {
 friend_buffs.PRIEST = {
 	[121557] = true, -- Angelic Feather
 	[152118] = true, -- Clarity of Will
-	[47753]	 = true, -- Divine Aegis
+	[47753]  = true, -- Divine Aegis
 	[64843]  = true, -- Divine Hymn
 	[77489]  = true, -- Echo of Light
 	[157146] = true, -- Enhanced Leap of Faith
 	[6346]   = true, -- Fear Ward
-	[47788]	 = true, -- Guardian Spirit
+	[47788]  = true, -- Guardian Spirit
 	[1706]   = true, -- Levitate
-	[7001]	 = true, -- Lightwell Renew
+	[7001]   = true, -- Lightwell Renew
 	[49868]  = true, -- Mind Quickening
 	[81782]  = true, -- Power Word: Barrier
 	[21562]  = true, -- Power Word: Fortitude
@@ -588,7 +588,7 @@ self_buffs.PRIEST = {
 	[114214] = true, -- Angelic Bulwark
 	[81700]  = true, -- Archangel
 	[65081]  = true, -- Body and Soul
-	[59889]	 = true, -- Borrowed Time
+	[59889]  = true, -- Borrowed Time
 	[81209]  = true, -- Chakra: Chastise
 	[81206]  = true, -- Chakra: Sanctuary
 	[81208]  = true, -- Chakra: Serenity
@@ -628,7 +628,7 @@ enemy_debuffs.PRIEST = {
 	[14914]  = true, -- Holy Fire
 	[88625]  = true, -- Holy Word: Chastise
 	[15407]  = true, -- Mind Flay
-	[49821]	 = true, -- Mind Sear
+	[49821]  = true, -- Mind Sear
 	[2096]   = true, -- Mind Vision
 	[129250] = true, -- Power Word: Solace
 	[64044]  = true, -- Psychic Horror
@@ -719,17 +719,17 @@ self_buffs.SHAMAN = {
 	[53817]  = true, -- Maelstrom Weapon
 	[16188]  = true, -- Nature's Swiftness
 	[30823]  = true, -- Shamanistic Rage
-	[98007]  = true, -- Spirit Link Totem 
+	[98007]  = true, -- Spirit Link Totem
 	[115356] = true, -- Stormblast
 	[53390]  = true, -- Tidal Waves
 	[52127]  = true, -- Water Shield
 	[79206]  = true, -- Spiritwalker's Grace
-	[58875]	 = true, -- Spirit Walk
+	[58875]  = true, -- Spirit Walk
 	[73685]  = true, -- Unleash Life
 }
 self_debuffs.SHAMAN = {}
 pet_buffs.SHAMAN = {
-	[58875]	 = true, -- Spirit Walk
+	[58875]  = true, -- Spirit Walk
 }
 enemy_debuffs.SHAMAN = {
 	[3600]   = true, -- Earthbind
@@ -740,7 +740,7 @@ enemy_debuffs.SHAMAN = {
 	[8056]   = true, -- Frost Shock
 	[17364]  = true, -- Stormstrike
 	[51490]  = true, -- Thunderstorm
-	[51514]	 = true, -- Hex
+	[51514]  = true, -- Hex
 }
 
 -- WARLOCK
@@ -854,7 +854,7 @@ self_buffs.WARRIOR = {
 	[125565] = true, -- Demoralizing Shout
 	[118038] = true, -- Die by the Sword
 	[12880]  = true, -- Enrage
-	[55694]	 = true, -- Enraged Regeneration
+	[55694]  = true, -- Enraged Regeneration
 	[156291] = true, -- Gladiator Stance
 	[133278] = true, -- Heroic Leap (Glyph of)
 	[12975]  = true, -- Last Stand
