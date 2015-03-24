@@ -434,7 +434,9 @@ local classification_lookup = {
 	rare = L["Rare"],
 	rareelite = L["Rare-Elite"],
 	elite = L["Elite"],
-	worldboss = L["Boss"]
+	worldboss = L["Boss"],
+	minus = L["Minus"],
+	trivial = L["Trivial"],
 }
 
 local function Classification(unit)
@@ -446,7 +448,9 @@ local ShortClassification_abbrev = {
 	[L["Rare"]] = L["Rare_short"],
 	[L["Rare-Elite"]] = L["Rare-Elite_short"],
 	[L["Elite"]] = L["Elite_short"],
-	[L["Boss"]] = L["Boss_short"]
+	[L["Boss"]] = L["Boss_short"],
+	[L["Minus"]] = L["Minus_short"],
+	[L["Trivial"]] = L["Trivial_short"],
 }
 
 local function ShortClassification(arg)

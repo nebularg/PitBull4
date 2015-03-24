@@ -268,14 +268,15 @@ end
 --- Return the unit classification of the given unit.
 -- This acts like UnitClassification(unit), but returns "worldboss" for bosses that match LibBossIDs-1.0
 -- @param unit The unit to check the classification of.
--- @return one of "worldboss", "elite", "rareelite", "rare", or "normal"
+-- @return one of "worldboss", "elite", "rareelite", "rare", "normal", "trivial", or "minus"
 function PitBull4.Utils.BetterUnitClassification(unit)
     local classification = UnitClassification(unit)
     local LibBossIDs = PitBull4.LibBossIDs
     
-    if not LibBossIDs or classification == "worldboss" or classification == "normal" then
+    if not LibBossIDs or classification == "worldboss" or classification == "normal" or classification == "minus" or classification == "trivial" then
         return classification
     end
+
     local guid = UnitGUID(unit)
     if not guid then
         return classification
