@@ -82,13 +82,6 @@ timerFrame:SetScript("OnUpdate", function(self, elapsed)
 				if result_opacity == final_opacity then
 					changing_frames[frame] = nil
 				end
-
-				-- Workaround the alpha bug in cooldown swipes
-				-- Fixes #1084 until the Blizzard fix goes live
-				local PitBull4_Aura = PitBull4:GetModule("Aura", true)
-				if PitBull4_Aura then
-					PitBull4_Aura:UpdateFrame(frame)
-				end
 			else
 				changing_frames[frame] = nil
 			end
