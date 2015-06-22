@@ -283,7 +283,6 @@ enemy_debuffs.DRUID = {
 -- HUNTER
 friend_buffs.HUNTER = {
 	[90355]  = true, -- Ancient Hysteria
-	[172106] = true, -- Aspect of the Fox
 	[13159]  = true, -- Aspect of the Pack
 	[34477]  = true, -- Misdirection
 	[160452] = true, -- Netherwinds
@@ -414,7 +413,6 @@ enemy_debuffs.HUNTER = {
 
 -- MAGE
 friend_buffs.MAGE = {
-	[159916] = true, -- Amplify Magic
 	[1459]   = true, -- Arcane Brilliance
 	[61316]  = true, -- Dalaran Brilliance
 	[130]    = true, -- Slow Fall
