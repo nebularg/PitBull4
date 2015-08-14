@@ -471,6 +471,7 @@ enemy_debuffs.MAGE = {
 	[102051] = true, -- Frostjaw
 	[84714]  = true, -- Frozen Orb
 	[7302]   = true, -- Ice Armor
+	[157997]  = true, -- Ice Nova
 	[3261]   = true, -- Ignite
 	[114923] = true, -- Nether Tempest
 	[44457]  = true, -- Living Bomb
