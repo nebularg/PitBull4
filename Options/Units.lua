@@ -248,7 +248,7 @@ function PitBull4.Options.get_unit_options()
 			get_group_db().enabled = value
 			
 			if value then
-				PitBull4:MakeGroupHeader(CURRENT_GROUP, nil)
+				PitBull4:MakeGroupHeader(CURRENT_GROUP)
 			end
 
 			for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do

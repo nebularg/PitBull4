@@ -1285,6 +1285,11 @@ function PitBull4:OnProfileChanged()
 	for group, group_db in pairs(db.profile.groups) do
 		if group_db.enabled then
 			self:MakeGroupHeader(group)
+			for header in PitBull4:IterateHeadersForName(group) do
+				header.group_db = group_db
+				header:RefreshGroup()
+				header:UpdateShownState()
+			end
 		end
 	end
 	
