@@ -5,6 +5,8 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_LuaTexts = PitBull4:GetModule("LuaTexts")
 
+local legion_700 = select(4, GetBuildInfo()) >= 70000
+
 -- The ScriptEnv table serves as the environment that the scripts run
 -- under LuaTexts run under.  The functions included in it are accessible
 -- to this scripts as though they were local functions to it.  Functions
@@ -473,31 +475,34 @@ end
 ScriptEnv.Class = Class
 
 local ShortClass_abbrev = {
-	[L["Priest"]] = L["Priest_short"],
-	[L["Mage"]] = L["Mage_short"],
-	[L["Shaman"]] = L["Shaman_short"],
-	[L["Paladin"]] = L["Paladin_short"],
-	[L["Warlock"]] = L["Warlock_short"],
-	[L["Druid"]] = L["Druid_short"],
-	[L["Rogue"]] = L["Rogue_short"],
-	[L["Hunter"]] = L["Hunter_short"],
-	[L["Warrior"]] = L["Warrior_short"],
-	[L["Death Knight"]] = L["Death Knight_short"],
-	[L["Monk"]] = L["Monk_short"],
-	[L["Demon Hunter"]] = L["Demon Hunter_short"],
-	[L["Priest_female"]] = L["Priest_short"],
-	[L["Mage_female"]] = L["Mage_short"],
-	[L["Shaman_female"]] = L["Shaman_short"],
-	[L["Paladin_female"]] = L["Paladin_short"],
-	[L["Warlock_female"]] = L["Warlock_short"],
-	[L["Druid_female"]] = L["Druid_short"],
-	[L["Rogue_female"]] = L["Rogue_short"],
-	[L["Hunter_female"]] = L["Hunter_short"],
-	[L["Warrior_female"]] = L["Warrior_short"],
-	[L["Death Knight_female"]] = L["Death Knight_short"],
-	[L["Monk_female"]] = L["Monk_short"],
-	[L["Demon Hunter_female"]] = L["Demon Hunter_short"],
+	[LOCALIZED_CLASS_NAMES_MALE.DEATHKNIGHT] = L["Death Knight_short"],
+	[LOCALIZED_CLASS_NAMES_MALE.DRUID] = L["Druid_short"],
+	[LOCALIZED_CLASS_NAMES_MALE.HUNTER] = L["Hunter_short"],
+	[LOCALIZED_CLASS_NAMES_MALE.MAGE] = L["Mage_short"],
+	[LOCALIZED_CLASS_NAMES_MALE.MONK] = L["Monk_short"],
+	[LOCALIZED_CLASS_NAMES_MALE.PALADIN] = L["Paladin_short"],
+	[LOCALIZED_CLASS_NAMES_MALE.PRIEST] = L["Priest_short"],
+	[LOCALIZED_CLASS_NAMES_MALE.ROGUE] = L["Rogue_short"],
+	[LOCALIZED_CLASS_NAMES_MALE.SHAMAN] = L["Shaman_short"],
+	[LOCALIZED_CLASS_NAMES_MALE.WARLOCK] = L["Warlock_short"],
+	[LOCALIZED_CLASS_NAMES_MALE.WARRIOR] = L["Warrior_short"],
+
+	[LOCALIZED_CLASS_NAMES_FEMALE.DEATHKNIGHT] = L["Death Knight_short"],
+	[LOCALIZED_CLASS_NAMES_FEMALE.DRUID] = L["Druid_short"],
+	[LOCALIZED_CLASS_NAMES_FEMALE.HUNTER] = L["Hunter_short"],
+	[LOCALIZED_CLASS_NAMES_FEMALE.MAGE] = L["Mage_short"],
+	[LOCALIZED_CLASS_NAMES_FEMALE.MONK] = L["Monk_short"],
+	[LOCALIZED_CLASS_NAMES_FEMALE.PALADIN] = L["Paladin_short"],
+	[LOCALIZED_CLASS_NAMES_FEMALE.PRIEST] = L["Priest_short"],
+	[LOCALIZED_CLASS_NAMES_FEMALE.ROGUE] = L["Rogue_short"],
+	[LOCALIZED_CLASS_NAMES_FEMALE.SHAMAN] = L["Shaman_short"],
+	[LOCALIZED_CLASS_NAMES_FEMALE.WARLOCK] = L["Warlock_short"],
+	[LOCALIZED_CLASS_NAMES_FEMALE.WARRIOR] = L["Warrior_short"],
 }
+if legion_700 then
+	ShortClass_abbrev[LOCALIZED_CLASS_NAMES_MALE.DEMONHUNTER] = L["Demon Hunter_short"]
+	ShortClass_abbrev[LOCALIZED_CLASS_NAMES_FEMALE.DEMONHUNTER] = L["Demon Hunter_short"]
+end
 
 local function ShortClass(arg)
 	local short = ShortClass_abbrev[arg]
@@ -528,32 +533,33 @@ end
 ScriptEnv.SmartRace = SmartRace
 
 local ShortRace_abbrev = {
-	[L["Pandaren"]] = L["Pandaren_short"],
-	[L["Goblin"]] = L["Goblin_short"],
-	[L["Worgen"]] = L["Worgen_short"],
 	[L["Blood Elf"]] = L["Blood Elf_short"],
 	[L["Draenei"]] = L["Draenei_short"],
 	[L["Dwarf"]] = L["Dwarf_short"],
 	[L["Gnome"]] = L["Gnome_short"],
+	[L["Goblin"]] = L["Goblin_short"],
 	[L["Human"]] = L["Human_short"],
 	[L["Night Elf"]] = L["Night Elf_short"],
 	[L["Orc"]] = L["Orc_short"],
+	[L["Pandaren"]] = L["Pandaren_short"],
 	[L["Tauren"]] = L["Tauren_short"],
 	[L["Troll"]] = L["Troll_short"],
 	[L["Undead"]] = L["Undead_short"],
-	[L["Pandaren_female"]] = L["Pandaren_short"],
-	[L["Goblin_female"]] = L["Goblin_short"],
-	[L["Worgen_female"]] = L["Worgen_short"],
+	[L["Worgen"]] = L["Worgen_short"],
+
 	[L["Blood Elf_female"]] = L["Blood Elf_short"],
 	[L["Draenei_female"]] = L["Draenei_short"],
 	[L["Dwarf_female"]] = L["Dwarf_short"],
 	[L["Gnome_female"]] = L["Gnome_short"],
+	[L["Goblin_female"]] = L["Goblin_short"],
 	[L["Human_female"]] = L["Human_short"],
 	[L["Night Elf_female"]] = L["Night Elf_short"],
 	[L["Orc_female"]] = L["Orc_short"],
+	[L["Pandaren_female"]] = L["Pandaren_short"],
 	[L["Tauren_female"]] = L["Tauren_short"],
 	[L["Troll_female"]] = L["Troll_short"],
 	[L["Undead_female"]] = L["Undead_short"],
+	[L["Worgen_female"]] = L["Worgen_short"],
 }
 
 local function ShortRace(arg)

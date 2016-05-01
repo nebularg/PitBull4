@@ -1,32 +1,33 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("PitBull4", "enUS", true, true)
 
 -- races
-L["Pandaren"] = true
-L["Goblin"] = true
-L["Worgen"] = true
 L["Blood Elf"] = true
-L["Draenei"] = true 
-L["Dwarf"] = true 
-L["Gnome"] = true 
-L["Human"] = true 
-L["Night Elf"] = true 
-L["Orc"] = true 
-L["Tauren"] = true 
-L["Troll"] = true 
-L["Undead"] = true 
-L["Goblin_female"] = "Goblin" 
-L["Pandaren_female"] = "Pandaren"
-L["Worgen_female"] = "Worgen"
+L["Draenei"] = true
+L["Dwarf"] = true
+L["Gnome"] = true
+L["Goblin"] = true
+L["Human"] = true
+L["Night Elf"] = true
+L["Orc"] = true
+L["Pandaren"] = true
+L["Tauren"] = true
+L["Troll"] = true
+L["Undead"] = true
+L["Worgen"] = true
+
 L["Blood Elf_female"] = "Blood Elf"
 L["Draenei_female"] = "Draenei"
 L["Dwarf_female"] = "Dwarf"
 L["Gnome_female"] = "Gnome"
+L["Goblin_female"] = "Goblin"
 L["Human_female"] = "Human"
 L["Night Elf_female"] = "Night Elf"
 L["Orc_female"] = "Orc"
+L["Pandaren_female"] = "Pandaren"
 L["Tauren_female"] = "Tauren"
 L["Troll_female"] = "Troll"
 L["Undead_female"] = "Undead"
+L["Worgen_female"] = "Worgen"
 
 
 -- short races
@@ -44,32 +45,7 @@ L["Tauren_short"] = "Ta"
 L["Troll_short"] = "Tr"
 L["Undead_short"] = "Ud"
 
--- classes
-L["Demon Hunter"] = true
-L["Monk"] = true
-L["Death Knight"] = true 
-L["Warrior"] = true 
-L["Priest"] = true 
-L["Mage"] = true 
-L["Shaman"] = true 
-L["Paladin"] = true 
-L["Warlock"] = true 
-L["Druid"] = true 
-L["Rogue"] = true 
-L["Hunter"] = true 
-L["Demon Hunter_female"] = "Demon Hunter"
-L["Monk_female"] = "Monk"
-L["Death Knight_female"] = "Death Knight"
-L["Warrior_female"] = "Warrior"
-L["Priest_female"] = "Priest"
-L["Mage_female"] = "Mage"
-L["Shaman_female"] = "Shaman"
-L["Paladin_female"] = "Paladin"
-L["Warlock_female"] = "Warlock"
-L["Druid_female"] = "Druid"
-L["Rogue_female"] = "Rogue"
-L["Hunter_female"] = "Hunter"
-	
+
 -- short classes
 L["Demon Hunter_short"] = "DH"
 L["Monk_short"] = "Mo"
