@@ -912,6 +912,8 @@ function PitBull4_LuaTexts:UNIT_SPELLCAST_SENT(event, unit, spell, rank, target)
 	next_spell = spell
 	next_rank = rank and tonumber(rank:match("%d+"))
 	next_target = target ~= "" and target or nil
+
+	self:OnEvent(event, unit, spell, rank, target)
 end
 
 local pool = setmetatable({}, {__mode='k'})
@@ -1182,6 +1184,8 @@ function PitBull4_LuaTexts:GROUP_ROSTER_UPDATE(event)
 		end
 	end
 	wipe(tmp)
+
+	self:OnEvent(event)
 end
 
 function PitBull4_LuaTexts:OnEvent(event, unit, ...)
@@ -1204,7 +1208,7 @@ function PitBull4_LuaTexts:OnEvent(event, unit, ...)
 
 	if event == "PLAYER_FLAGS_CHANGED" then
 		update_timers()
-	elseif string.sub(event,1,15) == "UNIT_SPELLCAST_" then
+	elseif string.sub(event,1,15) == "UNIT_SPELLCAST_" and event ~= "UNIT_SPELLCAST_SENT" then
 		-- spell casting events need to go through
 		update_cast_data(event, unit, ...)
 	end
@@ -1398,7 +1402,9 @@ local function event_cache_insert(event, font_string)
 	if not event_entry then
 		event_entry = {}
 		event_cache[event] = event_entry
-		PitBull4_LuaTexts:RegisterEvent(event,"OnEvent")
+		if not protected_events[event] then
+			PitBull4_LuaTexts:RegisterEvent(event,"OnEvent")
+		end
 	end
 	event_entry[font_string] = true
 end
