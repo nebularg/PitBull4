@@ -483,6 +483,8 @@ local ShortClass_abbrev = {
 	[L["Hunter"]] = L["Hunter_short"],
 	[L["Warrior"]] = L["Warrior_short"],
 	[L["Death Knight"]] = L["Death Knight_short"],
+	[L["Monk"]] = L["Monk_short"],
+	[L["Demon Hunter"]] = L["Demon Hunter_short"],
 	[L["Priest_female"]] = L["Priest_short"],
 	[L["Mage_female"]] = L["Mage_short"],
 	[L["Shaman_female"]] = L["Shaman_short"],
@@ -493,6 +495,8 @@ local ShortClass_abbrev = {
 	[L["Hunter_female"]] = L["Hunter_short"],
 	[L["Warrior_female"]] = L["Warrior_short"],
 	[L["Death Knight_female"]] = L["Death Knight_short"],
+	[L["Monk_female"]] = L["Monk_short"],
+	[L["Demon Hunter_female"]] = L["Demon Hunter_short"],
 }
 
 local function ShortClass(arg)
@@ -524,6 +528,7 @@ end
 ScriptEnv.SmartRace = SmartRace
 
 local ShortRace_abbrev = {
+	[L["Pandaren"]] = L["Pandaren_short"],
 	[L["Goblin"]] = L["Goblin_short"],
 	[L["Worgen"]] = L["Worgen_short"],
 	[L["Blood Elf"]] = L["Blood Elf_short"],
@@ -536,6 +541,7 @@ local ShortRace_abbrev = {
 	[L["Tauren"]] = L["Tauren_short"],
 	[L["Troll"]] = L["Troll_short"],
 	[L["Undead"]] = L["Undead_short"],
+	[L["Pandaren_female"]] = L["Pandaren_short"],
 	[L["Goblin_female"]] = L["Goblin_short"],
 	[L["Worgen_female"]] = L["Worgen_short"],
 	[L["Blood Elf_female"]] = L["Blood Elf_short"],

@@ -1,6 +1,7 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("PitBull4", "enUS", true, true)
 
 -- races
+L["Pandaren"] = true
 L["Goblin"] = true
 L["Worgen"] = true
 L["Blood Elf"] = true
@@ -14,6 +15,7 @@ L["Tauren"] = true
 L["Troll"] = true 
 L["Undead"] = true 
 L["Goblin_female"] = "Goblin" 
+L["Pandaren_female"] = "Pandaren"
 L["Worgen_female"] = "Worgen"
 L["Blood Elf_female"] = "Blood Elf"
 L["Draenei_female"] = "Draenei"
@@ -28,6 +30,7 @@ L["Undead_female"] = "Undead"
 
 
 -- short races
+L["Pandaren_short"] = "Pa"
 L["Goblin_short"] = "Gb"
 L["Worgen_short"] = "Wg"
 L["Blood Elf_short"] = "BE"
@@ -42,6 +45,8 @@ L["Troll_short"] = "Tr"
 L["Undead_short"] = "Ud"
 
 -- classes
+L["Demon Hunter"] = true
+L["Monk"] = true
 L["Death Knight"] = true 
 L["Warrior"] = true 
 L["Priest"] = true 
@@ -52,6 +57,8 @@ L["Warlock"] = true
 L["Druid"] = true 
 L["Rogue"] = true 
 L["Hunter"] = true 
+L["Demon Hunter_female"] = "Demon Hunter"
+L["Monk_female"] = "Monk"
 L["Death Knight_female"] = "Death Knight"
 L["Warrior_female"] = "Warrior"
 L["Priest_female"] = "Priest"
@@ -64,6 +71,8 @@ L["Rogue_female"] = "Rogue"
 L["Hunter_female"] = "Hunter"
 	
 -- short classes
+L["Demon Hunter_short"] = "DH"
+L["Monk_short"] = "Mo"
 L["Death Knight_short"] = "DK"
 L["Warrior_short"] = "Wr"
 L["Priest_short"] = "Pr"
@@ -77,12 +86,16 @@ L["Hunter_short"] = "Hu"
 
 -- classifications
 L["Rare"] = ITEM_QUALITY3_DESC
-L["Rare-Elite"] = ITEM_QUALITY3_DESC and ELITE and ITEM_QUALITY3_DESC .. "-" .. ELITE
+L["Rare-Elite"] = ITEM_QUALITY3_DESC .. "-" .. ELITE
 L["Elite"] = ELITE
 L["Boss"] = BOSS
+L["Trivial"] = "Trivial"
+L["Minus"] = "Minor"
 
 -- short classifications
 L["Rare_short"] = "r"
 L["Rare-Elite_short"] = "r+"
 L["Elite_short"] = "+"
 L["Boss_short"] = "b"
+L["Trivial_short"] = "t"
+L["Minus_short"] = "-"
