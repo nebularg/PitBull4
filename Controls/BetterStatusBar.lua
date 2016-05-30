@@ -36,7 +36,7 @@ local function fix_icon_size(self)
 	if not icon then
 		return
 	end
-	
+
 	local size = self.orientation == "VERTICAL" and self:GetWidth() or self:GetHeight()
 	icon:SetWidth(size)
 	icon:SetHeight(size)
@@ -70,7 +70,7 @@ local function set_vertical_coord(bar, reverse, alpha, bravo)
 	if reverse then
 		alpha, bravo = bravo, alpha
 	end
-	
+
 	bar:SetTexCoord(bravo, 0, alpha, 0, bravo, 1, alpha, 1)
 	return bravo
 end
@@ -87,7 +87,7 @@ function SetValue_orientation:VERTICAL(value, extraValue, extra2Value, run_anima
 	self.fg:SetHeight(height * value)
 	self.extra:SetHeight(height * extraValue)
 	self.extra2:SetHeight(height * extra2Value)
-	
+
 	set_vertical_coord(self.fg, self.reverse, 0, value)
 
 	if run_animation then
@@ -117,7 +117,7 @@ function SetValue_orientation:VERTICAL(value, extraValue, extra2Value, run_anima
 		-- Not going to run the animation
 		local anim_value = 0
 		if self.anim then
-			-- But the animation texture still exists, so... set the height to a 
+			-- But the animation texture still exists, so... set the height to a
 			-- very small value.
 			self.anim:SetHeight(EPSILON)
 			anim_value = EPSILON
@@ -133,7 +133,7 @@ local function set_horizontal_coord(bar, reverse, alpha, bravo)
 	if reverse then
 		alpha, bravo = bravo, alpha
 	end
-	
+
 	bar:SetTexCoord(alpha, 0, alpha, 1, bravo, 0, bravo, 1)
 	return bravo
 end
@@ -150,7 +150,7 @@ function SetValue_orientation:HORIZONTAL(value, extraValue, extra2Value, run_ani
 	self.fg:SetWidth(width * value)
 	self.extra:SetWidth(width * extraValue)
 	self.extra2:SetWidth(width * extra2Value)
-	
+
 	set_horizontal_coord(self.fg, self.reverse, 0, value)
 
 	if run_animation then
@@ -179,7 +179,7 @@ function SetValue_orientation:HORIZONTAL(value, extraValue, extra2Value, run_ani
 		-- Not going to run the animation
 		local anim_value = 0
 		if self.anim then
-			-- But the animation texture still exists, so... set the width to a 
+			-- But the animation texture still exists, so... set the width to a
 			-- very small value.
 			self.anim:SetWidth(EPSILON)
 			anim_value = EPSILON
@@ -199,7 +199,7 @@ function BetterStatusBar:SetValue(value)
 		expect(value, 'typeof', 'number')
 	end
 	local run_animation = false
-	
+
 	value = clamp(value, 0, 1)
 	self.value = value
 	if self.deficit then
@@ -242,13 +242,12 @@ function BetterStatusBar:SetValue(value)
 				local normal_alpha = self:GetNormalAlpha()
 				local bg_alpha = self:GetBackgroundAlpha()
 				local alpha_delta = 0.7 * (normal_alpha - bg_alpha)
-				if alpha_delta ~= 0 then
-					anim:SetAlpha(bg_alpha)
-				else
-					anim:SetAlpha(0)
+				if alpha_delta == 0 then
+					bg_alpha = 0
 					alpha_delta = 0.7 * normal_alpha
 				end
-				anim.fader:SetChange(alpha_delta)
+				anim.fader:SetFromAlpha(bg_alpha)
+				anim.fader:SetToAlpha(bg_alpha + alpha_delta)
 			else
 				anim:SetAlpha(self:GetNormalAlpha())
 			end
@@ -262,7 +261,8 @@ function BetterStatusBar:SetValue(value)
 				if alpha_delta == 0 then
 					alpha_delta = -0.7 * bg_alpha
 				end
-				anim.fader:SetChange(alpha_delta)
+				anim.fader:SetFromAlpha(normal_alpha)
+				anim.fader:SetToAlpha(normal_alpha + alpha_delta)
 			end
 			run_animation = true
 		end
@@ -290,7 +290,7 @@ function BetterStatusBar:SetExtraValue(extraValue)
 	if DEBUG then
 		expect(extraValue, 'typeof', 'number')
 	end
-	
+
 	extraValue = clamp(extraValue, 0, 1)
 	self.extraValue = extraValue
 	self:SetValue(self.value)
@@ -311,7 +311,7 @@ function BetterStatusBar:SetExtra2Value(extra2Value)
 	if DEBUG then
 		expect(extra2Value, 'typeof', 'number')
 	end
-	
+
 	extra2Value = clamp(extra2Value, 0, 1)
 	self.extra2Value = extra2Value
 	self:SetValue(self.value)
@@ -330,13 +330,13 @@ local function set_bar_points(self, side_point_a, side_point_b, moving_point_a, 
 	if self.reverse then
 		moving_point_a, moving_point_b = moving_point_b, moving_point_a
 	end
-	
+
 	if self.icon and self.icon_position then
 		-- icon is fixed to the edge
 		self.icon:SetPoint(side_point_a)
 		self.icon:SetPoint(side_point_b)
 		self.icon:SetPoint(moving_point_a)
-		
+
 		-- fg attaches to the icon
 		self.fg:SetPoint(moving_point_a, self.icon, moving_point_b)
 	else
@@ -345,7 +345,7 @@ local function set_bar_points(self, side_point_a, side_point_b, moving_point_a, 
 	end
 	self.fg:SetPoint(side_point_a)
 	self.fg:SetPoint(side_point_b)
-	
+
 	-- extra moves with and is attached to the fg.
 	self.extra:SetPoint(side_point_a)
 	self.extra:SetPoint(side_point_b)
@@ -359,11 +359,11 @@ local function set_bar_points(self, side_point_a, side_point_b, moving_point_a, 
 	self.extra2:SetPoint(side_point_a)
 	self.extra2:SetPoint(side_point_b)
 	self.extra2:SetPoint(moving_point_a, self.extra, moving_point_b)
-	
+
 	if self.icon and not self.icon_position then
 		-- bg attaches to the icon
 		self.bg:SetPoint(moving_point_b, self.icon, moving_point_a)
-		
+
 		-- icon then fills up the rest of the space
 		self.icon:SetPoint(side_point_a)
 		self.icon:SetPoint(side_point_b)
@@ -371,7 +371,7 @@ local function set_bar_points(self, side_point_a, side_point_b, moving_point_a, 
 	else
 		-- bg merely fills up the rest of the space
 		self.bg:SetPoint(moving_point_b)
-	end	
+	end
 	self.bg:SetPoint(moving_point_a, self.extra2, moving_point_b)
 	self.bg:SetPoint(side_point_a)
 	self.bg:SetPoint(side_point_b)
@@ -393,7 +393,7 @@ function fix_orientation_helper:VERTICAL()
 	if self.anim then
 		self.anim:SetHeight(EPSILON)
 	end
-	
+
 	set_bar_points(self, "LEFT", "RIGHT", "BOTTOM", "TOP")
 end
 -- reset the points of the bar to their original state for horizontal orientation
@@ -404,7 +404,7 @@ function fix_orientation_helper:HORIZONTAL()
 	if self.anim then
 		self.anim:SetWidth(EPSILON)
 	end
-	
+
 	set_bar_points(self, "BOTTOM", "TOP", "LEFT", "RIGHT")
 end
 
@@ -440,12 +440,12 @@ function BetterStatusBar:SetOrientation(orientation)
 	if DEBUG then
 		expect(orientation, 'inset', 'HORIZONTAL;VERTICAL')
 	end
-	
+
 	if self.orientation == orientation then
 		return
 	end
 	self.orientation = orientation
-	
+
 	fix_orientation(self)
 end
 --- Get the current orientation of the bar
@@ -463,13 +463,13 @@ function BetterStatusBar:SetReverse(reverse)
 	if DEBUG then
 		expect(reverse, 'typeof', 'boolean')
 	end
-	
+
 	reverse = not not reverse
 	if self.reverse == reverse then
 		return
 	end
 	self.reverse = reverse
-	
+
 	fix_orientation(self)
 end
 --- Get whether the bar is currently reversed
@@ -487,13 +487,13 @@ function BetterStatusBar:SetDeficit(deficit)
 	if DEBUG then
 		expect(deficit, 'typeof', 'boolean')
 	end
-	
+
 	deficit = not not deficit
 	if self.deficit == deficit then
 		return
 	end
 	self.deficit = deficit
-	
+
 	self:SetValue(self.value)
 end
 --- Get whether the bar is showing its deficit
@@ -543,7 +543,7 @@ local function smoother_OnUpdate(self)
 		start = set_vertical_coord(bar.extra2, bar.reverse, start, start+extra2Value)
 		set_vertical_coord(bar.bg, bar.reverse, start, 1)
 	end
-	anim.current_value = current_value 
+	anim.current_value = current_value
 end
 
 local function ag_OnFinished(self)
@@ -609,7 +609,7 @@ local function update_animation_objects(bar)
 	local fade = bar.fade
 	local anim = bar.anim
 
-	if not animated and not fade then 
+	if not animated and not fade then
 		if anim then
 			bar.anim = anim:Delete()
 			fix_orientation(bar)
@@ -617,19 +617,19 @@ local function update_animation_objects(bar)
 		return
 	end
 
-	if not anim then 
+	if not anim then
 		anim = PitBull4.Controls.MakeAnimatedTexture(bar, "BACKGROUND")
 		bar.anim = anim
-		anim.dest_value = bar.value 
+		anim.dest_value = bar.value
 		anim.current_value = nil
 	end
-	
+
 	local ag = anim.ag
 	ag:SetScript("OnFinished",ag_OnFinished)
 
 	if animated then
 		local smoother = anim.smoother
-		if not smoother then 
+		if not smoother then
 			smoother = PitBull4.Controls.MakeAnimation(ag)
 			anim.smoother = smoother
 		end
@@ -662,7 +662,7 @@ local function update_animation_objects(bar)
 	anim:SetTexture(bar:GetTexture())
 	anim:SetVertexColor(bar:GetColor())
 end
-	
+
 
 --- Set whether the bar updates are animated
 -- If set to true bar updates will be animated
@@ -675,7 +675,7 @@ function BetterStatusBar:SetAnimated(animated)
 
 	animated = not not animated
 	if self.animated == animated then return end
-	self.animated = animated	
+	self.animated = animated
 	update_animation_objects(self)
 end
 --- Get whether the bar updates are animated
@@ -732,7 +732,7 @@ function BetterStatusBar:SetTexture(texture)
 	if DEBUG then
 		expect(texture, 'typeof', 'string')
 	end
-	
+
 	self.fg:SetTexture(texture)
 	self.extra:SetTexture(texture)
 	self.extra2:SetTexture(texture)
@@ -769,7 +769,7 @@ local function get_extra_color(self)
 	if self.extraR then
 		return self.extraR, self.extraG, self.extraB
 	end
-	
+
 	local r, g, b = self.fg:GetVertexColor()
 	return normal_to_extra_color(r, g, b)
 end
@@ -779,7 +779,7 @@ local function get_extra2_color(self)
 	if self.extra2R then
 		return self.extra2R, self.extra2G, self.extra2B
 	end
-	
+
 	local r, g, b = self.fg:GetVertexColor()
 	return normal_to_extra2_color(r, g, b)
 end
@@ -789,7 +789,7 @@ local function get_bg_color(self)
 	if self.bgR then
 		return self.bgR, self.bgG, self.bgB
 	end
-	
+
 	local r, g, b = self.fg:GetVertexColor()
 	return normal_to_bg_color(r, g, b)
 end
@@ -813,7 +813,7 @@ function BetterStatusBar:SetColor(r, g, b)
 		expect(b, '>=', 0)
 		expect(b, '<=', 1)
 	end
-	
+
 	self.fg:SetVertexColor(r, g, b)
 	self.extra:SetVertexColor(get_extra_color(self))
 	self.extra2:SetVertexColor(get_extra2_color(self))
@@ -845,7 +845,7 @@ function BetterStatusBar:SetNormalAlpha(a)
 		expect(a, '>=', 0)
 		expect(a, '<=', 1)
 	end
-	
+
 	self.fg:SetAlpha(a)
 	if not self.extraA then
 		self.extra:SetAlpha(a)
@@ -889,7 +889,7 @@ function BetterStatusBar:SetBackgroundColor(br, bg, bb)
 			expect(bb, 'typeof', 'nil')
 		end
 	end
-	
+
 	self.bgR, self.bgG, self.bgB = br or false, bg or false, bb or false
 	self.bg:SetVertexColor(get_bg_color(self))
 end
@@ -918,7 +918,7 @@ function BetterStatusBar:SetBackgroundAlpha(a)
 			expect(a, '<=', 1)
 		end
 	end
-	
+
 	self.bgA = a or false
 	if not a then
 		a = self.fg:GetAlpha()
@@ -987,7 +987,7 @@ function BetterStatusBar:SetExtraAlpha(a)
 			expect(a, '<=', 1)
 		end
 	end
-	
+
 	self.extraA = a or false
 	if not a then
 		a = self.fg:GetAlpha()
@@ -1056,7 +1056,7 @@ function BetterStatusBar:SetExtra2Alpha(a)
 			expect(a, '<=', 1)
 		end
 	end
-	
+
 	self.extra2A = a or false
 	if not a then
 		a = self.fg:GetAlpha()
@@ -1101,12 +1101,12 @@ function BetterStatusBar:SetIcon(path)
 	if DEBUG then
 		expect(path, 'typeof', 'string;nil')
 	end
-	
+
 	local old_icon_path = self.icon_path
 	if old_icon_path == path then
 		return
 	end
-	
+
 	self.icon_path = path
 	if path then
 		if not self.icon then
@@ -1140,11 +1140,11 @@ function BetterStatusBar:SetIconPosition(value)
 	if DEBUG then
 		expect(value, 'typeof', 'boolean')
 	end
-	
+
 	if value == self.icon_position then
 		return
 	end
-	
+
 	self.icon_position = value
 	fix_orientation(self)
 end
@@ -1158,13 +1158,13 @@ end
 PitBull4.Controls.MakeNewControlType("BetterStatusBar", "Button", function(control)
 	-- onCreate
 	control:EnableMouse(false)
-	
+
 	local control_fg = PitBull4.Controls.MakeTexture(control, "BACKGROUND")
 	control.fg = control_fg
 	control_fg:SetPoint("LEFT")
 	control_fg:SetPoint("TOP")
 	control_fg:SetPoint("BOTTOM")
-	
+
 	local control_extra = PitBull4.Controls.MakeTexture(control, "BACKGROUND")
 	control.extra = control_extra
 	control_extra:SetPoint("LEFT", control_fg, "RIGHT")
@@ -1176,14 +1176,14 @@ PitBull4.Controls.MakeNewControlType("BetterStatusBar", "Button", function(contr
 	control_extra2:SetPoint("LEFT", control_extra, "RIGHT")
 	control_extra2:SetPoint("TOP")
 	control_extra2:SetPoint("BOTTOM")
-	
+
 	local control_bg = PitBull4.Controls.MakeTexture(control, "BACKGROUND")
 	control.bg = control_bg
 	control_bg:SetPoint("LEFT", control_extra2, "RIGHT")
 	control_bg:SetPoint("RIGHT")
 	control_bg:SetPoint("TOP")
 	control_bg:SetPoint("BOTTOM")
-	
+
 	for k,v in pairs(BetterStatusBar) do
 		control[k] = v
 	end
