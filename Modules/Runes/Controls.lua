@@ -4,6 +4,8 @@ if select(2, UnitClass("player")) ~= "DEATHKNIGHT" then
 	return
 end
 
+local CooldownFrame_Set = CooldownFrame_Set or CooldownFrame_SetTimer -- XXX legion_700
+
 -- CONSTANTS ----------------------------------------------------------------
 
 local RUNETYPE_BLOOD = 1
@@ -55,7 +57,7 @@ function Rune:UpdateTexture()
 	if self.rune_type == rune_type then
 		return
 	end
-	
+
 	local old_rune_type = self.rune_type
 	self.rune_type = rune_type
 	self:SetNormalTexture(ICON_TEXTURES[rune_type])
@@ -66,7 +68,7 @@ end
 
 function Rune:UpdateCooldown()
 	local start, duration, ready = GetRuneCooldown(self.id)
-	
+
 	local cooldown = self.cooldown
 	if ready or not start then
 		if cooldown:IsShown() then
@@ -76,14 +78,14 @@ function Rune:UpdateCooldown()
 		self:GetNormalTexture():SetAlpha(READY_ALPHA)
 	else
 		cooldown:Show()
-		CooldownFrame_SetTimer(cooldown, start, duration, 1)
+		CooldownFrame_Set(cooldown, start, duration, 1)
 		self:GetNormalTexture():SetAlpha(UNREADY_ALPHA)
 	end
 end
 
 local function Rune_OnUpdate(self, elapsed)
 	local shine_time = self.shine_time + elapsed
-	
+
 	if shine_time > SHINE_TIME then
 		self:SetScript("OnUpdate", nil)
 		self.shine_time = nil
@@ -91,7 +93,7 @@ local function Rune_OnUpdate(self, elapsed)
 		return
 	end
 	self.shine_time = shine_time
-	
+
 	if shine_time < SHINE_HALF_TIME then
 		self.shine:SetAlpha(shine_time * INVERSE_SHINE_HALF_TIME)
 	else
@@ -122,7 +124,7 @@ function Rune_scripts:OnEnter()
 	if not self.rune_type then
 		return
 	end
-	
+
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 	GameTooltip:SetText(_G["COMBAT_TEXT_RUNE_" .. RUNE_MAPPING[self.rune_type]])
 	GameTooltip:Show()
@@ -134,14 +136,14 @@ end
 
 PitBull4.Controls.MakeNewControlType("Rune", "Button", function(control)
 	-- onCreate
-	
+
 	for k, v in pairs(Rune) do
 		control[k] = v
 	end
 	for k, v in pairs(Rune_scripts) do
 		control:SetScript(k, v)
 	end
-	
+
 	local cooldown = PitBull4.Controls.MakeCooldown(control)
 	control.cooldown = cooldown
 	cooldown:SetHideCountdownNumbers(true)
@@ -149,18 +151,18 @@ PitBull4.Controls.MakeNewControlType("Rune", "Button", function(control)
 	cooldown:Show()
 end, function(control, id)
 	-- onRetrieve
-	
+
 	control.id = id
 	control.cooldown:Hide()
 	control:SetWidth(STANDARD_SIZE)
 	control:SetHeight(STANDARD_SIZE)
 end, function(control)
 	-- onDelete
-	
+
 	control.id = nil
 	control.rune_type = nil
 	control.shine_time = nil
-	
+
 	control.cooldown:Hide()
 	control:SetNormalTexture(nil)
 	if control.shine then

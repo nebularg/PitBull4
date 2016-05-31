@@ -15,6 +15,8 @@ local unpack = _G.unpack
 local sort = _G.table.sort
 local wipe = _G.table.wipe
 
+local CooldownFrame_Set = CooldownFrame_Set or CooldownFrame_SetTimer -- XXX legion_700
+
 -- The table we use for gathering the aura data, filtering
 -- and then sorting them.  This table is reused without
 -- wiping it ever, so care must be taken to use it in ways
@@ -39,7 +41,7 @@ local wipe = _G.table.wipe
 -- [9] = debuff_type
 -- [10] = duration
 -- [11] = expiration_time
--- [12] = caster 
+-- [12] = caster
 -- [13] = is_stealable
 -- [14] = should_consolodate
 -- [15] = spell_id
@@ -210,7 +212,7 @@ local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 			entry[3]  = nil -- no quality color
 			entry[5]  = is_buff and L["Sample Buff"] or L["Sample Debuff"] -- name
 			entry[9]  = sample_debuff_types[(i-1)% #sample_debuff_types]
-			entry[12]  = ((random(2) % 2) == 1) and "player" or nil -- caster 
+			entry[12]  = ((random(2) % 2) == 1) and "player" or nil -- caster
 		end
 		entry[4]  = is_buff
 		entry[6]  = "" -- rank
@@ -286,7 +288,7 @@ local function set_weapon_entry(list, is_enchant, time_left, expiration_time, co
 	-- can sometimes not get set.  Probably due the cache being empty.  It's ok to end
 	-- up doing nothing because eventually it should work and the weapon enchants are
 	-- checked on a timer anyway.
-	if not name then 
+	if not name then
 		wipe(entry)
 		return
 	end
@@ -499,7 +501,7 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 		-- problem since 4.0.1.
 		if not unchanged or not cooldown:IsShown() then
 			cooldown:Show()
-			CooldownFrame_SetTimer(cooldown, expiration_time - duration, duration, 1)
+			CooldownFrame_Set(cooldown, expiration_time - duration, duration, 1)
 		end
 	else
 		control.cooldown:SetCooldown(0, 0)
@@ -521,9 +523,9 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 			cooldown_text:SetTextColor(r,g,b,a)
 		end
 		cooldown_text.color_by_time = cooldown_text_db.color_by_time
-		PitBull4_Aura:EnableCooldownText(control)	
+		PitBull4_Aura:EnableCooldownText(control)
 	else
-		PitBull4_Aura:DisableCooldownText(control)	
+		PitBull4_Aura:DisableCooldownText(control)
 	end
 
 	local border_db
@@ -664,11 +666,11 @@ local function update_cooldown_text(aura)
 	local new_time
 	if time_left >= 0 then
 		if time_left >= 3600 then
-			new_time = 30 
+			new_time = 30
 		elseif time_left >= 180 then
-			new_time = 1 
+			new_time = 1
 		elseif time_left >= 60 then
-			new_time = 0.5 
+			new_time = 0.5
 		elseif time_left < 3 then
 			new_time = 0
 		else
@@ -683,11 +685,11 @@ local function update_cooldown_text(aura)
 				-- fade from green to yellow betwee 30% left to 20% left
 				local r = 1 - ((duration_left - 0.2) * 10)
 				cooldown_text:SetTextColor(r,1,0,1)
-			elseif duration_left >= 0.1 then 
+			elseif duration_left >= 0.1 then
 				-- fade from yellow to red betwee 20% left to 10% left
 				local g = (duration_left - 0.1) * 10
 				cooldown_text:SetTextColor(1,g,0,1)
-			else		
+			else
 				-- less than 10% so stay red.
 				cooldown_text:SetTextColor(1,0,0,1)
 			end
@@ -727,7 +729,7 @@ function PitBull4_Aura:UpdateAuras(frame)
 	local highlight = db.highlight
 
 	-- Start the Highlight Filter System
-	if highlight then	
+	if highlight then
 		self:HighlightFilterStart()
 	end
 
@@ -769,7 +771,7 @@ function PitBull4_Aura:EnableCooldownText(aura)
 	local cooldown_text = aura.cooldown_text
 	if not cooldown_text then return end
 	cooldown_text:Show()
-	cooldown_texts[aura] = 0 
+	cooldown_texts[aura] = 0
 	self.next_text_update = 0
 end
 
