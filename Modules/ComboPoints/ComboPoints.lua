@@ -5,9 +5,9 @@ if not PitBull4 then
 	error("PitBull4_ComboPoints requires PitBull4")
 end
 
-local _, class = UnitClass("player")
-local is_rogue = class == "ROGUE"
-local is_druid = class == "DRUID"
+local player_class = select(2, UnitClass("player"))
+local is_rogue = player_class == "ROGUE"
+local is_druid = player_class == "DRUID"
 
 -- CONSTANTS ----------------------------------------------------------------
 
@@ -68,10 +68,10 @@ function PitBull4_ComboPoints:ClearFrame(frame)
 	if not frame.ComboPoints then
 		return false
 	end
-	
+
 	local combos = frame.ComboPoints
 	combos.height = nil
-	
+
 	for i, combo in ipairs(combos) do
 		combos[i] = combo:Delete()
 	end
@@ -86,14 +86,14 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 	if frame.unit ~= "target" and frame.unit ~= "player" and frame.unit ~= "pet" then
 		return self:ClearFrame(frame)
 	end
-	
+
 	local has_vehicle = UnitHasVehicleUI("player")
 	if frame.unit == "pet" and not has_vehicle then
 		return self:ClearFrame(frame)
 	end
-	
+
 	local num_combos = has_vehicle and GetComboPoints("vehicle", "target") or UnitPower("player", 4)
-	
+
 	-- While non-rogues and non-druids typically don't have combo points, certain game
 	-- mechanics may add them anyway (e.g. Malygos vehicles). Always show the combo
 	-- point indicator if there are combo points.
@@ -107,25 +107,25 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 			return self:ClearFrame(frame)
 		end
 	end
-	
+
 	if frame.force_show then
 		num_combos = MAX_COMBOS
 	end
-	
+
 	local db = self:GetLayoutDB(frame)
 	if num_combos == 0 and not db.has_background_color then
 		return self:ClearFrame(frame)
 	end
 	local combos = frame.ComboPoints
-	
+
 	if combos and #combos == num_combos then
 		combos:Show()
 		return false
 	end
-	
+
 	local spacing = db.spacing
 	local vertical = db.vertical
-	
+
 	if not combos then
 		combos = PitBull4.Controls.MakeFrame(frame)
 		frame.ComboPoints = combos
@@ -134,7 +134,7 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 		if db.has_background_color then
 			local bg = PitBull4.Controls.MakeTexture(combos, "BACKGROUND")
 			combos.bg = bg
-			bg:SetTexture(unpack(db.background_color))
+			bg:SetColorTexture(unpack(db.background_color))
 			bg:SetAllPoints(combos)
 
 			local height
@@ -150,7 +150,7 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 			combos.height = height / ICON_SIZE
 		end
 	end
-	
+
 	if not db.has_background_color then
 		if not vertical then
 			combos:SetHeight(ICON_SIZE)
@@ -163,17 +163,17 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 			combos.height = height / ICON_SIZE
 		end
 	end
-	
+
 	for i = #combos, num_combos + 1, -1 do
 		local combo = combos[i]
-		
+
 		combos[i] = combo:Delete()
 	end
-	
+
 	for i = #combos + 1, num_combos do
 		local combo = PitBull4.Controls.MakeTexture(combos, "ARTWORK")
 		combos[i] = combo
-		
+
 		combo:SetTexture(BASE_TEXTURE_PATH .. db.texture)
 		combo:SetVertexColor(unpack(db.color))
 		combo:SetWidth(ICON_SIZE)
@@ -185,7 +185,7 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 			combo:SetPoint("BOTTOM", combos, "BOTTOM", 0, border_size + (i - 1) * (ICON_SIZE + spacing))
 		end
 	end
-	
+
 	combos:Show()
 
 	return true
@@ -201,7 +201,7 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).vertical = value
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("target") do
 				self:Clear(frame)
 				self:Update(frame)
@@ -216,7 +216,7 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).spacing = value
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("target") do
 				self:Clear(frame)
 				self:Update(frame)
@@ -234,7 +234,7 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).texture = value
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("target") do
 				self:Clear(frame)
 				self:Update(frame)
@@ -261,7 +261,7 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 		set = function(info, r, g, b)
 			local color = PitBull4.Options.GetLayoutDB(self).color
 			color[1], color[2], color[3] = r, g, b
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("target") do
 				self:Clear(frame)
 				self:Update(frame)
@@ -276,7 +276,7 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).has_background_color = value
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("target") do
 				self:Clear(frame)
 				self:Update(frame)

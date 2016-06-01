@@ -1,13 +1,15 @@
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
+if select(2, UnitClass("player")) ~= "WARLOCK" then
+	return
+end
+
 local PitBull4 = _G.PitBull4
 if not PitBull4 then
 	error("PitBull4_SoulShards requires PitBull4")
 end
 
-if select(2, UnitClass("player")) ~= "WARLOCK" or not PowerBarColor["SOUL_SHARDS"] then
-	return
-end
+local legion_700 = select(4, GetBuildInfo()) >= 70000
 
 -- CONSTANTS ----------------------------------------------------------------
 
@@ -54,6 +56,7 @@ function PitBull4_SoulShards:OnEnable()
 	if player_level < SHARDBAR_SHOW_LEVEL then
 		self:RegisterEvent("PLAYER_LEVEL_UP")
 	end
+
 end
 
 local function update_player(self)
@@ -66,7 +69,7 @@ function PitBull4_SoulShards:UNIT_POWER_FREQUENT(event, unit, power_type)
 	if unit ~= "player" or power_type ~= "SOUL_SHARDS" then
 		return
 	end
-	
+
 	update_player(self)
 end
 
@@ -74,7 +77,7 @@ function PitBull4_SoulShards:UNIT_DISPLAYPOWER(event, unit)
 	if unit ~= "player" then
 		return
 	end
-	
+
 	update_player(self)
 end
 
@@ -95,13 +98,13 @@ function PitBull4_SoulShards:ClearFrame(frame)
 	if not container then
 		return false
 	end
-	
+
 	for i = 1, 4 do
 		container[i] = container[i]:Delete()
 	end
 	container.bg = container.bg:Delete()
 	frame.SoulShards = container:Delete()
-	
+
 	return true
 end
 
@@ -120,19 +123,19 @@ local function update_container_size(container, vertical, max_shards)
 end
 
 function PitBull4_SoulShards:UpdateFrame(frame)
-	if frame.unit ~= "player" or player_level < SHARDBAR_SHOW_LEVEL or (WARLOCK_SOULBURN and not IsPlayerSpell(WARLOCK_SOULBURN)) then
+	if frame.unit ~= "player" or (not legion_700 and (player_level < SHARDBAR_SHOW_LEVEL or (WARLOCK_SOULBURN and not IsPlayerSpell(WARLOCK_SOULBURN)))) then
 		return self:ClearFrame(frame)
 	end
 
 	local db = self:GetLayoutDB(frame)
 	local vertical = db.vertical
-	
+
 	local container = frame.SoulShards
 	if not container then
 		container = PitBull4.Controls.MakeFrame(frame)
 		frame.SoulShards = container
 		container:SetFrameLevel(frame:GetFrameLevel() + 13)
-		
+
 		local point, attach
 		for i = 1, 4 do
 			local soul_shard = PitBull4.Controls.MakeSoulShard(container, i)
@@ -146,12 +149,12 @@ function PitBull4_SoulShards:UpdateFrame(frame)
 				soul_shard:SetPoint("CENTER", container, "BOTTOM", 0, BORDER_SIZE + (i - 1) * (SPACING + STANDARD_SIZE) + HALF_STANDARD_SIZE)
 			end
 		end
-	
+
 		update_container_size(container, vertical, 4)
-		
+
 		local bg = PitBull4.Controls.MakeTexture(container, "BACKGROUND")
 		container.bg = bg
-		bg:SetTexture(unpack(db.background_color))
+		bg:SetColorTexture(unpack(db.background_color))
 		bg:SetAllPoints(container)
 	end
 
@@ -172,7 +175,7 @@ function PitBull4_SoulShards:UpdateFrame(frame)
 			soul_shard:Deactivate()
 		end
 	end
-	
+
 	container:Show()
 
 	return true
@@ -188,7 +191,7 @@ PitBull4_SoulShards:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).vertical = value
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("player") do
 				self:Clear(frame)
 				self:Update(frame)
@@ -205,7 +208,7 @@ PitBull4_SoulShards:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).click_through = value
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("player") do
 				self:Clear(frame)
 				self:Update(frame)
@@ -224,7 +227,7 @@ PitBull4_SoulShards:SetLayoutOptionsFunction(function(self)
 		set = function(info, r, g, b, a)
 			local color = PitBull4.Options.GetLayoutDB(self).background_color
 			color[1], color[2], color[3], color[4] = r, g, b, a
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("player") do
 				self:Clear(frame)
 				self:Update(frame)

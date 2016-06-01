@@ -1,7 +1,8 @@
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
-if select(2, UnitClass("player")) ~= "DRUID" or not PowerBarColor["ECLIPSE"] then
-  return
+local PitBull4_Eclipse = PitBull4:GetModule("Eclipse", true)
+if not PitBull4_Eclipse then
+	return
 end
 
 -- CONSTANTS ----------------------------------------------------------------
@@ -22,7 +23,6 @@ local INVERSE_SHINE_HALF_TIME = 1 / SHINE_HALF_TIME
 -----------------------------------------------------------------------------
 
 local L = PitBull4.L
-local PitBull4_Eclipse = PitBull4:GetModule("Eclipse")
 
 local Eclipse = {}
 local Eclipse_scripts = {}

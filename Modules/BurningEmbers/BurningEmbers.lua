@@ -1,13 +1,14 @@
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
+if select(2, UnitClass("player")) ~= "WARLOCK" or select(4, GetBuildInfo()) >= 70000 then
+	return
+end
+
 local PitBull4 = _G.PitBull4
 if not PitBull4 then
 	error("PitBull4_BurningEmbers requires PitBull4")
 end
 
-if select(2, UnitClass("player")) ~= "WARLOCK" then
-	return
-end
 
 -- CONSTANTS ----------------------------------------------------------------
 
@@ -56,7 +57,7 @@ function PitBull4_BurningEmbers:UNIT_POWER_FREQUENT(event, unit, power_type)
 	if unit ~= "player" or power_type ~= "BURNING_EMBERS" then
 		return
 	end
-	
+
 	update_player(self)
 end
 
@@ -64,7 +65,7 @@ function PitBull4_BurningEmbers:UNIT_DISPLAYPOWER(event, unit)
 	if unit ~= "player" then
 		return
 	end
-	
+
 	update_player(self)
 end
 
@@ -77,13 +78,13 @@ function PitBull4_BurningEmbers:ClearFrame(frame)
 	if not container then
 		return false
 	end
-	
+
 	for i = 1, 4 do
 		container[i] = container[i]:Delete()
 	end
 	container.bg = container.bg:Delete()
 	frame.BurningEmbers = container:Delete()
-	
+
 	return true
 end
 
@@ -108,13 +109,13 @@ function PitBull4_BurningEmbers:UpdateFrame(frame)
 
 	local db = self:GetLayoutDB(frame)
 	local vertical = db.vertical
-	
+
 	local container = frame.BurningEmbers
 	if not container then
 		container = PitBull4.Controls.MakeFrame(frame)
 		frame.BurningEmbers = container
 		container:SetFrameLevel(frame:GetFrameLevel() + 13)
-		
+
 		local point, attach
 		for i = 1, 4  do
 			local ember = PitBull4.Controls.MakeBurningEmber(container, i)
@@ -133,10 +134,10 @@ function PitBull4_BurningEmbers:UpdateFrame(frame)
 
 		local bg = PitBull4.Controls.MakeTexture(container, "BACKGROUND")
 		container.bg = bg
-		bg:SetTexture(unpack(db.background_color))
+		bg:SetColorTexture(unpack(db.background_color))
 		bg:SetAllPoints(container)
 	end
-	
+
 	local ember_power = UnitPower("player", SPELL_POWER_BURNING_EMBERS, true)
 	local max_ember_power = UnitPowerMax("player", SPELL_POWER_BURNING_EMBERS, true)
 	local max_embers = floor(max_ember_power / MAX_POWER_PER_EMBER)
@@ -156,7 +157,7 @@ function PitBull4_BurningEmbers:UpdateFrame(frame)
 			ember_power = ember_power - MAX_POWER_PER_EMBER
 		end
 	end
-	
+
 	container:Show()
 
 	return true
@@ -172,7 +173,7 @@ PitBull4_BurningEmbers:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).vertical = value
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("player") do
 				self:Clear(frame)
 				self:Update(frame)
@@ -189,7 +190,7 @@ PitBull4_BurningEmbers:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).click_through = value
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("player") do
 				self:Clear(frame)
 				self:Update(frame)
@@ -208,7 +209,7 @@ PitBull4_BurningEmbers:SetLayoutOptionsFunction(function(self)
 		set = function(info, r, g, b, a)
 			local color = PitBull4.Options.GetLayoutDB(self).background_color
 			color[1], color[2], color[3], color[4] = r, g, b, a
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("player") do
 				self:Clear(frame)
 				self:Update(frame)

@@ -20,6 +20,6 @@
 ## LoadOnDemand: 1
 ## Dependencies: PitBull4
 ## Version: @project-version@
-## X-PitBull4-Condition: return select(2, UnitClass("player")) == "WARLOCK" and PowerBarColor["SOUL_SHARDS"]
+## X-PitBull4-Condition: return select(2, UnitClass("player")) == "WARLOCK"
 
 load.xml

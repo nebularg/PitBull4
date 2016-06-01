@@ -1,18 +1,20 @@
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
+if select(2, UnitClass("player")) ~= "MONK" then
+	return
+end
+
 local PitBull4 = _G.PitBull4
 if not PitBull4 then
 	error("PitBull4_Chi requires PitBull4")
 end
 
-if select(2, UnitClass("player")) ~= "MONK" then
-	return
-end
+local legion_700 = select(4, GetBuildInfo()) >= 70000
 
 -- CONSTANTS ----------------------------------------------------------------
 
 local SPELL_POWER_CHI = _G.SPELL_POWER_CHI
-assert(SPELL_POWER_CHI)
+local SPEC_MONK_WINDWALKER = _G.SPEC_MONK_WINDWALKER
 
 local STANDARD_SIZE = 15
 local BORDER_SIZE = 3
@@ -50,6 +52,9 @@ function PitBull4_Chi:OnEnable()
 	self:RegisterEvent("UNIT_POWER_FREQUENT")
 	self:RegisterEvent("UNIT_DISPLAYPOWER")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	if legion_700 then
+		self:RegisterEvent("PLAYER_TALENT_UPDATE", "PLAYER_ENTERING_WORLD")
+	end
 end
 
 local function update_player(self)
@@ -62,7 +67,7 @@ function PitBull4_Chi:UNIT_POWER_FREQUENT(event, unit, power_type)
 	if unit ~= "player" or power_type ~= "CHI" then
 		return
 	end
-	
+
 	update_player(self)
 end
 
@@ -70,7 +75,7 @@ function PitBull4_Chi:UNIT_DISPLAYPOWER(event, unit)
 	if unit ~= "player" then
 		return
 	end
-	
+
 	update_player(self)
 end
 
@@ -83,13 +88,13 @@ function PitBull4_Chi:ClearFrame(frame)
 	if not container then
 		return false
 	end
-	
+
 	for i = 1, 6 do
 		container[i] = container[i]:Delete()
 	end
 	container.bg = container.bg:Delete()
 	frame.Chi = container:Delete()
-	
+
 	return true
 end
 
@@ -108,19 +113,19 @@ local function update_container_size(container, vertical, max_chi)
 end
 
 function PitBull4_Chi:UpdateFrame(frame)
-	if frame.unit ~= "player" then
+	if frame.unit ~= "player" or (legion_700 and GetSpecialization() ~= SPEC_MONK_WINDWALKER) then
 		return self:ClearFrame(frame)
 	end
 
 	local db = self:GetLayoutDB(frame)
 	local vertical = db.vertical
-	
+
 	local container = frame.Chi
 	if not container then
 		container = PitBull4.Controls.MakeFrame(frame)
 		frame.Chi = container
 		container:SetFrameLevel(frame:GetFrameLevel() + 13)
-		
+
 		local point, attach
 		for i = 1, 6 do
 			local chi_icon = PitBull4.Controls.MakeChiIcon(container, i)
@@ -135,15 +140,15 @@ function PitBull4_Chi:UpdateFrame(frame)
 				chi_icon:SetPoint("CENTER", container, "BOTTOM", 0, BORDER_SIZE + (i - 1) * (SPACING + STANDARD_SIZE) + HALF_STANDARD_SIZE)
 			end
 		end
-	
+
 		update_container_size(container, vertical, 4)
-		
+
 		local bg = PitBull4.Controls.MakeTexture(container, "BACKGROUND")
 		container.bg = bg
-		bg:SetTexture(unpack(db.background_color))
+		bg:SetColorTexture(unpack(db.background_color))
 		bg:SetAllPoints(container)
 	end
-	
+
 	local num_chi = UnitPower("player", SPELL_POWER_CHI)
 	local max_chi = UnitPowerMax("player", SPELL_POWER_CHI)
 	if max_chi ~= container.max_chi then
@@ -162,7 +167,7 @@ function PitBull4_Chi:UpdateFrame(frame)
 			chi_icon:Deactivate()
 		end
 	end
-	
+
 	container:Show()
 
 	return true
@@ -178,7 +183,7 @@ PitBull4_Chi:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).vertical = value
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("player") do
 				self:Clear(frame)
 				self:Update(frame)
@@ -195,7 +200,7 @@ PitBull4_Chi:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).click_through = value
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("player") do
 				self:Clear(frame)
 				self:Update(frame)
@@ -214,7 +219,7 @@ PitBull4_Chi:SetLayoutOptionsFunction(function(self)
 		set = function(info, r, g, b, a)
 			local color = PitBull4.Options.GetLayoutDB(self).active_color
 			color[1], color[2], color[3], color[4] = r, g, b, a
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("player") do
 				self:Clear(frame)
 				self:Update(frame)
@@ -233,7 +238,7 @@ PitBull4_Chi:SetLayoutOptionsFunction(function(self)
 		set = function(info, r, g, b, a)
 			local color = PitBull4.Options.GetLayoutDB(self).inactive_color
 			color[1], color[2], color[3], color[4] = r, g, b, a
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("player") do
 				self:Clear(frame)
 				self:Update(frame)
@@ -252,7 +257,7 @@ PitBull4_Chi:SetLayoutOptionsFunction(function(self)
 		set = function(info, r, g, b, a)
 			local color = PitBull4.Options.GetLayoutDB(self).background_color
 			color[1], color[2], color[3], color[4] = r, g, b, a
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("player") do
 				self:Clear(frame)
 				self:Update(frame)

@@ -1,6 +1,7 @@
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
-if select(2, UnitClass("player")) ~= "WARLOCK" then
+local PitBull4_BurningEmbers = PitBull4:GetModule("BurningEmbers", true)
+if not PitBull4_BurningEmbers then
 	return
 end
 
@@ -37,7 +38,7 @@ function BurningEmber:UpdateTexture()
 	if value == 0 then
 		value = EPSILON
 	end
-	if value < MAX_POWER_PER_EMBER then 
+	if value < MAX_POWER_PER_EMBER then
 		texture:SetTexCoord(0.00390625, 0.14453125, FIRE_TOP + (DELTA_PER_POWER * inverse_value), FIRE_BOTTOM)
 		texture:SetVertexColor(0.5, 0.5, 0.5)
 		texture:ClearAllPoints()
@@ -53,7 +54,7 @@ end
 
 local function BurningEmber_OnUpdate(self, elapsed)
 	local shine_time = self.shine_time + elapsed
-	
+
 	if shine_time > SHINE_TIME then
 		self:SetScript("OnUpdate", nil)
 		self.shine_time = nil
@@ -61,7 +62,7 @@ local function BurningEmber_OnUpdate(self, elapsed)
 		return
 	end
 	self.shine_time = shine_time
-	
+
 	if shine_time < SHINE_HALF_TIME then
 		self.shine:SetAlpha(shine_time * INVERSE_SHINE_HALF_TIME)
 	else
@@ -121,7 +122,7 @@ end
 
 PitBull4.Controls.MakeNewControlType("BurningEmber", "Button", function(control)
 	-- onCreate
-	
+
 	for k, v in pairs(BurningEmber) do
 		control[k] = v
 	end
@@ -130,18 +131,18 @@ PitBull4.Controls.MakeNewControlType("BurningEmber", "Button", function(control)
 	end
 end, function(control, id)
 	-- onRetrieve
-	
+
 	control.id = id
 	control:SetWidth(STANDARD_SIZE)
 	control:SetHeight(STANDARD_SIZE)
 	control:SetNormalTexture(ICON_TEXTURE)
 end, function(control)
 	-- onDelete
-	
+
 	control.id = nil
 	control.value = nil
 	control.shine_time = nil
-	
+
 	control:SetNormalTexture(nil)
 	if control.shine then
 		control.shine = control.shine:Delete()

@@ -1,12 +1,12 @@
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
+if select(2, UnitClass("player")) ~= "DEATHKNIGHT" then
+	return
+end
+
 local PitBull4 = _G.PitBull4
 if not PitBull4 then
 	error("PitBull4_Runes requires PitBull4")
-end
-
-if select(2, UnitClass("player")) ~= "DEATHKNIGHT" then
-	return
 end
 
 -- CONSTANTS ----------------------------------------------------------------
@@ -85,13 +85,13 @@ function PitBull4_Runes:ClearFrame(frame)
 	if not container then
 		return false
 	end
-	
+
 	for i = 1, NUM_RUNES do
 		container[i] = container[i]:Delete()
 	end
 	container.bg = container.bg:Delete()
 	frame.Runes = container:Delete()
-	
+
 	return true
 end
 
@@ -99,16 +99,16 @@ function PitBull4_Runes:UpdateFrame(frame)
 	if frame.unit ~= "player" then
 		return self:ClearFrame(frame)
 	end
-	
+
 	local container = frame.Runes
 	if not container then
 		container = PitBull4.Controls.MakeFrame(frame)
 		frame.Runes = container
 		container:SetFrameLevel(frame:GetFrameLevel() + 13)
-		
+
 		local db = self:GetLayoutDB(frame)
 		local vertical = db.vertical
-		
+
 		local point, attach
 		for i = 1, NUM_RUNES do
 			local id = RUNE_IDS[i]
@@ -122,7 +122,7 @@ function PitBull4_Runes:UpdateFrame(frame)
 				rune:SetPoint("CENTER", container, "BOTTOM", 0, BORDER_SIZE + (i - 1) * (SPACING + STANDARD_SIZE) + HALF_STANDARD_SIZE)
 			end
 		end
-		
+
 		if not vertical then
 			container:SetWidth(CONTAINER_WIDTH)
 			container:SetHeight(CONTAINER_HEIGHT)
@@ -132,19 +132,19 @@ function PitBull4_Runes:UpdateFrame(frame)
 			container:SetHeight(CONTAINER_WIDTH)
 			container.height = CONTAINER_WIDTH / CONTAINER_HEIGHT
 		end
-		
+
 		local bg = PitBull4.Controls.MakeTexture(container, "BACKGROUND")
 		container.bg = bg
-		bg:SetTexture(unpack(db.background_color))
+		bg:SetColorTexture(unpack(db.background_color))
 		bg:SetAllPoints(container)
 	end
-	
+
 	for i = 1, NUM_RUNES do
 		local rune = container[i]
 		rune:UpdateTexture()
 		rune:UpdateCooldown()
 	end
-	
+
 	container:Show()
 
 	return true
@@ -160,7 +160,7 @@ PitBull4_Runes:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).vertical = value
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("player") do
 				self:Clear(frame)
 				self:Update(frame)
@@ -177,7 +177,7 @@ PitBull4_Runes:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).click_through = value
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("player") do
 				self:Clear(frame)
 				self:Update(frame)
@@ -196,7 +196,7 @@ PitBull4_Runes:SetLayoutOptionsFunction(function(self)
 		set = function(info, r, g, b, a)
 			local color = PitBull4.Options.GetLayoutDB(self).background_color
 			color[1], color[2], color[3], color[4] = r, g, b, a
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("player") do
 				self:Clear(frame)
 				self:Update(frame)

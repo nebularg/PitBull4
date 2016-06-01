@@ -1,6 +1,7 @@
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
-if select(2, UnitClass("player")) ~= "WARLOCK" or not PowerBarColor["SOUL_SHARDS"] then
+local PitBull4_SoulShards = PitBull4:GetModule("SoulShards", true)
+if not PitBull4_SoulShards then
 	return
 end
 
@@ -43,7 +44,7 @@ end
 
 local function SoulShard_OnUpdate(self, elapsed)
 	local shine_time = self.shine_time + elapsed
-	
+
 	if shine_time > SHINE_TIME then
 		self:SetScript("OnUpdate", nil)
 		self.shine_time = nil
@@ -51,7 +52,7 @@ local function SoulShard_OnUpdate(self, elapsed)
 		return
 	end
 	self.shine_time = shine_time
-	
+
 	if shine_time < SHINE_HALF_TIME then
 		self.shine:SetAlpha(shine_time * INVERSE_SHINE_HALF_TIME)
 	else
@@ -103,7 +104,7 @@ end
 
 PitBull4.Controls.MakeNewControlType("SoulShard", "Button", function(control)
 	-- onCreate
-	
+
 	for k, v in pairs(SoulShard) do
 		control[k] = v
 	end
@@ -112,17 +113,17 @@ PitBull4.Controls.MakeNewControlType("SoulShard", "Button", function(control)
 	end
 end, function(control, id)
 	-- onRetrieve
-	
+
 	control.id = id
 	control:SetWidth(STANDARD_SIZE)
 	control:SetHeight(STANDARD_SIZE)
 end, function(control)
 	-- onDelete
-	
+
 	control.id = nil
 	control.active = nil
 	control.shine_time = nil
-	
+
 	control:SetNormalTexture(nil)
 	if control.shine then
 		control.shine = control.shine:Delete()

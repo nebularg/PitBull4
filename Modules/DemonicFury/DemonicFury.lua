@@ -1,7 +1,7 @@
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local player_class = select(2, UnitClass("player"))
-if player_class ~= "WARLOCK" then
+if player_class ~= "WARLOCK" or select(4, GetBuildInfo()) >= 70000 then
 	return
 end
 
@@ -33,7 +33,7 @@ function PitBull4_DemonicFury:GetValue(frame)
 	if frame.unit ~= "player" then
 		return nil
 	end
- 
+
 	if GetSpecialization() ~= SPEC_WARLOCK_DEMONOLOGY then
 		return nil
 	end

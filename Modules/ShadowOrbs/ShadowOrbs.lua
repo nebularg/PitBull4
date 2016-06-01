@@ -1,12 +1,12 @@
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
+if select(2, UnitClass("player")) ~= "PRIEST" or select(4, GetBuildInfo()) >= 70000 then
+	return
+end
+
 local PitBull4 = _G.PitBull4
 if not PitBull4 then
 	error("PitBull4_ShadowOrbs requires PitBull4")
-end
-
-if select(2, UnitClass("player")) ~= "PRIEST" then
-	return
 end
 
 -- CONSTANTS ----------------------------------------------------------------
@@ -69,7 +69,7 @@ function PitBull4_ShadowOrbs:UNIT_POWER_FREQUENT(event, unit, power_type)
 	if unit ~= "player" or power_type ~= "SHADOW_ORBS" then
 		return
 	end
-	
+
 	update_player(self)
 end
 
@@ -77,7 +77,7 @@ function PitBull4_ShadowOrbs:UNIT_DISPLAYPOWER(event, unit)
 	if unit ~= "player" then
 		return
 	end
-	
+
 	update_player(self)
 end
 
@@ -105,13 +105,13 @@ function PitBull4_ShadowOrbs:ClearFrame(frame)
 	if not container then
 		return false
 	end
-	
+
 	for i = 1, 5 do
 		container[i] = container[i]:Delete()
 	end
 	container.bg = container.bg:Delete()
 	frame.ShadowOrbs = container:Delete()
-	
+
 	return true
 end
 
@@ -162,7 +162,7 @@ function PitBull4_ShadowOrbs:UpdateFrame(frame)
 
 		local bg = PitBull4.Controls.MakeTexture(container, "BACKGROUND")
 		container.bg = bg
-		bg:SetTexture(unpack(db.background_color))
+		bg:SetColorTexture(unpack(db.background_color))
 		bg:SetAllPoints(container)
 	end
 
@@ -184,7 +184,7 @@ function PitBull4_ShadowOrbs:UpdateFrame(frame)
 			orb_icon:Deactivate()
 		end
 	end
-	
+
 	container:Show()
 
 	return true
@@ -200,7 +200,7 @@ PitBull4_ShadowOrbs:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).vertical = value
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("player") do
 				self:Clear(frame)
 				self:Update(frame)
@@ -217,7 +217,7 @@ PitBull4_ShadowOrbs:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).click_through = value
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("player") do
 				self:Clear(frame)
 				self:Update(frame)
@@ -236,7 +236,7 @@ PitBull4_ShadowOrbs:SetLayoutOptionsFunction(function(self)
 		set = function(info, r, g, b, a)
 			local color = PitBull4.Options.GetLayoutDB(self).active_color
 			color[1], color[2], color[3], color[4] = r, g, b, a
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("player") do
 				self:Clear(frame)
 				self:Update(frame)
@@ -255,7 +255,7 @@ PitBull4_ShadowOrbs:SetLayoutOptionsFunction(function(self)
 		set = function(info, r, g, b, a)
 			local color = PitBull4.Options.GetLayoutDB(self).inactive_color
 			color[1], color[2], color[3], color[4] = r, g, b, a
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("player") do
 				self:Clear(frame)
 				self:Update(frame)
@@ -274,7 +274,7 @@ PitBull4_ShadowOrbs:SetLayoutOptionsFunction(function(self)
 		set = function(info, r, g, b, a)
 			local color = PitBull4.Options.GetLayoutDB(self).background_color
 			color[1], color[2], color[3], color[4] = r, g, b, a
-			
+
 			for frame in PitBull4:IterateFramesForUnitID("player") do
 				self:Clear(frame)
 				self:Update(frame)

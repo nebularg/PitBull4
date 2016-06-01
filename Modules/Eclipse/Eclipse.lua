@@ -1,12 +1,12 @@
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
+if select(2, UnitClass("player")) ~= "DRUID" or select(4, GetBuildInfo()) >= 70000 then
+  return
+end
+
 local PitBull4 = _G.PitBull4
 if not PitBull4 then
   error("PitBull4_Eclipse requires PitBull4")
-end
-
-if select(2, UnitClass("player")) ~= "DRUID" or not PowerBarColor["ECLIPSE"] then
-  return
 end
 
 -----------------------------------------------------------------------------
@@ -25,7 +25,7 @@ end
 LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
 local AceGUI = LibStub("AceGUI-3.0")
 
-local PitBull4_Eclipse= PitBull4:NewModule("Eclipse", "AceEvent-3.0")
+local PitBull4_Eclipse = PitBull4:NewModule("Eclipse", "AceEvent-3.0")
 
 PitBull4_Eclipse:SetModuleType("indicator")
 PitBull4_Eclipse:SetName(L["Eclipse"])
@@ -75,13 +75,13 @@ function PitBull4_Eclipse:UpdateFrame(frame)
     -- left or right sides are treated as indicators but placed as bars,
     -- so we need to set our side
     eclipse:SetSize(HEIGHT,WIDTH)
-    eclipse.height = WIDTH / HEIGHT 
+    eclipse.height = WIDTH / HEIGHT
   else
     -- Not positioned as a bar so we're on our own to update our anchors
     if layout_db.orientation == "VERTICAL" then
       eclipse:SetSize(HEIGHT,WIDTH)
       eclipse:SetOrientation("VERTICAL")
-      eclipse.height = WIDTH / HEIGHT 
+      eclipse.height = WIDTH / HEIGHT
     else
       eclipse:SetSize(WIDTH,HEIGHT)
       eclipse:SetOrientation("HORIZONTAL")
@@ -190,7 +190,7 @@ PitBull4_Eclipse:SetLayoutOptionsFunction(function (self)
   }, 'icons', {
     type = 'toggle',
     name = L['Icons'],
-    desc = L['Display icons for the eclipse buffs on the bar.'], 
+    desc = L['Display icons for the eclipse buffs on the bar.'],
     order = 2,
     get = function(info)
       return PitBull4.Options.GetLayoutDB(self).icons

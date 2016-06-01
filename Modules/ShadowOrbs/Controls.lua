@@ -1,6 +1,7 @@
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
-if select(2, UnitClass("player")) ~= "PRIEST" then
+local PitBull4_ShadowOrbs = PitBull4:GetModule("ShadowOrbs", true)
+if not PitBull4_ShadowOrbs then
 	return
 end
 
@@ -10,7 +11,7 @@ local module_path = _G.debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z0-9]-
 
 local UI_TEXTURE = [[Interface\PlayerFrame\Priest-ShadowUI]]
 
-local STANDARD_SIZE = 38 
+local STANDARD_SIZE = 38
 
 local SHINE_TIME = 1
 local SHINE_HALF_TIME = SHINE_TIME / 2
@@ -43,7 +44,7 @@ end
 
 local function ShadowOrb_OnUpdate(self, elapsed)
 	local shine_time = self.shine_time + elapsed
-	
+
 	if shine_time > SHINE_TIME then
 		self:SetScript("OnUpdate", nil)
 		self.shine_time = nil
@@ -51,7 +52,7 @@ local function ShadowOrb_OnUpdate(self, elapsed)
 		return
 	end
 	self.shine_time = shine_time
-	
+
 	if shine_time < SHINE_HALF_TIME then
 		self.shine:SetAlpha(shine_time * INVERSE_SHINE_HALF_TIME)
 	else
@@ -105,7 +106,7 @@ end
 
 PitBull4.Controls.MakeNewControlType("ShadowOrb", "Button", function(control)
 	-- onCreate
-	
+
 	for k, v in pairs(ShadowOrb) do
 		control[k] = v
 	end
@@ -114,17 +115,17 @@ PitBull4.Controls.MakeNewControlType("ShadowOrb", "Button", function(control)
 	end
 end, function(control, id)
 	-- onRetrieve
-	
+
 	control.id = id
 	control:SetWidth(STANDARD_SIZE)
 	control:SetHeight(STANDARD_SIZE)
 end, function(control)
 	-- onDelete
-	
+
 	control.id = nil
 	control.active = nil
 	control.shine_time = nil
-	
+
 	control:SetNormalTexture(nil)
 	if control.shine then
 		control.shine = control.shine:Delete()
