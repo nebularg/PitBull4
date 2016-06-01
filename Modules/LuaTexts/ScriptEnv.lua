@@ -7,10 +7,14 @@ local PitBull4_LuaTexts = PitBull4:GetModule("LuaTexts")
 
 local legion_700 = select(4, GetBuildInfo()) >= 70000
 
+local UnitIsTapDenied = UnitIsTapDenied or function(unit) -- XXX compat legion_700
+	return UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) and not UnitIsTappedByAllThreatList(unit)
+end
+
 -- The ScriptEnv table serves as the environment that the scripts run
 -- under LuaTexts run under.  The functions included in it are accessible
 -- to this scripts as though they were local functions to it.  Functions
--- that they call will not have access to these functions.  
+-- that they call will not have access to these functions.
 local ScriptEnv = setmetatable({}, {__index = _G})
 PitBull4_LuaTexts.ScriptEnv = ScriptEnv
 
@@ -116,7 +120,7 @@ local function Name(unit)
 			return VehicleName(unit)
 		end
 	end
-	return UnitName(unit) 
+	return UnitName(unit)
 end
 ScriptEnv.Name = Name
 
@@ -350,7 +354,7 @@ local FRIENDLY_REACTION = 5
 local function HostileColor(unit)
 	local r, g, b
 	if not unit then
-		r, g, b = 0.8, 0.8, 0.8 --UNKNOWN 
+		r, g, b = 0.8, 0.8, 0.8 --UNKNOWN
 	else
 		if UnitIsPlayer(unit) or UnitPlayerControlled(unit) then
 			if UnitCanAttack(unit, "player") then
@@ -372,8 +376,8 @@ local function HostileColor(unit)
 				-- either enemy or friend, no violance
 				r, g, b = unpack(PitBull4.ReactionColors.civilian)
 			end
-		elseif (UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) and not UnitIsTappedByAllThreatList(unit)) or UnitIsDead(unit) then
-			r, g, b = 0.5, 0.5, 0.5 -- TODO: We really need this to be globally configurable. 
+		elseif UnitIsTapDenied(unit) or UnitIsDead(unit) then
+			r, g, b = 0.5, 0.5, 0.5 -- TODO: We really need this to be globally configurable.
 		else
 			local reaction = UnitReaction(unit, "player")
 			if reaction then
@@ -382,7 +386,7 @@ local function HostileColor(unit)
 				elseif reaction == 4 then
 					r, g, b = unpack(PitBull4.ReactionColors[NEUTRAL_REACTION])
 				else
-					r, g, b = unpack(PitBull4.ReactionColors[HOSTILE_REACTION]) 
+					r, g, b = unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
 				end
 			else
 				r, g, b = 0.8, 0.8, 0.8 --UNKNOWN
@@ -612,7 +616,7 @@ end
 ScriptEnv.DeadDuration = DeadDuration
 
 local function Dead(unit)
-	local dead_time = DeadDuration(unit) 
+	local dead_time = DeadDuration(unit)
 	local dead_type = (UnitIsGhost(unit) and L["Ghost"]) or (UnitIsDead(unit) and L["Dead"])
 	if dead_time and dead_type then
 		return dead_type..' ('..FormatDuration(dead_time)..')'
@@ -620,7 +624,7 @@ local function Dead(unit)
 		return dead_type
 	end
 end
-ScriptEnv.Dead = Dead 
+ScriptEnv.Dead = Dead
 
 local MOONKIN_FORM = GetSpellInfo(24858)
 local AQUATIC_FORM = GetSpellInfo(1066)
@@ -680,7 +684,7 @@ ScriptEnv.MaxHP = MaxHP
 
 local function Power(unit, power_type)
 	local power = UnitPower(unit, power_type)
-	
+
 	-- Detect mana texts for player and pet units, cache the power
 	-- and mark the font_strings for faster updating.  Allows
 	-- smoothing updating of PowerBars.
@@ -837,7 +841,7 @@ local function IsMouseOver()
 	local font_string = ScriptEnv.font_string
 	local frame = font_string.frame
 	mouseover_check_cache[font_string] = frame
-	return PitBull4_LuaTexts.mouseover == frame 
+	return PitBull4_LuaTexts.mouseover == frame
 end
 ScriptEnv.IsMouseOver = IsMouseOver
 
@@ -989,11 +993,11 @@ local function HPColor(cur, max)
 	if perc <= 0.5 then
 		perc = perc * 2
 		r1, g1, b1 = 1, 0, 0  -- TODO: Let these be configurable?
-		r2, g2, b2 = 1, 1, 0 
+		r2, g2, b2 = 1, 1, 0
 	else
 		perc = perc * 2 - 1
-		r1, g1, b1 = 1, 1, 0 
-		r2, g2, b2 = 0, 1, 0 
+		r1, g1, b1 = 1, 1, 0
+		r2, g2, b2 = 0, 1, 0
 	end
 	local r, g, b = r1 + (r2 - r1)*perc, g1 + (g2 - g1)*perc, b1 + (b2 - b1)*perc
 	if r < 0 then
