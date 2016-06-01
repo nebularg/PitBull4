@@ -23,7 +23,7 @@ function PitBull4_ReputationBar:GetValue(frame)
 	if frame.unit ~= "player" then
 		return nil
 	end
-	
+
 	local name, _, min, max, value, id = GetWatchedFactionInfo()
 	if not name then
 		return nil
@@ -71,7 +71,7 @@ function PitBull4_ReputationBar:GetExampleColor(frame)
 	return color[1], color[2], color[3]
 end
 
-hooksecurefunc("ReputationWatchBar_Update", function()
+hooksecurefunc(MainMenuBar_UpdateExperienceBars and "MainMenuBar_UpdateExperienceBars" or "ReputationWatchBar_Update", function() -- XXX compat legion_700
 	if not PitBull4_ReputationBar:IsEnabled() then
 		return
 	end
