@@ -2,10 +2,10 @@
 
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
-local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
-local PitBull4_Aura = PitBull4:GetModule("Aura")
 local L = PitBull4.L
+local PitBull4_Aura = PitBull4:GetModule("Aura")
+
 local wipe = _G.table.wipe
 
 local HighlightNormal_path, HighlightBorder_path, HighlightThinBorder_path
@@ -15,7 +15,6 @@ do
 	HighlightBorder_path = "Interface\\AddOns\\" .. module_path .. "\\HighlightBorder"
 	HighlightThinBorder_path = "Interface\\AddOns\\" .. module_path .. "\\HighlightThinBorder"
 end
-
 
 -- Handle the reusults table used for tracking the priority of auras to highlight
 local results, pool = {}, {}
@@ -59,7 +58,7 @@ function PitBull4_Aura:HighlightFilterIterator(frame, db, is_buff)
 		-- Note entry[2] says if the aura is a weapon enchant
 		entry[1], entry[2], entry[3], entry[4], entry[5], entry[6],
 			entry[7], entry[8], entry[9], entry[10], entry[11],
-			entry[12], entry[13], entry[14], entry[15]  = 
+			entry[12], entry[13], entry[14], entry[15]  =
 			id, nil, nil, is_buff, UnitAura(unit, id, filter)
 
 		-- Hack to get around a Blizzard bug.  The Enrage debuff_type

@@ -2,14 +2,12 @@
 
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
-local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
+local PitBull4_Aura = PitBull4:GetModule("Aura")
 
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
-
-local PitBull4_Aura = PitBull4:GetModule("Aura")
 
 local function copy(data)
 	local t = {}
@@ -181,8 +179,8 @@ local meta_operators = {
 }
 local meta_filter_funcs = {}
 
-PitBull4_Aura.OnProfileChanged_funcs[#PitBull4_Aura.OnProfileChanged_funcs+1] = 
-function(self) 
+PitBull4_Aura.OnProfileChanged_funcs[#PitBull4_Aura.OnProfileChanged_funcs+1] =
+function(self)
 	-- Must invalidate the cached filter functions on a profile change
 	wipe(meta_filter_funcs)
 end
@@ -987,7 +985,7 @@ PitBull4_Aura:RegisterFilterType('Unit',L["Unit"],unit_filter,function(self,opti
 			end
 			PitBull4_Aura:UpdateAll()
 		end,
-		values = unit_values, 
+		values = unit_values,
 		order = 1,
 	}
 	options.unit = {
@@ -1223,7 +1221,7 @@ PitBull4_Aura:RegisterFilterType('True',L["True"],false_filter,function(self,opt
 	}
 end)
 
--- Caster 
+-- Caster
 local caster_unit_values = {
 	['known'] = L['is known'],
 	['unknown'] = L['is unknown'],
@@ -1297,7 +1295,7 @@ end)
 -- Should Consolidate, Filter by if the Aura is eligible for the consolidated aura display
 local function should_consolidate_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).should_consolidate then
-		return not not entry[14] 
+		return not not entry[14]
 	else
 		return not entry[14]
 	end
@@ -1325,7 +1323,7 @@ PitBull4_Aura:RegisterFilterType('Should consolidate',L['Should consolidate'],sh
 	}
 end)
 
--- Spell ID, allows filtering by the spell id that created the aura 
+-- Spell ID, allows filtering by the spell id that created the aura
 local function id_filter(self, entry)
 	local cfg = PitBull4_Aura:GetFilterDB(self)
 	if cfg.id_list[entry[15]] then
@@ -1462,4 +1460,3 @@ PitBull4_Aura:RegisterFilterType('Boss debuff',L['Boss debuff'],boss_debuff_filt
 		order = 1,
 	}
 end)
-

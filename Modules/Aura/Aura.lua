@@ -2,15 +2,15 @@
 
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
-local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
 if not PitBull4 then
-        error("PitBull4_Aura requires PitBull4")
+	error("PitBull4_Aura requires PitBull4")
 end
+
 local wipe = _G.table.wipe
 
 local L = PitBull4.L
-local PitBull4_Aura= PitBull4:NewModule("Aura", "AceEvent-3.0")
+local PitBull4_Aura = PitBull4:NewModule("Aura", "AceEvent-3.0")
 
 PitBull4_Aura:SetModuleType("custom")
 PitBull4_Aura:SetName(L["Aura"])
@@ -34,14 +34,14 @@ timerFrame:SetScript("OnUpdate",function(self, elapsed)
 	end
 
 	local next_text_update = PitBull4_Aura.next_text_update
-	if next_text_update then 
+	if next_text_update then
 		next_text_update = next_text_update - elapsed
 		elapsed_since_text_update = elapsed_since_text_update + elapsed
 		if next_text_update <= 0 then
 			next_text_update = PitBull4_Aura:UpdateCooldownTexts(elapsed_since_text_update)
 			elapsed_since_text_update = 0
 		end
-		PitBull4_Aura.next_text_update = next_text_update 
+		PitBull4_Aura.next_text_update = next_text_update
 	end
 end)
 

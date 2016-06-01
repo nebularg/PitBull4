@@ -2,7 +2,6 @@
 
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
-local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
@@ -44,11 +43,11 @@ local function OnUpdate(self)
 		-- Real Buffs
 		local unit = self:GetUnit()
 		local filter = self.is_buff and "HELPFUL" or "HARMFUL"
-		-- Check that the cached id is still refrencing the same aura.  
-		-- If not walk the aura tree to find one of the same name so the 
+		-- Check that the cached id is still refrencing the same aura.
+		-- If not walk the aura tree to find one of the same name so the
 		-- tooltip will match.  UNIT_AURA events are not fired when the
 		-- unit goes out of range but the order of the auras by index change.
-		-- For a more detailed explanation for why this silly hack is necessary see: 
+		-- For a more detailed explanation for why this silly hack is necessary see:
 		-- http://www.wowace.com/addons/pitbull4/tickets/532-aura-tooltips-not-matching-icons/
 		-- or
 		-- http://forums.worldofwarcraft.com/thread.html?topicId=16904201555&sid=1&pageNo=9#166
@@ -58,7 +57,7 @@ local function OnUpdate(self)
 			while true do
 				name = UnitAura(unit,i,filter)
 				if not name then
-					-- Couldn't find a matching aura so do nothing. 
+					-- Couldn't find a matching aura so do nothing.
 					return
 				end
 				if name == self.name then
@@ -140,7 +139,7 @@ PitBull4.Controls.MakeNewControlType("Aura", "Button", function(control)
 	-- onCreate
 	control:RegisterForClicks("RightButtonUp")
 	control:SetScript("OnClick", OnClick)
-	
+
 	local texture = PitBull4.Controls.MakeTexture(control, "BACKGROUND")
 	control.texture = texture
 	texture:SetAllPoints(control)

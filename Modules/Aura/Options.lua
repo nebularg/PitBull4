@@ -2,10 +2,10 @@
 
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
-local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
-local PitBull4_Aura= PitBull4:GetModule("Aura")
 local L = PitBull4.L
+local PitBull4_Aura = PitBull4:GetModule("Aura")
+
 local can_dispel = PitBull4_Aura.can_dispel
 local friend_buffs = PitBull4_Aura.friend_buffs
 local friend_debuffs = PitBull4_Aura.friend_debuffs
@@ -292,7 +292,7 @@ PitBull4_Aura:SetDefaults({
 		-- = Troll
 		-- > Blood Elf
 		-- ?? Goblin (this has two characters for the race since there is no room to add a race otherwise)
-		-- ? Worgen 
+		-- ? Worgen
 		-- @ Pandaren (shared with the one below, race filters are always followed by a number)
 		-- @ Simple filters
 		--
@@ -1621,7 +1621,7 @@ local function copy(data)
 	return t
 end
 
-PitBull4_Aura.OnProfileChanged_funcs[#PitBull4_Aura.OnProfileChanged_funcs+1] = 
+PitBull4_Aura.OnProfileChanged_funcs[#PitBull4_Aura.OnProfileChanged_funcs+1] =
 function(self)
 	-- Recalculate the filter options on a profile change
 	self.SetHighlightOptions(self, HIGHLIGHT_FILTER_OPTIONS)
@@ -1737,7 +1737,7 @@ function PitBull4_Aura.SetHighlightOptions(self, options)
 
 	-- Make sure this table is empty so we can remove entries
 	wipe(options)
-	
+
 	local order = 1
 	local db = PitBull4.Options.GetLayoutDB(self)
 	local filters = db.highlight_filters
@@ -2225,7 +2225,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 		local id = info[#info]
 		return GetTextDB()[id]
 	end
-	
+
 	local function set_text(info, value)
 		local id = info[#info]
 		GetTextDB()[id] = value
@@ -2349,7 +2349,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				get = get,
 				set = function(info, value)
 					PitBull4.Options.GetLayoutDB(self).suppress_occ = value
-					
+
 					for frame in PitBull4:IterateFrames() do
 						if self:GetLayoutDB(frame).enabled then
 							self:Clear(frame)
@@ -2470,7 +2470,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				type = 'range',
 				name = L["Size"],
 				desc = L["Size of the text."],
-				get = get_text, 
+				get = get_text,
 				set = set_text,
 				min = 0.3,
 				max = 3,

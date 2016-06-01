@@ -2,7 +2,6 @@
 
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
-local _G = getfenv(0)
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
@@ -167,7 +166,7 @@ local function extract_filter_entry_from_key(key)
 	return decode(filter_name),decode(entry)
 end
 
-PitBull4_Aura.OnProfileChanged_funcs[#PitBull4_Aura.OnProfileChanged_funcs+1] = 
+PitBull4_Aura.OnProfileChanged_funcs[#PitBull4_Aura.OnProfileChanged_funcs+1] =
 function(self)
 	-- Recalculate the filter options on a profile change
 	if CURRENT_FILTER then
@@ -197,7 +196,7 @@ function PitBull4_Aura:GetFilterEditor()
 			args = {
 				friend_buffs = {
 					type = 'multiselect',
-					dialogControl = MULTISELECT_CONTROL, 
+					dialogControl = MULTISELECT_CONTROL,
 					name = L['Friend buffs'],
 					desc = L['Select buffs to show on your friends.'],
 					get = function(info,key)
@@ -249,7 +248,7 @@ function PitBull4_Aura:GetFilterEditor()
 				},
 				friend_debuffs = {
 					type = 'multiselect',
-					dialogControl = MULTISELECT_CONTROL, 
+					dialogControl = MULTISELECT_CONTROL,
 					name = L['Friend debuffs'],
 					desc = L['Select debuffs to show on your friends.'],
 					get = function(info,key)
@@ -298,7 +297,7 @@ function PitBull4_Aura:GetFilterEditor()
 				},
 				enemy_debuffs = {
 					type = 'multiselect',
-					dialogControl = MULTISELECT_CONTROL, 
+					dialogControl = MULTISELECT_CONTROL,
 					name = L['Enemy debuffs'],
 					desc = L['Select debuffs to show on your enemies.'],
 					get = function(info,key)
@@ -346,7 +345,7 @@ function PitBull4_Aura:GetFilterEditor()
 				},
 				friend_highlights = {
 					type = 'multiselect',
-					dialogControl = MULTISELECT_CONTROL, 
+					dialogControl = MULTISELECT_CONTROL,
 					name = L['Extra friend highlights'],
 					desc = L['Select extra debuffs to highlight on your friends.'],
 					get = function(info,key)
@@ -392,7 +391,7 @@ function PitBull4_Aura:GetFilterEditor()
 				},
 				enemy_highlights = {
 					type = 'multiselect',
-					dialogControl = MULTISELECT_CONTROL, 
+					dialogControl = MULTISELECT_CONTROL,
 					name = L['Extra enemy highlights'],
 					desc = L['Select extra buffs to highlight on your enemies.'],
 					get = function(info,key)
