@@ -64,9 +64,9 @@ function PitBull4_Background:UpdateFrame(frame)
 		frame.Background = background
 		background:SetAllPoints(frame)
 	end
-	
+
 	background:Show()
-	background:SetTexture(self:GetColor(frame))
+	background:SetColorTexture(self:GetColor(frame))
 
 	-- 3D Portrait
 	local layout_db = self:GetLayoutDB(frame)
@@ -150,7 +150,7 @@ PitBull4_Background:SetLayoutOptionsFunction(function(self)
 		set = function(info, r, g, b, a)
 			local color = PitBull4.Options.GetLayoutDB(self).color
 			color[1], color[2], color[3], color[4] = r, g, b, a
-			
+
 			PitBull4.Options.UpdateFrames()
 		end,
 	}, 'portrait', {
