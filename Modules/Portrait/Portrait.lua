@@ -92,6 +92,7 @@ function PitBull4_Portrait:ClearFrame(frame)
 	local portrait = frame.Portrait
 
 	if portrait.model then
+		portrait.model:SetScript("OnModelLoaded", nil)
 		portrait.model:SetScript("OnUpdate", nil)
 		portrait.model = portrait.model:Delete()
 	end
@@ -145,11 +146,12 @@ local function model_OnUpdate(self, elapsed)
 	-- then back up to get it to update.
 	self:SetAlpha(0.9999999)
 	self:SetAlpha(1)
+end
 
-	if type(self:GetModel()) == "string" then
-		-- the portrait was set properly, we can stop trying to set the portrait
-		self:SetScript("OnUpdate", nil)
-	end
+local function model_OnModelLoaded(self)
+	-- the portrait was set, we can stop trying to set it
+	self:SetScript("OnModelLoaded", nil)
+	self:SetScript("OnUpdate", nil)
 end
 
 function PitBull4_Portrait:OnHide(frame)
@@ -244,6 +246,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 		-- For 3d portraits we have to set the parameters later, doing
 		-- it immediately after a model frame is created doesn't work
 		-- reliably.
+		portrait.model:SetScript("OnModelLoaded", model_OnModelLoaded)
 		portrait.model:SetScript("OnUpdate", model_OnUpdate)
 	elseif style == "two_dimensional" then
 		portrait.texture:SetTexCoord(0.14644660941, 0.85355339059, 0.14644660941, 0.85355339059)

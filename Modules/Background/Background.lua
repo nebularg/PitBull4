@@ -9,8 +9,8 @@ local PitBull4_Background = PitBull4:NewModule("Background", "AceEvent-3.0")
 local L = PitBull4.L
 
 local function model_OnUpdate(self, elapsed)
-	local frame = self:GetParent()
 	if not self.falling_back then
+		local frame = self:GetParent()
 		self:SetUnit(frame.unit)
 		self:SetPortraitZoom(1)
 		self:SetPosition(0, 0, 0)
@@ -20,11 +20,12 @@ local function model_OnUpdate(self, elapsed)
 		self:SetPosition(0, 0, 0)
 		self:SetModel([[Interface\Buttons\talktomequestionmark.mdx]])
 	end
+end
 
-	if type(self:GetModel()) == "string" then
-		-- the portrait was set properly, we can stop trying to set the portrait
-		self:SetScript("OnUpdate", nil)
-	end
+local function model_OnModelLoaded(self)
+	-- the portrait was set, we can stop trying to set it
+	self:SetScript("OnModelLoaded", nil)
+	self:SetScript("OnUpdate", nil)
 end
 
 local guid_demanding_update = nil
@@ -101,6 +102,7 @@ function PitBull4_Background:UpdateFrame(frame)
 	-- For 3d portraits we have to set the parameters later, doing
 	-- it immediately after a model frame is created doesn't work
 	-- reliably.
+	portrait:SetScript("OnModelLoaded", model_OnModelLoaded)
 	portrait:SetScript("OnUpdate", model_OnUpdate)
 	portrait:Show()
 
@@ -114,6 +116,7 @@ function PitBull4_Background:ClearFrame(frame)
 
 	if frame.PortraitBG then
 		local portrait = frame.PortraitBG
+		portrait:SetScript("OnModelLoaded", nil)
 		portrait:SetScript("OnUpdate", nil)
 		portrait.falling_back = nil
 		portrait.guid = nil
