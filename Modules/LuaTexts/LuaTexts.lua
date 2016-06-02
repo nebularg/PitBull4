@@ -449,7 +449,7 @@ return ConfigMode()]],
 	},
 	[L["Combo points"]] = {
 		[L["Standard"]] = {
-			events = {['UNIT_COMBO_POINTS']=true},
+			events = {['UNIT_COMBO_POINTS']=true,['UNIT_POWER']=true},
 			code = [[
 local combos = Combos()
 if combos ~= 0 then

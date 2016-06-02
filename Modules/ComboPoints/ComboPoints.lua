@@ -5,6 +5,8 @@ if not PitBull4 then
 	error("PitBull4_ComboPoints requires PitBull4")
 end
 
+local legion_700 = select(4, GetBuildInfo()) >= 70000
+
 local player_class = select(2, UnitClass("player"))
 local is_rogue = player_class == "ROGUE"
 local is_druid = player_class == "DRUID"
@@ -44,14 +46,19 @@ PitBull4_ComboPoints:SetDefaults({
 })
 
 function PitBull4_ComboPoints:OnEnable()
-	self:RegisterEvent("UNIT_COMBO_POINTS")
+	if not legion_700 then
+		self:RegisterEvent("UNIT_COMBO_POINTS", "UNIT_POWER_FREQUENT")
+	else
+		self:RegisterEvent("UNIT_POWER_FREQUENT")
+	end
 	if is_druid then
 		self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
 	end
 end
 
-function PitBull4_ComboPoints:UNIT_COMBO_POINTS(event, unit)
+function PitBull4_ComboPoints:UNIT_POWER_FREQUENT(event, unit, power_type)
 	if unit ~= "player" and unit ~= "pet" then return end
+	if power_type and power_type ~= "COMBO_POINTS" then return end
 
 	for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
 		self:Update(frame)
