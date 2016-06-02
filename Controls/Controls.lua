@@ -188,7 +188,11 @@ end
 -- create a very basic control, properly handling Textures and FontStrings.
 local function create_control(kind, name, inheritTemplate, parent)
 	if kind == "Texture" then
-		return parent:CreateTexture(name, "BACKGROUND")
+		local texture = parent:CreateTexture(name, "BACKGROUND")
+		if type(texture.SetColorTexture) ~= "function" then -- XXX compat legion_700
+			texture.SetColorTexture = texture.SetTexture
+		end
+		return texture
 	end
 	if kind == "FontString" then
 		local font_string = parent:CreateFontString(name, "BACKGROUND")
@@ -204,7 +208,7 @@ local function create_control(kind, name, inheritTemplate, parent)
 		return font_string
 	end
 	if kind == "AnimatedTexture" then
-		local texture = parent:CreateTexture(name, "BACKGROUND")
+		local texture = create_control("Texture", name, nil, parent)
 		texture.ag = texture:CreateAnimationGroup()
 		return texture
 	end
