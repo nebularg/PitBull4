@@ -3,6 +3,7 @@
 
 <!--@debug@-->
 <Include file="Modules\Aggro\load.xml"/>
+<Include file="Modules\AltManaBar\load.xml"/>
 <Include file="Modules\AltPowerBar\load.xml"/>
 <Include file="Modules\Aura\load.xml"/>
 <Include file="Modules\Background\load.xml"/>
@@ -19,7 +20,6 @@
 <Include file="Modules\ComboPoints\load.xml"/>
 <Include file="Modules\DemonicFury\load.xml"/>
 <Include file="Modules\DogTagTexts\load.xml"/>
-<Include file="Modules\DruidManaBar\load.xml"/>
 <Include file="Modules\Eclipse\load.xml"/>
 <Include file="Modules\ExperienceBar\load.xml"/>
 <Include file="Modules\HealthBar\load.xml"/>

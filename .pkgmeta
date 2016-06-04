@@ -26,6 +26,7 @@ externals:
 
 move-folders:
     PitBull4/Modules/Aggro: PitBull4_Aggro
+    PitBull4/Modules/AltManaBar: PitBull4_AltManaBar
     PitBull4/Modules/AltPowerBar: PitBull4_AltPowerBar
     PitBull4/Modules/Aura: PitBull4_Aura
     PitBull4/Modules/Background: PitBull4_Background
@@ -42,7 +43,6 @@ move-folders:
     PitBull4/Modules/ComboPoints: PitBull4_ComboPoints
     PitBull4/Modules/DemonicFury: PitBull4_DemonicFury
     PitBull4/Modules/DogTagTexts: PitBull4_DogTagTexts
-    PitBull4/Modules/DruidManaBar: PitBull4_DruidManaBar
     PitBull4/Modules/Eclipse: PitBull4_Eclipse
     PitBull4/Modules/ExperienceBar: PitBull4_ExperienceBar
     PitBull4/Modules/HealthBar: PitBull4_HealthBar
