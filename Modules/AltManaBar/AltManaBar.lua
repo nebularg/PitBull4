@@ -1,7 +1,7 @@
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local player_class = select(2, UnitClass("player"))
-if player_class ~= "DRUID" and player_class ~= "MONK" then
+if player_class ~= "DRUID" then
 	return
 end
 
@@ -24,18 +24,15 @@ PitBull4_AltManaBar:SetDefaults({
 })
 
 -- constants
-local MANA_TYPE = 0
+local SPELL_POWER_MANA = _G.SPELL_POWER_MANA
 
 -- cached power type for optimization
 local power_type = nil
 
 function PitBull4_AltManaBar:OnEnable()
 	self:RegisterEvent("UNIT_POWER_FREQUENT")
-	self:RegisterEvent("UNIT_MAXPOWER","UNIT_POWER_FREQUENT")
-	self:RegisterEvent("UNIT_DISPLAYPOWER","UNIT_POWER_FREQUENT")
-	if player_class == "MONK" then
-		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
-	end
+	self:RegisterEvent("UNIT_MAXPOWER", "UNIT_POWER_FREQUENT")
+	self:RegisterEvent("UNIT_DISPLAYPOWER", "UNIT_POWER_FREQUENT")
 end
 
 function PitBull4_AltManaBar:GetValue(frame)
@@ -44,29 +41,25 @@ function PitBull4_AltManaBar:GetValue(frame)
 	end
 
 	power_type = UnitPowerType("player")
-	if power_type == MANA_TYPE then
+	if power_type == SPELL_POWER_MANA then
 		return nil
 	end
 
-	if player_class == "MONK" and GetSpecialization() ~= SPEC_MONK_MISTWEAVER then
+	if UnitHasVehiclePlayerFrameUI("player") then
 		return nil
 	end
 
-	local max = UnitPowerMax("player", MANA_TYPE)
-	local percent = 0
-	if max ~= 0 then
-	  percent = UnitPower("player", MANA_TYPE) / max
+	local max = UnitPowerMax("player", SPELL_POWER_MANA)
+	if max == 0 then
+		return nil
 	end
 
+	local percent = UnitPower("player", SPELL_POWER_MANA) / max
 	if percent == 1 and self:GetLayoutDB(frame).hide_if_full then
 		return nil
 	end
 
 	return percent
-end
-function PitBull4_AltManaBar:GetExampleValue(frame)
-	-- just go with what :GetValue gave
-	return nil
 end
 
 function PitBull4_AltManaBar:GetColor(frame, value)
@@ -81,19 +74,13 @@ function PitBull4_AltManaBar:UNIT_POWER_FREQUENT(event, unit, power_type)
 	end
 
 	local prev_power_type = power_type
-	power_type = UnitPowerType("player") 
-	if power_type == MANA_TYPE and power_type == prev_power_type then
+	power_type = UnitPowerType("player")
+	if power_type == SPELL_POWER_MANA and power_type == prev_power_type then
 		-- We really don't want to iterate all the frames on every mana
 		-- update when the bar is already hidden.
 		return
 	end
 
-	for frame in PitBull4:IterateFramesForUnitID("player") do
-		self:Update(frame)
-	end
-end
-
-function PitBull4_AltManaBar:PLAYER_SPECIALIZATION_CHANGED()
 	for frame in PitBull4:IterateFramesForUnitID("player") do
 		self:Update(frame)
 	end
@@ -109,7 +96,6 @@ PitBull4_AltManaBar:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).hide_if_full = value
-			
 			PitBull4.Options.UpdateFrames()
 		end,
 	}
