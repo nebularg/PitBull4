@@ -5,8 +5,6 @@ if not PitBull4 then
 	error("PitBull4_ComboPoints requires PitBull4")
 end
 
-local legion_700 = select(4, GetBuildInfo()) >= 70000
-
 local player_class = select(2, UnitClass("player"))
 local is_rogue = player_class == "ROGUE"
 local is_druid = player_class == "DRUID"
@@ -16,6 +14,8 @@ local is_druid = player_class == "DRUID"
 local BASE_TEXTURE_PATH = [[Interface\AddOns\]] .. debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z]-%.lua") .. [[\]]
 
 local L = PitBull4.L
+
+local SPELL_POWER_COMBO_POINTS = _G.SPELL_POWER_COMBO_POINTS
 
 local TEXTURES = {
 	default = L["Default"],
@@ -46,11 +46,8 @@ PitBull4_ComboPoints:SetDefaults({
 })
 
 function PitBull4_ComboPoints:OnEnable()
-	if not legion_700 then
-		self:RegisterEvent("UNIT_COMBO_POINTS", "UNIT_POWER_FREQUENT")
-	else
-		self:RegisterEvent("UNIT_POWER_FREQUENT")
-	end
+	self:RegisterEvent("UNIT_POWER_FREQUENT")
+	self:RegisterEvent("UNIT_EXITED_VEHICLE")
 	if is_druid then
 		self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
 	end
@@ -58,7 +55,15 @@ end
 
 function PitBull4_ComboPoints:UNIT_POWER_FREQUENT(event, unit, power_type)
 	if unit ~= "player" and unit ~= "pet" then return end
-	if power_type and power_type ~= "COMBO_POINTS" then return end
+	if power_type ~= "COMBO_POINTS" then return end
+
+	for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
+		self:Update(frame)
+	end
+end
+
+function PitBull4_ComboPoints:UNIT_EXITED_VEHICLE(event, unit)
+	if unit ~= "player" then return end
 
 	for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
 		self:Update(frame)
@@ -99,7 +104,7 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 		return self:ClearFrame(frame)
 	end
 
-	local num_combos = has_vehicle and GetComboPoints("vehicle", "target") or UnitPower("player", 4)
+	local num_combos = has_vehicle and GetComboPoints("vehicle", "target") or UnitPower("player", SPELL_POWER_COMBO_POINTS)
 
 	-- While non-rogues and non-druids typically don't have combo points, certain game
 	-- mechanics may add them anyway (e.g. Malygos vehicles). Always show the combo
