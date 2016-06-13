@@ -31,9 +31,9 @@ PitBull4_VisualHeal:SetDefaults({
 
 function PitBull4_VisualHeal:OnEnable()
 	self:RegisterEvent("UNIT_HEAL_PREDICTION")
-	self:RegisterEvent("UNIT_HEALTH","UNIT_HEAL_PREDICTION")
+	self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UNIT_HEAL_PREDICTION")
 	self:RegisterEvent("UNIT_MAXHEALTH", "UNIT_HEAL_PREDICTION")
-	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED",  "UNIT_HEAL_PREDICTION")
+	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", "UNIT_HEAL_PREDICTION")
 end
 
 local function clamp(value, min, max)
