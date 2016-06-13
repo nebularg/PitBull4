@@ -5,28 +5,9 @@ if not PitBull4 then
 	error("PitBull4_Background requires PitBull4")
 end
 
-local PitBull4_Background = PitBull4:NewModule("Background", "AceEvent-3.0")
 local L = PitBull4.L
 
-local function model_OnUpdate(self, elapsed)
-	if not self.falling_back then
-		local frame = self:GetParent()
-		self:SetUnit(frame.unit)
-		self:SetPortraitZoom(1)
-		self:SetPosition(0, 0, 0)
-	else
-		-- question mark or :ClearModel?
-		self:SetModelScale(3)
-		self:SetPosition(0, 0, 0)
-		self:SetModel([[Interface\Buttons\talktomequestionmark.mdx]])
-	end
-end
-
-local function model_OnModelLoaded(self)
-	-- the portrait was set, we can stop trying to set it
-	self:SetScript("OnModelLoaded", nil)
-	self:SetScript("OnUpdate", nil)
-end
+local PitBull4_Background = PitBull4:NewModule("Background", "AceEvent-3.0")
 
 local guid_demanding_update = nil
 
@@ -43,17 +24,14 @@ function PitBull4_Background:OnEnable()
 end
 
 function PitBull4_Background:UNIT_PORTRAIT_UPDATE(event, unit)
-	if not unit then
-		return
-	end
-
+	if not unit then return end
 	local guid = UnitGUID(unit)
 	guid_demanding_update = guid
 	self:UpdateForGUID(guid)
 	guid_demanding_update = nil
 end
 
--- this is here to allow it to be overridden, by say an aggro module
+-- this is here to allow it to be overridden, e.g., aggro module
 function PitBull4_Background:GetColor(frame)
 	return unpack(PitBull4_Background:GetLayoutDB(frame).color)
 end
@@ -96,14 +74,18 @@ function PitBull4_Background:UpdateFrame(frame)
 		return false
 	end
 
-	portrait.falling_back = falling_back
 	portrait.guid = frame.guid
-
-	-- For 3d portraits we have to set the parameters later, doing
-	-- it immediately after a model frame is created doesn't work
-	-- reliably.
-	portrait:SetScript("OnModelLoaded", model_OnModelLoaded)
-	portrait:SetScript("OnUpdate", model_OnUpdate)
+	portrait:ClearModel()
+	if not falling_back then
+		portrait:SetUnit(frame.unit)
+		portrait:SetPortraitZoom(1)
+		portrait:SetPosition(0, 0, 0)
+	else
+		portrait:SetModelScale(1)
+		portrait:SetModel([[Interface\Buttons\talktomequestionmark.mdx]])
+		portrait:SetModelScale(3)
+		portrait:SetPosition(0, 0, 0)
+	end
 	portrait:Show()
 
 	return created
@@ -116,9 +98,6 @@ function PitBull4_Background:ClearFrame(frame)
 
 	if frame.PortraitBG then
 		local portrait = frame.PortraitBG
-		portrait:SetScript("OnModelLoaded", nil)
-		portrait:SetScript("OnUpdate", nil)
-		portrait.falling_back = nil
 		portrait.guid = nil
 		frame.PortraitBG = portrait:Delete()
 

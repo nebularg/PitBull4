@@ -1,30 +1,19 @@
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
-local CLASS_TEX_COORDS = {
-	WARRIOR     = {0, 0.25, 0, 0.25},
-	MAGE        = {0.25, 0.49609375, 0, 0.25},
-	ROGUE       = {0.49609375, 0.7421875, 0, 0.25},
-	DRUID       = {0.7421875, 0.98828125, 0, 0.25},
-	HUNTER      = {0, 0.25, 0.25, 0.5},
-	SHAMAN      = {0.25, 0.49609375, 0.25, 0.5},
-	PRIEST      = {0.49609375, 0.7421875, 0.25, 0.5},
-	WARLOCK     = {0.7421875, 0.98828125, 0.25, 0.5},
-	PALADIN     = {0, 0.25, 0.5, 0.75},
-	DEATHKNIGHT = {0.25, 0.49609375, 0.5, 0.75},
-	MONK        = {0.496039375, 0.7421875, 0.5, 0.75},
-}
+local PitBull4 = _G.PitBull4
+if not PitBull4 then
+	error("PitBull4_Portrait requires PitBull4")
+end
 
-for k, v in pairs(CLASS_TEX_COORDS) do
+local legion_700 = select(4, GetBuildInfo()) >= 70000
+
+local CLASS_TEX_COORDS = {}
+for k, v in pairs(_G.CLASS_ICON_TCOORDS) do
 	-- zoom by 14%
 	local left, right, top, bottom = unpack(v)
 	left, right = left + (right - left) * 0.07, right - (right - left) * 0.07
 	top, bottom = top + (bottom - top) * 0.07, bottom - (bottom - top) * 0.07
-	v[1], v[2], v[3], v[4] = left, right, top, bottom
-end
-
-local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_Portrait requires PitBull4")
+	CLASS_TEX_COORDS[k] = { left, right, top, bottom }
 end
 
 local L = PitBull4.L
@@ -71,9 +60,6 @@ function PitBull4_Portrait:OnEnable()
 	end
 end
 
-function PitBull4_Portrait:OnDisable()
-end
-
 local guid_demanding_update = nil
 
 function PitBull4_Portrait:UNIT_PORTRAIT_UPDATE(event, unit)
@@ -92,8 +78,6 @@ function PitBull4_Portrait:ClearFrame(frame)
 	local portrait = frame.Portrait
 
 	if portrait.model then
-		portrait.model:SetScript("OnModelLoaded", nil)
-		portrait.model:SetScript("OnUpdate", nil)
 		portrait.model = portrait.model:Delete()
 	end
 	if portrait.texture then
@@ -105,53 +89,10 @@ function PitBull4_Portrait:ClearFrame(frame)
 	portrait.style = nil
 	portrait.height = nil
 	portrait.guid = nil
-	portrait.falling_back = nil
+	portrait.full_body = nil
 	frame.Portrait = portrait:Delete()
 
 	return true
-end
-
-local function model_OnUpdate(self, elapsed)
-
-	local frame = self:GetParent()
-	local style = frame.Portrait.style
-	local full_body = PitBull4_Portrait:GetLayoutDB(frame).full_body
-
-	if style == "three_dimensional" then
-		if not frame.Portrait.falling_back then
-			self:SetUnit(frame.unit)
-			self:SetPortraitZoom(full_body and 0 or 1)
-			self:SetPosition(0, 0, 0)
-		else
-			self:SetModelScale(4.25)
-			self:SetPosition(0, 0, -1.5)
-			self:SetModel([[Interface\Buttons\talktomequestionmark.mdx]])
-		end
-	else -- style == "pirate"
-		self:SetUnit(frame.unit)
-		self:Undress()
-		self:TryOn(9636)
-		self:TryOn(6795)
-		self:TryOn(6835)
-		self:TryOn(6836)
-		self:TryOn(2955)
-		self:TryOn(3935)
-		self:SetPosition(0, 0, 0)
-		self:SetPortraitZoom(full_body and 0 or 1)
-	end
-
-	-- work around a Blizzard bug that causes model frames not to
-	-- adjust their alpha realtive to their parent frames alpha after
-	-- the model is updated.  So we nudge the alpha down a bit and
-	-- then back up to get it to update.
-	self:SetAlpha(0.9999999)
-	self:SetAlpha(1)
-end
-
-local function model_OnModelLoaded(self)
-	-- the portrait was set, we can stop trying to set it
-	self:SetScript("OnModelLoaded", nil)
-	self:SetScript("OnUpdate", nil)
 end
 
 function PitBull4_Portrait:OnHide(frame)
@@ -240,14 +181,33 @@ function PitBull4_Portrait:UpdateFrame(frame)
 		return false
 	end
 
-	portrait.falling_back = falling_back
+	local full_body = layout_db.full_body
+	portrait.full_body = full_body
 	portrait.guid = frame.guid
-	if style == "three_dimensional" or style == "pirate" then
-		-- For 3d portraits we have to set the parameters later, doing
-		-- it immediately after a model frame is created doesn't work
-		-- reliably.
-		portrait.model:SetScript("OnModelLoaded", model_OnModelLoaded)
-		portrait.model:SetScript("OnUpdate", model_OnUpdate)
+	if style == "three_dimensional" then
+		portrait.model:ClearModel()
+		if not falling_back then
+			portrait.model:SetUnit(frame.unit)
+			portrait.model:SetPortraitZoom(full_body and 0 or 1)
+			portrait.model:SetPosition(0, 0, 0)
+		else
+			portrait.model:SetModelScale(1) -- the scale gets screwed up if not reset before SetModel
+			portrait.model:SetModel([[Interface\Buttons\talktomequestionmark.mdx]])
+			portrait.model:SetModelScale(legion_700 and 3 or 4.25)
+			portrait.model:SetPosition(0, 0, legion_700 and -0.15 or -0.8)
+		end
+	elseif style == "pirate" then
+		portrait.model:ClearModel()
+		portrait.model:SetUnit(frame.unit)
+		portrait.model:Undress()
+		portrait.model:TryOn(9636)
+		portrait.model:TryOn(6795)
+		portrait.model:TryOn(6835)
+		portrait.model:TryOn(6836)
+		portrait.model:TryOn(2955)
+		portrait.model:TryOn(3935)
+		portrait.model:SetPortraitZoom(full_body and 0 or 1)
+		portrait.model:SetPosition(0, 0, 0)
 	elseif style == "two_dimensional" then
 		portrait.texture:SetTexCoord(0.14644660941, 0.85355339059, 0.14644660941, 0.85355339059)
 		if unit then
