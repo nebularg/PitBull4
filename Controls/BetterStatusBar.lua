@@ -732,6 +732,9 @@ function BetterStatusBar:SetTexture(texture)
 	if DEBUG then
 		expect(texture, 'typeof', 'string')
 	end
+	if texture and self:GetTexture() == texture:gsub("%.tga$", ""):gsub("%.blp$", "") then
+		return
+	end
 
 	self.fg:SetTexture(texture)
 	self.extra:SetTexture(texture)
@@ -745,7 +748,11 @@ end
 -- @usage assert(bar:GetTexture() == [[Interface\TargetingFrame\UI-StatusBar]])
 -- @return the path to the texture
 function BetterStatusBar:GetTexture()
-	return self.fg:GetTexture()
+	local texture = self.fg:GetTexture()
+	if texture then
+		texture = texture:gsub("%.tga$", ""):gsub("%.blp$", "")
+	end
+	return texture
 end
 BetterStatusBar.GetStatusBarTexture = BetterStatusBar.GetTexture
 
