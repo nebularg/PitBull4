@@ -157,11 +157,9 @@ local function get_power_options()
 		confirmText = L["Are you sure you want to reset to defaults?"],
 		order = -1,
 		func = function(info)
-			for power_token, color in pairs(PowerBarColor) do
-				if type(power_token) == "string" then
-					local db_color = PitBull4.db.profile.colors.power[power_token]
-					db_color[1], db_color[2], db_color[3] = color.r, color.g, color.b
-				end
+			for power_token, color in next, PitBull4.DEFAULT_COLORS do
+				local db_color = PitBull4.db.profile.colors.power[power_token]
+				db_color[1], db_color[2], db_color[3] = color.r, color.g, color.b
 			end
 			
 			for frame in PitBull4:IterateFrames() do

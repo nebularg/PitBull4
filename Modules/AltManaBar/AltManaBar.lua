@@ -72,8 +72,7 @@ function PitBull4_AltManaBar:GetValue(frame)
 end
 
 function PitBull4_AltManaBar:GetColor(frame, value)
-	local color = PitBull4.PowerColors["MANA"]
-	return color[1], color[2], color[3]
+	return unpack(PitBull4.PowerColors.MANA)
 end
 PitBull4_AltManaBar.GetExampleColor = PitBull4_AltManaBar.GetColor
 

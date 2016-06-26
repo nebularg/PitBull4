@@ -21,7 +21,7 @@ local INVERSE_SHINE_HALF_TIME = 1 / SHINE_HALF_TIME
 local UNREADY_ALPHA = 0.6
 local READY_ALPHA = 1
 
-local SOUL_SHARD_COLOR = assert(PowerBarColor["SOUL_SHARDS"])
+local SOUL_SHARD_COLOR = PitBull4.PowerColors["SOUL_SHARDS"]
 
 -----------------------------------------------------------------------------
 

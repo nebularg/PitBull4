@@ -190,7 +190,9 @@ local DATABASE_DEFAULTS = {
 		},
 		colors = {
 			class = {}, -- filled in by RAID_CLASS_COLORS
-			power = {}, -- filled in by PowerBarColor
+			power = { -- filled in by PowerBarColor
+				["PB4_ALTERNATE"] = { 0.7, 0.7, 0.6 }, -- Fallback alternate power color
+			},
 			reaction = { -- filled in by FACTION_BAR_COLORS
 				civilian = { 48/255, 113/255, 191/255 }
 			},
@@ -206,28 +208,16 @@ for power_token, color in pairs(PowerBarColor) do
 	if type(power_token) == "string" then
 		if color.r then
 			DATABASE_DEFAULTS.profile.colors.power[power_token] = { color.r, color.g, color.b }
-		elseif power_token == "ECLIPSE" then
-			local negative, positive = color.negative, color.positive
-			if negative then
-				DATABASE_DEFAULTS.profile.colors.power["BALANCE_NEGATIVE_ENERGY"] = { negative.r, negative.g, negative.b }
-			end
-			if positive then
-				DATABASE_DEFAULTS.profile.colors.power["BALANCE_POSITIVE_ENERGY"] = { positive.r, positive.g, positive.b }
-			end
+		elseif power_token == "ECLIPSE" then -- XXX compat legion_700: is replaced by LUNAR_POWER which doesn't need this
+			DATABASE_DEFAULTS.profile.colors.power["BALANCE_NEGATIVE_ENERGY"] = { color.negative.r, color.negative.g, color.negative.b }
+			DATABASE_DEFAULTS.profile.colors.power["BALANCE_POSITIVE_ENERGY"] = { color.positive.r, color.positive.g, color.positive.b }
 		end
 	end
 end
-DATABASE_DEFAULTS.profile.colors.power["POWER_TYPE_PYRITE"] = { 0, 0.79215693473816, 1 }
-DATABASE_DEFAULTS.profile.colors.power["POWER_TYPE_STEAM"] = { 0.94901967048645, 0.94901967048645, 0.94901967048645 }
-DATABASE_DEFAULTS.profile.colors.power["POWER_TYPE_HEAT"] = { 1, 0.490019610742107, 0 }
-DATABASE_DEFAULTS.profile.colors.power["POWER_TYPE_BLOOD_POWER"] = { 0.73725494556129, 0, 1 }
-DATABASE_DEFAULTS.profile.colors.power["POWER_TYPE_OOZE"] = { 0.75686281919479, 1, 0 }
-DATABASE_DEFAULTS.profile.colors.power["PB4_ALTERNATE"] = { 0.7, 0.7, 0.6 }
-if not DATABASE_DEFAULTS.profile.colors.power["DEMONIC_FURY"] then
-	DATABASE_DEFAULTS.profile.colors.power["DEMONIC_FURY"] = { 0.58431372549, 0.270588235294, 0.78431372549 }
-end
-DATABASE_DEFAULTS.profile.colors.power["POWER_TYPE_FEL_ENERGY"] = { 0.87843143939972, 0.98039221763611, 0 }
-
+-- remove vehicle power colors
+DATABASE_DEFAULTS.profile.colors.power["AMMOSLOT"] = nil
+DATABASE_DEFAULTS.profile.colors.power["FUEL"] = nil
+DATABASE_DEFAULTS.profile.colors.power["STAGGER"] = nil
 for reaction, color in pairs(FACTION_BAR_COLORS) do
 	DATABASE_DEFAULTS.profile.colors.reaction[reaction] = { color.r, color.g, color.b }
 end
@@ -1036,7 +1026,6 @@ function PitBull4:OnInitialize()
 	local fresh_config = not PitBull4DB
 
 	db = LibStub("AceDB-3.0"):New("PitBull4DB", DATABASE_DEFAULTS, "Default")
-	DATABASE_DEFAULTS = nil
 	self.db = db
 
 	if fresh_config then
@@ -1049,6 +1038,9 @@ function PitBull4:OnInitialize()
 	db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
 
 	LibStub("LibDualSpec-1.0"):EnhanceDatabase(db, "PitBull4")
+
+	self.DEFAULT_COLORS = CopyTable(DATABASE_DEFAULTS.profile.colors.power)
+	DATABASE_DEFAULTS = nil
 
 	local LibDataBrokerLauncher = LibStub("LibDataBroker-1.1"):NewDataObject("PitBull4", {
 		type = "launcher",
