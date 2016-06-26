@@ -1372,7 +1372,7 @@ local initialConfigFunction = [[
     local header = self:GetParent()
     local unitsuffix = header:GetAttribute("unitsuffix")
     if unitsuffix then
-      self:SetAttribute("unitsuffix",unitsuffix)
+      self:SetAttribute("unitsuffix", unitsuffix)
     end
     self:SetWidth(header:GetAttribute("unitWidth"))
     self:SetHeight(header:GetAttribute("unitHeight"))
@@ -1390,20 +1390,11 @@ local initialConfigFunction = [[
       if clickcast_header then
         clickcast_header:SetAttribute("clickcast_button", self)
         clickcast_header:RunAttribute("clickcast_register")
-        -- Borrowed this idea from ShadowedUF to keep Clique working on
-        -- RAID frames since togglemenu is broken with raid menus.
-        -- this works because we gsub togglemenu -> menu.
-        if "togglemenu" == "menu" then
-          self:SetAttribute("clique-shiv", "1")
-          if self:GetAttribute("type2") == "toggle" .. "menu" then
-            self:SetAttribute("type2", "menu")
-          end
-        end
       end
     else
       self:EnableMouse(false)
       -- Very important that the CallMethod is done AFTER the mouse is
-      -- potentially disabled above becuase otherwise it will create a
+      -- potentially disabled above because otherwise it will create a
       -- stack overflow.
       header:CallMethod("InitialConfigFunction")
     end
@@ -1474,13 +1465,9 @@ function PitBull4:ConvertIntoGroupHeader(header)
 		function header.initialConfigFunction(...)
 			return header:InitialConfigFunction(...)
 		end
-
-		if header.group_db.unit_group:sub(1, 4) == "raid" then
-			header:SetAttribute("initialConfigFunction", initialConfigFunction:gsub("togglemenu", "menu"))
-		else
-			header:SetAttribute("initialConfigFunction", initialConfigFunction)
-		end
+		header:SetAttribute("initialConfigFunction", initialConfigFunction)
 	else
+		-- enemy groups are not run from a SecureGroupHeader
 		header:SetScript("OnEvent", header_OnEvent)
 	end
 
