@@ -19,6 +19,7 @@ PitBull4_PowerBar:SetDefaults({
 	position = 2,
 	hide_no_mana = false,
 	hide_no_power = false,
+	use_atlas = false,
 })
 
 local guids_to_update = {}
@@ -27,6 +28,12 @@ local type_to_token = {
 	"RUNES", "RUNIC_POWER", "SOUL_SHARDS", "LUNAR_POWER",
 	"HOLY_POWER", "MAELSTROM", "INSANITY", "FURY", "PAIN"
 }
+local power_bar_atlas = {}
+for power_token, info in next, PowerBarColor do
+	if info.atlas then
+		power_bar_atlas[power_token] = info.atlas
+	end
+end
 
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
@@ -93,7 +100,7 @@ function PitBull4_PowerBar:GetColor(frame, value)
 		end
 	end
 
-	return color[1], color[2], color[3]
+	return color[1], color[2], color[3], nil, nil, self:GetLayoutDB(frame).use_atlas and power_bar_atlas[power_token]
 end
 function PitBull4_PowerBar:GetExampleColor(frame)
 	return unpack(PitBull4.PowerColors.MANA)
@@ -117,29 +124,32 @@ function PitBull4_PowerBar:UNIT_DISPLAYPOWER(event, unit)
 end
 
 PitBull4_PowerBar:SetLayoutOptionsFunction(function(self)
+	local function get(info)
+		return PitBull4.Options.GetLayoutDB(self)[info[#info]]
+	end
+	local function set(info, value)
+		PitBull4.Options.GetLayoutDB(self)[info[#info]] = value
+		PitBull4.Options.UpdateFrames()
+	end
+
 	return 'hide_no_mana', {
-		name = L['Hide non-mana'],
+		name = L["Hide non-mana"],
 		desc = L["Hides the power bar if the unit's current power is not mana."],
-		type = 'toggle',
-		get = function(info)
-			return PitBull4.Options.GetLayoutDB(self).hide_no_mana
-		end,
-		set = function(info, value)
-			PitBull4.Options.GetLayoutDB(self).hide_no_mana = value
-
-			PitBull4.Options.UpdateFrames()
-		end,
+		type = "toggle",
+		get = get,
+		set = set,
 	}, 'hide_no_power', {
-		name = L['Hide non-power'],
-		desc = L['Hides the power bar if the unit has no power.'],
-		type = 'toggle',
-		get = function(info)
-			return PitBull4.Options.GetLayoutDB(self).hide_no_power
-		end,
-		set = function(info, value)
-			PitBull4.Options.GetLayoutDB(self).hide_no_power = value
-
-			PitBull4.Options.UpdateFrames()
-		end,
+		name = L["Hide non-power"],
+		desc = L["Hides the power bar if the unit has no power."],
+		type = "toggle",
+		get = get,
+		set = set,
+	}, 'use_atlas', {
+		name = L["Use power texture"],
+		desc = L["Use the provided power-specific texture if available instead of the set texture."],
+		type = "toggle",
+		get = get,
+		set = set,
+		hidden = function() return not next(power_bar_atlas) end, -- XXX compat legion_700
 	}
 end)

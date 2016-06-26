@@ -749,12 +749,25 @@ end
 -- @return the path to the texture
 function BetterStatusBar:GetTexture()
 	local texture = self.fg:GetTexture()
-	if texture then
+	if type(texture) == "string" then
 		texture = texture:gsub("%.tga$", ""):gsub("%.blp$", "")
 	end
 	return texture
 end
 BetterStatusBar.GetStatusBarTexture = BetterStatusBar.GetTexture
+
+function BetterStatusBar:SetAtlas(atlas)
+	self.fg:SetAtlas(atlas)
+	if atlas then
+		self.fg:SetVertexColor(1, 1, 1)
+	end
+end
+BetterStatusBar.SetStatusBarAltas = BetterStatusBar.SetAtlas
+
+function BetterStatusBar:GetAtlas()
+	return self.fg:GetAtlas()
+end
+BetterStatusBar.GetStatusBarAltas = BetterStatusBar.GetAtlas
 
 -- if extra color is not set, it'll take on this variance of the normal color
 local function normal_to_extra_color(r, g, b)
@@ -1200,6 +1213,7 @@ PitBull4.Controls.MakeNewControlType("BetterStatusBar", "Button", function(contr
 end, function(control)
 	-- onRetrieve
 	fix_orientation(control)
+	control:SetAtlas(nil)
 	control:SetColor(1, 1, 1)
 	control:SetNormalAlpha(1)
 	control:SetIcon(nil)

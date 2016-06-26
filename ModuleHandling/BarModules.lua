@@ -92,14 +92,14 @@ local function call_color_function(self, frame, bar_db, value, extra, icon)
 			return 0.7, 0.7, 0.7, bar_db.alpha 
 		end
 	end
-	local r, g, b, a, override
+	local r, g, b, a, override, atlas
 	-- See the comments in call_value_function for why the frame.unit test is here.
 	-- aka ticket 475.
 	if frame.guid and frame.unit then
 		if bar_provider then
-			r, g, b, a, override = self:GetColor(frame, bar_db, value, extra, icon)
+			r, g, b, a, override, atlas = self:GetColor(frame, bar_db, value, extra, icon)
 		else
-			r, g, b, a, override = self:GetColor(frame, value, extra, icon)
+			r, g, b, a, override, atlas = self:GetColor(frame, value, extra, icon)
 		end
 	end
 	if not override then
@@ -185,7 +185,7 @@ local function call_color_function(self, frame, bar_db, value, extra, icon)
 	if not r or not g or not b then
 		return 0.7, 0.7, 0.7, a
 	end
-	return r, g, b, a
+	return r, g, b, a, atlas
 end
 
 --- Call the :GetBackgroundColor function on the status bar module regarding the given frame.
@@ -417,11 +417,11 @@ function BarModule:UpdateFrame(frame)
 		control = PitBull4.Controls.MakeBetterStatusBar(frame)
 		frame[id] = control
 	end
-	
+
 	control:SetTexture(self:GetTexture(frame))
-	
+
 	control:SetValue(value)
-	local r, g, b, a = call_color_function(self, frame, nil, value, extra or 0, icon)
+	local r, g, b, a, atlas = call_color_function(self, frame, nil, value, extra or 0, icon)
 	control:SetColor(r, g, b)
 	control:SetNormalAlpha(a)
 
@@ -431,7 +431,6 @@ function BarModule:UpdateFrame(frame)
 
 	if extra then
 		control:SetExtraValue(extra)
-		
 		local r, g, b, a = call_extra_color_function(self, frame, nil, value, extra, icon)
 		control:SetExtraColor(r, g, b)
 		control:SetExtraAlpha(a)
@@ -439,7 +438,14 @@ function BarModule:UpdateFrame(frame)
 		control:SetExtraValue(0)
 	end
 	control:SetExtra2Value(0)
-	
+
+	if atlas then
+		-- This is set later so SetBackgroundColor and SetExtraColor
+		-- can operate on the fg color from SetColor if needed before
+		-- resetting it back to 1,1,1 for the atlas.
+		control:SetAtlas(atlas)
+	end
+
 	control:SetIcon(icon)
 	control:SetIconPosition(db.icon_on_left)
 
@@ -450,7 +456,7 @@ function BarModule:UpdateFrame(frame)
 	end
 
 	control:Show()
-	
+
 	return made_control or not not icon
 end
 
