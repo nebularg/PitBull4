@@ -21,6 +21,7 @@ local PitBull4_AltManaBar = PitBull4:NewModule("DruidManaBar", "AceEvent-3.0")
 PitBull4_AltManaBar:SetModuleType("bar")
 PitBull4_AltManaBar:SetName(L["Alternate mana bar"])
 PitBull4_AltManaBar:SetDescription(L["Show the mana bar for specs that don't use mana as their primary resource."])
+PitBull4_AltManaBar.allow_animations = true
 PitBull4_AltManaBar:SetDefaults({
 	size = 1,
 	position = 6,
@@ -83,14 +84,10 @@ function PitBull4_AltManaBar:UNIT_POWER_FREQUENT(event, unit, power_type)
 
 	local prev_power_type = power_type
 	power_type = UnitPowerType("player")
-	if power_type == SPELL_POWER_MANA and power_type == prev_power_type then
+	if power_type ~= SPELL_POWER_MANA or power_type ~= prev_power_type then
 		-- We really don't want to iterate all the frames on every mana
 		-- update when the bar is already hidden.
-		return
-	end
-
-	for frame in PitBull4:IterateFramesForUnitID("player") do
-		self:Update(frame)
+		self:UpdateForUnitID("player")
 	end
 end
 

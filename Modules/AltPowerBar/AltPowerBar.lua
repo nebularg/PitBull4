@@ -14,6 +14,7 @@ local PitBull4_AltPowerBar = PitBull4:NewModule("AltPowerBar", "AceEvent-3.0")
 PitBull4_AltPowerBar:SetModuleType("bar")
 PitBull4_AltPowerBar:SetName(L["Alternate power bar"])
 PitBull4_AltPowerBar:SetDescription(L["Show a bar for the alternate power bar as used in some quests and boss encounters."])
+PitBull4_AltPowerBar.allow_animations = true
 PitBull4_AltPowerBar:SetDefaults({
 	position = 3,
 })
