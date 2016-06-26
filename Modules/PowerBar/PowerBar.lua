@@ -13,7 +13,7 @@ local PitBull4_PowerBar = PitBull4:NewModule("PowerBar", "AceEvent-3.0")
 
 PitBull4_PowerBar:SetModuleType("bar")
 PitBull4_PowerBar:SetName(L["Power bar"])
-PitBull4_PowerBar:SetDescription(L["Show a mana, rage, energy, or runic power bar."])
+PitBull4_PowerBar:SetDescription(L["Show a bar for your primary resource."])
 PitBull4_PowerBar.allow_animations = true
 PitBull4_PowerBar:SetDefaults({
 	position = 2,
@@ -22,6 +22,11 @@ PitBull4_PowerBar:SetDefaults({
 })
 
 local guids_to_update = {}
+local type_to_token = {
+	"MANA", "RAGE", "FOCUS", "ENERGY", "CHI",
+	"RUNES", "RUNIC_POWER", "SOUL_SHARDS", "LUNAR_POWER",
+	"HOLY_POWER", "MAELSTROM", "INSANITY", "FURY", "PAIN"
+}
 
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
@@ -29,7 +34,9 @@ timerFrame:Hide()
 function PitBull4_PowerBar:OnEnable()
 	self:RegisterEvent("UNIT_POWER_FREQUENT")
 	self:RegisterEvent("UNIT_MAXPOWER", "UNIT_POWER_FREQUENT")
-	self:RegisterEvent("UNIT_DISPLAYPOWER", "UNIT_POWER_FREQUENT")
+	self:RegisterEvent("UNIT_DISPLAYPOWER")
+	self:RegisterEvent("UNIT_POWER_BAR_SHOW", "UNIT_DISPLAYPOWER")
+	self:RegisterEvent("UNIT_POWER_BAR_HIDE", "UNIT_DISPLAYPOWER")
 
 	timerFrame:Show()
 end
@@ -49,7 +56,7 @@ timerFrame:SetScript("OnUpdate", function()
 	end
 end)
 
-function PitBull4_PowerBar:GetValue(frame)	
+function PitBull4_PowerBar:GetValue(frame)
 	local unit = frame.unit
 	local layout_db = self:GetLayoutDB(frame)
 	local max = UnitPowerMax(unit)
@@ -71,31 +78,38 @@ function PitBull4_PowerBar:GetExampleValue(frame)
 	return EXAMPLE_VALUE
 end
 
+local alt_color = {}
 function PitBull4_PowerBar:GetColor(frame, value)
-	local db = self:GetLayoutDB(frame)
-	
-	local _, power_token = UnitPowerType(frame.unit)
-	if not power_token then
-		power_token = "MANA"
-	end
-	if power_token == "POWER_TYPE_RED_POWER" then
-		-- Apparently they couldn't just reuse the existing
-		-- RAGE type they had to make a new one, just map it
-		-- becuase providing two colors that are both red and 
-		-- translate to Red in the UI is dumb.
-		power_token = "RAGE"
-	end
+	local unit = frame.unit
+	local power_type, power_token, alt_r, alt_g, alt_b = UnitPowerType(unit)
 	local color = PitBull4.PowerColors[power_token]
-	
-	if color then
-		return color[1], color[2], color[3]
+
+	if not color then
+		if not alt_r then
+			color = PitBull4.PowerColors[type_to_token[power_type]] or PitBull4.PowerColors.MANA
+		else
+			alt_color.r, alt_color.g, alt_color.b = alt_r, alt_g, alt_b
+			color = alt_color
+		end
 	end
+
+	return color[1], color[2], color[3]
 end
 function PitBull4_PowerBar:GetExampleColor(frame)
 	return unpack(PitBull4.PowerColors.MANA)
 end
 
-function PitBull4_PowerBar:UNIT_POWER_FREQUENT(event, unit)
+function PitBull4_PowerBar:UNIT_POWER_FREQUENT(event, unit, power_type)
+	local _, power_token = UnitPowerType(unit)
+	if power_token == power_type then
+		local guid = UnitGUID(unit)
+		if guid then
+			guids_to_update[guid] = true
+		end
+	end
+end
+
+function PitBull4_PowerBar:UNIT_DISPLAYPOWER(event, unit)
 	local guid = UnitGUID(unit)
 	if guid then
 		guids_to_update[guid] = true

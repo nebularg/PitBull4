@@ -7,14 +7,14 @@
 ## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Power bar")@|r]
 ## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Power bar")@|r]
 ## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Power bar")@|r]
-## Notes: Show a mana, rage, energy, or runic power bar.
-## Notes-deDE: @localization(locale="deDE", key="Show a mana, rage, energy, or runic power bar.")@
-## Notes-esES: @localization(locale="esES", key="Show a mana, rage, energy, or runic power bar.")@
-## Notes-frFR: @localization(locale="frFR", key="Show a mana, rage, energy, or runic power bar.")@
-## Notes-koKR: @localization(locale="koKR", key="Show a mana, rage, energy, or runic power bar.")@
-## Notes-ruRU: @localization(locale="ruRU", key="Show a mana, rage, energy, or runic power bar.")@
-## Notes-zhCN: @localization(locale="zhCN", key="Show a mana, rage, energy, or runic power bar.")@
-## Notes-zhTW: @localization(locale="zhTW", key="Show a mana, rage, energy, or runic power bar.")@
+## Notes: Show a bar for your primary resource.
+## Notes-deDE: @localization(locale="deDE", key="Show a bar for your primary resource.")@
+## Notes-esES: @localization(locale="esES", key="Show a bar for your primary resource.")@
+## Notes-frFR: @localization(locale="frFR", key="Show a bar for your primary resource.")@
+## Notes-koKR: @localization(locale="koKR", key="Show a bar for your primary resource.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Show a bar for your primary resource.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Show a bar for your primary resource.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Show a bar for your primary resource.")@
 ## Author: ckknight
 ## DefaultState: enabled
 ## LoadOnDemand: 1
