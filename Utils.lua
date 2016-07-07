@@ -72,7 +72,7 @@ do
 	for i = 1, MAX_BOSS_FRAMES do
 		better_unit_ids["boss" .. i] = "boss" .. i
 	end
-	for i = 1, 30 do
+	for i = 1, 40 do
 		better_unit_ids["nameplate" .. i] = "nameplate" .. i
 	end
 	setmetatable(better_unit_ids, target_same_with_target_mt)

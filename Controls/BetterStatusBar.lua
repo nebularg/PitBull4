@@ -730,8 +730,9 @@ end
 -- @usage bar:SetTexture([[Interface\TargetingFrame\UI-StatusBar]])
 function BetterStatusBar:SetTexture(texture)
 	if DEBUG then
-		expect(texture, 'typeof', 'string')
+		expect(texture, 'typeof', 'string;nil')
 	end
+
 	if texture and self:GetTexture() == texture:gsub("%.tga$", ""):gsub("%.blp$", "") then
 		return
 	end
