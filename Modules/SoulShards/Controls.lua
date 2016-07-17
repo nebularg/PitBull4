@@ -21,8 +21,6 @@ local INVERSE_SHINE_HALF_TIME = 1 / SHINE_HALF_TIME
 local UNREADY_ALPHA = 0.6
 local READY_ALPHA = 1
 
-local SOUL_SHARD_COLOR = PitBull4.PowerColors["SOUL_SHARDS"]
-
 -----------------------------------------------------------------------------
 
 local L = PitBull4.L
@@ -86,7 +84,7 @@ function SoulShard:Shine()
 		shine:SetBlendMode("ADD")
 		shine:SetAlpha(0)
 		shine:SetAllPoints(self)
-		shine:SetVertexColor(SOUL_SHARD_COLOR.r, SOUL_SHARD_COLOR.g, SOUL_SHARD_COLOR.b)
+		shine:SetVertexColor(unpack(PitBull4.PowerColors["SOUL_SHARDS"]))
 		self:SetScript("OnUpdate", SoulShard_OnUpdate)
 	end
 	self.shine_time = 0
