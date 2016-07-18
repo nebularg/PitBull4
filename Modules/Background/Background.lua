@@ -16,6 +16,7 @@ PitBull4_Background:SetName(L["Background"])
 PitBull4_Background:SetDescription(L["Show a flat background for your unit frames."])
 PitBull4_Background:SetDefaults({
 	portrait = false,
+	fallback_style = "three_dimensional",
 	color = { 0, 0, 0, 0.5 }
 })
 
@@ -80,11 +81,10 @@ function PitBull4_Background:UpdateFrame(frame)
 		portrait:SetUnit(frame.unit)
 		portrait:SetPortraitZoom(1)
 		portrait:SetPosition(0, 0, 0)
-	else
+	elseif layout_db.fallback_style == "three_dimensional" then
 		portrait:SetModelScale(1)
 		portrait:SetModel([[Interface\Buttons\talktomequestionmark.mdx]])
-		portrait:SetModelScale(3)
-		portrait:SetPosition(0, 0, 0)
+		portrait:SetPosition(-0.55, 0, 0)
 	end
 	portrait:Show()
 
@@ -152,5 +152,26 @@ PitBull4_Background:SetLayoutOptionsFunction(function(self)
 				end
 			end
 		end,
+	}, 'fallback_style', {
+		type = 'select',
+		name = L["Fallback style"],
+		desc = L["Set the portrait style for when the normal style can't be shown, such as if they are out of visibility."],
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).fallback_style
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).fallback_style = value
+
+			for frame in PitBull4:IterateFrames() do
+				if self:GetLayoutDB(frame).portrait then
+					self:Clear(frame)
+					self:Update(frame)
+				end
+			end
+		end,
+		values = {
+			["three_dimensional"] = L["3D question mark"],
+			["blank"] = L["Blank"],
+		},
 	}
 end)
