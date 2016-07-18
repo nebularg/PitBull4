@@ -1032,9 +1032,9 @@ end
 ScriptEnv.PowerColor = PowerColor
 
 local function ReputationColor(reaction)
-  local color = FACTION_BAR_COLORS[reaction]
+  local color = PitBull4.ReactionColors[reaction]
 	if color then
-		return color.r * 255, color.g * 255, color.b * 255
+		return color[1] * 255, color[2] * 255, color[3] * 255
 	end
 end
 ScriptEnv.ReputationColor = ReputationColor
@@ -1043,7 +1043,7 @@ local function ConfigMode()
 	local font_string = ScriptEnv.font_string
 	local frame = font_string.frame
 	if frame.force_show then
-		return '{'..font_string.luatexts_name..'}'
+		return ("{%s}"):format(font_string.luatexts_name)
 	end
 end
 ScriptEnv.ConfigMode = ConfigMode
