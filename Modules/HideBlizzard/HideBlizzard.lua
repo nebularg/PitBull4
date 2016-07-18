@@ -4,6 +4,7 @@ local PitBull4 = _G.PitBull4
 if not PitBull4 then
 	error("PitBull4_HideBlizzard requires PitBull4")
 end
+-- luacheck: no global
 
 local legion_700 = select(4, GetBuildInfo()) >= 70000
 
@@ -143,6 +144,7 @@ function hiders:party()
 	for i = 1, MAX_PARTY_MEMBERS do
 		local frame = _G["PartyMemberFrame" .. i]
 		rawhook_frames(frame)
+		-- hook_reparent_frames(frame)
 	end
 
 	UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
@@ -173,6 +175,8 @@ do
 	end
 
 	function hiders:raid()
+		if not CompactRaidFrameManager then return end -- Blizzard_CompactRaidFrames isn't loaded
+
 		if not PitBull4_HideBlizzard:IsHooked("CompactRaidFrameManager_UpdateShown") then
 			PitBull4_HideBlizzard:SecureHook("CompactRaidFrameManager_UpdateShown", hide_raid)
 			PitBull4_HideBlizzard:SecureHookScript(CompactRaidFrameManager, "OnShow", hide_frame)
@@ -181,6 +185,8 @@ do
 	end
 
 	function showers:raid()
+		if not CompactRaidFrameManager then return end -- Blizzard_CompactRaidFrames isn't loaded
+
 		PitBull4_HideBlizzard:Unhook("CompactRaidFrameManager_UpdateShown")
 		PitBull4_HideBlizzard:Unhook(CompactRaidFrameManager, "OnShow")
 
@@ -363,7 +369,7 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		get = get,
 		set = set,
 		hidden = hidden,
-		disabled = function() return self.db.profile.global.player	end,
+		disabled = function() return self.db.profile.global.player end,
 	}, 'party', {
 		type = 'toggle',
 		name = L["Party"],
