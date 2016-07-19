@@ -158,7 +158,7 @@ PitBull4_Highlight:SetLayoutOptionsFunction(function(self)
 		end,
 	}, 'while_hover', {
 		type = 'toggle',
-		name = L["On mouse hover"],
+		name = L["On mouse-over"],
 		desc = L["Highlight this unit frame while the mouse hovers over it."],
 		get = function(info)
 			return PitBull4.Options.GetLayoutDB(self).while_hover
