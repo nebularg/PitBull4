@@ -1,5 +1,6 @@
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
+local PitBull4 = _G.PitBull4
 local PitBull4_SoulShards = PitBull4:GetModule("SoulShards", true)
 if not PitBull4_SoulShards then
 	return
@@ -92,7 +93,8 @@ end
 
 function SoulShard_scripts:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-	GameTooltip:SetText(L["%d soul shards"]:format(UnitPower("player", SPELL_POWER_SOUL_SHARDS)))
+	GameTooltip:SetText(SOUL_SHARDS_POWER)
+	GameTooltip:AddLine(SOUL_SHARDS_TOOLTIP, nil, nil, nil, true)
 	GameTooltip:Show()
 end
 

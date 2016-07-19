@@ -161,7 +161,7 @@ PitBull4_SoulShards:SetLayoutOptionsFunction(function(self)
 	return 'vertical', {
 		type = 'toggle',
 		name = L["Vertical"],
-		desc = L["Show the soul shards stacked vertically instead of horizontally."],
+		desc = L["Show the icons stacked vertically instead of horizontally."],
 		get = function(info)
 			return PitBull4.Options.GetLayoutDB(self).vertical
 		end,
@@ -178,7 +178,7 @@ PitBull4_SoulShards:SetLayoutOptionsFunction(function(self)
 	'click_through', {
 		type = 'toggle',
 		name = L["Click-through"],
-		desc = L["Disable capturing clicks on indicators allowing the clicks to fall through to the window underneath the indicator."],
+		desc = L["Disable capturing clicks on icons, allowing the click to fall through to the window underneath the icon."],
 		get = function(info)
 			return PitBull4.Options.GetLayoutDB(self).click_through
 		end,
@@ -196,7 +196,7 @@ PitBull4_SoulShards:SetLayoutOptionsFunction(function(self)
 		type = 'color',
 		hasAlpha = true,
 		name = L["Background color"],
-		desc = L["The background color behind the soul shards."],
+		desc = L["The background color behind the icons."],
 		get = function(info)
 			return unpack(PitBull4.Options.GetLayoutDB(self).background_color)
 		end,

@@ -2373,7 +2373,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			click_through = {
 				type = 'toggle',
 				name = L["Click-through"],
-				desc = L["Disable capturing clicks on aura icons allowing the clicks to fall through to the window underneath the aura."],
+				desc = L["Disable capturing clicks on icons, allowing the click to fall through to the window underneath the icon."],
 				get = get,
 				set = set,
 				disabled = is_aura_disabled,

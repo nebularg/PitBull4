@@ -1,14 +1,12 @@
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
-
+local PitBull4 = _G.PitBull4
 local PitBull4_Chi = PitBull4:GetModule("Chi", true)
 if not PitBull4_Chi then
 	return
 end
 
 -- CONSTANTS ----------------------------------------------------------------
-
-local module_path = _G.debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z0-9]-%.lua")
 
 local TEXTURE = [[Interface\PlayerFrame\MonkUI]]
 
@@ -17,9 +15,6 @@ local STANDARD_SIZE = 15
 local SHINE_TIME = 1
 local SHINE_HALF_TIME = SHINE_TIME / 2
 local INVERSE_SHINE_HALF_TIME = 1 / SHINE_HALF_TIME
-
-local UNREADY_ALPHA = 0.6
-local READY_ALPHA = 1
 
 -----------------------------------------------------------------------------
 

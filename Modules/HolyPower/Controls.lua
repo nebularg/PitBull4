@@ -1,5 +1,6 @@
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
+local PitBull4 = _G.PitBull4
 local PitBull4_HolyPower = PitBull4:GetModule("HolyPower", true)
 if not PitBull4_HolyPower then
 	return
@@ -17,9 +18,6 @@ local STANDARD_SIZE = 15
 local SHINE_TIME = 1
 local SHINE_HALF_TIME = SHINE_TIME / 2
 local INVERSE_SHINE_HALF_TIME = 1 / SHINE_HALF_TIME
-
-local UNREADY_ALPHA = 0.6
-local READY_ALPHA = 1
 
 -----------------------------------------------------------------------------
 
@@ -94,7 +92,8 @@ end
 
 function HolyIcon_scripts:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-	GameTooltip:SetText(HOLY_POWER_COST:format(UnitPower("player", SPELL_POWER_HOLY_POWER)))
+	GameTooltip:SetText(HOLY_POWER)
+	GameTooltip:AddLine(HOLY_POWER_TOOLTIP, nil, nil, nil, true)
 	GameTooltip:Show()
 end
 
