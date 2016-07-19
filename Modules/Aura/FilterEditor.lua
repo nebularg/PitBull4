@@ -33,8 +33,8 @@ function PitBull4_Aura:SetFilterOptions(filter, options)
 	-- Dropdown for display when
 	options.display_when = {
 		type = 'select',
-		name = L['Display when'],
-		desc = L['Set when to include this filter as an option for a layout.'],
+		name = L["Display when"],
+		desc = L["Set when to include this filter as an option for a layout."],
 		get = function(info)
 			return PitBull4_Aura:GetFilterDB(filter).display_when or ""
 		end,
@@ -54,8 +54,8 @@ function PitBull4_Aura:SetFilterOptions(filter, options)
 	-- Create the dropdown for the filter type
 	options.filter_type = {
 		type = 'select',
-		name = L['Filter type'],
-		desc = L['Set the type of filter.'],
+		name = L["Filter type"],
+		desc = L["Set the type of filter."],
 		get = function(info)
 			return PitBull4_Aura:GetFilterDB(filter).filter_type
 		end,
@@ -190,15 +190,15 @@ function PitBull4_Aura:GetFilterEditor()
 	return {
 		simple = {
 			type = 'group',
-			name = L['Simple'],
-			desc = L['Add or remove auras by name to the default filters easily.'],
+			name = L["Simple"],
+			desc = L["Add or remove auras by name to the default filters easily."],
 			inline = false,
 			args = {
 				friend_buffs = {
 					type = 'multiselect',
 					dialogControl = MULTISELECT_CONTROL,
-					name = L['Friend buffs'],
-					desc = L['Select buffs to show on your friends.'],
+					name = L["Friend buffs"],
+					desc = L["Select buffs to show on your friends."],
 					get = function(info,key)
 						local filters = PitBull4_Aura.db.profile.global.filters
 						local filter_name,entry = extract_filter_entry_from_key(key)
@@ -224,8 +224,8 @@ function PitBull4_Aura:GetFilterEditor()
 				},
 				friend_buffs_add = {
 					type = 'input',
-					name = L['Add friend buff'],
-					desc = L['Add a friend buff to the extra friend buff filter.'],
+					name = L["Add friend buff"],
+					desc = L["Add a friend buff to the extra friend buff filter."],
 					get = function(info) return "" end,
 					set = function(info, value)
 						local name_list = PitBull4_Aura:GetFilterDB('*A').name_list
@@ -249,8 +249,8 @@ function PitBull4_Aura:GetFilterEditor()
 				friend_debuffs = {
 					type = 'multiselect',
 					dialogControl = MULTISELECT_CONTROL,
-					name = L['Friend debuffs'],
-					desc = L['Select debuffs to show on your friends.'],
+					name = L["Friend debuffs"],
+					desc = L["Select debuffs to show on your friends."],
 					get = function(info,key)
 						local filters = PitBull4_Aura.db.profile.global.filters
 						local filter_name,entry = extract_filter_entry_from_key(key)
@@ -273,8 +273,8 @@ function PitBull4_Aura:GetFilterEditor()
 				},
 				friend_debuffs_add = {
 					type = 'input',
-					name = L['Add friend debuff'],
-					desc = L['Add a friend debuff to the extra friend debuff filter.'],
+					name = L["Add friend debuff"],
+					desc = L["Add a friend debuff to the extra friend debuff filter."],
 					get = function(info) return "" end,
 					set = function(info, value)
 						local name_list = PitBull4_Aura:GetFilterDB('*B').name_list
@@ -298,8 +298,8 @@ function PitBull4_Aura:GetFilterEditor()
 				enemy_debuffs = {
 					type = 'multiselect',
 					dialogControl = MULTISELECT_CONTROL,
-					name = L['Enemy debuffs'],
-					desc = L['Select debuffs to show on your enemies.'],
+					name = L["Enemy debuffs"],
+					desc = L["Select debuffs to show on your enemies."],
 					get = function(info,key)
 						local filters = PitBull4_Aura.db.profile.global.filters
 						local filter_name,entry = extract_filter_entry_from_key(key)
@@ -321,8 +321,8 @@ function PitBull4_Aura:GetFilterEditor()
 				},
 				enemy_debuffs_add = {
 					type = 'input',
-					name = L['Add enemy debuff'],
-					desc = L['Add a enemy debuff to the extra enemy debuff filter.'],
+					name = L["Add enemy debuff"],
+					desc = L["Add a enemy debuff to the extra enemy debuff filter."],
 					get = function(info) return "" end,
 					set = function(info, value)
 						local name_list = PitBull4_Aura:GetFilterDB('*C').name_list
@@ -346,8 +346,8 @@ function PitBull4_Aura:GetFilterEditor()
 				friend_highlights = {
 					type = 'multiselect',
 					dialogControl = MULTISELECT_CONTROL,
-					name = L['Extra friend highlights'],
-					desc = L['Select extra debuffs to highlight on your friends.'],
+					name = L["Extra friend highlights"],
+					desc = L["Select extra debuffs to highlight on your friends."],
 					get = function(info,key)
 						local filters = PitBull4_Aura.db.profile.global.filters
 						local filter_name,entry = extract_filter_entry_from_key(key)
@@ -367,8 +367,8 @@ function PitBull4_Aura:GetFilterEditor()
 				},
 				friend_highlights_add = {
 					type = 'input',
-					name = L['Add friend highlight'],
-					desc = L['Add a friend debuff to the extra friend debuff highlights.'],
+					name = L["Add friend highlight"],
+					desc = L["Add a friend debuff to the extra friend debuff highlights."],
 					get = function(info) return "" end,
 					set = function(info, value)
 						local name_list = PitBull4_Aura:GetFilterDB('*D').name_list
@@ -392,8 +392,8 @@ function PitBull4_Aura:GetFilterEditor()
 				enemy_highlights = {
 					type = 'multiselect',
 					dialogControl = MULTISELECT_CONTROL,
-					name = L['Extra enemy highlights'],
-					desc = L['Select extra buffs to highlight on your enemies.'],
+					name = L["Extra enemy highlights"],
+					desc = L["Select extra buffs to highlight on your enemies."],
 					get = function(info,key)
 						local filters = PitBull4_Aura.db.profile.global.filters
 						local filter_name,entry = extract_filter_entry_from_key(key)
@@ -413,8 +413,8 @@ function PitBull4_Aura:GetFilterEditor()
 				},
 				enemy_highlights_add = {
 					type = 'input',
-					name = L['Add enemy highlight'],
-					desc = L['Add an enemy buff to the extra enemy buff highlights.'],
+					name = L["Add enemy highlight"],
+					desc = L["Add an enemy buff to the extra enemy buff highlights."],
 					get = function(info) return "" end,
 					set = function(info, value)
 						local name_list = PitBull4_Aura:GetFilterDB('*E').name_list
@@ -434,14 +434,14 @@ function PitBull4_Aura:GetFilterEditor()
 		},
 		advanced = {
 			type = 'group',
-			name = L['Advanced'],
-			desc = L['Configure every detail of the aura filtering.'],
+			name = L["Advanced"],
+			desc = L["Configure every detail of the aura filtering."],
 			inline = false,
 			args = {
 				current_filter = {
 					type = 'select',
-					name = L['Current filter'],
-					desc = L['Change the filter you are currently editing.'],
+					name = L["Current filter"],
+					desc = L["Change the filter you are currently editing."],
 					get = function(info)
 						local filters = self.db.profile.global.filters
 						if not rawget(filters,CURRENT_FILTER) then
@@ -473,8 +473,8 @@ function PitBull4_Aura:GetFilterEditor()
 				},
 				delete_filter = {
 					type = 'execute',
-					name = L['Delete'],
-					desc = L['Delete current filter.'],
+					name = L["Delete"],
+					desc = L["Delete current filter."],
 					func = function(info)
 						local filters = self.db.profile.global.filters
 						filters[CURRENT_FILTER] = nil

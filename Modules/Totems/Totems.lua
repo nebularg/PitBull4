@@ -1463,7 +1463,7 @@ PitBull4_Totems:SetColorOptionsFunction(function(self)
 	},
 	'color_group_timer_text', {
 		type = 'group',
-		name = L["Text Timer"],
+		name = L["Text timer"],
 		inline = true,
 		args = {
 			timer_text = { -- color option

@@ -222,8 +222,8 @@ PitBull4_VisualHeal:SetColorOptionsFunction(function(self)
 	end
 	return 'incoming_color', {
 		type = 'color',
-		name = L['Incoming color'],
-		desc = L['The color of the bar that shows incoming heals from other players.'],
+		name = L["Incoming color"],
+		desc = L["The color of the bar that shows incoming heals from other players."],
 		get = get,
 		set = set,
 		hasAlpha = true,
@@ -231,8 +231,8 @@ PitBull4_VisualHeal:SetColorOptionsFunction(function(self)
 	},
 	'outgoing_color', {
 		type = 'color',
-		name = L['Outgoing color (no overheal)'],
-		desc = L['The color of the bar that shows your own heals, when no overhealing is due.'],
+		name = L["Outgoing color (no overheal)"],
+		desc = L["The color of the bar that shows your own heals, when no overhealing is due."],
 		get = get,
 		set = set,
 		hasAlpha = true,
@@ -240,8 +240,8 @@ PitBull4_VisualHeal:SetColorOptionsFunction(function(self)
 	},
 	'outgoing_color_overheal', {
 		type = 'color',
-		name = L['Outgoing color (overheal)'],
-		desc = L['The color of the bar that shows your own heals, when full overhealing is due.'],
+		name = L["Outgoing color (overheal)"],
+		desc = L["The color of the bar that shows your own heals, when full overhealing is due."],
 		get = get,
 		set = set,
 		hasAlpha = true,
@@ -249,8 +249,8 @@ PitBull4_VisualHeal:SetColorOptionsFunction(function(self)
 	},
 	'absorb_color', {
 		type = 'color',
-		name = L['Absorb color'],
-		desc = L['The color of the bar that shows absorption shields.'],
+		name = L["Absorb color"],
+		desc = L["The color of the bar that shows absorption shields."],
 		get = get,
 		set = set,
 		hasAlpha = true,
@@ -285,8 +285,8 @@ PitBull4_VisualHeal:SetLayoutOptionsFunction(function(self)
 
 	return 'show_overheal', {
 		type = 'toggle',
-		name = L['Show overheals'],
-		desc = L['Show overheals past the end of the health bar.'],
+		name = L["Show overheals"],
+		desc = L["Show overheals past the end of the health bar."],
 		get = function(info)
 			return PitBull4.Options.GetLayoutDB(self).show_overheal
 		end,
@@ -296,8 +296,8 @@ PitBull4_VisualHeal:SetLayoutOptionsFunction(function(self)
 		disabled = disabled,
 	}, 'show_overabsorb', {
 		type = 'toggle',
-		name = L['Show overabsorb'],
-		desc = L['Show absorb past the end of the health bar.'],
+		name = L["Show overabsorb"],
+		desc = L["Show absorb past the end of the health bar."],
 		get = function(info)
 			return PitBull4.Options.GetLayoutDB(self).show_overabsorb
 		end,

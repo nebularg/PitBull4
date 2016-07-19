@@ -775,7 +775,7 @@ end]]
 				if elements then
 					for _,text in pairs(elements) do
 						if text.code == OLD_CODE then
-							text.code = PROVIDED_CODES[L['Reputation']][L['Standard']].code
+							text.code = PROVIDED_CODES[L["Reputation"]][L["Standard"]].code
 						end
 					end
 				end
@@ -1306,62 +1306,62 @@ function PitBull4_LuaTexts:OnNewLayout(layout)
 	end
 	for name, data in pairs {
 		["Lua:"..L["Name"]] = {
-			code = PROVIDED_CODES[L['Name']][L['Standard']].code,
-			events = copy(PROVIDED_CODES[L['Name']][L['Standard']].events),
+			code = PROVIDED_CODES[L["Name"]][L["Standard"]].code,
+			events = copy(PROVIDED_CODES[L["Name"]][L["Standard"]].events),
 			attach_to = "HealthBar",
 			location = "left"
 		},
 		["Lua:"..L["Health"]] = {
-			code = PROVIDED_CODES[L['Health']][L['Absolute and percent']].code,
-			events = copy(PROVIDED_CODES[L['Health']][L['Absolute and percent']].events),
+			code = PROVIDED_CODES[L["Health"]][L["Absolute and percent"]].code,
+			events = copy(PROVIDED_CODES[L["Health"]][L["Absolute and percent"]].events),
 			attach_to = "HealthBar",
 			location = "right"
 		},
 		["Lua:"..L["Class"]] = {
-			code = PROVIDED_CODES[L['Class']][L['Standard']].code,
-			events = copy(PROVIDED_CODES[L['Class']][L['Standard']].events),
+			code = PROVIDED_CODES[L["Class"]][L["Standard"]].code,
+			events = copy(PROVIDED_CODES[L["Class"]][L["Standard"]].events),
 			attach_to = "PowerBar",
 			location = "left"
 		},
 		["Lua:"..L["Power"]] = {
-			code = PROVIDED_CODES[L['Power']][L['Absolute']].code,
-			events = copy(PROVIDED_CODES[L['Power']][L['Absolute']].events),
+			code = PROVIDED_CODES[L["Power"]][L["Absolute"]].code,
+			events = copy(PROVIDED_CODES[L["Power"]][L["Absolute"]].events),
 			attach_to = "PowerBar",
 			location = "right"
 		},
 		["Lua:"..L["Reputation"]] = {
-			code = PROVIDED_CODES[L['Reputation']][L['Standard']].code,
-			events = copy(PROVIDED_CODES[L['Reputation']][L['Standard']].events),
+			code = PROVIDED_CODES[L["Reputation"]][L["Standard"]].code,
+			events = copy(PROVIDED_CODES[L["Reputation"]][L["Standard"]].events),
 			attach_to = "ReputationBar",
 			location = "center"
 		},
 		["Lua:"..L["Cast"]] = {
-			code = PROVIDED_CODES[L['Cast']][L['Standard name']].code,
-			events = copy(PROVIDED_CODES[L['Cast']][L['Standard time']].events),
+			code = PROVIDED_CODES[L["Cast"]][L["Standard name"]].code,
+			events = copy(PROVIDED_CODES[L["Cast"]][L["Standard time"]].events),
 			attach_to = "CastBar",
 			location = "left"
 		},
 		["Lua:"..L["Cast time"]] = {
-			code = PROVIDED_CODES[L['Cast']][L['Standard time']].code,
-			events = copy(PROVIDED_CODES[L['Cast']][L['Standard name']].events),
+			code = PROVIDED_CODES[L["Cast"]][L["Standard time"]].code,
+			events = copy(PROVIDED_CODES[L["Cast"]][L["Standard name"]].events),
 			attach_to = "CastBar",
 			location = "right"
 		},
 		["Lua:"..L["Experience"]] = {
-			code = PROVIDED_CODES[L['Experience']][L['Standard']].code,
-			events = copy(PROVIDED_CODES[L['Experience']][L['Standard']].events),
+			code = PROVIDED_CODES[L["Experience"]][L["Standard"]].code,
+			events = copy(PROVIDED_CODES[L["Experience"]][L["Standard"]].events),
 			attach_to = "ExperienceBar",
 			location = "center"
 		},
 		["Lua:"..L["Threat"]] = {
-			code = PROVIDED_CODES[L['Threat']][L['Percent']].code,
-			events = copy(PROVIDED_CODES[L['Threat']][L['Percent']].events),
+			code = PROVIDED_CODES[L["Threat"]][L["Percent"]].code,
+			events = copy(PROVIDED_CODES[L["Threat"]][L["Percent"]].events),
 			attach_to = "ThreatBar",
 			location = "center"
 		},
 		["Lua:"..L["Druid mana"]] = {
-			code = PROVIDED_CODES[L['Druid mana']][L['Absolute']].code,
-			events = copy(PROVIDED_CODES[L['Druid mana']][L['Absolute']].events),
+			code = PROVIDED_CODES[L["Druid mana"]][L["Absolute"]].code,
+			events = copy(PROVIDED_CODES[L["Druid mana"]][L["Absolute"]].events),
 			attach_to = "DruidManaBar",
 			location = "center"
 		},
@@ -1377,8 +1377,8 @@ function PitBull4_LuaTexts:OnNewLayout(layout)
 			location = "center"
 		},
 		["Lua:"..L["Alternate power"]] = {
-			code = PROVIDED_CODES[L['Alternate power']][L['Percent']].code,
-			events = copy(PROVIDED_CODES[L['Alternate power']][L['Percent']].events),
+			code = PROVIDED_CODES[L["Alternate power"]][L["Percent"]].code,
+			events = copy(PROVIDED_CODES[L["Alternate power"]][L["Percent"]].events),
 			attach_to = "AltPowerBar",
 			location = "right"
 		},
@@ -1625,10 +1625,10 @@ end)
 local CURRENT_EVENT
 PitBull4_LuaTexts:SetGlobalOptionsFunction(function(self)
 	local update_for_values = {
-		all = L['All'],
-		player = L['Player'],
-		pet = L['Pet'],
-		unit = L['Unit passed in arg1 of event'],
+		all = L["All"],
+		player = L["Player"],
+		pet = L["Pet"],
+		unit = L["Unit passed in arg1 of event"],
 	}
 	if not CURRENT_EVENT then
 		CURRENT_EVENT = next(self.db.profile.global.events)
@@ -1645,8 +1645,8 @@ PitBull4_LuaTexts:SetGlobalOptionsFunction(function(self)
 		hidden = hidden, 
 	}, 'current_event', {
 		type = 'select',
-		name = L['Current event'],
-		desc = L['Change the current event you are editing.'],
+		name = L["Current event"],
+		desc = L["Change the current event you are editing."],
 		get = function(info)
 			local events = self.db.profile.global.events
 			if not rawget(events,CURRENT_EVENT) then
@@ -1669,8 +1669,8 @@ PitBull4_LuaTexts:SetGlobalOptionsFunction(function(self)
 		width = 'double',
 	}, 'new_event', {
 		type = 'input',
-		name = L['New event'],
-		desc = L['Add a new event to LuaTexts.'],
+		name = L["New event"],
+		desc = L["Add a new event to LuaTexts."],
 		get = function(info) return "" end,
 		set = function(info, value)
 			self.db.profile.global.events[value] = {unit=true}
@@ -1685,15 +1685,15 @@ PitBull4_LuaTexts:SetGlobalOptionsFunction(function(self)
 		hidden = hidden, 
 	}, 'edit_event', {
 		type = 'group',
-		name = L['Edit event'],
-		desc = L['Edit which units the event triggers updates on.'],
+		name = L["Edit event"],
+		desc = L["Edit which units the event triggers updates on."],
 		inline = true,
 		hidden = hidden, 
 		args = {
 			delete = {
 				type = 'execute',
-				name = L['Delete'],
-				desc = L['Delete current event.'],
+				name = L["Delete"],
+				desc = L["Delete current event."],
 				func = function(info)
 					local events = self.db.profile.global.events
 					events[CURRENT_EVENT] = nil

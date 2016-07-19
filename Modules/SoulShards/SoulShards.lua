@@ -178,7 +178,7 @@ PitBull4_SoulShards:SetLayoutOptionsFunction(function(self)
 	'click_through', {
 		type = 'toggle',
 		name = L["Click-through"],
-		desc = L['Disable capturing clicks on indicators allowing the clicks to fall through to the window underneath the indicator.'],
+		desc = L["Disable capturing clicks on indicators allowing the clicks to fall through to the window underneath the indicator."],
 		get = function(info)
 			return PitBull4.Options.GetLayoutDB(self).click_through
 		end,

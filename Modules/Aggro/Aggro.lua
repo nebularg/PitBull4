@@ -199,8 +199,8 @@ end)
 PitBull4_Aggro:SetColorOptionsFunction(function(self)
 	return 'aggro_color', {
 		type = 'color',
-		name = L['Aggro'],
-		desc = L['Sets which color to use on the health bar of units that have aggro.'],
+		name = L["Aggro"],
+		desc = L["Sets which color to use on the health bar of units that have aggro."],
 		get = function(info)
 			return unpack(self.db.profile.global.aggro_color)
 		end,

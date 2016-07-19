@@ -453,8 +453,8 @@ PitBull4_CastBar:SetColorOptionsFunction(function(self)
 		args = {
 			casting_interruptible_color = {
 				type = 'color',
-				name = L['Interruptible'],
-				desc = L['Sets which color to use on casting bar of casts that are interruptible.'],
+				name = L["Interruptible"],
+				desc = L["Sets which color to use on casting bar of casts that are interruptible."],
 				get = function(info)
 					return unpack(self.db.profile.global.casting_interruptible_color)
 				end,
@@ -466,8 +466,8 @@ PitBull4_CastBar:SetColorOptionsFunction(function(self)
 			},
 			casting_uninterruptible_color = {
 				type = 'color',
-				name = L['Uninterruptible'],
-				desc = L['Sets which color to use on casting bar of casts that are not interruptible.'],
+				name = L["Uninterruptible"],
+				desc = L["Sets which color to use on casting bar of casts that are not interruptible."],
 				get = function(info)
 					return unpack(self.db.profile.global.casting_uninterruptible_color)
 				end,
@@ -479,8 +479,8 @@ PitBull4_CastBar:SetColorOptionsFunction(function(self)
 			},
 			casting_complete_color = {
 				type = 'color',
-				name = L['Complete'],
-				desc = L['Sets which color to use on casting bar of casts that completed.'],
+				name = L["Complete"],
+				desc = L["Sets which color to use on casting bar of casts that completed."],
 				get = function(info)
 					return unpack(self.db.profile.global.casting_complete_color)
 				end,
@@ -492,8 +492,8 @@ PitBull4_CastBar:SetColorOptionsFunction(function(self)
 			},
 			casting_failed_color = {
 				type = 'color',
-				name = L['Failed'],
-				desc = L['Sets which color to use on casting bar of casts that failed.'],
+				name = L["Failed"],
+				desc = L["Sets which color to use on casting bar of casts that failed."],
 				get = function(info)
 					return unpack(self.db.profile.global.casting_failed_color)
 				end,
@@ -511,8 +511,8 @@ PitBull4_CastBar:SetColorOptionsFunction(function(self)
 		args = {
 			channel_interruptible_color = {
 				type = 'color',
-				name = L['Interruptible'],
-				desc = L['Sets which color to use on casting bar of channeled casts that are interruptible.'],
+				name = L["Interruptible"],
+				desc = L["Sets which color to use on casting bar of channeled casts that are interruptible."],
 				get = function(info)
 					return unpack(self.db.profile.global.channel_interruptible_color)
 				end,
@@ -524,8 +524,8 @@ PitBull4_CastBar:SetColorOptionsFunction(function(self)
 			},
 			channel_uninterruptible_color = {
 				type = 'color',
-				name = L['Uninterruptible'],
-				desc = L['Sets which color to use on casting bar of channeled casts that are not interruptible.'],
+				name = L["Uninterruptible"],
+				desc = L["Sets which color to use on casting bar of channeled casts that are not interruptible."],
 				get = function(info)
 					return unpack(self.db.profile.global.channel_uninterruptible_color)
 				end,

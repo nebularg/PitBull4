@@ -284,8 +284,8 @@ PitBull4_CastBarLatency:SetGlobalOptionsFunction(function(self)
 	return 'show_gcd', {
 		type = 'toggle',
 		width = 'full',
-		name = L['Include GCD lockout'],
-		desc = L['This assumes spells cannot be (locally) triggered before the GCD has run out.'],
+		name = L["Include GCD lockout"],
+		desc = L["This assumes spells cannot be (locally) triggered before the GCD has run out."],
 		get = function(info)
 			local id = info[#info]
 			return self.db.profile.global[id]
@@ -299,8 +299,8 @@ PitBull4_CastBarLatency:SetGlobalOptionsFunction(function(self)
 	'show_queue', {
 		type = 'toggle',
 		width = 'full',
-		name = L['Include spell queue time'],
-		desc = L['Always add the spell queue time to the shown latency.'],
+		name = L["Include spell queue time"],
+		desc = L["Always add the spell queue time to the shown latency."],
 		get = function(info)
 			local id = info[#info]
 			return self.db.profile.global[id]
@@ -314,7 +314,7 @@ PitBull4_CastBarLatency:SetGlobalOptionsFunction(function(self)
 	'queue_time', {
 		type = 'range',
 		width = 'double',
-		name = L['Queue time'],
+		name = L["Queue time"],
 		desc = string.format(L["Fixed time at then end of a running cast where you are able to cast the next spell. Default is %s\nWARNING: Do not change this unless you know exactly what you're doing!"], tostring(DEFAULT_QUEUE_TIME)),
 		min = 0,
 		max = 1000,
@@ -334,8 +334,8 @@ end)
 PitBull4_CastBarLatency:SetColorOptionsFunction(function(self)
 	return 'latency_color', {
 		type = 'color',
-		name = L['Latency'],
-		desc = L['Sets which color the latency overlay on the castbar is using.'],
+		name = L["Latency"],
+		desc = L["Sets which color the latency overlay on the castbar is using."],
 		get = function(info)
 			return unpack(self.db.profile.global.latency_color)
 		end,

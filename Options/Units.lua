@@ -436,9 +436,9 @@ function PitBull4.Options.get_unit_options()
 		order = next_order(),
 		type = 'select',
 		values = {
-			always = L['Always'],
-			never = L['Never'],
-			ooc = L['Out of combat'],
+			always = L["Always"],
+			never = L["Never"],
+			ooc = L["Out of combat"],
 		},
 		get = function (info)
 			if get_db(info[1]).click_through then
@@ -1269,7 +1269,7 @@ function PitBull4.Options.get_unit_options()
 
 	group_options.args.filtering = {
 		type = 'group',
-		name = L['Filtering'],
+		name = L["Filtering"],
 		desc = L["Configure when the group will be shown and if units will be filtered."],
 		args = group_filtering_args,
 		order = next_order(),

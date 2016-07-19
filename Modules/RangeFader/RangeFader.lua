@@ -253,16 +253,16 @@ PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 	}, 'check_method', {
 		type = 'select',
 		name = L["Range check method"],
-		desc = L['Choose the method to determine if the unit is in range.'],
+		desc = L["Choose the method to determine if the unit is in range."],
 		values = {
-			helpful = L['Helpful spells (~40 yards)'],
-			class = L['Class abilities'],
-			follow = L['Follow (~28 yards)'],
-			trade = L['Trade (~11 yards)'],
-			duel = L['Duel (~10 yards)'],
-			custom_spell = L['Custom spell'],
-			custom_item = L['Custom item'],
-			visible = L['Visible (~100 yards)'],
+			helpful = L["Helpful spells (~40 yards)"],
+			class = L["Class abilities"],
+			follow = L["Follow (~28 yards)"],
+			trade = L["Trade (~11 yards)"],
+			duel = L["Duel (~10 yards)"],
+			custom_spell = L["Custom spell"],
+			custom_item = L["Custom item"],
+			visible = L["Visible (~100 yards)"],
 		},
 		get = function(info)
 			local db = PitBull4.Options.GetLayoutDB(self)
@@ -280,8 +280,8 @@ PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 		width = 'double',
 	}, 'custom_spell', {
 		type = 'input',
-		name = L['Custom spell'],
-		desc = L['Enter the name of the spell you want use to check the range with.'],
+		name = L["Custom spell"],
+		desc = L["Enter the name of the spell you want use to check the range with."],
 		get = function(info)
 			local db = PitBull4.Options.GetLayoutDB(self)
 
@@ -301,8 +301,8 @@ PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 		end,
 	}, 'custom_item', {
 		type = 'input',
-		name = L['Custom item'],
-		desc = L['Enter the name of the item you want use to check the range with.'],
+		name = L["Custom item"],
+		desc = L["Enter the name of the item you want use to check the range with."],
 		get = function(info)
 			local db = PitBull4.Options.GetLayoutDB(self)
 

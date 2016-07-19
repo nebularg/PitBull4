@@ -311,54 +311,54 @@ PitBull4_Aura:SetDefaults({
 		-- This is necessary to get the sort order proper for the
 		-- drop down boxes while using a value that is not localized
 		['@I'] = {
-			display_name = L['True'],
+			display_name = L["True"],
 			filter_type = 'True',
 			disabled = true,
 			built_in = true,
 		},
 		['@J'] = {
-			display_name = L['False'],
+			display_name = L["False"],
 			filter_type = 'False',
 			disabled = true,
 			built_in = true,
 		},
 		['@A'] = {
-			display_name = L['Buff'],
+			display_name = L["Buff"],
 			filter_type = 'Buff',
 			buff = true,
 			disabled = true,
 			built_in = true,
 		},
 		['@B'] = {
-			display_name = L['Debuff'],
+			display_name = L["Debuff"],
 			filter_type = 'Buff',
 			buff = false,
 			disabled = true,
 			built_in = true,
 		},
 		['@C'] = {
-			display_name = L['Weapon enchant'],
+			display_name = L["Weapon enchant"],
 			filter_type = 'Weapon Enchant',
 			weapon = true,
 			disabled = true,
 			built_in = true,
 		},
 		['@D'] = {
-			display_name = L['Friend'],
+			display_name = L["Friend"],
 			filter_type = 'Unit',
 			unit_operator = 'friend',
 			disabled = true,
 			built_in = true,
 		},
 		['@E'] = {
-			display_name = L['Enemy'],
+			display_name = L["Enemy"],
 			filter_type = 'Unit',
 			unit_operator = 'enemy',
 			disabled = true,
 			built_in = true,
 		},
 		['@F'] = {
-			display_name = L['Pet'],
+			display_name = L["Pet"],
 			filter_type = 'Unit',
 			unit_operator = '==',
 			unit = 'pet',
@@ -366,7 +366,7 @@ PitBull4_Aura:SetDefaults({
 			built_in = true,
 		},
 		['@G'] = {
-			display_name = L['Player'],
+			display_name = L["Player"],
 			filter_type = 'Unit',
 			unit_operator = '==',
 			unit = 'player',
@@ -374,14 +374,14 @@ PitBull4_Aura:SetDefaults({
 			built_in = true,
 		},
 		['@H'] = {
-			display_name = L['Mine'],
+			display_name = L["Mine"],
 			filter_type = 'Mine',
 			mine = true,
 			disabled = true,
 			built_in = true,
 		},
 		['@K'] = {
-			display_name = L['Dispellable'],
+			display_name = L["Dispellable"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = {
@@ -394,7 +394,7 @@ PitBull4_Aura:SetDefaults({
 			built_in = true,
 		},
 		['@L'] = {
-			display_name = L['Cast by my vehicle'],
+			display_name = L["Cast by my vehicle"],
 			filter_type = 'Caster',
 			unit_operator = '==',
 			unit = 'vehicle',
@@ -402,7 +402,7 @@ PitBull4_Aura:SetDefaults({
 			built_in = true,
 		},
 		['@P'] = {
-			display_name = L['Purgeable'],
+			display_name = L["Purgeable"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = {
@@ -412,623 +412,623 @@ PitBull4_Aura:SetDefaults({
 			built_in = true,
 		},
 		['@Q'] = {
-			display_name = L['Boss debuff'],
+			display_name = L["Boss debuff"],
 			filter_type = 'Boss debuff',
 			boss_debuff = true,
 			disabled = true,
 			built_in = true,
 		},
 		['//3'] = {
-			display_name = L['Monk can dispel'],
+			display_name = L["Monk can dispel"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_dispel['MONK'],
 			built_in = true,
 		},
 		[',3'] = {
-			display_name = L['Druid can dispel'],
+			display_name = L["Druid can dispel"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_dispel['DRUID'],
 			built_in = true,
 		},
 		['-3'] = {
-			display_name = L['Hunter can dispel'],
+			display_name = L["Hunter can dispel"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_dispel['HUNTER'],
 			built_in = true,
 		},
 		['.3'] = {
-			display_name = L['Mage can dispel'],
+			display_name = L["Mage can dispel"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_dispel['MAGE'],
 			built_in = true,
 		},
 		['/3'] = {
-			display_name = L['Paladin can dispel'],
+			display_name = L["Paladin can dispel"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_dispel['PALADIN'],
 			built_in = true,
 		},
 		['03'] = {
-			display_name = L['Priest can dispel'],
+			display_name = L["Priest can dispel"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_dispel['PRIEST'],
 			built_in = true,
 		},
 		['13'] = {
-			display_name = L['Rogue can dispel'],
+			display_name = L["Rogue can dispel"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_dispel['ROGUE'],
 			built_in = true,
 		},
 		['23'] = {
-			display_name = L['Shaman can dispel'],
+			display_name = L["Shaman can dispel"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_dispel['SHAMAN'],
 			built_in = true,
 		},
 		['33'] = {
-			display_name = L['Warlock can dispel'],
+			display_name = L["Warlock can dispel"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_dispel['WARLOCK'],
 			built_in = true,
 		},
 		['43'] = {
-			display_name = L['Warrior can dispel'],
+			display_name = L["Warrior can dispel"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_dispel['WARRIOR'],
 			built_in = true,
 		},
 		['//0'] = {
-			display_name = L['Monk self buffs'],
+			display_name = L["Monk self buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_buffs.MONK,
 			built_in = true,
 		},
 		['+0'] = {
-			display_name = L['Death Knight self buffs'],
+			display_name = L["Death Knight self buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_buffs.DEATHKNIGHT,
 			built_in = true,
 		},
 		[',0'] = {
-			display_name = L['Druid self buffs'],
+			display_name = L["Druid self buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_buffs.DRUID,
 			built_in = true,
 		},
 		['-0'] = {
-			display_name = L['Hunter self buffs'],
+			display_name = L["Hunter self buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_buffs.HUNTER,
 			built_in = true,
 		},
 		['.0'] = {
-			display_name = L['Mage self buffs'],
+			display_name = L["Mage self buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_buffs.MAGE,
 			built_in = true,
 		},
 		['/0'] = {
-			display_name = L['Paladin self buffs'],
+			display_name = L["Paladin self buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_buffs.PALADIN,
 			built_in = true,
 		},
 		['00'] = {
-			display_name = L['Priest self buffs'],
+			display_name = L["Priest self buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_buffs.PRIEST,
 			built_in = true,
 		},
 		['10'] = {
-			display_name = L['Rogue self buffs'],
+			display_name = L["Rogue self buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_buffs.ROGUE,
 			built_in = true,
 		},
 		['20'] = {
-			display_name = L['Shaman self buffs'],
+			display_name = L["Shaman self buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_buffs.SHAMAN,
 			built_in = true,
 		},
 		['30'] = {
-			display_name = L['Warlock self buffs'],
+			display_name = L["Warlock self buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_buffs.WARLOCK,
 			built_in = true,
 		},
 		['40'] = {
-			display_name = L['Warrior self buffs'],
+			display_name = L["Warrior self buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_buffs.WARRIOR,
 			built_in = true,
 		},
 		['+1'] = {
-			display_name = L['Death Knight pet buffs'],
+			display_name = L["Death Knight pet buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = pet_buffs.DEATHKNIGHT,
 			built_in = true,
 		},
 		['-1'] = {
-			display_name = L['Hunter pet buffs'],
+			display_name = L["Hunter pet buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = pet_buffs.HUNTER,
 			built_in = true,
 		},
 		['31'] = {
-			display_name = L['Warlock pet buffs'],
+			display_name = L["Warlock pet buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = pet_buffs.WARLOCK,
 			built_in = true,
 		},
 		['//2'] = {
-			display_name = L['Monk friend buffs'],
+			display_name = L["Monk friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.MONK,
 			built_in = true,
 		},
 		['+2'] = {
-			display_name = L['Death Knight friend buffs'],
+			display_name = L["Death Knight friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.DEATHKNIGHT,
 			built_in = true,
 		},
 		[',2'] = {
-			display_name = L['Druid friend buffs'],
+			display_name = L["Druid friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.DRUID,
 			built_in = true,
 		},
 		['-2'] = {
-			display_name = L['Hunter friend buffs'],
+			display_name = L["Hunter friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.HUNTER,
 			built_in = true,
 		},
 		['.2'] = {
-			display_name = L['Mage friend buffs'],
+			display_name = L["Mage friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.MAGE,
 			built_in = true,
 		},
 		['/2'] = {
-			display_name = L['Paladin friend buffs'],
+			display_name = L["Paladin friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.PALADIN,
 			built_in = true,
 		},
 		['02'] = {
-			display_name = L['Priest friend buffs'],
+			display_name = L["Priest friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.PRIEST,
 			built_in = true,
 		},
 		['12'] = {
-			display_name = L['Rogue friend buffs'],
+			display_name = L["Rogue friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.ROGUE,
 			built_in = true,
 		},
 		['22'] = {
-			display_name = L['Shaman friend buffs'],
+			display_name = L["Shaman friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.SHAMAN,
 			built_in = true,
 		},
 		['32'] = {
-			display_name = L['Warlock friend buffs'],
+			display_name = L["Warlock friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.WARLOCK,
 			built_in = true,
 		},
 		['42'] = {
-			display_name = L['Warrior friend buffs'],
+			display_name = L["Warrior friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.WARRIOR,
 			built_in = true,
 		},
 		['//6'] = {
-			display_name = L['Monk enemy debuffs'],
+			display_name = L["Monk enemy debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = enemy_debuffs.MONK,
 			built_in = true,
 		},
 		['+6'] = {
-			display_name = L['Death Knight enemy debuffs'],
+			display_name = L["Death Knight enemy debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = enemy_debuffs.DEATHKNIGHT,
 			built_in = true,
 		},
 		[',6'] = {
-			display_name = L['Druid enemy debuffs'],
+			display_name = L["Druid enemy debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = enemy_debuffs.DRUID,
 			built_in = true,
 		},
 		['-6'] = {
-			display_name = L['Hunter enemy debuffs'],
+			display_name = L["Hunter enemy debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = enemy_debuffs.HUNTER,
 			built_in = true,
 		},
 		['.6'] = {
-			display_name = L['Mage enemy debuffs'],
+			display_name = L["Mage enemy debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = enemy_debuffs.MAGE,
 			built_in = true,
 		},
 		['/6'] = {
-			display_name = L['Paladin enemy debuffs'],
+			display_name = L["Paladin enemy debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = enemy_debuffs.PALADIN,
 			built_in = true,
 		},
 		['06'] = {
-			display_name = L['Priest enemy debuffs'],
+			display_name = L["Priest enemy debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = enemy_debuffs.PRIEST,
 			built_in = true,
 		},
 		['16'] = {
-			display_name = L['Rogue enemy debuffs'],
+			display_name = L["Rogue enemy debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = enemy_debuffs.ROGUE,
 			built_in = true,
 		},
 		['26'] = {
-			display_name = L['Shaman enemy debuffs'],
+			display_name = L["Shaman enemy debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = enemy_debuffs.SHAMAN,
 			built_in = true,
 		},
 		['36'] = {
-			display_name = L['Warlock enemy debuffs'],
+			display_name = L["Warlock enemy debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = enemy_debuffs.WARLOCK,
 			built_in = true,
 		},
 		['46'] = {
-			display_name = L['Warrior enemy debuffs'],
+			display_name = L["Warrior enemy debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = enemy_debuffs.WARRIOR,
 			built_in = true,
 		},
 		['-5'] = {
-			display_name = L['Hunter friend debuffs'],
+			display_name = L["Hunter friend debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_debuffs.HUNTER,
 			built_in = true,
 		},
 		['.5'] = {
-			display_name = L['Mage friend debuffs'],
+			display_name = L["Mage friend debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_debuffs.MAGE,
 			built_in = true,
 		},
 		['/5'] = {
-			display_name = L['Paladin friend debuffs'],
+			display_name = L["Paladin friend debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_debuffs.PALADIN,
 			built_in = true,
 		},
 		['05'] = {
-			display_name = L['Priest friend debuffs'],
+			display_name = L["Priest friend debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_debuffs.PRIEST,
 			built_in = true,
 		},
 		['25'] = {
-			display_name = L['Shaman friend debuffs'],
+			display_name = L["Shaman friend debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_debuffs.SHAMAN,
 			built_in = true,
 		},
 		['60'] = {
-			display_name = L['Dwarf self buffs'],
+			display_name = L["Dwarf self buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_buffs.Dwarf,
 			built_in = true,
 		},
 		['70'] = {
-			display_name = L['Night Elf self buffs'],
+			display_name = L["Night Elf self buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_buffs.NightElf,
 			built_in = true,
 		},
 		[':0'] = {
-			display_name = L['Orc self buffs'],
+			display_name = L["Orc self buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_buffs.Orc,
 			built_in = true,
 		},
 		[';0'] = {
-			display_name = L['Undead self buffs'],
+			display_name = L["Undead self buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_buffs.Scourge,
 			built_in = true,
 		},
 		['=0'] = {
-			display_name = L['Troll self buffs'],
+			display_name = L["Troll self buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_buffs.Troll,
 			built_in = true,
 		},
 		['>0'] = {
-			display_name = L['Blood Elf self buffs'],
+			display_name = L["Blood Elf self buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_buffs.BloodElf,
 			built_in = true,
 		},
 		['?0'] = {
-			display_name = L['Worgen self buffs'],
+			display_name = L["Worgen self buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_buffs.Worgen,
 			built_in = true,
 		},
 		['52'] = {
-			display_name = L['Human friend buffs'],
+			display_name = L["Human friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.Human,
 			built_in = true,
 		},
 		['62'] = {
-			display_name = L['Dwarf friend buffs'],
+			display_name = L["Dwarf friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.Dwarf,
 			built_in = true,
 		},
 		['72'] = {
-			display_name = L['Night Elf friend buffs'],
+			display_name = L["Night Elf friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.NightElf,
 			built_in = true,
 		},
 		['82'] = {
-			display_name = L['Gnome friend buffs'],
+			display_name = L["Gnome friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.Gnome,
 			built_in = true,
 		},
 		['92'] = {
-			display_name = L['Draenei friend buffs'],
+			display_name = L["Draenei friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.Draenei,
 			built_in = true,
 		},
 		[':2'] = {
-			display_name = L['Orc friend buffs'],
+			display_name = L["Orc friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.Orc,
 			built_in = true,
 		},
 		[';2'] = {
-			display_name = L['Undead friend buffs'],
+			display_name = L["Undead friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.Scourge,
 			built_in = true,
 		},
 		['<2'] = {
-			display_name = L['Tauren friend buffs'],
+			display_name = L["Tauren friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.Tauren,
 			built_in = true,
 		},
 		['=2'] = {
-			display_name = L['Troll friend buffs'],
+			display_name = L["Troll friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.Troll,
 			built_in = true,
 		},
 		['>2'] = {
-			display_name = L['Blood Elf friend buffs'],
+			display_name = L["Blood Elf friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.BloodElf,
 			built_in = true,
 		},
 		['??2'] = {
-			display_name = L['Goblin friend buffs'],
+			display_name = L["Goblin friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.Goblin,
 			built_in = true,
 		},
 		['?2'] = {
-			display_name = L['Worgen friend buffs'],
+			display_name = L["Worgen friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.Worgen,
 			built_in = true,
 		},
 		['@2'] = {
-			display_name = L['Pandaren friend buffs'],
+			display_name = L["Pandaren friend buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.Pandaren,
 			built_in = true,
 		},
 		['<6'] = {
-			display_name = L['Taruen enemy debuffs'],
+			display_name = L["Taruen enemy debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = enemy_debuffs.Tauren,
 			built_in = true,
 		},
 		['>6'] = {
-			display_name = L['Blood Elf enemy debuffs'],
+			display_name = L["Blood Elf enemy debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = enemy_debuffs.BloodElf,
 			built_in = true,
 		},
 		['@6'] = {
-			display_name = L['Pandaren enemy debuffs'],
+			display_name = L["Pandaren enemy debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = enemy_debuffs.Pandaren,
 			built_in = true,
 		},
 		[':4'] = {
-			display_name = L['Orc self debuffs'],
+			display_name = L["Orc self debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_debuffs.Orc,
 			built_in = true,
 		},
 		['.4'] = {
-			display_name = L['Mage self debuffs'],
+			display_name = L["Mage self debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_debuffs.MAGE,
 			built_in = true,
 		},
 		['04'] = {
-			display_name = L['Priest self debuffs'],
+			display_name = L["Priest self debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_debuffs.PRIEST,
 			built_in = true,
 		},
 		['44'] = {
-			display_name = L['Warrior self debuffs'],
+			display_name = L["Warrior self debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_debuffs.WARRIOR,
 			built_in = true,
 		},
 		['+7'] = {
-			display_name = L['Death Knight can purge'],
+			display_name = L["Death Knight can purge"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_purge.DEATHKNIGHT,
 			built_in = true,
 		},
 		[',7'] = {
-			display_name = L['Druid can purge'],
+			display_name = L["Druid can purge"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_purge.DRUID,
 			built_in = true,
 		},
 		['-7'] = {
-			display_name = L['Hunter can purge'],
+			display_name = L["Hunter can purge"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_purge.HUNTER,
 			built_in = true,
 		},
 		['.7'] = {
-			display_name = L['Mage can purge'],
+			display_name = L["Mage can purge"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_purge.MAGE,
 			built_in = true,
 		},
 		['07'] = {
-			display_name = L['Priest can purge'],
+			display_name = L["Priest can purge"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_purge.PRIEST,
 			built_in = true,
 		},
 		['17'] = {
-			display_name = L['Rogue can purge'],
+			display_name = L["Rogue can purge"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_purge.ROGUE,
 			built_in = true,
 		},
 		['27'] = {
-			display_name = L['Shaman can purge'],
+			display_name = L["Shaman can purge"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_purge.SHAMAN,
 			built_in = true,
 		},
 		['37'] = {
-			display_name = L['Warlock can purge'],
+			display_name = L["Warlock can purge"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_purge.WARLOCK,
 			built_in = true,
 		},
 		['47'] = {
-			display_name = L['Warrior can purge'],
+			display_name = L["Warrior can purge"],
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_purge.WARRIOR,
 			built_in = true,
 		},
 		['&D'] = {
-			display_name = L['My class can dispel'],
+			display_name = L["My class can dispel"],
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
@@ -1047,7 +1047,7 @@ PitBull4_Aura:SetDefaults({
 			built_in = true,
 		},
 		['&A'] = {
-			display_name = L['My class self buffs'],
+			display_name = L["My class self buffs"],
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
@@ -1066,7 +1066,7 @@ PitBull4_Aura:SetDefaults({
 			built_in = true,
 		},
 		['&B'] = {
-			display_name = L['My class pet buffs'],
+			display_name = L["My class pet buffs"],
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
@@ -1085,7 +1085,7 @@ PitBull4_Aura:SetDefaults({
 			built_in = true,
 		},
 		['&C'] = {
-			display_name = L['My class friend buffs'],
+			display_name = L["My class friend buffs"],
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
@@ -1104,7 +1104,7 @@ PitBull4_Aura:SetDefaults({
 			built_in = true,
 		},
 		['&G'] = {
-			display_name = L['My class enemy debuffs'],
+			display_name = L["My class enemy debuffs"],
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
@@ -1123,7 +1123,7 @@ PitBull4_Aura:SetDefaults({
 			built_in = true,
 		},
 		['&F'] = {
-			display_name = L['My class friend debuffs'],
+			display_name = L["My class friend debuffs"],
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
@@ -1142,9 +1142,9 @@ PitBull4_Aura:SetDefaults({
 			built_in = true,
 		},
 		['&E'] = {
-			display_name = L['My class self debuffs'],
+			display_name = L["My class self debuffs"],
 			filter_type = 'Map',
-			map_type == 'class',
+			map_type = 'class',
 			map = {
 				['DEATHKNIGHT'] = '@J',
 				['DRUID'] = '@J',
@@ -1161,7 +1161,7 @@ PitBull4_Aura:SetDefaults({
 			built_in = true,
 		},
 		['&P'] = {
-			display_name = L['My class can purge'],
+			display_name = L["My class can purge"],
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
@@ -1180,7 +1180,7 @@ PitBull4_Aura:SetDefaults({
 			built_in = true,
 		},
 		['%A'] = {
-			display_name = L['My race self buffs'],
+			display_name = L["My race self buffs"],
 			filter_type = 'Map',
 			map_type = 'race',
 			map = {
@@ -1201,7 +1201,7 @@ PitBull4_Aura:SetDefaults({
 			built_in = true,
 		},
 		['%B'] = {
-			display_name = L['My race friend buffs'],
+			display_name = L["My race friend buffs"],
 			filter_type = 'Map',
 			map_type = 'race',
 			map = {
@@ -1222,7 +1222,7 @@ PitBull4_Aura:SetDefaults({
 			built_in = true,
 		},
 		['%D'] = {
-			display_name = L['My race enemy debuffs'],
+			display_name = L["My race enemy debuffs"],
 			filter_type = 'Map',
 			map_type = 'race',
 			map = {
@@ -1243,7 +1243,7 @@ PitBull4_Aura:SetDefaults({
 			built_in = true,
 		},
 		['%C'] = {
-			display_name = L['My race self debuffs'],
+			display_name = L["My race self debuffs"],
 			filter_type = 'Map',
 			map_type = 'race',
 			map = {
@@ -1264,98 +1264,98 @@ PitBull4_Aura:SetDefaults({
 			built_in = true,
 		},
 		['*A'] = {
-			display_name = L['Extra buffs'],
+			display_name = L["Extra buffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = extra_buffs,
 			built_in = true,
 		},
 		['*B'] = {
-			display_name = L['Extra friend debuffs'],
+			display_name = L["Extra friend debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = {},
 			built_in = true,
 		},
 		['*C'] = {
-			display_name = L['Extra enemy debuffs'],
+			display_name = L["Extra enemy debuffs"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = {},
 			built_in = true,
 		},
 		['*D'] = {
-			display_name = L['Extra friend highlights'],
+			display_name = L["Extra friend highlights"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = {},
 			built_in = true,
 		},
 		['*E'] = {
-			display_name = L['Extra enemy highlights'],
+			display_name = L["Extra enemy highlights"],
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = {},
 			built_in = true,
 		},
 		['#A'] = {
-			display_name = L['All self buffs'],
+			display_name = L["All self buffs"],
 			filter_type = 'Meta',
 			filters = {'&A','%A','@C'},
 			operators = {'|','|'},
 			built_in = true,
 		},
 		['#C'] = {
-			display_name = L['All self debuffs'],
+			display_name = L["All self debuffs"],
 			filter_type = 'Meta',
 			filters = {'&E','%C'},
 			operators = {'|'},
 			built_in = true,
 		},
 		['#B'] = {
-			display_name = L['All friend buffs'],
+			display_name = L["All friend buffs"],
 			filter_type = 'Meta',
 			filters =  {'&C','%B','*A'},
 			operators = {'|','|'},
 			built_in = true,
 		},
 		['#D'] = {
-			display_name = L['All friend debuffs'],
+			display_name = L["All friend debuffs"],
 			filter_type = 'Meta',
 			filters = {'&F','&D','*B'},
 			operators = {'|','|'},
 			built_in = true,
 		},
 		['#E'] = {
-			display_name = L['All enemy debuffs'],
+			display_name = L["All enemy debuffs"],
 			filter_type = 'Meta',
 			filters = {'&G','%D','*C'},
 			operators = {'|','|'},
 			built_in = true,
 		},
 		['#F'] = {
-			display_name = L['Dispellable or extra friend'],
+			display_name = L["Dispellable or extra friend"],
 			filter_type = 'Meta',
 			filters = {'@K','*D'},
 			operators = {'|'},
 			built_in = true,
 		},
 		['#G'] = {
-			display_name = L['Dispellable by me or extra friend'],
+			display_name = L["Dispellable by me or extra friend"],
 			filter_type = 'Meta',
 			filters = {'&D','*D'},
 			operators = {'|'},
 			built_in = true,
 		},
 		['#H'] = {
-			display_name = L['Purgeable by me or extra enemy'],
+			display_name = L["Purgeable by me or extra enemy"],
 			filter_type = 'Meta',
 			filters = {'&P','*E'},
 			operators = {'|'},
 			built_in = true,
 		},
 		['!B'] = {
-			display_name = L['Default buffs'],
+			display_name = L["Default buffs"],
 			filter_type = 'Meta',
 			filters = {'@G','#A','@F','&B','@D','#B','@E','@L'},
 			operators = {'&','|','&','|','&','|','|'},
@@ -1363,7 +1363,7 @@ PitBull4_Aura:SetDefaults({
 			display_when = "buff",
 		},
 		['!C'] = {
-			display_name = L['Default buffs, mine'],
+			display_name = L["Default buffs, mine"],
 			filter_type = 'Meta',
 			filters = {'@H','!B','@E'},
 			operators = {'&','|'},
@@ -1371,7 +1371,7 @@ PitBull4_Aura:SetDefaults({
 			display_when = "buff",
 		},
 		['!D'] = {
-			display_name = L['Default debuffs'],
+			display_name = L["Default debuffs"],
 			filter_type = 'Meta',
 			filters = {'@G','#C','@D','#D','#E','@L'},
 			operators = {'&','|','&','|','|'},
@@ -1379,7 +1379,7 @@ PitBull4_Aura:SetDefaults({
 			display_when = "debuff",
 		},
 		['!E'] = {
-			display_name = L['Default debuffs, mine'],
+			display_name = L["Default debuffs, mine"],
 			filter_type = 'Meta',
 			filters = {'@H','!D','&D'},
 			operators = {'&','|'},
@@ -1387,7 +1387,7 @@ PitBull4_Aura:SetDefaults({
 			display_when = "debuff",
 		},
 		['!F'] = {
-			display_name = L['Highlight: all friend debuffs'],
+			display_name = L["Highlight: all friend debuffs"],
 			filter_type = 'Meta',
 			filters = {'@D','@B'},
 			operators = {'&'},
@@ -1395,7 +1395,7 @@ PitBull4_Aura:SetDefaults({
 			display_when = "highlight",
 		},
 		['!G'] = {
-			display_name = L['Highlight: dispellable debuffs'],
+			display_name = L["Highlight: dispellable debuffs"],
 			filter_type = 'Meta',
 			filters = {'!F','@K'},
 			operators = {'&'},
@@ -1403,7 +1403,7 @@ PitBull4_Aura:SetDefaults({
 			display_when = "highlight",
 		},
 		['!H'] = {
-			display_name = L['Highlight: dispellable by me debuffs'],
+			display_name = L["Highlight: dispellable by me debuffs"],
 			filter_type = 'Meta',
 			filters = {'!F','&D'},
 			operators = {'&'},
@@ -1411,7 +1411,7 @@ PitBull4_Aura:SetDefaults({
 			display_when = "highlight",
 		},
 		['!I'] = {
-			display_name = L['Highlight: Enemy buffs'],
+			display_name = L["Highlight: Enemy buffs"],
 			filter_type = 'Meta',
 			filters = {'@E','@A','*E'},
 			operators = {'&','&'},
@@ -1419,7 +1419,7 @@ PitBull4_Aura:SetDefaults({
 			display_when = "highlight",
 		},
 		['!J'] = {
-			display_name = L['Highlight: Friend debuffs'],
+			display_name = L["Highlight: Friend debuffs"],
 			filter_type = 'Meta',
 			filters = {'!F','*D'},
 			operators = {'&'},
@@ -1427,7 +1427,7 @@ PitBull4_Aura:SetDefaults({
 			display_when = "highlight",
 		},
 		['!K'] = {
-			display_name = L['Highlight: purgeable buffs'],
+			display_name = L["Highlight: purgeable buffs"],
 			filter_type = 'Meta',
 			filters = {'@E','@A','@P'},
 			operators = {'&','&','&'},
@@ -1435,7 +1435,7 @@ PitBull4_Aura:SetDefaults({
 			display_when = "highlight",
 		},
 		['!L'] = {
-			display_name = L['Highlight: purgeable by me buffs'],
+			display_name = L["Highlight: purgeable by me buffs"],
 			filter_type = 'Meta',
 			filters = {'@E','@A','&P'},
 			operators = {'&','&','&'},
@@ -1448,14 +1448,14 @@ PitBull4_Aura:SetDefaults({
 -- tables of options for the selection options
 
 local anchor_values = {
-	TOPLEFT_TOP        = L['Top-left on top'],
-	TOPRIGHT_TOP       = L['Top-right on top'],
-	TOPLEFT_LEFT       = L['Top-left on left'],
-	TOPRIGHT_RIGHT     = L['Top-right on right'],
-	BOTTOMLEFT_BOTTOM  = L['Bottom-left on bottom'],
-	BOTTOMRIGHT_BOTTOM = L['Bottom-right on bottom'],
-	BOTTOMLEFT_LEFT    = L['Bottom-left on left'],
-	BOTTOMRIGHT_RIGHT  = L['Bottom-right on right'],
+	TOPLEFT_TOP        = L["Top-left on top"],
+	TOPRIGHT_TOP       = L["Top-right on top"],
+	TOPLEFT_LEFT       = L["Top-left on left"],
+	TOPRIGHT_RIGHT     = L["Top-right on right"],
+	BOTTOMLEFT_BOTTOM  = L["Bottom-left on bottom"],
+	BOTTOMRIGHT_BOTTOM = L["Bottom-right on bottom"],
+	BOTTOMLEFT_LEFT    = L["Bottom-left on left"],
+	BOTTOMRIGHT_RIGHT  = L["Bottom-right on right"],
 }
 
 local growth_values = {
@@ -1470,13 +1470,13 @@ local growth_values = {
 }
 
 local width_type_values = {
-	percent = L['Percentage of side'],
-	fixed   = L['Fixed size'],
+	percent = L["Percentage of side"],
+	fixed   = L["Fixed size"],
 }
 
 local show_when_values = {
-	my_buffs = L['My own buffs'],
-	my_debuffs = L['My own debuffs'],
+	my_buffs = L["My own buffs"],
+	my_debuffs = L["My own debuffs"],
 	other_buffs = L["Others' buffs"],
 	other_debuffs = L["Others' debuffs"],
 	weapon_buffs = L["Weapon enchants"],
@@ -1505,20 +1505,20 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 	end
 	return 'caster', {
 		type = 'group',
-		name = L['Caster'],
+		name = L["Caster"],
 		inline = true,
 		args = {
 			my = {
 				type = 'color',
-				name = L['Self'],
-				desc = L['Color for own buffs.'],
+				name = L["Self"],
+				desc = L["Color for own buffs."],
 				get = get,
 				set = set,
 				order = 0,
 			},
 			other = {
 				type = 'color',
-				name = L['Others'],
+				name = L["Others"],
 				desc = L["Color for others' buffs."],
 				get = get,
 				set = set,
@@ -1528,12 +1528,12 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 	},
 	'type', {
 		type = 'group',
-		name = L['Dispel type'],
+		name = L["Dispel type"],
 		inline = true,
 		args = {
 			Poison = {
 				type = 'color',
-				name = L['Poison'],
+				name = L["Poison"],
 				desc = L["Color for poison."],
 				get = get,
 				set = set,
@@ -1541,7 +1541,7 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 			},
 			Magic = {
 				type = 'color',
-				name = L['Magic'],
+				name = L["Magic"],
 				desc = L["Color for magic."],
 				get = get,
 				set = set,
@@ -1549,7 +1549,7 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 			},
 			Disease = {
 				type = 'color',
-				name = L['Disease'],
+				name = L["Disease"],
 				desc = L["Color for disease."],
 				get = get,
 				set = set,
@@ -1557,7 +1557,7 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 			},
 			Curse = {
 				type = 'color',
-				name = L['Curse'],
+				name = L["Curse"],
 				desc = L["Color for curse."],
 				get = get,
 				set = set,
@@ -1565,7 +1565,7 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 			},
 			Enrage = {
 				type = 'color',
-				name = L['Enrage'],
+				name = L["Enrage"],
 				desc = L["Color for enrage."],
 				get = get,
 				set = set,
@@ -1573,7 +1573,7 @@ PitBull4_Aura:SetColorOptionsFunction(function(self)
 			},
 			["nil"] = {
 				type = 'color',
-				name = L['Other'],
+				name = L["Other"],
 				desc = L["Color for other auras without a type."],
 				get = get,
 				set = set,
@@ -1602,8 +1602,8 @@ PitBull4_Aura:SetGlobalOptionsFunction(function(self)
 	return 'filter_editor', {
 		type = 'group',
 		childGroups = 'tab',
-		name = L['Aura filter editor'],
-		desc = L['Configure the filters for the aura modules.'],
+		name = L["Aura filter editor"],
+		desc = L["Configure the filters for the aura modules."],
 		args = PitBull4_Aura:GetFilterEditor(),
 	}
 end)
@@ -1630,8 +1630,8 @@ end
 function PitBull4_Aura.SetHighlightOptions(self, options)
 	local filter_option = {
 		type = 'select',
-		name = L['Filter'],
-		desc = L['Select a filter to use for highlighting auras.'],
+		name = L["Filter"],
+		desc = L["Select a filter to use for highlighting auras."],
 		get = function(info)
 			local pos = tonumber(string.match(info[#info],"_(%d+)"))
 			return PitBull4.Options.GetLayoutDB(self).highlight_filters[pos] or ""
@@ -1681,8 +1681,8 @@ function PitBull4_Aura.SetHighlightOptions(self, options)
 	}
 	local color_type_option = {
 		type = 'toggle',
-		name = L['Color by type'],
-		desc = L['Use the auras type to select the color of the highlight.'],
+		name = L["Color by type"],
+		desc = L["Use the auras type to select the color of the highlight."],
 		get = function(info)
 			local pos = tonumber(string.match(info[#info],"_(%d+)"))
 			local color_by_type = PitBull4.Options.GetLayoutDB(self).highlight_filters_color_by_type[pos]
@@ -1706,8 +1706,8 @@ function PitBull4_Aura.SetHighlightOptions(self, options)
 	}
 	local custom_color_option = {
 		type = 'color',
-		name = L['Custom color'],
-		desc = L['Set the custom color for the highlight if not coloring by type.'],
+		name = L["Custom color"],
+		desc = L["Set the custom color for the highlight if not coloring by type."],
 		get = function(info)
 			local pos = tonumber(string.match(info[#info],"_(%d+)"))
 			local color = PitBull4.Options.GetLayoutDB(self).highlight_filters_custom_color[pos]
@@ -1750,8 +1750,8 @@ function PitBull4_Aura.SetHighlightOptions(self, options)
 
 	options.enable = {
 		type = 'toggle',
-		name = L['Enable'],
-		desc = L['Enable aura highlighting for this layout.'],
+		name = L["Enable"],
+		desc = L["Enable aura highlighting for this layout."],
 		get = function(info)
 			return PitBull4.Options.GetLayoutDB(self).highlight
 		end,
@@ -1768,8 +1768,8 @@ function PitBull4_Aura.SetHighlightOptions(self, options)
 
 	options.style = {
 		type = 'select',
-		name = L['Style'],
-		desc = L['Select the style of the highlight for this layout.'],
+		name = L["Style"],
+		desc = L["Select the style of the highlight for this layout."],
 		get = function(info)
 			return PitBull4.Options.GetLayoutDB(self).highlight_style
 		end,
@@ -1902,16 +1902,16 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 		name = function(info)
 			local group = info[#info]
 			if group == 'buff' then
-				return L['Buff layout']
+				return L["Buff layout"]
 			else
-				return L['Debuff layout']
+				return L["Debuff layout"]
 			end
 		end,
 		args = {
 			size = {
 				type = 'range',
-				name = L['Icon size'],
-				desc = L['Set size of the aura icons.'],
+				name = L["Icon size"],
+				desc = L["Set size of the aura icons."],
 				get = get_layout,
 				set = set_layout,
 				disabled = is_aura_disabled,
@@ -1922,8 +1922,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			my_size = {
 				type = 'range',
-				name = L['Icon size for my auras'],
-				desc = L['Set size of icons of auras cast by me.'],
+				name = L["Icon size for my auras"],
+				desc = L["Set size of icons of auras cast by me."],
 				get = get_layout,
 				set = set_layout,
 				disabled = is_aura_disabled,
@@ -1934,8 +1934,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			size_to_fit = {
 				type = 'toggle',
-				name = L['Size to fit'],
-				desc = L['Size auras to use up as much of the space available as possible.'],
+				name = L["Size to fit"],
+				desc = L["Size auras to use up as much of the space available as possible."],
 				get = get_layout,
 				set = set_layout,
 				disabled = is_aura_disabled,
@@ -1949,8 +1949,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			anchor = {
 				-- Anchor option actually sets 2 values, we do the split here so we don't have to do it in a more time sensitive place
 				type = 'select',
-				name = L['Start at'],
-				desc = L['Set the corner and side to start auras from.'],
+				name = L["Start at"],
+				desc = L["Set the corner and side to start auras from."],
 				get = get_layout_anchor,
 				set = set_layout_anchor,
 				disabled = is_aura_disabled,
@@ -1959,8 +1959,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			growth = {
 				type = 'select',
-				name = L['Growth direction'],
-				desc = L['Direction that the auras will grow.'],
+				name = L["Growth direction"],
+				desc = L["Direction that the auras will grow."],
 				get = get_layout,
 				set = set_layout,
 				disabled = is_aura_disabled,
@@ -1974,8 +1974,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			offset_x = {
 				type = 'range',
-				name = L['Horizontal offset'],
-				desc = L['Number of pixels to offset the auras from the start point horizontally.'],
+				name = L["Horizontal offset"],
+				desc = L["Number of pixels to offset the auras from the start point horizontally."],
 				get = get_layout,
 				set = set_layout,
 				disabled = is_aura_disabled,
@@ -1987,8 +1987,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			offset_y = {
 				type = 'range',
-				name = L['Vertical offset'],
-				desc = L['Number of pixels to offset the auras from the start point vertically.'],
+				name = L["Vertical offset"],
+				desc = L["Number of pixels to offset the auras from the start point vertically."],
 				get = get_layout,
 				set = set_layout,
 				disabled = is_aura_disabled,
@@ -2005,8 +2005,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			sort = {
 				type = 'toggle',
-				name = L['Sort'],
-				desc = L['Sort auras by type and alphabetically, preferring your own auras first.'],
+				name = L["Sort"],
+				desc = L["Sort auras by type and alphabetically, preferring your own auras first."],
 				get = get_layout,
 				set = set_layout,
 				disabled = is_aura_disabled,
@@ -2014,8 +2014,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			reverse = {
 				type = 'toggle',
-				name = L['Reverse'],
-				desc = L['Reverse order in which auras are displayed.'],
+				name = L["Reverse"],
+				desc = L["Reverse order in which auras are displayed."],
 				get = get_layout,
 				set = set_layout,
 				disabled = is_aura_disabled,
@@ -2032,18 +2032,18 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 					local group = info[#info - 1]
 					local db = PitBull4.Options.GetLayoutDB(self).layout[group]
 					if is_height[db.growth] then
-						return L['Height type']
+						return L["Height type"]
 					else
-						return L['Width type']
+						return L["Width type"]
 					end
 				end,
 				desc = function(info)
 					local group = info[#info - 1]
 					local db = PitBull4.Options.GetLayoutDB(self).layout[group]
 					if is_height[db.growth] then
-						return L['Select how to configure the height setting.']
+						return L["Select how to configure the height setting."]
 					else
-						return L['Select how to configure the width setting.']
+						return L["Select how to configure the width setting."]
 					end
 				end,
 				get = get_layout,
@@ -2058,18 +2058,18 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 					local group = info[#info - 1]
 					local db = PitBull4.Options.GetLayoutDB(self).layout[group]
 					if is_height[db.growth] then
-						return L['Height']
+						return L["Height"]
 					else
-						return L['Width']
+						return L["Width"]
 					end
 				end,
 				desc = function(info)
 					local group = info[#info - 1]
 					local db = PitBull4.Options.GetLayoutDB(self).layout[group]
 					if is_height[db.growth] then
-						return L['Set how tall the auras will be allowed to grow in pixels.']
+						return L["Set how tall the auras will be allowed to grow in pixels."]
 					else
-						return L['Set how wide the auras will be allowed to grow in pixels.']
+						return L["Set how wide the auras will be allowed to grow in pixels."]
 					end
 				end,
 				get = get_layout,
@@ -2091,18 +2091,18 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 					local group = info[#info - 1]
 					local db = PitBull4.Options.GetLayoutDB(self).layout[group]
 					if is_height[db.growth] then
-						return L['Height']
+						return L["Height"]
 					else
-						return L['Width']
+						return L["Width"]
 					end
 				end,
 				desc = function(info)
 					local group = info[#info - 1]
 					local db = PitBull4.Options.GetLayoutDB(self).layout[group]
 					if is_height[db.growth] then
-						return L['Set how tall the auras will be allowed to grow as a percentage of the height of the frame they are attached to.']
+						return L["Set how tall the auras will be allowed to grow as a percentage of the height of the frame they are attached to."]
 					else
-						return L['Set how wide the auras will be allowed to grow as a percentage of the width of the frame they are attached to.']
+						return L["Set how wide the auras will be allowed to grow as a percentage of the width of the frame they are attached to."]
 					end
 				end,
 				get = get_layout,
@@ -2125,8 +2125,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			row_spacing = {
 				type = 'range',
-				name = L['Row spacing'],
-				desc = L['Set the number of pixels between each row of auras.'],
+				name = L["Row spacing"],
+				desc = L["Set the number of pixels between each row of auras."],
 				get = get_layout,
 				set = set_layout,
 				disabled = is_aura_disabled,
@@ -2137,8 +2137,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			col_spacing = {
 				type = 'range',
-				name = L['Column spacing'],
-				desc = L['Set the number of pixels between each column of auras.'],
+				name = L["Column spacing"],
+				desc = L["Set the number of pixels between each column of auras."],
 				get = get_layout,
 				set = set_layout,
 				disabled = is_aura_disabled,
@@ -2153,18 +2153,18 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 					local group = info[#info - 1]
 					local db = PitBull4.Options.GetLayoutDB(self).layout[group]
 					if is_height[db.growth] then
-						return L['New column on resize']
+						return L["New column on resize"]
 					else
-						return L['New row on resize']
+						return L["New row on resize"]
 					end
 				end,
 				desc = function(info)
 					local group = info[#info - 1]
 					local db = PitBull4.Options.GetLayoutDB(self).layout[group]
 					if is_height[db.growth] then
-						return L['Start a new column whenever the size of the aura changes.']
+						return L["Start a new column whenever the size of the aura changes."]
 					else
-						return L['Start a new row whenever the size of the aura changes.']
+						return L["Start a new row whenever the size of the aura changes."]
 					end
 				end,
 				get = get_layout,
@@ -2178,8 +2178,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			frame_level = {
 				type = 'range',
-				name = L['Frame level'],
-				desc = L['Set how many frame levels auras are above the frame.'],
+				name = L["Frame level"],
+				desc = L["Set how many frame levels auras are above the frame."],
 				get = get_layout,
 				set = set_layout,
 				disabled = is_aura_disabled,
@@ -2266,12 +2266,12 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 
 	return 	true, 'display', {
 		type = 'group',
-		name = L['Display'],
+		name = L["Display"],
 		args = {
 			enabled_buffs = {
 				type = 'toggle',
-				name = L['Buffs'],
-				desc = L['Enable display of buffs.'],
+				name = L["Buffs"],
+				desc = L["Enable display of buffs."],
 				get = get,
 				set = set,
 				disabled = is_aura_disabled,
@@ -2279,8 +2279,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			enabled_weapons = {
 				type = 'toggle',
-				name = L['Weapon enchants'],
-				desc = L['Enable display of temporary weapon enchants.'],
+				name = L["Weapon enchants"],
+				desc = L["Enable display of temporary weapon enchants."],
 				get = function(info)
 					local db = PitBull4.Options.GetLayoutDB(self)
 					return db.enabled_buffs and db.enabled_weapons
@@ -2293,8 +2293,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			enabled_debuffs = {
 				type = 'toggle',
-				name = L['Debuffs'],
-				desc = L['Enable display of debuffs.'],
+				name = L["Debuffs"],
+				desc = L["Enable display of debuffs."],
 				get = get,
 				set = set,
 				disabled = is_aura_disabled,
@@ -2302,14 +2302,14 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			max = {
 				type = 'group',
-				name = L['Limit number of displayed auras.'],
+				name = L["Limit number of displayed auras."],
 				inline = true,
 				order = 3,
 				args = {
 					max_buffs = {
 						type = 'range',
-						name = L['Buffs'],
-						desc = L['Set the maximum number of buffs to display.'],
+						name = L["Buffs"],
+						desc = L["Set the maximum number of buffs to display."],
 						get = get,
 						set = set,
 						disabled = is_aura_disabled,
@@ -2320,8 +2320,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 					},
 					max_debuffs = {
 						type = 'range',
-						name = L['Debuffs'],
-						desc = L['Set the maximum number of debuffs to display.'],
+						name = L["Debuffs"],
+						desc = L["Set the maximum number of debuffs to display."],
 						get = get,
 						set = set,
 						disabled = is_aura_disabled,
@@ -2334,8 +2334,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			cooldown = {
 				type = 'multiselect',
-				name = L['Time remaining spiral'],
-				desc = L['Set when the time remaining spiral shows.'],
+				name = L["Time remaining spiral"],
+				desc = L["Set when the time remaining spiral shows."],
 				values = show_when_values,
 				get = get_multi,
 				set = set_multi,
@@ -2344,8 +2344,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			suppress_occ = {
 				type = 'toggle',
-				name = L['Suppress cooldown numbers'],
-				desc = L['Try to stop addons from showing cooldown numbers on the spiral timer.'],
+				name = L["Suppress cooldown numbers"],
+				desc = L["Try to stop addons from showing cooldown numbers on the spiral timer."],
 				get = get,
 				set = function(info, value)
 					PitBull4.Options.GetLayoutDB(self).suppress_occ = value
@@ -2363,8 +2363,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			zoom_aura = {
 				type = 'toggle',
-				name = L['Zoom icon'],
-				desc = L['Zoom in on aura icons slightly.'],
+				name = L["Zoom icon"],
+				desc = L["Zoom in on aura icons slightly."],
 				get = get,
 				set = set,
 				disabled = is_aura_disabled,
@@ -2372,8 +2372,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			click_through = {
 				type = 'toggle',
-				name = L['Click-through'],
-				desc = L['Disable capturing clicks on aura icons allowing the clicks to fall through to the window underneath the aura.'],
+				name = L["Click-through"],
+				desc = L["Disable capturing clicks on aura icons allowing the clicks to fall through to the window underneath the aura."],
 				get = get,
 				set = set,
 				disabled = is_aura_disabled,
@@ -2385,13 +2385,13 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 	'debuff', layout,
 	'texts', {
 		type = 'group',
-		name = L['Texts'],
-		desc = L['Configure the text displayed on auras.'],
+		name = L["Texts"],
+		desc = L["Configure the text displayed on auras."],
 		args = {
 			current_text = {
 				type = 'select',
-				name = L['Current text'],
-				desc = L['Choose the text to configure.'],
+				name = L["Current text"],
+				desc = L["Choose the text to configure."],
 				get = function(info)
 					return CURRENT_TEXT
 				end,
@@ -2399,16 +2399,16 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 					CURRENT_TEXT = value
 				end,
 				values = {
-					['my_buffs.count'] = L['My own buffs count'],
-					['my_buffs.cooldown_text'] = L['My own buffs time remaining'],
-					['my_debuffs.count'] = L['My own debuffs count'],
-					['my_debuffs.cooldown_text'] = L['My own debuffs time remaining'],
+					['my_buffs.count'] = L["My own buffs count"],
+					['my_buffs.cooldown_text'] = L["My own buffs time remaining"],
+					['my_debuffs.count'] = L["My own debuffs count"],
+					['my_debuffs.cooldown_text'] = L["My own debuffs time remaining"],
 					['other_buffs.count'] = L["Others' buffs count"],
 					['other_buffs.cooldown_text'] = L["Others' buffs time remaining"],
 					['other_debuffs.count'] = L["Others' debuffs count"],
 					['other_debuffs.cooldown_text'] = L["Others' debuffs time remaining"],
-					['weapon_buffs.count'] = L['Weapon enchants count'],
-					['weapon_buffs.cooldown_text'] = L['Weapon enchants time remaining'],
+					['weapon_buffs.count'] = L["Weapon enchants count"],
+					['weapon_buffs.cooldown_text'] = L["Weapon enchants time remaining"],
 				},
 				width = 'double',
 				order = 1,
@@ -2421,8 +2421,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			enabled = {
 				type = 'toggle',
-				name = L['Enabled'],
-				desc = L['Enable this text.'],
+				name = L["Enabled"],
+				desc = L["Enable this text."],
 				get = function(info)
 					local rule,text = split_text()
 					return PitBull4.Options.GetLayoutDB(self)[text][rule]
@@ -2440,7 +2440,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			font = {
 				type = 'select',
-				name = L['Font'],
+				name = L["Font"],
 				desc = L["Which font to use for this text."] .. "\n" .. L["If you want more fonts, you should install the addon 'SharedMedia'."],
 				get = function(info)
 					local font = GetTextDB().font
@@ -2482,28 +2482,28 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			anchor = {
 				type = 'select',
-				name = L['Anchor'],
-				desc = L['Set the anchor point on the inside of the aura.'],
+				name = L["Anchor"],
+				desc = L["Set the anchor point on the inside of the aura."],
 				get = get_text,
 				set = set_text,
 				values = {
-					['TOP'] = L['Top'],
-					['BOTTOM'] = L['Bottom'],
-					['LEFT'] = L['Left'],
-					['RIGHT'] = L['Right'],
-					['TOPLEFT'] = L['Top-left'],
-					['TOPRIGHT'] = L['Top-right'],
-					['BOTTOMLEFT'] = L['Bottom-left'],
-					['BOTTOMRIGHT'] = L['Bottom-right'],
-					['CENTER'] = L['Center'],
+					['TOP'] = L["Top"],
+					['BOTTOM'] = L["Bottom"],
+					['LEFT'] = L["Left"],
+					['RIGHT'] = L["Right"],
+					['TOPLEFT'] = L["Top-left"],
+					['TOPRIGHT'] = L["Top-right"],
+					['BOTTOMLEFT'] = L["Bottom-left"],
+					['BOTTOMRIGHT'] = L["Bottom-right"],
+					['CENTER'] = L["Center"],
 				},
 				disabled = disable_text,
 				order = 6,
 			},
 			offset_x = {
 				type = 'range',
-				name = L['Horizontal offset'],
-				desc = L['Number of pixels to offset the text from the anchor point horizontally.'],
+				name = L["Horizontal offset"],
+				desc = L["Number of pixels to offset the text from the anchor point horizontally."],
 				get = get_text,
 				set = set_text,
 				softMin = -50,
@@ -2515,8 +2515,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			offset_y = {
 				type = 'range',
-				name = L['Vertical offset'],
-				desc = L['Number of pixels to offset the text from the anchor point vertically.'],
+				name = L["Vertical offset"],
+				desc = L["Number of pixels to offset the text from the anchor point vertically."],
 				get = get_text,
 				set = set_text,
 				softMin = -50,
@@ -2528,8 +2528,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			color = {
 				type = 'color',
-				name = L['Color'],
-				desc = L['Set the color of the text.'],
+				name = L["Color"],
+				desc = L["Set the color of the text."],
 				hasAlpha = true,
 				get = function(info)
 					return unpack(GetTextDB().color)
@@ -2547,8 +2547,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			color_by_time = {
 				type = 'toggle',
-				name = L['Color by time'],
-				desc = L['Color the text by the time remaining on the aura.'],
+				name = L["Color by time"],
+				desc = L["Color the text by the time remaining on the aura."],
 				get = get_text,
 				set = set_text,
 				hidden = function(info)
@@ -2562,13 +2562,13 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 	},
 	'borders', {
 		type = 'group',
-		name = L['Borders'],
-		desc = L['Configure the borders that are applied around the auras.'],
+		name = L["Borders"],
+		desc = L["Configure the borders that are applied around the auras."],
 		args = {
 			current_text = {
 				type = 'select',
-				name = L['Current border'],
-				desc = L['Choose the border to configure.'],
+				name = L["Current border"],
+				desc = L["Choose the border to configure."],
 				get = function(info)
 					return CURRENT_BORDER
 				end,
@@ -2576,15 +2576,15 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 					CURRENT_BORDER = value
 				end,
 				values = {
-					['my_buffs.friend'] = L['My own buffs on friendly units'],
-					['my_buffs.enemy'] = L['My own buffs on enemy units'],
-					['my_debuffs.friend'] = L['My own debuffs on friendly units'],
-					['my_debuffs.enemy'] = L['My own debuffs on enemy units'],
+					['my_buffs.friend'] = L["My own buffs on friendly units"],
+					['my_buffs.enemy'] = L["My own buffs on enemy units"],
+					['my_debuffs.friend'] = L["My own debuffs on friendly units"],
+					['my_debuffs.enemy'] = L["My own debuffs on enemy units"],
 					['other_buffs.friend'] = L["Others' buffs on friendly units"],
 					['other_buffs.enemy'] = L["Others' buffs on enemy"],
 					['other_debuffs.friend'] = L["Others' debuffs on friendly units"],
 					['other_debuffs.enemy'] = L["Others' debuffs on enemy units"],
-					['weapon_buffs'] = L['Weapon enchants'],
+					['weapon_buffs'] = L["Weapon enchants"],
 				},
 				width = 'double',
 				order = 1,
@@ -2597,16 +2597,16 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			enabled = {
 				type = 'toggle',
-				name = L['Enabled'],
-				desc = L['Enable this border.'],
+				name = L["Enabled"],
+				desc = L["Enable this border."],
 				get = get_border,
 				set = set_border,
 				order = 3,
 			},
 			color_type = {
 				type = 'select',
-				name = L['Color by'],
-				desc = L['Choose how to color this border.'],
+				name = L["Color by"],
+				desc = L["Choose how to color this border."],
 				get = get_border,
 				set = function(info, value)
 					local border_db = GetBorderDB()
@@ -2622,20 +2622,20 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				values = function(info)
 					local t = {}
 					if CURRENT_BORDER == "weapon_buffs" then
-						t.weapon = L['Weapon quality']
+						t.weapon = L["Weapon quality"]
 					else
-						t.caster = L['Caster']
-						t.type = L['Dispel type']
+						t.caster = L["Caster"]
+						t.type = L["Dispel type"]
 					end
-					t.custom = L['Custom color']
+					t.custom = L["Custom color"]
 					return t
 				end,
 				order = 4,
 			},
 			custom_color = {
 				type = 'color',
-				name = L['Custom color'],
-				desc = L['Set the color of the border.'],
+				name = L["Custom color"],
+				desc = L["Set the color of the border."],
 				get = function(info)
 					return unpack(GetBorderDB().custom_color)
 				end,
@@ -2653,13 +2653,13 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 	},
 	'filters', {
 		type = 'group',
-		name = L['Filters'],
-		desc = L['Select the filters to be used to limit the auras that are displayed.'],
+		name = L["Filters"],
+		desc = L["Select the filters to be used to limit the auras that are displayed."],
 		args = {
 			buff = {
 				type = 'select',
-				name = L['Buff'],
-				desc = L['Set the aura filter to filter the buff auras.'],
+				name = L["Buff"],
+				desc = L["Set the aura filter to filter the buff auras."],
 				get = get_layout_filter,
 				set = set_layout_filter,
 				values = get_layout_filter_values,
@@ -2669,8 +2669,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 			},
 			debuff = {
 				type = 'select',
-				name = L['Debuff'],
-				desc = L['Set the aura filter to filter the debuff auras.'],
+				name = L["Debuff"],
+				desc = L["Set the aura filter to filter the debuff auras."],
 				get = get_layout_filter,
 				set = set_layout_filter,
 				values = get_layout_filter_values,
@@ -2682,8 +2682,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 	},
 	'highlights', {
 		type = 'group',
-		name = L['Highlights'],
-		desc = L['Configure what auras trigger a highlight.'],
+		name = L["Highlights"],
+		desc = L["Configure what auras trigger a highlight."],
 		args = HIGHLIGHT_FILTER_OPTIONS,
 	}
 end)

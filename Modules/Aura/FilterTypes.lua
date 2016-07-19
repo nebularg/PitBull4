@@ -25,44 +25,44 @@ local filter_types = {}
 PitBull4_Aura.filter_types = filter_types
 
 local whitelist_values = {
-	['wl'] = L['Whitelist'],
-	['bl'] = L['Blacklist'],
+	['wl'] = L["Whitelist"],
+	['bl'] = L["Blacklist"],
 }
 
 -- Generic comparision operators
 local operators = {
-	['>'] = L['Greater than'],
-	['<'] = L['Less than'],
-	['>='] = L['Greater than or equal'],
-	['<='] = L['Less than or equal'],
-	['=='] = L['Equal'],
-	['~='] = L['Not equal'],
+	['>'] = L["Greater than"],
+	['<'] = L["Less than"],
+	['>='] = L["Greater than or equal"],
+	['<='] = L["Less than or equal"],
+	['=='] = L["Equal"],
+	['~='] = L["Not equal"],
 }
 
 local time_units = {
-	['h'] = L['Hours'],
-	['m'] = L['Minutes'],
-	['s'] = L['Seconds'],
+	['h'] = L["Hours"],
+	['m'] = L["Minutes"],
+	['s'] = L["Seconds"],
 }
 
 local bool_values = {
-	['yes'] = L['Yes'],
-	['no'] = L['No'],
+	['yes'] = L["Yes"],
+	['no'] = L["No"],
 }
 
 local unit_values = {
-	['=='] = L['is'],
-	['~='] = L['is not'],
-	['friend'] = L['is friend'],
-	['enemy'] = L['is enemy'],
-	['is'] = L['is the same as unit'],
-	['isnot'] = L['is not the same as unit'],
-	['match'] = L['matches the pattern'],
-	['nomatch'] = L['does not match the pattern'],
-	['player_controlled'] = L['is player controlled'],
-	['not_player_controlled'] = L['is not player controlled'],
-	['combat'] = L['is in combat'],
-	['nocombat'] = L['is not in combat'],
+	['=='] = L["is"],
+	['~='] = L["is not"],
+	['friend'] = L["is friend"],
+	['enemy'] = L["is enemy"],
+	['is'] = L["is the same as unit"],
+	['isnot'] = L["is not the same as unit"],
+	['match'] = L["matches the pattern"],
+	['nomatch'] = L["does not match the pattern"],
+	['player_controlled'] = L["is player controlled"],
+	['not_player_controlled'] = L["is not player controlled"],
+	['combat'] = L["is in combat"],
+	['nocombat'] = L["is not in combat"],
 }
 
 local function compare_unit(unit,op,value,frame)
@@ -227,8 +227,8 @@ end
 local function meta_filter_option(self, options)
 	local filter_option = {
 		type = 'select',
-		name = L['Filter'],
-		desc = L['Select a filter to use in this meta filter.'],
+		name = L["Filter"],
+		desc = L["Select a filter to use in this meta filter."],
 		get = function(info)
 			local pos = tonumber(string.match(info[#info],"_(%d+)"))
 			return PitBull4_Aura:GetFilterDB(self).filters[pos] or ""
@@ -265,8 +265,8 @@ local function meta_filter_option(self, options)
 	}
 	local operator_option = {
 		type = 'select',
-		name = L['Operator'],
-		desc = L['Operator to use to combine the filters.'],
+		name = L["Operator"],
+		desc = L["Operator to use to combine the filters."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			local pos = tonumber(string.match(info[#info],"_(%d+)"))
@@ -338,8 +338,8 @@ end
 PitBull4_Aura:RegisterFilterType('Name',L["Name"],name_filter, function(self, options)
 	options.whitelist = {
 		type = 'select',
-		name = L['List type'],
-		desc = L['Select if the list of names are treated as a whitelist or blacklist. A whitelist will only display the selected auras and a blacklist will only show unchecked or unlisted auras.'],
+		name = L["List type"],
+		desc = L["Select if the list of names are treated as a whitelist or blacklist. A whitelist will only display the selected auras and a blacklist will only show unchecked or unlisted auras."],
 		get = function(info)
 			return PitBull4_Aura:GetFilterDB(self).whitelist and 'wl' or 'bl'
 		end,
@@ -359,8 +359,8 @@ PitBull4_Aura:RegisterFilterType('Name',L["Name"],name_filter, function(self, op
 	}
 	options.name_list = {
 		type = 'multiselect',
-		name = L['Aura names'],
-		desc = L['Names of the auras you want the filter to include or exclude.'],
+		name = L["Aura names"],
+		desc = L["Names of the auras you want the filter to include or exclude."],
 		get = function(info, key)
 			return PitBull4_Aura:GetFilterDB(self).name_list[key]
 		end,
@@ -433,18 +433,18 @@ local function aura_type_filter(self, entry)
 	end
 end
 local aura_types = {
-	['Poison'] = L['Poison'],
-	['Magic'] = L['Magic'],
-	['Disease'] = L['Disease'],
-	['Curse'] = L['Curse'],
-	['Enrage'] = L['Enrage'],
-	['nil'] = L['Other'],
+	['Poison'] = L["Poison"],
+	['Magic'] = L["Magic"],
+	['Disease'] = L["Disease"],
+	['Curse'] = L["Curse"],
+	['Enrage'] = L["Enrage"],
+	['nil'] = L["Other"],
 }
 PitBull4_Aura:RegisterFilterType('Aura Type',L["Aura Type"],aura_type_filter, function(self,options)
 	options.whitelist = {
 		type = 'select',
-		name = L['List type'],
-		desc = L['Select if the list of names are treated as a whitelist or blacklist. A whitelist will only display the selected auras and a blacklist will only show unchecked or unlisted auras.'],
+		name = L["List type"],
+		desc = L["Select if the list of names are treated as a whitelist or blacklist. A whitelist will only display the selected auras and a blacklist will only show unchecked or unlisted auras."],
 		get = function(info)
 			return PitBull4_Aura:GetFilterDB(self).whitelist and 'wl' or 'bl'
 		end,
@@ -464,8 +464,8 @@ PitBull4_Aura:RegisterFilterType('Aura Type',L["Aura Type"],aura_type_filter, fu
 	}
 	options.name_list = {
 		type = 'multiselect',
-		name = L['Aura types'],
-		desc = L['Types of the auras you want the filter to include or exclude.'],
+		name = L["Aura types"],
+		desc = L["Types of the auras you want the filter to include or exclude."],
 		get = function(info, key)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			if not db.aura_type_list then
@@ -506,8 +506,8 @@ end
 PitBull4_Aura:RegisterFilterType('Rank',L["Rank"],rank_filter, function(self,options)
 	options.operator = {
 		type = 'select',
-		name = L['Operator'],
-		desc = L['Select the operator to compare the rank against the value.'],
+		name = L["Operator"],
+		desc = L["Select the operator to compare the rank against the value."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			if not db.operator then
@@ -524,8 +524,8 @@ PitBull4_Aura:RegisterFilterType('Rank',L["Rank"],rank_filter, function(self,opt
 	}
 	options.value = {
 		type = 'input',
-		name = L['Value'],
-		desc = L['Enter the value to compare the rank against.'],
+		name = L["Value"],
+		desc = L["Enter the value to compare the rank against."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			if not db.value then
@@ -541,7 +541,7 @@ PitBull4_Aura:RegisterFilterType('Rank',L["Rank"],rank_filter, function(self,opt
 			if tonumber(value) then
 				return true
 			else
-				return L['Value needs to be a number.']
+				return L["Value needs to be a number."]
 			end
 		end,
 		order = 2,
@@ -571,8 +571,8 @@ end
 PitBull4_Aura:RegisterFilterType('Count',L["Count"],count_filter, function(self,options)
 	options.operator = {
 		type = 'select',
-		name = L['Operator'],
-		desc = L['Select the operator to compare the count against the value.'],
+		name = L["Operator"],
+		desc = L["Select the operator to compare the count against the value."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			if not db.operator then
@@ -589,8 +589,8 @@ PitBull4_Aura:RegisterFilterType('Count',L["Count"],count_filter, function(self,
 	}
 	options.value = {
 		type = 'input',
-		name = L['Value'],
-		desc = L['Enter the value to compare the count against.'],
+		name = L["Value"],
+		desc = L["Enter the value to compare the count against."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			if not db.value then
@@ -606,7 +606,7 @@ PitBull4_Aura:RegisterFilterType('Count',L["Count"],count_filter, function(self,
 			if tonumber(value) then
 				return true
 			else
-				return L['Value needs to be a number.']
+				return L["Value needs to be a number."]
 			end
 		end,
 		order = 2,
@@ -642,8 +642,8 @@ end
 PitBull4_Aura:RegisterFilterType('Duration',L["Duration"],duration_filter, function(self,options)
 	options.operator = {
 		type = 'select',
-		name = L['Operator'],
-		desc = L['Select the operator to compare the duration against the value.'],
+		name = L["Operator"],
+		desc = L["Select the operator to compare the duration against the value."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			if not db.operator then
@@ -660,8 +660,8 @@ PitBull4_Aura:RegisterFilterType('Duration',L["Duration"],duration_filter, funct
 	}
 	options.value = {
 		type = 'input',
-		name = L['Value'],
-		desc = L['Enter the value to compare the duration against.'],
+		name = L["Value"],
+		desc = L["Enter the value to compare the duration against."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			if not db.value then
@@ -677,15 +677,15 @@ PitBull4_Aura:RegisterFilterType('Duration',L["Duration"],duration_filter, funct
 			if tonumber(value) then
 				return true
 			else
-				return L['Value needs to be a number.']
+				return L["Value needs to be a number."]
 			end
 		end,
 		order = 2,
 	}
 	options.time_unit = {
 		type = 'select',
-		name = L['Time unit'],
-		desc = L['Select the time units the value represents.'],
+		name = L["Time unit"],
+		desc = L["Select the time units the value represents."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			if not db.time_unit then
@@ -762,8 +762,8 @@ end
 PitBull4_Aura:RegisterFilterType('Time Left',L["Time Left"],time_left_filter, function(self,options)
 	options.operator = {
 		type = 'select',
-		name = L['Operator'],
-		desc = L['Select the operator to compare the time left against the value.'],
+		name = L["Operator"],
+		desc = L["Select the operator to compare the time left against the value."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			if not db.operator then
@@ -780,8 +780,8 @@ PitBull4_Aura:RegisterFilterType('Time Left',L["Time Left"],time_left_filter, fu
 	}
 	options.value = {
 		type = 'input',
-		name = L['Value'],
-		desc = L['Enter the value to compare the time left against.'],
+		name = L["Value"],
+		desc = L["Enter the value to compare the time left against."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			if not db.value then
@@ -797,15 +797,15 @@ PitBull4_Aura:RegisterFilterType('Time Left',L["Time Left"],time_left_filter, fu
 			if tonumber(value) then
 				return true
 			else
-				return L['Value needs to be a number.']
+				return L["Value needs to be a number."]
 			end
 		end,
 		order = 2,
 	}
 	options.time_unit = {
 		type = 'select',
-		name = L['Time unit'],
-		desc = L['Select the time units the value represents.'],
+		name = L["Time unit"],
+		desc = L["Select the time units the value represents."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			if not db.time_unit then
@@ -836,11 +836,11 @@ local function mine_filter(self, entry)
 		return not my_units[entry[12]]
 	end
 end
-PitBull4_Aura:RegisterFilterType('Mine',L['Mine'],mine_filter, function(self,options)
+PitBull4_Aura:RegisterFilterType('Mine',L["Mine"],mine_filter, function(self,options)
 	options.mine = {
 		type = 'select',
-		name = L['Is mine'],
-		desc = L['Filter by if the debuff is yours or not.'],
+		name = L["Is mine"],
+		desc = L["Filter by if the debuff is yours or not."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			return db.mine and "yes" or "no"
@@ -867,11 +867,11 @@ local function stealable_filter(self, entry)
 		return not entry[13]
 	end
 end
-PitBull4_Aura:RegisterFilterType('Stealable',L['Stealable'],stealable_filter, function(self,options)
+PitBull4_Aura:RegisterFilterType('Stealable',L["Stealable"],stealable_filter, function(self,options)
 	options.stealable = {
 		type = 'select',
-		name = L['Is stealable'],
-		desc = L['Filter by if the debuff is stealable or not.'],
+		name = L["Is stealable"],
+		desc = L["Filter by if the debuff is stealable or not."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			return db.stealable and "yes" or "no"
@@ -906,11 +906,11 @@ local function weapon_filter(self, entry)
 		end
 	end
 end
-PitBull4_Aura:RegisterFilterType('Weapon Enchant',L['Weapon Enchant'],weapon_filter, function(self,options)
+PitBull4_Aura:RegisterFilterType('Weapon Enchant',L["Weapon Enchant"],weapon_filter, function(self,options)
 	options.weapon = {
 		type = 'select',
-		name = L['Is weapon enchant'],
-		desc = L['Filter by if the aura is weapon enchant or not.'],
+		name = L["Is weapon enchant"],
+		desc = L["Filter by if the aura is weapon enchant or not."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			return db.weapon and "yes" or "no"
@@ -937,11 +937,11 @@ local function buff_filter(self, entry)
 		return not entry[4]
 	end
 end
-PitBull4_Aura:RegisterFilterType('Buff',L['Buff'],buff_filter, function(self,options)
+PitBull4_Aura:RegisterFilterType('Buff',L["Buff"],buff_filter, function(self,options)
 	options.buff = {
 		type = 'select',
-		name = L['Is buff'],
-		desc = L['Filter by if the aura is a buff or not.'],
+		name = L["Is buff"],
+		desc = L["Filter by if the aura is a buff or not."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			return db.buff and "yes" or "no"
@@ -968,8 +968,8 @@ end
 PitBull4_Aura:RegisterFilterType('Unit',L["Unit"],unit_filter,function(self,options)
 	options.unit_operator = {
 		type = 'select',
-		name = L['Test'],
-		desc = L['Type of test to check the unit by.'],
+		name = L["Test"],
+		desc = L["Type of test to check the unit by."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			if not db.unit_operator then
@@ -990,8 +990,8 @@ PitBull4_Aura:RegisterFilterType('Unit',L["Unit"],unit_filter,function(self,opti
 	}
 	options.unit = {
 		type = 'input',
-		name = L['Unit'],
-		desc = L['Enter the unit to compare the unit the aura is on against.'],
+		name = L["Unit"],
+		desc = L["Enter the unit to compare the unit the aura is on against."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			if not db.unit then
@@ -1017,7 +1017,7 @@ PitBull4_Aura:RegisterFilterType('Unit',L["Unit"],unit_filter,function(self,opti
 			if PitBull4.Utils.GetBestUnitID(value) then
 				return true
 			else
-				return L['Must be a valid unit id.']
+				return L["Must be a valid unit id."]
 			end
 		end,
 		order = 2,
@@ -1104,8 +1104,8 @@ end
 local function map_filter_options(self,options)
 	options.map_type = {
 		type = 'select',
-		name = L['Map type'],
-		desc = L['What to map based on.'],
+		name = L["Map type"],
+		desc = L["What to map based on."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			if not db.map_type then
@@ -1119,8 +1119,8 @@ local function map_filter_options(self,options)
 			PitBull4_Aura:UpdateAll()
 		end,
 		values = {
-			['class'] = L['Player class'],
-			['race'] = L['Player race'],
+			['class'] = L["Player class"],
+			['race'] = L["Player race"],
 		},
 		order = 1,
 	}
@@ -1170,11 +1170,11 @@ local function map_filter_options(self,options)
 	if db.map_type == "class" then
 		t = classes
 		n = class_names
-		desc = L['Select a filter to use for the class.']
+		desc = L["Select a filter to use for the class."]
 	else
 		t = races
 		n = race_names
-		desc = L['Select a filter to use for the race.']
+		desc = L["Select a filter to use for the race."]
 	end
 	local order = 3
 	for i=1,#t do
@@ -1223,8 +1223,8 @@ end)
 
 -- Caster
 local caster_unit_values = {
-	['known'] = L['is known'],
-	['unknown'] = L['is unknown'],
+	['known'] = L["is known"],
+	['unknown'] = L["is unknown"],
 }
 for k,v in pairs(unit_values) do
 	caster_unit_values[k] = v
@@ -1236,8 +1236,8 @@ end
 PitBull4_Aura:RegisterFilterType('Caster',L["Caster"],caster_filter,function(self,options)
 	options.unit_operator = {
 		type = 'select',
-		name = L['Test'],
-		desc = L['Type of test to check the caster by.'],
+		name = L["Test"],
+		desc = L["Type of test to check the caster by."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			if not db.unit_operator then
@@ -1258,8 +1258,8 @@ PitBull4_Aura:RegisterFilterType('Caster',L["Caster"],caster_filter,function(sel
 	}
 	options.unit = {
 		type = 'input',
-		name = L['Unit'],
-		desc = L['Enter the unit to compare the caster of the aura against.'],
+		name = L["Unit"],
+		desc = L["Enter the unit to compare the caster of the aura against."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			if not db.unit then
@@ -1285,7 +1285,7 @@ PitBull4_Aura:RegisterFilterType('Caster',L["Caster"],caster_filter,function(sel
 			if PitBull4.Utils.GetBestUnitID(value) then
 				return true
 			else
-				return L['Must be a valid unit id.']
+				return L["Must be a valid unit id."]
 			end
 		end,
 		order = 2,
@@ -1300,11 +1300,11 @@ local function should_consolidate_filter(self, entry)
 		return not entry[14]
 	end
 end
-PitBull4_Aura:RegisterFilterType('Should consolidate',L['Should consolidate'],should_consolidate_filter, function(self,options)
+PitBull4_Aura:RegisterFilterType('Should consolidate',L["Should consolidate"],should_consolidate_filter, function(self,options)
 	options.should_consolidate = {
 		type = 'select',
-		name = L['Should consolidate'],
-		desc = L['Filter by if the aura is eligible for consolidation.'],
+		name = L["Should consolidate"],
+		desc = L["Filter by if the aura is eligible for consolidation."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			return db.should_consolidate and "yes" or "no"
@@ -1343,8 +1343,8 @@ end
 PitBull4_Aura:RegisterFilterType('Spell id',L["Spell id"],id_filter, function(self, options)
 	options.whitelist = {
 		type = 'select',
-		name = L['List type'],
-		desc = L['Select if the list of ids are treated as a whitelist or blacklist. A whitelist will only display the selected auras and a blacklist will only show unchecked or unlisted auras.'],
+		name = L["List type"],
+		desc = L["Select if the list of ids are treated as a whitelist or blacklist. A whitelist will only display the selected auras and a blacklist will only show unchecked or unlisted auras."],
 		get = function(info)
 			return PitBull4_Aura:GetFilterDB(self).whitelist and 'wl' or 'bl'
 		end,
@@ -1364,8 +1364,8 @@ PitBull4_Aura:RegisterFilterType('Spell id',L["Spell id"],id_filter, function(se
 	}
 	options.id_list = {
 		type = 'multiselect',
-		name = L['Aura ids'],
-		desc = L['Ids of the auras you want the filter to include or exclude.'],
+		name = L["Aura ids"],
+		desc = L["Ids of the auras you want the filter to include or exclude."],
 		get = function(info, key)
 			return PitBull4_Aura:GetFilterDB(self).id_list[key]
 		end,
@@ -1442,11 +1442,11 @@ local function boss_debuff_filter(self, entry)
 		return not entry[17]
 	end
 end
-PitBull4_Aura:RegisterFilterType('Boss debuff',L['Boss debuff'],boss_debuff_filter,function(self, options)
+PitBull4_Aura:RegisterFilterType('Boss debuff',L["Boss debuff"],boss_debuff_filter,function(self, options)
 	options.boss_debuff = {
 		type = 'select',
-		name = L['Boss debuff'],
-		desc = L['Filter by if the aura is a boss debuff.'],
+		name = L["Boss debuff"],
+		desc = L["Filter by if the aura is a boss debuff."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			return db.boss_debuff and "yes" or "no"
