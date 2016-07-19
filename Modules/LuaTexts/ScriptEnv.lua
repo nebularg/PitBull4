@@ -395,7 +395,7 @@ local function ClassColor(unit)
 	local r, g, b = 0.8, 0.8, 0.8 --UNKNOWN
 	local _, class = UnitClass(unit)
 	local color = PitBull4.ClassColors[class]
-	if t then
+	if color then
 		r, g, b = color[1], color[2], color[3]
 	end
 	return r * 255, g * 255, b * 255
