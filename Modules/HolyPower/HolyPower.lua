@@ -9,8 +9,6 @@ if not PitBull4 then
 	error("PitBull4_HolyPower requires PitBull4")
 end
 
-local legion_700 = select(4, GetBuildInfo()) >= 70000
-
 -- CONSTANTS ----------------------------------------------------------------
 
 local PALADINPOWERBAR_SHOW_LEVEL = _G.PALADINPOWERBAR_SHOW_LEVEL
@@ -23,7 +21,6 @@ local SPACING = 3
 
 local HALF_STANDARD_SIZE = STANDARD_SIZE / 2
 
-local CONTAINER_WIDTH = STANDARD_SIZE * HOLY_POWER_FULL + BORDER_SIZE * 2 + SPACING * (HOLY_POWER_FULL - 1)
 local CONTAINER_HEIGHT = STANDARD_SIZE + BORDER_SIZE * 2
 
 -----------------------------------------------------------------------------
@@ -54,9 +51,7 @@ function PitBull4_HolyPower:OnEnable()
 	self:RegisterEvent("UNIT_POWER_FREQUENT")
 	self:RegisterEvent("UNIT_DISPLAYPOWER")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	if legion_700 then
-		self:RegisterEvent("PLAYER_TALENT_UPDATE", "PLAYER_ENTERING_WORLD")
-	end
+	self:RegisterEvent("PLAYER_TALENT_UPDATE", "PLAYER_ENTERING_WORLD")
 	if player_level < PALADINPOWERBAR_SHOW_LEVEL then
 		self:RegisterEvent("PLAYER_LEVEL_UP")
 	end
@@ -126,7 +121,7 @@ local function update_container_size(container, vertical, max_holy_power)
 end
 
 function PitBull4_HolyPower:UpdateFrame(frame)
-	if frame.unit ~= "player" or player_level < PALADINPOWERBAR_SHOW_LEVEL or (legion_700 and GetSpecialization() ~= SPEC_PALADIN_RETRIBUTION) then
+	if frame.unit ~= "player" or GetSpecialization() ~= SPEC_PALADIN_RETRIBUTION or player_level < PALADINPOWERBAR_SHOW_LEVEL then
 		return self:ClearFrame(frame)
 	end
 
@@ -139,7 +134,6 @@ function PitBull4_HolyPower:UpdateFrame(frame)
 		frame.HolyPower = container
 		container:SetFrameLevel(frame:GetFrameLevel() + 13)
 
-		local point, attach
 		for i = 1, 5 do
 			local holy_icon = PitBull4.Controls.MakeHolyIcon(container, i)
 			container[i] = holy_icon

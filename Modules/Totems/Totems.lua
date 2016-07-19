@@ -13,8 +13,6 @@ end
 
 local DEBUG = PitBull4.DEBUG
 
-local CooldownFrame_Set = CooldownFrame_Set or CooldownFrame_SetTimer -- XXX legion_700
-
 -- CONSTANTS ----------------------------------------------------------------
 
 local MAX_TOTEMS = MAX_TOTEMS or 4 -- comes from blizzard's totem frame lua

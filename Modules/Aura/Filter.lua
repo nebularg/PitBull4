@@ -25,13 +25,8 @@ local function scan_for_known_talent(spellid)
 end
 
 local function scan_for_known_glyph(spellid)
-	if legion_700 then return false end
-	for index = 1, NUM_GLYPH_SLOTS do
-		local _, _, _, gylph_spellid = GetGlyphSocketInfo(index)
-		if gylph_spellid == spellid then
-			return true
-		end
-	end
+	-- XXX need to check abilities for built-in effects before
+	-- removing this
 	return false
 end
 

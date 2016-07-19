@@ -6,8 +6,6 @@ if not PitBull4 then
 end
 -- luacheck: no global
 
-local legion_700 = select(4, GetBuildInfo()) >= 70000
-
 local L = PitBull4.L
 local PitBull4_HideBlizzard = PitBull4:NewModule("HideBlizzard", "AceHook-3.0")
 
@@ -229,60 +227,29 @@ function showers:castbar()
 end
 
 function hiders:runebar()
-	if not legion_700 then
-		hook_frames(WarlockPowerFrame, TotemFrame, EclipseBarFrame, PaladinPowerBar, RuneFrame, PriestBarFrame, MonkHarmonyBar)
-	else
-		hook_frames(PlayerFrame.classPowerBar, TotemFrame, EclipseBarFrame, RuneFrame, PriestBarFrame)
-	end
+	hook_frames(PlayerFrame.classPowerBar, TotemFrame, EclipseBarFrame, RuneFrame, PriestBarFrame)
 end
 
 function showers:runebar()
-	if not legion_700 then
-		unhook_frames(WarlockPowerFrame, TotemFrame, EclipseBarFrame, PaladinPowerBar, RuneFrame, PriestBarFrame, MonkHarmonyBar)
+	unhook_frames(PlayerFrame.classPowerBar, TotemFrame, EclipseBarFrame, RuneFrame, PriestBarFrame)
 
-		local _, class = UnitClass("player")
-		if class == "WARLOCK" then
-			WarlockPowerFrame_SetUpCurrentPower()
-		elseif class == "SHAMAN" then
-			TotemFrame_Update()
-		elseif class == "DRUID" then
-			EclipseBar_UpdateShown(EclipseBarFrame)
-		elseif class == "PALADIN" then
-			PaladinPowerBar:Show()
-			PaladinPowerBar_Update(PaladinPowerBar)
-		elseif class == "DEATHKNIGHT" then
-			RuneFrame:Show()
-			RuneFrame:GetScript("OnEvent")(RuneFrame, "PLAYER_ENTERING_WORLD")
-		elseif class == "PRIEST" then
-			PriestBarFrame_CheckAndShow()
-		elseif class == "MONK" then
-			MonkHarmonyBar:Show()
-			MonkHarmonyBar_Update(MonkHarmonyBar)
-		end
-	else
-		unhook_frames(PlayerFrame.classPowerBar, TotemFrame, EclipseBarFrame, RuneFrame, PriestBarFrame)
-
-		local _, class = UnitClass("player")
-		if PlayerFrame.classPowerBar then
-			PlayerFrame.classPowerBar:Setup()
-		elseif class == "SHAMAN" then
-			TotemFrame_Update()
-		elseif class == "DRUID" then
-			EclipseBar_UpdateShown(EclipseBarFrame)
-		elseif class == "DEATHKNIGHT" then
-			RuneFrame:Show()
-			RuneFrame:GetScript("OnEvent")(RuneFrame, "PLAYER_ENTERING_WORLD")
-		elseif class == "PRIEST" then
-			PriestBarFrame_CheckAndShow()
-		end
+	local _, class = UnitClass("player")
+	if PlayerFrame.classPowerBar then
+		PlayerFrame.classPowerBar:Setup()
+	elseif class == "SHAMAN" then
+		TotemFrame_Update()
+	elseif class == "DRUID" then
+		EclipseBar_UpdateShown(EclipseBarFrame)
+	elseif class == "DEATHKNIGHT" then
+		RuneFrame:Show()
+		RuneFrame:GetScript("OnEvent")(RuneFrame, "PLAYER_ENTERING_WORLD")
+	elseif class == "PRIEST" then
+		PriestBarFrame_CheckAndShow()
 	end
 end
 
 function hiders:aura()
 	hook_frames(BuffFrame, TemporaryEnchantFrame)
-	if not legion_700 then
-		hook_frames(ConsolidatedBuffs)
-	end
 end
 
 function showers:aura()
@@ -293,13 +260,6 @@ function showers:aura()
 	BuffFrame:Show()
 
 	TemporaryEnchantFrame:Show()
-
-	if not legion_700 then
-		unhook_frames_without_init(ConsolidatedBuffs)
-		if ShouldShowConsolidatedBuffFrame() then
-			ConsolidatedBuffs:Show()
-		end
-	end
 end
 
 function hiders:altpower()

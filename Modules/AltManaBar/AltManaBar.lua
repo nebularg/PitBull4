@@ -1,11 +1,7 @@
 if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
-local legion_700 = select(4, GetBuildInfo()) >= 70000
 local _, player_class = UnitClass("player")
-if not legion_700 and player_class ~= "DRUID" then
-	return
-end
-if legion_700 and player_class ~= "DRUID" and player_class ~= "PRIEST" and player_class ~= "SHAMAN" then
+if player_class ~= "DRUID" and player_class ~= "PRIEST" and player_class ~= "SHAMAN" then
 	return
 end
 
@@ -30,7 +26,7 @@ PitBull4_AltManaBar:SetDefaults({
 
 -- constants
 local SPELL_POWER_MANA = _G.SPELL_POWER_MANA
-local DISPLAY_INFO = legion_700 and _G.ALT_MANA_BAR_PAIR_DISPLAY_INFO[player_class]
+local DISPLAY_INFO = _G.ALT_MANA_BAR_PAIR_DISPLAY_INFO[player_class]
 
 -- cached power type for optimization
 local power_type = nil
@@ -60,7 +56,7 @@ function PitBull4_AltManaBar:GetValue(frame)
 		return nil
 	end
 
-	if legion_700 and not DISPLAY_INFO[power_type] then
+	if not DISPLAY_INFO[power_type] then
 		return nil
 	end
 

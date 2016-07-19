@@ -9,14 +9,7 @@ if not PitBull4 then
 	error("PitBull4_SoulShards requires PitBull4")
 end
 
-local legion_700 = select(4, GetBuildInfo()) >= 70000
-
 -- CONSTANTS ----------------------------------------------------------------
-
-local SHARDBAR_SHOW_LEVEL = SHARDBAR_SHOW_LEVEL
-if not SHARDBAR_SHOW_LEVEL then
-	SHARDBAR_SHOW_LEVEL = 0
-end
 
 local STANDARD_SIZE = 15
 local BORDER_SIZE = 3
@@ -45,18 +38,10 @@ PitBull4_SoulShards:SetDefaults({
 	background_color = { 0, 0, 0, 0.5 }
 })
 
-local player_level = UnitLevel("player")
-
 function PitBull4_SoulShards:OnEnable()
-	player_level = UnitLevel("player")
 	self:RegisterEvent("UNIT_POWER_FREQUENT")
 	self:RegisterEvent("UNIT_DISPLAYPOWER")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	self:RegisterEvent("PLAYER_TALENT_UPDATE","PLAYER_ENTERING_WORLD")
-	if player_level < SHARDBAR_SHOW_LEVEL then
-		self:RegisterEvent("PLAYER_LEVEL_UP")
-	end
-
 end
 
 local function update_player(self)
@@ -83,14 +68,6 @@ end
 
 function PitBull4_SoulShards:PLAYER_ENTERING_WORLD(event)
 	update_player(self)
-end
-
-function PitBull4_SoulShards:PLAYER_LEVEL_UP(event, level)
-	player_level = level
-	if player_level >= SHARDBAR_SHOW_LEVEL then
-		self:UnregisterEvent("PLAYER_LEVEL_UP")
-		update_player(self)
-	end
 end
 
 function PitBull4_SoulShards:ClearFrame(frame)
@@ -123,7 +100,7 @@ local function update_container_size(container, vertical, max_shards)
 end
 
 function PitBull4_SoulShards:UpdateFrame(frame)
-	if frame.unit ~= "player" or (not legion_700 and (player_level < SHARDBAR_SHOW_LEVEL or (WARLOCK_SOULBURN and not IsPlayerSpell(WARLOCK_SOULBURN)))) then
+	if frame.unit ~= "player" then
 		return self:ClearFrame(frame)
 	end
 
@@ -136,7 +113,6 @@ function PitBull4_SoulShards:UpdateFrame(frame)
 		frame.SoulShards = container
 		container:SetFrameLevel(frame:GetFrameLevel() + 13)
 
-		local point, attach
 		for i = 1, 4 do
 			local soul_shard = PitBull4.Controls.MakeSoulShard(container, i)
 			container[i] = soul_shard

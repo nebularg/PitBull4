@@ -150,6 +150,5 @@ PitBull4_PowerBar:SetLayoutOptionsFunction(function(self)
 		type = "toggle",
 		get = get,
 		set = set,
-		hidden = function() return not next(power_bar_atlas) end, -- XXX compat legion_700
 	}
 end)

@@ -204,7 +204,7 @@ local function get_reaction_options()
 		end
 	}
 	
-	for reaction in pairs(FACTION_BAR_COLORS) do
+	for reaction in pairs(_G.FACTION_BAR_COLORS) do
 		local my_option = {}
 		for k, v in pairs(option) do
 			my_option[k] = v
@@ -241,7 +241,7 @@ local function get_reaction_options()
 		confirmText = L["Are you sure you want to reset to defaults?"],
 		order = -1,
 		func = function(info)
-			for reaction, color in pairs(FACTION_BAR_COLORS) do
+			for reaction, color in pairs(_G.FACTION_BAR_COLORS) do
 				local db_color = PitBull4.db.profile.colors.reaction[reaction]
 				db_color[1], db_color[2], db_color[3] = color.r, color.g, color.b
 			end

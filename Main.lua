@@ -208,9 +208,6 @@ for power_token, color in pairs(PowerBarColor) do
 	if type(power_token) == "string" then
 		if color.r then
 			DATABASE_DEFAULTS.profile.colors.power[power_token] = { color.r, color.g, color.b }
-		elseif power_token == "ECLIPSE" then -- XXX compat legion_700: is replaced by LUNAR_POWER which doesn't need this
-			DATABASE_DEFAULTS.profile.colors.power["BALANCE_NEGATIVE_ENERGY"] = { color.negative.r, color.negative.g, color.negative.b }
-			DATABASE_DEFAULTS.profile.colors.power["BALANCE_POSITIVE_ENERGY"] = { color.positive.r, color.positive.g, color.positive.b }
 		end
 	end
 end

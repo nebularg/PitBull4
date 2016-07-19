@@ -188,11 +188,7 @@ end
 -- create a very basic control, properly handling Textures and FontStrings.
 local function create_control(kind, name, inheritTemplate, parent)
 	if kind == "Texture" then
-		local texture = parent:CreateTexture(name, "BACKGROUND")
-		if type(texture.SetColorTexture) ~= "function" then -- XXX compat legion_700
-			texture.SetColorTexture = texture.SetTexture
-		end
-		return texture
+		return parent:CreateTexture(name, "BACKGROUND")
 	end
 	if kind == "FontString" then
 		local font_string = parent:CreateFontString(name, "BACKGROUND")

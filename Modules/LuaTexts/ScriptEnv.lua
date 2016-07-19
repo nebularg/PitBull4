@@ -5,12 +5,6 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_LuaTexts = PitBull4:GetModule("LuaTexts")
 
-local legion_700 = select(4, GetBuildInfo()) >= 70000
-
-local UnitIsTapDenied = UnitIsTapDenied or function(unit) -- XXX compat legion_700
-	return UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) and not UnitIsTappedByAllThreatList(unit)
-end
-
 -- The ScriptEnv table serves as the environment that the scripts run
 -- under LuaTexts run under.  The functions included in it are accessible
 -- to this scripts as though they were local functions to it.  Functions
@@ -400,9 +394,9 @@ ScriptEnv.HostileColor = HostileColor
 local function ClassColor(unit)
 	local r, g, b = 0.8, 0.8, 0.8 --UNKNOWN
 	local _, class = UnitClass(unit)
-	local t = PitBull4.ClassColors[class]
+	local color = PitBull4.ClassColors[class]
 	if t then
-		r, g, b = t[1], t[2], t[3]
+		r, g, b = color[1], color[2], color[3]
 	end
 	return r * 255, g * 255, b * 255
 end
@@ -479,6 +473,7 @@ end
 ScriptEnv.Class = Class
 
 local ShortClass_abbrev = {
+	[LOCALIZED_CLASS_NAMES_MALE.DEMONHUNTER] = L["Demon Hunter_short"],
 	[LOCALIZED_CLASS_NAMES_MALE.DEATHKNIGHT] = L["Death Knight_short"],
 	[LOCALIZED_CLASS_NAMES_MALE.DRUID] = L["Druid_short"],
 	[LOCALIZED_CLASS_NAMES_MALE.HUNTER] = L["Hunter_short"],
@@ -491,6 +486,7 @@ local ShortClass_abbrev = {
 	[LOCALIZED_CLASS_NAMES_MALE.WARLOCK] = L["Warlock_short"],
 	[LOCALIZED_CLASS_NAMES_MALE.WARRIOR] = L["Warrior_short"],
 
+	[LOCALIZED_CLASS_NAMES_FEMALE.DEMONHUNTER] = L["Demon Hunter_short"],
 	[LOCALIZED_CLASS_NAMES_FEMALE.DEATHKNIGHT] = L["Death Knight_short"],
 	[LOCALIZED_CLASS_NAMES_FEMALE.DRUID] = L["Druid_short"],
 	[LOCALIZED_CLASS_NAMES_FEMALE.HUNTER] = L["Hunter_short"],
@@ -503,10 +499,6 @@ local ShortClass_abbrev = {
 	[LOCALIZED_CLASS_NAMES_FEMALE.WARLOCK] = L["Warlock_short"],
 	[LOCALIZED_CLASS_NAMES_FEMALE.WARRIOR] = L["Warrior_short"],
 }
-if legion_700 then
-	ShortClass_abbrev[LOCALIZED_CLASS_NAMES_MALE.DEMONHUNTER] = L["Demon Hunter_short"]
-	ShortClass_abbrev[LOCALIZED_CLASS_NAMES_FEMALE.DEMONHUNTER] = L["Demon Hunter_short"]
-end
 
 local function ShortClass(arg)
 	local short = ShortClass_abbrev[arg]

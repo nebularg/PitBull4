@@ -5,8 +5,6 @@ if not PitBull4 then
 	error("PitBull4_Portrait requires PitBull4")
 end
 
-local legion_700 = select(4, GetBuildInfo()) >= 70000
-
 local CLASS_TEX_COORDS = {}
 for k, v in pairs(_G.CLASS_ICON_TCOORDS) do
 	-- zoom by 14%
@@ -193,8 +191,8 @@ function PitBull4_Portrait:UpdateFrame(frame)
 		else
 			portrait.model:SetModelScale(1) -- the scale gets screwed up if not reset before SetModel
 			portrait.model:SetModel([[Interface\Buttons\talktomequestionmark.mdx]])
-			portrait.model:SetModelScale(legion_700 and 3 or 4.25)
-			portrait.model:SetPosition(0, 0, legion_700 and -0.15 or -0.8)
+			portrait.model:SetModelScale(3)
+			portrait.model:SetPosition(0, 0, -0.15)
 		end
 	elseif style == "pirate" then
 		portrait.model:ClearModel()

@@ -71,7 +71,7 @@ function PitBull4_ReputationBar:GetExampleColor(frame)
 	return color[1], color[2], color[3]
 end
 
-hooksecurefunc(MainMenuBar_UpdateExperienceBars and "MainMenuBar_UpdateExperienceBars" or "ReputationWatchBar_Update", function() -- XXX compat legion_700
+hooksecurefunc("MainMenuBar_UpdateExperienceBars", function()
 	if not PitBull4_ReputationBar:IsEnabled() then
 		return
 	end
