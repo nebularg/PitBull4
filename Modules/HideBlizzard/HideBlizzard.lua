@@ -324,8 +324,8 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		hidden = hidden,
 	}, 'runebar', {
 		type = 'toggle',
-		name = "Class power bar",
-		desc = "Hides the class resource bar attached to your player frame.",
+		name = L["Class power bar"],
+		desc = L["Hides the class resource bar attached to your player frame."],
 		get = get,
 		set = set,
 		hidden = hidden,
