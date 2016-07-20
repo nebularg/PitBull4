@@ -11,8 +11,8 @@ end
 
 -- CONSTANTS ----------------------------------------------------------------
 
-local RUNE_IDS = { 1, 2, 5, 6, 3, 4 } -- for some ungodly reason, unholy and frost are switched.
-local NUM_RUNES = #RUNE_IDS
+local SPELL_POWER_RUNES = _G.SPELL_POWER_RUNES
+local CURRENT_NUM_RUNES = 0
 
 local STANDARD_SIZE = 15
 local BORDER_SIZE = 3
@@ -20,7 +20,6 @@ local SPACING = 3
 
 local HALF_STANDARD_SIZE = STANDARD_SIZE / 2
 
-local CONTAINER_WIDTH = STANDARD_SIZE * NUM_RUNES + BORDER_SIZE * 2 + SPACING * (NUM_RUNES - 1)
 local CONTAINER_HEIGHT = STANDARD_SIZE + BORDER_SIZE * 2
 
 -----------------------------------------------------------------------------
@@ -44,37 +43,30 @@ PitBull4_Runes:SetDefaults({
 
 function PitBull4_Runes:OnEnable()
 	self:RegisterEvent("RUNE_POWER_UPDATE")
-	self:RegisterEvent("RUNE_TYPE_UPDATE")
+	self:RegisterEvent("RUNE_TYPE_UPDATE", "RUNE_POWER_UPDATE")
+	self:RegisterEvent("UNIT_MAXPOWER")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateNumRunes")
 end
 
-function PitBull4_Runes:OnDisable()
+function PitBull4_Runes:UpdateNumRunes()
+		CURRENT_NUM_RUNES = UnitPowerMax("player", SPELL_POWER_RUNES)
+		self:UpdateAll()
+end
+
+function PitBull4_Runes:UNIT_MAXPOWER(event, unit)
+	if unit == "player" then
+		self:UpdateNumRunes()
+	end
 end
 
 function PitBull4_Runes:RUNE_POWER_UPDATE(event, rune_id, usable)
-	if rune_id > NUM_RUNES or rune_id < 1 then
-		-- sometimes rune 7 or 8 fires
-		return
-	end
+	if rune_id > CURRENT_NUM_RUNES or rune_id < 1 then return end
+
 	for frame in PitBull4:IterateFramesForUnitID("player") do
 		if frame.Runes then
 			local rune = frame.Runes[rune_id]
 			if rune then
 				rune:UpdateCooldown()
-			end
-		end
-	end
-end
-
-function PitBull4_Runes:RUNE_TYPE_UPDATE(event, rune_id)
-	if rune_id > NUM_RUNES or rune_id < 1 then
-		-- sometimes rune 7 or 8 fires
-		return
-	end
-	for frame in PitBull4:IterateFramesForUnitID("player") do
-		if frame.Runes then
-			local rune = frame.Runes[rune_id]
-			if rune then
-				rune:UpdateTexture()
 			end
 		end
 	end
@@ -86,7 +78,7 @@ function PitBull4_Runes:ClearFrame(frame)
 		return false
 	end
 
-	for i = 1, NUM_RUNES do
+	for i = 1, #container do
 		container[i] = container[i]:Delete()
 	end
 	container.bg = container.bg:Delete()
@@ -101,6 +93,11 @@ function PitBull4_Runes:UpdateFrame(frame)
 	end
 
 	local container = frame.Runes
+	if container and #container ~= CURRENT_NUM_RUNES then
+		self:ClearFrame(frame)
+		container = nil
+	end
+
 	if not container then
 		container = PitBull4.Controls.MakeFrame(frame)
 		frame.Runes = container
@@ -109,10 +106,9 @@ function PitBull4_Runes:UpdateFrame(frame)
 		local db = self:GetLayoutDB(frame)
 		local vertical = db.vertical
 
-		for i = 1, NUM_RUNES do
-			local id = RUNE_IDS[i]
-			local rune = PitBull4.Controls.MakeRune(container, id)
-			container[id] = rune
+		for i = 1, CURRENT_NUM_RUNES do
+			local rune = PitBull4.Controls.MakeRune(container, i)
+			container[i] = rune
 			rune:ClearAllPoints()
 			rune:EnableMouse(not db.click_through)
 			if not vertical then
@@ -122,14 +118,15 @@ function PitBull4_Runes:UpdateFrame(frame)
 			end
 		end
 
+		local width = STANDARD_SIZE * CURRENT_NUM_RUNES + BORDER_SIZE * 2 + SPACING * (CURRENT_NUM_RUNES - 1)
 		if not vertical then
-			container:SetWidth(CONTAINER_WIDTH)
+			container:SetWidth(width)
 			container:SetHeight(CONTAINER_HEIGHT)
 			container.height = 1
 		else
 			container:SetWidth(CONTAINER_HEIGHT)
-			container:SetHeight(CONTAINER_WIDTH)
-			container.height = CONTAINER_WIDTH / CONTAINER_HEIGHT
+			container:SetHeight(width)
+			container.height = width / CONTAINER_HEIGHT
 		end
 
 		local bg = PitBull4.Controls.MakeTexture(container, "BACKGROUND")
@@ -138,10 +135,8 @@ function PitBull4_Runes:UpdateFrame(frame)
 		bg:SetAllPoints(container)
 	end
 
-	for i = 1, NUM_RUNES do
-		local rune = container[i]
-		rune:UpdateTexture()
-		rune:UpdateCooldown()
+	for i = 1, CURRENT_NUM_RUNES do
+		container[i]:UpdateCooldown()
 	end
 
 	container:Show()
