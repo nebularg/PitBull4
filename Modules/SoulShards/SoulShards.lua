@@ -11,6 +11,8 @@ end
 
 -- CONSTANTS ----------------------------------------------------------------
 
+local NUM_SHARDS = 5
+
 local STANDARD_SIZE = 15
 local BORDER_SIZE = 3
 local SPACING = 3
@@ -76,7 +78,7 @@ function PitBull4_SoulShards:ClearFrame(frame)
 		return false
 	end
 
-	for i = 1, 4 do
+	for i = 1, NUM_SHARDS do
 		container[i] = container[i]:Delete()
 	end
 	container.bg = container.bg:Delete()
@@ -113,7 +115,7 @@ function PitBull4_SoulShards:UpdateFrame(frame)
 		frame.SoulShards = container
 		container:SetFrameLevel(frame:GetFrameLevel() + 13)
 
-		for i = 1, 4 do
+		for i = 1, NUM_SHARDS do
 			local soul_shard = PitBull4.Controls.MakeSoulShard(container, i)
 			container[i] = soul_shard
 			soul_shard:UpdateTexture()
@@ -139,7 +141,7 @@ function PitBull4_SoulShards:UpdateFrame(frame)
 	if max_shards ~= container.max_shards then
 		update_container_size(container, vertical, max_shards)
 	end
-	for i = 1, 4 do
+	for i = 1, NUM_SHARDS do
 		local soul_shard = container[i]
 		if i > max_shards then
 			soul_shard:Hide()
