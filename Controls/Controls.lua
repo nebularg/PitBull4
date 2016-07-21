@@ -233,7 +233,7 @@ local function get_or_create_control(cache_kind, kind, realKind, inheritTemplate
 		name = "PitBull4_" .. kind .. "_" .. i
 	until not _G[name]
 	
-	local control = create_control(realKind, name, inheritTemplate, parent)
+	control = create_control(realKind, name, inheritTemplate, parent)
 	if onCreate then
 		onCreate(control)
 	end

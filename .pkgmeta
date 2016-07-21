@@ -25,6 +25,7 @@ externals:
     Modules/DogTagTexts/libs/LibDogTag-Unit-3.0: git://git.wowace.com/wow/libdogtag-unit-3-0/mainline.git
 
 move-folders:
+    PitBull4/Modules/ArcaneCharges: PitBull4_ArcaneCharges
     PitBull4/Modules/Aggro: PitBull4_Aggro
     PitBull4/Modules/AltManaBar: PitBull4_AltManaBar
     PitBull4/Modules/AltPowerBar: PitBull4_AltPowerBar
