@@ -9,8 +9,6 @@ if not PitBull4 then
 	error("PitBull4_Chi requires PitBull4")
 end
 
-local legion_700 = select(4, GetBuildInfo()) >= 70000
-
 -- CONSTANTS ----------------------------------------------------------------
 
 local SPELL_POWER_CHI = _G.SPELL_POWER_CHI
@@ -45,16 +43,11 @@ PitBull4_Chi:SetDefaults({
 	background_color = { 0, 0, 0, 0.5 }
 })
 
-local player_level
-
 function PitBull4_Chi:OnEnable()
-	player_level = UnitLevel("player")
 	self:RegisterEvent("UNIT_POWER_FREQUENT")
 	self:RegisterEvent("UNIT_DISPLAYPOWER")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	if legion_700 then
-		self:RegisterEvent("PLAYER_TALENT_UPDATE", "PLAYER_ENTERING_WORLD")
-	end
+	self:RegisterEvent("PLAYER_TALENT_UPDATE", "PLAYER_ENTERING_WORLD")
 end
 
 local function update_player(self)
@@ -113,7 +106,7 @@ local function update_container_size(container, vertical, max_chi)
 end
 
 function PitBull4_Chi:UpdateFrame(frame)
-	if frame.unit ~= "player" or (legion_700 and GetSpecialization() ~= SPEC_MONK_WINDWALKER) then
+	if frame.unit ~= "player" or GetSpecialization() ~= SPEC_MONK_WINDWALKER then
 		return self:ClearFrame(frame)
 	end
 
@@ -126,7 +119,6 @@ function PitBull4_Chi:UpdateFrame(frame)
 		frame.Chi = container
 		container:SetFrameLevel(frame:GetFrameLevel() + 13)
 
-		local point, attach
 		for i = 1, 6 do
 			local chi_icon = PitBull4.Controls.MakeChiIcon(container, i)
 			container[i] = chi_icon

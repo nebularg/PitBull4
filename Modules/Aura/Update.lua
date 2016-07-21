@@ -15,8 +15,6 @@ local unpack = _G.unpack
 local sort = _G.table.sort
 local wipe = _G.table.wipe
 
-local CooldownFrame_Set = CooldownFrame_Set or CooldownFrame_SetTimer -- XXX legion_700
-
 -- The table we use for gathering the aura data, filtering
 -- and then sorting them.  This table is reused without
 -- wiping it ever, so care must be taken to use it in ways

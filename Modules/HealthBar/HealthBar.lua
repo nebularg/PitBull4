@@ -10,10 +10,6 @@ local EXAMPLE_VALUE = 0.8
 local unpack = _G.unpack
 local L = PitBull4.L
 
-local UnitIsTapDenied = UnitIsTapDenied or function(unit) -- XXX compat legion_700
-	return UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) and not UnitIsTappedByAllThreatList(unit)
-end
-
 local PitBull4_HealthBar = PitBull4:NewModule("HealthBar", "AceEvent-3.0")
 
 PitBull4_HealthBar:SetModuleType("bar")
