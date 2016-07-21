@@ -12,7 +12,6 @@ end
 -- CONSTANTS ----------------------------------------------------------------
 
 local SPELL_POWER_RUNES = _G.SPELL_POWER_RUNES
-local CURRENT_NUM_RUNES = 0
 
 local STANDARD_SIZE = 15
 local BORDER_SIZE = 3
@@ -45,22 +44,22 @@ function PitBull4_Runes:OnEnable()
 	self:RegisterEvent("RUNE_POWER_UPDATE")
 	self:RegisterEvent("RUNE_TYPE_UPDATE", "RUNE_POWER_UPDATE")
 	self:RegisterEvent("UNIT_MAXPOWER")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateNumRunes")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
-function PitBull4_Runes:UpdateNumRunes()
-		CURRENT_NUM_RUNES = UnitPowerMax("player", SPELL_POWER_RUNES)
-		self:UpdateAll()
+function PitBull4_Runes:PLAYER_ENTERING_WORLD()
+	self:UpdateForUnitID("player")
 end
 
 function PitBull4_Runes:UNIT_MAXPOWER(event, unit)
 	if unit == "player" then
-		self:UpdateNumRunes()
+		self:UpdateForUnitID(unit)
 	end
 end
 
-function PitBull4_Runes:RUNE_POWER_UPDATE(event, rune_id, usable)
-	if rune_id > CURRENT_NUM_RUNES or rune_id < 1 then return end
+function PitBull4_Runes:RUNE_POWER_UPDATE(event, rune_id)
+	local num_runes = UnitPowerMax("player", SPELL_POWER_RUNES)
+	if rune_id > num_runes or rune_id < 1 then return end
 
 	for frame in PitBull4:IterateFramesForUnitID("player") do
 		if frame.Runes then
@@ -78,7 +77,7 @@ function PitBull4_Runes:ClearFrame(frame)
 		return false
 	end
 
-	for i = 1, #container do
+	for i = 1, container.max_runes do
 		container[i] = container[i]:Delete()
 	end
 	container.bg = container.bg:Delete()
@@ -92,8 +91,9 @@ function PitBull4_Runes:UpdateFrame(frame)
 		return self:ClearFrame(frame)
 	end
 
+	local num_runes = UnitPowerMax("player", SPELL_POWER_RUNES)
 	local container = frame.Runes
-	if container and #container ~= CURRENT_NUM_RUNES then
+	if container and container.max_runes ~= num_runes then
 		self:ClearFrame(frame)
 		container = nil
 	end
@@ -106,7 +106,7 @@ function PitBull4_Runes:UpdateFrame(frame)
 		local db = self:GetLayoutDB(frame)
 		local vertical = db.vertical
 
-		for i = 1, CURRENT_NUM_RUNES do
+		for i = 1, num_runes do
 			local rune = PitBull4.Controls.MakeRune(container, i)
 			container[i] = rune
 			rune:ClearAllPoints()
@@ -117,8 +117,9 @@ function PitBull4_Runes:UpdateFrame(frame)
 				rune:SetPoint("CENTER", container, "BOTTOM", 0, BORDER_SIZE + (i - 1) * (SPACING + STANDARD_SIZE) + HALF_STANDARD_SIZE)
 			end
 		end
+		container.max_runes = num_runes
 
-		local width = STANDARD_SIZE * CURRENT_NUM_RUNES + BORDER_SIZE * 2 + SPACING * (CURRENT_NUM_RUNES - 1)
+		local width = STANDARD_SIZE * num_runes + BORDER_SIZE * 2 + SPACING * (num_runes - 1)
 		if not vertical then
 			container:SetWidth(width)
 			container:SetHeight(CONTAINER_HEIGHT)
@@ -135,7 +136,7 @@ function PitBull4_Runes:UpdateFrame(frame)
 		bg:SetAllPoints(container)
 	end
 
-	for i = 1, CURRENT_NUM_RUNES do
+	for i = 1, num_runes do
 		container[i]:UpdateCooldown()
 	end
 
