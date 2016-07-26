@@ -22,6 +22,7 @@ PitBull4_AltManaBar:SetDefaults({
 	size = 1,
 	position = 6,
 	hide_if_full = false,
+	show_in_forms = true,
 })
 
 -- constants
@@ -56,7 +57,7 @@ function PitBull4_AltManaBar:GetValue(frame)
 		return nil
 	end
 
-	if not DISPLAY_INFO[power_type] then
+	if not DISPLAY_INFO[power_type] and (player_class ~= "DRUID" or not self:GetLayoutDB(frame).show_in_forms) then
 		return nil
 	end
 
@@ -98,6 +99,21 @@ PitBull4_AltManaBar:SetLayoutOptionsFunction(function(self)
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).hide_if_full = value
 			PitBull4.Options.UpdateFrames()
+		end,
+	},
+	'show_in_forms', {
+		name = L["Show while shifted"],
+		desc = L["Show in all shapeshift forms."],
+		type = "toggle",
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).show_in_forms
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).show_in_forms = value
+			PitBull4.Options.UpdateFrames()
+		end,
+		hidden = function()
+			return player_class ~= "DRUID"
 		end,
 	}
 end)
