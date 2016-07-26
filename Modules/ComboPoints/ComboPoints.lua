@@ -21,7 +21,6 @@ local TEXTURES = {
 	default = L["Default"],
 }
 
-local MAX_COMBOS = 5
 local ICON_SIZE = 15
 local BORDER_SIZE = 3
 
@@ -46,11 +45,9 @@ PitBull4_ComboPoints:SetDefaults({
 })
 
 function PitBull4_ComboPoints:OnEnable()
+	self:RegisterEvent("UNIT_DISPLAYPOWER")
 	self:RegisterEvent("UNIT_POWER_FREQUENT")
-	self:RegisterEvent("UNIT_EXITED_VEHICLE")
-	if is_druid then
-		self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
-	end
+	self:RegisterEvent("UNIT_EXITED_VEHICLE", "UNIT_DISPLAYPOWER")
 end
 
 function PitBull4_ComboPoints:UNIT_POWER_FREQUENT(event, unit, power_type)
@@ -62,15 +59,9 @@ function PitBull4_ComboPoints:UNIT_POWER_FREQUENT(event, unit, power_type)
 	end
 end
 
-function PitBull4_ComboPoints:UNIT_EXITED_VEHICLE(event, unit)
-	if unit ~= "player" then return end
+function PitBull4_ComboPoints:UNIT_DISPLAYPOWER(event, unit)
+	if unit ~= "player" and unit ~= "pet" then return end
 
-	for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
-		self:Update(frame)
-	end
-end
-
-function PitBull4_ComboPoints:UPDATE_SHAPESHIFT_FORM(event)
 	for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
 		self:Update(frame)
 	end
@@ -120,8 +111,11 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 		end
 	end
 
+	local max_combos = UnitPowerMax("player", SPELL_POWER_COMBO_POINTS)
+	if max_combos == 0 then max_combos = 5 end
+
 	if frame.force_show then
-		num_combos = MAX_COMBOS
+		num_combos = max_combos
 	end
 
 	local db = self:GetLayoutDB(frame)
@@ -153,9 +147,9 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 			if not vertical then
 				height = ICON_SIZE + 2*BORDER_SIZE
 				combos:SetHeight(height)
-				combos:SetWidth(ICON_SIZE*MAX_COMBOS + BORDER_SIZE*2 + spacing*(MAX_COMBOS-1))
+				combos:SetWidth(ICON_SIZE*max_combos + BORDER_SIZE*2 + spacing*(max_combos-1))
 			else
-				height = ICON_SIZE*MAX_COMBOS + BORDER_SIZE*2 + spacing*(MAX_COMBOS-1)
+				height = ICON_SIZE*max_combos + BORDER_SIZE*2 + spacing*(max_combos-1)
 				combos:SetHeight(height)
 				combos:SetWidth(ICON_SIZE + 2*BORDER_SIZE)
 			end
