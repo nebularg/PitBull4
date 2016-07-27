@@ -29,9 +29,7 @@ local check_method_to_dist_index = {
 	follow = 4,
 }
 
-local friendly_is_in_range, pet_is_in_range, enemy_is_in_range
-local enemy_is_in_long_range
-local distanceCheckFunctionLow
+local friendly_is_in_range, pet_is_in_range, enemy_is_in_range, enemy_is_in_long_range
 do
 	local friendly_spells = {}
 	local pet_spells = {}
@@ -42,59 +40,61 @@ do
 	local _,class = UnitClass("player")
 	
 	if class == "PRIEST" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(585) -- Smite
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(589) -- Shadow Word: Pain
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(528) -- Dispel Magic
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(585) -- Smite
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(15407) -- Mind Flay
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(2061) -- Flash Heal
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(17) -- Power Word: Shield
 		res_spells[#res_spells+1] = GetSpellInfo(2006) -- Resurrection
 	elseif class == "DRUID" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(33786) -- Cyclone
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(5176) -- Wrath
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(774) -- Rejuvenation for MoP or Nourish
-		res_spells[#res_spells+1] = GetSpellInfo(50769) -- Revive 
-		res_spells[#res_spells+1] = GetSpellInfo(20484) -- Rebirth 
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(8921) -- Moonfire
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(5185) -- Healing Touch
+		res_spells[#res_spells+1] = GetSpellInfo(50769) -- Revive
+		res_spells[#res_spells+1] = GetSpellInfo(20484) -- Rebirth
 	elseif class == "PALADIN" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(20271) -- Judgement for MoP or Hand of Reckoning otherwise
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(19750) -- Flash of Light for MoP or Holy Light otherwise
-		res_spells[#res_spells+1] = GetSpellInfo(7328) -- Redemption 
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(20271) -- Judgement
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(19750) -- Flash of Light
+		res_spells[#res_spells+1] = GetSpellInfo(7328) -- Redemption
 	elseif class == "SHAMAN" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(8042) -- Earth Shock 
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(51514) -- Hex
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(403) -- Lightning Bolt
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(8004) -- Healing Surge for MoP or Healing Wave
-		res_spells[#res_spells+1] = GetSpellInfo(2008) -- Ancestral Spirit 
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(8004) -- Healing Surge
+		res_spells[#res_spells+1] = GetSpellInfo(2008) -- Ancestral Spirit
 	elseif class == "WARLOCK" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(5782) -- Fear
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(172) -- Corruption
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(686) -- Shadow Bolt
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(196657) -- Shadow Bolt
 		pet_spells[#pet_spells+1] = GetSpellInfo(755) -- Health Funnel
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(5697) -- Unending Breath
+		res_spells[#res_spells+1] = GetSpellInfo(20707) -- Soulstone
 	elseif class == "MAGE" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(118) -- Polymorph
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(44614) -- Frostfire Bolt for MoP or Fireball
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(475) -- Remove Curse
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(2139) -- Counterspell
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(130) -- Slow Fall
 	elseif class == "HUNTER" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(147362) -- Counter Shot
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(190925) -- Harpoon
 		pet_spells[#pet_spells+1] = GetSpellInfo(136) -- Mend Pet
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(75) -- Auto Shot
 	elseif class == "DEATHKNIGHT" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(49576) -- Death Grip
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(49016) -- Unholy Frenzy
-		res_spells[#res_spells+1] = GetSpellInfo(61999) -- Raise Ally 
+		res_spells[#res_spells+1] = GetSpellInfo(61999) -- Raise Ally
 	elseif class == "ROGUE" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(2094) -- Blind 
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(1725) -- Distract
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(57934) -- Tricks of the Trade
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(36554) -- Shadowstep
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(185763) -- Pistol Shot
 	elseif class == "WARRIOR" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(5246) -- Intimidating Shout
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(100) -- Charge
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(355) -- Taunt
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(3411) -- Intervene
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(198304) -- Intercept (Protection)
 	elseif class == "MONK" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(115546) -- Provoke
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(115450) -- Detox
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(116694) -- Effuse
 		res_spells[#res_spells+1] = GetSpellInfo(115178) -- Resuscitate
+	elseif class == "DEMONHUNTER" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(183752) -- Consume Magic
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(185123) -- Throw Glaive
 	end
-	
+
 	function friendly_is_in_range(unit)
-		if CheckInteractDistance(unit, 2) then
+		if CheckInteractDistance(unit, 1) then
 			return true
 		end
 		
