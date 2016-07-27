@@ -7,8 +7,6 @@ if not PitBull4 then
 	error("PitBull4_Aura requires PitBull4")
 end
 
-local wipe = _G.table.wipe
-
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:NewModule("Aura", "AceEvent-3.0")
 

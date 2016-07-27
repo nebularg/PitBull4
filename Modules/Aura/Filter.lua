@@ -20,50 +20,39 @@ function PitBull4_Aura:GetFilterDB(filter)
 	return self.db.profile.global.filters[filter]
 end
 
-local function scan_for_known_talent(spellid)
-	return IsPlayerSpell(spellid)
-end
-
-local function scan_for_known_glyph(spellid)
-	-- XXX need to check abilities for built-in effects before
-	-- removing this
-	return false
-end
-
 -- Setup the data for who can dispel what types of auras.
 -- dispel in this context means remove from friendly players
 local can_dispel = {
 	DEATHKNIGHT = {},
+	DEMONHUNTER = {},
 	DRUID = {
 		Curse = true,
 		Poison = true,
-		Magic = scan_for_known_talent(88423),
+		Magic = IsPlayerSpell(88423),
 	},
 	HUNTER = {},
-	MAGE = {
-		Curse = true,
-	},
-	PALADIN = {
-		Magic = scan_for_known_talent(53551),
+	MAGE = {},
+	MONK = {
 		Poison = true,
 		Disease = true,
+		Magic = IsPlayerSpell(115450),
+	},
+	PALADIN = {
+		Poison = true,
+		Disease = true,
+		Magic = IsPlayerSpell(4987),
 	},
 	PRIEST = {
 		Magic = true,
-		Disease = scan_for_known_talent(527),
+		Disease = IsPlayerSpell(527),
 	},
 	ROGUE = {},
 	SHAMAN = {
 		Curse = true,
-		Magic = scan_for_known_talent(77130),
+		Magic = IsPlayerSpell(77130),
 	},
 	WARLOCK = {},
 	WARRIOR = {},
-	MONK = {
-		Poison = true,
-		Disease = true,
-		Magic = scan_for_known_talent(115451)
-	},
 }
 can_dispel.player = can_dispel[player_class]
 PitBull4_Aura.can_dispel = can_dispel
@@ -71,67 +60,37 @@ PitBull4_Aura.can_dispel = can_dispel
 -- Setup the data for who can purge what types of auras.
 -- purge in this context means remove from enemies.
 local can_purge = {
-	DEATHKNIGHT = {
-		Magic = scan_for_known_glyph(58631),
-	},
-	DRUID = {
-		Enrage = true,
-	},
-	HUNTER = {
-		Magic = true,
-		Enrage = true,
-	},
+	DEATHKNIGHT = {},
+	DEMONHUNTER = {},
+	DRUID = {},
+	HUNTER = {},
 	MAGE = {
 		Magic = true,
 	},
+	MONK = {},
 	PALADIN = {},
 	PRIEST = {
 		Magic = true,
 	},
-	ROGUE = {
-		Enrage = true,
-	},
+	ROGUE = {},
 	SHAMAN = {
 		Magic = true,
 	},
 	WARLOCK = {
-		Magic = true,
+		Magic = true, -- Imp: Singe Magic
 	},
-	WARRIOR = {
-		Magic = scan_for_known_glyph(58375),
-	},
-	MONK = {},
+	WARRIOR = {},
 }
 can_purge.player = can_purge[player_class]
 PitBull4_Aura.can_purge = can_purge
 
--- Handle PLAYER_TALENT_UPDATE event .
--- Rescan the talents for the relevent talents that change
--- what we can dispel.
+-- Handle PLAYER_TALENT_UPDATE event
+-- Rescan specialization spells that change what we can dispel.
 function PitBull4_Aura:PLAYER_TALENT_UPDATE(event)
-	local monk_magic = scan_for_known_talent(115451)
-	can_dispel.MONK.Magic = monk_magic
-	self:GetFilterDB('//3').aura_type_list.Magic = monk_magic
-
-	local shaman_magic = scan_for_known_talent(77130)
-	can_dispel.SHAMAN.Magic = shaman_magic
-	self:GetFilterDB('23').aura_type_list.Magic = shaman_magic
-
-	local druid_magic = scan_for_known_talent(88423)
-	can_dispel.DRUID.Magic = druid_magic
-	self:GetFilterDB(',3').aura_type_list.Magic = druid_magic
-
-	local paladin_magic = scan_for_known_talent(53551)
-	can_dispel.PALADIN.Magic = paladin_magic
-	self:GetFilterDB('/3').aura_type_list.Magic = paladin_magic
-
-	local deathknight_magic = scan_for_known_glyph(58631)
-	can_purge.DEATHKNIGHT.Magic = deathknight_magic
-	self:GetFilterDB('+7').aura_type_list.Magic = deathknight_magic
-
-	local warrior_magic = scan_for_known_glyph(58375)
-	can_purge.WARRIOR.Magic = warrior_magic
-	self:GetFilterDB('47').aura_type_list.Magic = warrior_magic
+	can_dispel.DRUID.Magic = IsPlayerSpell(88423)
+	can_dispel.MONK.Magic = IsPlayerSpell(115450)
+	can_dispel.PALADIN.Magic = IsPlayerSpell(4987)
+	can_dispel.SHAMAN.Magic = IsPlayerSpell(77130)
 end
 
 -- Setup the data for which auras belong to whom
