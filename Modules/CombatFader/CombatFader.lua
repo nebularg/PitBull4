@@ -44,39 +44,42 @@ function PitBull4_CombatFader:OnEnable()
 	timerFrame:Show()
 end
 
-local power_check = {
-	MANA = function()
-		return UnitPower('player') < UnitPowerMax('player')
-	end,
-	RAGE = function()
-		-- this seems counter-intuitive, but if rage > 0, you're up for fighting
-		return UnitPower('player') > 0
-	end,
-	ENERGY = function()
-		return UnitPower('player') < UnitPowerMax('player')
-	end,
-	FOCUS = function()
-		return UnitPower('player') < UnitPowerMax('player')
-	end,
-	RUNICPOWER = function()
-		return UnitPower('player') > 0
-	end,
-}
+local power_check
+do
+	local function not_full()
+		return UnitPower("player") < UnitPowerMax("player")
+	end
+	local function not_empty()
+		return UnitPower("player") > 0
+	end
+	power_check = {
+		MANA = not_full,
+		RAGE = not_empty,
+		FOCUS = not_full,
+		ENERGY = not_full,
+		RUNIC_POWER = not_empty,
+		LUNAR_POWER = not_empty,
+		MAELSTROM = not_empty,
+		INSANITY = not_empty,
+		FURY = not_empty,
+		PAIN = not_empty,
+	}
+end
 
 function PitBull4_CombatFader:RecalculateState()
-	if UnitAffectingCombat('player') then
-		state = 'in_combat'
-	elseif UnitExists('target') then
-		state = 'target'
-	elseif UnitHealth('player') < UnitHealthMax('player') then
-		state = 'hurt'
+	if UnitAffectingCombat("player") then
+		state = "in_combat"
+	elseif UnitExists("target") then
+		state = "target"
+	elseif UnitHealth("player") < UnitHealthMax("player") then
+		state = "hurt"
 	else
-		local _, power_token = UnitPowerType('player')
+		local _, power_token = UnitPowerType("player")
 		local func = power_check[power_token]
 		if func and func() then
-			state = 'hurt'
+			state = "hurt"
 		else
-			state = 'out_of_combat'
+			state = "out_of_combat"
 		end
 	end
 end
