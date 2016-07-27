@@ -20,10 +20,12 @@ PitBull4_HostilityFader:SetDefaults({
 
 function PitBull4_HostilityFader:OnEnable()
 	self:RegisterEvent("UNIT_FACTION")
+	self:RegisterEvent("UNIT_FLAGS", "UNIT_FACTION")
+	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "UNIT_FACTION")
 end
 
 function PitBull4_HostilityFader:UNIT_FACTION(event, unit)
-	self:UpdateForUnitID(unit)	
+	self:UpdateForUnitID(unit)
 end
 
 function PitBull4_HostilityFader:GetOpacity(frame)
