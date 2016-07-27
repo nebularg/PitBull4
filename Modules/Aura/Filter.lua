@@ -84,12 +84,12 @@ local can_purge = {
 can_purge.player = can_purge[player_class]
 PitBull4_Aura.can_purge = can_purge
 
--- Handle PLAYER_TALENT_UPDATE event
--- Rescan specialization spells that change what we can dispel.
-function PitBull4_Aura:PLAYER_TALENT_UPDATE(event)
+-- Rescan specialization spells that can change what we can dispel.
+function PitBull4_Aura:PLAYER_TALENT_UPDATE()
 	can_dispel.DRUID.Magic = IsPlayerSpell(88423)
-	can_dispel.MONK.Magic = IsPlayerSpell(115450)
 	can_dispel.PALADIN.Magic = IsPlayerSpell(4987)
+	can_dispel.PRIEST.Disease = IsPlayerSpell(527)
+	can_dispel.MONK.Magic = IsPlayerSpell(115450)
 	can_dispel.SHAMAN.Magic = IsPlayerSpell(77130)
 end
 

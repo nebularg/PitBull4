@@ -48,13 +48,10 @@ function PitBull4_Aura:OnEnable()
 	self:RegisterEvent("UNIT_AURA")
 	timerFrame:Show()
 
-	-- Need to track talents for Shaman, Druids and Paladins since it
-	-- can change what they can dispel.
-	local _,player_class = UnitClass('player')
-	if player_class == 'SHAMAN' or player_class == 'DRUID' or player_class == 'PALADIN' or player_class == 'MONK' then
+	-- Need to track spec changes since it can change what they can dispel.
+	local _,player_class = UnitClass("player")
+	if player_class == "DRUID" or player_class == "MONK" or player_class == "PALADIN" or player_class == "PRIEST" or player_class == "SHAMAN" then
 		self:RegisterEvent("PLAYER_TALENT_UPDATE")
-		self:RegisterEvent("CHARACTER_POINTS_CHANGED","PLAYER_TALENT_UPDATE")
-		self:RegisterEvent("SPELLS_CHANGED","PLAYER_TALENT_UPDATE")
 		-- Update the can dispel filters
 		PitBull4_Aura:PLAYER_TALENT_UPDATE()
 	end
