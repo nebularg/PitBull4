@@ -130,7 +130,7 @@ local s = Status(unit)
 if s then
   return s
 end
-local miss = MaxHP(unit) - HP(unit) 
+local miss = MaxHP(unit) - HP(unit)
 if miss ~= 0 then
   return "-%d",miss
 end]],
@@ -158,7 +158,7 @@ if s then
 end
 local cur, max = HP(unit), MaxHP(unit)
 if UnitIsFriend(unit,"player") then
-  local miss = max - cur 
+  local miss = max - cur
   if miss ~= 0 then
     return "|cffff7f7f%d|r",miss
   else
@@ -187,7 +187,7 @@ if s then
 end
 local cur, max = HP(unit), MaxHP(unit)
 if UnitIsFriend(unit,"player") then
-  local miss = max - cur 
+  local miss = max - cur
   if miss ~= 0 then
     return "|cffff7f7f%s|r || %s/%s || %s%%",Short(miss,true),Short(cur,true),Short(max,true),Percent(cur,max)
   end
@@ -487,7 +487,7 @@ end]],
 			code = [[
 local name, _, min , max, value, id = GetWatchedFactionInfo()
 if IsMouseOver() then
-  return name or ConfigMode() 
+  return name or ConfigMode()
 else
   local fs_id, fs_rep, _, _, _, _, _, fs_threshold, next_fs_threshold = GetFriendshipReputation(id)
   if fs_id then
@@ -531,7 +531,7 @@ if cast_data then
   elseif target then
     return "%s (%s)",spell,target
   else
-    return spell 
+    return spell
   end
 end
 return ConfigMode()]],
@@ -736,7 +736,7 @@ function PitBull4_LuaTexts:OnEnable()
 	fix_unit_healthmax()
 	fix_rep_std_text()
 
-	-- UNIT_SPELLCAST_SENT has to always be registered so we can capture 
+	-- UNIT_SPELLCAST_SENT has to always be registered so we can capture
 	-- additional data not always available.
 	self:RegisterEvent("UNIT_SPELLCAST_SENT")
 	self:RegisterEvent("GROUP_ROSTER_UPDATE")
@@ -769,7 +769,6 @@ local function set_text(font_string, ...)
 	elseif select('#',...) > 1 and select(2,...) ~= nil then
 		local success, err = pcall(font_string.SetFormattedText,font_string,select(2,...))
 		if not success then
---			print(select(2,...))
 			-- hack to add the name of the text that caused the error to the error message and
 			-- to fix the ? for the name of the function we're calling.  xpcall would handle
 			-- the latter for us but it requires a lot of overhead that's just not worth it.
@@ -779,13 +778,13 @@ local function set_text(font_string, ...)
 		end
 	else
 		-- not enough parameters so just set an empty string
-		font_string:SetText('')
+		font_string:SetText("")
 	end
 end
 
 local function set_font(font_string)
 	local font, size = font_string:GetFont()
-	local success, err = pcall(font_string.SetFont,font_string,font,size,PitBull4_LuaTexts.outline)
+	local success, err = pcall(font_string.SetFont, font_string, font, size, PitBull4_LuaTexts.outline)
 	if not success then
 		local output = "PitBull4_LuaTexts:"..font_string.frame.layout..":"..font_string.luatexts_name.." caused the following error when calling SetFont("..tostring(font)..","..tostring(size)..","..tostring(PitBull4_LuaTexts.outline).."):\n"..err:gsub("'%?'","'SetFont)'")
 		pcall(geterrorhandler(),output)
@@ -793,14 +792,14 @@ local function set_font(font_string)
 end
 
 local function set_alpha(font_string)
-	local success, err = pcall(font_string.SetAlpha,font_string,PitBull4_LuaTexts.alpha)
+	local success, err = pcall(font_string.SetAlpha, font_string, PitBull4_LuaTexts.alpha)
 	if not success then
 		local output = "PitBull4_LuaTexts:"..font_string.frame.layout..":"..font_string.luatexts_name.." caused the following error when calling SetAlpha("..tostring(PitBull4_LuaTexts.alpha).."):\n"..err:gsub("'%?'","'SetAlpha)'")
 		pcall(geterrorhandler(),output)
 	end
 end
 
-local lua_name = "Lua:"..L["Name"]
+local lua_name = ("Lua:%s"):format(L["Name"])
 local function update_text(font_string, event)
 	if not texts[font_string] then return end
 	if no_update[font_string] then return end
@@ -810,24 +809,23 @@ local function update_text(font_string, event)
 	local unit = frame.unit
 	local func = func_cache[code]
 	local ScriptEnv = PitBull4_LuaTexts.ScriptEnv
---	print(string.format("%q %q %q %q",name,font_string:GetName(),frame:GetName(),unit))
 
 	if (frame.force_show and not frame.guid and name ~= L["Name"] and name ~= lua_name) or not unit then
-		font_string:SetFormattedText("{%s}",font_string.luatexts_name)
+		font_string:SetFormattedText("{%s}", font_string.luatexts_name)
 		return
 	end
 
 	if not func then
 		-- Doesn't exist in the cache so we build it
-		local lua_string = 'return function(unit) '..code..' end'
-		local lua_string_name = "PitBull4_LuaTexts:"..frame.layout..':'..font_string.luatexts_name
-		local create_func, err = loadstring(lua_string,lua_string_name)
+		local lua_string = ("return function(unit) %s end"):format(code)
+		local lua_string_name = ("PitBull4_LuaTexts:%s:%s"):format(frame.layout, font_string.luatexts_name)
+		local create_func, err = loadstring(lua_string, lua_string_name)
 		if create_func then
 			-- note the following call is always safe, the only actual code executing is the
 			-- return of the function wrapper that's hard coded above.  So no error handling
 			-- needed.
 			func = create_func()
-			setfenv(func,ScriptEnv)
+			setfenv(func, ScriptEnv)
 			func_cache[code] = func
 		else
 			geterrorhandler()(err)
@@ -847,7 +845,7 @@ local function update_text(font_string, event)
 	PitBull4_LuaTexts.outline = nil
 	PitBull4_LuaTexts.word_wrap = nil
 
-	set_text(font_string,pcall(func,unit))
+	set_text(font_string, pcall(func,unit))
 	set_font(font_string)
 	set_alpha(font_string)
 	font_string:SetWordWrap(not not PitBull4_LuaTexts.word_wrap)
@@ -899,10 +897,10 @@ local function update_cast_data(event, unit, event_spell, event_rank, event_cast
 		cast_data[guid] = data
 	end
 
-	local spell, rank, name, icon, start_time, end_time, is_trade_skill, cast_id, uninterruptible = UnitCastingInfo(unit)
+	local spell, rank, _, _, start_time, end_time, _, cast_id, uninterruptible = UnitCastingInfo(unit)
 	local channeling = false
 	if not spell then
-		spell, rank, name, icon, start_time, end_time, uninterruptible = UnitChannelInfo(unit)
+		spell, rank, _, _, start_time, end_time, uninterruptible = UnitChannelInfo(unit)
 		channeling = true
 	end
 	if spell then
@@ -962,7 +960,6 @@ end
 
 local tmp = {}
 local function fix_cast_data()
-	local frame
 	local current_time = GetTime()
 	for guid, data in pairs(cast_data) do
 		tmp[guid] = data
@@ -997,7 +994,7 @@ local function fix_cast_data()
 		for font_string in pairs(spell_cast_cache) do
 			if guid == font_string.frame.guid then
 				found = true
-				to_update[font_string] = 0 -- update now 
+				to_update[font_string] = 0 -- update now
 			end
 		end
 		if not found then
@@ -1016,7 +1013,7 @@ local function update_timers()
 		first = false
 		PitBull4_LuaTexts:GROUP_ROSTER_UPDATE()
 	end
-	for unit, guid in pairs(group_members) do 
+	for unit, guid in pairs(group_members) do
 		if not UnitIsConnected(unit) then
 			if not offline_times[guid] then
 				offline_times[guid] = GetTime()
@@ -1164,7 +1161,7 @@ function PitBull4_LuaTexts:OnEvent(event, unit, ...)
 	for font_string in pairs(event_entry) do
 		local fs_guid = font_string.frame.guid
 		if all or (by_unit and fs_guid == guid) or (player and fs_guid == player_guid) or (pet and fs_guid == UnitGUID("pet")) then
-			update_text(font_string,event)	
+			update_text(font_string,event)
 		end
 	end
 end
@@ -1187,16 +1184,16 @@ function PitBull4_LuaTexts:OnLeave(frame)
 	end
 end
 
--- Timed updates 
+-- Timed updates
 local timer = 0
 timerframe:SetScript("OnUpdate", function(self, elapsed)
 	local ScriptEnv = PitBull4_LuaTexts.ScriptEnv
 	-- Fast updates for powerbars for player and pet frames
 	if predicted_power and next(power_cache) then
-		if UnitPower("player") ~= ScriptEnv.player_power then	
+		if UnitPower("player") ~= ScriptEnv.player_power then
 			for font_string in pairs(power_cache) do
 				if font_string.frame.guid == player_guid then
-					to_update[font_string] = 0 
+					to_update[font_string] = 0
 				end
 			end
 		end
@@ -1204,7 +1201,7 @@ timerframe:SetScript("OnUpdate", function(self, elapsed)
 			local pet_guid = UnitGUID("pet")
 			for font_string in pairs(power_cache) do
 				if font_string.frame.guid == pet_guid then
-					to_update[font_string] = 0 
+					to_update[font_string] = 0
 				end
 			end
 		end
@@ -1248,9 +1245,9 @@ function PitBull4_LuaTexts:OnNewLayout(layout)
 	end
 	layout_db.first = false
 
-	local texts = layout_db.elements
-	for k in pairs(texts) do
-		texts[k] = nil
+	local text_elements = layout_db.elements
+	for k in pairs(text_elements) do
+		text_elements[k] = nil
 	end
 	for name, data in pairs {
 		["Lua:"..L["Name"]] = {
@@ -1337,7 +1334,7 @@ function PitBull4_LuaTexts:OnNewLayout(layout)
 			location = "center"
 		},
 	} do
-		local text_db = texts[name]
+		local text_db = text_elements[name]
 		text_db.exists = true
 		for k, v in pairs(data) do
 			text_db[k] = v
@@ -1498,7 +1495,7 @@ PitBull4_LuaTexts:SetLayoutOptionsFunction(function(self)
 		desc = L["Some codes provided for you."],
 		get = function(info)
 			local db = PitBull4.Options.GetTextLayoutDB()
-			local code = db.code 
+			local code = db.code
 			for k, preset_entry in pairs(value_key_to_entry) do
 				if preset_entry.code == code then
 					local preset_events = preset_entry.events
@@ -1527,7 +1524,7 @@ PitBull4_LuaTexts:SetLayoutOptionsFunction(function(self)
 			db.code = entry.code
 			db.events = copy(entry.events)
 		
-			update()	
+			update()
 		end,
 		values = values,
 		width = 'double',
@@ -1542,7 +1539,7 @@ PitBull4_LuaTexts:SetLayoutOptionsFunction(function(self)
 			local db = PitBull4.Options.GetTextLayoutDB()
 			func_cache[db.code] = nil
 			db.code = value:gsub("||","|")
-			update()	
+			update()
 		end,
 		multiline = true,
 		width = 'full',
@@ -1557,7 +1554,7 @@ PitBull4_LuaTexts:SetLayoutOptionsFunction(function(self)
 		set = function(info,key,value)
 			local events = PitBull4.Options.GetTextLayoutDB().events
 			events[key] = value
-			update()	
+			update()
 		end,
 		width = 'double',
 		values = function(info)
@@ -1590,7 +1587,7 @@ PitBull4_LuaTexts:SetGlobalOptionsFunction(function(self)
 		type = 'header',
 		name = '',
 		desc = '',
-		hidden = hidden, 
+		hidden = hidden,
 	}, 'current_event', {
 		type = 'select',
 		name = L["Current event"],
@@ -1613,7 +1610,7 @@ PitBull4_LuaTexts:SetGlobalOptionsFunction(function(self)
 			end
 			return t
 		end,
-		hidden = hidden, 
+		hidden = hidden,
 		width = 'double',
 	}, 'new_event', {
 		type = 'input',
@@ -1630,13 +1627,13 @@ PitBull4_LuaTexts:SetGlobalOptionsFunction(function(self)
 			end
 			return true
 		end,
-		hidden = hidden, 
+		hidden = hidden,
 	}, 'edit_event', {
 		type = 'group',
 		name = L["Edit event"],
 		desc = L["Edit which units the event triggers updates on."],
 		inline = true,
-		hidden = hidden, 
+		hidden = hidden,
 		args = {
 			delete = {
 				type = 'execute',
@@ -1667,4 +1664,3 @@ PitBull4_LuaTexts:SetGlobalOptionsFunction(function(self)
 		}
 	}
 end)
-
