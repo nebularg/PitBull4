@@ -49,7 +49,9 @@ local can_dispel = {
 		Curse = true,
 		Magic = IsPlayerSpell(77130),
 	},
-	WARLOCK = {},
+	WARLOCK = {
+		Magic = true, -- Imp: Singe Magic
+	},
 	WARRIOR = {},
 }
 can_dispel.player = can_dispel[player_class]
@@ -74,9 +76,7 @@ local can_purge = {
 	SHAMAN = {
 		Magic = true,
 	},
-	WARLOCK = {
-		Magic = true, -- Imp: Singe Magic
-	},
+	WARLOCK = {},
 	WARRIOR = {},
 }
 can_purge.player = can_purge[player_class]
