@@ -757,7 +757,7 @@ self_buffs.WARRIOR = {
 	[206333] = true, -- Taste for Blood
 	[122510] = true, -- Ultimatum
 	[202574] = true, -- Vengeance: Ignore Pain
-	[292573] = true, -- Vengeance: Focused Rage
+	[202573] = true, -- Vengeance: Focused Rage
 	[215562] = true, -- War Machine
 	[215570] = true, -- Wrecking Ball
 }
