@@ -193,6 +193,14 @@ enemy_debuffs.DEATHKNIGHT = {
 	[212332] = true, -- Smash
 }
 
+-- DEMONHUNTER
+friend_buffs.DEMONHUNTER = {}
+friend_debuffs.DEMONHUNTER = {}
+self_buffs.DEMONHUNTER = {}
+self_debuffs.DEMONHUNTER = {}
+pet_buffs.DEMONHUNTER = {}
+enemy_debuffs.DEMONHUNTER = {}
+
 -- DRUID
 friend_buffs.DRUID = {
 	[102352] = true, -- Cenarion Ward
