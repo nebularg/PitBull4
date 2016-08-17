@@ -142,7 +142,6 @@ self_buffs.DEATHKNIGHT = {
 	[207290] = true, -- Unholy Frenzy
 	[55233]  = true, -- Vampiric Blood
 	[212552] = true, -- Wraith Walk
-
 }
 self_debuffs.DEATHKNIGHT = {
 	[48743]  = true, -- Death Pact
