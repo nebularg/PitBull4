@@ -669,7 +669,7 @@ function PitBull4_LuaTexts:SetCVar()
 	predicted_health = GetCVarBool("predictedHealth")
 end
 
--- Fix a typo in the original default event names. 
+-- Fix a typo in the original default event names.
 -- s/UNIT_HEALTHMAX/UNIT_MAXHEALTH/
 local function fix_unit_healthmax()
 	local sv = PitBull4.db:GetNamespace("LuaTexts").profiles
@@ -686,7 +686,7 @@ local function fix_unit_healthmax()
 		end
 		local layouts = profile.layouts
 		if layouts then
-			for _,layout in pairs(layouts) do	
+			for _,layout in pairs(layouts) do
 				local elements = layout.elements
 				if elements then
 					for _,text in pairs(elements)	do
@@ -709,7 +709,7 @@ local function fix_rep_std_text()
 	local OLD_CODE = [[
 local name,_,min,max,value = GetWatchedFactionInfo()
 if IsMouseOver() then
-  return name or ConfigMode() 
+  return name or ConfigMode()
 else
   local bar_cur,bar_max = value-min,max-min
   return "%d/%d (%s%%)",bar_cur,bar_max,Percent(bar_cur,bar_max)
@@ -1307,7 +1307,7 @@ function PitBull4_LuaTexts:OnNewLayout(layout)
 		["Lua:"..L["Druid mana"]] = {
 			code = PROVIDED_CODES[L["Druid mana"]][L["Absolute"]].code,
 			events = copy(PROVIDED_CODES[L["Druid mana"]][L["Absolute"]].events),
-			attach_to = "DruidManaBar",
+			attach_to = "AltManaBar",
 			location = "center"
 		},
 		["Lua:"..L["PVPTimer"]] = {
@@ -1315,23 +1315,11 @@ function PitBull4_LuaTexts:OnNewLayout(layout)
 			events = copy(PROVIDED_CODES[L["PVPTimer"]][L["Standard"]].events),
 			location = "out_right_top"
 		},
-		["Lua:"..L["Eclipse"]] = {
-			code = PROVIDED_CODES[L["Eclipse"]][L["Absolute"]].code,
-			events = copy(PROVIDED_CODES[L["Eclipse"]][L["Absolute"]].events),
-			attach_to = "Eclipse",
-			location = "center"
-		},
 		["Lua:"..L["Alternate power"]] = {
 			code = PROVIDED_CODES[L["Alternate power"]][L["Percent"]].code,
 			events = copy(PROVIDED_CODES[L["Alternate power"]][L["Percent"]].events),
 			attach_to = "AltPowerBar",
 			location = "right"
-		},
-		["Lua:"..L["Demonic fury"]] = {
-			code = PROVIDED_CODES[L["Demonic fury"]][L["Absolute"]].code,
-			events = copy(PROVIDED_CODES[L["Demonic fury"]][L["Absolute"]].events),
-			attach_to = "DemonicFury",
-			location = "center"
 		},
 	} do
 		local text_db = text_elements[name]
@@ -1523,7 +1511,7 @@ PitBull4_LuaTexts:SetLayoutOptionsFunction(function(self)
 			local db = PitBull4.Options.GetTextLayoutDB()
 			db.code = entry.code
 			db.events = copy(entry.events)
-		
+
 			update()
 		end,
 		values = values,
@@ -1566,7 +1554,7 @@ PitBull4_LuaTexts:SetLayoutOptionsFunction(function(self)
 		end,
 	}
 end)
- 
+
 local CURRENT_EVENT
 PitBull4_LuaTexts:SetGlobalOptionsFunction(function(self)
 	local update_for_values = {
