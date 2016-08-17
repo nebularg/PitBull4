@@ -3,7 +3,7 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
 local CURRENT_UNIT = "player"
-local CURRENT_GROUP = L["Party"] 
+local CURRENT_GROUP = L["Party"]
 
 function PitBull4.Options.get_unit_options()
 	local unit_options = {
@@ -13,7 +13,7 @@ function PitBull4.Options.get_unit_options()
 		args = {},
 		childGroups = "tab",
 	}
-	
+
 	local group_options = {
 		type = 'group',
 		name = L["Groups"],
@@ -21,7 +21,7 @@ function PitBull4.Options.get_unit_options()
 		args = {},
 		childGroups = "tab",
 	}
-	
+
 	local function get_unit_db()
 		return PitBull4.db.profile.units[CURRENT_UNIT]
 	end
@@ -37,9 +37,9 @@ function PitBull4.Options.get_unit_options()
 			return get_group_db()
 		end
 	end
-	
+
 	local deep_copy = PitBull4.Utils.deep_copy
-	
+
 	unit_options.args.current_unit = {
 		name = L["Current unit"],
 		desc = L["Change the unit you are currently editing."],
@@ -59,7 +59,7 @@ function PitBull4.Options.get_unit_options()
 			CURRENT_UNIT = value
 		end
 	}
-	
+
 	group_options.args.current_group = {
 		name = L["Current group"],
 		desc = L["Change the unit group you are currently editing."],
@@ -83,7 +83,7 @@ function PitBull4.Options.get_unit_options()
 			CURRENT_GROUP = value
 		end
 	}
-	
+
 	local function validate_group(info, value)
 		if value:len() < 3 then
 			return L["Must be at least 3 characters long."]
@@ -93,7 +93,7 @@ function PitBull4.Options.get_unit_options()
 		end
 		return true
 	end
-	
+
 	group_options.args.new_group = {
 		name = L["New group"],
 		desc = L["Create a new group. This will copy the data of the currently-selected group."],
@@ -102,9 +102,9 @@ function PitBull4.Options.get_unit_options()
 		get = function(info) return "" end,
 		set = function(info, value)
 			PitBull4.db.profile.groups[value] = deep_copy(PitBull4.db.profile.groups[CURRENT_GROUP])
-			
+
 			CURRENT_GROUP = value
-			
+
 			if get_group_db().enabled then
 				PitBull4:MakeGroupHeader(CURRENT_GROUP)
 				for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do
@@ -123,20 +123,20 @@ function PitBull4.Options.get_unit_options()
 			return current
 		end
 	end
-	
+
 	local update, refresh_group, refresh_layout, refresh_vehicle
 	do
 		local update_funcs, refresh_group_funcs, refresh_layout_funcs = {}, {}, {}
 		local refresh_vehicle_funcs = {}
-		
+
 		function update(type)
 			return update_funcs[type]()
 		end
-		
+
 		function refresh_group(type)
 			return refresh_group_funcs[type]()
 		end
-		
+
 		function refresh_layout(type)
 			return refresh_layout_funcs[type]()
 		end
@@ -144,31 +144,31 @@ function PitBull4.Options.get_unit_options()
 		function refresh_vehicle(type)
 			return refresh_vehicle_funcs[type]()
 		end
-		
+
 		function update_funcs.groups()
 			for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do
 				header:UpdateMembers(true, true)
 			end
 		end
-		
+
 		function update_funcs.units()
 			for frame in PitBull4:IterateFramesForClassification(CURRENT_UNIT, true) do
 				frame:Update(true, true)
 			end
 		end
-		
+
 		function refresh_group_funcs.groups()
 			for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do
 				header:RefreshGroup()
 			end
 		end
-		
+
 		function refresh_layout_funcs.groups()
 			for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do
 				header:RefreshLayout()
 			end
 		end
-		
+
 		function refresh_group_funcs.units()
 			for frame in PitBull4:IterateFramesForClassification(CURRENT_UNIT, true) do
 				frame:RefreshLayout()
@@ -181,7 +181,7 @@ function PitBull4.Options.get_unit_options()
 				frame:RefreshVehicle()
 			end
 		end
-		
+
 		function refresh_vehicle_funcs.groups()
 			for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do
 				for _,frame in header:IterateMembers(false) do
@@ -190,21 +190,21 @@ function PitBull4.Options.get_unit_options()
 			end
 		end
 	end
-	
+
 	local function round(value)
 		return math.floor(value + 0.5)
 	end
-	
+
 	local function disabled(info)
 		return InCombatLockdown()
 	end
-	
+
 	local shared_args = {}
 	local unit_args = {}
 	local group_args = {}
 	local group_layout_args = {}
 	local group_filtering_args = {}
-	
+
 	unit_args.enable = {
 		name = L["Enable"],
 		desc = L["Enable this unit."],
@@ -215,12 +215,12 @@ function PitBull4.Options.get_unit_options()
 		end,
 		set = function(info, value)
 			get_unit_db().enabled = value
-			
+
 			-- Note RecheckConfigMode() must be called after the frame is made
 			-- if we're turning on the frame so it can be ForceShown() and before
-			-- the frame is deactivated if we are hiding it so that the Hide() in 
+			-- the frame is deactivated if we are hiding it so that the Hide() in
 			-- Deactivate() will actually hide the frame, since Hide() is disabled
-			-- when the frame is force_shown. 
+			-- when the frame is force_shown.
 			if value then
 				PitBull4:MakeSingletonFrame(CURRENT_UNIT)
 				for frame in PitBull4:IterateFramesForClassification(CURRENT_UNIT, true) do
@@ -235,7 +235,7 @@ function PitBull4.Options.get_unit_options()
 		end,
 		disabled = disabled,
 	}
-	
+
 	group_args.enable = {
 		name = L["Enable"],
 		desc = L["Enable this unit group."],
@@ -246,7 +246,7 @@ function PitBull4.Options.get_unit_options()
 		end,
 		set = function(info, value)
 			get_group_db().enabled = value
-			
+
 			if value then
 				PitBull4:MakeGroupHeader(CURRENT_GROUP)
 			end
@@ -259,7 +259,7 @@ function PitBull4.Options.get_unit_options()
 		end,
 		disabled = disabled,
 	}
-	
+
 	group_args.remove = {
 		name = L["Remove"],
 		desc = L["Remove this unit group. Note: there is no way to recover after removal."],
@@ -272,35 +272,35 @@ function PitBull4.Options.get_unit_options()
 				header:Hide()
 				header:RecheckConfigMode()
 			end
-			
+
 			PitBull4.db.profile.groups[CURRENT_GROUP] = nil
 		end,
 		disabled = function(info)
 			if next(PitBull4.db.profile.groups) == CURRENT_GROUP and not next(PitBull4.db.profile.groups, CURRENT_GROUP) then
 				return true
 			end
-			
+
 			return disabled(info)
 		end,
 	}
-	
+
 	local function get(info)
 		local type = info[1]
-		
+
 		return get_db(type)[info[#info]]
 	end
-	
+
 	local function set(info, value)
 		local type = info[1]
 		local key = info[#info]
-		
+
 		local db = get_db(type)
 		if db[key] == value then
 			return false
 		end
-		
+
 		db[key] = value
-		
+
 		return true
 	end
 	local function set_with_refresh_group(info, value)
@@ -351,14 +351,14 @@ function PitBull4.Options.get_unit_options()
 			PitBull4.db.profile.groups[value], PitBull4.db.profile.groups[CURRENT_GROUP] = PitBull4.db.profile.groups[CURRENT_GROUP], nil
 			local old_group = CURRENT_GROUP
 			CURRENT_GROUP = value
-			
+
 			for header in PitBull4:IterateHeadersForName(old_group) do
 				header:Rename(CURRENT_GROUP)
 			end
 		end,
 		validate = validate_group,
 	}
-	
+
 	group_args.unit_group = {
 		name = L["Unit group"],
 		desc = L["Which units this group should show."],
@@ -376,8 +376,8 @@ function PitBull4.Options.get_unit_options()
 		disabled = disabled,
 		width = 'double',
 	}
-	
-	
+
+
 	shared_args.layout = {
 		name = L["Layout"],
 		desc = L["Which layout the unit should use. Note: Use the layout editor to change any layout settings."],
@@ -394,7 +394,7 @@ function PitBull4.Options.get_unit_options()
 		set = set_with_refresh_layout,
 		disabled = disabled,
 	}
-	
+
 	shared_args.horizontal_mirror = {
 		name = L["Mirror horizontally"],
 		desc = L["Whether all options will be mirrored, e.g. what would be on the left is now on the right and vice-versa."],
@@ -404,7 +404,7 @@ function PitBull4.Options.get_unit_options()
 		set = set_with_refresh_layout,
 		disabled = disabled,
 	}
-	
+
 	shared_args.vertical_mirror = {
 		name = L["Mirror vertically"],
 		desc = L["Whether all options will be mirrored, e.g. what would be on the bottom is now on the top and vice-versa."],
@@ -414,7 +414,7 @@ function PitBull4.Options.get_unit_options()
 		set = set_with_refresh_layout,
 		disabled = disabled,
 	}
-	
+
 	shared_args.scale = {
 		name = L["Scale"],
 		desc = L["The scale of the unit. This will be multiplied against the layout's scale."],
@@ -442,7 +442,7 @@ function PitBull4.Options.get_unit_options()
 		},
 		get = function (info)
 			if get_db(info[1]).click_through then
-				return "never" 
+				return "never"
 			end
 			return get(info)
 		end,
@@ -451,7 +451,7 @@ function PitBull4.Options.get_unit_options()
 			return InCombatLockdown() or get_db(info[1]).click_through
 		end,
 	}
-	
+
 	shared_args.size_x = {
 		name = L["Width multiplier"],
 		desc = L["A width multiplier applied to the unit. Your layout's width will be multiplied against this value."],
@@ -466,7 +466,7 @@ function PitBull4.Options.get_unit_options()
 		set = set_with_refresh_layout,
 		disabled = disabled,
 	}
-	
+
 	shared_args.size_y = {
 		name = L["Height multiplier"],
 		desc = L["A height multiplier applied to the unit. Your layout's height will be multiplied against this value."],
@@ -481,7 +481,7 @@ function PitBull4.Options.get_unit_options()
 		set = set_with_refresh_layout,
 		disabled = disabled,
 	}
-    
+
 	shared_args.font_multiplier = {
 		name = L["Font size multiplier"],
 		desc = L["A font size multiplier applied to the unit. Every text's font size in your layout will be multiplied against this value."],
@@ -496,7 +496,7 @@ function PitBull4.Options.get_unit_options()
 		set = set_with_refresh_layout,
 		disabled = disabled,
 	}
-    
+
 	shared_args.click_through = {
 		name = L["Click-through"],
 		desc = L["Whether the unit should be unclickable, allowing you to use it as a HUD without interfering with the game world."],
@@ -506,7 +506,7 @@ function PitBull4.Options.get_unit_options()
 		set = set_with_refresh_layout,
 		disabled = disabled,
 	}
-	
+
 	shared_args.position_x = {
 		name = L["Horizontal position"],
 		desc = L["Horizontal position on the x-axis of the screen."],
@@ -522,7 +522,7 @@ function PitBull4.Options.get_unit_options()
 		bigStep = 5,
 		disabled = disabled,
 	}
-	
+
 	shared_args.position_y = {
 		name = L["Vertical position"],
 		desc = L["Vertical position on the y-axis of the screen."],
@@ -581,7 +581,7 @@ function PitBull4.Options.get_unit_options()
 			end
 		end,
 	}
-		
+
 	group_args.include_player = {
 		name = function(info)
 			local unit_group = get_group_db().unit_group:sub(6)
@@ -607,12 +607,12 @@ function PitBull4.Options.get_unit_options()
 		end,
 		width = 'double',
 	}
-	
+
 	local party_values = {
 		INDEX = L["By index"],
 		NAME = L["By name"],
 	}
-	
+
 	local raid_values = {
 		INDEX = L["By index"],
 		NAME = L["By name"],
@@ -620,11 +620,11 @@ function PitBull4.Options.get_unit_options()
 		GROUP = L["By group"],
 		ASSIGNEDROLE = L["By role"],
 	}
-	
+
 	local enemy_values = {
 		INDEX = L["By index"],
 	}
-	
+
 	group_layout_args.sort_method = {
 		name = L["Sort method"],
 		desc = L["How to sort the frames within the group."],
@@ -652,7 +652,7 @@ function PitBull4.Options.get_unit_options()
 		end,
 		set = function(info, value)
 			local db = get_group_db()
-			
+
 			if value == "INDEX" or value == "NAME" then
 				db.sort_method = value
 				db.group_by = nil
@@ -666,12 +666,12 @@ function PitBull4.Options.get_unit_options()
 				db.sort_method = "INDEX"
 				db.group_by = "GROUP"
 			end
-			
+
 			refresh_group('groups')
 		end,
 		disabled = disabled,
 	}
-	
+
 	group_layout_args.sort_direction = {
 		name = L["Sort direction"],
 		desc = L["Which direction to sort the frames within a group."],
@@ -685,14 +685,14 @@ function PitBull4.Options.get_unit_options()
 		set = set_with_refresh_group,
 		disabled = disabled,
 	}
-	
+
 	local VERTICAL_FIRST = {
 		down_right = true,
 		down_left = true,
 		up_right = true,
 		up_left = true,
 	}
-	
+
 	group_layout_args.direction = {
 		name = L["Growth direction"],
 		desc = L["Which way frames should placed."],
@@ -734,7 +734,7 @@ function PitBull4.Options.get_unit_options()
 		set = set_with_refresh_group,
 		disabled = disabled,
 	}
-	
+
 	group_layout_args.horizontal_spacing = {
 		name = L["Horizontal spacing"],
 		desc = L["How many pixels between columns in this group."],
@@ -748,7 +748,7 @@ function PitBull4.Options.get_unit_options()
 		set = set_with_refresh_group,
 		disabled = disabled,
 	}
-	
+
 	group_layout_args.units_per_column = {
 		name = function(info)
 			if VERTICAL_FIRST[get_group_db().direction] then
@@ -773,7 +773,7 @@ function PitBull4.Options.get_unit_options()
 		step = 1,
 		disabled = disabled,
 	}
-	
+
 	group_layout_args.use_pet_header = {
 		name = L["Gaps for missing pets"],
 		desc = L["Leave gaps in the spacing for pets that do not exist."],
@@ -789,7 +789,7 @@ function PitBull4.Options.get_unit_options()
 			return not unit_group:match("pet") or unit_group:match("^arena")
 		end,
 	}
-	
+
 	local function colorify(text, class)
 		local color = PitBull4.ClassColors[class]
 		if not color then
@@ -798,17 +798,17 @@ function PitBull4.Options.get_unit_options()
 		local r, g, b = unpack(color)
 		return ("|cff%02x%02x%02x%s|r"):format(r * 255, g * 255, b * 255, text)
 	end
-	
+
 	local class_sort_values = {}
 	local function refresh_class_sort_values()
 		wipe(class_sort_values)
 		for i, class in ipairs(PitBull4.ClassOrder) do
 			class_sort_values[i] = ("%d. %s"):format(i, colorify(LOCALIZED_CLASS_NAMES_MALE[class], class))
-			
+
 			group_layout_args.class_order.args[class].order = i
 		end
 	end
-	
+
 	local class_last_db = nil
 	group_layout_args.class_order = {
 		name = L["Class order"],
@@ -828,7 +828,7 @@ function PitBull4.Options.get_unit_options()
 		end,
 		args = {}
 	}
-	
+
 	for i, class in ipairs(CLASS_SORT_ORDER) do
 		group_layout_args.class_order.args[class] = {
 			name = colorify(LOCALIZED_CLASS_NAMES_MALE[class], class),
@@ -855,7 +855,7 @@ function PitBull4.Options.get_unit_options()
 					table.insert(PitBull4.ClassOrder, class)
 					return
 				end
-				
+
 				table.remove(PitBull4.ClassOrder, current)
 				table.insert(PitBull4.ClassOrder, value, class)
 				refresh_class_sort_values()
@@ -864,17 +864,17 @@ function PitBull4.Options.get_unit_options()
 			end
 		}
 	end
-	
+
 	local role_sort_values = {}
 	local function refresh_role_sort_values()
 		wipe(role_sort_values)
 		for i, role in ipairs(PitBull4.RoleOrder) do
 			role_sort_values[i] = ("%d. %s"):format(i, _G[role])
-			
+
 			group_layout_args.role_order.args[role].order = i
 		end
 	end
-	
+
 	local role_last_db = nil
 	group_layout_args.role_order = {
 		name = L["Role order"],
@@ -894,7 +894,7 @@ function PitBull4.Options.get_unit_options()
 		end,
 		args = {}
 	}
-	
+
 	for i, role in ipairs({ "TANK", "HEALER", "DAMAGER", "NONE" }) do
 		group_layout_args.role_order.args[role] = {
 			name = _G[role],
@@ -921,7 +921,7 @@ function PitBull4.Options.get_unit_options()
 					table.insert(PitBull4.RoleOrder, role)
 					return
 				end
-				
+
 				table.remove(PitBull4.RoleOrder, current)
 				table.insert(PitBull4.RoleOrder, value, role)
 				refresh_role_sort_values()
@@ -930,7 +930,7 @@ function PitBull4.Options.get_unit_options()
 			end
 		}
 	end
-	
+
 	group_filtering_args.shown_when = {
 		name = L["Show when in"],
 		desc = L["Which situations to show the unit group in."],
@@ -939,11 +939,11 @@ function PitBull4.Options.get_unit_options()
 		values = function(info)
 			local unit_group = get_group_db().unit_group
 			local group_based = get_group_db().group_based
-			
+
 			local party_based = unit_group:sub(1, 5) == "party"
-			
+
 			local t = {}
-			
+
 			if party_based then
 				if get_group_db().include_player then
 					t.solo = L["Solo"]
@@ -956,26 +956,26 @@ function PitBull4.Options.get_unit_options()
 				end
 				t.party = L["Party"]
 			end
-			
+
 			t.raid = L["5-man raid"]
 			t.raid10 = L["10-man raid"]
 			t.raid15 = L["15-man raid"]
 			t.raid20 = L["20-man raid"]
 			t.raid25 = L["25-man raid"]
 			t.raid40 = L["40-man raid"]
-			
+
 			return t
 		end,
 		get = function(info, key)
 			local db = get_group_db()
-			
+
 			return db.show_when[key]
 		end,
 		set = function(info, key, value)
 			local db = get_group_db()
-			
+
 			db.show_when[key] = value
-			
+
 			for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do
 				header:RefreshGroup(true)
 				header:UpdateShownState()
@@ -983,14 +983,14 @@ function PitBull4.Options.get_unit_options()
 		end,
 		disabled = disabled,
 	}
-	
+
 	local group_filter_roles = {
 		TANK = TANK,
 		HEALER = HEALER,
 		DAMAGER = DAMAGER,
 		NONE = NONE,
 	}
-	
+
 	group_filtering_args.filter_type = {
 		name = L["Filter type"],
 		desc = L["What type of filter to run on the unit group."],
@@ -1006,42 +1006,42 @@ function PitBull4.Options.get_unit_options()
 		},
 		get = function(info)
 			local db = get_group_db()
-			
+
 			local group_filter = db.group_filter
-			
+
 			if not group_filter then
 				return 'ALL'
 			end
-			
+
 			if group_filter == "" then
 				return 'NUMBER'
 			end
-			
+
 			local start = ((","):split(group_filter))
-			
+
 			if tonumber(start) then
 				return 'NUMBER'
 			end
-			
+
 			if RAID_CLASS_COLORS[start] then
 				return 'CLASS'
 			end
-			
+
 			if start == 'MAINTANK' or start == 'MAINASSIST' then
 				return start
 			end
-			
+
 			if group_filter_roles[start] then
 				return 'ROLE'
 			end
-			
+
 			-- WTF here, should never happen
 			db.group_filter = nil
 			return 'ALL'
 		end,
 		set = function(info, value)
 			local db = get_group_db()
-			
+
 			if value == 'ALL' then
 				db.group_filter = nil
 			elseif value == 'NUMBER' then
@@ -1061,20 +1061,20 @@ function PitBull4.Options.get_unit_options()
 			else--if value == 'MAINTANK' or value == 'MAINASSIST' then
 				db.group_filter = value
 			end
-			
+
 			refresh_group('groups')
 		end,
 		disabled = disabled,
 		hidden = function(info)
 			local db = get_group_db()
-			
+
 			local unit_group = db.unit_group
 			local raid_based = unit_group:sub(1, 4) == "raid"
-			
+
 		 	return not raid_based -- only show in raid
 		end
 	}
-	
+
 	local function new_set(...)
 		local set = {}
 		for i = 1, select('#', ...) do
@@ -1083,7 +1083,7 @@ function PitBull4.Options.get_unit_options()
 		set[""] = nil
 		return set
 	end
-	
+
 	local function concat_set_by_comma(set)
 		local t = {}
 		for k in pairs(set) do
@@ -1091,24 +1091,24 @@ function PitBull4.Options.get_unit_options()
 		end
 		return table.concat(t, ",")
 	end
-	
+
 	local function get_filter(info, key)
 		local db = get_group_db()
 		return not not db.group_filter:match(key)
 	end
-	
+
 	local function set_filter(info, key, value)
 		local db = get_group_db()
-		
+
 		local set = new_set((","):split(db.group_filter))
-		
+
 		set[key] = value or nil
-		
+
 		db.group_filter = concat_set_by_comma(set)
-		
+
 		refresh_group('groups')
 	end
-	
+
 	group_filtering_args.group_filter_role = {
 		name = L["Filter roles"],
 		desc = L["Which roles should show in this unit group"],
@@ -1128,15 +1128,15 @@ function PitBull4.Options.get_unit_options()
 				-- only show in raid
 				return true
 			end
-			
+
 			local group_filter = db.group_filter
-			
+
 			if not group_filter or group_filter == "" then
 				return true
 			end
-			
+
 			local start = ((","):split(group_filter))
-			
+
 			return not group_filter_roles[start]
 		end
 	}
@@ -1161,26 +1161,26 @@ function PitBull4.Options.get_unit_options()
 				-- only show in raid
 				return true
 			end
-			
+
 			local group_filter = db.group_filter
-			
+
 			if not group_filter then
 				return true
 			end
-			
+
 			if group_filter == "" then
 				return false
 			end
-			
+
 			local start = ((","):split(group_filter))
-			
+
 			return not tonumber(start)
 		end
 	}
 	for i = 1, NUM_RAID_GROUPS do
 		group_filtering_args.group_filter_number.values[i..""] = L["Group #%d"]:format(i)
 	end
-	
+
 	group_filtering_args.group_filter_class = {
 		name = L["Filter classes"],
 		desc = L["Which classes should show in this unit group"],
@@ -1201,15 +1201,15 @@ function PitBull4.Options.get_unit_options()
 				-- only show in raid
 				return true
 			end
-			
+
 			local group_filter = db.group_filter
-			
+
 			if not group_filter or group_filter == "" then
 				return true
 			end
-			
+
 			local start = ((","):split(group_filter))
-			
+
 			return not RAID_CLASS_COLORS[start]
 		end
 	}
@@ -1228,9 +1228,9 @@ function PitBull4.Options.get_unit_options()
 	for class in pairs(RAID_CLASS_COLORS) do
 		group_filtering_args.group_filter_class.values[class] = class_translations[class] or class
 	end
-	
+
 	local current_order = 0
-	
+
 	local args = {}
 	for k, v in pairs(shared_args) do
 		args[k] = v
@@ -1244,7 +1244,7 @@ function PitBull4.Options.get_unit_options()
 		inline = true,
 		args = args,
 	}
-	
+
 	local args = {}
 	for k, v in pairs(shared_args) do
 		args[k] = v
@@ -1274,6 +1274,6 @@ function PitBull4.Options.get_unit_options()
 		args = group_filtering_args,
 		order = next_order(),
 	}
-	
+
 	return unit_options, group_options
 end

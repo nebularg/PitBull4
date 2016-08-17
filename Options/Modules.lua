@@ -18,7 +18,7 @@ function PitBull4.defaultModulePrototype:SetGlobalOptionsFunction(func)
 		expect(func, 'typeof', 'function')
 		expect(global_functions[self], '==', nil)
 	end
-	
+
 	global_functions[self] = func
 end
 
@@ -30,7 +30,7 @@ function PitBull4.Options.get_module_options()
 		args = {},
 		childGroups = "tree",
 	}
-	
+
 	local module_args = {
 		enabled = {
 			type = 'toggle',
@@ -80,14 +80,14 @@ function PitBull4.Options.get_module_options()
 			global_functions[module] = false
 		end
 	end
-	
+
 	for id, module in PitBull4:IterateModules() do
 		PitBull4.Options.modules_handle_module_load(module)
 	end
-	
+
 	-- and now for disabled modules not yet loaded
 	local modules_not_loaded = PitBull4.modules_not_loaded
-	
+
 	local function loadable(info)
 		local id = info[#info - 1]
 		local addon_name = 'PitBull4_'..id
@@ -111,7 +111,7 @@ function PitBull4.Options.get_module_options()
 		end,
 		disabled = unloadable,
 	}
-	
+
 	local no_mem_notice = {
 		type = 'description',
 		name = L["This module is not loaded and will not take up and memory or processing power until enabled."],
@@ -141,20 +141,20 @@ function PitBull4.Options.get_module_options()
 		order = -1,
 		hidden = loadable,
 	}
-	
+
 	for id in pairs(modules_not_loaded) do
 		if not module_options.args[id] then
 			local addon_name = 'PitBull4_' .. id
 			local title = GetAddOnMetadata(addon_name, "Title")
 			local notes = GetAddOnMetadata(addon_name, "Notes")
-		
+
 			local name = title:match("%[(.*)%]")
 			if not name then
 				name = id
 			else
 				name = name:gsub("|r", ""):gsub("|c%x%x%x%x%x%x%x%x", "")
 			end
-		
+
 			local opt = {
 				type = 'group',
 				name = name,
@@ -169,6 +169,6 @@ function PitBull4.Options.get_module_options()
 			module_options.args[id] = opt
 		end
 	end
-	
+
 	return module_options
 end

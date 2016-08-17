@@ -40,7 +40,7 @@ local function call_value_function(self, frame, bar_db)
 	if frame.guid and frame.unit then
 		value, extra, icon = self:GetValue(frame, bar_db)
 	end
-	
+
 	if not value and frame.force_show and self.GetExampleValue then
 		value, extra, icon = self:GetExampleValue(frame, bar_db)
 	end
@@ -55,12 +55,12 @@ local function call_value_function(self, frame, bar_db)
 	if not extra or extra <= 0 or extra ~= extra then -- NaN
 		return value, nil, icon
 	end
-	
+
 	local max = 1 - value
 	if extra > max then
 		extra = max
 	end
-	
+
 	return value, extra, icon
 end
 
@@ -78,18 +78,18 @@ end
 -- @return blue value within [0, 1]
 -- @return alpha value within [0, 1]
 local function call_color_function(self, frame, bar_db, value, extra, icon)
-	local bar_provider = true 
+	local bar_provider = true
 	if not bar_db then
 		bar_provider = false
 		bar_db = self:GetLayoutDB(frame)
 	end
 	local custom_color = bar_db.custom_color
-	
+
 	if not self.GetColor then
 		if custom_color then
-			return custom_color[1], custom_color[2], custom_color[3], bar_db.alpha 
+			return custom_color[1], custom_color[2], custom_color[3], bar_db.alpha
 		else
-			return 0.7, 0.7, 0.7, bar_db.alpha 
+			return 0.7, 0.7, 0.7, bar_db.alpha
 		end
 	end
 	local r, g, b, a, override, atlas
@@ -208,12 +208,12 @@ local function call_background_color_function(self, frame, bar_db, value, extra,
 		bar_db = self:GetLayoutDB(frame)
 	end
 	local custom_background = bar_db.custom_background
-	
+
 	if not self.GetBackgroundColor then
 		if custom_background then
 			return custom_background[1], custom_background[2], custom_background[3], bar_db.background_alpha
 		else
-			return nil, nil, nil, bar_db.background_alpha 
+			return nil, nil, nil, bar_db.background_alpha
 		end
 	end
 	local r, g, b, a, override
@@ -255,7 +255,7 @@ local function call_background_color_function(self, frame, bar_db, value, extra,
 		a = 1
 	end
 	if not r or not g or not b then
-		return nil, nil, nil, a 
+		return nil, nil, nil, a
 	end
 	return r, g, b, a
 end
@@ -282,13 +282,13 @@ local function call_extra_color_function(self, frame, bar_db, value, extra, icon
 	end
 	local custom_color = bar_db.custom_color
 	local custom_extra = bar_db.custom_extra
-	
+
 	if not self.GetExtraColor then
 		if custom_extra then
-			return custom_extra[1], custom_extra[2], custom_extra[3], nil 
+			return custom_extra[1], custom_extra[2], custom_extra[3], nil
 		elseif custom_color then
-			local r, g, b = custom_color[1], custom_color[2], custom_color[3] 
-			return (1 + 2*r) / 3, (1 + 2*g) / 3, (1 + 2*b) / 3, nil 
+			local r, g, b = custom_color[1], custom_color[2], custom_color[3]
+			return (1 + 2*r) / 3, (1 + 2*g) / 3, (1 + 2*b) / 3, nil
 		else
 			return 0.5, 0.5, 0.5, nil
 		end
@@ -314,7 +314,7 @@ local function call_extra_color_function(self, frame, bar_db, value, extra, icon
 		if custom_extra then
 			return custom_extra[1], custom_extra[2], custom_extra[3], a
 		elseif custom_color then
-			local r, g, b = custom_color[1], custom_color[2], custom_color[3] 
+			local r, g, b = custom_color[1], custom_color[2], custom_color[3]
 			return (1 + 2*r) / 3, (1 + 2*g) / 3, (1 + 2*b) / 3, a
 		end
 	end
@@ -384,13 +384,13 @@ function BarModule:ClearFrame(frame)
 	if DEBUG then
 		expect(frame, 'typeof', 'frame')
 	end
-	
+
 	local id = self.id
 	local control = frame[id]
 	if not control then
 		return false
 	end
-	
+
 	frame[id] = control:Delete()
 	return true
 end
@@ -403,12 +403,12 @@ function BarModule:UpdateFrame(frame)
 	if DEBUG then
 		expect(frame, 'typeof', 'frame')
 	end
-	
+
 	local value, extra, icon = call_value_function(self, frame)
 	if not value then
 		return self:ClearFrame(frame)
 	end
-	
+
 	local db = self:GetLayoutDB(frame)
 	local id = self.id
 	local control = frame[id]
@@ -543,20 +543,20 @@ function BarProviderModule:ClearFrame(frame)
 	if DEBUG then
 		expect(frame, 'typeof', 'frame')
 	end
-	
+
 	local id = self.id
 	local bars = frame[id]
 	if not bars then
 		return false
 	end
-	
+
 	for name, bar in pairs(bars) do
 		bar.db = nil
 		bar:Delete()
 		frame[id .. ";" .. name] = nil
 	end
 	frame[id] = del(bars)
-	
+
 	return true
 end
 
@@ -568,20 +568,20 @@ function BarProviderModule:UpdateFrame(frame)
 	if DEBUG then
 		expect(frame, 'typeof', 'frame')
 	end
-	
+
 	local layout_db = self:GetLayoutDB(frame)
 	if not next(layout_db.elements) then
 		return self:ClearFrame(frame)
 	end
-	
+
 	local bars = frame[self.id]
 	if not bars then
 		bars = new()
 		frame[self.id] = bars
 	end
-	
+
 	local changed = false
-	
+
 	-- get rid of any bars not in the db
 	for name, bar in pairs(bars) do
 		if not rawget(layout_db.elements, name) then
@@ -591,11 +591,11 @@ function BarProviderModule:UpdateFrame(frame)
 			changed = true
 		end
 	end
-	
+
 	-- create or update bars
 	for name, bar_db in pairs(layout_db.elements) do
 		local bar = bars[name]
-		
+
 		local value, extra, icon = call_value_function(self, frame, bar_db)
 		if not value then
 			if bar then
@@ -612,22 +612,22 @@ function BarProviderModule:UpdateFrame(frame)
 				bar.db = bar_db
 				changed = true
 			end
-			
+
 			local texture
 			if LibSharedMedia then
 				texture = LibSharedMedia:Fetch("statusbar", bar_db.texture or frame.layout_db.bar_texture or "Blizzard")
 			end
 			bar:SetTexture(texture or [[Interface\TargetingFrame\UI-StatusBar]])
 			bar:SetValue(value)
-			
+
 			local r, g, b, a = call_color_function(self, frame, bar_db, value, extra or 0, icon)
 			bar:SetColor(r, g, b)
 			bar:SetAlpha(a)
-	
+
 			r, g, b, a = call_background_color_function(self, frame, bar_db, value, extra or 0, icon)
 			bar:SetBackgroundColor(r, g, b)
 			bar:SetBackgroundAlpha(a)
-			
+
 			if extra then
 				bar:SetExtraValue(extra)
 
@@ -651,12 +651,12 @@ function BarProviderModule:UpdateFrame(frame)
 			bar:Show()
 		end
 	end
-	
+
 	if next(bars) == nil then
 		frame[self.id] = del(bars)
 		bars = nil
 	end
-	
+
 	return changed
 end
 

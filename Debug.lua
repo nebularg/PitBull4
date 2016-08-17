@@ -4,7 +4,7 @@ PitBull4.DEBUG = true
 
 local function is_list(t)
 	local n = #t
-	
+
 	for k in pairs(t) do
 		if type(k) ~= "number" or k < 1 or k > n or math.floor(k) ~= k then
 			return false
@@ -25,7 +25,7 @@ local function pretty_tostring(value)
 	if type(value) ~= "table" then
 		return simple_pretty_tostring(value)
 	end
-	
+
 	local t = {}
 	if is_list(value) then
 		for _, v in ipairs(value) do
@@ -35,7 +35,7 @@ local function pretty_tostring(value)
 		for k, v in pairs(value) do
 			t[#t+1] = "[" .. simple_pretty_tostring(k) .. "] = " .. simple_pretty_tostring(v)
 		end
-	end	
+	end
 	return "{" .. table.concat(t, ", ") .. "}"
 end
 

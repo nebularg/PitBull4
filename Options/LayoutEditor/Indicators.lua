@@ -17,7 +17,7 @@ local root_locations = {
 	out_right_top = ("%s, %s"):format(L["Outside"], L["Right-top"]),
 	out_right = ("%s, %s"):format(L["Outside"], L["Right"]),
 	out_right_bottom = ("%s, %s"):format(L["Outside"], L["Right-bottom"]),
-	
+
 	in_center = ("%s, %s"):format(L["Inside"], L["Middle"]),
 	in_top_left = ("%s, %s"):format(L["Inside"], L["Top-left"]),
 	in_top = ("%s, %s"):format(L["Inside"], L["Top"]),
@@ -27,7 +27,7 @@ local root_locations = {
 	in_bottom_right = ("%s, %s"):format(L["Inside"], L["Bottom-right"]),
 	in_left = ("%s, %s"):format(L["Inside"], L["Left"]),
 	in_right = ("%s, %s"):format(L["Inside"], L["Right"]),
-	
+
 	edge_top_left = ("%s, %s"):format(L["Edge"], L["Top-left"]),
 	edge_top = ("%s, %s"):format(L["Edge"], L["Top"]),
 	edge_top_right = ("%s, %s"):format(L["Edge"], L["Top-right"]),
@@ -73,11 +73,11 @@ PitBull4.Options.indicator_locations = indicator_locations
 function PitBull4.Options.get_layout_editor_indicator_options()
 	local GetLayoutDB = PitBull4.Options.GetLayoutDB
 	local UpdateFrames = PitBull4.Options.UpdateFrames
-	
+
 	local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 	LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
 	local AceGUI = LibStub("AceGUI-3.0")
-	
+
 	local options = {
 		name = L["Indicators"],
 		desc = L["Indicators are icons or other graphical displays that convey a specific, usually temporary, status."],
@@ -85,7 +85,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		childGroups = "tab",
 		args = {}
 	}
-	
+
 	options.args.general = {
 		type = 'group',
 		name = L["General"],
@@ -93,9 +93,9 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		order = 1,
 		args = {},
 	}
-	
+
 	local general_args = options.args.general.args
-	
+
 	general_args.spacing = {
 		type = 'range',
 		name = L["Spacing"],
@@ -109,11 +109,11 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end,
 		set = function(info, value)
 			GetLayoutDB(false).indicator_spacing = value
-			
+
 			UpdateFrames()
 		end,
 	}
-	
+
 	general_args.size = {
 		type = 'range',
 		name = L["Size"],
@@ -128,11 +128,11 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end,
 		set = function(info, value)
 			GetLayoutDB(false).indicator_size = value
-			
+
 			UpdateFrames()
 		end,
 	}
-	
+
 	general_args.bar = {
 		type = 'group',
 		name = L["Bar relation"],
@@ -140,7 +140,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		order = 3,
 		args = {}
 	}
-	
+
 	general_args.bar.args.inside_horizontal_padding = {
 		type = 'range',
 		name = L["Inside horizontal padding"],
@@ -154,11 +154,11 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end,
 		set = function(info, value)
 			GetLayoutDB(false).indicator_bar_inside_horizontal_padding = value
-			
+
 			UpdateFrames()
 		end,
 	}
-	
+
 	general_args.bar.args.inside_vertical_padding = {
 		type = 'range',
 		name = L["Inside vertical padding"],
@@ -172,12 +172,12 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end,
 		set = function(info, value)
 			GetLayoutDB(false).indicator_bar_inside_vertical_padding = value
-			
+
 			UpdateFrames()
 		end,
 		hidden = true,
 	}
-	
+
 	general_args.bar.args.outside_margin = {
 		type = 'range',
 		name = L["Outside margin"],
@@ -191,11 +191,11 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end,
 		set = function(info, value)
 			GetLayoutDB(false).indicator_bar_outside_margin = value
-			
+
 			UpdateFrames()
 		end,
 	}
-	
+
 	general_args.root = {
 		type = 'group',
 		name = L["Frame relation"],
@@ -203,7 +203,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		order = 4,
 		args = {}
 	}
-	
+
 	general_args.root.args.root_inside_horizontal_padding = {
 		type = 'range',
 		name = L["Inside horizontal padding"],
@@ -217,11 +217,11 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end,
 		set = function(info, value)
 			GetLayoutDB(false).indicator_root_inside_horizontal_padding = value
-			
+
 			UpdateFrames()
 		end,
 	}
-	
+
 	general_args.root.args.root_inside_vertical_padding = {
 		type = 'range',
 		name = L["Inside vertical padding"],
@@ -235,11 +235,11 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end,
 		set = function(info, value)
 			GetLayoutDB(false).indicator_root_inside_vertical_padding = value
-			
+
 			UpdateFrames()
 		end,
 	}
-	
+
 	general_args.root.args.root_outside_margin = {
 		type = 'range',
 		name = L["Outside margin"],
@@ -253,13 +253,13 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end,
 		set = function(info, value)
 			GetLayoutDB(false).indicator_root_outside_margin = value
-			
+
 			UpdateFrames()
 		end,
 	}
-	
+
 	local indicator_args = {}
-	
+
 	indicator_args.enable = {
 		type = 'toggle',
 		name = L["Enable"],
@@ -270,15 +270,15 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end,
 		set = function(info, value)
 			GetLayoutDB(info[#info-1]).enabled = value
-			
+
 			UpdateFrames()
 		end
 	}
-	
+
 	local function disabled(info)
 		return not GetLayoutDB(info[#info-1]).enabled
 	end
-	
+
 	indicator_args.act_as_bar = {
 		type = 'toggle',
 		name = L["Position as bar"],
@@ -289,23 +289,23 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end,
 		set = function(info, value)
 			GetLayoutDB(info[#info-1]).side = value and "left" or false
-			
+
 			UpdateFrames()
 		end,
 		disabled = disabled,
 	}
-	
+
 	local side_values = {
 		left = L["Left"],
 		right = L["Right"],
 	}
-	
+
 	local side_values_with_center = {
 		left = L["Left"],
 		center = L["Center"],
 		right = L["Right"],
 	}
-	
+
 	indicator_args.side = {
 		type = 'select',
 		name = L["Side"],
@@ -323,7 +323,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end,
 		set = function(info, value)
 			GetLayoutDB(info[#info-1]).side = value
-			
+
 			UpdateFrames()
 		end,
 		disabled = disabled,
@@ -331,7 +331,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			return not GetLayoutDB(info[#info-1]).side
 		end,
 	}
-	
+
 	indicator_args.bar_size = {
 		type = 'range',
 		name = L["Height"],
@@ -353,7 +353,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			return GetLayoutDB(info[#info-1]).side ~= "center"
 		end,
 	}
-	
+
 	indicator_args.attach_to = {
 		type = 'select',
 		name = L["Attach to"],
@@ -364,21 +364,21 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end,
 		set = function(info, value)
 			GetLayoutDB(info[#info-1]).attach_to = value
-			
+
 			UpdateFrames()
 		end,
 		values = function(info)
 			local t = {}
-			
+
 			t["root"] = L["Unit frame"]
-			
+
 			for id, module in PitBull4:IterateModulesOfType("bar", "indicator") do
 				local db = GetLayoutDB(module)
 				if db.enabled and db.side then
 					t[id] = module.name
 				end
 			end
-			
+
 			for id, module in PitBull4:IterateModulesOfType("bar_provider") do
 				local db = GetLayoutDB(module)
 				if db.enabled then
@@ -387,7 +387,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 					end
 				end
 			end
-			
+
 			return t
 		end,
 		disabled = disabled,
@@ -395,7 +395,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			return GetLayoutDB(info[#info-1]).side
 		end,
 	}
-	
+
 	indicator_args.location = {
 		type = 'select',
 		name = L["Location"],
@@ -406,7 +406,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end,
 		set = function(info, value)
 			GetLayoutDB(info[#info-1]).location = value
-			
+
 			UpdateFrames()
 		end,
 		values = function(info)
@@ -421,7 +421,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 					if module.module_type == "indicator" then
 						return indicator_locations
 					end
-					
+
 					local db = GetLayoutDB(module)
 					if element_id then
 						db = rawget(db.elements, element_id)
@@ -441,7 +441,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			return GetLayoutDB(info[#info-1]).side
 		end,
 	}
-	
+
 	indicator_args.bar_position = {
 		type = 'select',
 		name = L["Position"],
@@ -496,12 +496,12 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		set = function(info, new_position)
 			local id = info[#info-1]
 			local db = GetLayoutDB(id)
-			
+
 			local id_to_position = {}
 			local bars = {}
-			
+
 			local old_position = db.position
-			
+
 			for other_id, other_module in PitBull4:IterateModulesOfType("bar", "indicator", true) do
 				local other_db = GetLayoutDB(other_id)
 				if other_db.side then
@@ -509,7 +509,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 					bars[#bars+1] = other_id
 				end
 			end
-			
+
 			for other_id, other_module in PitBull4:IterateModulesOfType("bar_provider", true) do
 				for name, bar_db in pairs(GetLayoutDB(other_id).elements) do
 					local joined_id = other_id .. ";" .. name
@@ -517,7 +517,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 					bars[#bars+1] = joined_id
 				end
 			end
-			
+
 			for bar_id, other_position in pairs(id_to_position) do
 				if bar_id == id then
 					id_to_position[bar_id] = new_position
@@ -527,11 +527,11 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 					id_to_position[bar_id] = other_position + 1
 				end
 			end
-			
+
 			table.sort(bars, function(alpha, bravo)
 				return id_to_position[alpha] < id_to_position[bravo]
 			end)
-			
+
 			for position, bar_id in ipairs(bars) do
 				if bar_id:match(";") then
 					local module_id, name = (";"):split(bar_id, 2)
@@ -543,7 +543,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 					GetLayoutDB(bar_id).position = position
 				end
 			end
-			
+
 			UpdateFrames()
 		end,
 		disabled = disabled,
@@ -551,7 +551,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			return not GetLayoutDB(info[#info-1]).side
 		end,
 	}
-	
+
 	indicator_args.position = {
 		type = 'select',
 		name = L["Position"],
@@ -604,12 +604,12 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		set = function(info, new_position)
 			local id = info[#info-1]
 			local db = GetLayoutDB(id)
-			
+
 			local id_to_position = {}
 			local elements = {}
-			
+
 			local old_position = db.position
-			
+
 			for other_id, other_module in PitBull4:IterateModulesOfType("indicator", "custom_text", true) do
 				local other_db = GetLayoutDB(other_id)
 				if not other_db.side then
@@ -617,7 +617,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 					elements[#elements+1] = other_id
 				end
 			end
-			
+
 			for other_id, other_module in PitBull4:IterateModulesOfType("text_provider", true) do
 				for element_id, element_db in pairs(GetLayoutDB(other_id).elements) do
 					local joined_id = other_id .. ";" .. element_id
@@ -625,7 +625,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 					elements[#elements+1] = joined_id
 				end
 			end
-			
+
 			for element_id, other_position in pairs(id_to_position) do
 				if element_id == id then
 					id_to_position[element_id] = new_position
@@ -635,11 +635,11 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 					id_to_position[element_id] = other_position + 1
 				end
 			end
-			
+
 			table.sort(elements, function(alpha, bravo)
 				return id_to_position[alpha] < id_to_position[bravo]
 			end)
-			
+
 			for position, element_id in ipairs(elements) do
 				if element_id:match(";") then
 					local module_id, name = (";"):split(element_id, 2)
@@ -651,7 +651,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 					GetLayoutDB(element_id).position = position
 				end
 			end
-			
+
 			UpdateFrames()
 		end,
 		disabled = disabled,
@@ -659,7 +659,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			return GetLayoutDB(info[#info-1]).side
 		end,
 	}
-	
+
 	indicator_args.size = {
 		type = 'range',
 		name = L["Size"],
@@ -670,7 +670,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end,
 		set = function(info, value)
 			GetLayoutDB(info[#info-1]).size = value
-			
+
 			UpdateFrames()
 		end,
 		softMin = 0.5,
@@ -683,7 +683,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			return GetLayoutDB(info[#info-1]).side
 		end,
 	}
-	
+
 	indicator_args.text_font = {
 		type = 'select',
 		name = L["Font"],
@@ -697,9 +697,9 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			if value == default then
 				value = nil
 			end
-			
+
 			GetLayoutDB(info[#info-1]).text_font = value
-			
+
 			UpdateFrames()
 		end,
 		values = function(info)
@@ -712,7 +712,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end,
 		dialogControl = AceGUI.WidgetRegistry["LSM30_Font"] and "LSM30_Font" or nil,
 	}
-	
+
 	indicator_args.text_size = {
 		type = 'range',
 		name = L["Font size"],
@@ -723,7 +723,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 		end,
 		set = function(info, value)
 			GetLayoutDB(info[#info-1]).text_size = value
-			
+
 			UpdateFrames()
 		end,
 		softMin = 0.5,
@@ -737,9 +737,9 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			return not module.show_font_size_option
 		end,
 	}
-	
+
 	local layout_functions = PitBull4.Options.layout_functions
-	
+
 	function PitBull4.Options.layout_editor_indicator_handle_module_load(module)
 		local id = module.id
 		local args = {}
@@ -779,6 +779,6 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 	for id, module in PitBull4:IterateModulesOfType("indicator", true) do
 		PitBull4.Options.layout_editor_indicator_handle_module_load(module)
 	end
-	
+
 	return options
 end

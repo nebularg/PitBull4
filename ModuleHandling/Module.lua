@@ -34,11 +34,11 @@ function PitBull4:NewModuleType(name, defaults, update_texts)
 		expect(defaults, 'typeof', "table")
 		expect(update_texts, 'typeof', 'boolean;nil')
 	end
-	
+
 	module_types[name] = {}
 	module_types_to_layout_defaults[name] = defaults
 	module_types_to_update_texts[name] = update_texts or false
-	
+
 	return module_types[name]
 end
 
@@ -58,7 +58,7 @@ function PitBull4:IterateFrameScriptHooks(script)
 		expect(script, 'typeof', 'string')
 		expect(script, 'match', '^On[A-Z][A-Za-z]+$')
 	end
-	
+
 	if not module_script_hooks[script] then
 		return do_nothing
 	end
@@ -91,7 +91,7 @@ function PitBull4:OnModuleCreated(module)
 	end
 	module.id = id
 	self[id] = module
-	
+
 	recent_modules[#recent_modules+1] = module
 end
 
@@ -141,11 +141,11 @@ function Module:AddFrameScriptHook(script, method)
 			expect(self, 'not_inset', module_script_hooks[script])
 		end
 	end
-	
+
 	if not method then
 		method = script
 	end
-	
+
 	if not module_script_hooks[script] then
 		module_script_hooks[script] = {}
 	end
@@ -172,7 +172,7 @@ function Module:SetName(name)
 	if DEBUG then
 		expect(name, 'typeof', 'string')
 	end
-	
+
 	self.name = name
 end
 
@@ -183,7 +183,7 @@ function Module:SetDescription(description)
 	if DEBUG then
 		expect(description, 'typeof', 'string')
 	end
-	
+
 	self.description = description
 end
 
@@ -196,9 +196,9 @@ function Module:SetModuleType(type)
 		expect(type, 'typeof', 'string')
 		expect(type, 'inset', module_types)
 	end
-	
+
 	self.module_type = type
-	
+
 	for k, v in pairs(module_types[type]) do
 		if self[k] == nil then
 			self[k] = v
@@ -234,7 +234,7 @@ local function fix_db_for_module(module, layout_defaults, global_defaults)
 	-- reload the UI so you load back into the UI with the profile that doesn't have
 	-- the module loaded.  Now select the other profile.  Without the following line
 	-- the profile will change but the module will load with the namespace still
-	-- set to the old profile.  
+	-- set to the old profile.
 	pb4_db.SetProfile(db, pb4_db:GetCurrentProfile())
 
 	if not db.profile.global.enabled then
@@ -266,9 +266,9 @@ function Module:SetDefaults(layout_defaults, global_defaults)
 		expect(global_defaults, 'typeof', 'table;nil')
 		expect(self.module_type, 'typeof', 'string')
 	end
-	
+
 	local better_layout_defaults = merge(module_types_to_layout_defaults[self.module_type], layout_defaults or {})
-	
+
 	if not PitBull4.db then
 		-- full addon not loaded yet
 		module_to_layout_defaults[self] = better_layout_defaults
@@ -289,12 +289,12 @@ function Module:GetLayoutDB(layout)
 			expect(layout.layout, 'typeof', 'string')
 		end
 	end
-	
+
 	if type(layout) == "table" then
 		-- we're dealing with a unit frame that has the layout key on it.
 		layout = layout.layout
 	end
-	
+
 	return self.db.profile.layouts[layout]
 end
 
@@ -309,16 +309,16 @@ function Module:Update(frame, return_changed, same_guid)
 		expect(frame, 'typeof', 'frame')
 		expect(return_changed, 'typeof', 'nil;boolean')
 	end
-	
+
 	local changed
-	
+
 	local layout_db = self:GetLayoutDB(frame)
 	if not layout_db.enabled or (not frame.guid and not frame.force_show) then
 		changed = self:ClearFrame(frame)
 	else
 		changed = self:UpdateFrame(frame, same_guid)
 	end
-	
+
 	if return_changed then
 		return changed
 	end
@@ -355,7 +355,7 @@ function Module:UpdateForUnitID(unit)
 	if DEBUG then
 		expect(unit, 'typeof', 'string')
 	end
-	
+
 	for frame in PitBull4:IterateFramesForUnitID(unit) do
 		self:Update(frame)
 	end
@@ -368,11 +368,11 @@ function Module:UpdateForGUID(guid)
 	if DEBUG then
 		expect(guid, 'typeof', 'string;nil')
 	end
-	
+
 	if not guid then
 		return
 	end
-	
+
 	for frame in PitBull4:IterateFramesForGUID(guid) do
 		self:Update(frame)
 	end
@@ -385,7 +385,7 @@ function Module:UpdateForClassification(classification)
 	if DEBUG then
 		expect(classification, 'typeof', 'string')
 	end
-	
+
 	for frame in PitBull4:IterateFramesForClassification(classification) do
 		self:Update(frame)
 	end
@@ -443,17 +443,17 @@ local function iter(types, id)
 		del(types)
 		return nil
 	end
-	
+
 	if not types[module.module_type] then
 		-- wrong type, try again
 		return iter(types, id)
 	end
-	
+
 	if not types.also_disabled and not module:IsEnabled() then
 		-- skip disabled modules
 		return iter(types, id)
 	end
-	
+
 	return id, module
 end
 
@@ -474,19 +474,19 @@ function PitBull4:IterateModulesOfType(...)
 	if also_disabled then
 		n = n - 1
 	end
-	
+
 	for i = 1, n do
 		local type = select(i, ...)
 		if DEBUG then
 			expect(type, 'typeof', 'string')
 			expect(type, 'inset', module_types)
 		end
-		
+
 		types[type] = true
 	end
-	
+
 	types.also_disabled = also_disabled
-	
+
 	return iter, types, nil
 end
 
@@ -497,7 +497,7 @@ do
 		if old_PitBull4_OnInitialize then
 			old_PitBull4_OnInitialize(self)
 		end
-		
+
 		for module, layout_defaults in pairs(module_to_layout_defaults) do
 			fix_db_for_module(module, layout_defaults, module_to_global_defaults[module])
 		end
@@ -515,10 +515,10 @@ function PitBull4:EnableModuleAndSaveState(module)
 	if module:IsEnabled() then
 		return
 	end
-	
+
 	module.db.profile.global.enabled = true
 	module:Enable()
-	
+
 	for frame in self:IterateFrames() do
 		frame:Update(true, true)
 	end
@@ -532,14 +532,14 @@ function PitBull4:DisableModuleAndSaveState(module)
 	if not module:IsEnabled() then
 		return
 	end
-	
+
 	for frame in self:IterateFrames() do
 		module:Clear(frame)
 	end
-	
+
 	module.db.profile.global.enabled = false
 	module:Disable()
-	
+
 	for frame in self:IterateFrames() do
 		frame:Update(true, true)
 	end

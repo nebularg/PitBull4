@@ -76,7 +76,7 @@ function PitBull4.defaultModulePrototype:SetLayoutOptionsFunction(func)
 		expect(func, 'typeof', 'function')
 		expect(layout_functions[self], '==', nil)
 	end
-	
+
 	layout_functions[self] = func
 end
 
@@ -94,7 +94,7 @@ function PitBull4.Options.get_layout_editor_options()
 	local deep_copy = PitBull4.Utils.deep_copy
 	local GetLayoutDB = PitBull4.Options.GetLayoutDB
 	local UpdateFrames = PitBull4.Options.UpdateFrames
-	
+
 	local layout_options = {
 		type = 'group',
 		name = L["Layout editor"],
@@ -102,7 +102,7 @@ function PitBull4.Options.get_layout_editor_options()
 		args = {},
 		childGroups = "tab",
 	}
-	
+
 	layout_options.args.current_layout = {
 		name = L["Current layout"],
 		desc = L["Change the layout you are currently editing."],
@@ -122,7 +122,7 @@ function PitBull4.Options.get_layout_editor_options()
 			CURRENT_LAYOUT = value
 		end
 	}
-	
+
 	layout_options.args.new_layout = {
 		name = L["New layout"],
 		desc = L["Create a new layout. This will copy the data of the currently-selected layout."],
@@ -135,7 +135,7 @@ function PitBull4.Options.get_layout_editor_options()
 					module.db.profile.layouts[value] = deep_copy(module.db.profile.layouts[CURRENT_LAYOUT])
 				end
 			end
-			
+
 			CURRENT_LAYOUT = value
 		end,
 		validate = function(info, value)
@@ -148,30 +148,30 @@ function PitBull4.Options.get_layout_editor_options()
 			return true
 		end,
 	}
-	
+
 	layout_options.args.general = PitBull4.Options.get_layout_editor_general_options()
 	PitBull4.Options.get_layout_editor_general_options = nil
 	layout_options.args.general.order = 1
-	
+
 	layout_options.args.bars = PitBull4.Options.get_layout_editor_bar_options()
 	PitBull4.Options.get_layout_editor_bar_options = nil
 	layout_options.args.bars.order = 2
-	
+
 	layout_options.args.indicators = PitBull4.Options.get_layout_editor_indicator_options()
 	PitBull4.Options.get_layout_editor_indicator_options = nil
 	layout_options.args.indicators.order = 3
-	
+
 	layout_options.args.texts = PitBull4.Options.get_layout_editor_text_options()
 	PitBull4.Options.get_layout_editor_text_options = nil
 	layout_options.args.texts.order = 4
-	
+
 	layout_options.args.faders = PitBull4.Options.get_layout_editor_fader_options()
 	PitBull4.Options.get_layout_editor_fader_options = nil
 	layout_options.args.faders.order = 5
-	
+
 	layout_options.args.modules = PitBull4.Options.get_layout_editor_other_options(layout_options)
 	PitBull4.Options.get_layout_editor_module_options = nil
 	layout_options.args.modules.order = 7
-	
+
 	return layout_options
 end

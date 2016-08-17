@@ -31,10 +31,10 @@ function PitBull4:GetFinalFrameOpacity(frame)
 	if DEBUG then
 		expect(frame, 'typeof', 'frame')
 	end
-	
+
 	local layout_db = frame.layout_db
 	local unit = frame.unit
-	
+
 	local low = layout_db and layout_db.opacity_max or 1
 	local max_priority
 	for module, frame_to_opacity in pairs(module_to_frame_to_opacity) do
@@ -45,7 +45,7 @@ function PitBull4:GetFinalFrameOpacity(frame)
 			low = layout_db and layout_db.opacity_max or 1
 			max_priority = priority
 		end
-		if opacity and opacity < low and (not priority or not max_priority or priority >= max_priority) then 
+		if opacity and opacity < low and (not priority or not max_priority or priority >= max_priority) then
 			low = opacity
 		end
 	end
@@ -61,7 +61,7 @@ timerFrame:SetScript("OnUpdate", function(self, elapsed)
 		else
 			local final_opacity = PitBull4:GetFinalFrameOpacity(frame)
 			local current_opacity = frame:GetAlpha()
-		
+
 			if final_opacity ~= current_opacity then
 				local result_opacity
 				if not frame.layout_db.opacity_smooth then
@@ -77,7 +77,7 @@ timerFrame:SetScript("OnUpdate", function(self, elapsed)
 						result_opacity = final_opacity
 					end
 				end
-			
+
 				frame:SetAlpha(result_opacity)
 				if result_opacity == final_opacity then
 					changing_frames[frame] = nil
@@ -121,13 +121,13 @@ function FaderModule:ClearFrame(frame)
 	if DEBUG then
 		expect(frame, 'typeof', 'frame')
 	end
-	
+
 	local frame_to_opacity = module_to_frame_to_opacity[self]
 	local frame_to_priority = module_to_frame_to_priority[self]
 	if not frame_to_opacity and not frame_to_priority then
 		return false
 	end
-	
+
 	local update = false
 
 	if frame_to_opacity[frame] then
@@ -144,7 +144,7 @@ function FaderModule:ClearFrame(frame)
 		changing_frames[frame] = true
 		timerFrame:Show()
 	end
-	
+
 	return false
 end
 
@@ -159,12 +159,12 @@ local function call_opacity_function(self, frame)
 	if not self.GetOpacity then
 		return nil, nil
 	end
-	
+
 	local layout_db = frame.layout_db
-	
+
 	local opacity_min = layout_db.opacity_min
 	local opacity_max = layout_db.opacity_max
-	
+
 	local value, priority
 	-- Extra frame.unit test here is a workaround for the same root issue
 	-- as we have in BarModules.  See ticket 475.
@@ -188,7 +188,7 @@ function FaderModule:UpdateFrame(frame)
 	if DEBUG then
 		expect(frame, 'typeof', 'frame')
 	end
-	
+
 	local frame_to_opacity = module_to_frame_to_opacity[self]
 	if not frame_to_opacity then
 		frame_to_opacity = {}
@@ -199,7 +199,7 @@ function FaderModule:UpdateFrame(frame)
 		frame_to_priority = {}
 		module_to_frame_to_priority[self] = frame_to_priority
 	end
-	
+
 	local opacity, priority = call_opacity_function(self, frame)
 	if not opacity then
 		return self:ClearFrame(frame)
@@ -207,13 +207,13 @@ function FaderModule:UpdateFrame(frame)
 	if not priority then
 		priority = 0
 	end
-	
+
 	if frame_to_opacity[frame] ~= opacity or frame_to_priority[frame] ~= priority then
 		frame_to_opacity[frame] = opacity
 		frame_to_priority[frame] = priority
 		changing_frames[frame] = true
 		timerFrame:Show()
 	end
-	
+
 	return false
 end

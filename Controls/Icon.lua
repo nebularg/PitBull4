@@ -12,11 +12,11 @@ end
 PitBull4.Controls.MakeNewControlType("Icon", "Button", function(control)
 	-- onCreate
 	control:EnableMouse(false)
-	
+
 	local texture = PitBull4.Controls.MakeTexture(control, "ARTWORK")
 	control.texture = texture
 	texture:SetAllPoints(control)
-	
+
 	for k,v in pairs(Icon) do
 		control[k] = v
 	end

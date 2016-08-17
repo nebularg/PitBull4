@@ -51,10 +51,10 @@ function PitBull4.Options.HandleModuleLoad(module)
 		-- doesn't matter yet, it'll be caught in the real config opening.
 		return
 	end
-	
+
 	PitBull4.Options.modules_handle_module_load(module)
 	PitBull4.Options.colors_handle_module_load(module)
-	
+
 	PitBull4.Options["layout_editor_" .. module.module_type .. "_handle_module_load"](module)
 end
 
@@ -63,7 +63,7 @@ function PitBull4.Options.OpenConfig()
 	function PitBull4.Options.OpenConfig()
 		AceConfigDialog:Open("PitBull4")
 	end
-	
+
 	options = {
 		name = L["PitBull"],
 		handler = PitBull4,
@@ -71,7 +71,7 @@ function PitBull4.Options.OpenConfig()
 		args = {
 		},
 	}
-	
+
 	local new_order
 	do
 		local current = 0
@@ -80,34 +80,34 @@ function PitBull4.Options.OpenConfig()
 			return current
 		end
 	end
-	
+
 	local t = { PitBull4.Options.get_general_options() }
 	PitBull4.Options.get_general_options = nil
-	
+
 	for i = 1, #t, 2 do
 		local k, v = t[i], t[i+1]
-		
+
 		options.args[k] = v
 		v.order = new_order()
 	end
-	
+
 	options.args.layout_editor = PitBull4.Options.get_layout_editor_options()
 	PitBull4.Options.get_layout_editor_options = nil
 	options.args.layout_editor.order = new_order()
-	
+
 	options.args.units, options.args.groups = PitBull4.Options.get_unit_options()
 	PitBull4.Options.get_unit_options = nil
 	options.args.units.order = new_order()
 	options.args.groups.order = new_order()
-	
+
 	options.args.modules = PitBull4.Options.get_module_options()
 	PitBull4.Options.get_module_options = nil
 	options.args.modules.order = new_order()
-	
+
 	options.args.colors = PitBull4.Options.get_color_options()
 	PitBull4.Options.get_color_options = nil
 	options.args.colors.order = new_order()
-	
+
 	options.args.profile = LibStub("AceDBOptions-3.0"):GetOptionsTable(PitBull4.db)
 	options.args.profile.order = new_order()
 	local old_disabled = options.args.profile.disabled
@@ -115,17 +115,17 @@ function PitBull4.Options.OpenConfig()
 		return InCombatLockdown() or (old_disabled and old_disabled(info))
 	end
 	LibStub("LibDualSpec-1.0"):EnhanceOptions(options.args.profile, PitBull4.db)
-	
+
 	AceConfig:RegisterOptionsTable("PitBull4", options)
 	AceConfigDialog:SetDefaultSize("PitBull4", 835, 550)
-	
+
 	LibStub("AceEvent-3.0").RegisterEvent("PitBull4.Options", "PLAYER_REGEN_ENABLED", function()
 		LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
 	end)
-	
+
 	LibStub("AceEvent-3.0").RegisterEvent("PitBull4.Options", "PLAYER_REGEN_DISABLED", function()
 		LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
 	end)
-	
+
 	return PitBull4.Options.OpenConfig()
 end

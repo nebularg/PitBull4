@@ -1,4 +1,6 @@
 -- Constants ----------------------------------------------------------------
+local _G = _G
+
 local L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
 
 local SINGLETON_CLASSIFICATIONS = {
@@ -44,7 +46,7 @@ local NORMAL_UNITS = {
 	"focus",
 	-- "mouseover",
 }
-for i = 1, MAX_PARTY_MEMBERS do
+for i = 1, _G.MAX_PARTY_MEMBERS do
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "party" .. i
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "partypet" .. i
 end
@@ -52,10 +54,10 @@ for i = 1, 5 do
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "arena" .. i
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "arenapet" .. i
 end
-for i = 1, MAX_RAID_MEMBERS do
+for i = 1, _G.MAX_RAID_MEMBERS do
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "raid" .. i
 end
-for i = 1, MAX_BOSS_FRAMES do
+for i = 1, _G.MAX_BOSS_FRAMES do
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "boss" .. i
 end
 
@@ -78,7 +80,7 @@ local DEFAULT_LSM_FONT = "Arial Narrow"
 if LibSharedMedia then
 	if not LibSharedMedia:IsValid("font", DEFAULT_LSM_FONT) then
 		-- non-Western languages
-		
+
 		DEFAULT_LSM_FONT = LibSharedMedia:GetDefault("font")
 	end
 end
@@ -128,13 +130,13 @@ local DATABASE_DEFAULTS = {
 				horizontal_spacing = 30,
 				vertical_spacing = 30,
 				direction = "down_right",
-				units_per_column = MAX_RAID_MEMBERS,
+				units_per_column = _G.MAX_RAID_MEMBERS,
 				unit_group = "party",
 				include_player = false,
 				group_filter = nil,
 				group_by = nil,
 				use_pet_header = nil,
-				
+
 				position_x = 0,
 				position_y = 0,
 				size_x = 1, -- this is a multiplier
@@ -148,7 +150,7 @@ local DATABASE_DEFAULTS = {
 				click_through = false,
 				tooltip = 'always',
 				exists = false, -- used to force the group to exist even if all values are default
-				
+
 				show_when = {
 					solo = false,
 					party = true,
@@ -201,10 +203,10 @@ local DATABASE_DEFAULTS = {
 		role_order = { "TANK", "HEALER", "DAMAGER", "NONE" },
 	}
 }
-for class, color in pairs(RAID_CLASS_COLORS) do
+for class, color in pairs(_G.RAID_CLASS_COLORS) do
 	DATABASE_DEFAULTS.profile.colors.class[class] = { color.r, color.g, color.b }
 end
-for power_token, color in pairs(PowerBarColor) do
+for power_token, color in pairs(_G.PowerBarColor) do
 	if type(power_token) == "string" then
 		if color.r then
 			DATABASE_DEFAULTS.profile.colors.power[power_token] = { color.r, color.g, color.b }
@@ -215,7 +217,7 @@ end
 DATABASE_DEFAULTS.profile.colors.power["AMMOSLOT"] = nil
 DATABASE_DEFAULTS.profile.colors.power["FUEL"] = nil
 DATABASE_DEFAULTS.profile.colors.power["STAGGER"] = nil
-for reaction, color in pairs(FACTION_BAR_COLORS) do
+for reaction, color in pairs(_G.FACTION_BAR_COLORS) do
 	DATABASE_DEFAULTS.profile.colors.reaction[reaction] = { color.r, color.g, color.b }
 end
 
@@ -233,9 +235,7 @@ local DEFAULT_GROUPS = {
 }
 -----------------------------------------------------------------------------
 
-local _G = _G
-
-local PitBull4 = select(2, ...)
+local _, PitBull4 = ...
 PitBull4 = LibStub("AceAddon-3.0"):NewAddon(PitBull4, "PitBull4", "AceEvent-3.0", "AceTimer-3.0")
 _G.PitBull4 = PitBull4
 
@@ -263,7 +263,7 @@ do
 	-- unused tables go in this set
 	-- if the garbage collector comes around, they'll be collected properly
 	local cache = setmetatable({}, {__mode='k'})
-	
+
 	--- Return a table
 	-- @usage local t = PitBull4.new()
 	-- @return a blank table
@@ -273,10 +273,10 @@ do
 			cache[t] = nil
 			return t
 		end
-		
+
 		return {}
 	end
-	
+
 	local wipe = _G.wipe
 	--- Delete a table, clearing it and putting it back into the queue
 	-- @usage local t = PitBull4.new()
@@ -287,7 +287,7 @@ do
 			expect(t, 'typeof', 'table')
 			expect(t, 'not_inset', cache)
 		end
-		
+
 		wipe(t)
 		cache[t] = true
 		return nil
@@ -373,12 +373,12 @@ local function get_best_unit(guid)
 	if not guid then
 		return nil
 	end
-	
+
 	local guid_to_unit_ids__guid = guid_to_unit_ids[guid]
 	if not guid_to_unit_ids__guid then
 		return nil
 	end
-	
+
 	return (next(guid_to_unit_ids__guid))
 end
 PitBull4.get_best_unit = get_best_unit
@@ -387,13 +387,13 @@ local function refresh_guid(unit,new_guid)
 	if not NORMAL_UNITS[unit] then
 		return
 	end
-	
+
 	local old_guid = unit_id_to_guid[unit]
 	if new_guid == old_guid then
 		return
 	end
 	unit_id_to_guid[unit] = new_guid
-	
+
 	if old_guid then
 		local guid_to_unit_ids__old_guid = guid_to_unit_ids[old_guid]
 		guid_to_unit_ids__old_guid[unit] = nil
@@ -401,7 +401,7 @@ local function refresh_guid(unit,new_guid)
 			guid_to_unit_ids[old_guid] = del(guid_to_unit_ids__old_guid)
 		end
 	end
-	
+
 	if new_guid then
 		local guid_to_unit_ids__new_guid = guid_to_unit_ids[new_guid]
 		if not guid_to_unit_ids__new_guid then
@@ -410,7 +410,7 @@ local function refresh_guid(unit,new_guid)
 		end
 		guid_to_unit_ids__new_guid[unit] = true
 	end
-	
+
 	for frame in PitBull4:IterateWackyFrames() do
 		if frame.best_unit == unit or frame.guid == new_guid then
 			frame:UpdateBestUnit()
@@ -434,7 +434,7 @@ function PitBull4:OutOfCombatWrapper(func)
 	if DEBUG then
 		expect(func, 'typeof', 'function')
 	end
-	
+
 	return function(...)
 		return PitBull4:RunOnLeaveCombat(func, ...)
 	end
@@ -497,7 +497,7 @@ function PitBull4:IterateFrames(also_hidden)
 	if DEBUG then
 		expect(also_hidden, 'typeof', 'boolean;nil')
 	end
-	
+
 	return not also_hidden and iterate_shown_frames or half_next, all_frames
 end
 
@@ -515,7 +515,7 @@ function PitBull4:IterateWackyFrames(also_hidden)
 	if DEBUG then
 		expect(also_hidden, 'typeof', 'boolean;nil')
 	end
-	
+
 	return not also_hidden and iterate_shown_frames or half_next, wacky_frames
 end
 
@@ -533,7 +533,7 @@ function PitBull4:IterateNonWackyFrames(also_hidden, only_non_wacky)
 	if DEBUG then
 		expect(also_hidden, 'typeof', 'boolean;nil')
 	end
-	
+
 	return not also_hidden and iterate_shown_frames or half_next, non_wacky_frames
 end
 
@@ -551,7 +551,7 @@ function PitBull4:IterateSingletonFrames(also_hidden)
 	if DEBUG then
 		expect(also_hidden, 'typeof', 'boolean;nil')
 	end
-	
+
 	return not also_hidden and iterate_shown_frames or half_next, singleton_frames
 end
 
@@ -569,7 +569,7 @@ function PitBull4:IterateMemberFrames(also_hidden)
 	if DEBUG then
 		expect(also_hidden, 'typeof', 'boolean;nil')
 	end
-	
+
 	return not also_hidden and iterate_shown_frames or half_next, member_frames
 end
 
@@ -594,7 +594,7 @@ function PitBull4:IterateFramesForUnitID(unit, also_hidden, dont_include_wacky)
 		expect(also_hidden, 'typeof', 'boolean;nil')
 		expect(dont_include_wacky, 'typeof', 'boolean;nil')
 	end
-	
+
 	local id = PitBull4.Utils.GetBestUnitID(unit)
 	if not id then
 		if DEBUG then
@@ -603,7 +603,7 @@ function PitBull4:IterateFramesForUnitID(unit, also_hidden, dont_include_wacky)
 			return function () end
 		end
 	end
-	
+
 	return not also_hidden and iterate_shown_frames or half_next, (not dont_include_wacky and unit_id_to_frames_with_wacky or unit_id_to_frames)[id]
 end
 
@@ -620,23 +620,23 @@ end
 function PitBull4:IterateFramesForUnitIDs(...)
 	local t = new()
 	local n = select('#', ...)
-	
+
 	local also_hidden = ((select(n, ...)) == true)
 	if also_hidden then
 		n = n - 1
 	end
-	
+
 	for i = 1, n do
 		local unit = (select(i, ...))
 		local frames = unit_id_to_frames_with_wacky[unit]
-		
+
 		for frame in pairs(frames) do
 			if also_hidden or frame:IsShown() then
 				t[frame] = true
 			end
 		end
 	end
-	
+
 	return half_next_with_del, t
 end
 
@@ -656,12 +656,12 @@ function PitBull4:IterateFramesForClassification(classification, also_hidden)
 		expect(classification, 'typeof', 'string')
 		expect(also_hidden, 'typeof', 'boolean;nil')
 	end
-	
+
 	local frames = rawget(classification_to_frames, classification)
 	if not frames then
 		return do_nothing
 	end
-	
+
 	return not also_hidden and iterate_shown_frames or half_next, frames
 end
 
@@ -703,7 +703,7 @@ function PitBull4:IterateFramesForLayout(layout, also_hidden)
 		expect(layout, 'typeof', 'string')
 		expect(also_hidden, 'typeof', 'boolean;nil')
 	end
-	
+
 	return not also_hidden and layout_shown_iter or layout_iter, layout
 end
 
@@ -737,11 +737,11 @@ function PitBull4:IterateFramesForGUID(guid)
 	if DEBUG then
 		expect(guid, 'typeof', 'string;nil')
 	end
-	
+
 	if not guid then
 		return do_nothing
 	end
-	
+
 	return guid_iter, guid, nil
 end
 
@@ -770,17 +770,17 @@ function PitBull4:IterateFramesForGUIDs(...)
 		if DEBUG then
 			expect(guid, 'typeof', 'string;nil')
 		end
-		
+
 		if guid then
 			guids[guid] = true
 		end
 	end
-	
+
 	if not next(guids) then
 		guids = del(guids)
 		return do_nothing
 	end
-	
+
 	return guids_iter, guids, nil
 end
 
@@ -842,12 +842,12 @@ function PitBull4:IterateHeadersForUnitGroup(unit_group)
 	if DEBUG then
 		expect(unit_group, 'typeof', 'string')
 	end
-	
+
 	local headers = rawget(unit_group_to_headers, unit_group)
 	if not headers then
 		return do_nothing
 	end
-	
+
 	return iterate_shown_frames or half_next, headers
 end
 
@@ -862,12 +862,12 @@ function PitBull4:IterateHeadersForSuperUnitGroup(super_unit_group)
 		expect(super_unit_group, 'typeof', 'string')
 		expect(super_unit_group, 'inset', 'party;raid;boss;arena')
 	end
-	
+
 	local headers = rawget(super_unit_group_to_headers, super_unit_group)
 	if not headers then
 		return do_nothing
 	end
-	
+
 	return iterate_shown_frames or half_next, headers
 end
 
@@ -889,7 +889,7 @@ function PitBull4:IterateHeadersForName(name)
 	if DEBUG then
 		expect(name, 'typeof', 'string')
 	end
-	
+
 	return return_same, name_to_header[name]
 end
 
@@ -914,7 +914,7 @@ function PitBull4:IterateHeadersForLayout(layout, also_hidden)
 	if DEBUG then
 		expect(layout, 'typeof', 'string')
 	end
-	
+
 	return header_layout_iter, layout
 end
 
@@ -981,7 +981,7 @@ local upgrade_functions = {
 				end
 			end
 			if namespaces then
-				-- Search our modules config entries for orphaned layouts 
+				-- Search our modules config entries for orphaned layouts
 				for namespace, namespace_db in pairs(namespaces) do
 					if namespace_db and namespace_db.profiles and namespace_db.profiles[profile] and namespace_db.profiles[profile].layouts then
 						for layout in pairs(namespace_db.profiles[profile].layouts) do
@@ -1018,7 +1018,7 @@ local function check_config_version(sv)
 end
 
 function PitBull4:OnInitialize()
-	local fresh_config = check_config_version(PitBull4DB)
+	local fresh_config = check_config_version(_G["PitBull4DB"])
 
 	db = LibStub("AceDB-3.0"):New("PitBull4DB", DATABASE_DEFAULTS, "Default")
 	self.db = db
@@ -1029,7 +1029,7 @@ function PitBull4:OnInitialize()
 
 	db.RegisterCallback(self, "OnProfileChanged")
 	db.RegisterCallback(self, "OnProfileReset")
-	db.RegisterCallback(self, "OnNewProfile") 
+	db.RegisterCallback(self, "OnNewProfile")
 	db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
 
 	LibStub("LibDualSpec-1.0"):EnhanceDatabase(db, "PitBull4")
@@ -1041,15 +1041,15 @@ function PitBull4:OnInitialize()
 		type = "launcher",
 		icon = [[Interface\AddOns\PitBull4\pitbull]],
 		OnClick = function(frame, button)
-			if button == "RightButton" then 
+			if button == "RightButton" then
 				if IsShiftKeyDown() then
 					self.db.profile.frame_snap = not self.db.profile.frame_snap
 				else
 					self.db.profile.lock_movement = not self.db.profile.lock_movement
 				end
 				LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
-			else 
-				return self.Options.OpenConfig() 
+			else
+				return self.Options.OpenConfig()
 			end
 		end,
 		OnTooltipShow = function(tt)
@@ -1065,8 +1065,8 @@ function PitBull4:OnInitialize()
 		LibDBIcon:Register("PitBull4", LibDataBrokerLauncher, self.db.profile.minimap_icon)
 	end
 
-	if oRA3 then
-		oRA3.RegisterCallback(self, "OnTanksUpdated")
+	if _G.oRA3 then
+		_G.oRA3.RegisterCallback(self, "OnTanksUpdated")
 		self.OnTanksUpdated()
 	end
 
@@ -1082,34 +1082,34 @@ do
 		end
 		return false
 	end
-	
+
 	local function iter(num_addons, i)
 		i = i + 1
 		if i >= num_addons then
 			-- and we're done
 			return nil
 		end
-		
+
 		-- must be Load-on-demand (obviously)
 		if not IsAddOnLoadOnDemand(i) then
 			return iter(num_addons, i)
 		end
-		
+
 		local name = GetAddOnInfo(i)
 		-- must start with PitBull4_
 		local module_name = name:match("^PitBull4_(.*)$")
 		if not module_name then
 			return iter(num_addons, i)
 		end
-		
+
 		-- PitBull4 must be in the Dependency list
 		if not find_PitBull4(GetAddOnDependencies(i)) then
 			return iter(num_addons, i)
 		end
-		
+
 		local condition = GetAddOnMetadata(name, "X-PitBull4-Condition")
 		if condition then
-			local func, err = loadstring(condition)
+			local func = loadstring(condition)
 			if func then
 				-- function created successfully
 				local success, ret = pcall(func)
@@ -1122,11 +1122,11 @@ do
 				end
 			end
 		end
-		
+
 		-- passes all tests
 		return i, name, module_name
 	end
-	
+
 	--- Return a iterator of addon ID, addon name that are modules that PitBull4 can load.
 	-- module_name is the same as name without the "PitBull4_" prefix.
 	-- @usage for i, name, module_name in PitBull4:IterateLoadOnDemandModules() do
@@ -1257,7 +1257,7 @@ function PitBull4:OnProfileChanged()
 			module:OnProfileChanged()
 		end
 	end
-	
+
 	if not db.profile.made_groups then
 		db.profile.made_groups = true
 		for name, data in pairs(DEFAULT_GROUPS) do
@@ -1265,7 +1265,7 @@ function PitBull4:OnProfileChanged()
 			merge_onto(group_db, data)
 		end
 	end
-	
+
 	for header in PitBull4:IterateHeaders(true) do
 		local group_db = rawget(db.profile.groups, header.name)
 		header.group_db = group_db
@@ -1276,7 +1276,7 @@ function PitBull4:OnProfileChanged()
 	for frame in PitBull4:IterateSingletonFrames(true) do
 		frame.classification_db = db.profile.units[frame.classification]
 	end
-	
+
 	for header in PitBull4:IterateHeaders(true) do
 		if header.group_db then
 			header:RefreshGroup(true)
@@ -1308,7 +1308,7 @@ function PitBull4:OnProfileChanged()
 			end
 		end
 	end
-	
+
 	self:LoadModules()
 
 	-- Enable/Disable modules to match the new profile.
@@ -1351,7 +1351,7 @@ timerFrame:Hide()
 
 function PitBull4:OnEnable()
 	self:ScheduleRepeatingTimer(refresh_all_guids, 15)
-	
+
 	-- register unit change events
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterEvent("PLAYER_FOCUS_CHANGED")
@@ -1360,22 +1360,22 @@ function PitBull4:OnEnable()
 
 	-- register events for core handled bar coloring
 	self:RegisterEvent("UNIT_FACTION")
-	
+
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-	
+
 	-- enter/leave combat for :RunOnLeaveCombat
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 
 	self:RegisterEvent("GROUP_ROSTER_UPDATE")
-	
+
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("PLAYER_LEAVING_WORLD")
 
 	self:RegisterEvent("PET_BATTLE_OPENING_START")
-	
+
 	timerFrame:Show()
 
 	-- show initial frames
@@ -1386,7 +1386,7 @@ end
 
 local timer = 0
 local wacky_update_rate
-local current_wacky_frame 
+local current_wacky_frame
 timerFrame:SetScript("OnUpdate",function(self, elapsed)
 	local num_wacky_frames = PitBull4.num_wacky_frames
 	if num_wacky_frames <= 0 then return end
@@ -1545,7 +1545,7 @@ PitBull4.StateHeader = StateHeader
 StateHeader:WrapScript(StateHeader, "OnAttributeChanged", [[
   if name ~= "new_group" and name ~= "remove_group" and name ~= "state-group" and name ~= "config_mode" and name ~= "forced_state" then return end
 
-  -- Special handling for the new_group and remove_group attributes 
+  -- Special handling for the new_group and remove_group attributes
   local header
   if name == "new_group" then
     -- value is the name of the new group header to add to our group list
@@ -1556,7 +1556,7 @@ StateHeader:WrapScript(StateHeader, "OnAttributeChanged", [[
     end
 
     header = self:GetFrameRef(value)
-    groups[value] = header 
+    groups[value] = header
   elseif name == "remove_group" then
     -- value is the name of the group header to remove from our group list
     if not value or not groups then return end
@@ -1627,7 +1627,7 @@ end
 -- @usage local state = PitBull4:GetState()
 -- @return the state of the player.
 function PitBull4:GetState()
-	return PitBull4.config_mode or GetManagedEnvironment(StateHeader).state 
+	return PitBull4.config_mode or GetManagedEnvironment(StateHeader).state
 end
 
 function PitBull4:PLAYER_LEAVING_WORLD()
@@ -1700,7 +1700,7 @@ do
 		end
 		local t = next(pool) or {}
 		pool[t] = nil
-		
+
 		t.f = func
 		local n = select('#', ...)
 		t.n = n

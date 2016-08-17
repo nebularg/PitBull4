@@ -5,9 +5,9 @@ local L = PitBull4.L
 function PitBull4.Options.get_general_options()
 	local config_mode = PitBull4.Options.get_config_mode_options()
 	PitBull4.Options.get_config_mode_options = nil
-	
+
 	return
-		'config_mode', config_mode, 
+		'config_mode', config_mode,
 		'movement', {
 			type = 'select',
 			name = L["Frame movement"],
@@ -49,7 +49,7 @@ function PitBull4.Options.get_general_options()
 			end,
 			set = function(info, value)
 				PitBull4.db.profile.minimap_icon.hide = not value
-				
+
 				if value then
 					LibStub("LibDBIcon-1.0"):Show("PitBull4")
 				else

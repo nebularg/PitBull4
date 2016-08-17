@@ -1626,4 +1626,3 @@ function GroupHeader:ConfigureChildren()
 	end
 end
 GroupHeader.ConfigureChildren = PitBull4:OutOfCombatWrapper(GroupHeader.ConfigureChildren)
-

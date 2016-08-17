@@ -34,7 +34,7 @@ function TextProviderModule:ClearFrame(frame)
 	if not texts then
 		return false
 	end
-	
+
 	for name, text in pairs(texts) do
 		self:RemoveFontString(text)
 		text.db = nil
@@ -42,7 +42,7 @@ function TextProviderModule:ClearFrame(frame)
 		frame[id .. ";" .. name] = nil
 	end
 	frame[id] = del(texts)
-	
+
 	return true
 end
 
@@ -61,20 +61,20 @@ function TextProviderModule:UpdateFrame(frame)
 	if DEBUG then
 		expect(frame, 'typeof', 'frame')
 	end
-	
+
 	local layout_db = self:GetLayoutDB(frame)
 	if not next(layout_db.elements) then
 		return self:ClearFrame(frame)
 	end
-	
+
 	local texts = frame[self.id]
 	if not texts then
 		texts = new()
 		frame[self.id] = texts
 	end
-	
+
 	local changed = false
-	
+
 	-- get rid of any font strings not in the db
 	for name, font_string in pairs(texts) do
 		if not rawget(layout_db.elements, name) then
@@ -85,11 +85,11 @@ function TextProviderModule:UpdateFrame(frame)
 			changed = true
 		end
 	end
-	
-	-- create or update font_strings 
+
+	-- create or update font_strings
 	for name, text_db in pairs(layout_db.elements) do
 		local font_string = texts[name]
-		
+
 		local enabled = text_db.enabled
 		local attach_to = text_db.attach_to
 
@@ -101,7 +101,7 @@ function TextProviderModule:UpdateFrame(frame)
 		end
 
 		local font, size = frame:GetFont(text_db.font, text_db.size)
-		
+
 		if enabled then
 			if not font_string then
 				font_string = PitBull4.Controls.MakeFontString(frame.overlay, "OVERLAY")
@@ -116,7 +116,7 @@ function TextProviderModule:UpdateFrame(frame)
 				local _, _, modifier = font_string:GetFont()
 				font_string:SetFont(font, size, modifier)
 			end
-			
+
 			font_string.db = text_db
 			if not self:AddFontString(frame, font_string, name, text_db) then
 				self:RemoveFontString(font_string)
@@ -139,7 +139,7 @@ function TextProviderModule:UpdateFrame(frame)
 		frame[self.id] = del(texts)
 		texts = nil
 	end
-	
+
 	return changed
 end
 

@@ -46,10 +46,10 @@ function PitBull4:SetConfigMode(kind)
 	if PitBull4.config_mode == kind then
 		return
 	end
-	
+
 	PitBull4.config_mode = kind
 	PitBull4.StateHeader:SetAttribute("config_mode", kind)
-	
+
 	self:RecheckConfigMode()
 end
 
@@ -57,7 +57,7 @@ function PitBull4:RecheckConfigMode()
 	for frame in self:IterateSingletonFrames(true) do
 		frame:RecheckConfigMode()
 	end
-	
+
 	for header in self:IterateHeaders() do
 		header:RecheckConfigMode()
 	end

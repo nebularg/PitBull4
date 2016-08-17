@@ -115,7 +115,7 @@ local function getfont(font_string, ...)
 	-- the retrieved font can be nil if the font we set is not available.
 	-- size will be possibly uninitalized so it can be any value including 0 or
 	-- negative values.  So whenever font is nil use the font and size we stored
-	-- in setfont above. 
+	-- in setfont above.
 	if not font then
 		font = font_string.font
 		size = font_string.size
@@ -131,21 +131,21 @@ end
 -- @return nil
 function control__index:Delete()
 	local kind = self.kind
-	
+
 	if self.onDelete then
 		self:onDelete()
 		self.onDelete = nil
 	end
-	
+
 	if self.extraDelete then
 		self:extraDelete()
 		self.extraDelete = nil
 	end
-	
+
 	if delete_funcs[kind] then
 		delete_funcs[kind](self)
 	end
-	
+
 	--[[
 	if kind ~= "Texture" and kind ~= "FontString" and not _G.OmniCC and customKind == kind and _G.UnitClassBase then
 		if self:GetNumRegions() > 0 then
@@ -220,19 +220,19 @@ end
 -- return a control from the cache if possible, otherwise create a new one and return that
 local function get_or_create_control(cache_kind, kind, realKind, inheritTemplate, onCreate, parent)
 	local control = next(cache_kind)
-	
+
 	if control then
 		cache_kind[control] = nil
 		return control
 	end
-	
+
 	local name
 	local i = 0
 	repeat
 		i = i + 1
 		name = "PitBull4_" .. kind .. "_" .. i
 	until not _G[name]
-	
+
 	control = create_control(realKind, name, inheritTemplate, parent)
 	if onCreate then
 		onCreate(control)
@@ -250,19 +250,19 @@ local function fetch_control(kind, parent, isCustom, ...)
 		expect(kind, 'typeof', 'string')
 		expect(parent, 'typeof', 'frame')
 	end
-	
+
 	local cache_kind = cache[kind]
 	if not cache_kind then
 		cache_kind = {}
 		cache[kind] = cache_kind
 	end
-	
+
 	local realKind, onCreate, onRetrieve, onDelete, inheritTemplate
 	realKind = kind
 	if isCustom then
 		realKind, onCreate, onRetrieve, onDelete, inheritTemplate = ...
 	end
-	
+
 	local control = get_or_create_control(cache_kind, kind, realKind, inheritTemplate, onCreate, parent)
 	control:SetParent(parent)
 	if control.ClearAllPoints then
@@ -299,7 +299,7 @@ function PitBull4.Controls.MakeFrame(parent)
 	if DEBUG then
 		expect(parent, 'typeof', 'frame')
 	end
-	
+
 	return fetch_control("Frame", parent)
 end
 
@@ -365,7 +365,7 @@ function PitBull4.Controls.MakeFontString(parent, layer)
 		expect(parent, 'typeof', 'frame')
 		expect(layer, 'typeof', 'string;nil')
 	end
-	
+
 	return fetch_control("FontString", parent, false, layer)
 end
 
@@ -377,7 +377,7 @@ function PitBull4.Controls.MakePlayerModel(parent)
 	if DEBUG then
 		expect(parent, 'typeof', 'frame')
 	end
-	
+
 	return fetch_control("PlayerModel", parent)
 end
 
@@ -389,7 +389,7 @@ function PitBull4.Controls.MakeDressUpModel(parent)
 	if DEBUG then
 		expect(parent, 'typeof', 'frame')
 	end
-	
+
 	return fetch_control("DressUpModel", parent)
 end
 
@@ -412,7 +412,7 @@ function PitBull4.Controls.MakeButton(parent)
 	if DEBUG then
 		expect(parent, 'typeof', 'frame')
 	end
-	
+
 	return fetch_control("Button", parent)
 end
 
@@ -434,7 +434,7 @@ function PitBull4.Controls.MakeNewControlType(name, frameType, onCreate, onRetri
 		expect(onDelete, 'typeof', 'function')
 		expect(inheritTemplate, 'typeof', 'nil;string')
 	end
-	
+
 	PitBull4_Controls["Make" .. name] = function(parent, ...)
 		return fetch_control(name, parent, true, frameType, onCreate, onRetrieve, onDelete, inheritTemplate, ...)
 	end

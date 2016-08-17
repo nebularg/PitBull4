@@ -40,7 +40,7 @@ local function call_texture_function(self, frame)
 	if not tex then
 		return nil
 	end
-	
+
 	return tex
 end
 
@@ -67,7 +67,7 @@ local function call_tex_coord_function(self, frame, texture)
 	if not c4 then
 		return 0, 1, 0, 1
 	end
-	
+
 	return c1, c2, c3, c4
 end
 
@@ -90,13 +90,13 @@ function IndicatorModule:ClearFrame(frame)
 	if DEBUG then
 		expect(frame, 'typeof', 'frame')
 	end
-	
+
 	local id = self.id
 	local control = frame[id]
 	if not control then
 		return false
 	end
-	
+
 	frame[id] = control:Delete()
 	return true
 end
@@ -109,12 +109,12 @@ function IndicatorModule:UpdateFrame(frame)
 	if DEBUG then
 		expect(frame, 'typeof', 'frame')
 	end
-	
+
 	local tex = call_texture_function(self, frame)
 	if not tex then
 		return self:ClearFrame(frame)
 	end
-	
+
 	local id = self.id
 	local control = frame[id]
 	local made_control = not control
@@ -128,11 +128,11 @@ function IndicatorModule:UpdateFrame(frame)
 		control:SetScript("OnEnter",self.OnEnter)
 		control:SetScript("OnLeave",self.OnLeave)
 	end
-	
+
 	control:SetTexture(tex)
-	
+
 	control:SetTexCoord(call_tex_coord_function(self, frame, tex))
-	
+
 	control:Show()
 
 	return made_control

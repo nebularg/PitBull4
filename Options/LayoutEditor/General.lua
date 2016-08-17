@@ -6,14 +6,14 @@ function PitBull4.Options.get_layout_editor_general_options(layout_options)
 	local GetLayoutDB = PitBull4.Options.GetLayoutDB
 	local UpdateFrames = PitBull4.Options.UpdateFrames
 	local RefreshFrameLayouts = PitBull4.Options.RefreshFrameLayouts
-	
+
 	local options = {
 		name = L["General"],
 		type = 'group',
 		childGroups = "tab",
 		args = {}
 	}
-	
+
 	options.args.size = {
 		type = 'group',
 		name = L["Size"],
@@ -34,7 +34,7 @@ function PitBull4.Options.get_layout_editor_general_options(layout_options)
 				end,
 				set = function(info, value)
 					GetLayoutDB(false).size_x = value
-					
+
 					RefreshFrameLayouts()
 				end,
 				disabled = function(info)
@@ -55,7 +55,7 @@ function PitBull4.Options.get_layout_editor_general_options(layout_options)
 				end,
 				set = function(info, value)
 					GetLayoutDB(false).size_y = value
-					
+
 					RefreshFrameLayouts()
 				end,
 				disabled = function(info)
@@ -77,7 +77,7 @@ function PitBull4.Options.get_layout_editor_general_options(layout_options)
 				end,
 				set = function(info, value)
 					GetLayoutDB(false).scale = value
-					
+
 					RefreshFrameLayouts()
 				end,
 				disabled = function(info)
@@ -141,7 +141,7 @@ function PitBull4.Options.get_layout_editor_general_options(layout_options)
 			}
 		}
 	}
-	
+
 	options.args.remove = {
 		type = 'group',
 		name = L["Delete"],
@@ -157,23 +157,23 @@ function PitBull4.Options.get_layout_editor_general_options(layout_options)
 				end,
 				func = function(info)
 					local layout = PitBull4.Options.GetCurrentLayout()
-					
+
 					PitBull4.db.profile.layouts[layout] = nil
-					
+
 					for id, module in PitBull4:IterateModules() do
 						if module.db then
 							module.db.profile.layouts[layout] = nil
 						end
 					end
-					
+
 					local new_layout = L["Normal"]
 					for name in pairs(PitBull4.db.profile.layouts) do
 						new_layout = name
 						break
 					end
-					
+
 					PitBull4.Options.SetCurrentLayout(new_layout)
-					
+
 					for unit, db in pairs(PitBull4.db.profile.units) do
 						if db.layout == layout then
 							db.layout = new_layout
@@ -182,7 +182,7 @@ function PitBull4.Options.get_layout_editor_general_options(layout_options)
 							end
 						end
 					end
-					
+
 					for group, db in pairs(PitBull4.db.profile.groups) do
 						if db.layout == layout then
 							db.layout = new_layout
@@ -202,6 +202,6 @@ function PitBull4.Options.get_layout_editor_general_options(layout_options)
 			}
 		}
 	}
-	
+
 	return options
 end

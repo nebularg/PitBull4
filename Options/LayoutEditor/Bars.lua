@@ -17,14 +17,14 @@ function PitBull4.Options.GetBarLayoutDB(module)
 	if not bar_id then
 		return
 	end
-	
+
 	return rawget(PitBull4.Options.GetLayoutDB(module).elements, bar_id)
 end
 
 function PitBull4.Options.get_layout_editor_bar_options()
 	local GetLayoutDB = PitBull4.Options.GetLayoutDB
 	local UpdateFrames = PitBull4.Options.UpdateFrames
-	
+
 	local options = {
 		name = L["Bars"],
 		desc = L["Status bars graphically display a value from 0% to 100%."],
@@ -32,11 +32,11 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		childGroups = "tab",
 		args = {}
 	}
-	
+
 	local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 	LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
 	local AceGUI = LibStub("AceGUI-3.0")
-	
+
 	options.args.general = {
 		type = 'group',
 		name = L["General"],
@@ -44,7 +44,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		order = 1,
 		args = {}
 	}
-	
+
 	options.args.general.args.texture = {
 		type = 'select',
 		name = L["Default texture"],
@@ -66,7 +66,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		end,
 		dialogControl = AceGUI.WidgetRegistry["LSM30_Statusbar"] and "LSM30_Statusbar" or nil,
 	}
-	
+
 	options.args.general.args.spacing = {
 		type = 'range',
 		name = L["Spacing"],
@@ -84,7 +84,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			UpdateFrames()
 		end,
 	}
-	
+
 	options.args.general.args.padding = {
 		type = 'range',
 		name = L["Padding"],
@@ -102,12 +102,12 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			UpdateFrames()
 		end,
 	}
-	
+
 	local enable_option = {
 		type = 'toggle',
 		name = L["Enable"],
 		desc = function(info)
-			if #info == 4 then 
+			if #info == 4 then
 				return L["Enable this status bar."]
 			else
 				return L["Enable this status bar provider."]
@@ -119,11 +119,11 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		end,
 		set = function(info, value)
 			GetLayoutDB(info[3]).enabled = value
-			
+
 			UpdateFrames()
 		end,
 	}
-	
+
 	local function get_current_layout_db(info)
 		if #info == 4 then
 			return GetLayoutDB(info[3])
@@ -136,13 +136,13 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			return rawget(GetLayoutDB(info[3]).elements, bar_id)
 		end
 	end
-	
+
 	local bar_args = {}
-	
+
 	local disabled = function(info)
 		return not GetLayoutDB(info[3]).enabled or not get_current_layout_db(info)
 	end
-	
+
 	bar_args.remove = {
 		type = 'execute',
 		name = L["Remove"],
@@ -162,7 +162,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 				CURRENT_BAR_PROVIDER_ID[id] = k
 				break
 			end
-			
+
 			UpdateFrames()
 		end,
 		hidden = function(info)
@@ -170,23 +170,23 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		end,
 		disabled = disabled,
 	}
-	
+
 	local function bar_name_validate(info, value)
 		if value:len() < 3 then
 			return L["Must be at least 3 characters long."]
 		end
-		
+
 		local value_lower = value:lower()
-		
+
 		for name in pairs(GetLayoutDB(info[3]).elements) do
 		 	if value_lower == name:lower() then
 				return L["'%s' is already a text."]:format(value)
 			end
 		end
-		
+
 		return true
 	end
-	
+
 	bar_args.name = {
 		type = 'input',
 		name = L["Name"],
@@ -199,15 +199,15 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		set = function(info, value)
 			local id = info[3]
 			local bar_id = CURRENT_BAR_PROVIDER_ID[id]
-			
+
 			local bars = GetLayoutDB(id).elements
-			
+
 			bars[value] = rawget(bars, bar_id)
 			if bar_id then
 				bars[bar_id] = nil
 			end
 			CURRENT_BAR_PROVIDER_ID[id] = value
-			
+
 			UpdateFrames()
 		end,
 		hidden = function(info)
@@ -216,7 +216,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		disabled = disabled,
 		validate = bar_name_validate
 	}
-	
+
 	bar_args.side = {
 		type = 'select',
 		name = L["Side"],
@@ -238,7 +238,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		},
 		disabled = disabled,
 	}
-	
+
 	bar_args.position = {
 		type = 'select',
 		name = L["Position"],
@@ -297,12 +297,12 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		set = function(info, new_position)
 			local id = info[3]
 			local db = get_current_layout_db(info)
-			
+
 			local id_to_position = {}
 			local bars = {}
-			
+
 			local old_position = db.position
-			
+
 			for other_id, other_module in PitBull4:IterateModulesOfType("bar", "indicator", true) do
 				local other_db = GetLayoutDB(other_id)
 				if other_db.side then
@@ -310,7 +310,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 					bars[#bars+1] = other_id
 				end
 			end
-			
+
 			for other_id, other_module in PitBull4:IterateModulesOfType("bar_provider", true) do
 				for name, bar_db in pairs(GetLayoutDB(other_id).elements) do
 					local joined_id = other_id .. ";" .. name
@@ -318,7 +318,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 					bars[#bars+1] = joined_id
 				end
 			end
-			
+
 			local current_id = id
 			if CURRENT_BAR_PROVIDER_ID[id] then
 				current_id = current_id .. ";" .. CURRENT_BAR_PROVIDER_ID[id]
@@ -332,11 +332,11 @@ function PitBull4.Options.get_layout_editor_bar_options()
 					id_to_position[bar_id] = other_position + 1
 				end
 			end
-			
+
 			table.sort(bars, function(alpha, bravo)
 				return id_to_position[alpha] < id_to_position[bravo]
 			end)
-			
+
 			for position, bar_id in ipairs(bars) do
 				if bar_id:match(";") then
 					local module_id, name = (";"):split(bar_id, 2)
@@ -348,12 +348,12 @@ function PitBull4.Options.get_layout_editor_bar_options()
 					GetLayoutDB(bar_id).position = position
 				end
 			end
-			
+
 			UpdateFrames()
 		end,
 		disabled = disabled,
 	}
-	
+
 	bar_args.texture = {
 		type = 'select',
 		name = L["Texture"],
@@ -364,12 +364,12 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			return db and db.texture or GetLayoutDB(false).bar_texture
 		end,
 		set = function(info, value)
-			local default = GetLayoutDB(false).bar_texture 
+			local default = GetLayoutDB(false).bar_texture
 			if value == default then
 				value = nil
 			end
 			get_current_layout_db(info).texture = value
-			
+
 			UpdateFrames()
 		end,
 		values = function(info)
@@ -381,7 +381,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		end,
 		dialogControl = AceGUI.WidgetRegistry["LSM30_Statusbar"] and "LSM30_Statusbar" or nil,
 	}
-	
+
 	bar_args.size = {
 		type = 'range',
 		name = function(info)
@@ -415,7 +415,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		step = 1,
 		disabled = disabled,
 	}
-	
+
 	bar_args.deficit = {
 		type = 'toggle',
 		name = L["Deficit"],
@@ -432,7 +432,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		end,
 		disabled = disabled,
 	}
-	
+
 	bar_args.reverse = {
 		type = 'toggle',
 		name = L["Reverse"],
@@ -449,7 +449,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		end,
 		disabled = disabled,
 	}
-	
+
 	bar_args.alpha = {
 		type = 'range',
 		name = L["Full opacity"],
@@ -471,7 +471,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		isPercent = true,
 		disabled = disabled,
 	}
-	
+
 	bar_args.background_alpha = {
 		type = 'range',
 		name = L["Empty opacity"],
@@ -510,7 +510,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		end,
 		hidden = function(info)
 			local size = #info
-			local module_index = size == 5 and size - 2 or size - 1 
+			local module_index = size == 5 and size - 2 or size - 1
 			local module = PitBull4.modules[info[module_index]]
 			return not module.allow_animations
 		end,
@@ -533,7 +533,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		end,
 		hidden = function(info)
 			local size = #info
-			local module_index = size == 5 and size - 2 or size - 1 
+			local module_index = size == 5 and size - 2 or size - 1
 			local module = PitBull4.modules[info[module_index]]
 			return not module.allow_animations
 		end,
@@ -556,7 +556,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		end,
 		hidden = function(info)
 			local size = #info
-			local module_index = size == 5 and size - 2 or size - 1 
+			local module_index = size == 5 and size - 2 or size - 1
 			local module = PitBull4.modules[info[module_index]]
 			local db = get_current_layout_db(info)
 			return not module.allow_animations or not(db.fade or db.animated)
@@ -578,7 +578,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		end,
 		set = function(info, value)
 			get_current_layout_db(info).color_by_class = value
-			
+
 			UpdateFrames()
 		end,
 		disabled = disabled,
@@ -647,12 +647,12 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			else
 				get_current_layout_db(info).custom_color = nil
 			end
-			
+
 			UpdateFrames()
 		end,
 		disabled = disabled,
 	}
-	
+
 	bar_args.custom_color = {
 		type = 'color',
 		name = L["Custom color"],
@@ -664,7 +664,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		set = function(info, r, g, b, a)
 			local color = get_current_layout_db(info).custom_color
 			color[1], color[2], color[3], color[4] = r, g, b, a
-			
+
 			UpdateFrames()
 		end,
 		hidden = function(info)
@@ -689,12 +689,12 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			else
 				get_current_layout_db(info).custom_background = nil
 			end
-			
+
 			UpdateFrames()
 		end,
 		disabled = disabled,
 	}
-	
+
 	bar_args.custom_background = {
 		type = 'color',
 		name = L["Custom background"],
@@ -706,7 +706,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		set = function(info, r, g, b, a)
 			local color = get_current_layout_db(info).custom_background
 			color[1], color[2], color[3], color[4] = r, g, b, a
-			
+
 			UpdateFrames()
 		end,
 		hidden = function(info)
@@ -717,11 +717,11 @@ function PitBull4.Options.get_layout_editor_bar_options()
 	}
 
 	local layout_functions = PitBull4.Options.layout_functions
-	
+
 	local function table_with_size(...)
 		return { ... }, select('#', ...)
 	end
-	
+
 	function PitBull4.Options.layout_editor_bar_handle_module_load(module)
 		local id = module.id
 		local args = {}
@@ -734,7 +734,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			layout_functions[module] = false
 			for i = 1, data_n, 2 do
 				local k, v = data[i], data[i + 1]
-				
+
 				args[k] = v
 				if v then
 					if not v.order then
@@ -747,7 +747,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 				end
 			end
 		end
-		
+
 		options.args[id] = {
 			name = module.name,
 			desc = module.description,
@@ -761,7 +761,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 	for id, module in PitBull4:IterateModulesOfType("bar", true) do
 		PitBull4.Options.layout_editor_bar_handle_module_load(module)
 	end
-	
+
 	function PitBull4.Options.layout_editor_bar_provider_handle_module_load(module)
 		local id = module.id
 		options.args[id] = {
@@ -773,9 +773,9 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			end,
 			args = {}
 		}
-		
+
 		options.args[id].args.enable = enable_option
-		
+
 		options.args[id].args.current_bar = {
 			name = L["Current bar"],
 			desc = L["Change the current bar that you are editing."],
@@ -805,7 +805,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 				return disabled(info) or next(GetLayoutDB(module).elements) == nil
 			end,
 		}
-		
+
 		options.args[id].args.new_bar = {
 			name = L["New bar"],
 			desc = L["This will make a new bar for this layout."],
@@ -814,18 +814,18 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			get = function(info) return "" end,
 			set = function(info, value)
 				local bars_db = GetLayoutDB(module).elements
-				
+
 				local bar_db = bars_db[value]
 				bar_db.exists = true
-				
+
 				CURRENT_BAR_PROVIDER_ID[id] = value
-				
+
 				UpdateFrames()
 			end,
 			validate = bar_name_validate,
 			disabled = disabled,
 		}
-		
+
 		local args = {}
 		for k, v in pairs(bar_args) do
 			args[k] = v
@@ -835,7 +835,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			layout_functions[module] = false
 			for i = 1, data_n, 2 do
 				local k, v = data[i], data[i + 1]
-				
+
 				args[k] = v
 				if v then
 					if not v.order then
@@ -848,7 +848,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 				end
 			end
 		end
-		
+
 		options.args[id].args.edit = {
 			name = L["Edit bar"],
 			type = 'group',
@@ -859,6 +859,6 @@ function PitBull4.Options.get_layout_editor_bar_options()
 	for id, module in PitBull4:IterateModulesOfType("bar_provider", true) do
 		PitBull4.Options.layout_editor_bar_provider_handle_module_load(module)
 	end
-	
+
 	return options
 end

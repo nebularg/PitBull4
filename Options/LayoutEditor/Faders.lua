@@ -5,14 +5,14 @@ local L = PitBull4.L
 function PitBull4.Options.get_layout_editor_fader_options()
 	local GetLayoutDB = PitBull4.Options.GetLayoutDB
 	local UpdateFrames = PitBull4.Options.UpdateFrames
-	
+
 	local options = {
 		name = L["Faders"],
 		desc = L["Faders cause the unit frame to become more or less opaque on certain conditions."],
 		type = 'group',
 		args = {}
 	}
-	
+
 	options.args.min_opacity = {
 		type = 'range',
 		name = L["Minimum opacity"],
@@ -30,14 +30,14 @@ function PitBull4.Options.get_layout_editor_fader_options()
 				value = db.opacity_max
 			end
 			db.opacity_min = value
-			
+
 			UpdateFrames()
 			PitBull4:RecheckAllOpacities()
 		end,
 		step = 0.01,
 		bigStep = 0.05,
 	}
-	
+
 	options.args.max_opacity = {
 		type = 'range',
 		name = L["Maximum opacity"],
@@ -55,7 +55,7 @@ function PitBull4.Options.get_layout_editor_fader_options()
 				value = db.opacity_min
 			end
 			db.opacity_max = value
-			
+
 			UpdateFrames()
 			PitBull4:RecheckAllOpacities()
 		end,
@@ -77,9 +77,9 @@ function PitBull4.Options.get_layout_editor_fader_options()
 			PitBull4:RecheckAllOpacities()
 		end,
 	}
-	
+
 	local layout_functions = PitBull4.Options.layout_functions
-	
+
 	function PitBull4.Options.layout_editor_fader_handle_module_load(module)
 		local id = module.id
 		options.args[id] = {
@@ -97,7 +97,7 @@ function PitBull4.Options.get_layout_editor_fader_options()
 					end,
 					set = function(info, value)
 						GetLayoutDB(module).enabled = value
-						
+
 						UpdateFrames()
 						PitBull4:RecheckAllOpacities()
 					end,
@@ -107,9 +107,9 @@ function PitBull4.Options.get_layout_editor_fader_options()
 				return not module:IsEnabled()
 			end
 		}
-		
+
 		local args = options.args[id].args
-		
+
 		if layout_functions[module] then
 			local t = { layout_functions[module](module) }
 			layout_functions[module] = false
@@ -117,7 +117,7 @@ function PitBull4.Options.get_layout_editor_fader_options()
 			for i = 1, #t, 2 do
 				local k = t[i]
 				local v = t[i+1]
-			
+
 				if v then
 					if not v.order then
 						v.order = i + 100
@@ -127,7 +127,7 @@ function PitBull4.Options.get_layout_editor_fader_options()
 						return not GetLayoutDB(module).enabled or (v_disabled and v_disabled(info))
 					end
 				end
-				
+
 				args[k] = v
 			end
 		end
@@ -135,6 +135,6 @@ function PitBull4.Options.get_layout_editor_fader_options()
 	for id, module in PitBull4:IterateModulesOfType("fader", true) do
 		PitBull4.Options.layout_editor_fader_handle_module_load(module)
 	end
-	
+
 	return options
 end
