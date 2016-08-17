@@ -1146,32 +1146,63 @@ PitBull4.modules_not_loaded = modules_not_loaded
 --- Load Load-on-demand modules if they are enabled and exist.
 -- @usage PitBull4:LoadModules()
 function PitBull4:LoadModules()
-	-- NOTE: this assumes that module profiles are the same as PitBull4's profile.
+	local blacklist = {
+		PitBull4_BurningEmbers = true,
+		PitBull4_DemonicFury = true,
+		PitBull4_DruidMana = true,
+		PitBull4_Eclipse = true,
+		PitBull4_ShadowOrb = true,
+	}
+	local blacklisted_module_loaded = false
+
 	local current_profile = self.db:GetCurrentProfile()
-	
 	local sv = self.db.sv
 	local sv_namespaces = sv and sv.namespaces
 	for i, name, module_name in self:IterateLoadOnDemandModules() do
-		local module_sv = sv_namespaces and sv_namespaces[module_name]
-		local module_profile_db = module_sv and module_sv.profiles and module_sv.profiles[current_profile]
-		local enabled = module_profile_db and module_profile_db.global and module_profile_db.global.enabled
-		
-		if enabled == nil then
-			-- we have to figure out the default state
-			local default_state = GetAddOnMetadata(name, "X-PitBull4-DefaultState")
-			enabled = (default_state ~= "disabled")
-		end
+		if blacklist[name] then
+			if GetAddOnEnableState(nil, name) > 0 then
+				-- print(("Found bad module '%s'."):format(module_name))
+				DisableAddOn(name, true)
+				blacklisted_module_loaded = true
+			end
+		else
+			local module_sv = sv_namespaces and sv_namespaces[module_name]
+			local module_profile_db = module_sv and module_sv.profiles and module_sv.profiles[current_profile]
+			local enabled = module_profile_db and module_profile_db.global and module_profile_db.global.enabled
 
-		local loaded
-		if enabled then
-			-- print(("Found module '%s', attempting to load."):format(module_name))
-			loaded = LoadAddOn(name)
+			if enabled == nil then
+				-- we have to figure out the default state
+				local default_state = GetAddOnMetadata(name, "X-PitBull4-DefaultState")
+				enabled = (default_state ~= "disabled")
+			end
+
+			local loaded
+			if enabled then
+				-- print(("Found module '%s', attempting to load."):format(module_name))
+				loaded = LoadAddOn(name)
+			end
+
+			if not loaded then
+				-- print(("Found module '%s', not loaded."):format(module_name))
+				modules_not_loaded[module_name] = true
+			end
 		end
-	
-		if not loaded then
-			-- print(("Found module '%s', not loaded."):format(module_name))
-			modules_not_loaded[module_name] = true
-		end
+	end
+
+	if blacklisted_module_loaded then
+		C_Timer.After(7, function()
+			StaticPopupDialogs["PITBULL4_OUTDATED_MODULES"] = {
+				text = L["You have out-dated PitBull4 modules enabled that can cause errors. Please reload your UI to disable the addons for these modules."],
+				button1 = RELOADUI,
+				button2 = CANCEL,
+				OnAccept = function() ReloadUI() end,
+				hideOnEscape = false,
+				timeout = 0,
+				exclusive = true,
+				showAlert = true,
+			}
+			StaticPopup_Show("PITBULL4_OUTDATED_MODULES")
+		end)
 	end
 end
 
