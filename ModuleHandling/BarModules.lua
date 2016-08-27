@@ -148,10 +148,10 @@ local function call_color_function(self, frame, bar_db, value, extra, icon)
 			elseif bar_db.hostility_color_npcs then
 				local reaction = UnitReaction(unit, "player")
 				if reaction then
-					if reaction >= 5 then
+					if reaction > FRIENDLY_REACTION then
 						r, g, b = unpack(PitBull4.ReactionColors[FRIENDLY_REACTION])
-					elseif reaction == 4 then
-						r, g, b = unpack(PitBull4.ReactionColors[NEUTRAL_REACTION])
+					elseif reaction > HOSTILE_REACTION then
+						r, g, b = unpack(PitBull4.ReactionColors[reaction])
 					else
 						r, g, b = unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
 					end
