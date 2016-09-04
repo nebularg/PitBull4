@@ -395,6 +395,53 @@ end
 return ConfigMode()]],
 		},
 	},
+	[L["Artifact power"]] = {
+		[L["Absolute"]] = {
+			events = {['ARTIFACT_XP_UPDATE']=true},
+			code = [[
+local cur,max = ArtifactPower()
+if max > 0 then
+  return "%s/%s",cur,max
+end
+return ConfigMode()]],
+		},
+		[L["Absolute short"]] = {
+			events = {['ARTIFACT_XP_UPDATE']=true},
+			code = [[
+local cur,max = ArtifactPower()
+if max > 0 then
+  return "%s/%s",Short(cur,true),Short(max,true)
+end
+return ConfigMode()]],
+		},
+		[L["Difference"]] = {
+			events = {['ARTIFACT_XP_UPDATE']=true},
+			code = [[
+local cur,max = ArtifactPower()
+if max > 0 then
+  return -(max - cur)
+end
+return ConfigMode()]],
+		},
+		[L["Percent"]] = {
+			events = {['ARTIFACT_XP_UPDATE']=true},
+			code = [[
+local cur,max = ArtifactPower()
+if max > 0 then
+  return "%s%%",Percent(cur,max)
+end
+return ConfigMode()]],
+		},
+		[L["Mini"]] = {
+			events = {['ARTIFACT_XP_UPDATE']=true},
+			code = [[
+local cur,max = ArtifactPower()
+if max > 0 then
+  return VeryShort(cur)
+end
+return ConfigMode()]],
+		},
+	},
 	[L["Threat"]] = {
 		[L["Percent"]] = {
 			events = {['UNIT_THREAT_LIST_UPDATE']=true,['UNIT_THREAT_SITUATION_UPDATE']=true},
@@ -577,6 +624,7 @@ do
 		-- Harcoded events basically the ones that aren't just unit=true ones
 		['UNIT_PET_EXPERIENCE'] = {pet=true},
 		['PLAYER_XP_UPDATE'] = {player=true},
+		['ARTIFACT_XP_UPDATE'] = {player=true},
 		['UNIT_COMBO_POINTS'] = {all=true},
 		['UPDATE_FACTION'] = {all=true},
 		['UNIT_LEVEL'] = {all=true},
@@ -1320,6 +1368,12 @@ function PitBull4_LuaTexts:OnNewLayout(layout)
 			events = copy(PROVIDED_CODES[L["Alternate power"]][L["Percent"]].events),
 			attach_to = "AltPowerBar",
 			location = "right"
+		},
+		["Lua:"..L["Artifact power"]] = {
+			code = PROVIDED_CODES[L["Artifact power"]][L["Absolute"]].code,
+			events = copy(PROVIDED_CODES[L["Artifact power"]][L["Absolute"]].events),
+			attach_to = "ArtifactPowerBar",
+			location = "center"
 		},
 	} do
 		local text_db = text_elements[name]

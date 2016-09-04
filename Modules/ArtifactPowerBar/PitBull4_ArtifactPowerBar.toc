@@ -1,0 +1,24 @@
+## Interface: 70000
+## Title: PitBull4 |r[|cffeda55fArtifact power bar|r]
+## Title-deDE: PitBull4 |r[|cffeda55f@localization(locale="deDE", key="Artifact power bar")@|r]
+## Title-esES: PitBull4 |r[|cffeda55f@localization(locale="esES", key="Artifact power bar")@|r]
+## Title-frFR: PitBull4 |r[|cffeda55f@localization(locale="frFR", key="Artifact power bar")@|r]
+## Title-koKR: PitBull4 |r[|cffeda55f@localization(locale="koKR", key="Artifact power bar")@|r]
+## Title-ruRU: PitBull4 |r[|cffeda55f@localization(locale="ruRU", key="Artifact power bar")@|r]
+## Title-zhCN: PitBull4 |r[|cffeda55f@localization(locale="zhCN", key="Artifact power bar")@|r]
+## Title-zhTW: PitBull4 |r[|cffeda55f@localization(locale="zhTW", key="Artifact power bar")@|r]
+## Notes: Show an artifact power bar.
+## Notes-deDE: @localization(locale="deDE", key="Show an artifact power bar.")@
+## Notes-esES: @localization(locale="esES", key="Show an artifact power bar.")@
+## Notes-frFR: @localization(locale="frFR", key="Show an artifact power bar.")@
+## Notes-koKR: @localization(locale="koKR", key="Show an artifact power bar.")@
+## Notes-ruRU: @localization(locale="ruRU", key="Show an artifact power bar.")@
+## Notes-zhCN: @localization(locale="zhCN", key="Show an artifact power bar.")@
+## Notes-zhTW: @localization(locale="zhTW", key="Show an artifact power bar.")@
+## Author: Neb
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull4
+## Version: @project-version@
+
+load.xml

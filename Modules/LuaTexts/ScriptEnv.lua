@@ -895,6 +895,16 @@ local function RestXP(unit)
 end
 ScriptEnv.RestXP = RestXP
 
+local function ArtifactPower()
+	if HasArtifactEquipped() then
+		local _, _, _, _, totalXP, pointsSpent = _G.C_ArtifactUI.GetEquippedArtifactInfo()
+		local _, value, max = _G.MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, totalXP)
+		return value, max
+	end
+	return 0, 0
+end
+ScriptEnv.ArtifactPower = ArtifactPower
+
 local function ThreatPair(unit)
 	if UnitIsFriend("player", unit) then
 		if UnitExists("target") then
