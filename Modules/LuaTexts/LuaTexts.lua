@@ -496,7 +496,7 @@ return ConfigMode()]],
 	},
 	[L["Combo points"]] = {
 		[L["Standard"]] = {
-			events = {['UNIT_COMBO_POINTS']=true,['UNIT_POWER']=true},
+			events = {['UNIT_POWER']=true},
 			code = [[
 local combos = Combos()
 if combos ~= 0 then
@@ -625,7 +625,6 @@ do
 		['UNIT_PET_EXPERIENCE'] = {pet=true},
 		['PLAYER_XP_UPDATE'] = {player=true},
 		['ARTIFACT_XP_UPDATE'] = {player=true},
-		['UNIT_COMBO_POINTS'] = {all=true},
 		['UPDATE_FACTION'] = {all=true},
 		['UNIT_LEVEL'] = {all=true},
 
@@ -707,6 +706,7 @@ compat_event_map.UNIT_RUNIC_POWER = 'UNIT_POWER_FREQUENT'
 compat_event_map.UNIT_MAXRUNIC_POWER = 'UNIT_POWER_FREQUENT'
 compat_event_map.PARTY_MEMBERS_CHANGED = 'GROUP_ROSTER_UPDATE'
 compat_event_map.RAID_ROSTER_UPDATE = 'GROUP_ROSTER_UPDATE'
+compat_event_map.UNIT_COMBO_POINTS = 'UNIT_POWER'
 
 local timerframe = CreateFrame("Frame")
 PitBull4_LuaTexts.timerframe = timerframe

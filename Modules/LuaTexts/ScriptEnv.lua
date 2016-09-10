@@ -837,20 +837,16 @@ local function IsMouseOver()
 end
 ScriptEnv.IsMouseOver = IsMouseOver
 
-local function Combos(unit, target)
-	if unit and target then
-		return GetComboPoints(unit, target)
-	else
-		return GetComboPoints(UnitHasVehicleUI("player") and "vehicle" or "player", "target")
+local function Combos()
+	if UnitHasVehicleUI("player") then
+		return GetComboPoints("vehicle")
 	end
+	return UnitPower("player", SPELL_POWER_COMBO_POINTS)
 end
 ScriptEnv.Combos = Combos
 
-local function ComboSymbols(symbol, unit, target)
-	if not symbol then
-		symbol = '@'
-	end
-	return string.rep(symbol,Combos(unit,target))
+local function ComboSymbols(symbol)
+	return string.rep(symbol or "@", Combos())
 end
 ScriptEnv.ComboSymbols = ComboSymbols
 
@@ -897,8 +893,8 @@ ScriptEnv.RestXP = RestXP
 
 local function ArtifactPower()
 	if HasArtifactEquipped() then
-		local _, _, _, _, totalXP, pointsSpent = _G.C_ArtifactUI.GetEquippedArtifactInfo()
-		local _, value, max = _G.MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, totalXP)
+		local _, _, _, _, totalXP, pointsSpent = C_ArtifactUI.GetEquippedArtifactInfo()
+		local _, value, max = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, totalXP)
 		return value, max
 	end
 	return 0, 0
