@@ -619,9 +619,6 @@ end
 ScriptEnv.Dead = Dead
 
 local MOONKIN_FORM = GetSpellInfo(24858)
-local AQUATIC_FORM = GetSpellInfo(1066)
-local FLIGHT_FORM = GetSpellInfo(33943)
-local SWIFT_FLIGHT_FORM = GetSpellInfo(40120)
 local TRAVEL_FORM = GetSpellInfo(783)
 local TREE_OF_LIFE = GetSpellInfo(33891)
 
@@ -635,16 +632,12 @@ local function DruidForm(unit)
 		return L["Bear"]
 	elseif power == 3 then
 		return L["Cat"]
-	elseif UnitAura(unit,MOONKIN_FORM) then
+	elseif UnitAura(unit, MOONKIN_FORM) then
 		return L["Moonkin"]
-	elseif UnitAura(unit,TREE_OF_LIFE) then
-		return L["Tree"]
-	elseif UnitAura(unit,TRAVEL_FORM) then
+	elseif UnitAura(unit, TRAVEL_FORM) then
 		return L["Travel"]
-	elseif UnitAura(unit,AQUATIC_FORM) then
-		return L["Aquatic"]
-	elseif UnitAura(unit,SWIFT_FLIGHT_FORM) or UnitAura(unit,FLIGHT_FORM) then
-		return L["Flight"]
+	elseif UnitAura(unit, TREE_OF_LIFE) then
+		return L["Tree"]
 	end
 end
 ScriptEnv.DruidForm = DruidForm
