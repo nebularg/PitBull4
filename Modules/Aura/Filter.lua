@@ -798,7 +798,7 @@ friend_buffs.Dwarf = {
 }
 friend_debuffs.Dwarf = {}
 self_buffs.Dwarf = {
-	[7020]   = true, -- Stoneform
+	[65116]   = true, -- Stoneform
 }
 self_debuffs.Dwarf = {}
 pet_buffs.Dwarf = {}
@@ -828,8 +828,15 @@ enemy_debuffs.Gnome = {}
 
 -- Draenei
 friend_buffs.Draenei = {
-	[28880]  = true, -- Gift of the Naaru
 	[23333]  = true, -- Warsong Flag
+	[59545]  = true, -- Gift of the Naaru (Death Knight)
+	[59543]  = true, -- Gift of the Naaru (Hunter)
+	[59548]  = true, -- Gift of the Naaru (Mage)
+	[59542]  = true, -- Gift of the Naaru (Paladin)
+	[59544]  = true, -- Gift of the Naaru (Priest)
+	[59547]  = true, -- Gift of the Naaru (Shaman)
+	[28880]  = true, -- Gift of the Naaru (Warrior)
+	[121093] = true, -- Gift of the Naaru (Monk)
 }
 friend_debuffs.Draenei = {}
 self_buffs.Draenei = {}
@@ -843,21 +850,21 @@ friend_buffs.Orc = {
 }
 friend_debuffs.Orc = {}
 self_buffs.Orc = {
-	[20572]  = true, -- Blood Fury
+	[20572]  = true, -- Blood Fury (Attack power)
+	[33702]  = true, -- Blood Fury (Spell power)
+	[33697]  = true, -- Blood Fury (Both)
 }
-self_debuffs.Orc = {
-	[20572]  = true, -- Blood Fury
-}
+self_debuffs.Orc = {}
 pet_buffs.Orc = {}
 enemy_debuffs.Orc = {}
 
--- Scourge
+-- Undead
 friend_buffs.Scourge = {
 	[23335]  = true, -- Silverwing Flag
 }
 friend_debuffs.Scourge = {}
 self_buffs.Scourge = {
-	[20577]  = true, -- Cannibalize
+	[20578]  = true, -- Cannibalize
 	[7744]   = true, -- Will of the Forsaken
 }
 self_debuffs.Scourge = {}
@@ -873,7 +880,7 @@ self_buffs.Tauren = {}
 self_debuffs.Tauren = {}
 pet_buffs.Tauren = {}
 enemy_debuffs.Tauren = {
-	[45]     = true, -- War Stomp
+	[20549]  = true, -- War Stomp
 }
 
 -- Troll
@@ -897,7 +904,13 @@ self_buffs.BloodElf = {}
 self_debuffs.BloodElf = {}
 pet_buffs.BloodElf = {}
 enemy_debuffs.BloodElf = {
-	[25046]  = true, -- Arcane Torrent
+	[28730]  = true, -- Arcane Torrent (Mana)
+	[50613]  = true, -- Arcane Torrent (Runic power)
+	[80483]  = true, -- Arcane Torrent (Focus)
+	[25046]  = true, -- Arcane Torrent (Energy)
+	[69179]  = true, -- Arcane Torrent (Rage)
+	[129597] = true, -- Arcane Torrent (Chi)
+	[155145] = true, -- Arcane Torrent (Holy power)
 }
 
 -- Goblin
