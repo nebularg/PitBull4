@@ -191,12 +191,66 @@ enemy_debuffs.DEATHKNIGHT = {
 }
 
 -- DEMONHUNTER
-friend_buffs.DEMONHUNTER = {}
+friend_buffs.DEMONHUNTER = {
+	[209426] = true, -- Darkness
+	[207810] = true, -- Nether Bond
+}
 friend_debuffs.DEMONHUNTER = {}
-self_buffs.DEMONHUNTER = {}
+self_buffs.DEMONHUNTER = {
+	[188499] = true, -- Blade Dance
+	[207709] = true, -- Blade Turning
+	[212800] = true, -- Blur
+	[211048] = true, -- Chaos Blades
+	[210155] = true, -- Death Sweep
+	[203819] = true, -- Demon Spikes
+	[218256] = true, -- Empower Wards
+	[227330] = true, -- Gluttony
+	[178740] = true, -- Immolation Aura
+	[162264] = true, -- Metamorphosis (Havoc)
+	[187827] = true, -- Metamorphosis (Vengeance)
+	[208628] = true, -- Momentum
+	[208607] = true, -- Nemesis (Aberrations)
+	[208608] = true, -- Nemesis (Beasts)
+	[208579] = true, -- Nemesis (Demons)
+	[208610] = true, -- Nemesis (Draginkin)
+	[208611] = true, -- Nemesis (Elementals)
+	[208612] = true, -- Nemesis (Giants)
+	[208605] = true, -- Nemesis (Humanoids)
+	[208613] = true, -- Nemesis (Mechanicals)
+	[208614] = true, -- Nemesis (Undead)
+	[207811] = true, -- Nether Bond
+	[196555] = true, -- Netherwalk
+	[212988] = true, -- Painbringer (Vengeance artifact)
+	[203650] = true, -- Prepared
+	[218561] = true, -- Siphoned Power (Vengeance artifact)
+	[227225] = true, -- Soul Barrier
+	[188501] = true, -- Spectral Sight
+}
 self_debuffs.DEMONHUNTER = {}
 pet_buffs.DEMONHUNTER = {}
-enemy_debuffs.DEMONHUNTER = {}
+enemy_debuffs.DEMONHUNTER = {
+	[202443] = true, -- Anguish (Havoc artifact)
+	[207690] = true, -- Bloodlet
+	[179057] = true, -- Chaos Nova (stun)
+	[211053] = true, -- Fel Barrage
+	[211881] = true, -- Fel Eruption (stun)
+	[207744] = true, -- Fiery Brand
+	[207771] = true, -- Fiery Brand
+	[212818] = true, -- Fiery Demise (Vengeance artifact)
+	[224509] = true, -- Fraility
+	[217832] = true, -- Imprison (incapacitate)
+	[213405] = true, -- Master of the Glaive
+	[200166] = true, -- Metamorphosis (Havoc) (stun)
+	[206491] = true, -- Nemesis
+	[210003] = true, -- Razor Spikes (slow)
+	[204843] = true, -- Sigil of Chains (slow)
+	[204598] = true, -- Sigil of Flame
+	[207685] = true, -- Sigil of Misery (disorient)
+	[204490] = true, -- Sigil of Silence
+	[207407] = true, -- Soul Carver (Vengeance artifact)
+	[185245] = true, -- Torment (taunt)
+	[198813] = true, -- Vengeful Retreat (slow)
+}
 
 -- DRUID
 friend_buffs.DRUID = {
