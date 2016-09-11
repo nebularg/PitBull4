@@ -16,7 +16,7 @@ PitBull4_ArtifactPowerBar:SetName(L["Artifact power bar"])
 PitBull4_ArtifactPowerBar:SetDescription(L["Show an artifact power bar."])
 PitBull4_ArtifactPowerBar:SetDefaults({
 	size = 1,
-	position = 5,
+	position = 8,
 })
 
 local C_ArtifactUI = _G.C_ArtifactUI
