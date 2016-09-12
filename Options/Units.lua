@@ -1224,6 +1224,8 @@ function PitBull4.Options.get_unit_options()
 		MAGE = L["Mages"],
 		WARLOCK = L["Warlocks"],
 		HUNTER = L["Hunters"],
+		MONK = L["Monks"],
+		DEMONHUNTER = L["Demon Hunters"],
 	}
 	for class in pairs(RAID_CLASS_COLORS) do
 		group_filtering_args.group_filter_class.values[class] = class_translations[class] or class
