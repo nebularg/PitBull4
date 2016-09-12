@@ -1040,6 +1040,7 @@ local classes = {
 	'WARLOCK',
 	'WARRIOR',
 	'MONK',
+	'DEMONHUNTER',
 }
 local class_names = {
 	L["Death Knight"],
@@ -1053,6 +1054,7 @@ local class_names = {
 	L["Warlock"],
 	L["Warrior"],
 	L["Monk"],
+	L["Demon Hunter"],
 }
 local races = {
 	'Human',
