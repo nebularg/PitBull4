@@ -1,6 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 	..\FrameXML\UI.xsd">
 
+	<!--@no-lib-strip@-->
+	<Include file="libs\LibPlayerSpells-1.0\lib.xml"/>
+	<!--@end-no-lib-strip@-->
+
 	<Script file="Aura.lua"/>
 	<Script file="Controls.lua"/>
 	<Script file="FilterEditor.lua"/>
@@ -12,4 +16,3 @@
 	<Script file="Options.lua"/>
 
 </Ui>
-

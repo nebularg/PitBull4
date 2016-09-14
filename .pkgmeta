@@ -21,6 +21,7 @@ externals:
     libs/LibDBIcon-1.0: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/trunk/LibDBIcon-1.0
     libs/LibDualSpec-1.0: git://git.wowace.com/wow/libdualspec-1-0/mainline.git
     Modules/Aggro/libs/LibBanzai-2.0: svn://svn.wowace.com/wow/libbanzai-2-0/mainline/trunk
+    Modules/Aura/libs/LibPlayerSpells-1.0: git://git.wowace.com/wow/libplayerspells-1-0/mainline.git
     Modules/DogTagTexts/libs/LibDogTag-3.0: git://git.wowace.com/wow/libdogtag-3-0/mainline.git
     Modules/DogTagTexts/libs/LibDogTag-Unit-3.0: git://git.wowace.com/wow/libdogtag-unit-3-0/mainline.git
 
