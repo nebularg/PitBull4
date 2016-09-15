@@ -44,7 +44,6 @@ function PitBull4_HealthBar:OnEnable()
 	self:RegisterEvent("UNIT_MAXHEALTH", "UNIT_HEALTH_FREQUENT")
 	self:RegisterEvent("UNIT_CONNECTION", "UNIT_HEALTH_FREQUENT")
 	self:RegisterEvent("PLAYER_ALIVE")
-	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 
 	self:UpdateAll()
 end
@@ -122,13 +121,6 @@ end
 
 function PitBull4_HealthBar:PLAYER_ALIVE(event)
 	guids_to_update[UnitGUID("player")] = true
-end
-
-function PitBull4_HealthBar:PLAYER_TARGET_CHANGED()
-	local guid = UnitGUID("target")
-	if guid then
-		guids_to_update[guid] = true
-	end
 end
 
 PitBull4_HealthBar:SetColorOptionsFunction(function(self)
