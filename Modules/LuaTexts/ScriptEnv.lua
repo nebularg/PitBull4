@@ -702,7 +702,10 @@ ScriptEnv.Round = Round
 local function Short(value,format)
 	if type(value) == "number" then
 		local fmt
-		if value >= 10000000 or value <= -10000000 then
+		if value >= 1000000000 or value <= -1000000000 then
+			fmt = "%.1fb"
+			value = value / 1000000000
+		elseif value >= 10000000 or value <= -10000000 then
 			fmt = "%.1fm"
 			value = value / 1000000
 		elseif value >= 1000000 or value <= -1000000 then
@@ -727,7 +730,10 @@ local function Short(value,format)
 		local a, b = value:match("^(%d+)/(%d+)$")
 		if a then
 			a, b = tonumber(a), tonumber(b)
-			if a >= 10000000 or a <= -10000000 then
+			if a >= 1000000000 or a <= -1000000000 then
+				fmt_a = "%.1fb"
+				a = a / 1000000000
+			elseif a >= 10000000 or a <= -10000000 then
 				fmt_a = "%.1fm"
 				a = a / 1000000
 			elseif a >= 1000000 or a <= -1000000 then
@@ -740,7 +746,10 @@ local function Short(value,format)
 				fmt_a = "%.1fk"
 				a = a / 1000
 			end
-			if b >= 10000000 or b <= -10000000 then
+			if b >= 1000000000 or b <= -1000000000 then
+				fmt_b = "%.1fb"
+				b = b / 1000000000
+			elseif b >= 10000000 or b <= -10000000 then
 				fmt_b = "%.1fm"
 				b = b / 1000000
 			elseif b >= 1000000 or b <= -1000000 then
@@ -768,7 +777,10 @@ ScriptEnv.Short = Short
 local function VeryShort(value,format)
 	if type(value) == "number" then
 		local fmt
-		if value >= 1000000 or value <= -1000000 then
+		if value >= 1000000000 or value <= -1000000000 then
+			fmt = "%.1fb"
+			value = value / 1000000000
+		elseif value >= 1000000 or value <= -1000000 then
 			fmt = "%.0fm"
 			value = value / 1000000
 		elseif value >= 1000 or value <= -1000 then
@@ -786,14 +798,20 @@ local function VeryShort(value,format)
 		if a then
 			local fmt_a, fmt_b
 			a, b = tonumber(a), tonumber(b)
-			if b >= 1000000 or b <= -1000000 then
+			if b >= 1000000000 or b <= -1000000000 then
+				fmt_b = "%.1fb"
+				b = b / 1000000000
+			elseif b >= 1000000 or b <= -1000000 then
 				fmt_b = "%.0fm"
 				b = b / 1000000
 			elseif b >= 1000 or b <= -1000 then
 				fmt_b = "%.0fk"
 				b = b / 1000
 			end
-			if a >= 1000000 or a <= -1000000 then
+			if a >= 1000000000 or a <= -1000000000 then
+				fmt_a = "%.1fb"
+				a = a / 1000000000
+			elseif a >= 1000000 or a <= -1000000 then
 				fmt_a = "%.0fm"
 				a = a / 1000000
 			elseif a >= 1000 or a <= -1000 then
