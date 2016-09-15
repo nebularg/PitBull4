@@ -399,8 +399,11 @@ return ConfigMode()]],
 		[L["Absolute"]] = {
 			events = {['ARTIFACT_XP_UPDATE']=true},
 			code = [[
-local cur,max = ArtifactPower()
+local cur,max,points = ArtifactPower()
 if max > 0 then
+  if points > 0 then
+    return "%s/%s (%d)",cur,max,points
+  end
   return "%s/%s",cur,max
 end
 return ConfigMode()]],
@@ -408,8 +411,11 @@ return ConfigMode()]],
 		[L["Absolute short"]] = {
 			events = {['ARTIFACT_XP_UPDATE']=true},
 			code = [[
-local cur,max = ArtifactPower()
+local cur,max,points = ArtifactPower()
 if max > 0 then
+  if points > 0 then
+    return "%s/%s (%d)",Short(cur,true),Short(max,true),points
+  end
   return "%s/%s",Short(cur,true),Short(max,true)
 end
 return ConfigMode()]],
@@ -417,17 +423,24 @@ return ConfigMode()]],
 		[L["Difference"]] = {
 			events = {['ARTIFACT_XP_UPDATE']=true},
 			code = [[
-local cur,max = ArtifactPower()
+local cur,max,points = ArtifactPower()
 if max > 0 then
-  return -(max - cur)
+  local missing = -(max-cur)
+  if points > 0 then
+    return "%d (%d)",missing,points
+  end
+  return missing
 end
 return ConfigMode()]],
 		},
 		[L["Percent"]] = {
 			events = {['ARTIFACT_XP_UPDATE']=true},
 			code = [[
-local cur,max = ArtifactPower()
+local cur,max,points = ArtifactPower()
 if max > 0 then
+  if points > 0 then
+    return "%s%% (%d)",Percent(cur,max),points
+  end
   return "%s%%",Percent(cur,max)
 end
 return ConfigMode()]],
@@ -435,8 +448,11 @@ return ConfigMode()]],
 		[L["Mini"]] = {
 			events = {['ARTIFACT_XP_UPDATE']=true},
 			code = [[
-local cur,max = ArtifactPower()
+local cur,max,points = ArtifactPower()
 if max > 0 then
+  if points > 0 then
+    return "%s (%d)",VeryShort(cur,true),points
+  end
   return VeryShort(cur)
 end
 return ConfigMode()]],

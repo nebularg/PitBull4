@@ -872,11 +872,21 @@ ScriptEnv.RestXP = RestXP
 
 local function ArtifactPower()
 	if HasArtifactEquipped() then
-		local _, _, _, _, totalXP, pointsSpent = C_ArtifactUI.GetEquippedArtifactInfo()
-		local _, value, max = _G.MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, totalXP)
-		return value, max
+		local _, _, _, _, xp, pointsSpent = C_ArtifactUI.GetEquippedArtifactInfo()
+
+		local numPoints = 0
+		local xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent)
+		while xp >= xpForNextPoint and xpForNextPoint > 0 do
+			xp = xp - xpForNextPoint
+
+			pointsSpent = pointsSpent + 1
+			numPoints = numPoints + 1
+
+			xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent)
+		end
+		return xp, xpForNextPoint, numPoints
 	end
-	return 0, 0
+	return 0, 0, 0
 end
 ScriptEnv.ArtifactPower = ArtifactPower
 
