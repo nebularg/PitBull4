@@ -105,7 +105,7 @@ do
 	local PET = LibPlayerSpells.constants.PET
 	local TARGETING = LibPlayerSpells.masks.TARGETING
 
-	for class in next, RAID_CLASS_COLORS do
+	for _, class in next, CLASS_SORT_ORDER do
 		friend_buffs[class] = {}
 		friend_debuffs[class] = {}
 		self_buffs[class] = {}
