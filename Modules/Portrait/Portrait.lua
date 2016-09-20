@@ -114,7 +114,7 @@ local function portrait_OnModelLoaded(model)
 	model:SetScript("OnUpdate", nil)
 
 	-- >.> semi-persistent random costumes!
-	local guid = unit and UnitGUID(model:GetParent().unit or "")
+	local guid = UnitGUID(model:GetParent().unit or "")
 	local id = guid and tostring(tonumber(select(3, strsplit("-", guid)), 16) + 1):sub(-1)
 	local costume = id and math.floor(id / 3) or math.random(1, 3)
 
