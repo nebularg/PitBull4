@@ -18,12 +18,17 @@ local L = PitBull4.L
 
 local PitBull4_Portrait = PitBull4:NewModule("Portrait", "AceEvent-3.0")
 
-local pirate_day
+local pirate_day, pirate_costumes
 do
 	local month = tonumber(date("%m"))
 	local day = tonumber(date("%d"))
 	if month == 9 and day == 19 then
 		pirate_day = true
+		pirate_costumes = {
+			{ 2955, 6795, 9636, 6835, 6836, 3935 }, -- white
+			{ 2955, 5202, 9636, 45848, 14174, 45848 }, -- orange
+			{ 11735, 9782, 6795, 138419, 78259, 7282, 9776, 90030 }, -- eyepatch
+		}
 	else
 		pirate_day = false
 	end
@@ -76,6 +81,7 @@ function PitBull4_Portrait:ClearFrame(frame)
 	local portrait = frame.Portrait
 
 	if portrait.model then
+		portrait.model:SetScript("OnUpdate", nil)
 		portrait.model = portrait.model:Delete()
 	end
 	if portrait.texture then
@@ -101,6 +107,20 @@ function PitBull4_Portrait:OnHide(frame)
 			portrait.bg:Hide()
 		end
 		portrait:Hide()
+	end
+end
+
+local function portrait_OnModelLoaded(model)
+	model:SetScript("OnUpdate", nil)
+
+	-- >.> semi-persistent random costumes!
+	local guid = unit and UnitGUID(model:GetParent().unit or "")
+	local id = guid and tostring(tonumber(select(3, strsplit("-", guid)), 16) + 1):sub(-1)
+	local costume = id and math.floor(id / 3) or math.random(1, 3)
+
+	model:Undress()
+	for _,  item in next, pirate_costumes[costume] do
+		model:TryOn(("item:%d"):format(item))
 	end
 end
 
@@ -152,13 +172,13 @@ function PitBull4_Portrait:UpdateFrame(frame)
 		if style == "three_dimensional" then
 			local model = PitBull4.Controls.MakePlayerModel(frame)
 			model:SetFrameLevel(frame:GetFrameLevel() + 5)
-			portrait.model = model
 			model:SetAllPoints(portrait)
+			portrait.model = model
 		elseif style == "pirate" then
 			local model = PitBull4.Controls.MakeDressUpModel(frame)
 			model:SetFrameLevel(frame:GetFrameLevel() + 5)
-			portrait.model = model
 			model:SetAllPoints(portrait)
+			portrait.model = model
 		else -- two_dimensional or class
 			local texture = PitBull4.Controls.MakeTexture(portrait, "ARTWORK")
 			portrait.texture = texture
@@ -197,13 +217,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 	elseif style == "pirate" then
 		portrait.model:ClearModel()
 		portrait.model:SetUnit(frame.unit)
-		portrait.model:Undress()
-		portrait.model:TryOn(9636)
-		portrait.model:TryOn(6795)
-		portrait.model:TryOn(6835)
-		portrait.model:TryOn(6836)
-		portrait.model:TryOn(2955)
-		portrait.model:TryOn(3935)
+		portrait.model:SetScript("OnUpdate", portrait_OnModelLoaded)
 		portrait.model:SetPortraitZoom(full_body and 0 or 1)
 		portrait.model:SetPosition(0, 0, 0)
 	elseif style == "two_dimensional" then
