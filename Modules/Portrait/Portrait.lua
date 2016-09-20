@@ -28,6 +28,7 @@ do
 			{ 2955, 6795, 9636, 6835, 6836, 3935 }, -- white
 			{ 2955, 5202, 9636, 45848, 14174, 45848 }, -- orange
 			{ 11735, 9782, 6795, 138419, 78259, 7282, 9776, 90030 }, -- eyepatch
+			{ 2955, 6795, 9636, 6835, 6836, 3935 }, -- white
 		}
 	else
 		pirate_day = false
@@ -115,8 +116,8 @@ local function portrait_OnModelLoaded(model)
 
 	-- >.> semi-persistent random costumes!
 	local guid = UnitGUID(model:GetParent().unit or "")
-	local id = guid and tostring(tonumber(select(3, strsplit("-", guid)), 16) + 1):sub(-1)
-	local costume = id and math.floor(id / 3) or math.random(1, 3)
+	local id = guid and tostring(tonumber(select(3, strsplit("-", guid)), 16)):sub(-1)
+	local costume = id and (math.floor(id / 3) + 1) or math.random(1, 4)
 
 	model:Undress()
 	for _,  item in next, pirate_costumes[costume] do
