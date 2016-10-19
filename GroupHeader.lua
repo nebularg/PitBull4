@@ -502,9 +502,9 @@ GroupHeader.RefreshLayout = PitBull4:OutOfCombatWrapper(GroupHeader.RefreshLayou
 -- @usage header:InitializeConfigFunction()
 function GroupHeader:InitialConfigFunction()
 	-- Since Cataclysm, the frame is not passed into us but the new
-		-- GroupHeader does set the 1..n array slots to the frames.
-		-- Since this function is only called on the creation of a new
-		-- frame the newest frame will always be the last array slot
+	-- GroupHeader does set the 1..n array slots to the frames.
+	-- Since this function is only called on the creation of a new
+	-- frame the newest frame will always be the last array slot
 	local frame = self[#self]
 
 	frame.header = self
