@@ -34,16 +34,16 @@ end
 
 function PitBull4_ArtifactPowerBar:OnEnable()
 	self:RegisterEvent("ARTIFACT_XP_UPDATE")
-	self:RegisterEvent("UNIT_INVENTORY_CHANGED") -- handle (un)equip
+	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED") -- handle (un)equip
 end
 
 function PitBull4_ArtifactPowerBar:ARTIFACT_XP_UPDATE()
 	self:UpdateForUnitID("player")
 end
 
-function PitBull4_ArtifactPowerBar:UNIT_INVENTORY_CHANGED(_, unit)
-	if unit == "player" then
-		self:UpdateForUnitID(unit)
+function PitBull4_ArtifactPowerBar:PLAYER_EQUIPMENT_CHANGED(_, slot)
+	if slot == 16 or slot == 17 then
+		self:UpdateForUnitID("player")
 	end
 end
 
