@@ -1378,7 +1378,7 @@ local initialConfigFunction = [[
     self:SetHeight(header:GetAttribute("unitHeight"))
     RegisterUnitWatch(self)
     self:SetAttribute("*type1", "target")
-    self:SetAttribute("*type2", "togglemenu")
+    self:SetAttribute("*type2", "menu")
     local click_through = header:GetAttribute("clickThrough")
     if not click_through then
       -- Verify important the CallMethod is done BEFORE the frame is
