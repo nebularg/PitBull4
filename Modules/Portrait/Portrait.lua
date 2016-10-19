@@ -133,10 +133,6 @@ function PitBull4_Portrait:UpdateFrame(frame)
 
 	local unit = frame.unit
 
-	if pirate and unit and UnitIsPlayer(unit) then
-		style = "pirate"
-	end
-
 	if style == "class" then
 		if not unit or not UnitIsPlayer(unit) then
 			style = layout_db.fallback_style
@@ -158,6 +154,10 @@ function PitBull4_Portrait:UpdateFrame(frame)
 	if portrait and portrait.style ~= style then
 		self:ClearFrame(frame)
 		portrait = nil
+	end
+
+	if pirate and style == "three_dimensional" and not falling_back and UnitIsPlayer(unit) then
+		style = "pirate"
 	end
 
 	local created = not portrait
