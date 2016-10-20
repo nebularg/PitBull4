@@ -6,6 +6,7 @@ if not PitBull4 then
 end
 
 local EXAMPLE_VALUE = 0.6
+local PowerBarColor = _G.PowerBarColor
 
 local L = PitBull4.L
 
@@ -108,6 +109,10 @@ end
 
 function PitBull4_PowerBar:UNIT_POWER_FREQUENT(event, unit, power_type)
 	local _, power_token = UnitPowerType(unit)
+	-- fix units that have a special power type but update as ENERGY
+	if not PowerBarColor[power_token] then
+		power_token = "ENERGY"
+	end
 	if power_token == power_type then
 		local guid = UnitGUID(unit)
 		if guid then
