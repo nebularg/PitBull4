@@ -113,7 +113,7 @@ function PitBull4_HealthBar:GetExampleColor(frame, value)
 end
 
 function PitBull4_HealthBar:UNIT_HEALTH_FREQUENT(event, unit)
-	local guid = UnitGUID(unit)
+	local guid = unit and UnitGUID(unit)
 	if guid then
 		guids_to_update[guid] = true
 	end

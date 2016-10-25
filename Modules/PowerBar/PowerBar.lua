@@ -108,6 +108,7 @@ function PitBull4_PowerBar:GetExampleColor(frame)
 end
 
 function PitBull4_PowerBar:UNIT_POWER_FREQUENT(event, unit, power_type)
+	if not unit then return end
 	local _, power_token = UnitPowerType(unit)
 	-- fix units that have a special power type but update as ENERGY
 	if not PowerBarColor[power_token] then
@@ -122,7 +123,7 @@ function PitBull4_PowerBar:UNIT_POWER_FREQUENT(event, unit, power_type)
 end
 
 function PitBull4_PowerBar:UNIT_DISPLAYPOWER(event, unit)
-	local guid = UnitGUID(unit)
+	local guid = unit and UnitGUID(unit)
 	if guid then
 		guids_to_update[guid] = true
 	end
