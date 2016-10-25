@@ -227,14 +227,18 @@ function showers:castbar()
 end
 
 function hiders:runebar()
-	hook_frames(PlayerFrame.classPowerBar, TotemFrame, EclipseBarFrame, RuneFrame, PriestBarFrame)
+	hook_frames(TotemFrame, EclipseBarFrame, RuneFrame, PriestBarFrame)
+	if PlayerFrame.classPowerBar then
+		hook_frames(PlayerFrame.classPowerBar)
+	end
 end
 
 function showers:runebar()
-	unhook_frames(PlayerFrame.classPowerBar, TotemFrame, EclipseBarFrame, RuneFrame, PriestBarFrame)
+	unhook_frames(TotemFrame, EclipseBarFrame, RuneFrame, PriestBarFrame)
 
 	local _, class = UnitClass("player")
 	if PlayerFrame.classPowerBar then
+		unhook_frame(PlayerFrame.classPowerBar)
 		PlayerFrame.classPowerBar:Setup()
 	elseif class == "SHAMAN" then
 		TotemFrame_Update()
