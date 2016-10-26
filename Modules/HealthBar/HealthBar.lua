@@ -36,8 +36,11 @@ local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
 
 local guids_to_update = {}
+local player_guid
 
 function PitBull4_HealthBar:OnEnable()
+	player_guid = UnitGUID("player")
+
 	timerFrame:Show()
 
 	self:RegisterEvent("UNIT_HEALTH_FREQUENT")
@@ -112,15 +115,15 @@ function PitBull4_HealthBar:GetExampleColor(frame, value)
 	return unpack(self.db.profile.global.colors.disconnected)
 end
 
-function PitBull4_HealthBar:UNIT_HEALTH_FREQUENT(event, unit)
+function PitBull4_HealthBar:UNIT_HEALTH_FREQUENT(_, unit)
 	local guid = unit and UnitGUID(unit)
 	if guid then
 		guids_to_update[guid] = true
 	end
 end
 
-function PitBull4_HealthBar:PLAYER_ALIVE(event)
-	guids_to_update[UnitGUID("player")] = true
+function PitBull4_HealthBar:PLAYER_ALIVE()
+	guids_to_update[player_guid] = true
 end
 
 PitBull4_HealthBar:SetColorOptionsFunction(function(self)
