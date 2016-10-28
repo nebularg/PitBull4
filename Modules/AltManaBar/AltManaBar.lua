@@ -1,15 +1,9 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
-
 local _, player_class = UnitClass("player")
 if player_class ~= "DRUID" and player_class ~= "PRIEST" and player_class ~= "SHAMAN" then
 	return
 end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_AltManaBar requires PitBull4")
-end
-
 local L = PitBull4.L
 
 local PitBull4_AltManaBar = PitBull4:NewModule("DruidManaBar", "AceEvent-3.0")

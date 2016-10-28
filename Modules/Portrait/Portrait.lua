@@ -1,9 +1,6 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_Portrait requires PitBull4")
-end
+local L = PitBull4.L
 
 local CLASS_TEX_COORDS = {}
 for k, v in pairs(_G.CLASS_ICON_TCOORDS) do
@@ -13,8 +10,6 @@ for k, v in pairs(_G.CLASS_ICON_TCOORDS) do
 	top, bottom = top + (bottom - top) * 0.07, bottom - (bottom - top) * 0.07
 	CLASS_TEX_COORDS[k] = { left, right, top, bottom }
 end
-
-local L = PitBull4.L
 
 local PitBull4_Portrait = PitBull4:NewModule("Portrait", "AceEvent-3.0")
 

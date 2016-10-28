@@ -1,13 +1,8 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_ThreatBar requires PitBull4")
-end
+local L = PitBull4.L
 
 local EXAMPLE_VALUE = 0.6
-
-local L = PitBull4.L
 
 local PitBull4_ThreatBar = PitBull4:NewModule("ThreatBar", "AceEvent-3.0")
 

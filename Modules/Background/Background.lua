@@ -1,15 +1,8 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_Background requires PitBull4")
-end
-
 local L = PitBull4.L
 
 local PitBull4_Background = PitBull4:NewModule("Background", "AceEvent-3.0")
-
-local guid_demanding_update = nil
 
 PitBull4_Background:SetModuleType("custom")
 PitBull4_Background:SetName(L["Background"])
@@ -19,6 +12,8 @@ PitBull4_Background:SetDefaults({
 	fallback_style = "three_dimensional",
 	color = { 0, 0, 0, 0.5 }
 })
+
+local guid_demanding_update = nil
 
 function PitBull4_Background:OnEnable()
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE")

@@ -1,15 +1,13 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_CombatText requires PitBull4")
-end
+local L = PitBull4.L
 
 -- CONSTANTS ----------------------------------------------------------------
+
 local MAX_ALPHA = 0.6
-local COMBATFEEDBACK_FADEINTIME = COMBATFEEDBACK_FADEINTIME
-local COMBATFEEDBACK_HOLDTIME = COMBATFEEDBACK_HOLDTIME
-local COMBATFEEDBACK_FADEOUTTIME = COMBATFEEDBACK_FADEOUTTIME
+local COMBATFEEDBACK_FADEINTIME = _G.COMBATFEEDBACK_FADEINTIME
+local COMBATFEEDBACK_HOLDTIME = _G.COMBATFEEDBACK_HOLDTIME
+local COMBATFEEDBACK_FADEOUTTIME = _G.COMBATFEEDBACK_FADEOUTTIME
 
 local COMBATFEEDBACK_FADEINTIME_AND_HOLDTIME = COMBATFEEDBACK_FADEINTIME + COMBATFEEDBACK_HOLDTIME
 local COMBATFEEDBACK_FADEINTIME_AND_HOLDTIME_AND_FADEOUTTIME = COMBATFEEDBACK_FADEINTIME + COMBATFEEDBACK_HOLDTIME + COMBATFEEDBACK_FADEOUTTIME
@@ -19,9 +17,8 @@ local CRITICAL_HELP_SIZE_MODIFIER = 1.3
 local BLOCK_SIZE_MODIFIER = 0.75
 
 local EXAMPLE_TEXT = "123"
------------------------------------------------------------------------------
 
-local L = PitBull4.L
+-----------------------------------------------------------------------------
 
 local PitBull4_CombatText = PitBull4:NewModule("CombatText", "AceEvent-3.0")
 
@@ -53,7 +50,7 @@ function PitBull4_CombatText:ClearFrame(frame)
 	if not frame.CombatText then
 		return false
 	end
-	
+
 	frame.CombatText.size_modifier = nil
 	frame.CombatText = frame.CombatText:Delete()
 	return true
@@ -71,19 +68,19 @@ function PitBull4_CombatText:UpdateFrame(frame)
 		font_string:SetShadowOffset(0.8, -0.8)
 		font_string:SetNonSpaceWrap(false)
 	end
-	
+
 	if not font_string.size_modifier then
 		font_string.size_modifier = 1
 	end
 	local font, size = self:GetFont(frame)
 	font_string:SetFont(font, size * font_string.size_modifier, "OUTLINE")
-	
+
 	if frame.force_show and not frame.guid then
 		font_string:SetText(EXAMPLE_TEXT)
 	elseif font_string:GetText() == EXAMPLE_TEXT then
 		font_string:SetText("")
 	end
-	
+
 	return created
 end
 
@@ -106,13 +103,13 @@ function PitBull4_CombatText:UNIT_COMBAT(_, unit, event, flags, amount, type)
 					elseif flags == "GLANCING" then
 						size_modifier = BLOCK_SIZE_MODIFIER
 					end
-					
+
 					if UnitInParty(unit) or UnitInRaid(unit) then
 						r, g, b = 1, 0, 0
 					elseif type > 0 then
 						r, g, b = 1, 1, 0
 					end
-					
+
 					text = tostring(-amount)
 				else
 					if flags == "ABSORB" or flags == "BLOCK" or flags == "RESIST" then
@@ -138,14 +135,14 @@ function PitBull4_CombatText:UNIT_COMBAT(_, unit, event, flags, amount, type)
 			else
 				text = CombatFeedbackText[event]
 			end
-			
+
 			font_string:SetText(text)
 			font_string.size_modifier = size_modifier
 			local font, size = self:GetFont(frame)
 			font_string:SetFont(font, size * size_modifier, "OUTLINE")
 			font_string:SetTextColor(r, g, b)
 			font_string:SetAlpha(0)
-			
+
 			frame_to_time[frame] = GetTime()
 			timerFrame:Show()
 		end
@@ -154,14 +151,14 @@ end
 
 function PitBull4_CombatText:UpdateAlphas()
 	local now = GetTime()
-	
+
 	for frame, time in pairs(frame_to_time) do
 		local font_string = frame.CombatText
 		if not font_string then
 			frame_to_time[frame] = nil
 		else
 			local delta = now - time
-			
+
 			if delta < COMBATFEEDBACK_FADEINTIME then
 				font_string:SetAlpha(MAX_ALPHA * delta / COMBATFEEDBACK_FADEINTIME)
 			elseif delta < COMBATFEEDBACK_FADEINTIME_AND_HOLDTIME then

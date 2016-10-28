@@ -1,12 +1,8 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_ExperienceBar requires PitBull4")
-end
-
 local L = PitBull4.L
 
+local MAX_PLAYER_LEVEL = _G.MAX_PLAYER_LEVEL
 local EXAMPLE_VALUE = 0.25
 
 local PitBull4_ExperienceBar = PitBull4:NewModule("ExperienceBar", "AceEvent-3.0")
@@ -30,34 +26,34 @@ function PitBull4_ExperienceBar:GetValue(frame)
 	if unit ~= "player" and unit ~= "pet" then
 		return nil
 	end
-	
+
 	local level = UnitLevel(unit)
 	local current, max, rest
 	if unit == "player" then
 		if level == MAX_PLAYER_LEVEL then
 			return nil
 		end
-		
+
 		current, max = UnitXP("player"), UnitXPMax("player")
-		rest = GetXPExhaustion() 
+		rest = GetXPExhaustion()
 		if rest == nil then
 		    rest = 0
 		end
-		
+
 	else -- pet
 		if level == UnitLevel("player") or UnitIsUnit("pet","vehicle") then
 			return nil
 		end
-		
+
 		current, max = GetPetExperience()
 		rest = 0
 	end
-	
+
 	if max == 0 then
 		current = 0
 		max = 1
 	end
-	
+
 	return current / max, rest / max
 end
 function PitBull4_ExperienceBar:GetExampleValue(frame)
@@ -90,7 +86,7 @@ PitBull4_ExperienceBar:SetLayoutOptionsFunction(function(self)
 		desc = L["Whether to override the rested color and use a custom one."],
 		order = -30,
 		get = function(info)
-			local db = PitBull4.Options.GetLayoutDB(self) 
+			local db = PitBull4.Options.GetLayoutDB(self)
 			return db and not not db.custom_extra
 		end,
 		set = function(info, value)
@@ -99,7 +95,7 @@ PitBull4_ExperienceBar:SetLayoutOptionsFunction(function(self)
 			else
 				PitBull4.Options.GetLayoutDB(self).custom_extra = nil
 			end
-			
+
 			PitBull4.Options.UpdateFrames()
 		end,
 	}, 'custom_extra', {
@@ -113,7 +109,7 @@ PitBull4_ExperienceBar:SetLayoutOptionsFunction(function(self)
 		set = function(info, r, g, b, a)
 			local color = PitBull4.Options.GetLayoutDB(self).custom_extra
 			color[1], color[2], color[3], color[4] = r, g, b, a
-			
+
 			PitBull4.Options.UpdateFrames()
 		end,
 		hidden = function(info)

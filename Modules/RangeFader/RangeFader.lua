@@ -1,10 +1,5 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_RangeFader requires PitBull4")
-end
-
 local L = PitBull4.L
 
 local PitBull4_RangeFader = PitBull4:NewModule("RangeFader", "AceTimer-3.0")
@@ -36,9 +31,9 @@ do
 	local enemy_spells = {}
 	local long_enemy_spells = {}
 	local res_spells = {}
-	
+
 	local _,class = UnitClass("player")
-	
+
 	if class == "PRIEST" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(528) -- Dispel Magic
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(585) -- Smite
@@ -97,7 +92,7 @@ do
 		if CheckInteractDistance(unit, 1) then
 			return true
 		end
-		
+
 		if UnitIsDeadOrGhost(unit) then
 			for _, name in ipairs(res_spells) do
 				if IsSpellInRange(name, unit) == 1 then
@@ -115,15 +110,15 @@ do
 				return true
 			end
 		end
-		
+
 		return false
 	end
-	
+
 	function pet_is_in_range(unit)
 		if CheckInteractDistance(unit, 2) then
 			return true
 		end
-		
+
 		for _, name in ipairs(friendly_spells) do
 			if IsSpellInRange(name, unit) == 1 then
 				return true
@@ -134,31 +129,31 @@ do
 				return true
 			end
 		end
-		
+
 		return false
 	end
-	
+
 	function enemy_is_in_range(unit)
 		if CheckInteractDistance(unit, 2) then
 			return true
 		end
-		
+
 		for _, name in ipairs(enemy_spells) do
 			if IsSpellInRange(name, unit) == 1 then
 				return true
 			end
 		end
-		
+
 		return false
 	end
-	
+
 	function enemy_is_in_long_range(unit)
 		for _, name in ipairs(long_enemy_spells) do
 			if IsSpellInRange(name, unit) == 1 then
 				return true
 			end
 		end
-		
+
 		return false
 	end
 end
@@ -167,11 +162,11 @@ function PitBull4_RangeFader:GetOpacity(frame)
 	local unit = frame.unit
 	local db = self:GetLayoutDB(frame)
 	local check_method = db.check_method
-	
+
 	if UnitIsUnit(unit, "player") then
 		return 1
 	end
-	
+
 	if check_method== "follow" or check_method == "trade" or check_method == "duel" or check_method == "follow" then
 		if CheckInteractDistance(unit, check_method_to_dist_index[check_method]) then
 			return 1
@@ -273,7 +268,7 @@ PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 			local db = PitBull4.Options.GetLayoutDB(self)
 
 			db.check_method = value
-			
+
 			PitBull4.Options.UpdateFrames()
 			PitBull4:RecheckAllOpacities()
 		end,

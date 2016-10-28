@@ -1,9 +1,6 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_ComboPoints requires PitBull4")
-end
+local L = PitBull4.L
 
 local player_class = select(2, UnitClass("player"))
 local is_rogue = player_class == "ROGUE"
@@ -12,8 +9,6 @@ local is_druid = player_class == "DRUID"
 -- CONSTANTS ----------------------------------------------------------------
 
 local BASE_TEXTURE_PATH = [[Interface\AddOns\]] .. debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z]-%.lua") .. [[\]]
-
-local L = PitBull4.L
 
 local SPELL_POWER_COMBO_POINTS = _G.SPELL_POWER_COMBO_POINTS
 

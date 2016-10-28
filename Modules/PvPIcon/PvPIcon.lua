@@ -1,10 +1,5 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_PvPIcon requires PitBull4")
-end
-
 local L = PitBull4.L
 
 local PitBull4_PvPIcon = PitBull4:NewModule("PvPIcon", "AceEvent-3.0")
@@ -26,11 +21,11 @@ end
 
 function PitBull4_PvPIcon:GetTexture(frame)
 	local unit = frame.unit
-	
+
 	if UnitIsPVPFreeForAll(unit) then
 		return [[Interface\TargetingFrame\UI-PVP-FFA]]
 	end
-	
+
 	local faction = UnitFactionGroup(unit) or UnitFactionGroup("player")
 	if not faction or faction == "Neutral" then
 		return nil
@@ -39,7 +34,7 @@ function PitBull4_PvPIcon:GetTexture(frame)
 	if not UnitIsPVP(unit) then
 		return nil
 	end
-	
+
 	return [[Interface\TargetingFrame\UI-PVP-]] .. faction
 end
 
@@ -61,7 +56,7 @@ function PitBull4_PvPIcon:GetExampleTexture(frame)
 	if classification == "focus" then
 		return [[Interface\TargetingFrame\UI-PVP-FFA]]
 	end
-	
+
 	local player_faction = UnitFactionGroup("player")
 	-- Pandarens start out with a Neutral faction, so just make config mode
 	-- guess that Pandarens are all going to be Alliance so we have something
@@ -69,7 +64,7 @@ function PitBull4_PvPIcon:GetExampleTexture(frame)
 	if not player_faction or player_faction == "Neutral" then
 		player_faction = "Alliance"
 	end
-	
+
 	if FRIENDLY_CLASSIFICATIONS[classification] or (frame.guid and frame.unit and UnitIsFriend("player", frame.unit)) then
 		return [[Interface\TargetingFrame\UI-PVP-]] .. player_faction
 	else

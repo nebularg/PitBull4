@@ -1,10 +1,5 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_RaidTargetIcon requires PitBull4")
-end
-
 local L = PitBull4.L
 
 local PitBull4_RaidTargetIcon = PitBull4:NewModule("RaidTargetIcon", "AceEvent-3.0", "AceTimer-3.0")
@@ -16,10 +11,10 @@ PitBull4_RaidTargetIcon:SetDefaults({
 	attach_to = "root",
 	location = "edge_top",
 	position = 1,
-	[1] = true, -- Star 
-	[2] = true, -- Circle 
-	[3] = true, -- Diamond 
-	[4] = true, -- Triangle 
+	[1] = true, -- Star
+	[2] = true, -- Circle
+	[3] = true, -- Diamond
+	[4] = true, -- Triangle
 	[5] = true, -- Moon
 	[6] = true, -- Square
 	[7] = true, -- Cross
@@ -33,9 +28,9 @@ end
 
 function PitBull4_RaidTargetIcon:GetTexture(frame)
 	local unit = frame.unit
-	
+
 	local index = GetRaidTargetIndex(unit)
-	
+
 	if not index then
 		return nil
 	end
@@ -44,13 +39,13 @@ function PitBull4_RaidTargetIcon:GetTexture(frame)
 	if not self:GetLayoutDB(frame)[index] then
 		return nil
 	end
-	
+
 	return [[Interface\TargetingFrame\UI-RaidTargetingIcon_]] .. index
 end
 
 function PitBull4_RaidTargetIcon:GetExampleTexture(frame)
 	local unit = frame.unit or frame:GetName()
-	
+
 	local index = unit:match(".*(%d+)")
 	if index then
 		index = index+0
@@ -58,14 +53,14 @@ function PitBull4_RaidTargetIcon:GetExampleTexture(frame)
 		index = 0
 	end
 	index = index + #unit + unit:byte()
-	
+
 	index = (index % 8) + 1
-	
+
 	-- Disabled
 	if not self:GetLayoutDB(frame)[index] then
 		return nil
 	end
-	
+
 	return [[Interface\TargetingFrame\UI-RaidTargetingIcon_]] .. index
 end
 

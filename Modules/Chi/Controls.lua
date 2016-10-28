@@ -1,10 +1,5 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-local PitBull4_Chi = PitBull4:GetModule("Chi", true)
-if not PitBull4_Chi then
-	return
-end
 
 -- CONSTANTS ----------------------------------------------------------------
 

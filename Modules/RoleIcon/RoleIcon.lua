@@ -1,10 +1,5 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_RoleIcon requires PitBull4")
-end
-
 local L = PitBull4.L
 
 local PitBull4_RoleIcon = PitBull4:NewModule("RoleIcon", "AceEvent-3.0")
@@ -27,7 +22,7 @@ function PitBull4_RoleIcon:GetTexture(frame)
 	if role == "NONE" then
 		return nil
 	end
-	
+
 	return [[Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES]]
 end
 
@@ -51,14 +46,14 @@ function PitBull4_RoleIcon:GetTexCoord(frame)
 	if not tex_coord then
 		return nil
 	end
-	
+
 	return tex_coord[1], tex_coord[2], tex_coord[3], tex_coord[4]
 end
 
 function PitBull4_RoleIcon:GetExampleTexCoord(frame)
 	local role = UnitGroupRolesAssigned(frame.unit)
 	local tex_coord = tex_coords[role] or tex_coords[math.random(1, 3)]
-	
+
 	return tex_coord[1], tex_coord[2], tex_coord[3], tex_coord[4]
 end
 

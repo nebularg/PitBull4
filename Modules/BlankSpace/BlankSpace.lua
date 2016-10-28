@@ -1,10 +1,5 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_BlankSpace requires PitBull4")
-end
-
 local L = PitBull4.L
 
 local PitBull4_BlankSpace = PitBull4:NewModule("BlankSpace")
@@ -19,7 +14,7 @@ PitBull4_BlankSpace:SetDefaults({
 
 function PitBull4_BlankSpace:OnNewLayout(layout)
 	local layout_db = self.db.profile.layouts[layout]
-	
+
 	if layout_db.first then
 		layout_db.first = false
 		local default_bar = layout_db.elements[L["Default"]]

@@ -1,13 +1,8 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_AltPowerBar requires PitBull4")
-end
+local L = PitBull4.L
 
 local EXAMPLE_VALUE = 0.6
-
-local L = PitBull4.L
 
 local PitBull4_AltPowerBar = PitBull4:NewModule("AltPowerBar", "AceEvent-3.0")
 
@@ -76,4 +71,3 @@ function PitBull4_AltPowerBar:UNIT_POWER_FREQUENT(event, unit, power_type)
 
 	self:UpdateForUnitID(unit)
 end
-

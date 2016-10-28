@@ -1,9 +1,6 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_VoiceIcon requires PitBull4")
-end
+local L = PitBull4.L
 
 -- CONSTANTS ----------------------------------------------------------------
 
@@ -14,9 +11,8 @@ local FLASH_TIME = 0.7
 local HALF_FLASH_TIME = FLASH_TIME / 2
 
 local INVERSE_HALF_FLASH_TIME = 1 / HALF_FLASH_TIME
------------------------------------------------------------------------------
 
-local L = PitBull4.L
+-----------------------------------------------------------------------------
 
 local PitBull4_VoiceIcon = PitBull4:NewModule("VoiceIcon", "AceEvent-3.0")
 
@@ -60,14 +56,14 @@ function PitBull4_VoiceIcon:ClearFrame(frame)
 	if not frame.VoiceIcon then
 		return false
 	end
-	
+
 	local icon = frame.VoiceIcon
 	icon:SetScript("OnUpdate", nil)
 	icon.elapsed = nil
-	
+
 	icon.base = icon.base:Delete()
 	icon.noise = icon.noise:Delete()
-	
+
 	frame.VoiceIcon = icon:Delete()
 	return true
 end
@@ -75,7 +71,7 @@ end
 local function icon_OnUpdate(self, elapsed)
 	elapsed = self.elapsed + elapsed
 	self.elapsed = elapsed
-	
+
 	local alpha = (elapsed % FLASH_TIME) * INVERSE_HALF_FLASH_TIME
 	if alpha > 1 then
 		alpha = 2 - alpha
@@ -93,29 +89,29 @@ function PitBull4_VoiceIcon:UpdateFrame(frame)
 		icon:Show()
 		return false
 	end
-	
+
 	icon = PitBull4.Controls.MakeFrame(frame)
 	frame.VoiceIcon = icon
 	icon:SetFrameLevel(frame:GetFrameLevel() + 13)
 	icon:SetScript("OnUpdate", icon_OnUpdate)
 	icon:SetWidth(15)
 	icon:SetHeight(15)
-	
+
 	local base = PitBull4.Controls.MakeTexture(icon, "ARTWORK")
 	icon.base = base
 	base:SetTexture([[Interface\Common\VoiceChat-Speaker]])
 	base:SetTexCoord(0.04, 0.96, 0.04, 0.96)
 	base:SetAllPoints(icon)
-	
+
 	local noise = PitBull4.Controls.MakeTexture(icon, "ARTWORK")
 	icon.noise = noise
 	noise:SetTexture([[Interface\Common\VoiceChat-On]])
 	noise:SetTexCoord(0.04, 0.96, 0.04, 0.96)
 	noise:SetAllPoints(icon)
-	
+
 	icon.elapsed = 0
-	
+
 	icon:Show()
-	
+
 	return true
 end

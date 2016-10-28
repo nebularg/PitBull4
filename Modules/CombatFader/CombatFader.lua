@@ -1,10 +1,5 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_CombatFader requires PitBull4")
-end
-
 local L = PitBull4.L
 
 local PitBull4_CombatFader = PitBull4:NewModule("CombatFader", "AceEvent-3.0")
@@ -27,7 +22,7 @@ timerFrame:Hide()
 
 timerFrame:SetScript("OnUpdate", function(self)
 	self:Hide()
-	
+
 	PitBull4_CombatFader:RecalculateState()
 	PitBull4_CombatFader:UpdateAll()
 end)
@@ -39,7 +34,7 @@ function PitBull4_CombatFader:OnEnable()
 	self:RegisterEvent("UNIT_HEALTH")
 	self:RegisterEvent("UNIT_POWER","UNIT_HEALTH")
 	self:RegisterEvent("UNIT_DISPLAYPOWER","UNIT_HEALTH")
-	
+
 	self:RecalculateState()
 	timerFrame:Show()
 end
@@ -96,13 +91,13 @@ function PitBull4_CombatFader:UNIT_HEALTH(event, unit)
 	if unit ~= "player" then
 		return
 	end
-	
+
 	return self:PLAYER_REGEN_ENABLED()
 end
 
 function PitBull4_CombatFader:GetOpacity(frame)
 	local layout_db = self:GetLayoutDB(frame)
-	
+
 	return layout_db[state .. "_opacity"]
 end
 
@@ -116,14 +111,14 @@ PitBull4_CombatFader:SetLayoutOptionsFunction(function(self)
 		isPercent = true,
 		get = function(info)
 			local db = PitBull4.Options.GetLayoutDB(self)
-			
+
 			return db.hurt_opacity
 		end,
 		set = function(info, value)
 			local db = PitBull4.Options.GetLayoutDB(self)
-			
+
 			db.hurt_opacity = value
-			
+
 			PitBull4.Options.UpdateFrames()
 			PitBull4:RecheckAllOpacities()
 		end,

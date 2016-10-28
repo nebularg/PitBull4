@@ -1,12 +1,5 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-local PitBull4_ArcaneCharges = PitBull4:GetModule("ArcaneCharges", true)
-if not PitBull4_ArcaneCharges then
-	return
-end
-
------------------------------------------------------------------------------
 
 local ArcaneCharge = {}
 local ArcaneCharge_scripts = {}

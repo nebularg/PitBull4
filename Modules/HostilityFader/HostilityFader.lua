@@ -1,10 +1,5 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_HostilityFader requires PitBull4")
-end
-
 local L = PitBull4.L
 
 local PitBull4_HostilityFader = PitBull4:NewModule("HostilityFader","AceEvent-3.0")

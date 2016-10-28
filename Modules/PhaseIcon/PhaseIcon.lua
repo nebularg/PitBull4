@@ -1,10 +1,5 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_PhaseIcon requires PitBull4")
-end
-
 local L = PitBull4.L
 
 local PitBull4_PhaseIcon = PitBull4:NewModule("PhaseIcon", "AceEvent-3.0")
@@ -31,7 +26,7 @@ function PitBull4_PhaseIcon:GetTexture(frame)
 	if not unit or not UnitIsPlayer(unit) or UnitInPhase(unit) or not UnitExists(unit) then
 		return nil
 	end
-	
+
 	return [[Interface\TargetingFrame\UI-PhasingIcon]]
 end
 
@@ -40,7 +35,7 @@ function PitBull4_PhaseIcon:GetExampleTexture(frame)
 end
 
 function PitBull4_PhaseIcon:UNIT_PHASE(event, unit)
-	-- UNIT_PHASE fires for some units at different points than for others. 
+	-- UNIT_PHASE fires for some units at different points than for others.
 	-- So we update by GUID rather than by unit id to increase accuracy
 	self:UpdateForGUID(UnitGUID(unit))
 end

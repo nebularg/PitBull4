@@ -1,15 +1,10 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
-
 local player_class = select(2, UnitClass("player"))
 if player_class ~= "SHAMAN" and player_class ~= "DRUID" and player_class ~= "MONK" and player_class ~= "MAGE" then
 	return
 end
 
-local _G = _G
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_Totems requires PitBull4")
-end
+local L = PitBull4.L
 
 local DEBUG = PitBull4.DEBUG
 
@@ -127,9 +122,6 @@ if LSM then LSM:Register('sound',DEFAULT_SOUND_NAME,DEFAULT_SOUND_PATH) end
 
 LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
 local AceGUI = LibStub("AceGUI-3.0")
-
--- Fetch localization
-local L = PitBull4.L
 
 -- Register some metadata of ours with PB4
 PitBull4_Totems:SetModuleType('indicator')

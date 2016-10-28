@@ -1,9 +1,5 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-  error("PitBull4_Aggro requires PitBull4")
-end
 local L = PitBull4.L
 
 local LibBanzai
@@ -97,7 +93,7 @@ function PitBull4_Aggro:HealthBar_GetColor(module, frame, value)
 		local aggro_color = self.db.profile.global.aggro_color
 		return aggro_color[1], aggro_color[2], aggro_color[3], nil, true
 	end
-	
+
 	return self.hooks[module].GetColor(module, frame, value)
 end
 
@@ -112,14 +108,14 @@ function PitBull4_Aggro:Border_GetTextureAndColor(module, frame)
 		-- to the normal settings
 		texture, r, g, b, a = self.hooks[module].GetTextureAndColor(module, frame)
 	end
-	
+
 	if unit and db.enabled and db.kind == "Border" and UnitIsFriend("player", unit) and LibBanzai:GetUnitAggroByUnitId(unit) then
 		r, g, b, a = unpack(self.db.profile.global.aggro_color)
 		if not texture or texture == "None" then
 			texture = "Blizzard Tooltip"
 		end
 	end
-	
+
 	return texture, r, g, b, a
 end
 
@@ -134,7 +130,7 @@ function PitBull4_Aggro:Background_GetColor(module, frame)
 		-- to the normal settings
 		r, g, b, a = self.hooks[module].GetColor(module, frame)
 	end
-	
+
 	if unit and db.enabled and db.kind == "Background" and UnitIsFriend("player", unit) and LibBanzai:GetUnitAggroByUnitId(unit) then
 		local a2
 		r, g, b, a2 = unpack(self.db.profile.global.aggro_color)
@@ -144,7 +140,7 @@ function PitBull4_Aggro:Background_GetColor(module, frame)
 			a = a2
 		end
 	end
-	
+
 	return r, g, b, a
 end
 
@@ -176,19 +172,19 @@ PitBull4_Aggro:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).kind = value
-			
+
 			PitBull4.Options.UpdateFrames()
 		end,
 		values = function(info)
 			local t = {}
 			t[""] = L["None"]
-			if is_kind_allowed("HealthBar") then 
+			if is_kind_allowed("HealthBar") then
 				t.HealthBar = L["Health bar"]
 			end
-			if is_kind_allowed("Border") then 
+			if is_kind_allowed("Border") then
 				t.Border = L["Border"]
 			end
-			if is_kind_allowed("Background") then 
+			if is_kind_allowed("Background") then
 				t.Background = L["Background"]
 			end
 			return t

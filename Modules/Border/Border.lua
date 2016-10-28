@@ -1,10 +1,5 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_Border requires PitBull4")
-end
-
 local L = PitBull4.L
 
 local PitBull4_Border = PitBull4:NewModule("Border", "AceEvent-3.0")
@@ -42,7 +37,7 @@ function PitBull4_Border:OnEnable()
 		error(L["PitBull4_Border requires the library LibSharedMedia-3.0 to be available."])
 	end
 	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED")
-	
+
 	LibSharedMedia_border_None = LibSharedMedia:Fetch("border", "None")
 
 	-- Force an update, OnEnable may not have run before PB4 tried to update the frames
@@ -54,7 +49,7 @@ end
 function PitBull4_Border:GetTextureAndColor(frame)
 	local unit = frame.unit
 	local classification = unit and PitBull4.Utils.BetterUnitClassification(unit)
-	
+
     if classification == "worldboss" then
         classification = "boss"
 	elseif classification == "elite" then
@@ -68,7 +63,7 @@ function PitBull4_Border:GetTextureAndColor(frame)
 	local db = self:GetLayoutDB(frame)
 	local texture = db[classification .. "_texture"]
 	local color = db[classification .. "_color"]
-	
+
 	return texture, color[1], color[2], color[3], color[4]
 end
 
@@ -76,16 +71,16 @@ function PitBull4_Border:UpdateFrame(frame)
 	if not LibSharedMedia then
 		return self:ClearFrame(frame)
 	end
-	
+
 	local texture, r, g, b, a = self:GetTextureAndColor(frame)
 	texture = LibSharedMedia:Fetch("border", texture) or LibSharedMedia_border_None
-	
+
 	local border = frame.Border
-	
+
 	if texture == LibSharedMedia_border_None then
 		return self:ClearFrame(frame)
 	end
-	
+
 	if not border then
 		local db = self:GetLayoutDB(frame)
 		local size = db.size
@@ -94,7 +89,7 @@ function PitBull4_Border:UpdateFrame(frame)
 		frame.Border = border
 		border:SetFrameLevel(frame:GetFrameLevel())
 		border:SetAllPoints(frame)
-		
+
 		local tex = PitBull4.Controls.MakeTexture(border, "BORDER")
 		border[1] = tex
 		tex:SetWidth(size)
@@ -148,12 +143,12 @@ function PitBull4_Border:UpdateFrame(frame)
 		tex:SetPoint("BOTTOMRIGHT", border, "BOTTOMRIGHT", padding, -padding)
 		tex:SetTexCoord(0.875, 0, 0.875, 1, 1, 0, 1, 1)
 	end
-	
+
 	for _, tex in ipairs(border) do
 		tex:SetTexture(texture)
 		tex:SetVertexColor(r, g, b, a)
 	end
-	
+
 	border:Show()
 
 	return false
@@ -164,12 +159,12 @@ function PitBull4_Border:ClearFrame(frame)
 	if not border then
 		return false
 	end
-	
+
 	for i, tex in ipairs(border) do
 		border[i] = tex:Delete()
 	end
 	frame.Border = border:Delete()
-	
+
 	return false
 end
 
@@ -208,26 +203,26 @@ end
 
 function PitBull4_Border:ShouldShow(frame)
 	local db = self:GetLayoutDB(frame)
-	
+
 	if mouse_focus == frame and db.while_hover then
 		return true
 	end
-	
+
 	if not target_guid or frame.guid ~= target_guid or EXEMPT_UNITS[frame.unit] then
 		return false
 	end
-	
+
 	if not db.show_target then
 		return false
 	end
-	
+
 	return true
 end
 
 function PitBull4_Border:PLAYER_TARGET_CHANGED()
 	mouse_focus = GetMouseFocus()
 	target_guid = UnitGUID("target")
-	
+
 	for frame in PitBull4:IterateFrames() do
 		if frame.Border then
 		 	if self:ShouldShow(frame) then
@@ -248,20 +243,20 @@ end
 PitBull4_Border:SetLayoutOptionsFunction(function(self)
 	LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
 	local AceGUI = LibStub("AceGUI-3.0")
-	
+
 	local function update()
 		for frame in PitBull4:IterateFramesForLayout(PitBull4.Options.GetCurrentLayout()) do
 			self:UpdateFrame(frame)
 		end
 	end
-	
+
 	local function clear_and_update()
 		for frame in PitBull4:IterateFramesForLayout(PitBull4.Options.GetCurrentLayout()) do
 			self:ClearFrame(frame)
 			self:UpdateFrame(frame)
 		end
 	end
-	
+
 	local function get(info)
 		return PitBull4.Options.GetLayoutDB(self)[info[#info]]
 	end
@@ -269,7 +264,7 @@ PitBull4_Border:SetLayoutOptionsFunction(function(self)
 		PitBull4.Options.GetLayoutDB(self)[info[#info]] = value
 		update()
 	end
-	
+
 	local function get_color(info)
 		return unpack(PitBull4.Options.GetLayoutDB(self)[info[#info]])
 	end

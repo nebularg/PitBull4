@@ -1,10 +1,5 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_ReadyCheckIcon requires PitBull4")
-end
-
 local L = PitBull4.L
 
 local PitBull4_ReadyCheckIcon = PitBull4:NewModule("ReadyCheckIcon", "AceEvent-3.0", "AceTimer-3.0")
@@ -21,7 +16,7 @@ PitBull4_ReadyCheckIcon:SetDefaults({
 local PLAYER_GUID
 function PitBull4_ReadyCheckIcon:OnEnable()
 	PLAYER_GUID = UnitGUID("player")
-	
+
 	self:RegisterEvent("READY_CHECK")
 	self:RegisterEvent("READY_CHECK_CONFIRM")
 	self:RegisterEvent("READY_CHECK_FINISHED")
@@ -52,7 +47,7 @@ function PitBull4_ReadyCheckIcon:GetExampleTexture(frame)
 	elseif not EXAMPLE_CLASSIFICATIONS[frame.header.unit_group] then
 		return nil
 	end
-	
+
 	local unit = frame.unit or frame:GetName()
 	local index = unit:match(".*(%d+)")
 	if index then
@@ -61,9 +56,9 @@ function PitBull4_ReadyCheckIcon:GetExampleTexture(frame)
 		index = 0
 	end
 	index = index + #unit + unit:byte()
-	
+
 	index = index % 3
-	
+
 	local status
 	if index == 0 then
 		status = "ready"
@@ -72,7 +67,7 @@ function PitBull4_ReadyCheckIcon:GetExampleTexture(frame)
 	else
 		status = "waiting"
 	end
-	
+
 	return status_to_texture[status]
 end
 
@@ -88,7 +83,7 @@ function PitBull4_ReadyCheckIcon:CacheRaidCheckStatuses()
 		end
 	elseif UnitInParty("player") then
 		guid_to_status[PLAYER_GUID] = GetReadyCheckStatus("player")
-		
+
 		for i = 1, MAX_PARTY_MEMBERS do
 			local unit = "party" .. i
 			local guid = UnitGUID(unit)

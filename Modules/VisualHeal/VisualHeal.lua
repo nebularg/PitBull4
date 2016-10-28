@@ -1,17 +1,15 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_VisualHeal requires PitBull4")
-end
-
--- CONSTANTS ----------------------------------------------------------------
+local L = PitBull4.L
 
 local EPSILON = 1e-5
 
------------------------------------------------------------------------------
-
-local L = PitBull4.L
+local REVERSE_POINT = {
+	LEFT = "RIGHT",
+	RIGHT = "LEFT",
+	TOP = "BOTTOM",
+	BOTTOM = "TOP",
+}
 
 local PitBull4_VisualHeal = PitBull4:NewModule("VisualHeal", "AceEvent-3.0")
 
@@ -29,13 +27,6 @@ PitBull4_VisualHeal:SetDefaults({
 	auto_luminance = true,
 })
 
-function PitBull4_VisualHeal:OnEnable()
-	self:RegisterEvent("UNIT_HEAL_PREDICTION")
-	self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UNIT_HEAL_PREDICTION")
-	self:RegisterEvent("UNIT_MAXHEALTH", "UNIT_HEAL_PREDICTION")
-	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", "UNIT_HEAL_PREDICTION")
-end
-
 local function clamp(value, min, max)
 	if value < min then
 		return min
@@ -46,12 +37,12 @@ local function clamp(value, min, max)
 	end
 end
 
-local REVERSE_POINT = {
-	LEFT = "RIGHT",
-	RIGHT = "LEFT",
-	TOP = "BOTTOM",
-	BOTTOM = "TOP",
-}
+function PitBull4_VisualHeal:OnEnable()
+	self:RegisterEvent("UNIT_HEAL_PREDICTION")
+	self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UNIT_HEAL_PREDICTION")
+	self:RegisterEvent("UNIT_MAXHEALTH", "UNIT_HEAL_PREDICTION")
+	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", "UNIT_HEAL_PREDICTION")
+end
 
 function PitBull4_VisualHeal:UpdateFrame(frame)
 	local health_bar = frame.HealthBar
@@ -81,15 +72,15 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 	local absorb_percent = 0
 	if unit_health_max ~= 0 then
 		current_percent = UnitHealth(unit) / unit_health_max
-		others_percent = others_healing and others_healing / unit_health_max 
+		others_percent = others_healing and others_healing / unit_health_max
 		player_percent = player_healing and player_healing / unit_health_max
-		absorb_percent = all_absorbs and all_absorbs / unit_health_max 
+		absorb_percent = all_absorbs and all_absorbs / unit_health_max
 	end
 
 	if others_percent <= 0 and player_percent <= 0 and absorb_percent <= 0 then
 		return self:ClearFrame(frame)
 	end
-	
+
 	local bar = frame.VisualHeal
 	if not bar then
 		bar = PitBull4.Controls.MakeBetterStatusBar(health_bar)
@@ -119,14 +110,14 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 	bar:SetExtra2Value(absorb_percent)
 
 	bar:SetTexture(health_bar:GetTexture())
-	
+
 	local deficit = health_bar.deficit
 	local orientation = health_bar.orientation
 	local reverse = health_bar.reverse
 	bar:SetOrientation(orientation)
 	bar:SetReverse(deficit ~= reverse)
 	bar:SetDeficit(false)
-	
+
 	bar:ClearAllPoints()
 	local point, attach, attach_frame
 	if orientation == "HORIZONTAL" then
@@ -142,47 +133,47 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 		bar:SetPoint("LEFT", health_bar, "LEFT")
 		bar:SetPoint("RIGHT", health_bar, "RIGHT")
 	end
-	
+
 	if deficit then
 		point, attach = attach, point
 		attach_frame = health_bar.bg
 	else
 		attach_frame = health_bar.fg
 	end
-	
+
 	if reverse then
 		point, attach = REVERSE_POINT[point], REVERSE_POINT[attach]
 	end
-	
+
 	bar:SetPoint(point, attach_frame, attach)
-	
+
 	local db = self.db.profile.global
-	
+
 	if others_percent > 0 then
 		local r, g, b, a = unpack(db.incoming_color)
 		bar:SetColor(r, g, b)
 		bar:SetNormalAlpha(a)
 	end
-	
+
 	if player_percent > 0 then
 		local waste = clamp((current_percent + others_percent + player_percent - 1) / player_percent, 0, 1)
-		
+
 		local r, g, b, a = unpack(db.outgoing_color)
 		if waste > 0 then
 			local r2, g2, b2, a2 = unpack(db.outgoing_color_overheal)
-			
+
 			local inverse_waste = 1 - waste
 			r = r * inverse_waste + r2 * waste
 			g = g * inverse_waste + g2 * waste
 			b = b * inverse_waste + b2 * waste
 			a = a * inverse_waste + a2 * waste
 		end
-		
+
 		if db.auto_luminance then
 			local high = math.max(r, g, b, EPSILON)
 			r, g, b = r / high, g / high, b / high
 		end
-		
+
 		bar:SetExtraColor(r, g, b)
 		bar:SetExtraAlpha(a)
 	end
@@ -192,7 +183,7 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 		bar:SetExtra2Color(r, g, b)
 		bar:SetExtra2Alpha(a)
 	end
-	
+
 	return true
 end
 
@@ -205,7 +196,7 @@ function PitBull4_VisualHeal:ClearFrame(frame)
 	if not frame.VisualHeal then
 		return false
 	end
-	
+
 	frame.VisualHeal = frame.VisualHeal:Delete()
 	return true
 end
@@ -279,7 +270,7 @@ PitBull4_VisualHeal:SetColorOptionsFunction(function(self)
 	end
 end)
 
-PitBull4_VisualHeal:SetLayoutOptionsFunction(function(self) 
+PitBull4_VisualHeal:SetLayoutOptionsFunction(function(self)
 	local function disabled(info)
 		return not PitBull4.Options.GetLayoutDB(self).enabled
 	end

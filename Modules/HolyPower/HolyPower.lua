@@ -1,13 +1,9 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
-
 if select(2, UnitClass("player")) ~= "PALADIN" then
 	return
 end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_HolyPower requires PitBull4")
-end
+local L = PitBull4.L
 
 -- CONSTANTS ----------------------------------------------------------------
 
@@ -24,8 +20,6 @@ local HALF_STANDARD_SIZE = STANDARD_SIZE / 2
 local CONTAINER_HEIGHT = STANDARD_SIZE + BORDER_SIZE * 2
 
 -----------------------------------------------------------------------------
-
-local L = PitBull4.L
 
 local PitBull4_HolyPower = PitBull4:NewModule("HolyPower", "AceEvent-3.0")
 
@@ -48,6 +42,7 @@ local player_level = UnitLevel("player")
 
 function PitBull4_HolyPower:OnEnable()
 	player_level = UnitLevel("player")
+
 	self:RegisterEvent("UNIT_POWER_FREQUENT")
 	self:RegisterEvent("UNIT_DISPLAYPOWER")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")

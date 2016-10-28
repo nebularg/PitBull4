@@ -1,14 +1,8 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_Highlight requires PitBull4")
-end
-
 local L = PitBull4.L
 
-local LibSharedMedia
-local AceGUI
+local LibSharedMedia = LibStub("LibSharedMedia-3.0")
 
 local PitBull4_Highlight = PitBull4:NewModule("Highlight", "AceEvent-3.0")
 
@@ -30,19 +24,17 @@ end
 local target_guid = nil
 local mouse_focus = nil
 
-function PitBull4_Highlight:OnEnable()
-	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
-	LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
-	AceGUI = LibStub("AceGUI-3.0")
-
+function PitBull4_Highlight:OnInitialize()
 	LibSharedMedia:Register("background","Blizzard QuestTitleHighlight", [[Interface\QuestFrame\UI-QuestTitleHighlight]])
 	LibSharedMedia:Register("background","Blizzard QuestLogTitleHighlight", [[Interface\QuestFrame\UI-QuestLogTitleHighlight]])
+end
 
+function PitBull4_Highlight:OnEnable()
 	self:AddFrameScriptHook("OnEnter")
 	self:AddFrameScriptHook("OnLeave")
-	
+
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
-	
+
 	self:PLAYER_TARGET_CHANGED()
 end
 
@@ -53,7 +45,7 @@ end
 
 function PitBull4_Highlight:UpdateFrame(frame)
 	local highlight = frame.Highlight
-	
+
 	if not self:ShouldShow(frame) then
 		if highlight then
 			highlight:Hide()
@@ -66,13 +58,13 @@ function PitBull4_Highlight:UpdateFrame(frame)
 		frame.Highlight = highlight
 		highlight:SetAllPoints(frame)
 		highlight:SetFrameLevel(frame:GetFrameLevel() + 17)
-	
+
 		local texture = PitBull4.Controls.MakeTexture(highlight, "OVERLAY")
 		highlight.texture = texture
 		texture:SetBlendMode("ADD")
 		texture:SetAllPoints(highlight)
 	end
-		
+
 	local layout_db = self:GetLayoutDB(frame)
 	local texture = highlight.texture
 	local texture_path = LibSharedMedia:Fetch("background", layout_db.texture)
@@ -80,7 +72,7 @@ function PitBull4_Highlight:UpdateFrame(frame)
 	texture:SetVertexColor(unpack(layout_db.color))
 
 	highlight:Show()
-	
+
 	return false
 end
 
@@ -88,10 +80,10 @@ function PitBull4_Highlight:ClearFrame(frame)
 	if not frame.Highlight then
 		return false
 	end
-	
+
 	frame.Highlight.texture = frame.Highlight.texture:Delete()
 	frame.Highlight = frame.Highlight:Delete()
-	
+
 	return false
 end
 
@@ -107,25 +99,25 @@ end
 
 function PitBull4_Highlight:ShouldShow(frame)
 	local db = self:GetLayoutDB(frame)
-	
+
 	if mouse_focus == frame and db.while_hover then
 		return true
 	end
-	
+
 	if not target_guid or frame.guid ~= target_guid or EXEMPT_UNITS[frame.unit] then
 		return false
 	end
-	
+
 	if not db.show_target then
 		return false
 	end
-	
+
 	return true
 end
 
 function PitBull4_Highlight:PLAYER_TARGET_CHANGED()
 	target_guid = UnitGUID("target")
-	
+
 	self:UpdateAll()
 end
 
@@ -153,7 +145,7 @@ PitBull4_Highlight:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).show_target = value
-			
+
 			self:PLAYER_TARGET_CHANGED()
 		end,
 	}, 'while_hover', {
@@ -183,9 +175,6 @@ PitBull4_Highlight:SetLayoutOptionsFunction(function(self)
 		values = function(info)
 			return LibSharedMedia:HashTable("background")
 		end,
-		hidden = function(info)
-			return not LibSharedMedia
-		end,
-		dialogControl = AceGUI and AceGUI.WidgetRegistry["LSM30_Background"] and "LSM30_Background" or nil,
+		dialogControl = "LSM30_Background",
 	}
 end)

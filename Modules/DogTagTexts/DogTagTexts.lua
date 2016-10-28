@@ -1,10 +1,5 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_DogTagTexts requires PitBull4")
-end
-
 local L = PitBull4.L
 
 local PitBull4_DogTagTexts = PitBull4:NewModule("DogTagTexts")
@@ -30,18 +25,17 @@ PitBull4_DogTagTexts:SetDefaults({
 	first = true
 },
 {
-	-- Global defaults
 	enabled = false,
 })
 
 function PitBull4_DogTagTexts:OnNewLayout(layout)
 	local layout_db = self.db.profile.layouts[layout]
-	
+
 	if not layout_db.first then
 		return
 	end
 	layout_db.first = false
-	
+
 	local texts = layout_db.elements
 	for k in pairs(texts) do
 		texts[k] = nil
@@ -230,10 +224,10 @@ function PitBull4_DogTagTexts:AddFontString(...)
 	if run_first then
 		run_first()
 	end
-	
+
 	self.AddFontString = self._AddFontString
 	self._AddFontString = nil
-	
+
 	return PitBull4_DogTagTexts:AddFontString(...)
 end
 
@@ -289,8 +283,8 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetTextLayoutDB().code = value_key_to_code[value]
-			
-			update()	
+
+			update()
 		end,
 		values = values,
 		disabled = function(info)
@@ -306,21 +300,21 @@ PitBull4_DogTagTexts:SetLayoutOptionsFunction(function(self)
 		desc = L["Enter a LibDogTag-3.0 code tag. You can type /dog into your chat for help."],
 		get = function(info)
 			local code = PitBull4.Options.GetTextLayoutDB().code
-			
+
 			if run_first then
 				run_first()
 			end
-			
+
 			if LibDogTag then
 				code = LibDogTag:CleanCode(code)
 			end
-			
+
 			return code
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetTextLayoutDB().code = LibDogTag:CleanCode(value)
-			
-			update()	
+
+			update()
 		end,
 		multiline = true,
 		width = 'full',

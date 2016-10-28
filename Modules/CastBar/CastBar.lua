@@ -1,9 +1,5 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_CastBar requires PitBull4")
-end
 local L = PitBull4.L
 
 local EXAMPLE_VALUE = 0.4
@@ -40,9 +36,9 @@ timer_frame:SetScript("OnUpdate", function() PitBull4_CastBar:FixCastDataAndUpda
 local player_guid
 function PitBull4_CastBar:OnEnable()
 	player_guid = UnitGUID("player")
-	
+
 	timer_frame:Show()
-	
+
 	self:RegisterEvent("UNIT_SPELLCAST_START")
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
 	self:RegisterEvent("UNIT_SPELLCAST_STOP")
@@ -75,7 +71,7 @@ do
 			pool[t] = nil
 			return t
 		end
-		
+
 		return {}
 	end
 	function del(t)
@@ -91,7 +87,7 @@ function PitBull4_CastBar:GetValue(frame)
 		self:UpdateInfo(nil, frame.unit)
 		data = cast_data[guid]
 	end
-	
+
 	local db = self:GetLayoutDB(frame)
 	if not data then
 		if db.auto_hide then
@@ -99,19 +95,19 @@ function PitBull4_CastBar:GetValue(frame)
 		end
 		return 0, nil, nil
 	end
-	
+
 	local icon = db.show_icon and data.icon or nil
-	
+
 	if data.casting then
 		local start_time = data.start_time
 		return (GetTime() - start_time) / (data.end_time - start_time), nil, icon
-	elseif data.channeling then	
+	elseif data.channeling then
 		local end_time = data.end_time
 		return (end_time - GetTime()) / (end_time - data.start_time), nil, icon
 	elseif data.fade_out then
 		return frame.CastBar and frame.CastBar:GetValue() or 0, nil, icon
 	end
-	
+
 	if db.auto_hide then
 		return nil
 	end
@@ -129,11 +125,11 @@ function PitBull4_CastBar:GetColor(frame, value)
 	if not data then
 		return 0, 0, 0, 0
 	end
-	
+
 	if data.casting then
 		if data.interruptible then
 			local r, g, b = unpack(self.db.profile.global.casting_interruptible_color)
-			return r, g, b, 1 
+			return r, g, b, 1
 		else
 			local r, g, b = unpack(self.db.profile.global.casting_uninterruptible_color)
 			return r, g, b, 1
@@ -226,7 +222,7 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_spell, event_rank, event
 		data = new()
 		cast_data[guid] = data
 	end
-	
+
 	local spell, rank, display_name, icon, start_time, end_time, is_trade_skill, cast_id, uninterruptible = UnitCastingInfo(unit)
 	local channeling = false
 	if not spell then
@@ -254,7 +250,7 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_spell, event_rank, event
 		timer_frame:Show()
 		return
 	end
-	
+
 	if not data.icon then
 		cast_data[guid] = del(data)
 		if not next(cast_data) then
@@ -270,7 +266,7 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_spell, event_rank, event
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			-- This is necessary because if the interrupt happens just as the cast finishes
 			-- it can look to the client like it failed but the server sends the success
-			-- message after.  
+			-- message after.
 			data.failed = false
 		end
 	end
@@ -313,7 +309,7 @@ function PitBull4_CastBar:FixCastData()
 					if stop_time then
 						alpha = stop_time - current_time + 1
 					end
-					
+
 					if alpha <= 0 then
 						cast_data[guid] = del(data)
 						self:ClearFramesByGUID(guid)
@@ -323,7 +319,7 @@ function PitBull4_CastBar:FixCastData()
 					self:ClearFramesByGUID(guid)
 				end
 				break
-			end	
+			end
 		end
 		if not found then
 			cast_data[guid] = del(data)
@@ -376,7 +372,7 @@ PitBull4_CastBar:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).show_icon = value
-			
+
 			PitBull4.Options.RefreshFrameLayouts()
 		end,
 	}, 'icon_on_left', {
@@ -388,7 +384,7 @@ PitBull4_CastBar:SetLayoutOptionsFunction(function(self)
 			local icon_on_left = db.icon_on_left
 			local side = db.side
 			local reverse = db.reverse
-			
+
 			if not reverse then
 				if side == "center" then
 					return {
@@ -530,7 +526,7 @@ PitBull4_CastBar:SetColorOptionsFunction(function(self)
 					return unpack(self.db.profile.global.channel_uninterruptible_color)
 				end,
 				set = function(info, r, g, b)
-					self.db.profile.global.channel_uninterruptible_color = { r, g, b } 
+					self.db.profile.global.channel_uninterruptible_color = { r, g, b }
 					self:UpdateAll()
 				end,
 				order = 2,

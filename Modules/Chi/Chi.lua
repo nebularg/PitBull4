@@ -1,13 +1,9 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
-
 if select(2, UnitClass("player")) ~= "MONK" then
 	return
 end
 
 local PitBull4 = _G.PitBull4
-if not PitBull4 then
-	error("PitBull4_Chi requires PitBull4")
-end
+local L = PitBull4.L
 
 -- CONSTANTS ----------------------------------------------------------------
 
@@ -23,8 +19,6 @@ local HALF_STANDARD_SIZE = STANDARD_SIZE / 2
 local CONTAINER_HEIGHT = STANDARD_SIZE + BORDER_SIZE * 2
 
 -----------------------------------------------------------------------------
-
-local L = PitBull4.L
 
 local PitBull4_Chi = PitBull4:NewModule("Chi", "AceEvent-3.0")
 
