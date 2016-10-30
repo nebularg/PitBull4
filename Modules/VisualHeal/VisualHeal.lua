@@ -196,7 +196,8 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 	return true
 end
 
-function PitBull4_VisualHeal:UNIT_HEAL_PREDICTION(event, unit)
+function PitBull4_VisualHeal:UNIT_HEAL_PREDICTION(_, unit)
+	if not unit then return end
 	self:UpdateForUnitID(unit)
 end
 
