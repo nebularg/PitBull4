@@ -50,6 +50,12 @@ function PitBull4_Aura:OnEnable()
 		-- Update the can dispel filters
 		PitBull4_Aura:PLAYER_TALENT_UPDATE()
 	end
+
+	-- Update class spells from LibPlayerSpells
+	if self.BuildClassFilters then
+		self:BuildClassFilters()
+		self.BuildClassFilters = nil
+	end
 end
 
 function PitBull4_Aura:OnDisable()

@@ -91,10 +91,24 @@ end
 
 -- Setup the data for which auras belong to whom
 local friend_buffs,friend_debuffs,self_buffs,self_debuffs,pet_buffs,enemy_debuffs = {},{},{},{},{},{}
+for _, class in next, CLASS_SORT_ORDER do
+	friend_buffs[class] = {}
+	friend_debuffs[class] = {}
+	self_buffs[class] = {}
+	self_debuffs[class] = {}
+	pet_buffs[class] = {}
+	enemy_debuffs[class] = {}
+end
 
 -- Build the class filters
-do
-	local LibPlayerSpells = LibStub("LibPlayerSpells-1.0")
+function PitBull4_Aura:BuildClassFilters()
+	-- some shenanigans to only load LPS if the module is enabled (for nolib installs)
+	local LibPlayerSpells = LibStub("LibPlayerSpells-1.0", true)
+	if not LibPlayerSpells then
+		LoadAddOn("LibPlayerSpells-1.0")
+		LibPlayerSpells = LibStub("LibPlayerSpells-1.0", true)
+	end
+	if not LibPlayerSpells then return end
 
 	local AURA = LibPlayerSpells.constants.AURA
 	local INVERT_AURA = LibPlayerSpells.constants.INVERT_AURA
@@ -105,13 +119,6 @@ do
 	local TARGETING = LibPlayerSpells.masks.TARGETING
 
 	for _, class in next, CLASS_SORT_ORDER do
-		friend_buffs[class] = {}
-		friend_debuffs[class] = {}
-		self_buffs[class] = {}
-		self_debuffs[class] = {}
-		pet_buffs[class] = {}
-		enemy_debuffs[class] = {}
-
 		for spell, flags in next, LibPlayerSpells.__categories[class] do
 			if bit.band(flags, AURA) ~= 0 then
 				local target = bit.band(flags, TARGETING)
