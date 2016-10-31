@@ -389,13 +389,12 @@ end
 ScriptEnv.HostileColor = HostileColor
 
 local function ClassColor(unit)
-	local r, g, b = 0.8, 0.8, 0.8 --UNKNOWN
 	local _, class = UnitClass(unit)
 	local color = PitBull4.ClassColors[class]
-	if color then
-		r, g, b = color[1], color[2], color[3]
+	if not color then
+		return 0.8, 0.8, 0.8 -- UNKNOWN
 	end
-	return r * 255, g * 255, b * 255
+	return color[1] * 255, color[2] * 255, color[3] * 255
 end
 ScriptEnv.ClassColor = ClassColor
 
@@ -1022,13 +1021,10 @@ ScriptEnv.HPColor = HPColor
 
 local function PowerColor(power_type)
 	local color = PitBull4.PowerColors[power_type]
-	local r, g, b
-	if color then
-		r, g, b = color[1], color[2], color[3]
-	else
-		r, g, b = 0.7, 0.7, 0.7
+	if not color then
+		return 0.7, 0.7, 0.7
 	end
-	return r * 255, g * 255, b * 255
+	return color[1] * 255, color[2] * 255, color[3] * 255
 end
 ScriptEnv.PowerColor = PowerColor
 

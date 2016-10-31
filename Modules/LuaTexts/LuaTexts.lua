@@ -644,25 +644,12 @@ do
 		-- every text on every one of these events.  /sigh
 		['UNIT_THREAT_LIST_UPDATE'] = {all=true},
 		['UNIT_THREAT_SITUATION_UPDATE'] = {all=true},
-
-		-- Maintain compatability with existing texts that depend on
-		-- these existing, even though they are obsolete.
-		['UNIT_MANA'] = {unit=true},
-		['UNIT_RAGE'] = {unit=true},
-		['UNIT_ENERGY'] = {unit=true},
-		['UNIT_FOCUS'] = {unit=true},
-		['UNIT_RUNIC_POWER'] = {unit=true},
-		['UNIT_MAXMANA'] = {unit=true},
-		['UNIT_MAXRAGE'] = {unit=true},
-		['UNIT_MAXENERGY'] = {unit=true},
-		['UNIT_MAXFOCUS'] = {unit=true},
-		['UNIT_MAXRUNIC_POWER'] = {unit=true},
 	}
 
 	-- Iterate the provided codes to fill in all the rest
-	for base, codes in pairs(PROVIDED_CODES) do
-		for name, entry in pairs(codes) do
-			for event in pairs(entry.events) do
+	for base, codes in next, PROVIDED_CODES do
+		for name, entry in next, codes do
+			for event in next, entry.events do
 				if not events[event] then
 					events[event] = {unit=true}
 				end
@@ -700,62 +687,50 @@ local protected_events = {
 	['GROUP_ROSTER_UPDATE'] = true,
 }
 
--- Provide a way to map changed events so existing LuaTexts configs
+-- Provide a way to update changed events so existing LuaTexts configs
 -- continue to work transparently to end users.
 local compat_event_map = {}
+compat_event_map.UNIT_HEALTHMAX = 'UNIT_MAXHEALTH'
 compat_event_map.UNIT_MANA = 'UNIT_POWER_FREQUENT'
-compat_event_map.UNIT_MAXMANA = 'UNIT_POWER_FREQUENT'
+compat_event_map.UNIT_MAXMANA = 'UNIT_MAXPOWER'
 compat_event_map.UNIT_RAGE = 'UNIT_POWER_FREQUENT'
-compat_event_map.UNIT_MAXRAGE = 'UNIT_POWER_FREQUENT'
+compat_event_map.UNIT_MAXRAGE = 'UNIT_MAXPOWER'
 compat_event_map.UNIT_ENERGY = 'UNIT_POWER_FREQUENT'
-compat_event_map.UNIT_MAXENERGY = 'UNIT_POWER_FREQUENT'
+compat_event_map.UNIT_MAXENERGY = 'UNIT_MAXPOWER'
 compat_event_map.UNIT_FOCUS = 'UNIT_POWER_FREQUENT'
-compat_event_map.UNIT_MAXFOCUS = 'UNIT_POWER_FREQUENT'
-compat_event_map.UNIT_HAPPINESS = 'UNIT_POWER_FREQUENT'
+compat_event_map.UNIT_MAXFOCUS = 'UNIT_MAXPOWER'
+compat_event_map.UNIT_HAPPINESS = 'UNIT_MAXPOWER'
 compat_event_map.UNIT_MAXHAPPINESS = 'UNIT_POWER_FREQUENT'
 compat_event_map.UNIT_RUNIC_POWER = 'UNIT_POWER_FREQUENT'
-compat_event_map.UNIT_MAXRUNIC_POWER = 'UNIT_POWER_FREQUENT'
+compat_event_map.UNIT_MAXRUNIC_POWER = 'UNIT_MAXPOWER'
+compat_event_map.UNIT_COMBO_POINTS = 'UNIT_POWER_FREQUENT'
 compat_event_map.PARTY_MEMBERS_CHANGED = 'GROUP_ROSTER_UPDATE'
 compat_event_map.RAID_ROSTER_UPDATE = 'GROUP_ROSTER_UPDATE'
-compat_event_map.UNIT_COMBO_POINTS = 'UNIT_POWER'
 
-local timerframe = CreateFrame("Frame")
-PitBull4_LuaTexts.timerframe = timerframe
-timerframe:Hide()
-
-function PitBull4_LuaTexts:SetCVar()
-	predicted_power = GetCVarBool("predictedPower")
-	predicted_health = GetCVarBool("predictedHealth")
+local function update_events(events)
+	for old_event, new_event in next, compat_event_map do
+		local value = events[old_event]
+		if not events[new_event] and value then
+			events[new_event] = value
+			events[old_event] = nil
+		end
+	end
 end
 
--- Fix a typo in the original default event names.
--- s/UNIT_HEALTHMAX/UNIT_MAXHEALTH/
-local function fix_unit_healthmax()
+local function fix_legacy_events()
 	local sv = PitBull4.db:GetNamespace("LuaTexts").profiles
-	for _,profile in pairs(sv) do
-		if profile.global then
-			local events = profile.global.events
-			if events then
-				local old_event = events.UNIT_HEALTHMAX
-				if not events.UNIT_MAXHEALTH and old_event then
-					events.UNIT_MAXHEALTH = old_event
-					events.UNIT_HEALTHMAX = nil
-				end
-			end
+	for _, profile in next, sv do
+		if profile.global and profile.global.events then
+			update_events(profile.global.events)
 		end
 		local layouts = profile.layouts
 		if layouts then
-			for _,layout in pairs(layouts) do
+			for _, layout in next, layouts do
 				local elements = layout.elements
 				if elements then
-					for _,text in pairs(elements)	do
-						local events = text.events
-						if events then
-							local old_event = events.UNIT_HEALTHMAX
-							if not events.UNIT_MAXHEALTH and old_event then
-								events.UNIT_MAXHEALTH = old_event
-								events.UNIT_HEALTHMAX = nil
-							end
+					for _, text in next, elements do
+						if text.events then
+							update_events(text.events)
 						end
 					end
 				end
@@ -774,13 +749,13 @@ else
   return "%d/%d (%s%%)",bar_cur,bar_max,Percent(bar_cur,bar_max)
 end]]
 	local sv = PitBull4.db:GetNamespace("LuaTexts").profiles
-	for _,profile in pairs(sv) do
+	for _, profile in next, sv do
 		local layouts = profile.layouts
 		if layouts then
-			for _,layout in pairs(layouts) do
+			for _, layout in next, layouts do
 				local elements = layout.elements
 				if elements then
-					for _,text in pairs(elements) do
+					for _, text in next, elements do
 						if text.code == OLD_CODE then
 							text.code = PROVIDED_CODES[L["Reputation"]][L["Standard"]].code
 						end
@@ -791,8 +766,17 @@ end]]
 	end
 end
 
+local timerframe = CreateFrame("Frame")
+PitBull4_LuaTexts.timerframe = timerframe
+timerframe:Hide()
+
+function PitBull4_LuaTexts:SetCVar()
+	predicted_power = GetCVarBool("predictedPower")
+	predicted_health = GetCVarBool("predictedHealth")
+end
+
 function PitBull4_LuaTexts:OnEnable()
-	fix_unit_healthmax()
+	fix_legacy_events()
 	fix_rep_std_text()
 
 	-- UNIT_SPELLCAST_SENT has to always be registered so we can capture
@@ -1429,22 +1413,9 @@ function PitBull4_LuaTexts:AddFontString(frame, font_string, name, data)
 	texts[font_string] = true
 	font_string.frame = frame
 	font_string.luatexts_name = name
-	for event,enabled in pairs(db.events) do
+	for event, enabled in next, db.events do
 		if enabled then
-			-- Check if the event is remaped to one or more events.
-			local mapped_event = compat_event_map[event]
-			if type(mapped_event) == 'string' then
-				-- mapped to a single event.
-				event_cache_insert(mapped_event, font_string)
-			elseif type(mapped_event) == 'table' then
-				-- mapped to multiple events
-				for _,v in ipairs(mapped_event) do
-					event_cache_insert(v, font_string)
-				end
-			else
-				-- not mapped
-				event_cache_insert(event, font_string)
-			end
+			event_cache_insert(event, font_string)
 		end
 	end
 
