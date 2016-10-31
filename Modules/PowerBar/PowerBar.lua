@@ -86,22 +86,21 @@ function PitBull4_PowerBar:GetExampleValue(frame)
 	return EXAMPLE_VALUE
 end
 
-local alt_color = {}
 function PitBull4_PowerBar:GetColor(frame, value)
 	local unit = frame.unit
-	local power_type, power_token, alt_r, alt_g, alt_b = UnitPowerType(unit)
+	local power_type, power_token, r, g, b = UnitPowerType(unit)
 	local color = PitBull4.PowerColors[power_token]
 
 	if not color then
-		if not alt_r then
+		if not r then
 			color = PitBull4.PowerColors[type_to_token[power_type]] or PitBull4.PowerColors.MANA
-		else
-			alt_color.r, alt_color.g, alt_color.b = alt_r, alt_g, alt_b
-			color = alt_color
+			r, g, b = color[1], color[2], color[3]
 		end
+	else
+		r, g, b = color[1], color[2], color[3]
 	end
 
-	return color[1], color[2], color[3], nil, nil, self:GetLayoutDB(frame).use_atlas and power_bar_atlas[power_token]
+	return r, g, b, nil, nil, self:GetLayoutDB(frame).use_atlas and power_bar_atlas[power_token]
 end
 function PitBull4_PowerBar:GetExampleColor(frame)
 	return unpack(PitBull4.PowerColors.MANA)

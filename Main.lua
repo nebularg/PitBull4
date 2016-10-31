@@ -213,10 +213,6 @@ for power_token, color in pairs(_G.PowerBarColor) do
 		end
 	end
 end
--- remove vehicle power colors
-DATABASE_DEFAULTS.profile.colors.power["AMMOSLOT"] = nil
-DATABASE_DEFAULTS.profile.colors.power["FUEL"] = nil
-DATABASE_DEFAULTS.profile.colors.power["STAGGER"] = nil
 for reaction, color in pairs(_G.FACTION_BAR_COLORS) do
 	DATABASE_DEFAULTS.profile.colors.reaction[reaction] = { color.r, color.g, color.b }
 end
