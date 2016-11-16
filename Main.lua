@@ -91,6 +91,9 @@ local DATABASE_DEFAULTS = {
 		units = {
 			['**'] = {
 				enabled = false,
+				anchor = "CENTER",
+				relative_to = "0", -- UIParent
+				relative_point = "CENTER",
 				position_x = 0,
 				position_y = 0,
 				size_x = 1, -- this is a multiplier
@@ -104,15 +107,6 @@ local DATABASE_DEFAULTS = {
 				click_through = false,
 				tooltip = 'always',
 			},
-			player = { enabled = true },
-			pet = { enabled = true },
-			pettarget = { enabled = true },
-			target = { enabled = true },
-			targettarget = { enabled = true },
-			targettargettarget = { enabled = true },
-			focus = { enabled = true },
-			focustarget = { enabled = true },
-			focustargettarget = { enabled = true },
 		},
 		groups = {
 			['**'] = {
@@ -129,6 +123,9 @@ local DATABASE_DEFAULTS = {
 				group_by = nil,
 				use_pet_header = nil,
 
+				anchor = "", -- automatic from growth direction
+				relative_to = "0", -- UIParent
+				relative_point = "CENTER",
 				position_x = 0,
 				position_y = 0,
 				size_x = 1, -- this is a multiplier
@@ -156,6 +153,8 @@ local DATABASE_DEFAULTS = {
 			}
 		},
 		made_groups = false,
+		made_units = false,
+		group_anchors_updated = false,
 		layouts = {
 			['**'] = {
 				size_x = 200,
@@ -221,6 +220,43 @@ local DEFAULT_GROUPS = {
 		exists = true,
 	},
 }
+
+local DEFAULT_UNITS =  {
+	[L["Player"]] = {
+		enabled = true,
+		unit = "player",
+	},
+	[L["Player's pet"]] = {
+		enabled = true,
+		unit = "pet"
+	},
+	[format(L["%s's target"],L["Player's pet"])]= {
+		unit = "pettarget"
+	},
+	[L["Target"]] = {
+		enabled = true,
+		unit = "target"
+	},
+	[format(L["%s's target"],L["Target"])] = {
+		enabled = true,
+		unit = "targettarget"
+	},
+	[format(L["%s's target"],format(L["%s's target"],L["Target"]))] = {
+		unit = "targettargettarget"
+	},
+	[L["Focus"]] = {
+		enabled = true,
+		unit = "focus"
+	},
+	[format(L["%s's target"],L["Focus"])]= {
+		unit = "focustarget"
+	},
+	[format(L["%s's target"],format(L["%s's target"],L["Focus"]))] = {
+		unit = "focustargettarget"
+	},
+}
+
+
 -----------------------------------------------------------------------------
 
 local _, PitBull4 = ...
@@ -356,6 +392,13 @@ PitBull4.unit_id_to_guid = unit_id_to_guid
 -- A dictionary of GUID to a set of UnitIDs for non-wacky units
 local guid_to_unit_ids = {}
 PitBull4.guid_to_unit_ids = guid_to_unit_ids
+
+-- A list of frames that need to be anchored because their relative frame
+-- did not exist when we tried to anchor them.  The key is the frame and the
+-- value is the relative_to value, see the documentation for Utils.GetRelativeFrame()
+-- for the details of the relative_to value.
+local frames_to_anchor = {}
+PitBull4.frames_to_anchor = frames_to_anchor
 
 local function get_best_unit(guid)
 	if not guid then
@@ -990,10 +1033,73 @@ local function get_disabled_module_addons()
 	return format("|cffffd200%s|r", NONE)
 end
 
+-- Convert the old units table to the new format.  Prior to this we could
+-- only have one unit frame per unit for singelton frames.  Now we can have
+-- as many as we want.  However, we can't use the unit id as the key now so
+-- migrate the old units to their localized names as keys and set their unit
+-- id as the unit key.
+local function migrate_to_new_units_db()
+	local profiles = PitBull4DB and PitBull4DB.profiles
+	if not profiles then return end
+	local tmp = {}
+	for _,profile in pairs(profiles) do
+		if not profile.made_units then -- Old profile
+			profile.made_units = true
+			local units = profile and profile.units
+			if units then
+				-- Copy the units to a tmp table
+				for unit, data in pairs(units) do
+					tmp[unit] = data
+				end
+				-- Clear the units table so...
+				wipe(units)
+				-- We can rebuild it with the new setup.
+				for unit, data in pairs(tmp) do
+					units[PitBull4.Utils.GetLocalizedClassification(unit)] = data
+					data.unit = unit
+					if data.enabled == nil then
+						-- enabled was default so set it explitly since the default for
+						-- some units is disabled now.
+						data.enabled = true
+					end
+				end
+				wipe(tmp)
+			end
+		end
+	end
+end
+
+local function migrate_to_new_group_anchor_format()
+	local db = PitBull4.db
+	local profiles = db and db.profiles
+	if not profiles then return end
+	local current_profile = db:GetCurrentProfile()
+	for profile_name,profile in pairs(profiles) do
+		if not profile.group_anchors_updated then -- Old profile
+			db:SetProfile(profile_name)
+			profile = db.profile
+			profile.group_anchors_updated = true
+			local groups = profile.groups
+			local layouts = profile.layouts
+			if groups and layouts then
+				for group, group_db in pairs(groups) do
+					if group_db then
+						local layout_db = layouts[group_db.layout]
+						if layout_db then
+							PitBull4:MigrateGroupAnchorToNewFormat(group_db, layout_db)
+						end
+					end
+				end
+			end
+		end
+	end
+	db:SetProfile(current_profile)
+end
+
 local upgrade_functions = {
 	[1] = function(sv)
-		-- Version 1 (version number used for config files without a version
-		-- tag.  This version is missing the exists key for layouts and groups
+		-- Version 1 (version number used for config files without a version tag)
+		-- This version is missing the exists key for layouts, groups, and units
 		local function make_layout_exist(profile_db, layout)
 			local layouts = profile_db.layouts
 			if not layouts then
@@ -1068,7 +1174,11 @@ local function check_config_version(sv)
 end
 
 function PitBull4:OnInitialize()
-	local fresh_config = check_config_version(_G["PitBull4DB"])
+	check_config_version(PitBull4DB)
+
+	migrate_to_new_units_db()
+
+	local fresh_config = check_config_version(PitBull4DB)
 
 	db = LibStub("AceDB-3.0"):New("PitBull4DB", DATABASE_DEFAULTS, "Default")
 	self.db = db
@@ -1076,6 +1186,8 @@ function PitBull4:OnInitialize()
 	if fresh_config then
 		db.global.config_version = CURRENT_CONFIG_VERSION
 	end
+
+	migrate_to_new_group_anchor_format()
 
 	db.RegisterCallback(self, "OnProfileChanged")
 	db.RegisterCallback(self, "OnProfileReset")
@@ -1316,6 +1428,14 @@ function PitBull4:OnProfileChanged()
 		end
 	end
 
+	if not db.profile.made_units then
+		db.profile.made_units = true
+		for name, data in pairs(DEFAULT_UNITS) do
+			local unit_db = db.profile.units[name]
+			merge_onto(unit_db, data)
+		end
+	end
+
 	for header in PitBull4:IterateHeaders(true) do
 		local group_db = rawget(db.profile.groups, header.name)
 		header.group_db = group_db
@@ -1339,11 +1459,11 @@ function PitBull4:OnProfileChanged()
 	end
 
 	-- Make sure all frames and groups are made
-	for unit, unit_db in pairs(db.profile.units) do
-		if unit_db.enabled then
-			self:MakeSingletonFrame(unit)
+	for singleton, singleton_db in pairs(db.profile.units) do
+		if singleton_db.enabled then
+			self:MakeSingletonFrame(singleton)
 		else
-			for frame in PitBull4:IterateFramesForClassification(unit, true) do
+			for frame in PitBull4:IterateFramesForClassification(singleton, true) do
 				frame:Deactivate()
 			end
 		end
@@ -1470,6 +1590,30 @@ timerFrame:SetScript("OnUpdate",function(self, elapsed)
 		timer = timer - wacky_update_rate
 	end
 end)
+
+-- Watch for custom anchors that may not be created until after
+-- the frame is created.
+local anchor_elapsed = 0
+local anchor_timer = CreateFrame("Frame")
+anchor_timer:Hide()
+anchor_timer:SetScript("OnUpdate",function(self, elapsed)
+	anchor_elapsed = anchor_elapsed + elapsed
+	if anchor_elapsed >= 0.2 then
+		for frame, relative_to in pairs(frames_to_anchor) do
+			if relative_to:sub(1,1) == "~" then
+				local relative_name = relative_to:sub(2)
+				if relative_name and _G[relative_name] then
+					frame:RefixSizeAndPosition()
+				end
+			end
+		end
+		anchor_elapsed = 0
+		if not next(frames_to_anchor) then
+			anchor_timer:Hide()
+		end
+	end
+end)
+PitBull4.anchor_timer = anchor_timer
 
 --- Iterate over all wacky frames, and call their respective :UpdateGUID methods.
 -- @usage PitBull4:CheckWackyFramesForGUIDUpdate()

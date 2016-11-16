@@ -4,6 +4,7 @@ local PitBull4 = _G.PitBull4
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
 local deep_copy = PitBull4.Utils.deep_copy
+local frames_to_anchor = PitBull4.frames_to_anchor
 
 local MAX_PARTY_MEMBERS_WITH_PLAYER = MAX_PARTY_MEMBERS + 1
 local NUM_CLASSES = #CLASS_SORT_ORDER
@@ -62,6 +63,13 @@ function PitBull4:MakeGroupHeader(group)
 	end
 
 	header:UpdateShownState()
+
+	for frame, relative_to in pairs(frames_to_anchor) do
+		local relative_frame = PitBull4.Utils.GetRelativeFrame(relative_to)
+		if relative_frame == header then
+			frame:RefixSizeAndPosition()
+		end
+	end
 end
 PitBull4.MakeGroupHeader = PitBull4:OutOfCombatWrapper(PitBull4.MakeGroupHeader)
 
@@ -89,10 +97,13 @@ function PitBull4:SwapGroupTemplate(group)
 	old_header:UpdateShownState()
 	old_header:RecheckConfigMode()
 
+	local pet_based = not not group_db.unit_group:match("pet") -- this feels dirty
+	local use_pet_header = pet_based and group_db.use_pet_header
+
 	local new_name
 	if not group_based then
 		new_name = "PitBull4_EnemyGroups_"..group
-	elseif group_db.use_pet_header then
+	elseif use_pet_header then
 		new_name = "PitBull4_PetGroups_"..group
 	else
 		new_name = "PitBull4_Groups_"..group
@@ -125,12 +136,20 @@ local MemberUnitFrame__scripts = PitBull4.MemberUnitFrame__scripts
 
 --- Force an update on the group header.
 -- This is just a wrapper for SecureGroupHeader_Update.
+-- @param force the update to happen now
 -- @usage header:Update()
-function GroupHeader:Update()
+function GroupHeader:Update(force)
+	local shown = self:IsShown()
 	-- We can't directly call SecureGroupHeader_Update so we just
 	-- set an attribute back to iself.  Calling SecureGroupHeader_Update
 	-- directly taints the entire template system and is very bad.
+	if not shown and force then
+		self:Show()
+	end
 	self:SetAttribute("maxColumns",self:GetAttribute("maxColumns"))
+	if not shown and force then
+		self:Hide()
+	end
 end
 GroupHeader.Update = PitBull4:OutOfCombatWrapper(GroupHeader.Update)
 
@@ -146,7 +165,7 @@ end
 function GroupHeader:ProxySetAttribute(key, value)
 	if self:GetAttribute(key) ~= value then
 		self:SetAttribute(key, value)
-		return true
+		return not not self:IsVisible()
 	end
 end
 
@@ -215,6 +234,30 @@ local DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER = {
 	left_up = 1,
 }
 
+local POINT_TO_HORIZONTAL_MULTIPLIER = {
+	TOP = 0,
+	BOTTOM = 0,
+	LEFT = 1,
+	RIGHT = -1,
+	TOPLEFT = 1,
+	TOPRIGHT = -1,
+	BOTTOMLEFT = 1,
+	BOTTOMRIGHT = -1,
+	CENTER = 0,
+}
+
+local POINT_TO_VERTICAL_MULTIPLIER = {
+	TOP = -1,
+	BOTTOM = 1,
+	LEFT = 0,
+	RIGHT = 0,
+	TOPLEFT = -1,
+	TOPRIGHT = -1,
+	BOTTOMLEFT = 1,
+	BOTTOMRIGHT = 1,
+	CENTER = 0,
+}
+
 local GROUPING_ORDER = {}
 do
 	local t = {}
@@ -240,6 +283,117 @@ local function position_label(self, label)
 	end
 end
 
+-- Offsets used to be stored between the center of the screen and the center
+-- of the group frame, while the frames anchor point varied based on the
+-- growth direction of the frame.  So the offset from the actual anchor point
+-- was calculated as needed.  Now we store the the actual offsets and only
+-- recalculate if the anchor point is being determined by the growth direction.
+-- This function converts the existing offsets to the new format.
+function PitBull4:MigrateGroupAnchorToNewFormat(group_db, layout_db)
+	local scale = layout_db.scale * group_db.scale / UIParent:GetEffectiveScale()
+	local direction = group_db.direction
+	local unit_width = layout_db.size_x * group_db.size_x
+	local unit_height = layout_db.size_y * group_db.size_y
+	local x_diff = unit_width / 2 * -DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction]
+	local y_diff = unit_height / 2 * -DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction]
+
+	group_db.position_x = (group_db.position_x / scale + x_diff) * scale
+	group_db.position_y = (group_db.position_y / scale + y_diff) * scale
+end
+
+-- Handles adjusting the offsets for when the growth direction changes.
+function PitBull4:AdjustGroupAnchorForDirectionChange(group_db, new_direction)
+	-- If the anchor is set explicitly then changing the direction does not require
+	-- a recalculation of the anchor offsets.
+	if group_db.anchor ~= "" then return end
+	local old_direction = group_db.direction
+	local layout_db = self.db.profile.layouts[group_db.layout]
+	local scale = layout_db.scale * group_db.scale
+	local unit_width = layout_db.size_x * group_db.size_x
+	local unit_height = layout_db.size_y * group_db.size_y
+
+	-- Calculate the difference from the current anchor point to the center
+	local x_diff = unit_width / 2 * DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[old_direction]
+	local y_diff = unit_height / 2 * DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[old_direction]
+
+	-- Calculate the difference from the center to the new anchor point
+	x_diff = x_diff + unit_width / 2 * -DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[new_direction]
+	y_diff = y_diff + unit_height / 2 * -DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[new_direction]
+
+	-- Adjust the offset to the new anchor point
+	group_db.position_x = (group_db.position_x / scale + x_diff) * scale
+	group_db.position_y = (group_db.position_y / scale + y_diff) * scale
+end
+
+-- Anchors a frame to the first frame within the group.  The first frame probably will
+-- not exist when we need to do the anchoring.  So we need to calculate where the frame
+-- would exist and adjust our offsets accordingly so we can simulate anchoring to the frame
+-- even though we're really anchoring to the group header itself.
+function GroupHeader:AnchorFrameToFirstUnit(frame, anchor, rel_point, x, y)
+	local growth_point = self:GetAttribute("point")
+	if rel_point:find(growth_point, 1, false) then
+		-- The relative point is on the edge we're growing away from so we
+		-- do not need to calculate the offset.
+		frame:SetPoint(anchor, self, rel_point, x,  y)
+	else
+		-- The relative point is not on the edge we're growing away from
+		-- so we must calculate the offset to the other edge of the unit frame
+		local group_db = self.group_db
+		local layout = group_db.layout
+		local layout_db = PitBull4.db.profile.layouts[layout]
+		local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
+		local unit_width = layout_db.size_x * group_db.size_x / scale
+		local unit_height = layout_db.size_y * group_db.size_y / scale
+		local direction = group_db.direction
+
+		if growth_point == "TOP" or growth_point == "BOTTOM" then
+			if rel_point:find("LEFT", 1, false) then
+				x = x - (unit_width / 2)
+				if rel_point == "LEFT" then
+					y = y + (unit_height/ 2 * DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction])
+				end
+			elseif rel_point:find("RIGHT", 1, false) then
+				x = x + (unit_width / 2)
+				if rel_point == "RIGHT" then
+					y = y + (unit_height / 2 * DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction])
+				end
+			end
+		elseif growth_point == "LEFT" or growth_point == "RIGHT" then
+			if rel_point:find("TOP", 1, false) then
+				y = y + (unit_height / 2)
+				if rel_point == "TOP" then
+					x = x + (unit_width / 2 * DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction])
+				end
+			elseif  rel_point:find("BOTTOM", 1, false) then
+				y = y - (unit_height / 2)
+				if rel_point == "BOTTOM" then
+					x = x + (unit_width / 2 * DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction])
+				end
+			end
+		end
+
+		if growth_point == "TOP" and rel_point:find("BOTTOM", 1, false) then
+			y = y - unit_height
+		elseif growth_point == "BOTTOM" and rel_point:find("TOP", 1, false) then
+			y = y + unit_height
+		elseif growth_point == "LEFT" and rel_point:find("RIGHT", 1, false) then
+			x = x + unit_width
+		elseif growth_point == "RIGHT" and rel_point:find("LEFT", 1, false) then
+			x = x - unit_width
+		end
+
+		if rel_point == "CENTER" then
+			if growth_point == "BOTTOM" or growth_point == "TOP" then
+				y = y + (unit_height / 2 * DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction])
+			else  -- growth_point == "LEFT" or growth_point == "RIGHT"
+				x = x + (unit_width / 2 * DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction])
+			end
+		end
+
+		frame:SetPoint(anchor, self, growth_point, x, y)
+	end
+end
+
 --- Reset the size and position of the group header.  More accurately,
 -- the scale and the position since size is set dynamically.
 -- @usage header:RefixSizeAndPosition()
@@ -253,39 +407,105 @@ function GroupHeader:RefixSizeAndPosition()
 	self:SetFrameStrata(layout_db.strata)
 	self:SetFrameLevel(layout_db.level - 1) -- 1 less than what the unit frame will be at
 
-	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
-	local direction = group_db.direction
-	local anchor = DIRECTION_TO_GROUP_ANCHOR_POINT[direction]
+	-- Calculate the  width and height of the group when the number of units
+	-- returned from GetMaxUnits() exist.  Use this to cause config mode to
+	-- behave this way.
 	local unit_width = layout_db.size_x * group_db.size_x
 	local unit_height = layout_db.size_y * group_db.size_y
-	local x_diff = unit_width / 2 * -DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction]
-	local y_diff = unit_height / 2 * -DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction]
+	local max = self:GetMaxUnits()
+	local super_unit_group = self.super_unit_group
+	local config_mode = PitBull4.config_mode
 
 	updated = self:ProxySetAttribute('unitWidth',unit_width) or updated
 	updated = self:ProxySetAttribute('unitHeight',unit_height) or updated
 	updated = self:ProxySetAttribute('clickThrough',group_db.click_through) or updated
+
+	-- Limit the number of frames to the config mode for raid
+	if config_mode and config_mode:sub(1,4) == "raid" and super_unit_group == "raid" then
+		if config_mode == "raid" then
+			if max > MEMBERS_PER_RAID_GROUP then
+				max = MEMBERS_PER_RAID_GROUP
+			end
+		elseif config_mode:sub(1,4) == "raid" then
+			local num = config_mode:sub(5)+0 -- raid10, raid25, raid40 => 10, 25, 40
+			if num < max then
+				max = num
+			end
+		end
+	end
+
+	local units_per_column = group_db.units_per_column
+	local num_columns
+	if units_per_column and max > units_per_column then
+		num_columns = math.ceil(max / units_per_column)
+	else
+		units_per_column = max
+		num_columns = 1
+	end
+	local point = self:GetAttribute("point") or "TOP"
+	local x_offset_mult = POINT_TO_HORIZONTAL_MULTIPLIER[point]
+	local y_offset_mult = POINT_TO_VERTICAL_MULTIPLIER[point]
+	local x_mult, y_mult = math.abs(x_offset_mult), math.abs(y_offset_mult)
+	local x_offset = self:GetAttribute("xOffset") or 0
+	local y_offset = self:GetAttribute("yOffset") or 0
+	local column_spacing = self:GetAttribute("columnSpacing") or 0
+	local col_point = self:GetAttribute("columnAnchorPoint")
+	local col_x_mult = POINT_TO_HORIZONTAL_MULTIPLIER[col_point]
+	local col_y_mult = POINT_TO_VERTICAL_MULTIPLIER[col_point]
+	local width = x_mult * (units_per_column - 1) * unit_width + ((units_per_column - 1) * (x_offset * x_offset_mult)) + unit_width
+	local height = y_mult * (units_per_column - 1) * unit_height + ((units_per_column - 1) * (y_offset * y_offset_mult)) + unit_height
+	if num_columns > 1 then
+		width = width + ((num_columns - 1) * math.abs(col_x_mult) * (width + column_spacing))
+		height = height + ((num_columns - 1) * math.abs(col_y_mult) * (height + column_spacing))
+	end
 
 	-- Set minimum width and height.  If we don't do this then
 	-- SecureTemplates will calculate the size dynamically and these
 	-- dimensions will end up being set to 0.1 if there are no units to
 	-- display.  This causes the positioning of the group header to move
 	-- and results in group frames that jump when someone joins the group
-	-- from where they were in config mode.
-	updated = self:ProxySetAttribute("minWidth",unit_width) or updated
-	updated = self:ProxySetAttribute("minHeight",unit_height) or updated
+	-- from where they were in config mode.  It also will make the frames
+	-- that are anchored to the entire group to behave differently in config
+	-- mode from actual use.
+	updated = self:ProxySetAttribute("minWidth",math.max(width,0.1)) or updated
+	updated = self:ProxySetAttribute("minHeight",math.max(height,0.1)) or updated
 
 	if not updated then
 		-- Update absolutely must be called at least once to ensure the GroupHeader
 		-- frame size is recalculated.
-		self:Update()
+		self:Update(true)
 	end
 
 	if not self.group_based then
 		self:ConfigureChildren()
 	end
 
+	-- Check if the frame we will be anchoring to exists and if not
+	-- delaying setting the anchor until it does.
+	local rel_to = group_db.relative_to
+	local rel_frame, rel_type = PitBull4.Utils.GetRelativeFrame(rel_to)
+	if not rel_frame then
+		frames_to_anchor[self] = rel_to
+		if rel_type == "~" then
+			PitBull4.anchor_timer:Show()
+		end
+		return
+	else
+		frames_to_anchor[self] = nil
+	end
+
+	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
+	local anchor = group_db.anchor
+	if anchor == "" then
+		anchor = DIRECTION_TO_GROUP_ANCHOR_POINT[group_db.direction]
+	end
+
 	self:ClearAllPoints()
-	self:SetPoint(anchor, UIParent, "CENTER", group_db.position_x / scale + x_diff, group_db.position_y / scale + y_diff)
+	if rel_type == "f" then
+		rel_frame:AnchorFrameToFirstUnit(self, anchor, group_db.relative_point, group_db.position_x / scale, group_db.position_y / scale)
+	else
+		self:SetPoint(anchor, rel_frame, group_db.relative_point, group_db.position_x / scale, group_db.position_y / scale)
+	end
 end
 
 --- Recheck the group-based settings of the group header, including sorting, position, what units are shown.
@@ -1160,11 +1380,38 @@ end
 GroupHeader.UnforceShow = PitBull4:OutOfCombatWrapper(GroupHeader.UnforceShow)
 
 function GroupHeader:Rename(name)
-	if self.name == name then
+	local old_name = self.name
+	if old_name == name then
 		return
 	end
 
-	local use_pet_header = self.group_db.use_pet_header
+	-- Look for groups and units that are anchored to this frame and update their
+	-- relative_to reference, there is no need to actually update the anchors
+	-- because the frame will already be anchored properly and changing the
+	-- name won't break the anchor.
+	for group, group_db in pairs(PitBull4.db.profile.groups) do
+		local rel_to = group_db.relative_to
+		local rel_type = rel_to:sub(1,1)
+		if rel_type == "g" or rel_type == "f" then
+			local rel_name = rel_to:sub(2)
+			if rel_name == old_name then
+				group_db.relative_to = rel_type .. name
+			end
+		end
+	end
+	for unit, unit_db in pairs(PitBull4.db.profile.units) do
+		local rel_to = unit_db.relative_to
+		local rel_type = rel_to:sub(1,1)
+		if rel_type == "g" or rel_type == "f" then
+			local rel_name = rel_to:sub(2)
+			if rel_name == old_name then
+				unit_db.relative_to = rel_type .. name
+			end
+		end
+	end
+
+	local pet_based = not not self.group_db.unit_group:match("pet") -- this feels dirty
+	local use_pet_header = pet_based and self.group_db.use_pet_header
 	local group_based = self.group_db.group_based
 	local prefix
 	if not group_based then
@@ -1175,10 +1422,10 @@ function GroupHeader:Rename(name)
 		prefix = "PitBull4_Groups_"
 	end
 
-	local old_header_name = prefix .. self.name
+	local old_header_name = prefix .. old_name
 	local new_header_name = prefix .. name
 
-	PitBull4.name_to_header[self.name] = nil
+	PitBull4.name_to_header[old_name] = nil
 	PitBull4.name_to_header[name] = self
 	_G[old_header_name] = nil
 	_G[new_header_name] = self
@@ -1263,17 +1510,73 @@ function MemberUnitFrame__scripts:OnDragStop()
 		header:StopMovingOrSizing()
 	end
 
-	local ui_scale = UIParent:GetEffectiveScale()
-	local scale = header[1]:GetEffectiveScale() / ui_scale
+	local db = header.group_db
+	local anchor = db.anchor
+	if anchor == "" then
+		anchor = DIRECTION_TO_GROUP_ANCHOR_POINT[db.direction]
+	end
+	local relative_frame = PitBull4.Utils.GetRelativeFrame(db.relative_to)
+	local relative_point = db.relative_point
+	local frame = header[1]
 
-	local x, y = header[1]:GetCenter()
+	local ui_scale = UIParent:GetEffectiveScale()
+	local scale = frame:GetEffectiveScale() / ui_scale
+
+	local x, y
+	if anchor == "TOPLEFT" then
+		x, y = frame:GetLeft(), frame:GetTop()
+	elseif anchor == "TOPRIGHT" then
+		x, y = frame:GetRight(), frame:GetTop()
+	elseif anchor == "BOTTOMLEFT" then
+		x, y = frame:GetLeft(), frame:GetBottom()
+	elseif anchor == "BOTTOMRIGHT" then
+		x, y = frame:GetRight(), frame:GetBottom()
+	elseif anchor == "CENTER" then
+		x, y = frame:GetCenter()
+	elseif anchor == "TOP" then
+		x = frame:GetCenter()
+		y = frame:GetTop()
+	elseif anchor == "BOTTOM" then
+		x = frame:GetCenter()
+		y = frame:GetBottom()
+	elseif anchor == "LEFT" then
+		x, y = frame:GetCenter()
+		x = frame:GetLeft()
+	elseif anchor == "RIGHT" then
+		x, y = frame:GetCenter()
+		x = frame:GetRight()
+	end
 	x, y = x * scale, y * scale
 
-	x = x - GetScreenWidth()/2
-	y = y - GetScreenHeight()/2
+	local scale2 = relative_frame:GetEffectiveScale() / ui_scale
+	local x2,y2
+	if relative_point == "TOPLEFT" then
+		x2, y2 = relative_frame:GetLeft(), relative_frame:GetTop()
+	elseif relative_point == "TOPRIGHT" then
+		x2, y2 = relative_frame:GetRight(), relative_frame:GetTop()
+	elseif relative_point == "BOTTOMLEFT" then
+		x2, y2 = relative_frame:GetLeft(), relative_frame:GetBottom()
+	elseif relative_point == "BOTTOMRIGHT" then
+		x2, y2 = relative_frame:GetRight(), relative_frame:GetBottom()
+	elseif relative_point == "CENTER" then
+		x2, y2 = relative_frame:GetCenter()
+	elseif relative_point == "TOP" then
+		x2 = relative_frame:GetCenter()
+		y2 = relative_frame:GetTop()
+	elseif relative_point == "BOTTOM" then
+		x2 = relative_frame:GetCenter()
+		y2 = relative_frame:GetBottom()
+	elseif relative_point == "LEFT" then
+		x2, y2 = relative_frame:GetCenter()
+		x2 = relative_frame:GetLeft()
+	elseif relative_point == "RIGHT" then
+		x2, y2 = relative_frame:GetCenter()
+		x2 = relative_frame:GetRight()
+	end
+	x2, y2 = x2 * scale2, y2 * scale2
 
-	header.group_db.position_x = x
-	header.group_db.position_y = y
+	db.position_x = x - x2
+	db.position_y = y - y2
 
 	LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
 

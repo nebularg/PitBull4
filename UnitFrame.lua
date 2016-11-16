@@ -4,6 +4,7 @@ local L = PitBull4.L
 
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
+local frames_to_anchor = PitBull4.frames_to_anchor
 
 -- CONSTANTS ----------------------------------------------------------------
 
@@ -44,20 +45,27 @@ local Singleton_OnAttributeChanged = [[
 ]]
 
 --- Make a singleton unit frame.
--- @param unit the UnitID of the frame in question
--- @usage PitBull4:MakeSingletonFrame("player")
-function PitBull4:MakeSingletonFrame(unit)
+-- @param classification the classification of the Unit Frame
+-- @usage local frame = PitBull4:MakeSingletonFrame("Player")
+function PitBull4:MakeSingletonFrame(classification)
 	if DEBUG then
-		expect(unit, 'typeof', 'string')
+		expect(classification, 'typeof', 'string')
 	end
+
+	local classification_db = PitBull4.db.profile.units[classification]
+	if not classification_db then
+		error(("Bad argument #1 to `MakeSingletonFrame'.  %q is not a singleton classification"):format(tostring(classification)),2)
+	end
+
+	local unit = classification_db.unit
 
 	local id = PitBull4.Utils.GetBestUnitID(unit)
 	if not PitBull4.Utils.IsSingletonUnitID(id) then
-		error(("Bad argument #1 to `MakeSingletonFrame'. %q is not a singleton UnitID"):format(tostring(unit)), 2)
+		error(("Bad unit set on Singleton Classification %q.  %q is not a singleton UnitID"):format(tostring(classification),tostring(unit)), 2)
 	end
 	unit = id
 
-	local frame_name = "PitBull4_Frames_" .. unit
+	local frame_name = "PitBull4_Frames_" .. classification
 	local frame = _G[frame_name]
 
 	if not frame then
@@ -66,17 +74,18 @@ function PitBull4:MakeSingletonFrame(unit)
 		frame:WrapScript(frame, "OnAttributeChanged", Singleton_OnAttributeChanged)
 		frame.is_singleton = true
 
-		-- for singletons, its classification is its UnitID
-		local classification = unit
 		frame.classification = classification
-		frame.classification_db = PitBull4.db.profile.units[classification]
+		frame.classification_db = classification_db
 
-		local is_wacky = PitBull4.Utils.IsWackyUnitGroup(classification)
-		frame.is_wacky = is_wacky
+		frame.is_wacky = PitBull4.Utils.IsWackyUnitGroup(unit)
 
 		self:ConvertIntoUnitFrame(frame)
 
 		frame:SetAttribute("unit", unit)
+	elseif frame.classification_db ~= classification_db then
+		-- Previously deleted frame being reused, set the classification_db
+		-- to its new classification_db.
+		frame.classification_db = classification_db
 	end
 
 	frame:Activate()
@@ -84,6 +93,13 @@ function PitBull4:MakeSingletonFrame(unit)
 	frame:RefreshLayout()
 
 	frame:UpdateGUID(UnitGUID(unit))
+
+	for frame_to_anchor, relative_to in pairs(frames_to_anchor) do
+		local relative_frame = PitBull4.Utils.GetRelativeFrame(relative_to)
+		if relative_frame == frame then
+			frame_to_anchor:RefixSizeAndPosition()
+		end
+	end
 end
 PitBull4.MakeSingletonFrame = PitBull4:OutOfCombatWrapper(PitBull4.MakeSingletonFrame)
 
@@ -146,17 +162,72 @@ function SingletonUnitFrame__scripts:OnDragStop()
 		self:StopMovingOrSizing()
 	end
 
+	local db = self.classification_db
+	local anchor = db.anchor
+	local relative_frame = PitBull4.Utils.GetRelativeFrame(db.relative_to)
+	local relative_point = db.relative_point
+
 	local ui_scale = UIParent:GetEffectiveScale()
 	local scale = self:GetEffectiveScale() / ui_scale
 
-	local x, y = self:GetCenter()
+	local x, y
+	if anchor == "TOPLEFT" then
+		x, y = self:GetLeft(), self:GetTop()
+	elseif anchor == "TOPRIGHT" then
+		x, y = self:GetRight(), self:GetTop()
+	elseif anchor == "BOTTOMLEFT" then
+		x, y = self:GetLeft(), self:GetBottom()
+	elseif anchor == "BOTTOMRIGHT" then
+		x, y = self:GetRight(), self:GetBottom()
+	elseif anchor == "CENTER" then
+		x, y = self:GetCenter()
+	elseif anchor == "TOP" then
+		x = self:GetCenter()
+		y = self:GetTop()
+	elseif anchor == "BOTTOM" then
+		x = self:GetCenter()
+		y = self:GetBottom()
+	elseif anchor == "LEFT" then
+		x, y = self:GetCenter()
+		x = self:GetLeft()
+	elseif anchor == "RIGHT" then
+		x, y = self:GetCenter()
+		x = self:GetRight()
+	end
 	x, y = x * scale, y * scale
 
-	x = x - GetScreenWidth()/2
-	y = y - GetScreenHeight()/2
+	local scale2 = relative_frame:GetEffectiveScale() / ui_scale
+	local x2,y2
+	if relative_point == "TOPLEFT" then
+		x2, y2 = relative_frame:GetLeft(), relative_frame:GetTop()
+	elseif relative_point == "TOPRIGHT" then
+		x2, y2 = relative_frame:GetRight(), relative_frame:GetTop()
+	elseif relative_point == "BOTTOMLEFT" then
+		x2, y2 = relative_frame:GetLeft(), relative_frame:GetBottom()
+	elseif relative_point == "BOTTOMRIGHT" then
+		x2, y2 = relative_frame:GetRight(), relative_frame:GetBottom()
+	elseif relative_point == "CENTER" then
+		x2, y2 = relative_frame:GetCenter()
+	elseif relative_point == "TOP" then
+		x2 = relative_frame:GetCenter()
+		y2 = relative_frame:GetTop()
+	elseif relative_point == "BOTTOM" then
+		x2 = relative_frame:GetCenter()
+		y2 = relative_frame:GetBottom()
+	elseif relative_point == "LEFT" then
+		x2, y2 = relative_frame:GetCenter()
+		x2 = relative_frame:GetLeft()
+	elseif relative_point == "RIGHT" then
+		x2, y2 = relative_frame:GetCenter()
+		x2 = relative_frame:GetRight()
+	end
+	x2, y2 = x2 * scale2, y2 * scale2
 
-	self.classification_db.position_x = x
-	self.classification_db.position_y = y
+	x = x - x2
+	y = y - y2
+
+	db.position_x = x
+	db.position_y = y
 
 	LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
 
@@ -235,9 +306,24 @@ function UnitFrame__scripts:OnAttributeChanged(key, value)
 		end
 
 		self.unit = new_unit
-		if new_unit then
+		if new_unit and self.is_singleton then
 			PitBull4.unit_id_to_frames[new_unit][self] = true
 			PitBull4.unit_id_to_frames_with_wacky[new_unit][self] = true
+			local is_wacky = PitBull4.Utils.IsWackyUnitGroup(new_unit)
+			self.is_wacky = is_wacky
+			if is_wacky then
+				if not PitBull4.wacky_frames[self] then
+					PitBull4.wacky_frames[self] = true
+					PitBull4.num_wacky_frames = PitBull4.num_wacky_frames + 1
+				end
+				PitBull4.non_wacky_frames[self] = nil
+			else
+				if PitBull4.wacky_frames[self] then
+					PitBull4.num_wacky_frames = PitBull4.num_wacky_frames - 1
+					PitBull4.wacky_frames[self] = nil
+				end
+				PitBull4.non_wacky_frames[self] = true
+			end
 		end
 
 		if not updated then
@@ -458,9 +544,27 @@ function SingletonUnitFrame:RefixSizeAndPosition()
 	self:SetFrameStrata(layout_db.strata)
 	self:SetFrameLevel(layout_db.level)
 
+	-- Check if the frame we will be anchoring to exists and if not
+	-- delay setting the anchor until it does.
+	local rel_to = classification_db.relative_to
+	local rel_frame, rel_type = PitBull4.Utils.GetRelativeFrame(rel_to)
+	if not rel_frame then
+		frames_to_anchor[self] = rel_to
+		if rel_type == "~" then
+			PitBull4.anchor_timer:Show()
+		end
+		return
+	else
+		frames_to_anchor[self] = nil
+	end
+
 	local scale = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
 	self:ClearAllPoints()
-	self:SetPoint("CENTER", UIParent, "CENTER", classification_db.position_x / scale, classification_db.position_y / scale)
+	if rel_type == "f" then
+		rel_frame:AnchorFrameToFirstUnit(self, classification_db.anchor, classification_db.relative_point, classification_db.position_x / scale, classification_db.position_y / scale)
+	else
+		self:SetPoint(classification_db.anchor, rel_frame, classification_db.relative_point, classification_db.position_x / scale, classification_db.position_y / scale)
+	end
 end
 SingletonUnitFrame.RefixSizeAndPosition = PitBull4:OutOfCombatWrapper(SingletonUnitFrame.RefixSizeAndPosition)
 
@@ -517,6 +621,47 @@ function UnitFrame:RecheckConfigMode()
 	self:Update(true, true)
 end
 
+function UnitFrame:Rename(name)
+	local old_name = self.classification
+	if old_name == name then
+		return
+	end
+
+	-- Look for groups and units that are anchored to this frame and update their
+	-- relative_to reference, there is no need to actually update the anchors
+	-- because the frame will already be anchored properly and changing the
+	-- name won't break the anchor.
+	for group, group_db in pairs(PitBull4.db.profile.groups) do
+		local rel_to = group_db.relative_to
+		local rel_type = rel_to:sub(1,1)
+		if rel_type == "S" then
+			local rel_name = rel_to:sub(2)
+			if rel_name == old_name then
+				group_db.relative_to = rel_type .. name
+			end
+		end
+	end
+	for unit, unit_db in pairs(PitBull4.db.profile.units) do
+		local rel_to = unit_db.relative_to
+		local rel_type = rel_to:sub(1,1)
+		if rel_type == "S" then
+			local rel_name = rel_to:sub(2)
+			if rel_name == old_name then
+				unit_db.relative_to = rel_type .. name
+			end
+		end
+	end
+
+	local old_frame_name = "PitBull4_Frames_" .. old_name
+	local new_frame_name = "PitBull4_Frames_" .. name
+
+	PitBull4.classification_to_frames[old_name][self] = nil
+	PitBull4.classification_to_frames[name][self] = true
+	_G[old_frame_name] = nil
+	_G[new_frame_name] = self
+	self.classification = name
+end
+
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 local DEFAULT_FONT, DEFAULT_FONT_SIZE = ChatFontNormal:GetFont()
 
@@ -565,6 +710,20 @@ function UnitFrame:Update(same_guid, update_layout)
 	if self.dont_update then
 		return
 	end
+
+	local classification_db = self.classification_db
+	if not classification_db or not self.layout_db then
+		-- Possibly unused frame made for another profile
+		return
+	end
+
+	-- Update the unit if it changed, only applicable to singleton units,
+	-- member units don't have a configured unit but a unit_group and
+	-- the unit is set by the SecureGroupHeaderTemplate instead.
+	if self.is_singleton then
+		self:ProxySetAttribute("unit",classification_db.unit)
+	end
+
 	if not self.guid and not self.force_show then
 		if self.populated then
 			self.populated = nil
@@ -575,9 +734,6 @@ function UnitFrame:Update(same_guid, update_layout)
 				module:Clear(self)
 			end
 		end
-		return
-	elseif not self.classification_db or not self.layout_db then
-		-- Possibly unused frame made for another profile
 		return
 	end
 	self.populated = true

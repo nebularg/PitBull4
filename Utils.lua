@@ -310,3 +310,44 @@ local function deep_copy(data)
 	return t
 end
 PitBull4.Utils.deep_copy = deep_copy
+
+--- Parse the relative_to value and return the frame and the type.
+-- The relative_to value contains a single character prefix followed by a suffix
+-- identifying how to find the actual frame.  See the actual code for the prefixes.
+-- @param relative_to value stored in the db
+-- @usage local rel_frame, rel_type = PitBull4.Utils.GetRelativeFrame(group_db.relative_to)
+-- @return relative_frame the actual frame if it exists.
+-- @return relative_type the prefix code indicating the type of the relative_frame
+function PitBull4.Utils.GetRelativeFrame(relative_to)
+	local relative_type = relative_to:sub(1,1)
+	local relative_name = relative_to:sub(2)
+
+	-- The relative_to field consists a single character prefix followed
+	-- by the information needed to calculate the frame name for that prefix.
+	-- The prefixes are as follows:
+	-- 0 = UIParent (suffix is ignored)
+	-- S = Singleton frames, suffix is user defined name for the unit.
+	-- g = Group header, suffix is the user defined name for the group.
+	-- f = First unit in a group, suffix is the user defined name for the group.
+	-- ~ = Custom, suffix is the frame name
+
+	if relative_type == "0" then
+		return UIParent, relative_type
+	elseif relative_type == "S" then
+		return _G["PitBull4_Frames_"..relative_name], relative_type
+	elseif relative_type == "g" or relative_type == "f" then
+		local group = PitBull4.db.profile.groups[relative_name]
+		if not group then return nil, relative_type end
+		if group.use_pet_header and group.unit_group:match("pet") then
+			return _G["PitBull4_PetGroups_"..relative_name], relative_type
+		elseif not group.group_based then
+			return _G["PitBull4_EnemyGroups_"..relative_name], relative_type
+		else
+			return _G["PitBull4_Groups_"..relative_name], relative_type
+		end
+	elseif relative_type == "~" then
+		return _G[relative_name], relative_type
+	else
+		error("PitBull4 found an unknown prefix string on the relative_to setting: "..relative_to)
+	end
+end

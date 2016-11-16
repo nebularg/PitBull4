@@ -37,7 +37,7 @@ local ACCEPTABLE_CLASSIFICATIONS = {
 }
 
 local function check_classification(frame)
-	local classification = frame.is_singleton and frame.classification or frame.header.unit_group
+	local classification = frame.is_singleton and frame.unit or frame.header.unit_group
 	return ACCEPTABLE_CLASSIFICATIONS[classification]
 end
 

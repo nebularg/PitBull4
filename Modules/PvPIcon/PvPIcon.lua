@@ -46,13 +46,14 @@ local FRIENDLY_CLASSIFICATIONS = {
 	raid = true,
 	raidpet = true,
 	targettarget = true,
+	bosstarget = true,
 }
 local OPPOSITE_PLAYER_FACTION = {
 	["Horde"] = "Alliance",
 	["Alliance"] = "Horde",
 }
 function PitBull4_PvPIcon:GetExampleTexture(frame)
-	local classification = frame.classification
+	local classification = frame.is_singleton and frame.unit or frame.header.unit_group
 	if classification == "focus" then
 		return [[Interface\TargetingFrame\UI-PVP-FFA]]
 	end

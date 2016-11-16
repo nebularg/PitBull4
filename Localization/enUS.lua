@@ -436,6 +436,7 @@ L["Friend"] = true
 L["Friend buffs"] = true
 L["Friend debuffs"] = true
 L["Friendly opacity"] = true
+L["From growth direction"] = true
 L["Full body"] = true
 L["Full health"] = true
 L["Full opacity"] = true

@@ -2,7 +2,7 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local CURRENT_UNIT = "player"
+local CURRENT_UNIT = L["Player"]
 local CURRENT_GROUP = L["Party"]
 
 function PitBull4.Options.get_unit_options()
@@ -41,23 +41,58 @@ function PitBull4.Options.get_unit_options()
 	local deep_copy = PitBull4.Utils.deep_copy
 
 	unit_options.args.current_unit = {
-		name = L["Current unit"],
-		desc = L["Change the unit you are currently editing."],
+		name = L["Current unit frame"],
+		desc = L["Change the unit frame you are currently editing."],
 		type = 'select',
 		order = 1,
 		values = function(info)
 			local t = {}
-			for _, name in ipairs(PitBull4.SINGLETON_CLASSIFICATIONS) do
-				t[name] = PitBull4.Utils.GetLocalizedClassification(name) .. (PitBull4.Utils.IsWackyUnitGroup(name) and "*" or "")
+			for name in pairs(PitBull4.db.profile.units) do
+				t[name] = name
 			end
 			return t
 		end,
 		get = function(info)
+			local units = PitBull4.db.profile.units
+			if not rawget(units, CURRENT_UNIT) then
+				CURRENT_UNIT = next(units)
+			end
 			return CURRENT_UNIT
 		end,
 		set = function(info, value)
 			CURRENT_UNIT = value
 		end
+	}
+
+	local function validate_unit(info, value)
+		if value:len() < 3 then
+			return L["Must be at least  characters long."]
+		end
+		if rawget(PitBull4.db.profile.units, value) then
+			return L["Must be unique."]
+		end
+		return true
+	end
+
+	unit_options.args.new_unit= {
+		name = L["New unit frame"],
+		desc = L["Create a new unit frame. This will copy the data of the currently-selected unit frame."],
+		type = 'input',
+		order = 2,
+		get = function(info) return "" end,
+		set = function(info, value)
+			PitBull4.db.profile.units[value] = deep_copy(PitBull4.db.profile.units[CURRENT_UNIT])
+
+			CURRENT_UNIT = value
+
+			if get_unit_db().enabled then
+				PitBull4:MakeSingletonFrame(CURRENT_UNIT)
+				for frame in PitBull4:IterateFramesForClassification(CURRENT_UNIT, true) do
+					frame:RecheckConfigMode()
+				end
+			end
+		end,
+		validate = validate_unit,
 	}
 
 	group_options.args.current_group = {
@@ -200,6 +235,7 @@ function PitBull4.Options.get_unit_options()
 	end
 
 	local shared_args = {}
+	local shared_position_args = {}
 	local unit_args = {}
 	local group_args = {}
 	local group_layout_args = {}
@@ -207,7 +243,7 @@ function PitBull4.Options.get_unit_options()
 
 	unit_args.enable = {
 		name = L["Enable"],
-		desc = L["Enable this unit."],
+		desc = L["Enable this unit frame."],
 		type = 'toggle',
 		order = next_order(),
 		get = function(info)
@@ -234,6 +270,29 @@ function PitBull4.Options.get_unit_options()
 			end
 		end,
 		disabled = disabled,
+	}
+
+	unit_args.remove = {
+		name = L["Remove"],
+		desc = L["Remove this unit frame.  Note: there is no way to recover after removal."],
+		confirm = true,
+		order = next_order(),
+		type = 'execute',
+		func = function(info)
+			get_unit_db().enabled = false
+
+			for frame in PitBull4:IterateFramesForClassification(CURRENT_UNIT, true) do
+				frame:RecheckConfigMode()
+				frame:Deactivate()
+			end
+
+			PitBull4.db.profile.units[CURRENT_UNIT] = nil
+		end,
+		disabled = function(info)
+			if next(PitBull4.db.profile.units) == CURRENT_UNIT and not next(PitBull4.db.profile.units, CURRENT_UNIT) then
+				return true
+			end
+		end,
 	}
 
 	group_args.enable = {
@@ -337,6 +396,28 @@ function PitBull4.Options.get_unit_options()
 		end
 	end
 
+	unit_args.name = {
+		name = L["Name"],
+		desc = function(info)
+			return L["Rename the '%s' unit frame."]:format(CURRENT_UNIT)
+		end,
+		type = 'input',
+		order = next_order(),
+		get = function(info)
+			return CURRENT_UNIT
+		end,
+		set = function(info, value)
+			PitBull4.db.profile.units[value], PitBull4.db.profile.units[CURRENT_UNIT] = PitBull4.db.profile.units[CURRENT_UNIT], nil
+			local old_name = CURRENT_UNIT
+			CURRENT_UNIT = value
+
+			for frame in PitBull4:IterateFramesForClassification(old_name, true) do
+				frame:Rename(CURRENT_UNIT)
+			end
+		end,
+		validate = validate_unit,
+	}
+
 	group_args.name = {
 		name = L["Name"],
 		desc = function(info)
@@ -357,6 +438,24 @@ function PitBull4.Options.get_unit_options()
 			end
 		end,
 		validate = validate_group,
+	}
+
+	unit_args.unit = {
+		name = L["Unit"],
+		desc = L["Which unit this frame should show."],
+		type = 'select',
+		order = next_order(),
+		values = function(info)
+			local t = {}
+			for _, name in ipairs(PitBull4.SINGLETON_CLASSIFICATIONS) do
+				t[name] = PitBull4.Utils.GetLocalizedClassification(name) .. (PitBull4.Utils.IsWackyUnitGroup(name) and "*" or "")
+			end
+			return t
+		end,
+		get = get,
+		set = set_with_update,
+		disabled = disabled,
+		width = 'double',
 	}
 
 	group_args.unit_group = {
@@ -507,13 +606,182 @@ function PitBull4.Options.get_unit_options()
 		disabled = disabled,
 	}
 
-	shared_args.position_x = {
-		name = L["Horizontal position"],
-		desc = L["Horizontal position on the x-axis of the screen."],
+	shared_position_args.anchor = {
+		name = L["Anchor point"],
+		desc = L["Anchor point on the unit frame."],
+		order = next_order(),
+		type = 'select',
+		get = get,
+		set = set_with_refresh_layout,
+		values = function(info)
+			local t = {
+			TOP = L["Top"],
+			RIGHT = L["Right"],
+			BOTTOM = L["Bottom"],
+			LEFT = L["Left"],
+			TOPRIGHT = L["Top-right"],
+			TOPLEFT = L["Top-left"],
+			BOTTOMRIGHT = L["Bottom-right"],
+			BOTTOMLEFT = L["Bottom-left"],
+			CENTER = L["Center"],
+			}
+
+			if info[1] == "groups" then
+				t[""] = L["From growth direction"]
+			end
+			return t
+		end,
+	}
+
+	local function is_prefix_of_type(type, relative_type)
+		if type == "units" then
+			return relative_type == "S"
+		elseif type == "groups" then
+			return relative_type == "g" or relative_type == 'f'
+		else
+			error("Unknown type")
+		end
+	end
+
+	local function is_relative_to_self(type, relative_to)
+		-- See PitBull4.Utils.GetRelativeFrame for the documentation
+		-- of the relative type which is the first character of the
+		-- relative_to field.
+
+		-- No relative_to, can't be true
+		if not relative_to then return false end
+
+		local relative_type = relative_to:sub(1,1)
+		local relative_suffix = relative_to:sub(2)
+
+		-- If the type matches check if it is the same as the current
+		-- unit or group.
+		if is_prefix_of_type(type, relative_type) then
+			if type == "units" then
+				if relative_suffix == CURRENT_UNIT then
+					return true
+				end
+			elseif type == "groups" then
+				if relative_suffix == CURRENT_GROUP then
+					return true
+				end
+			end
+		end
+
+		-- Didn't match but need to recurse to see if the unit
+		-- this depends on points at another unit that depends on this
+		-- unit.
+		local type_db
+		if is_prefix_of_type("units", relative_type) then
+			type_db = PitBull4.db.profile.units
+		elseif is_prefix_of_type("groups", relative_type) then
+			type_db = PitBull4.db.profile.groups
+		else
+			-- relative type not one we can recurse
+			return false
+		end
+
+		local relative_db = type_db[relative_suffix]
+		if relative_db then
+			return is_relative_to_self(type, relative_db.relative_to)
+		end
+
+		-- Something went wrong
+		return false
+	end
+
+	shared_position_args.relative_to = {
+		name = L["Relative to"],
+		desc = L["Frame which the unit frame is placed relative to."],
+		order = next_order(),
+		type = 'select',
+		width = 'double',
+		get = function(info)
+			local value = get(info)
+			if string.sub(value,1,1) == "~" then
+				return "~"
+			end
+			return value
+		end,
+		set = set_with_refresh_layout,
+		values = function(info)
+			-- See the documentation for the PitBull4.Utils.GetRelativeFrame
+			-- for a list of the prefixes used in this field.
+			local current = get_db(info[1])
+			local t = {}
+			t["0"] = L["Game window"]
+			t["~"] = L["Custom"]
+			for unit, unit_db in pairs(PitBull4.db.profile.units) do
+				if unit_db ~= current and unit_db.enabled and not is_relative_to_self(info[1], unit_db.relative_to) then
+					t["S"..unit] = unit
+				end
+			end
+			for group, group_db in pairs(PitBull4.db.profile.groups) do
+				if group_db ~= current and group_db.enabled and not is_relative_to_self(info[1], group_db.relative_to) then
+					t["g"..group] = group .. ' ' .. L["(entire group)"]
+					t["f"..group] = group .. ' ' .. L["(first frame)"]
+				end
+			end
+			return t
+		end,
+	}
+
+	shared_position_args.custom_relative_to = {
+		name = L["Custom relative to"],
+		desc = L["Name of the frame you wish to anchor to."],
+		order = next_order(),
+		type = 'input',
+		get = function(info)
+			return string.sub(get_db(info[1]).relative_to,2)
+		end,
+		set = function(info, value)
+			local type = info[1]
+
+			get_db(type).relative_to = "~"..value
+			refresh_layout(type)
+		end,
+		validate = function(info, value)
+			if not value then return true end
+			local prefix = value:sub(1,16)
+			-- Don't allow our frames to be custom anchor points to avoid
+			-- allowing people to break us by creating circular links
+			if prefix == "PitBull4_Groups_" or prefix == "PitBull4_EnemyGroups_" or prefix == "PitBull4_Frames_" then
+				return L["Cannot set PitBull4 frames as custom relative to"]
+			end
+			return true
+		end,
+		hidden = function(info)
+			return string.sub(get_db(info[1]).relative_to,1,1) ~= "~"
+		end,
+	}
+
+	shared_position_args.relative_point = {
+		name = L["Relative point"],
+		desc = L["Point on the relative to frame."],
+		order = next_order(),
+		type = 'select',
+		get = get,
+		set = set_with_refresh_layout,
+		values = {
+			TOP = L["Top"],
+			RIGHT = L["Right"],
+			BOTTOM = L["Bottom"],
+			LEFT = L["Left"],
+			TOPRIGHT = L["Top-right"],
+			TOPLEFT = L["Top-left"],
+			BOTTOMRIGHT = L["Bottom-right"],
+			BOTTOMLEFT = L["Bottom-left"],
+			CENTER = L["Center"],
+		},
+	}
+
+	shared_position_args.position_x = {
+		name = L["Horizontal offset"],
+		desc = L["Horizontal offset between relative point and anchor point."],
 		order = next_order(),
 		type = 'range',
-		softMin = -math.floor(GetScreenWidth() / 10) * 5,
-		softMax = math.floor(GetScreenWidth() / 10) * 5,
+		softMin = -math.floor(GetScreenWidth()),
+		softMax = math.floor(GetScreenWidth()),
 		get = function(info)
 			return round(get_db(info[1]).position_x)
 		end,
@@ -523,13 +791,13 @@ function PitBull4.Options.get_unit_options()
 		disabled = disabled,
 	}
 
-	shared_args.position_y = {
-		name = L["Vertical position"],
-		desc = L["Vertical position on the y-axis of the screen."],
+	shared_position_args.position_y = {
+		name = L["Vertical offset"],
+		desc = L["Vertical offset between relative point and anchor point."],
 		order = next_order(),
 		type = 'range',
-		softMin = -math.floor(GetScreenHeight() / 10) * 5,
-		softMax = math.floor(GetScreenHeight() / 10) * 5,
+		softMin = -math.floor(GetScreenHeight()),
+		softMax = math.floor(GetScreenHeight()),
 		get = function(info)
 			return round(get_db(info[1]).position_y)
 		end,
@@ -709,7 +977,10 @@ function PitBull4.Options.get_unit_options()
 			left_up = ("%s, %s"):format(L["Columns left"], L["Rows up"]),
 		},
 		get = get,
-		set = set_with_refresh_group,
+		set = function(info, value)
+			PitBull4:AdjustGroupAnchorForDirectionChange(get_group_db(), value)
+			set_with_refresh_group(info, value)
+		end,
 		disabled = disabled,
 		width = 'double',
 	}
@@ -1240,11 +1511,18 @@ function PitBull4.Options.get_unit_options()
 	for k, v in pairs(unit_args) do
 		args[k] = v
 	end
-	unit_options.args.sub = {
+	unit_options.args.general = {
 		type = 'group',
-		name = "",
-		inline = true,
+		name = L["General"],
 		args = args,
+		order = next_order()
+	}
+	unit_options.args.position = {
+		type = 'group',
+		name = L["Position"],
+		desc = L["Configure the position of the unit frame on screen."],
+		args = shared_position_args,
+		order = next_order()
 	}
 
 	local args = {}
@@ -1259,6 +1537,14 @@ function PitBull4.Options.get_unit_options()
 		name = L["General"],
 		args = args,
 		order = next_order(),
+	}
+
+	group_options.args.position = {
+		type = 'group',
+		name = L["Position"],
+		desc = L["Configure the position of the unit group on screen."],
+		args = shared_position_args,
+		order = next_order()
 	}
 
 	group_options.args.layout = {
