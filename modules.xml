@@ -1,7 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 
-<!--@debug@-->
 <Include file="Modules\Aggro\load.xml"/>
 <Include file="Modules\AltManaBar\load.xml"/>
 <Include file="Modules\AltPowerBar\load.xml"/>
@@ -47,6 +46,5 @@
 <Include file="Modules\Totems\load.xml"/>
 <Include file="Modules\VisualHeal\load.xml"/>
 <Include file="Modules\VoiceIcon\load.xml"/>
-<!--@end-debug@-->
 
 </Ui>
