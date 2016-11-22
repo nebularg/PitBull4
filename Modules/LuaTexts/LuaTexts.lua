@@ -715,6 +715,12 @@ local function update_events(events)
 			events[old_event] = nil
 		end
 	end
+	-- prune "false" entries
+	for event, value in next, events do
+		if not value then
+			events[event] = nil
+		end
+	end
 end
 
 local function fix_legacy_events()
@@ -775,10 +781,12 @@ function PitBull4_LuaTexts:SetCVar()
 	predicted_health = GetCVarBool("predictedHealth")
 end
 
-function PitBull4_LuaTexts:OnEnable()
+function PitBull4_LuaTexts:OnInitialize()
 	fix_legacy_events()
 	fix_rep_std_text()
+end
 
+function PitBull4_LuaTexts:OnEnable()
 	-- UNIT_SPELLCAST_SENT has to always be registered so we can capture
 	-- additional data not always available.
 	self:RegisterEvent("UNIT_SPELLCAST_SENT")
@@ -1577,7 +1585,7 @@ PitBull4_LuaTexts:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info,key,value)
 			local events = PitBull4.Options.GetTextLayoutDB().events
-			events[key] = value
+			events[key] = value or nil
 			update()
 		end,
 		width = 'double',
