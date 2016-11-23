@@ -710,9 +710,9 @@ compat_event_map.RAID_ROSTER_UPDATE = 'GROUP_ROSTER_UPDATE'
 local function update_events(events)
 	for old_event, new_event in next, compat_event_map do
 		local value = events[old_event]
+		events[old_event] = nil
 		if not events[new_event] and value then
 			events[new_event] = value
-			events[old_event] = nil
 		end
 	end
 	-- prune "false" entries
@@ -745,6 +745,36 @@ local function fix_legacy_events()
 	end
 end
 
+-- add missing power events
+local function fix_power_texts()
+	local sv = PitBull4.db:GetNamespace("LuaTexts").profiles
+	for _, profile in next, sv do
+		local layouts = profile.layouts
+		if layouts then
+			for _, layout in next, layouts do
+				local elements = layout.elements
+				if elements then
+					for _, text in next, elements do
+						if text.code and text.code:find("Power(unit)", nil, true) then
+							if not text.events then
+								text.events = { ["UNIT_POWER_FREQUENT"] = true, ["UNIT_MAXPOWER"] = true }
+							else
+								if not text.events["UNIT_MAXPOWER"] then
+									text.events["UNIT_MAXPOWER"] = true
+								end
+								if not text.events["UNIT_POWER_FREQUENT"] and not text.events["UNIT_POWER"] then
+									text.events["UNIT_POWER_FREQUENT"] = true
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+-- update pre-mop default rep text for friendships
 local function fix_rep_std_text()
 	local OLD_CODE = [[
 local name,_,min,max,value = GetWatchedFactionInfo()
@@ -782,8 +812,11 @@ function PitBull4_LuaTexts:SetCVar()
 end
 
 function PitBull4_LuaTexts:OnInitialize()
+	-- should probably switch to a global db version check/upgrade process
+	-- this doesn't need to run every load
 	fix_legacy_events()
 	fix_rep_std_text()
+	fix_power_texts()
 end
 
 function PitBull4_LuaTexts:OnEnable()
