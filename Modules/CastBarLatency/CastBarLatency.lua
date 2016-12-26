@@ -123,7 +123,6 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_CHANNEL_START(event, unit, spell
 	max_time = end_time - start_time
 	lag_time = start_time - send_time
 	is_channel = true
-	local queue_time = queue_time
 	local queue_val = queue_time / ADJUSTMENT_DIVISOR_FOR_QUEUES
 	if show_queue and (lag_time < queue_val) then
 		lag_time = queue_val
@@ -306,7 +305,7 @@ PitBull4_CastBarLatency:SetGlobalOptionsFunction(function(self)
 		type = 'range',
 		width = 'double',
 		name = L["Queue time"],
-		desc = string.format(L["Fixed time at then end of a running cast where you are able to cast the next spell. Default is %s\nWARNING: Do not change this unless you know exactly what you're doing!"], tostring(DEFAULT_QUEUE_TIME)),
+		desc = string.format(L["Fixed time at then end of a running cast where you are able to cast the next spell. Default is %s\\nWARNING: Do not change this unless you know exactly what you're doing!"]:gsub("\\n", "\n"), tostring(DEFAULT_QUEUE_TIME)),
 		min = 0,
 		max = 1000,
 		step = 1,
