@@ -101,41 +101,41 @@ for _, class in next, CLASS_SORT_ORDER do
 end
 
 -- Build the class filters
-function PitBull4_Aura:BuildClassFilters()
+do
 	-- some shenanigans to only load LPS if the module is enabled (for nolib installs)
 	local LibPlayerSpells = LibStub("LibPlayerSpells-1.0", true)
 	if not LibPlayerSpells then
 		LoadAddOn("LibPlayerSpells-1.0")
 		LibPlayerSpells = LibStub("LibPlayerSpells-1.0", true)
 	end
-	if not LibPlayerSpells then return end
+	if LibPlayerSpells then
+		local AURA = LibPlayerSpells.constants.AURA
+		local INVERT_AURA = LibPlayerSpells.constants.INVERT_AURA
+		local HELPFUL = LibPlayerSpells.constants.HELPFUL
+		local HARMFUL = LibPlayerSpells.constants.HARMFUL
+		local PERSONAL = LibPlayerSpells.constants.PERSONAL
+		local PET = LibPlayerSpells.constants.PET
+		local TARGETING = LibPlayerSpells.masks.TARGETING
 
-	local AURA = LibPlayerSpells.constants.AURA
-	local INVERT_AURA = LibPlayerSpells.constants.INVERT_AURA
-	local HELPFUL = LibPlayerSpells.constants.HELPFUL
-	local HARMFUL = LibPlayerSpells.constants.HARMFUL
-	local PERSONAL = LibPlayerSpells.constants.PERSONAL
-	local PET = LibPlayerSpells.constants.PET
-	local TARGETING = LibPlayerSpells.masks.TARGETING
+		for _, class in next, CLASS_SORT_ORDER do
+			for spell, flags in next, LibPlayerSpells.__categories[class] do
+				if bit.band(flags, AURA) ~= 0 then
+					local target = bit.band(flags, TARGETING)
+					local inverted = bit.band(flags, INVERT_AURA) ~= 0 -- friend debuff
 
-	for _, class in next, CLASS_SORT_ORDER do
-		for spell, flags in next, LibPlayerSpells.__categories[class] do
-			if bit.band(flags, AURA) ~= 0 then
-				local target = bit.band(flags, TARGETING)
-				local inverted = bit.band(flags, INVERT_AURA) ~= 0 -- friend debuff
-
-				if target == HELPFUL and not inverted then
-					friend_buffs[class][spell] = true
-				elseif (target == HELPFUL or target == PET) and inverted then
-					friend_debuffs[class][spell] = true
-				elseif target == PERSONAL and not inverted then
-					self_buffs[class][spell] = true
-				elseif target == PERSONAL and inverted then
-					self_debuffs[class][spell] = true
-				elseif target == PET and not inverted then
-					pet_buffs[class][spell] = true
-				elseif target == HARMFUL then
-					enemy_debuffs[class][spell] = true
+					if target == HELPFUL and not inverted then
+						friend_buffs[class][spell] = true
+					elseif (target == HELPFUL or target == PET) and inverted then
+						friend_debuffs[class][spell] = true
+					elseif target == PERSONAL and not inverted then
+						self_buffs[class][spell] = true
+					elseif target == PERSONAL and inverted then
+						self_debuffs[class][spell] = true
+					elseif target == PET and not inverted then
+						pet_buffs[class][spell] = true
+					elseif target == HARMFUL then
+						enemy_debuffs[class][spell] = true
+					end
 				end
 			end
 		end
@@ -306,7 +306,7 @@ local function turn(t, shallow)
 		for id, v in next, entry do
 			local spell = GetSpellInfo(id)
 			if not spell then
-				DEFAULT_CHAT_FRAME:AddMessage(string.format("PitBull4_Aura: Unknown spell ID: %d", id))
+				DEFAULT_CHAT_FRAME:AddMessage(string.format("PitBull4_Aura: Unknown spell ID: %s", id))
 			else
 				tmp[spell] = v
 			end
@@ -348,4 +348,24 @@ function PitBull4_Aura:FilterEntry(name, entry, frame)
 	if not filter then return true end
 	local filter_func = self.filter_types[filter.filter_type].filter_func
 	return filter_func(name, entry, frame)
+end
+
+
+PitBull4_Aura.OnProfileChanged_funcs[#PitBull4_Aura.OnProfileChanged_funcs+1] =
+function(self)
+	-- Fix name lists containing spell ids (issue in 27703b7)
+	for _, filter in next, PitBull4_Aura.db.profile.global.filters do
+		if filter.name_list then
+			local name_list = filter.name_list
+			for id, v in next, name_list do
+				if type(id) == "number" then
+					name_list[id] = nil
+					local spell = GetSpellInfo(id)
+					if spell then
+						name_list[spell] = v
+					end
+				end
+			end
+		end
+	end
 end
