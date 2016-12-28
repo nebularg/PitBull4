@@ -76,7 +76,7 @@ if LibSharedMedia and not LibSharedMedia:IsValid("font", DEFAULT_LSM_FONT) then 
 	DEFAULT_LSM_FONT = LibSharedMedia:GetDefault("font")
 end
 
-local CURRENT_CONFIG_VERSION = 2
+local CURRENT_CONFIG_VERSION = 3
 
 local DATABASE_DEFAULTS = {
 	profile = {
@@ -1033,69 +1033,6 @@ local function get_disabled_module_addons()
 	return format("|cffffd200%s|r", NONE)
 end
 
--- Convert the old units table to the new format.  Prior to this we could
--- only have one unit frame per unit for singelton frames.  Now we can have
--- as many as we want.  However, we can't use the unit id as the key now so
--- migrate the old units to their localized names as keys and set their unit
--- id as the unit key.
-local function migrate_to_new_units_db()
-	local profiles = PitBull4DB and PitBull4DB.profiles
-	if not profiles then return end
-	local tmp = {}
-	for _,profile in pairs(profiles) do
-		if not profile.made_units then -- Old profile
-			profile.made_units = true
-			local units = profile and profile.units
-			if units then
-				-- Copy the units to a tmp table
-				for unit, data in pairs(units) do
-					tmp[unit] = data
-				end
-				-- Clear the units table so...
-				wipe(units)
-				-- We can rebuild it with the new setup.
-				for unit, data in pairs(tmp) do
-					units[PitBull4.Utils.GetLocalizedClassification(unit)] = data
-					data.unit = unit
-					if data.enabled == nil then
-						-- enabled was default so set it explitly since the default for
-						-- some units is disabled now.
-						data.enabled = true
-					end
-				end
-				wipe(tmp)
-			end
-		end
-	end
-end
-
-local function migrate_to_new_group_anchor_format()
-	local db = PitBull4.db
-	local profiles = db and db.profiles
-	if not profiles then return end
-	local current_profile = db:GetCurrentProfile()
-	for profile_name,profile in pairs(profiles) do
-		if not profile.group_anchors_updated then -- Old profile
-			db:SetProfile(profile_name)
-			profile = db.profile
-			profile.group_anchors_updated = true
-			local groups = profile.groups
-			local layouts = profile.layouts
-			if groups and layouts then
-				for group, group_db in pairs(groups) do
-					if group_db then
-						local layout_db = layouts[group_db.layout]
-						if layout_db then
-							PitBull4:MigrateGroupAnchorToNewFormat(group_db, layout_db)
-						end
-					end
-				end
-			end
-		end
-	end
-	db:SetProfile(current_profile)
-end
-
 local upgrade_functions = {
 	[1] = function(sv)
 		-- Version 1 (version number used for config files without a version tag)
@@ -1149,6 +1086,60 @@ local upgrade_functions = {
 		end
 		return true
 	end,
+	[2] = function(sv)
+		-- Allows creating multiple singleton frames and frame-to-frame anchoring.
+		if not sv.profiles then return true end
+		local tmp = {}
+		for profile, profile_db in pairs(sv.profiles) do
+			-- Convert the old units table to the new format.  Prior to this we could
+			-- only have one unit frame per unit for singelton frames.  Now we can have
+			-- as many as we want.  However, we can't use the unit id as the key now so
+			-- migrate the old units to their localized names as keys and set their unit
+			-- id as the unit key.
+			if profile_db.units and not profile_db.made_units then
+				profile_db.made_units = true
+				local units = profile_db.units
+				-- Copy the units to a tmp table
+				for unit, data in pairs(units) do
+					tmp[unit] = data
+				end
+				-- Rebuild the units table with the localized unit names as keys.
+				wipe(units)
+				for unit, data in pairs(tmp) do
+					units[PitBull4.Utils.GetLocalizedClassification(unit)] = data
+					data.unit = unit
+					if data.enabled == nil then
+						-- enabled was default so set it explitly since the default for
+						-- some units is disabled now.
+						data.enabled = true
+					end
+				end
+				wipe(tmp)
+			end
+
+			-- Offsets used to be stored between the center of the screen and the center
+			-- of the group frame, while the frames anchor point varied based on the
+			-- growth direction of the frame.  So the offset from the actual anchor point
+			-- was calculated as needed.  Now we store the the actual offsets and only
+			-- recalculate if the anchor point is being determined by the growth direction.
+			if not profile_db.group_anchors_updated then -- the anchors branch set this
+				local groups = profile_db.groups
+				local layouts = profile_db.layouts
+				if groups and layouts then
+					for group, group_db in pairs(groups) do
+						if group_db then
+							local layout_db = layouts[group_db.layout]
+							if layout_db then
+								PitBull4:MigrateGroupAnchorToNewFormat(group_db, layout_db)
+							end
+						end
+					end
+				end
+			end
+			profile_db.group_anchors_updated = nil -- cleanup
+		end
+		return true
+	end,
 }
 
 local function check_config_version(sv)
@@ -1166,7 +1157,7 @@ local function check_config_version(sv)
 	while (global.config_version < CURRENT_CONFIG_VERSION) do
 		if upgrade_functions[global.config_version] then
 			if not upgrade_functions[global.config_version](sv) then
-				error(string.format(L["Problem upgrading PitBull4 config_version %d to %d.  Please file a ticket and attach your WTF/Account/$ACCOUNT/SavedVariables/PitBull4.lua file!"],global.config_version,global.config_version + 1))
+				error(format(L["Problem upgrading PitBull4 config_version %d to %d.  Please file a ticket and attach your WTF/Account/$ACCOUNT/SavedVariables/PitBull4.lua file!"],global.config_version,global.config_version + 1))
 			end
 		end
 		global.config_version = global.config_version + 1
@@ -1174,11 +1165,7 @@ local function check_config_version(sv)
 end
 
 function PitBull4:OnInitialize()
-	check_config_version(PitBull4DB)
-
-	migrate_to_new_units_db()
-
-	local fresh_config = check_config_version(PitBull4DB)
+	local fresh_config = check_config_version(_G["PitBull4DB"])
 
 	db = LibStub("AceDB-3.0"):New("PitBull4DB", DATABASE_DEFAULTS, "Default")
 	self.db = db
@@ -1186,8 +1173,6 @@ function PitBull4:OnInitialize()
 	if fresh_config then
 		db.global.config_version = CURRENT_CONFIG_VERSION
 	end
-
-	migrate_to_new_group_anchor_format()
 
 	db.RegisterCallback(self, "OnProfileChanged")
 	db.RegisterCallback(self, "OnProfileReset")
