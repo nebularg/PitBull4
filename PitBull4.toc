@@ -13,7 +13,7 @@
 ## Notes-zhTW: @localization(locale="zhTW", key="Dog-themed unit frames. Woof. Arf. Yip.")@
 ## Author: ckknight, Shekfi
 ## SavedVariables: PitBull4DB
-## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDBIcon-1.0, LibBossIDs-1.0, LibDualSpec-1.0, Clique
+## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDBIcon-1.0, LibBossIDs-1.0, LibDualSpec-1.0, LibPlayerSpells-1.0, Clique
 ## Version: @project-version@
 
 libs.xml

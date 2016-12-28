@@ -104,10 +104,6 @@ end
 do
 	-- some shenanigans to only load LPS if the module is enabled (for nolib installs)
 	local LibPlayerSpells = LibStub("LibPlayerSpells-1.0", true)
-	if not LibPlayerSpells then
-		LoadAddOn("LibPlayerSpells-1.0")
-		LibPlayerSpells = LibStub("LibPlayerSpells-1.0", true)
-	end
 	if LibPlayerSpells then
 		local AURA = LibPlayerSpells.constants.AURA
 		local INVERT_AURA = LibPlayerSpells.constants.INVERT_AURA
