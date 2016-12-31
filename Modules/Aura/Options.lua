@@ -2179,8 +2179,6 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 		CURRENT_BORDER = "my_buffs.friend"
 	end
 	local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
-	LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
-	local AceGUI = LibStub("AceGUI-3.0")
 
 	local function split_text()
 		return string.match(CURRENT_TEXT,"([^%.]*)%.(.*)")
@@ -2442,7 +2440,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 					return not LibSharedMedia
 				end,
 				disabled = disable_text,
-				dialogControl = AceGUI.WidgetRegistry["LSM30_Font"] and "LSM30_Font" or nil,
+				dialogControl = "LSM30_Font",
 				order = 4,
 			},
 			size = {

@@ -75,8 +75,6 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 	local UpdateFrames = PitBull4.Options.UpdateFrames
 
 	local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
-	LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
-	local AceGUI = LibStub("AceGUI-3.0")
 
 	local options = {
 		name = L["Indicators"],
@@ -710,7 +708,7 @@ function PitBull4.Options.get_layout_editor_indicator_options()
 			local module = PitBull4.modules[info[#info-1]]
 			return not module.show_font_option or not LibSharedMedia
 		end,
-		dialogControl = AceGUI.WidgetRegistry["LSM30_Font"] and "LSM30_Font" or nil,
+		dialogControl = "LSM30_Font",
 	}
 
 	indicator_args.text_size = {

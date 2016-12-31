@@ -241,9 +241,6 @@ function PitBull4_Border:LibSharedMedia_Registered(event, mediatype, key)
 end
 
 PitBull4_Border:SetLayoutOptionsFunction(function(self)
-	LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
-	local AceGUI = LibStub("AceGUI-3.0")
-
 	local function update()
 		for frame in PitBull4:IterateFramesForLayout(PitBull4.Options.GetCurrentLayout()) do
 			self:UpdateFrame(frame)
@@ -322,7 +319,7 @@ PitBull4_Border:SetLayoutOptionsFunction(function(self)
 				hidden = function(info)
 					return not LibSharedMedia
 				end,
-				dialogControl = AceGUI.WidgetRegistry["LSM30_Border"] and "LSM30_Border" or nil,
+				dialogControl = "LSM30_Border",
 			}
 		}
 	}, 'elite', {
@@ -350,7 +347,7 @@ PitBull4_Border:SetLayoutOptionsFunction(function(self)
 				hidden = function(info)
 					return not LibSharedMedia
 				end,
-				dialogControl = AceGUI.WidgetRegistry["LSM30_Border"] and "LSM30_Border" or nil,
+				dialogControl = "LSM30_Border",
 			}
 		}
     }, 'rare', {
@@ -378,7 +375,7 @@ PitBull4_Border:SetLayoutOptionsFunction(function(self)
                 hidden = function(info)
                     return not LibSharedMedia
                 end,
-                dialogControl = AceGUI.WidgetRegistry["LSM30_Border"] and "LSM30_Border" or nil,
+                dialogControl = "LSM30_Border",
             }
         }
     }, 'boss', {
@@ -406,7 +403,7 @@ PitBull4_Border:SetLayoutOptionsFunction(function(self)
                 hidden = function(info)
                     return not LibSharedMedia
                 end,
-                dialogControl = AceGUI.WidgetRegistry["LSM30_Border"] and "LSM30_Border" or nil,
+                dialogControl = "LSM30_Border",
             }
         }
 	}

@@ -34,8 +34,6 @@ function PitBull4.Options.get_layout_editor_bar_options()
 	}
 
 	local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
-	LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
-	local AceGUI = LibStub("AceGUI-3.0")
 
 	options.args.general = {
 		type = 'group',
@@ -64,7 +62,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		hidden = function(info)
 			return not LibSharedMedia
 		end,
-		dialogControl = AceGUI.WidgetRegistry["LSM30_Statusbar"] and "LSM30_Statusbar" or nil,
+		dialogControl = "LSM30_Statusbar",
 	}
 
 	options.args.general.args.spacing = {
@@ -179,7 +177,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		local value_lower = value:lower()
 
 		for name in pairs(GetLayoutDB(info[3]).elements) do
-		 	if value_lower == name:lower() then
+			if value_lower == name:lower() then
 				return L["'%s' is already a text."]:format(value)
 			end
 		end
@@ -379,7 +377,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		hidden = function(info)
 			return not LibSharedMedia
 		end,
-		dialogControl = AceGUI.WidgetRegistry["LSM30_Statusbar"] and "LSM30_Statusbar" or nil,
+		dialogControl = "LSM30_Statusbar",
 	}
 
 	bar_args.size = {

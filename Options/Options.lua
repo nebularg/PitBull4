@@ -2,14 +2,10 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local AceConfig = LibStub and LibStub("AceConfig-3.0", true)
+local AceConfig = LibStub("AceConfig-3.0", true)
 if not AceConfig then
-	LoadAddOn("Ace3")
-	AceConfig = LibStub and LibStub("AceConfig-3.0", true)
-	if not LibSimpleOptions then
-		message(("PitBull4 requires the library %q and will not work without it."):format("AceConfig-3.0"))
-		error(("PitBull4 requires the library %q and will not work without it."):format("AceConfig-3.0"))
-	end
+	message(("PitBull4 requires the library %q and will not work without it."):format("AceConfig-3.0"))
+	error(("PitBull4 requires the library %q and will not work without it."):format("AceConfig-3.0"))
 end
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 

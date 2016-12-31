@@ -26,8 +26,6 @@ function PitBull4.Options.get_layout_editor_text_options()
 	local UpdateFrames = PitBull4.Options.UpdateFrames
 
 	local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
-	LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
-	local AceGUI = LibStub("AceGUI-3.0")
 
 	local options = {
 		name = L["Texts"],
@@ -189,7 +187,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 		hidden = function(info)
 			return not LibSharedMedia
 		end,
-		dialogControl = AceGUI.WidgetRegistry["LSM30_Font"] and "LSM30_Font" or nil,
+		dialogControl = "LSM30_Font",
 	}
 
 	options.args.font_size = {
@@ -631,7 +629,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 		hidden = function(info)
 			return not LibSharedMedia
 		end,
-		dialogControl = AceGUI.WidgetRegistry["LSM30_Font"] and "LSM30_Font" or nil,
+		dialogControl = "LSM30_Font",
 	}
 
 	options.args.edit.args.size = {

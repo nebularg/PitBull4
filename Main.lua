@@ -71,18 +71,9 @@ do
 end
 
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
-if not LibSharedMedia then
-	LoadAddOn("LibSharedMedia-3.0")
-	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
-end
-
 local DEFAULT_LSM_FONT = "Arial Narrow"
-if LibSharedMedia then
-	if not LibSharedMedia:IsValid("font", DEFAULT_LSM_FONT) then
-		-- non-Western languages
-
-		DEFAULT_LSM_FONT = LibSharedMedia:GetDefault("font")
-	end
+if LibSharedMedia and not LibSharedMedia:IsValid("font", DEFAULT_LSM_FONT) then -- non-Western languages
+	DEFAULT_LSM_FONT = LibSharedMedia:GetDefault("font")
 end
 
 local CURRENT_CONFIG_VERSION = 2
@@ -1377,7 +1368,9 @@ function PitBull4:OnEnable()
 	-- show initial frames
 	self:OnProfileChanged()
 
-	LibSharedMedia.RegisterCallback(self,"LibSharedMedia_Registered")
+	if LibSharedMedia then
+		LibSharedMedia.RegisterCallback(self, "LibSharedMedia_Registered")
+	end
 end
 
 local timer = 0

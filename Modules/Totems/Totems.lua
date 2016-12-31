@@ -110,18 +110,10 @@ local GetTotemInfo = _G.GetTotemInfo
 local PitBull4_Totems = PitBull4:NewModule("Totems", "AceEvent-3.0", "AceTimer-3.0")
 local self = PitBull4_Totems
 
--- Load LibSharedMedia
-local LSM = LibStub("LibSharedMedia-3.0", true)
-if not LSM then
-	LoadAddOn("LibSharedMedia-3.0")
-	LSM = LibStub("LibSharedMedia-3.0", true)
+local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+if LibSharedMedia then
+	LibSharedMedia:Register("sound", DEFAULT_SOUND_NAME, DEFAULT_SOUND_PATH)
 end
-
--- Register our default sound. (comes with the wow engine)
-if LSM then LSM:Register('sound',DEFAULT_SOUND_NAME,DEFAULT_SOUND_PATH) end
-
-LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
-local AceGUI = LibStub("AceGUI-3.0")
 
 -- Register some metadata of ours with PB4
 PitBull4_Totems:SetModuleType('indicator')
@@ -758,8 +750,8 @@ function PitBull4_Totems:PLAYER_TOTEM_UPDATE(event, slot)
 		-- Sound functions
 		if global_option_get('death_sound') and not (event == nil) then
 			local soundpath = DEFAULT_SOUND_PATH
-			if LSM then
-				soundpath = LSM:Fetch('sound', global_option_get('sound_slot'..tostring(slot)))
+			if LibSharedMedia then
+				soundpath = LibSharedMedia:Fetch("sound", global_option_get("sound_slot"..tostring(slot)))
 			end
 			--dbg('Playing Death sound for slot %s: %s', tostring(slot), tostring(soundpath))
 			PlaySoundFile(soundpath)
@@ -1295,7 +1287,7 @@ local function get_sound_option_group()
 		set = gOptSet,
 		order = 1,
 	}
-	if LSM then
+	if LibSharedMedia then
 		for i = 1, MAX_TOTEMS do
 			local verbose_name = get_verbose_slot_name(i)
 			local slot = {
@@ -1303,7 +1295,9 @@ local function get_sound_option_group()
 				desc = verbose_name,
 				type = 'select',
 				width = 'double',
-				values = AceGUIWidgetLSMlists.sound,
+				values = function(info)
+					return LibSharedMedia:HashTable("sound")
+				end,
 				get = function(info)
 					return global_option_get(info) or DEFAULT_SOUND_NAME
 				end,
@@ -1311,7 +1305,7 @@ local function get_sound_option_group()
 				arg = i,
 				disabled = function() return not global_option_get('death_sound') end,
 				order = 10 + i,
-				dialogControl = AceGUI.WidgetRegistry["LSM30_Sound"] and "LSM30_Sound" or nil,
+				dialogControl = "LSM30_Sound",
 			}
 			so["sound_slot"..tostring(i)] = slot
 		end

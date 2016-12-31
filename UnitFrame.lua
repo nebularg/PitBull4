@@ -518,10 +518,6 @@ function UnitFrame:RecheckConfigMode()
 end
 
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
-if not LibSharedMedia then
-	LoadAddOn("LibSharedMedia-3.0")
-	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
-end
 local DEFAULT_FONT, DEFAULT_FONT_SIZE = ChatFontNormal:GetFont()
 
 --- Get the font of the unit frame.
@@ -570,7 +566,7 @@ function UnitFrame:Update(same_guid, update_layout)
 		return
 	end
 	if not self.guid and not self.force_show then
-	 	if self.populated then
+		if self.populated then
 			self.populated = nil
 
 			self:UpdateBestUnit()

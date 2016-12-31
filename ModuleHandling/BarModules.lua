@@ -12,10 +12,6 @@ local new, del = PitBull4.new, PitBull4.del
 --
 
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
-if not LibSharedMedia then
-	LoadAddOn("LibSharedMedia-3.0")
-	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
-end
 
 local HOSTILE_REACTION = 2
 local NEUTRAL_REACTION = 4
