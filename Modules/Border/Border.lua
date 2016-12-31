@@ -28,21 +28,14 @@ end
 local target_guid = nil
 local mouse_focus = nil
 
-local LibSharedMedia
-local LibSharedMedia_border_None = [[Interface\None]]
+local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 
 function PitBull4_Border:OnEnable()
-	LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 	if not LibSharedMedia then
+		self:Disable()
 		error(L["PitBull4_Border requires the library LibSharedMedia-3.0 to be available."])
 	end
 	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED")
-
-	LibSharedMedia_border_None = LibSharedMedia:Fetch("border", "None")
-
-	-- Force an update, OnEnable may not have run before PB4 tried to update the frames
-	-- so they'd end up with no border because LSM would not have been available.
-	self:UpdateAll()
 end
 
 -- this is here to allow it to be overridden, by say an aggro module
@@ -50,8 +43,8 @@ function PitBull4_Border:GetTextureAndColor(frame)
 	local unit = frame.unit
 	local classification = unit and PitBull4.Utils.BetterUnitClassification(unit)
 
-    if classification == "worldboss" then
-        classification = "boss"
+	if classification == "worldboss" then
+		classification = "boss"
 	elseif classification == "elite" then
 		classification = "elite"
 	elseif classification == "rare" or classification == "rareelite" then
@@ -68,19 +61,18 @@ function PitBull4_Border:GetTextureAndColor(frame)
 end
 
 function PitBull4_Border:UpdateFrame(frame)
-	if not LibSharedMedia then
+	if not LibSharedMedia then -- if updated before OnEnable
 		return self:ClearFrame(frame)
 	end
 
 	local texture, r, g, b, a = self:GetTextureAndColor(frame)
-	texture = LibSharedMedia:Fetch("border", texture) or LibSharedMedia_border_None
 
-	local border = frame.Border
-
-	if texture == LibSharedMedia_border_None then
+	texture = LibSharedMedia:Fetch("border", texture)
+	if not texture then
 		return self:ClearFrame(frame)
 	end
 
+	local border = frame.Border
 	if not border then
 		local db = self:GetLayoutDB(frame)
 		local size = db.size
@@ -225,7 +217,7 @@ function PitBull4_Border:PLAYER_TARGET_CHANGED()
 
 	for frame in PitBull4:IterateFrames() do
 		if frame.Border then
-		 	if self:ShouldShow(frame) then
+			if self:ShouldShow(frame) then
 				frame.Border:Show()
 			else
 				frame.Border:Hide()
