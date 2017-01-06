@@ -213,46 +213,96 @@ local DEFAULT_GROUPS = {
 		enabled = true,
 		unit_group = "party",
 		exists = true,
+		anchor = "", -- automatic from growth direction
+		relative_to = "0", -- UIParent
+		relative_point = "TOPLEFT",
+		position_x = 10,
+		position_y = -260,
 	},
 	[L["Party pets"]] = {
-		enabled = true,
+		-- enabled = true,
 		unit_group = "partypet",
 		exists = true,
 	},
+	[L["Boss"]] = {
+		enabled = true,
+		unit_group = "boss",
+		exists = true,
+		anchor = "", -- automatic from growth direction
+		relative_to = "0", -- UIParent
+		relative_point = "RIGHT",
+		position_x = -290,
+		position_y = 225,
+		show_when = {
+			solo = true,
+			party = true,
+			raid = true,
+			raid10 = true,
+			raid15 = true,
+			raid20 = true,
+			raid25 = true,
+			raid40 = true,
+		},
+	}
 }
 
 local DEFAULT_UNITS =  {
 	[L["Player"]] = {
 		enabled = true,
 		unit = "player",
+		anchor = "TOPLEFT",
+		relative_to = "0", -- UIParent
+		relative_point = "TOPLEFT",
+		position_x = 10,
+		position_y = -25,
 	},
 	[L["Player's pet"]] = {
 		enabled = true,
-		unit = "pet"
+		unit = "pet",
+		anchor = "TOP",
+		relative_to = "SPlayer",
+		relative_point = "BOTTOM",
+		position_x = 0,
+		position_y = -30,
 	},
 	[format(L["%s's target"],L["Player's pet"])]= {
 		unit = "pettarget"
 	},
 	[L["Target"]] = {
 		enabled = true,
-		unit = "target"
+		unit = "target",
+		anchor = "TOPLEFT",
+		relative_to = "0", -- UIParent
+		relative_point = "TOPLEFT",
+		position_x = 250,
+		position_y = -25,
 	},
 	[format(L["%s's target"],L["Target"])] = {
 		enabled = true,
-		unit = "targettarget"
+		unit = "targettarget",
+		anchor = "LEFT",
+		relative_to = "STarget",
+		relative_point = "RIGHT",
+		position_x = 0,
+		position_y = 0,
 	},
 	[format(L["%s's target"],format(L["%s's target"],L["Target"]))] = {
-		unit = "targettargettarget"
+		unit = "targettargettarget",
 	},
 	[L["Focus"]] = {
 		enabled = true,
-		unit = "focus"
+		unit = "focus",
+		anchor = "TOPLEFT",
+		relative_to = "0", -- UIParent
+		relative_point = "TOPLEFT",
+		position_x = 250,
+		position_y = -260,
 	},
 	[format(L["%s's target"],L["Focus"])]= {
-		unit = "focustarget"
+		unit = "focustarget",
 	},
 	[format(L["%s's target"],format(L["%s's target"],L["Focus"]))] = {
-		unit = "focustargettarget"
+		unit = "focustargettarget",
 	},
 }
 
