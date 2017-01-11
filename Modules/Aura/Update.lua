@@ -179,7 +179,8 @@ local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 		end
 	end
 
-	for i = #list + 1, max do
+	local num_entries = #list
+	for i = num_entries + 1, max do
 		local entry = list[i]
 		if not entry then
 			entry = new_entry()
@@ -191,7 +192,7 @@ local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 		entry[1]  = 0 -- index 0 means PitBull generated aura
 		if i == mainhand then
 			entry[2] = MAINHAND
-			local link = GetInventoryItemLink("player", OFFHAND)
+			local link = GetInventoryItemLink("player", MAINHAND)
 			entry[3] = link and select(3,GetItemInfo(link)) or 4 -- quality or epic if no item
 			entry[5] = L["Sample Weapon Enchant"] -- name
 			entry[9] = nil -- no debuff type
@@ -208,7 +209,7 @@ local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 			entry[3]  = nil -- no quality color
 			entry[5]  = is_buff and L["Sample Buff"] or L["Sample Debuff"] -- name
 			entry[9]  = sample_debuff_types[(i-1)% #sample_debuff_types]
-			entry[12]  = ((random(2) % 2) == 1) and "player" or nil -- caster
+			entry[12]  = (i - num_entries < 5) and "player" or nil -- caster (show 4 player entries)
 		end
 		entry[4]  = is_buff
 		entry[6]  = "" -- rank
