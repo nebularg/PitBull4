@@ -1,0 +1,3 @@
+## Interface: 70100
+## Title: PitBull4_CombatIcon
+## Notes: Unused. PitBull4 has been updated to load all of it's modules from the main addon.
