@@ -903,8 +903,8 @@ function PitBull4_Totems:BuildFrames(frame)
 		-----------------
 		-- Click handling
 		-- click handling for destroying single totems
-		frm:RegisterForClicks("RightButtonUp")
-		frm:SetScript("OnClick", self.button_scripts.OnClick)
+		-- frm:RegisterForClicks("RightButtonUp")
+		-- frm:SetScript("OnClick", self.button_scripts.OnClick)
 		-- tooltip handling
 		frm:SetScript("OnEnter", self.button_scripts.OnEnter)
 		frm:SetScript("OnLeave", self.button_scripts.OnLeave)
