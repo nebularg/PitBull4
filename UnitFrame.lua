@@ -514,6 +514,7 @@ function UnitFrame:_RefreshLayout()
 	self:SetClickThroughState(classification_db.click_through)
 
 	self:RefixSizeAndPosition()
+	self:UpdateConfigAnchorLine()
 
 	if old_layout then
 		self:Update(true, true)
@@ -619,7 +620,39 @@ function UnitFrame:RecheckConfigMode()
 		self:UnforceShow()
 	end
 	self:Update(true, true)
+	self:UpdateConfigAnchorLine()
 end
+
+--- Visually show a line connecting anchored frames
+function UnitFrame:UpdateConfigAnchorLine()
+	if not self.is_singleton then return end
+	local db = self.classification_db
+	if not self.force_show or not db then
+		if self.anchor_line then
+			self.anchor_line:Hide()
+		end
+		return
+	end
+
+	local relative_frame, relative_type = PitBull4.Utils.GetRelativeFrame(db.relative_to)
+	if relative_type ~= "0" then -- UIParent
+		if not self.anchor_line then
+			local line = self:CreateLine(nil, "BACKGROUND", nil, -2)
+			line:SetThickness(4)
+			line:SetTexture([[Interface/Artifacts/_Artifacts-DependencyBar-Fill]])
+			line:SetHorizTile(true)
+			line:SetIgnoreParentAlpha(true)
+			line:SetIgnoreParentScale(true)
+			self.anchor_line = line
+		end
+		self.anchor_line:SetStartPoint(db.anchor, self)
+		self.anchor_line:SetEndPoint(db.relative_point, relative_frame)
+		self.anchor_line:Show()
+	elseif self.anchor_line then
+		self.anchor_line:Hide()
+	end
+end
+UnitFrame.UpdateConfigAnchorLine = PitBull4:OutOfCombatWrapper(UnitFrame.UpdateConfigAnchorLine)
 
 function UnitFrame:Rename(name)
 	local old_name = self.classification
