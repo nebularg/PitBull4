@@ -20,7 +20,6 @@ externals:
     libs/AceGUI-3.0-SharedMediaWidgets: https://repos.wowace.com/wow/ace-gui-3-0-shared-media-widgets/trunk/AceGUI-3.0-SharedMediaWidgets
     libs/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
     libs/LibDualSpec-1.0: https://repos.wowace.com/wow/libdualspec-1-0
-    Modules/Aggro/libs/LibBanzai-2.0: https://repos.wowace.com/wow/libbanzai-2-0/trunk
     Modules/Aura/libs/LibPlayerSpells-1.0: https://github.com/AdiAddons/LibPlayerSpells-1.0.git
     Modules/DogTagTexts/libs/LibDogTag-3.0: https://repos.wowace.com/wow/libdogtag-3-0
     Modules/DogTagTexts/libs/LibDogTag-Unit-3.0: https://repos.wowace.com/wow/libdogtag-unit-3-0

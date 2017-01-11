@@ -2,40 +2,20 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local LibBanzai
-
 local PitBull4_Aggro = PitBull4:NewModule("Aggro", "AceEvent-3.0", "AceHook-3.0")
+
 PitBull4_Aggro:SetModuleType("custom")
 PitBull4_Aggro:SetName(L["Aggro"])
 PitBull4_Aggro:SetDescription(L["Add aggro coloring to the unit frame."])
 PitBull4_Aggro:SetDefaults({
 	kind = "HealthBar",
-},{aggro_color = {1, 0, 0, 1}})
+},{
+	aggro_color = {1, 0, 0, 1}
+})
 
 local PitBull4_HealthBar
 local PitBull4_Border
 local PitBull4_Background
-
-local function callback(aggro, name, unit)
-	for frame in PitBull4:IterateFramesForGUID(UnitGUID(unit)) do
-		local db = PitBull4_Aggro:GetLayoutDB(frame)
-		if db.enabled then
-			if db.kind == "HealthBar" then
-				if PitBull4_HealthBar and PitBull4_HealthBar:IsEnabled() then
-					PitBull4_HealthBar:UpdateFrame(frame)
-				end
-			elseif db.kind == "Border" then
-				if PitBull4_Border and PitBull4_Border:IsEnabled() then
-					PitBull4_Border:UpdateFrame(frame)
-				end
-			elseif db.kind == "Background" then
-				if PitBull4_Background and PitBull4_Background:IsEnabled() then
-					PitBull4_Background:UpdateFrame(frame)
-				end
-			end
-		end
-	end
-end
 
 local function set_hooks()
 	if not PitBull4_HealthBar then
@@ -69,29 +49,20 @@ function PitBull4_Aggro:OnModuleLoaded(module)
 end
 
 function PitBull4_Aggro:OnEnable()
-	if not LibBanzai then
-		LoadAddOn("LibBanzai-2.0")
-		LibBanzai = LibStub("LibBanzai-2.0", true)
-	end
-	if not LibBanzai then
-		error(L["PitBull4_Aggro requires the library LibBanzai-2.0 to be available."])
-	end
-
-	LibBanzai:RegisterCallback(callback)
+	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE")
 
 	set_hooks()
-end
-
-function PitBull4_Aggro:OnDisable()
-	LibBanzai:UnregisterCallback(callback)
 end
 
 function PitBull4_Aggro:HealthBar_GetColor(module, frame, value)
 	local unit = frame.unit
 	local db = self:GetLayoutDB(frame)
-	if unit and db.enabled and db.kind == "HealthBar" and UnitIsFriend("player", unit) and LibBanzai and LibBanzai:GetUnitAggroByUnitId(unit) then
-		local aggro_color = self.db.profile.global.aggro_color
-		return aggro_color[1], aggro_color[2], aggro_color[3], nil, true
+	if unit and db.enabled and db.kind == "HealthBar" and UnitIsFriend("player", unit) then
+		local status = UnitThreatSituation(unit) or 0
+		if status > 2 then
+			local aggro_color = self.db.profile.global.aggro_color
+			return aggro_color[1], aggro_color[2], aggro_color[3], nil, true
+		end
 	end
 
 	return self.hooks[module].GetColor(module, frame, value)
@@ -109,10 +80,13 @@ function PitBull4_Aggro:Border_GetTextureAndColor(module, frame)
 		texture, r, g, b, a = self.hooks[module].GetTextureAndColor(module, frame)
 	end
 
-	if unit and db.enabled and db.kind == "Border" and UnitIsFriend("player", unit) and LibBanzai:GetUnitAggroByUnitId(unit) then
-		r, g, b, a = unpack(self.db.profile.global.aggro_color)
-		if not texture or texture == "None" then
-			texture = "Blizzard Tooltip"
+	if unit and db.enabled and db.kind == "Border" and UnitIsFriend("player", unit) then
+		local status = UnitThreatSituation(unit) or 0
+		if status > 2 then
+			r, g, b, a = unpack(self.db.profile.global.aggro_color)
+			if not texture or texture == "None" then
+				texture = "Blizzard Tooltip"
+			end
 		end
 	end
 
@@ -131,17 +105,44 @@ function PitBull4_Aggro:Background_GetColor(module, frame)
 		r, g, b, a = self.hooks[module].GetColor(module, frame)
 	end
 
-	if unit and db.enabled and db.kind == "Background" and UnitIsFriend("player", unit) and LibBanzai:GetUnitAggroByUnitId(unit) then
-		local a2
-		r, g, b, a2 = unpack(self.db.profile.global.aggro_color)
-		if a then
-			a = a * a2
-		else
-			a = a2
+	if unit and db.enabled and db.kind == "Background" and UnitIsFriend("player", unit) then
+		local status = UnitThreatSituation(unit) or 0
+		if status > 2 then
+			local a2
+			r, g, b, a2 = unpack(self.db.profile.global.aggro_color)
+			if a then
+				a = a * a2
+			else
+				a = a2
+			end
 		end
 	end
 
 	return r, g, b, a
+end
+
+function PitBull4_Aggro:UNIT_THREAT_SITUATION_UPDATE(_, unit)
+	local guid = UnitGUID(unit or "player")
+	if not guid then return end
+
+	for frame in PitBull4:IterateFramesForGUID(guid) do
+		local db = self:GetLayoutDB(frame)
+		if db.enabled then
+			if db.kind == "HealthBar" then
+				if PitBull4_HealthBar and PitBull4_HealthBar:IsEnabled() then
+					PitBull4_HealthBar:UpdateFrame(frame)
+				end
+			elseif db.kind == "Border" then
+				if PitBull4_Border and PitBull4_Border:IsEnabled() then
+					PitBull4_Border:UpdateFrame(frame)
+				end
+			elseif db.kind == "Background" then
+				if PitBull4_Background and PitBull4_Background:IsEnabled() then
+					PitBull4_Background:UpdateFrame(frame)
+				end
+			end
+		end
+	end
 end
 
 PitBull4_Aggro:SetLayoutOptionsFunction(function(self)
