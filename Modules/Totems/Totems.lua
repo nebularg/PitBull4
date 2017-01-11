@@ -39,10 +39,8 @@ local TOTEM_SIZE = 50 -- fixed value used for internal frame creation, change th
 
 local UPDATE_FREQUENCY = 0.25 -- delay this many second between timer updates
 
-local module_path = _G.debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z0-9]-%.lua")
-
 local CONFIG_MODE_ICON = [[Interface\Icons\Spell_Fire_TotemOfWrath]]
-local BORDER_PATH  = [[Interface\AddOns\]] .. module_path .. [[\border]]
+local BORDER_PATH  = [[Interface\AddOns\PitBull4\Modules\Totems\border]]
 local DEFAULT_SOUND_NAME = 'Drop'
 local DEFAULT_SOUND_PATH =  [[Sound\interface\DropOnGround.wav]]
 

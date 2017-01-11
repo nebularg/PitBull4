@@ -14,11 +14,7 @@ local Aura = {}
 local Aura_scripts = {}
 
 -- Calculate the path to the texture for the borders.
-local border_path
-do
-	local module_path = _G.debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z0-9]-%.lua")
-	border_path = "Interface\\AddOns\\" .. module_path .. "\\border"
-end
+local border_path = [[Interface\AddOns\PitBull4\Modules\Aura\border]]
 
 -- Get the unit the aura applies to.
 function Aura:GetUnit()

@@ -3,8 +3,6 @@ local PitBull4 = _G.PitBull4
 
 -- CONSTANTS ----------------------------------------------------------------
 
-local module_path = _G.debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z0-9]-%.lua")
-
 local STANDARD_SIZE = 15
 
 local SHINE_TIME = 1
@@ -12,8 +10,8 @@ local SHINE_HALF_TIME = SHINE_TIME / 2
 local INVERSE_SHINE_HALF_TIME = 1 / SHINE_HALF_TIME
 
 -- local ICON_TEXTURE = [[Interface\PlayerFrame\UI-PlayerFrame-Deathknight-SingleRune]]
-local ICON_TEXTURE = [[Interface\AddOns\]] .. module_path .. [[\Death]]
-local SHINE_TEXTURE = [[Interface\AddOns\]] .. module_path .. [[\Shine]]
+local ICON_TEXTURE = [[Interface\AddOns\PitBull4\Modules\Runes\Death]]
+local SHINE_TEXTURE = [[Interface\AddOns\PitBull4\Modules\Runes\Shine]]
 
 local UNREADY_ALPHA = 0.6
 local READY_ALPHA = 1

@@ -6,13 +6,9 @@ local PitBull4_Aura = PitBull4:GetModule("Aura")
 
 local wipe = _G.table.wipe
 
-local HighlightNormal_path, HighlightBorder_path, HighlightThinBorder_path
-do
-	local module_path = _G.debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z0-9]-%.lua")
-	HighlightNormal_path = "Interface\\AddOns\\" .. module_path .. "\\HighlightNormal"
-	HighlightBorder_path = "Interface\\AddOns\\" .. module_path .. "\\HighlightBorder"
-	HighlightThinBorder_path = "Interface\\AddOns\\" .. module_path .. "\\HighlightThinBorder"
-end
+local HighlightNormal_path = [[Interface\AddOns\PitBull4\Modules\Aura\HighlightNormal]]
+local HighlightBorder_path = [[Interface\AddOns\PitBull4\Modules\Aura\HighlightBorder]]
+local HighlightThinBorder_path = [[Interface\AddOns\PitBull4\Modules\Aura\HighlightThinBorder]]
 
 -- Handle the reusults table used for tracking the priority of auras to highlight
 local results, pool = {}, {}

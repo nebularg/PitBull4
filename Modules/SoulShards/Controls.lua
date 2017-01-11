@@ -3,10 +3,8 @@ local PitBull4 = _G.PitBull4
 
 -- CONSTANTS ----------------------------------------------------------------
 
-local module_path = _G.debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z0-9]-%.lua")
-
-local ICON_TEXTURE = [[Interface\AddOns\]] .. module_path .. [[\Shard]]
-local SHINE_TEXTURE = [[Interface\AddOns\]] .. module_path .. [[\Shine]]
+local ICON_TEXTURE = [[Interface\AddOns\PitBull4\Modules\SoulShards\Shard]]
+local SHINE_TEXTURE = [[Interface\AddOns\PitBull4\Modules\SoulShards\Shine]]
 
 local STANDARD_SIZE = 15
 

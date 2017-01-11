@@ -8,7 +8,7 @@ local is_druid = player_class == "DRUID"
 
 -- CONSTANTS ----------------------------------------------------------------
 
-local BASE_TEXTURE_PATH = [[Interface\AddOns\]] .. debugstack():match("[d%.][d%.][O%.]ns\\(.-)\\[A-Za-z]-%.lua") .. [[\]]
+local BASE_TEXTURE_PATH = [[Interface\AddOns\PitBull4\Modules\ComboPoints\]]
 
 local SPELL_POWER_COMBO_POINTS = _G.SPELL_POWER_COMBO_POINTS
 
