@@ -83,10 +83,19 @@ PitBull4_Aura.can_purge = can_purge
 -- Rescan specialization spells that can change what we can dispel.
 function PitBull4_Aura:PLAYER_TALENT_UPDATE()
 	can_dispel.DRUID.Magic = IsPlayerSpell(88423)
-	can_dispel.PALADIN.Magic = IsPlayerSpell(4987)
-	can_dispel.PRIEST.Disease = IsPlayerSpell(527)
+	self:GetFilterDB(',3').aura_type_list.Magic = can_dispel.DRUID.Magic
+
 	can_dispel.MONK.Magic = IsPlayerSpell(115450)
+	self:GetFilterDB('//3').aura_type_list.Magic = can_dispel.MONK.Magic
+
+	can_dispel.PALADIN.Magic = IsPlayerSpell(4987)
+	self:GetFilterDB('/3').aura_type_list.Magic = can_dispel.PALADIN.Magic
+
+	can_dispel.PRIEST.Disease = IsPlayerSpell(527)
+	self:GetFilterDB('03').aura_type_list.Disease = can_dispel.PRIEST.Disease
+
 	can_dispel.SHAMAN.Magic = IsPlayerSpell(77130)
+	self:GetFilterDB('23').aura_type_list.Magic = can_dispel.SHAMAN.Magic
 end
 
 -- Setup the data for which auras belong to whom

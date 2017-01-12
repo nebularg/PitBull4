@@ -47,8 +47,8 @@ function PitBull4_Aura:OnEnable()
 	local _,player_class = UnitClass("player")
 	if player_class == "DRUID" or player_class == "MONK" or player_class == "PALADIN" or player_class == "PRIEST" or player_class == "SHAMAN" then
 		self:RegisterEvent("PLAYER_TALENT_UPDATE")
-		-- Update the can dispel filters
-		PitBull4_Aura:PLAYER_TALENT_UPDATE()
+		self:RegisterEvent("SPELLS_CHANGED", "PLAYER_TALENT_UPDATE")
+		self:PLAYER_TALENT_UPDATE()
 	end
 end
 
