@@ -34,14 +34,8 @@ function delete_funcs:Texture()
 	self:SetBlendMode("BLEND")
 	self:SetDesaturated(false)
 	self:SetTexCoord(0, 1, 0, 1)
-	if self.SetTexCoordModifiesRect then
-		-- pre 3.3.3 texture tiling code
-		self:SetTexCoordModifiesRect(false)
-	else
-		-- 3.3.3 and newer texture tiling code
-		self:SetHorizTile(false)
-		self:SetVertTile(false)
-	end
+	self:SetHorizTile(false)
+	self:SetVertTile(false)
 end
 local function delete_animations(...)
 	for i=1,select('#',...) do

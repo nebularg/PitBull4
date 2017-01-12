@@ -10,7 +10,7 @@ local HighlightNormal_path = [[Interface\AddOns\PitBull4\Modules\Aura\HighlightN
 local HighlightBorder_path = [[Interface\AddOns\PitBull4\Modules\Aura\HighlightBorder]]
 local HighlightThinBorder_path = [[Interface\AddOns\PitBull4\Modules\Aura\HighlightThinBorder]]
 
--- Handle the reusults table used for tracking the priority of auras to highlight
+-- Handle the results table used for tracking the priority of auras to highlight
 local results, pool = {}, {}
 
 local function new_result()
@@ -55,23 +55,14 @@ function PitBull4_Aura:HighlightFilterIterator(frame, db, is_buff)
 			entry[12], entry[13], entry[14], entry[15]  =
 			id, nil, nil, is_buff, UnitAura(unit, id, filter)
 
-		-- Hack to get around a Blizzard bug.  The Enrage debuff_type
-		-- gets set to "" instead of "Enrage" like it should.
-		-- Once this is fixed this code should be removed.
+		-- No more auras
+		if not entry[5] then
+			break
+		end
+
+		-- The Enrage debuff_type gets set to "" instead of "Enrage"
 		if entry[9] == "" then
 			entry[9] = "Enrage"
-		end
-
-		-- Make pre 3.1.0 clients emulate the return of the caster
-		-- argument in the new 3.1.0 clients.  Once 3.1.0 is live
-		-- for everyone this can be removed.
-		if entry[12] == 1 then
-			entry[12] = "player"
-		end
-
-		if not entry[5] then
-			-- No more auras, break the outer loop
-			break
 		end
 
 		self:HighlightFilter(db, entry, frame)
