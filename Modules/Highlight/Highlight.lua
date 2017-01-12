@@ -2,7 +2,14 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local LibSharedMedia = LibStub("LibSharedMedia-3.0")
+local DEFAULT_TEXTURE = [[Interface\QuestFrame\UI-QuestTitleHighlight]]
+
+local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+if LibSharedMedia then
+	DEFAULT_TEXTURE = nil
+	LibSharedMedia:Register("background","Blizzard QuestTitleHighlight", [[Interface\QuestFrame\UI-QuestTitleHighlight]])
+	LibSharedMedia:Register("background","Blizzard QuestLogTitleHighlight", [[Interface\QuestFrame\UI-QuestLogTitleHighlight]])
+end
 
 local PitBull4_Highlight = PitBull4:NewModule("Highlight", "AceEvent-3.0")
 
@@ -23,11 +30,6 @@ end
 
 local target_guid = nil
 local mouse_focus = nil
-
-function PitBull4_Highlight:OnInitialize()
-	LibSharedMedia:Register("background","Blizzard QuestTitleHighlight", [[Interface\QuestFrame\UI-QuestTitleHighlight]])
-	LibSharedMedia:Register("background","Blizzard QuestLogTitleHighlight", [[Interface\QuestFrame\UI-QuestLogTitleHighlight]])
-end
 
 function PitBull4_Highlight:OnEnable()
 	self:AddFrameScriptHook("OnEnter")
@@ -67,7 +69,7 @@ function PitBull4_Highlight:UpdateFrame(frame)
 
 	local layout_db = self:GetLayoutDB(frame)
 	local texture = highlight.texture
-	local texture_path = LibSharedMedia:Fetch("background", layout_db.texture)
+	local texture_path = DEFAULT_TEXTURE or LibSharedMedia:Fetch("background", layout_db.texture)
 	texture:SetTexture(texture_path)
 	texture:SetVertexColor(unpack(layout_db.color))
 
@@ -174,6 +176,9 @@ PitBull4_Highlight:SetLayoutOptionsFunction(function(self)
 		end,
 		values = function(info)
 			return LibSharedMedia:HashTable("background")
+		end,
+		hidden = function(info)
+			return not LibSharedMedia
 		end,
 		dialogControl = "LSM30_Background",
 	}
