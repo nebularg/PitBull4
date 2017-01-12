@@ -80,6 +80,7 @@ local CURRENT_CONFIG_VERSION = 2
 
 local DATABASE_DEFAULTS = {
 	profile = {
+		addon_states_migrated = false,
 		lock_movement = false,
 		frame_snap = true,
 		minimap_icon = {
@@ -927,6 +928,76 @@ function PitBull4.OnTanksUpdated()
 	end
 end
 
+local migrate_addon_module_states
+do
+	local old_modules = {
+		PitBull4_Aggro = true,
+		PitBull4_AltManaBar = true,
+		PitBull4_AltPowerBar = true,
+		PitBull4_ArcaneCharges = true,
+		PitBull4_ArtifactPowerBar = true,
+		PitBull4_Aura = true,
+		PitBull4_Background = true,
+		PitBull4_BattlePet = true,
+		PitBull4_BlankSpace = true,
+		PitBull4_Border = true,
+		PitBull4_CastBar = true,
+		PitBull4_CastBarLatency = true,
+		PitBull4_Chi = true,
+		PitBull4_CombatFader = true,
+		PitBull4_CombatIcon = true,
+		PitBull4_CombatText = true,
+		PitBull4_ComboPoints = true,
+		PitBull4_DogTagTexts = true,
+		PitBull4_ExperienceBar = true,
+		PitBull4_HealthBar = true,
+		PitBull4_HideBlizzard = true,
+		PitBull4_Highlight = true,
+		PitBull4_HolyPower = true,
+		PitBull4_HostilityFader = true,
+		PitBull4_LeaderIcon = true,
+		PitBull4_LuaTexts = true,
+		PitBull4_MasterLooterIcon = true,
+		PitBull4_PhaseIcon = true,
+		PitBull4_Portrait = true,
+		PitBull4_PowerBar = true,
+		PitBull4_PvPIcon = true,
+		PitBull4_RaidTargetIcon = true,
+		PitBull4_QuestIcon = true,
+		PitBull4_RangeFader = true,
+		PitBull4_ReadyCheckIcon = true,
+		PitBull4_ReputationBar = true,
+		PitBull4_RestIcon = true,
+		PitBull4_RoleIcon = true,
+		PitBull4_Runes = true,
+		PitBull4_SoulShards = true,
+		PitBull4_Sounds = true,
+		PitBull4_ThreatBar = true,
+		PitBull4_Totems = true,
+		PitBull4_VisualHeal = true,
+		PitBull4_VoiceIcon = true,
+	}
+	local character = UnitName("player")
+	for name in next, old_modules do
+		old_modules[name] = GetAddOnEnableState(character, name) > 0
+	end
+
+	function migrate_addon_module_states()
+		for addon_name, enabled in next, old_modules do
+			if not enabled then
+				local module_name = addon_name:sub(10)
+				if module_name == "AltManaBar" then module_name = "DruidManaBar" end  -- blame Stanzilla
+				local module = PitBull4:GetModule(module_name, true)
+				if module and module.db then
+					module.db.profile.global.enabled = false
+					print(format("PitBull4: Disabling module %q", module_name))
+					PitBull4:DisableModuleAndSaveState(module)
+				end
+			end
+		end
+	end
+end
+
 local upgrade_functions = {
 	[1] = function(sv)
 		-- Version 1 (version number used for config files without a version
@@ -1183,7 +1254,7 @@ function PitBull4:LoadModules()
 				OnAccept = function() ReloadUI() end,
 				hideOnEscape = false,
 				timeout = 0,
-				exclusive = true,
+				exclusive = false,
 				showAlert = true,
 			}
 			StaticPopup_Show("PITBULL4_OUTDATED_MODULES")
@@ -1238,13 +1309,6 @@ function PitBull4:OnProfileChanged()
 		end
 	end
 
-	-- Notify modules that the profile has changed.
-	for _, module in PitBull4:IterateEnabledModules() do
-		if module.OnProfileChanged then
-			module:OnProfileChanged()
-		end
-	end
-
 	if not db.profile.made_groups then
 		db.profile.made_groups = true
 		for name, data in pairs(DEFAULT_GROUPS) do
@@ -1296,6 +1360,13 @@ function PitBull4:OnProfileChanged()
 		end
 	end
 
+	-- Notify modules that the profile has changed.
+	for _, module in PitBull4:IterateEnabledModules() do
+		if module.OnProfileChanged then
+			module:OnProfileChanged()
+		end
+	end
+
 	self:LoadModules()
 
 	-- Enable/Disable modules to match the new profile.
@@ -1312,6 +1383,23 @@ function PitBull4:OnProfileChanged()
 	local LibDBIcon = LibStub("LibDBIcon-1.0", true)
 	if LibDBIcon then
 		LibDBIcon:Refresh("PitBull4", db.profile.minimap_icon)
+	end
+
+	-- save addon state into the module sv
+	if not db.profile.addon_states_migrated then
+		db.profile.addon_states_migrated = true
+		if not StaticPopupDialogs["PITBULL4_MIGRATE_ADDON_STATES"] then
+			StaticPopupDialogs["PITBULL4_MIGRATE_ADDON_STATES"] = {
+				text = "PitBull4 has been updated to load all of it's modules from the main addon. This means that modules must be disabled using the in-game config (/pb4) instead of just disabling the addon for a module.\n\nPress |cffffd200CANCEL|r if you have already disabled modules in the config or if you have otherwise changed the 'UNUSED' addons (for example, disabled them all).\n\nPress |cffffd200UPGRADE|r to transfer your old module states by setting the currently disabled addons as disabled in the config.\n\nThis should have happened automagically so I apologize for the annoyance (and for showing this for each profile you use >_<).",
+				button1 = UPGRADE,
+				button2 = CANCEL,
+				OnAccept = migrate_addon_module_states,
+				hideOnEscape = false,
+				timeout = 0,
+				exclusive = false,
+			}
+		end
+		StaticPopup_Show("PITBULL4_MIGRATE_ADDON_STATES")
 	end
 end
 
