@@ -1,3 +1,3 @@
 ## Interface: 70100
-## Title: PitBull4_CastBarLatency
-## Notes: Unused. PitBull4 has been updated to load all of it's modules from the main addon.
+## Title: PitBull4_CastBarLatency [UNUSED]
+## Notes: PitBull4 has been updated to load all of it's modules from the main addon. You can disable modules in the in-game config.
