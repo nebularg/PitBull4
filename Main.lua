@@ -992,6 +992,8 @@ do
 					module.db.profile.global.enabled = false
 					print(format("PitBull4: Disabling module %q", module_name))
 					PitBull4:DisableModuleAndSaveState(module)
+				else
+					print(format("PitBull4: Unable to disable module %q because it is not loaded for this class. You may have to disable this module manually on other classes that share this profile.", module_name))
 				end
 			end
 		end
@@ -1390,7 +1392,7 @@ function PitBull4:OnProfileChanged()
 		db.profile.addon_states_migrated = true
 		if not StaticPopupDialogs["PITBULL4_MIGRATE_ADDON_STATES"] then
 			StaticPopupDialogs["PITBULL4_MIGRATE_ADDON_STATES"] = {
-				text = "PitBull4 has been updated to load all of it's modules from the main addon. This means that modules must be disabled using the in-game config (/pb4) instead of just disabling the addon for a module.\n\nPress |cffffd200CANCEL|r if you have already disabled modules in the config or if you have otherwise changed the 'UNUSED' addons (for example, disabled them all).\n\nPress |cffffd200UPGRADE|r to transfer your old module states by setting the currently disabled addons as disabled in the config.\n\nThis should have happened automagically so I apologize for the annoyance (and for showing this for each profile you use >_<).",
+				text = "PitBull4 has been updated to load all of its modules from the main addon. This means that modules must be disabled using the in-game config (/pb4) instead of just disabling the addon for a module.\n\nPress |cffffd200CANCEL|r if you have already disabled modules in the config or if you have otherwise changed the 'UNUSED' addons (for example, disabled them all).\n\nPress |cffffd200UPGRADE|r to transfer your old module states by setting the currently disabled addons as disabled in the config.\n\nThis should have happened automagically so I apologize for the annoyance (and for showing this for each profile you use >_<).",
 				button1 = UPGRADE,
 				button2 = CANCEL,
 				OnAccept = migrate_addon_module_states,
