@@ -47,7 +47,9 @@ local can_dispel = {
 		Curse = true,
 		Magic = IsPlayerSpell(77130),
 	},
-	WARLOCK = {},
+	WARLOCK = {
+		Magic = true, -- Imp: Singe Magic
+	},
 	WARRIOR = {},
 }
 can_dispel.player = can_dispel[player_class]
@@ -94,9 +96,6 @@ function PitBull4_Aura:PLAYER_TALENT_UPDATE()
 
 	can_dispel.SHAMAN.Magic = IsPlayerSpell(77130)
 	self:GetFilterDB('23').aura_type_list.Magic = can_dispel.SHAMAN.Magic
-
-	can_dispel.WARLOCK.Magic = IsPlayerSpell(212623) -- Singe Magic (Demonology v43 Honor talent)
-	self:GetFilterDB('33').aura_type_list.Magic = can_dispel.WARLOCK.Magic
 end
 
 -- Setup the data for which auras belong to whom
