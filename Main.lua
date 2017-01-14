@@ -1311,6 +1311,13 @@ function PitBull4:OnProfileChanged()
 		end
 	end
 
+	-- Notify modules that the profile has changed.
+	for _, module in PitBull4:IterateEnabledModules() do
+		if module.OnProfileChanged then
+			module:OnProfileChanged()
+		end
+	end
+
 	if not db.profile.made_groups then
 		db.profile.made_groups = true
 		for name, data in pairs(DEFAULT_GROUPS) do
@@ -1359,13 +1366,6 @@ function PitBull4:OnProfileChanged()
 				header:RefreshGroup()
 				header:UpdateShownState()
 			end
-		end
-	end
-
-	-- Notify modules that the profile has changed.
-	for _, module in PitBull4:IterateEnabledModules() do
-		if module.OnProfileChanged then
-			module:OnProfileChanged()
 		end
 	end
 
