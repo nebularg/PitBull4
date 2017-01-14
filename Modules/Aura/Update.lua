@@ -39,10 +39,14 @@ local wipe = _G.table.wipe
 -- [11] = expiration_time
 -- [12] = caster
 -- [13] = is_stealable
--- [14] = should_consolodate
+-- [14] = nameplate_show_personal
 -- [15] = spell_id
 -- [16] = can_apply_aura
 -- [17] = boss_debuff
+-- (not set)
+-- [18] = cast_by_player
+-- [19] = nameplate_show_all
+-- [20] = time_mod
 local list = {}
 
 -- pool of available entries to be used in list
@@ -65,10 +69,8 @@ local weapon_list = {}
 local weapon_durations = {}
 
 -- constants for the slot ids
---
--- TODO: Remove these from the module when removing pre cata_400 support.
-local MAINHAND = PitBull4_Aura.MAINHAND
-local OFFHAND = PitBull4_Aura.OFFHAND
+local INVSLOT_MAINHAND = _G.INVSLOT_MAINHAND
+local INVSLOT_OFFHAND = _G.INVSLOT_OFFHAND
 
 -- constants for building sample auras
 local sample_buff_icon   = [[Interface\Icons\Spell_ChargePositive]]
@@ -170,7 +172,7 @@ local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 	-- figure the slot to use for the mainhand and offhand slots
 	local mainhand, offhand
 	if is_buff and db.enabled_weapons and unit and is_player then
-		local mh, oh = weapon_list[MAINHAND], weapon_list[OFFHAND]
+		local mh, oh = weapon_list[INVSLOT_MAINHAND], weapon_list[INVSLOT_OFFHAND]
 		if not mh or not mh[2] then
 			mainhand = #list + 1
 		end
@@ -191,15 +193,15 @@ local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 		-- Create our bogus aura entry
 		entry[1]  = 0 -- index 0 means PitBull generated aura
 		if i == mainhand then
-			entry[2] = MAINHAND
-			local link = GetInventoryItemLink("player", MAINHAND)
+			entry[2] = INVSLOT_MAINHAND
+			local link = GetInventoryItemLink("player", INVSLOT_MAINHAND)
 			entry[3] = link and select(3,GetItemInfo(link)) or 4 -- quality or epic if no item
 			entry[5] = L["Sample Weapon Enchant"] -- name
 			entry[9] = nil -- no debuff type
 			entry[12] = "player" -- treat weapon enchants as yours
 		elseif i == offhand then
-			entry[2] = OFFHAND
-			local link = GetInventoryItemLink("player", OFFHAND)
+			entry[2] = INVSLOT_OFFHAND
+			local link = GetInventoryItemLink("player", INVSLOT_OFFHAND)
 			entry[3] = link and select(3,GetItemInfo(link)) or 4 -- quality or epic if no item
 			entry[5] = L["Sample Weapon Enchant"] -- name
 			entry[9] = nil -- no debuff type
@@ -218,8 +220,10 @@ local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 		entry[10]  = 0 -- duration
 		entry[11]  = 0 -- expiration_time
 		entry[13] = nil -- is_stealable
-		entry[14] = nil -- should_consolodate
+		entry[14] = nil -- nameplate_show_personal
 		entry[15] = nil -- spell_id
+		entry[16] = nil -- can_apply_aura
+		entry[17] = nil -- boss_debuff
 	end
 end
 
@@ -232,7 +236,7 @@ do
 	local left = {}
 
 	local g = tt:CreateFontString()
-	g:SetFontObject(GameFontNormal)
+	g:SetFontObject(_G.GameFontNormal)
 	for i = 1, 30 do
 		local f = tt:CreateFontString()
 		f:SetFontObject(_G.GameFontNormal)
@@ -313,8 +317,10 @@ local function set_weapon_entry(list, is_enchant, time_left, expiration_time, co
 	entry[11] = expiration_time
 	entry[12] = "player" -- treat weapon enchants as always yours
 	entry[13] = nil -- is_stealable
-	entry[14] = nil -- should_consolodate
+	entry[14] = nil -- nameplate_show_personal
 	entry[15] = nil -- spell_id
+	entry[16] = nil -- can_apply_aura
+	entry[17] = nil -- boss_debuff
 end
 
 -- If the src table has a valid weapon enchant entry for the slot
@@ -433,7 +439,7 @@ end
 local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	local control = aura_controls[i]
 
-	local id, slot, quality, is_buff, name, rank, icon, count, debuff_type, duration, expiration_time, caster, is_stealable, should_consolidate, spell_id = unpack(aura, 1, ENTRY_END)
+	local id, slot, quality, is_buff, name, _, icon, count, debuff_type, duration, expiration_time, caster, _, _, spell_id = unpack(aura, 1, ENTRY_END)
 
 	local is_mine = my_units[caster]
 	local who = is_mine and "my" or "other"
@@ -594,11 +600,11 @@ local function update_auras(frame, db, is_buff)
 	-- copy the weapon entries into the aura list
 	if is_buff and db.enabled_weapons and unit and is_player then
 		local filter = db.layout.buff.filter
-		copy_weapon_entry(weapon_list, list, MAINHAND)
+		copy_weapon_entry(weapon_list, list, INVSLOT_MAINHAND)
 		if list[#list] and not PitBull4_Aura:FilterEntry(filter, list[#list], frame) then
 			list[#list] = del_entry(list[#list])
 		end
-		copy_weapon_entry(weapon_list, list, OFFHAND)
+		copy_weapon_entry(weapon_list, list, INVSLOT_OFFHAND)
 		if list[#list] and not PitBull4_Aura:FilterEntry(filter, list[#list], frame) then
 			list[#list] = del_entry(list[#list])
 		end
@@ -823,8 +829,8 @@ function PitBull4_Aura:UpdateWeaponEnchants(force)
 	end
 	local mh, mh_time_left, mh_count, _, oh, oh_time_left, oh_count = GetWeaponEnchantInfo()
 	local current_time = GetTime()
-	local mh_entry = weapon_list[MAINHAND]
-	local oh_entry = weapon_list[OFFHAND]
+	local mh_entry = weapon_list[INVSLOT_MAINHAND]
+	local oh_entry = weapon_list[INVSLOT_OFFHAND]
 
 	-- Grab the values from the weapon_list entries to use
 	-- to compare against the current values to look for changes.
@@ -863,11 +869,11 @@ function PitBull4_Aura:UpdateWeaponEnchants(force)
 	-- We check that the expiration time is at least 0.2 seconds further
 	-- ahead than it was to avoid rebuilding auras for rounding errors.
 	if mh ~= old_mh or mh_count ~= old_mh_count or (mh_expiration_time and old_mh_expiration_time and mh_expiration_time - old_mh_expiration_time > 0.2) then
-		set_weapon_entry(weapon_list, mh, mh_time_left, mh_expiration_time, mh_count, MAINHAND)
+		set_weapon_entry(weapon_list, mh, mh_time_left, mh_expiration_time, mh_count, INVSLOT_MAINHAND)
 		updated = true
 	end
 	if oh ~= old_oh or oh_count ~= old_oh_count or (oh_expiration_time and old_oh_expiration_time and oh_expiration_time - old_oh_expiration_time > 0.2) then
-		set_weapon_entry(weapon_list, oh, oh_time_left, oh_expiration_time, oh_count, OFFHAND)
+		set_weapon_entry(weapon_list, oh, oh_time_left, oh_expiration_time, oh_count, INVSLOT_OFFHAND)
 		updated = true
 	end
 

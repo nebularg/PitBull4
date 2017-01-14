@@ -11,10 +11,6 @@ PitBull4_Aura:SetModuleType("custom")
 PitBull4_Aura:SetName(L["Aura"])
 PitBull4_Aura:SetDescription(L["Shows buffs and debuffs for PitBull4 frames."])
 
--- constants for slot ids
-PitBull4_Aura.MAINHAND = GetInventorySlotInfo("MainHandSlot")
-PitBull4_Aura.OFFHAND = GetInventorySlotInfo("SecondaryHandSlot")
-
 PitBull4_Aura.OnProfileChanged_funcs = {}
 
 local timerFrame = CreateFrame("Frame")

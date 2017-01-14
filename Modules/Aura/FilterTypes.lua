@@ -1204,7 +1204,7 @@ PitBull4_Aura:RegisterFilterType('Map',L["Map"],map_filter,map_filter_options,ma
 local function false_filter()
 	return false
 end
-PitBull4_Aura:RegisterFilterType('False',L["False"],false_filter,function(self, options)
+PitBull4_Aura:RegisterFilterType('False',L["False"],false_filter,function(self,options)
 	options.text = {
 		type = 'description',
 		name = L["The False filter is always false."],
@@ -1214,7 +1214,7 @@ end)
 local function true_filter()
 	return true
 end
-PitBull4_Aura:RegisterFilterType('True',L["True"],false_filter,function(self,options)
+PitBull4_Aura:RegisterFilterType('True',L["True"],true_filter,function(self,options)
 	options.text = {
 		type = 'description',
 		name = L["The True filter is always true."],

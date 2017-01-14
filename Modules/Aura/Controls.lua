@@ -4,9 +4,6 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
-local MAINHAND = PitBull4_Aura.MAINHAND
-local OFFHAND = PitBull4_Aura.OFFHAND
-
 -- Table of functions included into the aura controls
 local Aura = {}
 
@@ -106,9 +103,9 @@ local function OnClick(self)
 	local slot = self.slot
 	if InCombatLockdown() or slot then return end
 	if slot then
-		if slot == MAINHAND then
+		if slot == _G.INVSLOT_MAINHAND then
 			CancelItemTempEnchantment(1)
-		elseif slot == OFFHAND then
+		elseif slot == _G.INVSLOT_OFFHAND then
 			CancelItemTempEnchantment(2)
 		end
 	else
