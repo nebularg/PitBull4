@@ -928,9 +928,9 @@ function PitBull4.OnTanksUpdated()
 	end
 end
 
-local migrate_addon_module_states
-do
-	local old_modules = {
+local function get_disabled_module_addons()
+	local disabled = {}
+	local addons = {
 		PitBull4_Aggro = true,
 		PitBull4_AltManaBar = true,
 		PitBull4_AltPowerBar = true,
@@ -978,26 +978,16 @@ do
 		PitBull4_VoiceIcon = true,
 	}
 	local character = UnitName("player")
-	for name in next, old_modules do
-		old_modules[name] = GetAddOnEnableState(character, name) > 0
-	end
-
-	function migrate_addon_module_states()
-		for addon_name, enabled in next, old_modules do
-			if not enabled then
-				local module_name = addon_name:sub(10)
-				if module_name == "AltManaBar" then module_name = "DruidManaBar" end  -- blame Stanzilla
-				local module = PitBull4:GetModule(module_name, true)
-				if module and module.db then
-					module.db.profile.global.enabled = false
-					print(format("PitBull4: Disabling module %q", module_name))
-					PitBull4:DisableModuleAndSaveState(module)
-				else
-					print(format("PitBull4: Unable to disable module %q because it is not loaded for this class. You may have to disable this module manually on other classes that share this profile.", module_name))
-				end
-			end
+	for name in next, addons do
+		local _, _, _, loadable, reason = GetAddOnInfo(name)
+		if (loadable or reason ~= "MISSING") and GetAddOnEnableState(character, name) == 0 then
+			disabled[#disabled + 1] = name:sub(10)
 		end
 	end
+	if #disabled > 0 and #disabled < 45 then
+		return format("|cffff2020%s|r", table.concat(disabled, ", "))
+	end
+	return format("|cffffd200%s|r", NONE)
 end
 
 local upgrade_functions = {
@@ -1388,21 +1378,18 @@ function PitBull4:OnProfileChanged()
 	end
 
 	-- save addon state into the module sv
-	if not db.profile.addon_states_migrated then
-		db.profile.addon_states_migrated = true
-		if not StaticPopupDialogs["PITBULL4_MIGRATE_ADDON_STATES"] then
-			StaticPopupDialogs["PITBULL4_MIGRATE_ADDON_STATES"] = {
-				text = "PitBull4 has been updated to load all of its modules from the main addon. This means that modules must be disabled using the in-game config (/pb4) instead of just disabling the addon for a module.\n\nPress |cffffd200CANCEL|r if you have already disabled modules in the config or if you have otherwise changed the 'UNUSED' addons (for example, disabled them all).\n\nPress |cffffd200UPGRADE|r to transfer your old module states by setting the currently disabled addons as disabled in the config.\n\nThis should have happened automagically so I apologize for the annoyance (and for showing this for each profile you use >_<).",
-				button1 = UPGRADE,
-				button2 = CANCEL,
-				OnAccept = migrate_addon_module_states,
-				hideOnEscape = false,
-				timeout = 0,
-				exclusive = false,
-			}
-		end
-		StaticPopup_Show("PITBULL4_MIGRATE_ADDON_STATES")
+	if not db.profile.addon_states_migrated and not db.sv.global.addon_states_migrated then
+		StaticPopupDialogs["PITBULL4_MIGRATE_ADDON_STATES"] = {
+			text = "PitBull4 modules are now disabled using the in-game config (/pb4). You may need to disable modules you had previously disabled via their addons.\n\nAddons you have disabled:\n%s",
+			button1 = OKAY,
+			hideOnEscape = false,
+			timeout = 0,
+			exclusive = false,
+			showAlert = true,
+		}
+		StaticPopup_Show("PITBULL4_MIGRATE_ADDON_STATES", get_disabled_module_addons())
 	end
+	db.sv.global.addon_states_migrated = true
 end
 
 function PitBull4:OnNewProfile()
