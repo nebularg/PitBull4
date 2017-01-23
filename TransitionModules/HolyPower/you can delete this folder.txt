@@ -1,3 +1,0 @@
-PitBull4 has been updated to load all of it's modules from the main addon.
-You're seeing this because Curse Client doesn't delete folders or you didn't
-remove everything when updating yourself.

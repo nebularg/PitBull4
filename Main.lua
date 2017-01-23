@@ -1021,68 +1021,6 @@ function PitBull4.OnTanksUpdated()
 	end
 end
 
-local function get_disabled_module_addons()
-	local disabled = {}
-	local addons = {
-		PitBull4_Aggro = true,
-		PitBull4_AltManaBar = true,
-		PitBull4_AltPowerBar = true,
-		PitBull4_ArcaneCharges = true,
-		PitBull4_ArtifactPowerBar = true,
-		PitBull4_Aura = true,
-		PitBull4_Background = true,
-		PitBull4_BattlePet = true,
-		PitBull4_BlankSpace = true,
-		PitBull4_Border = true,
-		PitBull4_CastBar = true,
-		PitBull4_CastBarLatency = true,
-		PitBull4_Chi = true,
-		PitBull4_CombatFader = true,
-		PitBull4_CombatIcon = true,
-		PitBull4_CombatText = true,
-		PitBull4_ComboPoints = true,
-		PitBull4_DogTagTexts = true,
-		PitBull4_ExperienceBar = true,
-		PitBull4_HealthBar = true,
-		PitBull4_HideBlizzard = true,
-		PitBull4_Highlight = true,
-		PitBull4_HolyPower = true,
-		PitBull4_HostilityFader = true,
-		PitBull4_LeaderIcon = true,
-		PitBull4_LuaTexts = true,
-		PitBull4_MasterLooterIcon = true,
-		PitBull4_PhaseIcon = true,
-		PitBull4_Portrait = true,
-		PitBull4_PowerBar = true,
-		PitBull4_PvPIcon = true,
-		PitBull4_RaidTargetIcon = true,
-		PitBull4_QuestIcon = true,
-		PitBull4_RangeFader = true,
-		PitBull4_ReadyCheckIcon = true,
-		PitBull4_ReputationBar = true,
-		PitBull4_RestIcon = true,
-		PitBull4_RoleIcon = true,
-		PitBull4_Runes = true,
-		PitBull4_SoulShards = true,
-		PitBull4_Sounds = true,
-		PitBull4_ThreatBar = true,
-		PitBull4_Totems = true,
-		PitBull4_VisualHeal = true,
-		PitBull4_VoiceIcon = true,
-	}
-	local character = UnitName("player")
-	for name in next, addons do
-		local _, _, _, loadable, reason = GetAddOnInfo(name)
-		if (loadable or reason ~= "MISSING") and GetAddOnEnableState(character, name) == 0 then
-			disabled[#disabled + 1] = name:sub(10)
-		end
-	end
-	if #disabled > 0 and #disabled < 45 then
-		return format("|cffff2020%s|r", table.concat(disabled, ", "))
-	end
-	return format("|cffffd200%s|r", NONE)
-end
-
 local upgrade_functions = {
 	[1] = function(sv)
 		-- Version 1 (version number used for config files without a version tag)
@@ -1186,8 +1124,12 @@ local upgrade_functions = {
 					end
 				end
 			end
-			profile_db.group_anchors_updated = nil -- cleanup
+			-- sv cleanup
+			profile_db.group_anchors_updated = nil
+			profile_db.addon_states_migrated = nil
 		end
+		sv.global.addon_states_migrated = nil
+
 		return true
 	end,
 }
@@ -1342,11 +1284,56 @@ PitBull4.modules_not_loaded = modules_not_loaded
 -- @usage PitBull4:LoadModules()
 function PitBull4:LoadModules()
 	local blacklist = {
+		PitBull4_Aggro = true,
+		PitBull4_AltManaBar = true,
+		PitBull4_AltPowerBar = true,
+		PitBull4_ArcaneCharges = true,
+		PitBull4_ArtifactPowerBar = true,
+		PitBull4_Aura = true,
+		PitBull4_Background = true,
+		PitBull4_BattlePet = true,
+		PitBull4_BlankSpace = true,
+		PitBull4_Border = true,
 		PitBull4_BurningEmbers = true,
+		PitBull4_CastBar = true,
+		PitBull4_CastBarLatency = true,
+		PitBull4_Chi = true,
+		PitBull4_CombatFader = true,
+		PitBull4_CombatIcon = true,
+		PitBull4_CombatText = true,
+		PitBull4_ComboPoints = true,
 		PitBull4_DemonicFury = true,
+		PitBull4_DogTagTexts = true,
 		PitBull4_DruidMana = true,
 		PitBull4_Eclipse = true,
+		PitBull4_ExperienceBar = true,
+		PitBull4_HealthBar = true,
+		PitBull4_HideBlizzard = true,
+		PitBull4_Highlight = true,
+		PitBull4_HolyPower = true,
+		PitBull4_HostilityFader = true,
+		PitBull4_LeaderIcon = true,
+		PitBull4_LuaTexts = true,
+		PitBull4_MasterLooterIcon = true,
+		PitBull4_PhaseIcon = true,
+		PitBull4_Portrait = true,
+		PitBull4_PowerBar = true,
+		PitBull4_PvPIcon = true,
+		PitBull4_RaidTargetIcon = true,
+		PitBull4_QuestIcon = true,
+		PitBull4_RangeFader = true,
+		PitBull4_ReadyCheckIcon = true,
+		PitBull4_ReputationBar = true,
+		PitBull4_RestIcon = true,
+		PitBull4_RoleIcon = true,
+		PitBull4_Runes = true,
 		PitBull4_ShadowOrb = true,
+		PitBull4_SoulShards = true,
+		PitBull4_Sounds = true,
+		PitBull4_ThreatBar = true,
+		PitBull4_Totems = true,
+		PitBull4_VisualHeal = true,
+		PitBull4_VoiceIcon = true,
 	}
 	local blacklisted_module_loaded = false
 
@@ -1531,20 +1518,6 @@ function PitBull4:OnProfileChanged()
 	if LibDBIcon then
 		LibDBIcon:Refresh("PitBull4", db.profile.minimap_icon)
 	end
-
-	-- save addon state into the module sv
-	if not db.profile.addon_states_migrated and not db.sv.global.addon_states_migrated then
-		StaticPopupDialogs["PITBULL4_MIGRATE_ADDON_STATES"] = {
-			text = "PitBull4 modules are now disabled using the in-game config (/pb4). You may need to disable modules you had previously disabled via their addons.\n\nAddons you have disabled:\n%s",
-			button1 = OKAY,
-			hideOnEscape = false,
-			timeout = 0,
-			exclusive = false,
-			showAlert = true,
-		}
-		StaticPopup_Show("PITBULL4_MIGRATE_ADDON_STATES", get_disabled_module_addons())
-	end
-	db.sv.global.addon_states_migrated = true
 end
 
 function PitBull4:OnNewProfile()
