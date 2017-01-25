@@ -1077,6 +1077,10 @@ local upgrade_functions = {
 	[2] = function(sv)
 		-- Allows creating multiple singleton frames and frame-to-frame anchoring.
 		if not sv.profiles then return true end
+		-- We don't have AceDB to provide defaults, so do it ourself.
+		local group_mt = { __index = function(t, k) return DATABASE_DEFAULTS.profile.groups["**"][k] end }
+		local layout_mt = { __index = function(t, k) return DATABASE_DEFAULTS.profile.layouts["**"][k] end }
+
 		local tmp = {}
 		for profile, profile_db in pairs(sv.profiles) do
 			-- Convert the old units table to the new format.  Prior to this we could
@@ -1118,7 +1122,11 @@ local upgrade_functions = {
 						if group_db then
 							local layout_db = layouts[group_db.layout]
 							if layout_db then
+								setmetatable(group_db, group_mt)
+								setmetatable(layout_db, layout_mt)
 								PitBull4:MigrateGroupAnchorToNewFormat(group_db, layout_db)
+								setmetatable(layout_db, nil)
+								setmetatable(group_db, nil)
 							end
 						end
 					end
