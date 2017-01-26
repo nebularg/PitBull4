@@ -52,6 +52,14 @@ function PitBull4_Aura:OnEnable()
 		self:RegisterEvent("SPELLS_CHANGED", "PLAYER_TALENT_UPDATE")
 		self:PLAYER_TALENT_UPDATE()
 	end
+
+	if MSQ then
+		-- Pre-populate the Masque groups so they're all available in
+		-- options without opening the config/going into config mode.
+		for layout_name in next, PitBull4.db.profile.layouts do
+			MSQ:Group("PitBull4 Aura", layout_name)
+		end
+	end
 end
 
 function PitBull4_Aura:OnDisable()
