@@ -2243,6 +2243,13 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 		PitBull4.Options.UpdateFrames()
 	end
 
+	local masque_skins = {}
+	if MSQ then
+		for id in next, MSQ:GetSkins() do
+			masque_skins[id] = id
+		end
+	end
+
 	return 	true, 'display', {
 		type = 'group',
 		name = L["Display"],
@@ -2336,9 +2343,18 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 						end
 					end
 				end,
-				width = 'full',
 				disabled = is_aura_disabled,
+				width = 'full',
 				order = 6,
+			},
+			click_through = {
+				type = 'toggle',
+				name = L["Click-through"],
+				desc = L["Disable capturing clicks on icons, allowing the click to fall through to the window underneath the icon."],
+				get = get,
+				set = set,
+				disabled = is_aura_disabled,
+				order = 7,
 			},
 			zoom_aura = {
 				type = 'toggle',
@@ -2348,15 +2364,22 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				set = set,
 				hidden = function(info) return MSQ end,
 				disabled = is_aura_disabled,
-				order = 7,
+				order = 8,
 			},
-			click_through = {
-				type = 'toggle',
-				name = L["Click-through"],
-				desc = L["Disable capturing clicks on icons, allowing the click to fall through to the window underneath the icon."],
-				get = get,
-				set = set,
-				disabled = is_aura_disabled,
+			skin = {
+				type = "select",
+				name = L["Skin"],
+				desc = L["Select a Masque skin to apply to the auras for this layout. For more options, open the Masque interface options with /msq."],
+				values = masque_skins,
+				get = function(info)
+					local group = MSQ:Group("PitBull4 Aura", PitBull4.Options.GetCurrentLayout())
+					return group.db.SkinID or "Blizzard"
+				end,
+				set = function(info, value)
+					local group = MSQ:Group("PitBull4 Aura", PitBull4.Options.GetCurrentLayout())
+					group:SetOption("SkinID", value)
+				end,
+				hidden = function(info) return not MSQ end,
 				order = 8,
 			},
 		},
