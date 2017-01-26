@@ -474,10 +474,13 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 
 	local texture = control.texture
 	texture:SetTexture(icon)
-	if db.zoom_aura then
-		texture:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-	else
-		texture:SetTexCoord(0, 1, 0, 1)
+
+	if not frame.masque_group then
+		if db.zoom_aura then
+			texture:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+		else
+			texture:SetTexCoord(0, 1, 0, 1)
+		end
 	end
 
 	local texts = db.texts[rule]

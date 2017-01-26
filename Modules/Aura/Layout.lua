@@ -397,4 +397,9 @@ function PitBull4_Aura:LayoutAuras(frame)
 
 	layout_auras(frame, db, true)
 	layout_auras(frame, db, false)
+
+	local group = frame.masque_group
+	if group then
+		group:ReSkin()
+	end
 end

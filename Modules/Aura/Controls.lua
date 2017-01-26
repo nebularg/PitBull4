@@ -18,7 +18,7 @@ local border_path = [[Interface\AddOns\PitBull4\Modules\Aura\border]]
 
 -- Get the unit the aura applies to.
 function Aura:GetUnit()
-      return self:GetParent().unit
+	return self:GetParent().unit
 end
 
 
@@ -183,8 +183,23 @@ end, function(control)
 	-- that everything should be done when the actual aura is set on
 	-- the control.  This is because the controls are recyled unless
 	-- the number of them changes a new control will not be retrieved.
+
+	local group = control:GetParent().masque_group
+	if group then
+		group:AddButton(control, {
+			Icon = control.texture,
+			Cooldown = control.cooldown,
+			Border = control.border,
+			Count = control.count_text
+		})
+	end
 end, function(control)
 	-- onDelete
 	control:SetScript("OnUpdate", nil)
 	PitBull4_Aura:DisableCooldownText(control)
+
+	local group = control:GetParent().masque_group
+	if group then
+		group:RemoveButton(control)
+	end
 end)

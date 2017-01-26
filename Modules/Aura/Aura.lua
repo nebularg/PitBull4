@@ -5,6 +5,8 @@ local L = PitBull4.L
 
 local PitBull4_Aura = PitBull4:NewModule("Aura", "AceEvent-3.0")
 
+local MSQ = LibStub("Masque", true)
+
 PitBull4_Aura:SetModuleType("custom")
 PitBull4_Aura:SetName(L["Aura"])
 PitBull4_Aura:SetDescription(L["Shows buffs and debuffs for PitBull4 frames."])
@@ -74,6 +76,16 @@ end
 PitBull4_Aura.OnHide = PitBull4_Aura.ClearFrame
 
 function PitBull4_Aura:UpdateFrame(frame)
+	if MSQ then
+		-- if the layout changed, remove the auras from the old group
+		if frame.masque_group and frame.masque_group.Group ~= frame.layout then
+			self:ClearAuras(frame)
+			frame.masque_group = nil
+		end
+		if not frame.masque_group then
+			frame.masque_group = MSQ:Group("PitBull4 Aura", frame.layout)
+		end
+	end
 	self:UpdateAuras(frame)
 	self:LayoutAuras(frame)
 end

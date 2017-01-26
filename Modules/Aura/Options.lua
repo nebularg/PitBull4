@@ -4,6 +4,8 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
+local MSQ = LibStub("Masque", true)
+
 local can_dispel = PitBull4_Aura.can_dispel
 local friend_buffs = PitBull4_Aura.friend_buffs
 local friend_debuffs = PitBull4_Aura.friend_debuffs
@@ -2344,6 +2346,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				desc = L["Zoom in on aura icons slightly."],
 				get = get,
 				set = set,
+				hidden = function(info) return MSQ end,
 				disabled = is_aura_disabled,
 				order = 7,
 			},
