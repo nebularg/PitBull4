@@ -5,26 +5,6 @@ local L = PitBull4.L
 
 local PitBull4_Aura = PitBull4:NewModule("Aura", "AceEvent-3.0")
 
-local MSQ = LibStub("Masque", true)
-if MSQ then
-	-- Add skins similar to what PitBull uses without Masque.
-	-- You can't raise the cooldown frame above the border, but that
-	-- should be the only difference between using Masque or not.
-	-- Too bad you can't register a default skin when registering a group :|
-	MSQ:AddSkin("PitBull", {
-		Author = "PitBull",
-		Version = "1.0.0",
-		Template = "Blizzard",
-		Border = { Texture = [[Interface\AddOns\PitBull4\Modules\Aura\border]] },
-	})
-	MSQ:AddSkin("PitBull Zoomed", {
-		Author = "PitBull",
-		Version = "1.0.0",
-		Template = "Zoomed",
-		Border = { Texture = [[Interface\AddOns\PitBull4\Modules\Aura\border]] },
-	})
-end
-
 PitBull4_Aura:SetModuleType("custom")
 PitBull4_Aura:SetName(L["Aura"])
 PitBull4_Aura:SetDescription(L["Shows buffs and debuffs for PitBull4 frames."])
@@ -66,14 +46,6 @@ function PitBull4_Aura:OnEnable()
 		self:RegisterEvent("SPELLS_CHANGED", "PLAYER_TALENT_UPDATE")
 		self:PLAYER_TALENT_UPDATE()
 	end
-
-	if MSQ then
-		-- Pre-populate the Masque groups so they're all available in
-		-- options without opening the config/going into config mode.
-		for layout_name in next, PitBull4.db.profile.layouts do
-			MSQ:Group("PitBull4 Aura", layout_name)
-		end
-	end
 end
 
 function PitBull4_Aura:OnDisable()
@@ -98,16 +70,7 @@ end
 PitBull4_Aura.OnHide = PitBull4_Aura.ClearFrame
 
 function PitBull4_Aura:UpdateFrame(frame)
-	if MSQ then
-		-- if the layout changed, remove the auras from the old group
-		if frame.masque_group and frame.masque_group.Group ~= frame.layout then
-			self:ClearAuras(frame)
-			frame.masque_group = nil
-		end
-		if not frame.masque_group then
-			frame.masque_group = MSQ:Group("PitBull4 Aura", frame.layout)
-		end
-	end
+	self:UpdateSkin(frame)
 	self:UpdateAuras(frame)
 	self:LayoutAuras(frame)
 end

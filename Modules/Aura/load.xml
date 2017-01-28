@@ -13,6 +13,7 @@
 	<Script file="Highlight.lua"/>
 	<Script file="Update.lua"/>
 	<Script file="Layout.lua"/>
+	<Script file="Skin.lua"/>
 	<Script file="Options.lua"/>
 
 </Ui>
