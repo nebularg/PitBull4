@@ -6,6 +6,24 @@ local L = PitBull4.L
 local PitBull4_Aura = PitBull4:NewModule("Aura", "AceEvent-3.0")
 
 local MSQ = LibStub("Masque", true)
+if MSQ then
+	-- Add skins similar to what PitBull uses without Masque.
+	-- You can't raise the cooldown frame above the border, but that
+	-- should be the only difference between using Masque or not.
+	-- Too bad you can't register a default skin when registering a group :|
+	MSQ:AddSkin("PitBull", {
+		Author = "PitBull",
+		Version = "1.0.0",
+		Template = "Blizzard",
+		Border = { Texture = [[Interface\AddOns\PitBull4\Modules\Aura\border]] },
+	})
+	MSQ:AddSkin("PitBull Zoomed", {
+		Author = "PitBull",
+		Version = "1.0.0",
+		Template = "Zoomed",
+		Border = { Texture = [[Interface\AddOns\PitBull4\Modules\Aura\border]] },
+	})
+end
 
 PitBull4_Aura:SetModuleType("custom")
 PitBull4_Aura:SetName(L["Aura"])
