@@ -369,6 +369,7 @@ L["Enable this text."] = true
 L["Enable this unit frame."] = true
 L["Enable this unit group."] = true
 L["Enable this unit."] = true
+L["Enable using Masque to apply a skin to auras."] = true
 L["Enabled"] = true
 L["Enables tooltips when hovering over the icons."] = true
 L["Enemy"] = true

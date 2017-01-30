@@ -189,6 +189,21 @@ end, function(control)
 			Border = control.border,
 			Count = control.count_text
 		})
+	else
+		-- reset the control layout
+		local texture = control.texture
+		texture:SetAllPoints(control)
+		texture:SetTexCoord(0, 1, 0, 1)
+
+		local border = control.border
+		border:SetAllPoints(control)
+		border:SetTexture(border_path)
+		border:SetBlendMode("BLEND")
+
+		local cooldown = control.cooldown
+		cooldown:SetAllPoints(control)
+		cooldown:SetFrameLevel(control:GetFrameLevel() + 1)
+		control.overlay:SetFrameLevel(cooldown:GetFrameLevel() + 1)
 	end
 end, function(control)
 	-- onDelete
@@ -199,4 +214,7 @@ end, function(control)
 	if group then
 		group:RemoveButton(control)
 	end
+	control.__MSQ_Cooldown = nil
+	control.__MSQ_NormalTexture = nil
+	control:SetNormalTexture(nil)
 end)

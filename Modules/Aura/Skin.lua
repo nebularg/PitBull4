@@ -4,15 +4,33 @@ local PitBull4_Aura = PitBull4:GetModule("Aura")
 
 local MSQ = LibStub("Masque", true)
 
+-- Called from UpdateFrame to set the layout group and catch layout changes
 function PitBull4_Aura:UpdateSkin(frame)
-	if MSQ then
-		-- if the layout changed, remove the auras from the old group
-		if frame.masque_group and frame.masque_group.Group ~= frame.layout then
-			self:ClearAuras(frame)
-			frame.masque_group = nil
-		end
-		if not frame.masque_group then
-			frame.masque_group = MSQ:Group("PitBull4 Aura", frame.layout)
+	if not MSQ then return end
+
+	if not self.db.profile.global.skin then
+		frame.masque_group = nil
+		return
+	end
+	-- if the layout changed, remove the auras from the old group
+	if frame.masque_group and frame.masque_group.Group ~= frame.layout then
+		self:ClearAuras(frame)
+		frame.masque_group = nil
+	end
+	if not frame.masque_group then
+		frame.masque_group = MSQ:Group("PitBull4 Aura", frame.layout)
+	end
+end
+
+function PitBull4_Aura:UpdateSkins()
+	if not MSQ then return end
+
+	MSQ:Group("PitBull4 Aura"):Delete()
+	if self.db.profile.global.skin then
+		-- Pre-populate the Masque groups so they're all available in
+		-- options without opening the config/going into config mode.
+		for layout_name in next, PitBull4.db.profile.layouts do
+			MSQ:Group("PitBull4 Aura", layout_name)
 		end
 	end
 end
@@ -34,13 +52,5 @@ if MSQ then
 		Border = { Texture = [[Interface\AddOns\PitBull4\Modules\Aura\border]] },
 	})
 
-	PitBull4_Aura.OnProfileChanged_funcs[#PitBull4_Aura.OnProfileChanged_funcs+1] =
-	function(self)
-		MSQ:Group("PitBull4 Aura"):Delete()
-		-- Pre-populate the Masque groups so they're all available in
-		-- options without opening the config/going into config mode.
-		for layout_name in next, PitBull4.db.profile.layouts do
-			MSQ:Group("PitBull4 Aura", layout_name)
-		end
-	end
+	PitBull4_Aura.OnProfileChanged_funcs[#PitBull4_Aura.OnProfileChanged_funcs+1] = PitBull4_Aura.UpdateSkins
 end

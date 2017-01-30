@@ -261,6 +261,7 @@ PitBull4_Aura:SetDefaults({
 },
 {
 	-- Global defaults
+	skin = true,
 	colors = color_defaults,
 	filters = {
 		-- default filters are indexed by two character codes.
@@ -1580,7 +1581,27 @@ end)
 
 
 PitBull4_Aura:SetGlobalOptionsFunction(function(self)
-	return 'filter_editor', {
+	return 'skin', {
+		type = "toggle",
+		name = L["Skin"],
+		desc = L["Enable using Masque to apply a skin to auras."],
+		get = function(info)
+			return self.db.profile.global.skin
+		end,
+		set = function(info, value)
+			self.db.profile.global.skin = value
+
+			self:UpdateSkins()
+			for frame in PitBull4:IterateFrames() do
+				self:ClearFrame(frame)
+				self:UpdateFrame(frame)
+			end
+		end,
+		hidden = function(info)
+			return not self:IsEnabled() or not MSQ
+		end,
+	},
+	'filter_editor', {
 		type = 'group',
 		childGroups = 'tab',
 		name = L["Aura filter editor"],
@@ -2362,7 +2383,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				desc = L["Zoom in on aura icons slightly."],
 				get = get,
 				set = set,
-				hidden = function(info) return MSQ end,
+				hidden = function(info) return MSQ and self.db.profile.global.skin end,
 				disabled = is_aura_disabled,
 				order = 8,
 			},
@@ -2379,7 +2400,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 					local group = MSQ:Group("PitBull4 Aura", PitBull4.Options.GetCurrentLayout())
 					group:SetOption("SkinID", value)
 				end,
-				hidden = function(info) return not MSQ end,
+				hidden = function(info) return not MSQ or not self.db.profile.global.skin end,
 				order = 8,
 			},
 		},
