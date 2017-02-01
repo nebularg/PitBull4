@@ -340,10 +340,10 @@ function PitBull4.Utils.GetRelativeFrame(relative_to)
 		if not group then return nil, relative_type end
 		if group.use_pet_header and group.unit_group:match("pet") then
 			return _G["PitBull4_PetGroups_"..relative_name], relative_type
-		elseif not group.group_based then
-			return _G["PitBull4_EnemyGroups_"..relative_name], relative_type
-		else
+		elseif group.unit_group:match("^party") or group.unit_group:match("^raid") then
 			return _G["PitBull4_Groups_"..relative_name], relative_type
+		else
+			return _G["PitBull4_EnemyGroups_"..relative_name], relative_type
 		end
 	elseif relative_type == "~" then
 		return _G[relative_name], relative_type
