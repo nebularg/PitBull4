@@ -193,36 +193,30 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 end
 
 PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
+	local function get(info)
+		return PitBull4.Options.GetLayoutDB(self)[info[#info]]
+	end
+	local function set(info, value)
+		PitBull4.Options.GetLayoutDB(self)[info[#info]] = value
+
+		for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
+			self:Clear(frame)
+			self:Update(frame)
+		end
+	end
+
 	return 'vertical', {
 		type = 'toggle',
 		name = L["Vertical"],
 		desc = L["Show the combo points stacked vertically instead of horizontally."],
-		get = function(info)
-			return PitBull4.Options.GetLayoutDB(self).vertical
-		end,
-		set = function(info, value)
-			PitBull4.Options.GetLayoutDB(self).vertical = value
-
-			for frame in PitBull4:IterateFramesForUnitID("target") do
-				self:Clear(frame)
-				self:Update(frame)
-			end
-		end,
+		get = get,
+		set = set,
 	}, 'spacing', {
 		type = 'range',
 		name = L["Spacing"],
 		desc = L["How much spacing to show between combo points."],
-		get = function(info)
-			return PitBull4.Options.GetLayoutDB(self).spacing
-		end,
-		set = function(info, value)
-			PitBull4.Options.GetLayoutDB(self).spacing = value
-
-			for frame in PitBull4:IterateFramesForUnitID("target") do
-				self:Clear(frame)
-				self:Update(frame)
-			end
-		end,
+		get = get,
+		set = set,
 		softMin = 0,
 		softMax = 15,
 		step = 1,
@@ -230,17 +224,8 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 		type = 'select',
 		name = L["Texture"],
 		desc = L["What texture to use for combo points."],
-		get = function(info)
-			return PitBull4.Options.GetLayoutDB(self).texture
-		end,
-		set = function(info, value)
-			PitBull4.Options.GetLayoutDB(self).texture = value
-
-			for frame in PitBull4:IterateFramesForUnitID("target") do
-				self:Clear(frame)
-				self:Update(frame)
-			end
-		end,
+		get = get,
+		set = set,
 		values = TEXTURES,
 		hidden = function(info)
 			local i = 0
@@ -263,7 +248,7 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 			local color = PitBull4.Options.GetLayoutDB(self).color
 			color[1], color[2], color[3] = r, g, b
 
-			for frame in PitBull4:IterateFramesForUnitID("target") do
+			for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
 				self:Clear(frame)
 				self:Update(frame)
 			end
@@ -272,17 +257,8 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 		type = 'toggle',
 		name = L["Has background color"],
 		desc = L["Show a background color behind the icons."],
-		get = function(info)
-			return PitBull4.Options.GetLayoutDB(self).has_background_color
-		end,
-		set = function(info, value)
-			PitBull4.Options.GetLayoutDB(self).has_background_color = value
-
-			for frame in PitBull4:IterateFramesForUnitID("target") do
-				self:Clear(frame)
-				self:Update(frame)
-			end
-		end,
+		get = get,
+		set = set,
 	}, 'background_color', {
 		type = 'color',
 		hasAlpha = true,
@@ -295,14 +271,14 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 			local color = PitBull4.Options.GetLayoutDB(self).background_color
 			color[1], color[2], color[3], color[4] = r, g, b, a
 
-			for frame in PitBull4:IterateFramesForUnitID("target") do
+			for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
 				self:Clear(frame)
 				self:Update(frame)
 			end
 		end,
 		disabled = function(info)
-			return not PitBull4.Options.GetLayoutDB(self).has_background_color or
-				   not PitBull4.Options.GetLayoutDB(self).enabled
+			local db = PitBull4.Options.GetLayoutDB(self)
+			return not db.has_background_color or not db.enabled
 		end
 	}
 end)
