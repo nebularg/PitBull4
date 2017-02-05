@@ -31,24 +31,6 @@ function PitBull4.Options.get_module_options()
 		childGroups = "tree",
 	}
 
-	local module_args = {
-		enabled = {
-			type = 'toggle',
-			name = L["Enable"],
-			desc = L["Globally enable this module."],
-			get = function(info)
-				return info.handler:IsEnabled()
-			end,
-			set = function(info, value)
-				if value then
-					PitBull4:EnableModuleAndSaveState(info.handler)
-				else
-					PitBull4:DisableModuleAndSaveState(info.handler)
-				end
-			end
-		}
-	}
-
 	local function merge_onto(dict, ...)
 		for i = 1, select('#', ...), 2 do
 			local k, v = select(i, ...)
@@ -60,23 +42,36 @@ function PitBull4.Options.get_module_options()
 	end
 
 	function PitBull4.Options.modules_handle_module_load(module)
-		local id = module.id
-
-		local opt = {
-			type = 'group',
+		module_options.args[module.id .. "_toggle"] = {
+			type = "toggle",
 			name = module.name,
-			desc = module.description,
-			args = {},
-			handler = module,
+			desc = (module.description or "") .. "\n\n" .. L["Globally enable this module."],
+			get = function(info)
+				return module:IsEnabled()
+			end,
+			set = function(info, value)
+				if value then
+					PitBull4:EnableModuleAndSaveState(module)
+				else
+					PitBull4:DisableModuleAndSaveState(module)
+				end
+			end
 		}
-		module_options.args[id] = opt
-
-		for k, v in pairs(module_args) do
-			opt.args[k] = v
-		end
 
 		if global_functions[module] then
+			local opt = {
+				type = "group",
+				name = module.name,
+				desc = module.description,
+				args = {},
+				handler = module,
+			}
+			-- enable toggle
+			-- for k, v in pairs(module_args) do
+			-- 	opt.args[k] = v
+			-- end
 			merge_onto(opt.args, global_functions[module](module))
+			module_options.args[module.id] = opt
 			global_functions[module] = false
 		end
 	end
@@ -88,10 +83,12 @@ function PitBull4.Options.get_module_options()
 	-- and now for disabled modules not yet loaded
 	local modules_not_loaded = PitBull4.modules_not_loaded
 
+	local player_name = UnitName("player")
+
 	local function loadable(info)
 		local id = info[#info - 1]
 		local addon_name = 'PitBull4_'..id
-		return GetAddOnEnableState(UnitName("player"), addon_name) > 0 and IsAddOnLoadOnDemand(addon_name)
+		return GetAddOnEnableState(player_name, addon_name) > 0 and IsAddOnLoadOnDemand(addon_name)
 	end
 
 	local function unloadable(info)
@@ -109,7 +106,7 @@ function PitBull4.Options.get_module_options()
 			local id = info[#info - 1]
 			PitBull4:LoadAndEnableModule(id)
 		end,
-		disabled = unloadable,
+		hidden = unloadable,
 	}
 
 	local no_mem_notice = {
@@ -143,19 +140,34 @@ function PitBull4.Options.get_module_options()
 	}
 
 	for id in pairs(modules_not_loaded) do
+		local addon_name = 'PitBull4_' .. id
+		local title = GetAddOnMetadata(addon_name, "Title")
+		local notes = GetAddOnMetadata(addon_name, "Notes")
+
+		local name = title:match("%[(.*)%]")
+		if not name then
+			name = id
+		else
+			name = name:gsub("|r", ""):gsub("|c%x%x%x%x%x%x%x%x", "")
+		end
+
+		module_options.args[id .. "_toggle"] = {
+			type = "toggle",
+			name = name,
+			desc = (notes or "") .. "\n\n" .. L["Globally enable this module."],
+			get = function(info)
+				return false
+			end,
+			set = function(info, value)
+				PitBull4:LoadAndEnableModule(id)
+			end,
+			disabled = function(info)
+				return GetAddOnEnableState(player_name, addon_name) == 0 or not IsAddOnLoadOnDemand(addon_name)
+			end,
+		}
+
 		if not module_options.args[id] then
-			local addon_name = 'PitBull4_' .. id
-			local title = GetAddOnMetadata(addon_name, "Title")
-			local notes = GetAddOnMetadata(addon_name, "Notes")
-
-			local name = title:match("%[(.*)%]")
-			if not name then
-				name = id
-			else
-				name = name:gsub("|r", ""):gsub("|c%x%x%x%x%x%x%x%x", "")
-			end
-
-			local opt = {
+			module_options.args[id] = {
 				type = 'group',
 				name = name,
 				desc = notes,
@@ -165,8 +177,6 @@ function PitBull4.Options.get_module_options()
 					unloadable_notice = unloadable_notice,
 				},
 			}
-
-			module_options.args[id] = opt
 		end
 	end
 
