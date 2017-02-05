@@ -7,7 +7,7 @@ local PitBull4_Sounds = PitBull4:NewModule("Sounds", "AceEvent-3.0")
 PitBull4_Sounds:SetModuleType("custom")
 PitBull4_Sounds:SetName(L["Sounds"])
 PitBull4_Sounds:SetDescription(L["Play certain sounds when various unit-based events occur."])
-PitBull4_Sounds:SetDefaults({}, {})
+PitBull4_Sounds:SetDefaults()
 
 function PitBull4_Sounds:OnEnable()
 	self:RegisterEvent("UNIT_FACTION")
@@ -55,6 +55,3 @@ end
 function PitBull4_Sounds:PLAYER_TARGET_CHANGED()
 	self:PLAYER_unit_CHANGED("target")
 end
-
-PitBull4_Sounds:SetGlobalOptionsFunction(function(self)
-end)

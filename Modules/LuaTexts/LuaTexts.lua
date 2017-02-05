@@ -1648,12 +1648,7 @@ PitBull4_LuaTexts:SetGlobalOptionsFunction(function(self)
 		return not self.db.profile.global.enabled
 	end
 
-	return 'div', {
-		type = 'header',
-		name = '',
-		desc = '',
-		hidden = hidden,
-	}, 'current_event', {
+	return 'current_event', {
 		type = 'select',
 		name = L["Current event"],
 		desc = L["Change the current event you are editing."],

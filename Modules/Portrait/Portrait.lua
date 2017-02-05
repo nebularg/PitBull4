@@ -26,7 +26,7 @@ do
 			{ 2955, 6795, 9636, 6835, 6836, 3935 }, -- white
 		}
 	else
-		pirate_day = false
+		pirate_day = nil
 	end
 end
 
@@ -44,8 +44,7 @@ PitBull4_Portrait:SetDefaults({
 	side = "left",
 	bar_size = 4,
 	enabled = false,
-},
-{
+}, {
 	pirate = true
 })
 PitBull4_Portrait.can_set_side_to_center = true
@@ -250,25 +249,26 @@ function PitBull4_Portrait:UpdateFrame(frame)
 	return created
 end
 
-PitBull4_Portrait:SetGlobalOptionsFunction(function(self)
-	return 'pirate', {
-		type = 'select',
-		name = L["Pirate"],
-		desc = L["Happy International Talk Like a Pirate Day!"],
-		get = function(info)
-			return self.db.profile.global.pirate and "pirate" or "~normal"
-		end,
-		set = function(info, value)
-			self.db.profile.global.pirate = value == "pirate"
-			self:UpdateAll()
-		end,
-		values = {
-			["pirate"] = L["Yaaarrr"],
-			["~normal"] = L["Land lubber"], -- ~ to force it after pirate
-		},
-		hidden = not pirate_day,
-	}
-end)
+if pirate_day then
+	PitBull4_Portrait:SetGlobalOptionsFunction(function(self)
+		return 'pirate', {
+			type = "select",
+			name = L["Pirate"],
+			desc = L["Happy International Talk Like a Pirate Day!"],
+			get = function(info)
+				return self.db.profile.global.pirate and "pirate" or "~normal"
+			end,
+			set = function(info, value)
+				self.db.profile.global.pirate = value == "pirate"
+				self:UpdateAll()
+			end,
+			values = {
+				["pirate"] = L["Yaaarrr"],
+				["~normal"] = L["Land lubber"], -- ~ to force it after pirate
+			},
+		}
+	end)
+end
 
 
 PitBull4_Portrait:SetLayoutOptionsFunction(function(self)

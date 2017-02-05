@@ -1602,12 +1602,11 @@ PitBull4_Aura:SetGlobalOptionsFunction(function(self)
 		end,
 	},
 	'filter_editor', {
-		type = 'group',
-		childGroups = 'tab',
-		name = L["Aura filter editor"],
-		desc = L["Configure the filters for the aura modules."],
-		args = PitBull4_Aura:GetFilterEditor(),
-	}
+		type = "description",
+		name =  L["Configure the filters for the aura modules."],
+		fontSize = "medium",
+	},
+	PitBull4_Aura:GetFilterEditor()
 end)
 
 local HIGHLIGHT_FILTER_OPTIONS = {}

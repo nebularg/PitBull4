@@ -41,6 +41,10 @@ function PitBull4.Options.get_module_options()
 		end
 	end
 
+	local function hidden(info)
+		return not info.handler:IsEnabled()
+	end
+
 	function PitBull4.Options.modules_handle_module_load(module)
 		module_options.args[module.id .. "_toggle"] = {
 			type = "toggle",
@@ -63,6 +67,8 @@ function PitBull4.Options.get_module_options()
 				type = "group",
 				name = module.name,
 				desc = module.description,
+				childGroups = "tab",
+				hidden = hidden,
 				args = {},
 				handler = module,
 			}
