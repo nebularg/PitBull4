@@ -2564,9 +2564,8 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 					PitBull4.Options.UpdateFrames()
 				end,
 				disabled = function(info)
-					return GetTextDB().color_by_time
+					return GetTextDB().color_by_time or disable_text(info)
 				end,
-				disabled = disable_text,
 				order = 9,
 			},
 			color_by_time = {
