@@ -72,10 +72,6 @@ function PitBull4.Options.get_module_options()
 				args = {},
 				handler = module,
 			}
-			-- enable toggle
-			-- for k, v in pairs(module_args) do
-			-- 	opt.args[k] = v
-			-- end
 			merge_onto(opt.args, global_functions[module](module))
 			module_options.args[module.id] = opt
 			global_functions[module] = false
@@ -168,14 +164,19 @@ function PitBull4.Options.get_module_options()
 				PitBull4:LoadAndEnableModule(id)
 			end,
 			disabled = function(info)
-				return GetAddOnEnableState(player_name, addon_name) == 0 or not IsAddOnLoadOnDemand(addon_name)
+				return GetAddOnEnableState(player_name, addon_name) == 0 or not select(4, GetAddOnInfo(addon_name))
 			end,
 		}
 
 		if not module_options.args[id] then
 			module_options.args[id] = {
 				type = 'group',
-				name = name,
+				name = function(info)
+					if not loadable(info) then
+						return ("|cff7f7f7f%s|r"):format(name)
+					end
+					return name
+				end,
 				desc = notes,
 				args = {
 					enabled = arg_enabled,
