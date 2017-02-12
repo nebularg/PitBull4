@@ -1434,19 +1434,19 @@ PitBull4_Aura:RegisterFilterType('Spell id',L["Spell id"],id_filter, function(se
 	}
 end)
 
--- Boss debuff, filter by if the aura is a debuff applied by a boss
-local function boss_debuff_filter(self, entry)
+-- Boss, filter by if the aura is applied by a boss
+local function boss_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).boss_debuff then
 		return not not entry[17]
 	else
 		return not entry[17]
 	end
 end
-PitBull4_Aura:RegisterFilterType('Boss debuff',L["Boss debuff"],boss_debuff_filter,function(self, options)
-	options.boss_debuff = {
+PitBull4_Aura:RegisterFilterType('Boss',L["Boss"],boss_filter,function(self,options)
+	options.boss = {
 		type = 'select',
-		name = L["Boss debuff"],
-		desc = L["Filter by if the aura is a boss debuff."],
+		name = L["Boss"],
+		desc = L["Filter by if the aura is applied by a boss."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			return db.boss_debuff and "yes" or "no"
