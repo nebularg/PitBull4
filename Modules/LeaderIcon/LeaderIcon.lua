@@ -23,8 +23,6 @@ end
 function PitBull4_LeaderIcon:GetTexture(frame)
 	if frame.guid == leader_guid then
 		return [[Interface\GroupFrame\UI-Group-LeaderIcon]]
-	else
-		return nil
 	end
 end
 

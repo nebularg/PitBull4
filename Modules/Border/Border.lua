@@ -89,46 +89,46 @@ function PitBull4_Border:UpdateFrame(frame)
 		tex:SetPoint("TOPLEFT", border, "TOPLEFT", -padding, -size + padding)
 		tex:SetPoint("BOTTOMLEFT", border, "BOTTOMLEFT", -padding, size - padding)
 		tex:SetTexCoord(0, 0, 0, 1.948, 0.125, 0, 0.125, 1.948)
-		local tex = PitBull4.Controls.MakeTexture(border, "BORDER")
+		tex = PitBull4.Controls.MakeTexture(border, "BORDER")
 		border[2] = tex
 		tex:SetWidth(size)
 		tex:SetHeight(size)
 		tex:SetPoint("TOPRIGHT", border, "TOPRIGHT", padding, -size + padding)
 		tex:SetPoint("BOTTOMRIGHT", border, "BOTTOMRIGHT", padding, size - padding)
 		tex:SetTexCoord(0.125, 0, 0.125, 1.948, 0.25, 0, 0.25, 1.948)
-		local tex = PitBull4.Controls.MakeTexture(border, "BORDER")
+		tex = PitBull4.Controls.MakeTexture(border, "BORDER")
 		border[3] = tex
 		tex:SetWidth(size*8)
 		tex:SetHeight(size)
 		tex:SetPoint("TOPLEFT", border, "TOPLEFT", size - padding, padding)
 		tex:SetPoint("TOPRIGHT", border, "TOPRIGHT", -size + padding, padding)
 		tex:SetTexCoord(0.25, 9.2808, 0.375, 9.2808, 0.25, 0, 0.375, 0)
-		local tex = PitBull4.Controls.MakeTexture(border, "BORDER")
+		tex = PitBull4.Controls.MakeTexture(border, "BORDER")
 		border[4] = tex
 		tex:SetWidth(size*8)
 		tex:SetHeight(size)
 		tex:SetPoint("BOTTOMLEFT", border, "BOTTOMLEFT", size - padding, -padding)
 		tex:SetPoint("BOTTOMRIGHT", border, "BOTTOMRIGHT", -size + padding, -padding)
 		tex:SetTexCoord(0.375, 9.2808, 0.5, 9.2808, 0.375, 0, 0.5, 0)
-		local tex = PitBull4.Controls.MakeTexture(border, "BORDER")
+		tex = PitBull4.Controls.MakeTexture(border, "BORDER")
 		border[5] = tex
 		tex:SetWidth(size)
 		tex:SetHeight(size)
 		tex:SetPoint("TOPLEFT", border, "TOPLEFT", -padding, padding)
 		tex:SetTexCoord(0.5, 0, 0.5, 1, 0.625, 0, 0.625, 1)
-		local tex = PitBull4.Controls.MakeTexture(border, "BORDER")
+		tex = PitBull4.Controls.MakeTexture(border, "BORDER")
 		border[6] = tex
 		tex:SetWidth(size)
 		tex:SetHeight(size)
 		tex:SetPoint("TOPRIGHT", border, "TOPRIGHT", padding, padding)
 		tex:SetTexCoord(0.625, 0, 0.625, 1, 0.75, 0, 0.75, 1)
-		local tex = PitBull4.Controls.MakeTexture(border, "BORDER")
+		tex = PitBull4.Controls.MakeTexture(border, "BORDER")
 		border[7] = tex
 		tex:SetWidth(size)
 		tex:SetHeight(size)
 		tex:SetPoint("BOTTOMLEFT", border, "BOTTOMLEFT", -padding, -padding)
 		tex:SetTexCoord(0.75, 0, 0.75, 1, 0.875, 0, 0.875, 1)
-		local tex = PitBull4.Controls.MakeTexture(border, "BORDER")
+		tex = PitBull4.Controls.MakeTexture(border, "BORDER")
 		border[8] = tex
 		tex:SetWidth(size)
 		tex:SetHeight(size)
@@ -342,61 +342,61 @@ PitBull4_Border:SetLayoutOptionsFunction(function(self)
 				dialogControl = "LSM30_Border",
 			}
 		}
-    }, 'rare', {
-        type = 'group',
-        inline = true,
-        name = L["Rare"],
-        args = {
-            rare_color = {
-                type = 'color',
-                name = L["Color"],
-                desc = L["What color should be applied to the border if it is a rare unit."],
-                hasAlpha = true,
-                get = get_color,
-                set = set_color,
-            },
-            rare_texture = {
-                type = 'select',
-                name = L["Texture"],
-                desc = L["What texture should be applied to the border if it is a rare unit."],
-                get = get,
-                set = set,
-                values = function(info)
-                    return LibSharedMedia:HashTable("border")
-                end,
-                hidden = function(info)
-                    return not LibSharedMedia
-                end,
-                dialogControl = "LSM30_Border",
-            }
-        }
-    }, 'boss', {
-        type = 'group',
-        inline = true,
-        name = L["Boss"],
-        args = {
-            boss_color = {
-                type = 'color',
-                name = L["Color"],
-                desc = L["What color should be applied to the border if it is a boss unit."],
-                hasAlpha = true,
-                get = get_color,
-                set = set_color,
-            },
-            boss_texture = {
-                type = 'select',
-                name = L["Texture"],
-                desc = L["What texture should be applied to the border if it is a boss unit."],
-                get = get,
-                set = set,
-                values = function(info)
-                    return LibSharedMedia:HashTable("border")
-                end,
-                hidden = function(info)
-                    return not LibSharedMedia
-                end,
-                dialogControl = "LSM30_Border",
-            }
-        }
+	}, 'rare', {
+		type = 'group',
+		inline = true,
+		name = L["Rare"],
+		args = {
+			rare_color = {
+				type = 'color',
+				name = L["Color"],
+				desc = L["What color should be applied to the border if it is a rare unit."],
+				hasAlpha = true,
+				get = get_color,
+				set = set_color,
+			},
+			rare_texture = {
+				type = 'select',
+				name = L["Texture"],
+				desc = L["What texture should be applied to the border if it is a rare unit."],
+				get = get,
+				set = set,
+				values = function(info)
+					return LibSharedMedia:HashTable("border")
+				end,
+				hidden = function(info)
+					return not LibSharedMedia
+				end,
+				dialogControl = "LSM30_Border",
+			}
+		}
+	}, 'boss', {
+		type = 'group',
+		inline = true,
+		name = L["Boss"],
+		args = {
+			boss_color = {
+				type = 'color',
+				name = L["Color"],
+				desc = L["What color should be applied to the border if it is a boss unit."],
+				hasAlpha = true,
+				get = get_color,
+				set = set_color,
+			},
+			boss_texture = {
+				type = 'select',
+				name = L["Texture"],
+				desc = L["What texture should be applied to the border if it is a boss unit."],
+				get = get,
+				set = set,
+				values = function(info)
+					return LibSharedMedia:HashTable("border")
+				end,
+				hidden = function(info)
+					return not LibSharedMedia
+				end,
+				dialogControl = "LSM30_Border",
+			}
+		}
 	}
 end)

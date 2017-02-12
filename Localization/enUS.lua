@@ -1100,6 +1100,7 @@ L["These color definitions will be used by per-element settings that need sepera
 L["Thin Border"] = true
 L["This assumes spells cannot be (locally) triggered before the GCD has run out."] = true
 L["This module can not be loaded: %s"] = true
+L["This module has additional global options."] = true
 L["This module is not loaded and will not take up and memory or processing power until enabled."] = true
 L["This plays a sound file when a totem expires or gets destroyed. Individual sounds can be set per element."] = true
 L["This will make a new bar for this layout."] = true

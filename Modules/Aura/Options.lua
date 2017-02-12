@@ -272,11 +272,11 @@ PitBull4_Aura:SetDefaults({
 		-- & Class map filters
 		-- * Extra filters
 		-- + Death Knight
-		-- ,, Demon Hunter (this has two characters for the class since there is no room to add a class otherwise)
+		-- ,, Demon Hunter
 		-- , Druid
 		-- - Hunter
 		-- . Mage
-		-- // Monk (this has two characters for the class since there is no room to add a class otherwise)
+		-- // Monk
 		-- / Paladin
 		-- 0 Priest
 		-- 1 Rogue
@@ -293,13 +293,16 @@ PitBull4_Aura:SetDefaults({
 		-- < Taruen
 		-- = Troll
 		-- > Blood Elf
-		-- ?? Goblin (this has two characters for the race since there is no room to add a race otherwise)
+		-- ?? Goblin
 		-- ? Worgen
 		-- @ Pandaren (shared with the one below, race filters are always followed by a number)
 		-- @ Simple filters
 		--
+		-- New classes and races are being added with two characters
+		-- since there is no room to add them otherwise.
+		--
 		-- The 2nd character places it within the proper order
-		-- under those major categories.  That said the follow
+		-- under those major categories.  That said the following
 		-- are generally true
 		-- 0 self buffs
 		-- 1 pet buffs
@@ -1598,6 +1601,14 @@ PitBull4_Aura:SetGlobalOptionsFunction(function(self)
 			end
 		end,
 		hidden = function(info)
+			return not self:IsEnabled() or not MSQ
+		end,
+	},
+	'div', {
+		type = "header",
+		name = "",
+		hidden = function(info)
+			-- don't show the divider if there are no other shown options
 			return not self:IsEnabled() or not MSQ
 		end,
 	},

@@ -23,8 +23,6 @@ end
 function PitBull4_MasterLooterIcon:GetTexture(frame)
 	if frame.guid == master_looter_guid then
 		return [[Interface\GroupFrame\UI-Group-MasterLooter]]
-	else
-		return nil
 	end
 end
 

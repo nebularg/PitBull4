@@ -25,8 +25,6 @@ function PitBull4_RestIcon:GetTexture(frame)
 
 	if IsResting() then
 		return [[Interface\CharacterFrame\UI-StateIcon]]
-	else
-		return nil
 	end
 end
 

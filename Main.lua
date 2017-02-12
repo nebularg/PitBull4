@@ -929,7 +929,7 @@ function PitBull4:IterateHeadersForUnitGroup(unit_group)
 		return do_nothing
 	end
 
-	return iterate_shown_frames or half_next, headers
+	return iterate_shown_frames, headers
 end
 
 --- Iterate over all headers with the given super-classification.
@@ -949,7 +949,7 @@ function PitBull4:IterateHeadersForSuperUnitGroup(super_unit_group)
 		return do_nothing
 	end
 
-	return iterate_shown_frames or half_next, headers
+	return iterate_shown_frames, headers
 end
 
 local function return_same(object, key)
@@ -1012,7 +1012,7 @@ function PitBull4:CallMethodOnModules(method_name, ...)
 end
 
 -- Callback for when the main tank list updates from oRA
-function PitBull4.OnTanksUpdated()
+function PitBull4:OnTanksUpdated()
 	for header in PitBull4:IterateHeadersForSuperUnitGroup("raid") do
 		local group_db = header.group_db
 		if group_db and group_db.group_filter == "MAINTANK" then
@@ -1212,12 +1212,10 @@ function PitBull4:OnInitialize()
 		LibDBIcon:Register("PitBull4", LibDataBrokerLauncher, self.db.profile.minimap_icon)
 	end
 
+	self:RegisterEvent("PLAYER_ROLES_ASSIGNED", "OnTanksUpdated")
 	if _G.oRA3 then
 		_G.oRA3.RegisterCallback(self, "OnTanksUpdated")
-		self.OnTanksUpdated()
 	end
-
-	self.LibBossIDs = LibStub("LibBossIDs-1.0", true)
 end
 
 do

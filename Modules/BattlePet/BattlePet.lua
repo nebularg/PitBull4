@@ -15,16 +15,12 @@ PitBull4_BattlePet:SetDefaults({
 
 function PitBull4_BattlePet:GetTexture(frame)
 	local unit = frame.unit
-	if not unit then return nil end
-
 	if UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit) then
 		local pet_type = UnitBattlePetType(unit)
 		return [[Interface\TargetingFrame\PetBadge-]]..PET_TYPE_SUFFIX[pet_type]
-	else
-		return nil
 	end
 end
 
 function PitBull4_BattlePet:GetExampleTexture(frame)
-	return [[Interface\TargetingFrame\PetBadge-]]..PET_TYPE_SUFFIX[8]
+	return [[Interface\TargetingFrame\PetBadge-Beast]]
 end

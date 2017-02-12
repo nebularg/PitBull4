@@ -3,6 +3,8 @@ local PitBull4 = _G.PitBull4
 
 local L = PitBull4.L
 
+local LibBossIDs = LibStub("LibBossIDs-1.0", true)
+
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
 
@@ -51,12 +53,12 @@ do
 		playertarget = "target",
 		npc = "npc",
 	}
-	for i = 1, MAX_PARTY_MEMBERS do
+	for i = 1, _G.MAX_PARTY_MEMBERS do
 		better_unit_ids["party" .. i] = "party" .. i
 		better_unit_ids["partypet" .. i] = "partypet" .. i
 		better_unit_ids["party" .. i .. "pet"] = "partypet" .. i
 	end
-	for i = 1, MAX_RAID_MEMBERS do
+	for i = 1, _G.MAX_RAID_MEMBERS do
 		better_unit_ids["raid" .. i] = "raid" .. i
 		better_unit_ids["raidpet" .. i] = "raidpet" .. i
 		better_unit_ids["raid" .. i .. "pet"] = "raidpet" .. i
@@ -69,7 +71,7 @@ do
 		better_unit_ids["arenapet" .. i] = "arenapet" .. i
 		better_unit_ids["arena" .. i .. "pet"] = "arenapet" .. i
 	end
-	for i = 1, MAX_BOSS_FRAMES do
+	for i = 1, _G.MAX_BOSS_FRAMES do
 		better_unit_ids["boss" .. i] = "boss" .. i
 	end
 	for i = 1, 40 do
@@ -96,7 +98,7 @@ do
 		valid_singleton_unit_ids["arena" .. i] = true
 		valid_singleton_unit_ids["arenapet" .. i] = true
 	end
-	for i = 1, MAX_BOSS_FRAMES do
+	for i = 1, _G.MAX_BOSS_FRAMES do
 		valid_singleton_unit_ids["boss" .. i] = true
 	end
 	setmetatable(valid_singleton_unit_ids, target_same_mt)
@@ -260,12 +262,12 @@ end
 -- @usage PitBull4.Utils.GetMobIDFromGuid("0xF13000046514911F") == 1125
 -- @usage PitBull4.Utils.GetMobIDFromGuid("F13000046514911F") == 1125
 function PitBull4.Utils.GetMobIDFromGuid(guid)
-    if DEBUG then
-        expect(guid, 'typeof', 'string')
-    end
+	if DEBUG then
+		expect(guid, 'typeof', 'string')
+	end
 
-    local _, _, _, _, _, mob_id = strsplit('-', guid)
-    return tonumber(mob_id)
+	local _, _, _, _, _, mob_id = strsplit('-', guid)
+	return tonumber(mob_id)
 end
 
 --- Return the unit classification of the given unit.
@@ -273,28 +275,27 @@ end
 -- @param unit The unit to check the classification of.
 -- @return one of "worldboss", "elite", "rareelite", "rare", "normal", "trivial", or "minus"
 function PitBull4.Utils.BetterUnitClassification(unit)
-    local classification = UnitClassification(unit)
-    local LibBossIDs = PitBull4.LibBossIDs
+		local classification = UnitClassification(unit)
 
-    if not LibBossIDs or classification == "worldboss" or classification == "normal" or classification == "minus" or classification == "trivial" then
-        return classification
-    end
+		if not LibBossIDs or classification == "worldboss" or classification == "normal" or classification == "minus" or classification == "trivial" then
+			return classification
+		end
 
-    local guid = UnitGUID(unit)
-    if not guid then
-        return classification
-    end
+		local guid = UnitGUID(unit)
+		if not guid then
+			return classification
+		end
 
-    local mob_id = PitBull4.Utils.GetMobIDFromGuid(guid)
-    if not mob_id then
-        return classification
-    end
+		local mob_id = PitBull4.Utils.GetMobIDFromGuid(guid)
+		if not mob_id then
+			return classification
+		end
 
-    if LibBossIDs.BossIDs[mob_id] then
-        return "worldboss"
-    end
+		if LibBossIDs.BossIDs[mob_id] then
+			return "worldboss"
+		end
 
-    return classification
+		return classification
 end
 
 local function deep_copy(data)

@@ -24,8 +24,6 @@ end
 function PitBull4_QuestIcon:GetTexture(frame)
 	if UnitIsQuestBoss(frame.unit) then
 		return [[Interface\TargetingFrame\PortraitQuestBadge]]
-	else
-		return nil
 	end
 end
 

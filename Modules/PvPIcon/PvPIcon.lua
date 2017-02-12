@@ -15,8 +15,8 @@ PitBull4_PvPIcon:SetDefaults({
 
 function PitBull4_PvPIcon:OnEnable()
 	self:RegisterEvent("UPDATE_FACTION")
-	self:RegisterEvent("PLAYER_FLAGS_CHANGED")
-	self:RegisterEvent("UNIT_FACTION")
+	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "UPDATE_FACTION")
+	self:RegisterEvent("UNIT_FACTION", "UPDATE_FACTION")
 end
 
 function PitBull4_PvPIcon:GetTexture(frame)
@@ -68,9 +68,8 @@ function PitBull4_PvPIcon:GetExampleTexture(frame)
 
 	if FRIENDLY_CLASSIFICATIONS[classification] or (frame.guid and frame.unit and UnitIsFriend("player", frame.unit)) then
 		return [[Interface\TargetingFrame\UI-PVP-]] .. player_faction
-	else
-		return [[Interface\TargetingFrame\UI-PVP-]] .. OPPOSITE_PLAYER_FACTION[player_faction]
 	end
+	return [[Interface\TargetingFrame\UI-PVP-]] .. OPPOSITE_PLAYER_FACTION[player_faction]
 end
 
 local tex_coords = {
@@ -95,5 +94,3 @@ function PitBull4_PvPIcon:UPDATE_FACTION(event, unit)
 		self:UpdateForUnitID(unit_pet)
 	end
 end
-PitBull4_PvPIcon.PLAYER_FLAGS_CHANGED = PitBull4_PvPIcon.UPDATE_FACTION
-PitBull4_PvPIcon.UNIT_FACTION = PitBull4_PvPIcon.UPDATE_FACTION
