@@ -1292,19 +1292,19 @@ PitBull4_Aura:RegisterFilterType('Caster',L["Caster"],caster_filter,function(sel
 	}
 end)
 
--- Should Consolidate, Filter by if the Aura is eligible for the consolidated aura display
-local function should_consolidate_filter(self, entry)
+-- Personal nameplate aura, Filter by if the aura is eligible to show on your personal nameplate
+local function personal_nameplate_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).should_consolidate then
 		return not not entry[14]
 	else
 		return not entry[14]
 	end
 end
-PitBull4_Aura:RegisterFilterType('Should consolidate',L["Should consolidate"],should_consolidate_filter, function(self,options)
-	options.should_consolidate = {
+PitBull4_Aura:RegisterFilterType('Personal nameplate',L["Personal nameplate"],personal_nameplate_filter,function(self,options)
+	options.personal_nameplate_filter = {
 		type = 'select',
-		name = L["Should consolidate"],
-		desc = L["Filter by if the aura is eligible for consolidation."],
+		name = L["Personal nameplate"],
+		desc = L["Filter by if the aura is eligible to show on your personal nameplate."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			return db.should_consolidate and "yes" or "no"
@@ -1340,7 +1340,7 @@ local function id_filter(self, entry)
 		end
 	end
 end
-PitBull4_Aura:RegisterFilterType('Spell id',L["Spell id"],id_filter, function(self, options)
+PitBull4_Aura:RegisterFilterType('Spell id',L["Spell id"],id_filter,function(self,options)
 	options.whitelist = {
 		type = 'select',
 		name = L["List type"],

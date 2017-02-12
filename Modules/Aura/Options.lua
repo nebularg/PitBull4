@@ -423,6 +423,13 @@ PitBull4_Aura:SetDefaults({
 			disabled = true,
 			built_in = true,
 		},
+		['@R'] = {
+			display_name = L["Personal nameplate"],
+			filter_type = 'Personal nameplate',
+			should_consolidate = true,
+			disabled = true,
+			built_in = true,
+		},
 		[',3'] = {
 			display_name = L["Druid can dispel"],
 			filter_type = 'Aura Type',
