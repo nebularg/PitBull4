@@ -491,6 +491,7 @@ function PitBull4_Aura:GetFilterEditor()
 				set = function(info, value)
 					local filters = self.db.profile.global.filters
 					local new_filter = deep_copy(filters[CURRENT_FILTER])
+					new_filter.disabled = nil
 					new_filter.built_in = nil
 					new_filter.display_name = nil
 					filters[value] = new_filter
