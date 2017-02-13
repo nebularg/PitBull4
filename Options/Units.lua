@@ -963,7 +963,7 @@ function PitBull4.Options.get_unit_options()
 
 	group_layout_args.direction = {
 		name = L["Growth direction"],
-		desc = L["Which way frames should placed."],
+		desc = L["Which way frames should be placed."],
 		order = next_order(),
 		type = 'select',
 		values = {

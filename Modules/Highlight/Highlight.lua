@@ -140,7 +140,7 @@ PitBull4_Highlight:SetLayoutOptionsFunction(function(self)
 		end,
 	}, 'show_target', {
 		type = 'toggle',
-		name = L["When targetted"],
+		name = L["When targeted"],
 		desc = L["Highlight this unit frame when it is the same as your current target."],
 		get = function(info)
 			return PitBull4.Options.GetLayoutDB(self).show_target

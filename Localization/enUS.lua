@@ -1231,7 +1231,7 @@ L["What texture the status bar should use."] = true
 L["What texture to use for combo points."] = true
 L["What to map based on."] = true
 L["What type of filter to run on the unit group."] = true
-L["When targetted"] = true
+L["When targeted"] = true
 L["Where on the control to place the indicator."] = true
 L["Where on the control to place the text."] = true
 L["Where to place the bar in relation to other bars on the frame."] = true
@@ -1259,7 +1259,7 @@ L["Which side of the unit frame to place the status bar on. Note: For the left a
 L["Which situations to show the unit group in."] = true
 L["Which unit this frame should show."] = true
 L["Which units this group should show."] = true
-L["Which way frames should placed."] = true
+L["Which way frames should be placed."] = true
 L["Whitelist"] = true
 L["Width"] = true
 L["Width multiplier"] = true
