@@ -425,7 +425,7 @@ PitBull4_Aura:SetDefaults({
 		},
 		['@R'] = {
 			display_name = L["Personal nameplate"],
-			filter_type = 'Personal nameplate',
+			filter_type = 'Should consolidate',
 			should_consolidate = true,
 			disabled = true,
 			built_in = true,

@@ -1300,7 +1300,7 @@ local function personal_nameplate_filter(self, entry)
 		return not entry[14]
 	end
 end
-PitBull4_Aura:RegisterFilterType('Personal nameplate',L["Personal nameplate"],personal_nameplate_filter,function(self,options)
+PitBull4_Aura:RegisterFilterType('Should consolidate',L["Personal nameplate"],personal_nameplate_filter,function(self,options)
 	options.personal_nameplate_filter = {
 		type = 'select',
 		name = L["Personal nameplate"],
