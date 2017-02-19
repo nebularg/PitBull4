@@ -187,7 +187,8 @@ end, function(control)
 			Icon = control.texture,
 			Cooldown = control.cooldown,
 			Border = control.border,
-			Count = control.count_text
+			-- Count = control.count_text,
+			-- Duration = control.cooldown_text,
 		})
 	else
 		-- reset the control layout
