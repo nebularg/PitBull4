@@ -418,7 +418,7 @@ PitBull4_Aura:SetDefaults({
 		},
 		['@Q'] = {
 			display_name = L["Boss"],
-			filter_type = 'Boss',
+			filter_type = 'Boss debuff',
 			boss_debuff = true,
 			disabled = true,
 			built_in = true,

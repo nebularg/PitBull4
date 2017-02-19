@@ -1442,7 +1442,7 @@ local function boss_filter(self, entry)
 		return not entry[17]
 	end
 end
-PitBull4_Aura:RegisterFilterType('Boss',L["Boss"],boss_filter,function(self,options)
+PitBull4_Aura:RegisterFilterType('Boss debuff',L["Boss"],boss_filter,function(self,options)
 	options.boss = {
 		type = 'select',
 		name = L["Boss"],
