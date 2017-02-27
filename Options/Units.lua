@@ -1038,7 +1038,7 @@ function PitBull4.Options.get_unit_options()
 		order = next_order(),
 		type = 'range',
 		min = 1,
-		max = MAX_RAID_MEMBERS,
+		max = _G.MAX_RAID_MEMBERS,
 		get = get,
 		set = set_with_refresh_group,
 		step = 1,
@@ -1319,7 +1319,7 @@ function PitBull4.Options.get_unit_options()
 				db.group_filter = nil
 			elseif value == 'NUMBER' then
 				local t = {}
-				for i = 1, NUM_RAID_GROUPS do
+				for i = 1, _G.NUM_RAID_GROUPS do
 					t[#t+1] = i..""
 				end
 				db.group_filter = table.concat(t, ",")
@@ -1344,7 +1344,7 @@ function PitBull4.Options.get_unit_options()
 			local unit_group = db.unit_group
 			local raid_based = unit_group:sub(1, 4) == "raid"
 
-		 	return not raid_based -- only show in raid
+			return not raid_based -- only show in raid
 		end
 	}
 
@@ -1430,7 +1430,7 @@ function PitBull4.Options.get_unit_options()
 			local unit_group = db.unit_group
 			local party_based = unit_group:sub(1, 5) == "party"
 
-		 	if party_based then
+			if party_based then
 				-- only show in raid
 				return true
 			end
@@ -1450,7 +1450,7 @@ function PitBull4.Options.get_unit_options()
 			return not tonumber(start)
 		end
 	}
-	for i = 1, NUM_RAID_GROUPS do
+	for i = 1, _G.NUM_RAID_GROUPS do
 		group_filtering_args.group_filter_number.values[i..""] = L["Group #%d"]:format(i)
 	end
 
@@ -1470,7 +1470,7 @@ function PitBull4.Options.get_unit_options()
 			local unit_group = db.unit_group
 			local party_based = unit_group:sub(1, 5) == "party"
 
-		 	if party_based then
+			if party_based then
 				-- only show in raid
 				return true
 			end
@@ -1503,8 +1503,6 @@ function PitBull4.Options.get_unit_options()
 	for class in pairs(RAID_CLASS_COLORS) do
 		group_filtering_args.group_filter_class.values[class] = class_translations[class] or class
 	end
-
-	local current_order = 0
 
 	local args = {}
 	for k, v in pairs(shared_args) do
