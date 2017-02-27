@@ -579,7 +579,7 @@ end
 ScriptEnv.OfflineDuration = OfflineDuration
 
 local function Offline(unit)
- 	local offline = OfflineDuration(unit)
+	local offline = OfflineDuration(unit)
 	if offline then
 		return ("%s (%s)"):format(L["Offline"], FormatDuration(offline))
 	end

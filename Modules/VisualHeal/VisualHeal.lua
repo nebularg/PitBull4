@@ -19,7 +19,7 @@ PitBull4_VisualHeal:SetDescription(L["Visualises healing done by you and your gr
 PitBull4_VisualHeal:SetDefaults({
 	show_overheal = true,
 	show_overabsorb = true,
-	}, {
+}, {
 	incoming_color = { 0.4, 0.6, 0.4, 0.75 },
 	outgoing_color = { 0, 1, 0, 1 },
 	outgoing_color_overheal = { 1, 0, 0, 0.65 },
@@ -265,7 +265,7 @@ PitBull4_VisualHeal:SetColorOptionsFunction(function(self)
 		self.db.profile.global.incoming_color = { 0.4, 0.6, 0.4, 0.75 }
 		self.db.profile.global.outgoing_color = { 0, 1, 0, 1 }
 		self.db.profile.global.outgoing_color_overheal = { 1, 0, 0, 0.65 }
-		self.db.profile.global.absorbe_color = { .4, .258, .619, 1}
+		self.db.profile.global.absorb_color = { .4, .258, .619, 1}
 		self.db.profile.global.auto_luminance = true
 	end
 end)
