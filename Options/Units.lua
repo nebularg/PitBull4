@@ -1053,7 +1053,9 @@ function PitBull4.Options.get_unit_options()
 		get = function(info)
 			return not get(info)
 		end,
-		set = set_with_swap_template,
+		set = function(info, value)
+			set_with_swap_template(info, not value or nil)
+		end,
 		disabled = disabled,
 		hidden = function(info)
 			local unit_group = get_group_db().unit_group
