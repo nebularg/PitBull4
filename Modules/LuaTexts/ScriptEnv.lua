@@ -888,17 +888,17 @@ ScriptEnv.RestXP = RestXP
 
 local function ArtifactPower()
 	if HasArtifactEquipped() then
-		local _, _, _, _, xp, pointsSpent = C_ArtifactUI.GetEquippedArtifactInfo()
+		local _, _, _, _, xp, pointsSpent, _, _, _, _, _, _, tier = C_ArtifactUI.GetEquippedArtifactInfo()
 
 		local numPoints = 0
-		local xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent)
+		local xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent, tier)
 		while xp >= xpForNextPoint and xpForNextPoint > 0 do
 			xp = xp - xpForNextPoint
 
 			pointsSpent = pointsSpent + 1
 			numPoints = numPoints + 1
 
-			xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent)
+			xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent, tier)
 		end
 		return xp, xpForNextPoint, numPoints
 	end

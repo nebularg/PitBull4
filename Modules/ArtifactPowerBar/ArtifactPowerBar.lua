@@ -17,12 +17,12 @@ PitBull4_ArtifactPowerBar:SetDefaults({
 local C_ArtifactUI = _G.C_ArtifactUI
 
 local function GetArtifactXP()
-	local _, _, _, _, artifactXP, pointsSpent = C_ArtifactUI.GetEquippedArtifactInfo()
-	local xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent)
+	local _, _, _, _, artifactXP, pointsSpent, _, _, _, _, _, _, artifactTier = C_ArtifactUI.GetEquippedArtifactInfo()
+	local xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent, artifactTier)
 	while artifactXP >= xpForNextPoint and xpForNextPoint > 0 do
 		artifactXP = artifactXP - xpForNextPoint
 		pointsSpent = pointsSpent + 1
-		xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent)
+		xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent, artifactTier)
 	end
 	return artifactXP, xpForNextPoint
 end
