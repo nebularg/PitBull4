@@ -645,7 +645,9 @@ end
 
 -- TODO Configurable formatting
 local function format_time(seconds)
-	if seconds >= 3600 then
+	if seconds >= 86400 then
+		return DAY_ONELETTER_ABBR,floor(seconds/86400)
+	elseif seconds >= 3600 then
 		return HOUR_ONELETTER_ABBR,ceil(seconds/3600)
 	elseif seconds >= 180 then
 		return MINUTE_ONELETTER_ABBR,ceil(seconds/60)
