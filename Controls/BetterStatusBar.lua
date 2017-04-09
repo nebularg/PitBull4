@@ -1,3 +1,5 @@
+local PitBull4 = _G.PitBull4
+
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
 
@@ -99,7 +101,7 @@ function SetValue_orientation:VERTICAL(value, extraValue, extra2Value, run_anima
 				end_value = anim.start_value + EPSILON
 			else
 				anim:SetHeight(height * anim.value_delta)
- 				end_value = anim.dest_value
+				end_value = anim.dest_value
 			end
 			local start = set_vertical_coord(anim, self.reverse, anim.start_value, end_value)
 			start = set_vertical_coord(self.extra, self.reverse, start, start+extraValue)
@@ -162,7 +164,7 @@ function SetValue_orientation:HORIZONTAL(value, extraValue, extra2Value, run_ani
 				end_value = anim.start_value + EPSILON
 			else
 				anim:SetWidth(width * anim.value_delta)
- 				end_value = anim.dest_value
+				end_value = anim.dest_value
 			end
 			local start = set_horizontal_coord(anim, self.reverse, anim.start_value, end_value)
 			start = set_horizontal_coord(self.extra, self.reverse, start, start+extraValue)
@@ -1120,7 +1122,7 @@ end
 -- @usage bar:SetIcon(nil)
 function BetterStatusBar:SetIcon(path)
 	if DEBUG then
-		expect(path, 'typeof', 'string;nil')
+		expect(path, 'typeof', 'string;number;nil')
 	end
 
 	local old_icon_path = self.icon_path
