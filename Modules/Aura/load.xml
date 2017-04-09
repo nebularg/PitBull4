@@ -2,7 +2,7 @@
 	..\FrameXML\UI.xsd">
 
 	<!--@no-lib-strip@-->
-	<Include file="libs\LibPlayerSpells-1.0\lib.xml"/>
+	<Include file="Libs\LibPlayerSpells-1.0\lib.xml"/>
 	<!--@end-no-lib-strip@-->
 
 	<Script file="Aura.lua"/>

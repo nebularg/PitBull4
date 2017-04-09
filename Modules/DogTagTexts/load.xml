@@ -2,8 +2,8 @@
 ..\FrameXML\UI.xsd">
 
 <!--@no-lib-strip@-->
-<Include file="libs\LibDogTag-3.0\lib.xml"/>
-<Include file="libs\LibDogTag-Unit-3.0\lib.xml"/>
+<Include file="Libs\LibDogTag-3.0\lib.xml"/>
+<Include file="Libs\LibDogTag-Unit-3.0\lib.xml"/>
 <!--@end-no-lib-strip@-->
 
 <Script file="DogTagTexts.lua"/>

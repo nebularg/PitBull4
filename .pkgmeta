@@ -1,32 +1,31 @@
 package-as: PitBull4
 
 externals:
-    libs/LibStub:
+    Libs/LibStub:
         url: https://repos.wowace.com/wow/libstub/trunk
         tag: latest
-    libs/CallbackHandler-1.0:
+    Libs/CallbackHandler-1.0:
         url: https://repos.wowace.com/wow/callbackhandler/trunk/CallbackHandler-1.0
         tag: latest
-    libs/AceAddon-3.0: https://repos.wowace.com/wow/ace3/trunk/AceAddon-3.0
-    libs/AceConfig-3.0: https://repos.wowace.com/wow/ace3/trunk/AceConfig-3.0
-    libs/AceDB-3.0: https://repos.wowace.com/wow/ace3/trunk/AceDB-3.0
-    libs/AceDBOptions-3.0: https://repos.wowace.com/wow/ace3/trunk/AceDBOptions-3.0
-    libs/AceEvent-3.0: https://repos.wowace.com/wow/ace3/trunk/AceEvent-3.0
-    libs/AceGUI-3.0: https://repos.wowace.com/wow/ace3/trunk/AceGUI-3.0
-    libs/AceHook-3.0: https://repos.wowace.com/wow/ace3/trunk/AceHook-3.0
-    libs/AceLocale-3.0: https://repos.wowace.com/wow/ace3/trunk/AceLocale-3.0
-    libs/AceTimer-3.0: https://repos.wowace.com/wow/ace3/trunk/AceTimer-3.0
-    libs/LibSharedMedia-3.0: https://repos.wowace.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
-    libs/AceGUI-3.0-SharedMediaWidgets: https://repos.wowace.com/wow/ace-gui-3-0-shared-media-widgets/trunk/AceGUI-3.0-SharedMediaWidgets
-    libs/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
-    libs/LibDualSpec-1.0: https://repos.wowace.com/wow/libdualspec-1-0
-    Modules/Aura/libs/LibPlayerSpells-1.0: https://github.com/AdiAddons/LibPlayerSpells-1.0.git
-    Modules/DogTagTexts/libs/LibDogTag-3.0: https://repos.wowace.com/wow/libdogtag-3-0
-    Modules/DogTagTexts/libs/LibDogTag-Unit-3.0: https://repos.wowace.com/wow/libdogtag-unit-3-0
+    Libs/AceAddon-3.0: https://repos.wowace.com/wow/ace3/trunk/AceAddon-3.0
+    Libs/AceConfig-3.0: https://repos.wowace.com/wow/ace3/trunk/AceConfig-3.0
+    Libs/AceDB-3.0: https://repos.wowace.com/wow/ace3/trunk/AceDB-3.0
+    Libs/AceDBOptions-3.0: https://repos.wowace.com/wow/ace3/trunk/AceDBOptions-3.0
+    Libs/AceEvent-3.0: https://repos.wowace.com/wow/ace3/trunk/AceEvent-3.0
+    Libs/AceGUI-3.0: https://repos.wowace.com/wow/ace3/trunk/AceGUI-3.0
+    Libs/AceHook-3.0: https://repos.wowace.com/wow/ace3/trunk/AceHook-3.0
+    Libs/AceLocale-3.0: https://repos.wowace.com/wow/ace3/trunk/AceLocale-3.0
+    Libs/AceTimer-3.0: https://repos.wowace.com/wow/ace3/trunk/AceTimer-3.0
+    Libs/LibSharedMedia-3.0: https://repos.wowace.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
+    Libs/AceGUI-3.0-SharedMediaWidgets: https://repos.wowace.com/wow/ace-gui-3-0-shared-media-widgets/trunk/AceGUI-3.0-SharedMediaWidgets
+    Libs/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
+    Libs/LibDualSpec-1.0: https://repos.wowace.com/wow/libdualspec-1-0
+    Modules/Aura/Libs/LibPlayerSpells-1.0: https://github.com/AdiAddons/LibPlayerSpells-1.0.git
+    Modules/DogTagTexts/Libs/LibDogTag-3.0: https://repos.wowace.com/wow/libdogtag-3-0
+    Modules/DogTagTexts/Libs/LibDogTag-Unit-3.0: https://repos.wowace.com/wow/libdogtag-unit-3-0
 
 ignore:
-    - docs
-    - tests
+    - Docs
     - spec.txt
 
 tools-used:

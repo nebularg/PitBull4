@@ -71,10 +71,10 @@ local FEMALE_CODE = 3
 function PitBull4_HelloKittyIcon:GetTexture(frame)
     -- the UnitID that the frame references.
 	local unit = frame.unit
-	
+
 	-- get the sex of the unit
 	gender_code = UnitSex(unit)
-    
+
 	if gender_code == FEMALE_CODE then
 	    -- we're female, return the texture
 		return [[Interface\AddOns\PitBull4\Modules\HelloKittyIcon\hellokitty]]
