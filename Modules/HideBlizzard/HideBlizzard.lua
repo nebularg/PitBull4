@@ -230,16 +230,14 @@ end
 
 function showers:runebar()
 	unhook_frames(TotemFrame, EclipseBarFrame, RuneFrame, PriestBarFrame)
+	TotemFrame_Update()
 
-	local _, class = UnitClass("player")
 	if PlayerFrame.classPowerBar then
 		unhook_frame(PlayerFrame.classPowerBar)
 		PlayerFrame.classPowerBar:Setup()
-	elseif class == "SHAMAN" then
-		TotemFrame_Update()
-	elseif class == "MONK" then
-		TotemFrame_Update()
-	elseif class == "DRUID" then
+	end
+	local _, class = UnitClass("player")
+	if class == "DRUID" then
 		EclipseBar_UpdateShown(EclipseBarFrame)
 	elseif class == "DEATHKNIGHT" then
 		RuneFrame:Show()
