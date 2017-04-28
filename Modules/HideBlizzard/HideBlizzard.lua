@@ -237,6 +237,8 @@ function showers:runebar()
 		PlayerFrame.classPowerBar:Setup()
 	elseif class == "SHAMAN" then
 		TotemFrame_Update()
+	elseif class == "MONK" then
+		TotemFrame_Update()
 	elseif class == "DRUID" then
 		EclipseBar_UpdateShown(EclipseBarFrame)
 	elseif class == "DEATHKNIGHT" then
