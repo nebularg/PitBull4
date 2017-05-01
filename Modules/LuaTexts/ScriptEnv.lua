@@ -581,7 +581,7 @@ ScriptEnv.OfflineDuration = OfflineDuration
 local function Offline(unit)
 	local offline = OfflineDuration(unit)
 	if offline then
-		return ("%s (%s)"):format(L["Offline"], FormatDuration(offline))
+		return ("%s (%s)"):format(_G.PLAYER_OFFLINE, FormatDuration(offline))
 	end
 end
 ScriptEnv.Offline = Offline
