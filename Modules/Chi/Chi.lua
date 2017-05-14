@@ -7,7 +7,7 @@ local L = PitBull4.L
 
 -- CONSTANTS ----------------------------------------------------------------
 
-local SPELL_POWER_CHI = _G.SPELL_POWER_CHI
+local SPELL_POWER_CHI = 12 -- Enum.PowerType.Chi
 local SPEC_MONK_WINDWALKER = _G.SPEC_MONK_WINDWALKER
 
 local STANDARD_SIZE = 15

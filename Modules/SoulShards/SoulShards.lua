@@ -7,6 +7,8 @@ local L = PitBull4.L
 
 -- CONSTANTS ----------------------------------------------------------------
 
+local SPELL_POWER_SOUL_SHARDS = 7 -- Enum.PowerType.SoulShards
+
 local NUM_SHARDS = 5
 
 local STANDARD_SIZE = 15

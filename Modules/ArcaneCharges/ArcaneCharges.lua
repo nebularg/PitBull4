@@ -7,7 +7,7 @@ local L = PitBull4.L
 
 -- CONSTANTS ----------------------------------------------------------------
 
-local SPELL_POWER_ARCANE_CHARGES = _G.SPELL_POWER_ARCANE_CHARGES
+local SPELL_POWER_ARCANE_CHARGES = 16 -- Enum.PowerType.ArcaneCharges
 local SPEC_MAGE_ARCANE = _G.SPEC_MAGE_ARCANE
 
 local NUM_CHARGES = 4

@@ -840,7 +840,7 @@ local function Combos()
 	if UnitHasVehicleUI("player") then
 		return GetComboPoints("vehicle")
 	end
-	return UnitPower("player", SPELL_POWER_COMBO_POINTS)
+	return UnitPower("player", 4) -- Enum.PowerType.ComboPoints
 end
 ScriptEnv.Combos = Combos
 

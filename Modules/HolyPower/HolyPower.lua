@@ -8,7 +8,7 @@ local L = PitBull4.L
 -- CONSTANTS ----------------------------------------------------------------
 
 local PALADINPOWERBAR_SHOW_LEVEL = _G.PALADINPOWERBAR_SHOW_LEVEL
-local SPELL_POWER_HOLY_POWER = _G.SPELL_POWER_HOLY_POWER
+local SPELL_POWER_HOLY_POWER = 9 -- Enum.PowerType.HolyPower
 local SPEC_PALADIN_RETRIBUTION = _G.SPEC_PALADIN_RETRIBUTION
 
 local STANDARD_SIZE = 15

@@ -7,7 +7,7 @@ local L = PitBull4.L
 
 -- CONSTANTS ----------------------------------------------------------------
 
-local SPELL_POWER_RUNES = _G.SPELL_POWER_RUNES
+local SPELL_POWER_RUNES = 5 -- Enum.PowerType.Runes
 
 local STANDARD_SIZE = 15
 local BORDER_SIZE = 3
