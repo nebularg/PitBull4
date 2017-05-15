@@ -4,20 +4,24 @@ end
 
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
+local is_725 = _G.ClassNameplateBarWarlockShardMixin and true
 
 -- CONSTANTS ----------------------------------------------------------------
 
 local SPELL_POWER_SOUL_SHARDS = 7 -- Enum.PowerType.SoulShards
 
-local NUM_SHARDS = 5
+local MAX_SHARDS = 5
 
-local STANDARD_SIZE = 15
+local STANDARD_WIDTH  = is_725 and 17 or 15
+local STANDARD_HEIGHT = is_725 and 22 or 15
 local BORDER_SIZE = 3
-local SPACING = 3
+local SPACING = is_725 and 6 or 3
 
-local HALF_STANDARD_SIZE = STANDARD_SIZE / 2
+local HALF_STANDARD_WIDTH = STANDARD_WIDTH / 2
+local HALF_STANDARD_HEIGHT = STANDARD_HEIGHT / 2
 
-local CONTAINER_HEIGHT = STANDARD_SIZE + BORDER_SIZE * 2
+local CONTAINER_WIDTH = STANDARD_WIDTH + BORDER_SIZE * 2
+local CONTAINER_HEIGHT = STANDARD_HEIGHT + BORDER_SIZE * 2
 
 -----------------------------------------------------------------------------
 
@@ -74,9 +78,12 @@ function PitBull4_SoulShards:ClearFrame(frame)
 		return false
 	end
 
-	for i = 1, NUM_SHARDS do
+	for i = 1, MAX_SHARDS do
 		container[i] = container[i]:Delete()
+		container.Shards[i] = nil
 	end
+	container.Shards = nil
+	container.max_shards = nil
 	container.bg = container.bg:Delete()
 	frame.SoulShards = container:Delete()
 
@@ -84,15 +91,16 @@ function PitBull4_SoulShards:ClearFrame(frame)
 end
 
 local function update_container_size(container, vertical, max_shards)
-	local width = STANDARD_SIZE * max_shards + BORDER_SIZE * 2 + SPACING * (max_shards - 1)
 	if not vertical then
+		local width = STANDARD_WIDTH * max_shards + BORDER_SIZE * 2 + SPACING * (max_shards - 1)
 		container:SetWidth(width)
 		container:SetHeight(CONTAINER_HEIGHT)
 		container.height = 1
 	else
-		container:SetWidth(CONTAINER_HEIGHT)
-		container:SetHeight(width)
-		container.height = width / CONTAINER_HEIGHT
+		local height = STANDARD_HEIGHT * max_shards + BORDER_SIZE * 2 + SPACING * (max_shards - 1)
+		container:SetWidth(CONTAINER_WIDTH)
+		container:SetHeight(height)
+		container.height = height / CONTAINER_HEIGHT
 	end
 	container.max_shards = max_shards
 end
@@ -110,21 +118,20 @@ function PitBull4_SoulShards:UpdateFrame(frame)
 		container = PitBull4.Controls.MakeFrame(frame)
 		frame.SoulShards = container
 		container:SetFrameLevel(frame:GetFrameLevel() + 13)
+		container.Shards = {} -- ClassNameplateBarShardFrame parentArray
 
-		for i = 1, NUM_SHARDS do
+		for i = 1, MAX_SHARDS do
 			local soul_shard = PitBull4.Controls.MakeSoulShard(container, i)
 			container[i] = soul_shard
-			soul_shard:UpdateTexture()
+			soul_shard:SetSize(STANDARD_WIDTH, STANDARD_HEIGHT)
 			soul_shard:ClearAllPoints()
 			soul_shard:EnableMouse(not db.click_through)
 			if not vertical then
-				soul_shard:SetPoint("CENTER", container, "LEFT", BORDER_SIZE + (i - 1) * (SPACING + STANDARD_SIZE) + HALF_STANDARD_SIZE, 0)
+				soul_shard:SetPoint("CENTER", container, "LEFT", BORDER_SIZE + (i - 1) * (SPACING + STANDARD_WIDTH) + HALF_STANDARD_WIDTH, 0)
 			else
-				soul_shard:SetPoint("CENTER", container, "BOTTOM", 0, BORDER_SIZE + (i - 1) * (SPACING + STANDARD_SIZE) + HALF_STANDARD_SIZE)
+				soul_shard:SetPoint("CENTER", container, "BOTTOM", 0, BORDER_SIZE + (i - 1) * (SPACING + STANDARD_HEIGHT) + HALF_STANDARD_HEIGHT)
 			end
 		end
-
-		update_container_size(container, vertical, 4)
 
 		local bg = PitBull4.Controls.MakeTexture(container, "BACKGROUND")
 		container.bg = bg
@@ -132,21 +139,20 @@ function PitBull4_SoulShards:UpdateFrame(frame)
 		bg:SetAllPoints(container)
 	end
 
-	local num_soul_shards = UnitPower("player", SPELL_POWER_SOUL_SHARDS)
 	local max_shards = UnitPowerMax("player", SPELL_POWER_SOUL_SHARDS)
 	if max_shards ~= container.max_shards then
 		update_container_size(container, vertical, max_shards)
 	end
-	for i = 1, NUM_SHARDS do
+
+	local modifier = UnitPowerDisplayMod(SPELL_POWER_SOUL_SHARDS)
+	local num_soul_shards = (modifier ~= 0) and (UnitPower("player", SPELL_POWER_SOUL_SHARDS, true) / modifier) or 0
+	for i = 1, MAX_SHARDS do
 		local soul_shard = container[i]
 		if i > max_shards then
 			soul_shard:Hide()
-		elseif i <= num_soul_shards then
-			soul_shard:Show()
-			soul_shard:Activate()
 		else
 			soul_shard:Show()
-			soul_shard:Deactivate()
+			soul_shard:Update(num_soul_shards)
 		end
 	end
 
