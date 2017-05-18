@@ -222,14 +222,14 @@ function showers:castbar()
 end
 
 function hiders:runebar()
-	hook_frames(TotemFrame, EclipseBarFrame, RuneFrame, PriestBarFrame)
+	hook_frames(TotemFrame, RuneFrame, PriestBarFrame)
 	if PlayerFrame.classPowerBar then
 		hook_frames(PlayerFrame.classPowerBar)
 	end
 end
 
 function showers:runebar()
-	unhook_frames(TotemFrame, EclipseBarFrame, RuneFrame, PriestBarFrame)
+	unhook_frames(TotemFrame, RuneFrame, PriestBarFrame)
 	TotemFrame_Update()
 
 	if PlayerFrame.classPowerBar then
@@ -237,9 +237,7 @@ function showers:runebar()
 		PlayerFrame.classPowerBar:Setup()
 	end
 	local _, class = UnitClass("player")
-	if class == "DRUID" then
-		EclipseBar_UpdateShown(EclipseBarFrame)
-	elseif class == "DEATHKNIGHT" then
+	if class == "DEATHKNIGHT" then
 		RuneFrame:Show()
 		RuneFrame:GetScript("OnEvent")(RuneFrame, "PLAYER_ENTERING_WORLD")
 	elseif class == "PRIEST" then
