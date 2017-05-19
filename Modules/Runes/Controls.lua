@@ -3,11 +3,8 @@ local PitBull4 = _G.PitBull4
 
 -- CONSTANTS ----------------------------------------------------------------
 
-local STANDARD_SIZE = 15
-
 local SHINE_TIME = 1
 local SHINE_HALF_TIME = SHINE_TIME / 2
-local INVERSE_SHINE_HALF_TIME = 1 / SHINE_HALF_TIME
 
 -- local ICON_TEXTURE = [[Interface\PlayerFrame\UI-PlayerFrame-Deathknight-SingleRune]]
 local ICON_TEXTURE = [[Interface\AddOns\PitBull4\Modules\Runes\Death]]
@@ -24,55 +21,16 @@ local Rune_scripts = {}
 function Rune:UpdateCooldown()
 	local start, duration, ready = GetRuneCooldown(self.id)
 
-	local cooldown = self.cooldown
+	self.shine.ag:Stop()
+	self.shine:SetAlpha(0)
 	if ready or not start then
-		if cooldown:IsShown() then
-			cooldown:Hide()
-			self:Shine()
-		end
+		self.cooldown:Clear()
+		self.shine.ag:Play()
 		self:GetNormalTexture():SetAlpha(READY_ALPHA)
 	else
-		if self.shine then
-			self:SetScript("OnUpdate", nil)
-			self.shine_time = nil
-			self.shine = self.shine:Delete()
-		end
-		cooldown:Show()
-		CooldownFrame_Set(cooldown, start, duration, 1)
+		self.cooldown:SetCooldown(start, duration)
 		self:GetNormalTexture():SetAlpha(UNREADY_ALPHA)
 	end
-end
-
-local function Rune_OnUpdate(self, elapsed)
-	local shine_time = self.shine_time + elapsed
-
-	if shine_time > SHINE_TIME then
-		self:SetScript("OnUpdate", nil)
-		self.shine_time = nil
-		self.shine = self.shine:Delete()
-		return
-	end
-	self.shine_time = shine_time
-
-	if shine_time < SHINE_HALF_TIME then
-		self.shine:SetAlpha(shine_time * INVERSE_SHINE_HALF_TIME)
-	else
-		self.shine:SetAlpha((SHINE_TIME - shine_time) * INVERSE_SHINE_HALF_TIME)
-	end
-end
-
-function Rune:Shine()
-	local shine = self.shine
-	if not shine then
-		shine = PitBull4.Controls.MakeTexture(self, "OVERLAY")
-		self.shine = shine
-		shine:SetTexture(SHINE_TEXTURE)
-		shine:SetBlendMode("ADD")
-		shine:SetAlpha(0)
-		shine:SetAllPoints(self)
-		self:SetScript("OnUpdate", Rune_OnUpdate)
-	end
-	self.shine_time = 0
 end
 
 function Rune_scripts:OnEnter()
@@ -96,29 +54,39 @@ PitBull4.Controls.MakeNewControlType("Rune", "Button", function(control)
 		control:SetScript(k, v)
 	end
 
+	control:SetNormalTexture(ICON_TEXTURE)
+
+	local shine = PitBull4.Controls.MakeAnimatedTexture(control, "OVERLAY")
+	control.shine = shine
+	shine:SetAllPoints(control)
+	shine:SetTexture(SHINE_TEXTURE)
+	shine:SetBlendMode("ADD")
+	shine:SetAlpha(0)
+
+	local fade_in = PitBull4.Controls.MakeAlpha(shine.ag)
+	fade_in:SetDuration(SHINE_HALF_TIME)
+	fade_in:SetFromAlpha(0)
+	fade_in:SetToAlpha(1)
+	fade_in:SetOrder(1)
+
+	local fade_out = PitBull4.Controls.MakeAlpha(shine.ag)
+	fade_out:SetDuration(SHINE_HALF_TIME)
+	fade_out:SetFromAlpha(1)
+	fade_out:SetToAlpha(0)
+	fade_out:SetOrder(2)
+
 	local cooldown = PitBull4.Controls.MakeCooldown(control)
 	control.cooldown = cooldown
-	cooldown:SetHideCountdownNumbers(true)
 	cooldown:SetAllPoints(control)
-	cooldown:Show()
+	cooldown:SetDrawEdge(true)
+	cooldown:SetHideCountdownNumbers(true)
+	cooldown:Clear()
 end, function(control, id)
 	-- onRetrieve
 
 	control.id = id
-	control.cooldown:Hide()
-	control:SetNormalTexture(ICON_TEXTURE)
-	control:SetWidth(STANDARD_SIZE)
-	control:SetHeight(STANDARD_SIZE)
 end, function(control)
 	-- onDelete
 
 	control.id = nil
-	control.shine_time = nil
-
-	control.cooldown:Hide()
-	control:SetNormalTexture(nil)
-	if control.shine then
-		control.shine = control.shine:Delete()
-	end
-	control:SetScript("OnUpdate", nil)
 end)

@@ -10,9 +10,11 @@ local L = PitBull4.L
 local SPELL_POWER_CHI = 12 -- Enum.PowerType.Chi
 local SPEC_MONK_WINDWALKER = _G.SPEC_MONK_WINDWALKER
 
+local MAX_POWER = 6
+
 local STANDARD_SIZE = 15
 local BORDER_SIZE = 3
-local SPACING = 3
+local SPACING = -1
 
 local HALF_STANDARD_SIZE = STANDARD_SIZE / 2
 
@@ -76,9 +78,10 @@ function PitBull4_Chi:ClearFrame(frame)
 		return false
 	end
 
-	for i = 1, 6 do
+	for i = 1, MAX_POWER do
 		container[i] = container[i]:Delete()
 	end
+	container.max_chi = nil
 	container.bg = container.bg:Delete()
 	frame.Chi = container:Delete()
 
@@ -113,9 +116,10 @@ function PitBull4_Chi:UpdateFrame(frame)
 		frame.Chi = container
 		container:SetFrameLevel(frame:GetFrameLevel() + 13)
 
-		for i = 1, 6 do
+		for i = 1, MAX_POWER do
 			local chi_icon = PitBull4.Controls.MakeChiIcon(container, i)
 			container[i] = chi_icon
+			chi_icon:SetSize(STANDARD_SIZE, STANDARD_SIZE)
 			chi_icon:ClearAllPoints()
 			chi_icon:UpdateColors(db.active_color, db.inactive_color)
 			chi_icon:UpdateTexture()
@@ -140,7 +144,7 @@ function PitBull4_Chi:UpdateFrame(frame)
 	if max_chi ~= container.max_chi then
 		update_container_size(container, vertical, max_chi)
 	end
-	for i = 1, 6 do
+	for i = 1, MAX_POWER do
 		local chi_icon = container[i]
 		chi_icon:UpdateColors(db.active_color, db.inactive_color)
 		if i > max_chi then

@@ -7,6 +7,7 @@ local ArcaneCharge_scripts = {}
 function ArcaneCharge:Activate()
 	if not self.active then
 		self.active = true
+		self.TurnOn:Stop()
 		self.TurnOff:Stop()
 		self.TurnOn:Play()
 	end
@@ -16,6 +17,7 @@ function ArcaneCharge:Deactivate()
 	if self.active then
 		self.active = nil
 		self.TurnOn:Stop()
+		self.TurnOff:Stop()
 		self.TurnOff:Play()
 	end
 end
@@ -43,8 +45,6 @@ PitBull4.Controls.MakeNewControlType("ArcaneCharge", "Frame", function(control)
 end, function(control, id)
 	-- onRetrieve
 
-	control:SetWidth(39)
-	control:SetHeight(39)
 end, function(control)
 	-- onDelete
 

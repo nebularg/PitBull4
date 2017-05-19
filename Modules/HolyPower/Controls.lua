@@ -6,11 +6,8 @@ local PitBull4 = _G.PitBull4
 local ICON_TEXTURE = [[Interface\AddOns\PitBull4\Modules\HolyPower\Holy]]
 local SHINE_TEXTURE = [[Interface\AddOns\PitBull4\Modules\HolyPower\Shine]]
 
-local STANDARD_SIZE = 15
-
 local SHINE_TIME = 1
 local SHINE_HALF_TIME = SHINE_TIME / 2
-local INVERSE_SHINE_HALF_TIME = 1 / SHINE_HALF_TIME
 
 -----------------------------------------------------------------------------
 
@@ -24,30 +21,14 @@ function HolyIcon:UpdateColors(active_color, inactive_color)
 end
 
 function HolyIcon:UpdateTexture()
-	self:SetNormalTexture(ICON_TEXTURE)
+	self.shine.ag:Stop()
+	self.shine:SetAlpha(0)
 	local texture = self:GetNormalTexture()
 	if self.active then
-		texture:SetVertexColor(unpack(self.active_color or tmp_color))
+		self.shine.ag:Play()
+		texture:SetVertexColor(unpack(self.active_color))
 	else
-		texture:SetVertexColor(unpack(self.inactive_color or tmp_color))
-	end
-end
-
-local function HolyIcon_OnUpdate(self, elapsed)
-	local shine_time = self.shine_time + elapsed
-
-	if shine_time > SHINE_TIME then
-		self:SetScript("OnUpdate", nil)
-		self.shine_time = nil
-		self.shine = self.shine:Delete()
-		return
-	end
-	self.shine_time = shine_time
-
-	if shine_time < SHINE_HALF_TIME then
-		self.shine:SetAlpha(shine_time * INVERSE_SHINE_HALF_TIME)
-	else
-		self.shine:SetAlpha((SHINE_TIME - shine_time) * INVERSE_SHINE_HALF_TIME)
+		texture:SetVertexColor(unpack(self.inactive_color))
 	end
 end
 
@@ -56,7 +37,6 @@ function HolyIcon:Activate()
 		return
 	end
 	self.active = true
-	self:Shine()
 	self:UpdateTexture()
 end
 
@@ -68,25 +48,10 @@ function HolyIcon:Deactivate()
 	self:UpdateTexture()
 end
 
-function HolyIcon:Shine()
-	local shine = self.shine
-	if not shine then
-		shine = PitBull4.Controls.MakeTexture(self, "OVERLAY")
-		self.shine = shine
-		shine:SetTexture(SHINE_TEXTURE)
-		shine:SetBlendMode("ADD")
-		shine:SetAlpha(0)
-		shine:SetAllPoints(self)
-		shine:SetVertexColor(unpack(self.active_color or tmp_color))
-		self:SetScript("OnUpdate", HolyIcon_OnUpdate)
-	end
-	self.shine_time = 0
-end
-
 function HolyIcon_scripts:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-	GameTooltip:SetText(HOLY_POWER)
-	GameTooltip:AddLine(HOLY_POWER_TOOLTIP, nil, nil, nil, true)
+	GameTooltip:SetText(_G.HOLY_POWER)
+	GameTooltip:AddLine(_G.HOLY_POWER_TOOLTIP, nil, nil, nil, true)
 	GameTooltip:Show()
 end
 
@@ -103,22 +68,37 @@ PitBull4.Controls.MakeNewControlType("HolyIcon", "Button", function(control)
 	for k, v in pairs(HolyIcon_scripts) do
 		control:SetScript(k, v)
 	end
+
+	control:SetNormalTexture(ICON_TEXTURE)
+
+	local shine = PitBull4.Controls.MakeAnimatedTexture(control, "OVERLAY")
+	control.shine = shine
+	shine:SetAllPoints(control)
+	shine:SetTexture(SHINE_TEXTURE)
+	shine:SetBlendMode("ADD")
+	shine:SetAlpha(0)
+
+	local fade_in = PitBull4.Controls.MakeAlpha(shine.ag)
+	fade_in:SetDuration(SHINE_HALF_TIME)
+	fade_in:SetFromAlpha(0)
+	fade_in:SetToAlpha(1)
+	fade_in:SetOrder(1)
+
+	local fade_out = PitBull4.Controls.MakeAlpha(shine.ag)
+	fade_out:SetDuration(SHINE_HALF_TIME)
+	fade_out:SetFromAlpha(1)
+	fade_out:SetToAlpha(0)
+	fade_out:SetOrder(2)
 end, function(control, id)
 	-- onRetrieve
 
 	control.id = id
-	control:SetWidth(STANDARD_SIZE)
-	control:SetHeight(STANDARD_SIZE)
+	control:UpdateColors(tmp_color, tmp_color)
 end, function(control)
 	-- onDelete
 
 	control.id = nil
 	control.active = nil
-	control.shine_time = nil
-
-	control:SetNormalTexture(nil)
-	if control.shine then
-		control.shine = control.shine:Delete()
-	end
-	control:SetScript("OnUpdate", nil)
+	control.active_color = nil
+	control.inactive_color = nil
 end)

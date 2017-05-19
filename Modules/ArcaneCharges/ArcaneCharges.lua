@@ -14,7 +14,7 @@ local NUM_CHARGES = 4
 
 local STANDARD_SIZE = 39
 local BORDER_SIZE = 3
-local SPACING = 3
+local SPACING = -1
 
 local HALF_STANDARD_SIZE = STANDARD_SIZE / 2
 
@@ -93,6 +93,7 @@ function PitBull4_ArcaneCharges:UpdateFrame(frame)
 		for i = 1, NUM_CHARGES do
 			local charge = PitBull4.Controls.MakeArcaneCharge(container, i)
 			container[i] = charge
+			charge:SetSize(STANDARD_SIZE, STANDARD_SIZE)
 			charge:ClearAllPoints()
 			charge:EnableMouse(not db.click_through)
 			if not vertical then

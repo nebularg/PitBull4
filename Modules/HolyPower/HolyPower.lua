@@ -11,6 +11,8 @@ local PALADINPOWERBAR_SHOW_LEVEL = _G.PALADINPOWERBAR_SHOW_LEVEL
 local SPELL_POWER_HOLY_POWER = 9 -- Enum.PowerType.HolyPower
 local SPEC_PALADIN_RETRIBUTION = _G.SPEC_PALADIN_RETRIBUTION
 
+local MAX_POWER = 5
+
 local STANDARD_SIZE = 15
 local BORDER_SIZE = 3
 local SPACING = 3
@@ -92,9 +94,10 @@ function PitBull4_HolyPower:ClearFrame(frame)
 		return false
 	end
 
-	for i = 1, 5 do
+	for i = 1, MAX_POWER do
 		container[i] = container[i]:Delete()
 	end
+	container.max_holy_power = nil
 	container.bg = container.bg:Delete()
 	frame.HolyPower = container:Delete()
 
@@ -129,9 +132,10 @@ function PitBull4_HolyPower:UpdateFrame(frame)
 		frame.HolyPower = container
 		container:SetFrameLevel(frame:GetFrameLevel() + 13)
 
-		for i = 1, 5 do
+		for i = 1, MAX_POWER do
 			local holy_icon = PitBull4.Controls.MakeHolyIcon(container, i)
 			container[i] = holy_icon
+			holy_icon:SetSize(STANDARD_SIZE, STANDARD_SIZE)
 			holy_icon:ClearAllPoints()
 			holy_icon:UpdateColors(db.active_color, db.inactive_color)
 			holy_icon:UpdateTexture()
@@ -142,8 +146,6 @@ function PitBull4_HolyPower:UpdateFrame(frame)
 				holy_icon:SetPoint("CENTER", container, "BOTTOM", 0, BORDER_SIZE + (i - 1) * (SPACING + STANDARD_SIZE) + HALF_STANDARD_SIZE)
 			end
 		end
-
-		update_container_size(container, vertical, 3)
 
 		local bg = PitBull4.Controls.MakeTexture(container, "BACKGROUND")
 		container.bg = bg
@@ -156,7 +158,7 @@ function PitBull4_HolyPower:UpdateFrame(frame)
 	if max_holy_power ~= container.max_holy_power then
 		update_container_size(container, vertical, max_holy_power)
 	end
-	for i = 1, 5 do
+	for i = 1, MAX_POWER do
 		local holy_icon = container[i]
 		holy_icon:UpdateColors(db.active_color, db.inactive_color)
 		if i > max_holy_power then

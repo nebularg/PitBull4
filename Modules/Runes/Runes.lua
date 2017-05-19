@@ -74,6 +74,7 @@ function PitBull4_Runes:ClearFrame(frame)
 	for i = 1, container.max_runes do
 		container[i] = container[i]:Delete()
 	end
+	container.max_runes = nil
 	container.bg = container.bg:Delete()
 	frame.Runes = container:Delete()
 
@@ -103,6 +104,7 @@ function PitBull4_Runes:UpdateFrame(frame)
 		for i = 1, num_runes do
 			local rune = PitBull4.Controls.MakeRune(container, i)
 			container[i] = rune
+			rune:SetSize(STANDARD_SIZE, STANDARD_SIZE)
 			rune:ClearAllPoints()
 			rune:EnableMouse(not db.click_through)
 			if not vertical then
