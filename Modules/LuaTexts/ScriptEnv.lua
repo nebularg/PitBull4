@@ -900,9 +900,9 @@ local function ArtifactPower()
 
 			xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent, tier)
 		end
-		return xp, xpForNextPoint, numPoints
+		return xp, xpForNextPoint, numPoints, pointsSpent
 	end
-	return 0, 0, 0
+	return 0, 0, 0, 0
 end
 ScriptEnv.ArtifactPower = ArtifactPower
 
