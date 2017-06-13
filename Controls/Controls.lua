@@ -270,7 +270,8 @@ local function fetch_control(kind, parent, isCustom, ...)
 		control:SetVertexColor(1, 1, 1, 1)
 	end
 	if kind == "Texture" or kind == "FontString" or kind == "AnimatedTexture" then
-		control:SetDrawLayer((...))
+		local layer, sublayer = ...
+		control:SetDrawLayer(layer, sublayer)
 	end
 	if control.SetScale then
 		control:SetScale(1)
@@ -300,29 +301,33 @@ end
 --- Make a texture
 -- @param parent frame the texture is parented to
 -- @param layer the art layer of the texture
+-- @param sublayer the art layer sub-layer
 -- @usage local texture = PitBull4.Controls.MakeTexture(someFrame, "BACKGROUND")
 -- @return a Texture object
-function PitBull4.Controls.MakeTexture(parent, layer)
+function PitBull4.Controls.MakeTexture(parent, layer, sublayer)
 	if DEBUG then
 		expect(parent, 'typeof', 'frame')
 		expect(layer, 'typeof', 'string;nil')
+		expect(sublayer, 'typeof', 'number;nil')
 	end
 
-	return fetch_control("Texture", parent, false, layer)
+	return fetch_control("Texture", parent, false, layer, sublayer)
 end
 
 --- Make an animated texture
 -- @param parent frame the animated texture is parented to
 -- @param layer the art layer of the texture
+-- @param sublayer the art layer sub-layer
 -- @usage local texture = PitBull4.Controls.MakeAnimatedTexture(someFrame, "BACKGROUND")
 -- @return a AnimatedTexture object
-function PitBull4.Controls.MakeAnimatedTexture(parent, layer)
+function PitBull4.Controls.MakeAnimatedTexture(parent, layer, sublayer)
 	if DEBUG then
 		expect(parent, 'typeof', 'frame')
 		expect(layer, 'typeof', 'string;nil')
+		expect(sublayer, 'typeof', 'number;nil')
 	end
 
-	return fetch_control("AnimatedTexture", parent, false, layer)
+	return fetch_control("AnimatedTexture", parent, false, layer, sublayer)
 end
 
 --- Make an Animation object
@@ -352,15 +357,17 @@ end
 --- Make a font string
 -- @param parent frame the font string is parented to
 -- @param layer the art layer of the font string
+-- @param sublayer the art layer sub-layer
 -- @usage local fs = PitBull4.Controls.MakeFontString(someFrame, "BACKGROUND")
 -- @return a FontString object
-function PitBull4.Controls.MakeFontString(parent, layer)
+function PitBull4.Controls.MakeFontString(parent, layer, sublayer)
 	if DEBUG then
 		expect(parent, 'typeof', 'frame')
 		expect(layer, 'typeof', 'string;nil')
+		expect(sublayer, 'typeof', 'number;nil')
 	end
 
-	return fetch_control("FontString", parent, false, layer)
+	return fetch_control("FontString", parent, false, layer, sublayer)
 end
 
 --- Make a PlayerModel
