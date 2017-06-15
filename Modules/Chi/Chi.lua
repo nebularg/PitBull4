@@ -146,7 +146,6 @@ function PitBull4_Chi:UpdateFrame(frame)
 	end
 	for i = 1, MAX_POWER do
 		local chi_icon = container[i]
-		chi_icon:UpdateColors(db.active_color, db.inactive_color)
 		if i > max_chi then
 			chi_icon:Hide()
 		elseif i <= num_chi then
