@@ -1120,6 +1120,20 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 		disabled = disabled,
 		order = 15,
 	},
+	'background_color', { -- color option
+		type = 'color',
+		hasAlpha = true,
+		name = L["Background color"],
+		desc = L["The background color behind the icons."],
+		get = function(info)
+			return color_option_get('main_background')
+		end,
+		set = function(info, r, g, b, a)
+			color_option_set('main_background', r, g, b, a)
+		end,
+		disabled = disabled,
+		order = 16,
+	},
 	'group_timer_spiral', {
 		type = 'group',
 		name = L["Spiral timer"],
@@ -1197,9 +1211,42 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 				set = set,
 				disabled = function()
 					local db = PitBull4.Options.GetLayoutDB(self)
-					return not db.timer_spiral or not db.enabled
+					return not db.timer_text or not db.enabled
 				end,
 				order = 3,
+			},
+			sep = {
+				type = "description",
+				name = "",
+				order = 4,
+			},
+			timer_text_color = { -- color option
+				type = 'color',
+				name = L["Color"],
+				desc = L["Color of the timer text."],
+				hasAlpha = true,
+				get = function(info)
+					return color_option_get('timer_text')
+				end,
+				set = function(info, r, g, b, a)
+					color_option_set('timer_text', r, g, b, a)
+				end,
+				order = 5,
+				disabled = function()
+					local db = PitBull4.Options.GetLayoutDB(self)
+					return global_option_get('text_color_per_element') or not db.timer_text or not db.enabled
+				end,
+			},
+			text_color_per_element = { -- global option
+				type = 'toggle',
+				name = L["Color text by element"],
+				get = global_option_get,
+				set = gOptSet,
+				order = 6,
+				disabled = function()
+					local db = PitBull4.Options.GetLayoutDB(self)
+					return not db.timer_text or not db.enabled
+				end,
 			},
 		}
 	},
