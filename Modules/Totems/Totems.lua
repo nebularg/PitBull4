@@ -1,5 +1,5 @@
 local player_class = select(2, UnitClass("player"))
-if player_class ~= "SHAMAN" and player_class ~= "DRUID" and player_class ~= "MONK" and player_class ~= "MAGE" then
+if player_class ~= "SHAMAN" and player_class ~= "DRUID" and player_class ~= "MONK" and player_class ~= "MAGE" and player_class ~= "PALADIN" then
 	return
 end
 
@@ -11,24 +11,29 @@ local DEBUG = PitBull4.DEBUG
 -- CONSTANTS ----------------------------------------------------------------
 
 local MAX_TOTEMS = MAX_TOTEMS or 4 -- comes from blizzard's totem frame lua
-local REQUIRED_SPEC_1
-local REQUIRED_SPEC_2
 local REQUIRED_SPELL
-local REQUIRED_LEVEL
-if player_class == 'DRUID' then
-	MAX_TOTEMS = 3
-	REQUIRED_LEVEL = 84
-	REQUIRED_SPEC_1 = 1
-	REQUIRED_SPEC_2 = 4
+if player_class == "DRUID" then
+	MAX_TOTEMS = 1
+	REQUIRED_SPELL = {
+		145205, -- Efflorescence (Restoration)
+	}
 elseif player_class == "MONK" then
 	MAX_TOTEMS = 1
-	REQUIRED_SPEC_1 = 1
-	REQUIRED_SPEC_2 = 2
-	REQUIRED_LEVEL = 70
+	REQUIRED_SPELL = {
+		115313, -- Summon Jade Serpent Statue (Mistweaver)
+		115315, -- Summon Black Ox Statue (Brewmaster/Windwalker)
+	}
 elseif player_class == "MAGE" then
 	MAX_TOTEMS = 1
-	REQUIRED_SPELL = 116011
-	REQUIRED_LEVEL = 90
+	REQUIRED_SPELL = {
+		116011 -- Rune of Power
+	}
+elseif player_class == "PALADIN" then
+	MAX_TOTEMS = 1
+	REQUIRED_SPELL = {
+		26573, -- Consecration (Holy/Protection)
+		205228, -- Consecration (Retribution)
+	}
 end
 local FIRE_TOTEM_SLOT  = FIRE_TOTEM_SLOT  or 1
 local EARTH_TOTEM_SLOT = EARTH_TOTEM_SLOT or 2
@@ -942,6 +947,15 @@ function PitBull4_Totems:ApplyLayoutSettings(frame)
 	self:RealignTimerTexts(frame)
 end
 
+local function HasRequiredSpell()
+	for _, spell in next, REQUIRED_SPELL do
+		if IsPlayerSpell(spell) then
+			return true
+		end
+	end
+	return false
+end
+
 function PitBull4_Totems:UpdateFrame(frame)
 	local unit = frame.unit
 	if not unit or not UnitIsUnit(unit,"player") then -- we only work for the player unit itself
@@ -951,14 +965,7 @@ function PitBull4_Totems:UpdateFrame(frame)
 		-- Disable for wacky frames, because something... wacky is going on with their updates.
 		return self:ClearFrame(frame)
 	end
-	if REQUIRED_LEVEL and UnitLevel('player') < REQUIRED_LEVEL then
-		return self:ClearFrame(frame)
-	end
-	local spec = GetSpecialization()
-	if REQUIRED_SPEC_1 and spec ~= REQUIRED_SPEC_1 and REQUIRED_SPEC_2 and spec ~= REQUIRED_SPEC_2 and (player_class ~= "DEATHKNIGHT" or spec) then
-		return self:ClearFrame(frame)
-	end
-	if REQUIRED_SPELL and not IsPlayerSpell(REQUIRED_SPELL) then
+	if REQUIRED_SPELL and not HasRequiredSpell() then
 		return self:ClearFrame(frame)
 	end
 
