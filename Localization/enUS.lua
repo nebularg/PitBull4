@@ -998,6 +998,7 @@ L["Show overabsorb"] = true
 L["Show overheals"] = true
 L["Show overheals past the end of the health bar."] = true
 L["Show Paladin Holy power icons."] = true
+L["Show prestige rank"] = true
 L["Show the combo points stacked vertically instead of horizontally."] = true
 L["Show the full body of the unit when in 3D mode."] = true
 L["Show the icons stacked vertically instead of horizontally."] = true
