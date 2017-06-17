@@ -1,53 +1,49 @@
 local player_class = select(2, UnitClass("player"))
-if player_class ~= "SHAMAN" and player_class ~= "DRUID" and player_class ~= "MONK" and player_class ~= "MAGE" and player_class ~= "PALADIN" and player_class ~= "PRIEST" then
-	return
-end
 
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local DEBUG = PitBull4.DEBUG
-
 -- CONSTANTS ----------------------------------------------------------------
 
-local MAX_TOTEMS = MAX_TOTEMS or 4 -- comes from blizzard's totem frame lua
+local MAX_TOTEMS = 4
+local TOTEM_ORDER = { 1, 2, 3, 4 }
+
+local MAX_CLASS_TOTEMS
 local REQUIRED_SPELL
 if player_class == "DRUID" then
-	MAX_TOTEMS = 1
+	MAX_CLASS_TOTEMS = 1
 	REQUIRED_SPELL = {
 		145205, -- Efflorescence (Restoration)
 	}
 elseif player_class == "MONK" then
-	MAX_TOTEMS = 1
+	MAX_CLASS_TOTEMS = 1
 	REQUIRED_SPELL = {
 		115313, -- Summon Jade Serpent Statue (Mistweaver)
 		115315, -- Summon Black Ox Statue (Brewmaster/Windwalker)
 	}
 elseif player_class == "MAGE" then
-	MAX_TOTEMS = 1
+	MAX_CLASS_TOTEMS = 1
 	REQUIRED_SPELL = {
 		116011 -- Rune of Power
 	}
 elseif player_class == "PALADIN" then
-	MAX_TOTEMS = 1
+	MAX_CLASS_TOTEMS = 1
 	REQUIRED_SPELL = {
 		26573, -- Consecration (Holy/Protection)
 		205228, -- Consecration (Retribution)
 	}
 elseif player_class == "PRIEST" then
-	MAX_TOTEMS = 1
+	MAX_CLASS_TOTEMS = 1
 	REQUIRED_SPELL = {
 		34433, -- Shadowfiend (Holy/Discipline)
 	}
+elseif player_class == "SHAMAN" then
+	MAX_CLASS_TOTEMS = MAX_TOTEMS
+	-- TOTEM_ORDER = { 2, 1, 3, 4 }
 end
-local FIRE_TOTEM_SLOT  = FIRE_TOTEM_SLOT  or 1
-local EARTH_TOTEM_SLOT = EARTH_TOTEM_SLOT or 2
-local WATER_TOTEM_SLOT = WATER_TOTEM_SLOT or 3
-local AIR_TOTEM_SLOT   = AIR_TOTEM_SLOT   or 4
+local TOTEM_SLOT_TO_INDEX = tInvert(TOTEM_ORDER)
 
 local TOTEM_SIZE = 50 -- fixed value used for internal frame creation, change the final size ingame only!
-
-local UPDATE_FREQUENCY = 0.25 -- delay this many second between timer updates
 
 local CONFIG_MODE_ICON = [[Interface\Icons\Spell_Fire_TotemOfWrath]]
 local BORDER_PATH  = [[Interface\AddOns\PitBull4\Modules\Totems\border]]
@@ -81,14 +77,8 @@ local LAYOUT_DEFAULTS = {
 	bar_size = 1, -- needs to exist for "show as bar" option, unused for now
 }
 
-local ORDER_DEFAULTS = {}
-for i = 1, MAX_TOTEMS do -- usually 4 but this is dynamic incase blizzard adds a new totem-element in the future
-	ORDER_DEFAULTS[i] = i
-end
-
 local GLOBAL_DEFAULTS = {
 	totem_tooltips = true,
-	order = ORDER_DEFAULTS, -- this is the order _by_slot_ not by position!
 	expiry_pulse = true,
 	expiry_pulse_time = 5,
 	recast_enabled = false,
@@ -113,10 +103,12 @@ local tostring = _G.tostring
 local type = _G.type
 local GetTotemTimeLeft = _G.GetTotemTimeLeft
 local GetTotemInfo = _G.GetTotemInfo
+
 -----------------------------------------------------------------------------
 
+if not MAX_CLASS_TOTEMS then return end
+
 local PitBull4_Totems = PitBull4:NewModule("Totems", "AceEvent-3.0", "AceTimer-3.0")
-local self = PitBull4_Totems
 
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 if LibSharedMedia then
@@ -131,23 +123,14 @@ PitBull4_Totems.show_font_option = true
 PitBull4_Totems.show_font_size_option = true
 PitBull4_Totems.can_set_side_to_center = false -- Intentionally deactivated until I find out how to scale the resulting pseudo-bar
 
-local dbg
-if DEBUG then
-	function dbg(...)
-		print(string.format(...))
-	end
-else
-	function dbg() end
-end
-
 local function get_verbose_slot_name(slot)
-	if slot == FIRE_TOTEM_SLOT then
+	if slot == _G.FIRE_TOTEM_SLOT then
 		return L["Fire"]
-	elseif slot == EARTH_TOTEM_SLOT then
+	elseif slot == _G.EARTH_TOTEM_SLOT then
 		return L["Earth"]
-	elseif slot == WATER_TOTEM_SLOT then
+	elseif slot == _G.WATER_TOTEM_SLOT then
 		return L["Water"]
-	elseif slot == AIR_TOTEM_SLOT then
+	elseif slot == _G.AIR_TOTEM_SLOT then
 		return L["Air"]
 	else
 		return L["Unknown Slot "]..tostring(slot)
@@ -233,58 +216,6 @@ local function layout_option_set(frame, key, value)
 	PitBull4.Options.UpdateFrames()
 end
 
-
--------------------------------
----- Totem Order Proxies
-
-local function get_order(slot)
-	return global_option_get('order')[slot]
-end
-
-local function get_order_as_string(info)
-	local slot = info.arg
-	return tostring(get_order(slot))
-end
-
-local function get_slot_from_order(pos)
-	for k,v in ipairs(global_option_get('order')) do
-		if v == pos then
-			return k
-		end
-	end
-	dbg("ERROR: get_slot_from_order failed to find slot for pos "..tostring(pos))
-	return nil -- this shouldn't ever happen
-end
-
-local function list_order(info)
-	local slot = info.arg
-	if not slot then
-		local slot = -1
-	end
-	local choices = {}
-	for i = 1, MAX_TOTEMS do
-		choices[tostring(i)] = L["Position %i (Currently: %s)"]:format(i, get_verbose_slot_name(get_slot_from_order(i)))
-	end
-	return choices
-end
-
-local function set_order(info, new_order_position_string) -- global option
-	local slot = info.arg
-	local new_order_position = tonumber(new_order_position_string)
-	for i = 1, MAX_TOTEMS do
-		if not (i == slot) then
-			if self.db.profile.global.order[i] == new_order_position then
-				-- switch the position with the element that had it earlier
-				self.db.profile.global.order[i] = get_order(slot)
-				self.db.profile.global.order[slot] = new_order_position
-				break
-			end
-		end
-	end
-	PitBull4.Options.UpdateFrames()
-	return true
-end
-
 --------------------------------------------------------------
 --------------------------------------------------------------
 --------------------------------------------------------------
@@ -302,22 +233,11 @@ local function MyGetTotemInfo(slot, frame)
 	if not frame.force_show then return GetTotemInfo(slot) end
 
 	-- Config mode on, simulate some fake totem info
-	local fakeLeft = MyGetTotemTimeLeft(slot, frame)
 	return true,
 		"Fake Totem",
 		ceil(GetTime()),
 		119,
 		CONFIG_MODE_ICON
-end
-
-function PitBull4_Totems:OneOrMoreDown()
-	for i = 1, MAX_TOTEMS do
-		if ( self.totem_is_down[i] == true ) then
-			return true
-		end
-	end
-	-- none is down
-	return false
 end
 
 function PitBull4_Totems:StartTimer()
@@ -372,9 +292,8 @@ function PitBull4_Totems:UpdateAllTimes()
 
 			local elements = frame.Totems.elements
 
-			local nowTime = floor(GetTime())
-			for slot=1, MAX_TOTEMS do
-				if (not elements) or (not elements[slot]) or (not elements[slot].frame) then return end
+			for i, slot in ipairs(TOTEM_ORDER) do
+				if (not elements) or (not elements[i]) or (not elements[i].frame) then return end
 
 				local timeleft = MyGetTotemTimeLeft(slot,frame)
 				local _, _, _, _, icon = MyGetTotemInfo(slot, frame)
@@ -382,40 +301,39 @@ function PitBull4_Totems:UpdateAllTimes()
 				if timeleft > 0 then
 					-- need to update shown time
 					if ( layout_option_get(frame,'timer_text') ) then
-						elements[slot].text:SetText(self:SecondsToTimeAbbrev(timeleft))
+						elements[i].text:SetText(self:SecondsToTimeAbbrev(timeleft))
 					else
-						elements[slot].text:SetText("")
+						elements[i].text:SetText("")
 					end
 
 					-- check if we need to update the shown icon
-					if icon ~= elements[slot].frame.totem_icon then
-						--dbg("Timer is fixing icon in slot %s", tostring(slot))
-						elements[slot].frame:SetNormalTexture(icon)
-						elements[slot].frame.totem_icon = icon
+					if icon ~= elements[i].frame.totem_icon then
+						elements[i].frame:SetNormalTexture(icon)
+						elements[i].frame.totem_icon = icon
 						--elements[slot].frame:SetAlpha(1)
-						elements[slot].frame:Show()
+						elements[i].frame:Show()
 					end
 
 					-- Hide the cooldown frame if it's shown and the user changed preference
-					if ( not layout_option_get(frame,'timer_spiral') and elements[slot].spiral:IsShown() ) then
-						elements[slot].spiral:Hide()
+					if ( not layout_option_get(frame,'timer_spiral') and elements[i].spiral:IsShown() ) then
+						elements[i].spiral:Hide()
 					end
 
 					if global_option_get('expiry_pulse') and (timeleft < global_option_get('expiry_pulse_time')) and (timeleft > 0) then
-						self:StartPulse(elements[slot].frame)
+						self:StartPulse(elements[i].frame)
 					else
-						self:StopPulse(elements[slot].frame)
+						self:StopPulse(elements[i].frame)
 					end
 				else
 					-- Totem expired
 
-					self:StopPulse(elements[slot].frame)
-					elements[slot].frame:SetAlpha(0.5)
+					self:StopPulse(elements[i].frame)
+					elements[i].frame:SetAlpha(0.5)
 					if layout_option_get(frame,'hide_inactive') then
-						elements[slot].frame:Hide()
+						elements[i].frame:Hide()
 					end
-					elements[slot].text:SetText("")
-					elements[slot].spiral:Hide()
+					elements[i].text:SetText("")
+					elements[i].spiral:Hide()
 				end
 			end
 		end
@@ -424,12 +342,12 @@ end
 
 function PitBull4_Totems:SpiralUpdate(frame,slot,start,left)
 	if not frame.Totems then return end
-	local tspiral = frame.Totems.elements[slot].spiral
+	local tspiral = frame.Totems.elements[TOTEM_SLOT_TO_INDEX[slot]].spiral
 	local startTime = start or select(3, MyGetTotemInfo(slot,frame))
 	local timeLeft = left or MyGetTotemTimeLeft(slot,frame)
 
 	CooldownFrame_Set(tspiral, startTime, timeLeft, 1)
-	if self.totem_is_down[slot] == true and layout_option_get(frame,'timer_spiral') then
+	if self.totem_is_down[slot] and layout_option_get(frame,'timer_spiral') then
 		tspiral:Show()
 	else
 		tspiral:Hide()
@@ -441,20 +359,12 @@ function PitBull4_Totems:ActivateTotem(slot)
 	for frame in PitBull4:IterateFrames() do
 		local unit = frame.unit
 		if unit and UnitIsUnit(unit,"player") and self:GetLayoutDB(frame).enabled and frame.Totems then
-
-			local haveTotem, name, startTime, duration, icon = MyGetTotemInfo(slot, frame)
-			-- queried seperately because GetTotemInfo apprears to give less reliable results (wtf?!)
+			local _, _, startTime, _, icon = MyGetTotemInfo(slot, frame)
 			local timeLeft = MyGetTotemTimeLeft(slot, frame)
 
-			if ( name == "" ) then
-				--dbg("WARNING: Can't activate a nondropped totem")
-				return
-			end
-
-			self.totem_is_down[slot] = true
-
-			local tframe = frame.Totems.elements[slot].frame
-			local ttext = frame.Totems.elements[slot].text
+			local i = TOTEM_SLOT_TO_INDEX[slot]
+			local tframe = frame.Totems.elements[i].frame
+			local ttext = frame.Totems.elements[i].text
 
 			tframe:SetNormalTexture(icon)
 			tframe.totem_icon = icon
@@ -478,23 +388,14 @@ end
 function PitBull4_Totems:DeactivateTotem(slot)
 	for frame in PitBull4:IterateFrames() do
 		local unit = frame.unit
+		local index = TOTEM_SLOT_TO_INDEX[slot]
 		if unit and UnitIsUnit(unit,"player") and self:GetLayoutDB(frame).enabled and frame.Totems then
-
-			local haveTotem, name, startTime, duration, icon = MyGetTotemInfo(slot, frame)
-
-			if ( name ~= "" ) then
-				--dbg("WARNING: Can't deactivate a dropped totem")
-				return
-			end
-
-			self.totem_is_down[slot] = false
-
-			local tframe = frame.Totems.elements[slot].frame
-			local ttext = frame.Totems.elements[slot].text
-			local tspiral = frame.Totems.elements[slot].spiral
+			local tframe = frame.Totems.elements[index].frame
+			local ttext = frame.Totems.elements[index].text
+			local tspiral = frame.Totems.elements[index].spiral
 
 			-- cleanup timer event if no totems are down
-			if not self:OneOrMoreDown() then
+			if not next(self.totem_is_down) then
 				self:StopTimer()
 			end
 			tspiral:Hide()
@@ -516,14 +417,13 @@ end
 --------------------------------------------------------------
 -- Frame functions
 
-
 function PitBull4_Totems:ResizeMainFrame(frame)
 	if not frame.Totems then
 		return
 	end
 	local tSpacing = layout_option_get(frame,'totem_spacing')
-	local lbreak = layout_option_get(frame,'line_break')
-	local nlines = ceil(MAX_TOTEMS / lbreak)
+	local lbreak = min(MAX_CLASS_TOTEMS, layout_option_get(frame,'line_break'))
+	local nlines = ceil(MAX_CLASS_TOTEMS / lbreak)
 	local ttf = frame.Totems
 	local width = nil
 	local height = nil
@@ -541,43 +441,32 @@ function PitBull4_Totems:ResizeMainFrame(frame)
 end
 
 function PitBull4_Totems:RealignTotems(frame)
-	local lbreak = layout_option_get(frame,'line_break') or MAX_TOTEMS
+	local lbreak = min(MAX_CLASS_TOTEMS, layout_option_get(frame,'line_break') or MAX_TOTEMS)
 	local tspacing = layout_option_get(frame,'totem_spacing') or 0
 
 	if frame.Totems then
 		local elements = frame.Totems.elements
-		for i = 1, MAX_TOTEMS do
-			local o = get_slot_from_order(i)
-
-
-			if (not o) then
-				return
-			end
-
-			if i==1 then
-				elements[o].frame:ClearAllPoints()
-				elements[o].frame:SetPoint("TOPLEFT", frame.Totems, "TOPLEFT", 0, 0)
+		for i = 1, MAX_CLASS_TOTEMS do
+			if i == 1 then
+				elements[i].frame:ClearAllPoints()
+				elements[i].frame:SetPoint("TOPLEFT", frame.Totems, "TOPLEFT", 0, 0)
 			else
-				elements[o].frame:ClearAllPoints()
+				elements[i].frame:ClearAllPoints()
 				-- Attach the button to the previous one
 				if (layout_option_get(frame,'totem_direction') == "h") then
 					-- grow horizontally
 					if ((i - 1) % lbreak == 0) then
 						-- Reached a line_break
-						local o3 = get_slot_from_order(i-lbreak)
-						elements[o].frame:SetPoint("TOPLEFT", elements[o3].frame, "BOTTOMLEFT", 0, 0-tspacing)
+						elements[i].frame:SetPoint("TOPLEFT", elements[i-lbreak].frame, "BOTTOMLEFT", 0, 0-tspacing)
 					else
-						local o2 = get_slot_from_order(i-1)
-						elements[o].frame:SetPoint("TOPLEFT", elements[o2].frame, "TOPRIGHT", tspacing, 0)
+						elements[i].frame:SetPoint("TOPLEFT", elements[i-1].frame, "TOPRIGHT", tspacing, 0)
 					end
 				else
 					--grow vertically
 					if ((i - 1) % lbreak == 0) then
-						local o3 = get_slot_from_order(i-lbreak)
-						elements[o].frame:SetPoint("TOPLEFT", elements[o3].frame, "TOPRIGHT", tspacing, 0)
+						elements[i].frame:SetPoint("TOPLEFT", elements[i-lbreak].frame, "TOPRIGHT", tspacing, 0)
 					else
-						local o2 = get_slot_from_order(i-1)
-						elements[o].frame:SetPoint("TOPLEFT", elements[o2].frame, "BOTTOMLEFT", 0, 0-tspacing)
+						elements[i].frame:SetPoint("TOPLEFT", elements[i-1].frame, "BOTTOMLEFT", 0, 0-tspacing)
 					end
 				end
 			end
@@ -618,7 +507,7 @@ function PitBull4_Totems:RealignTimerTexts(frame)
 	if not frame or not frame.Totems then return end
 
 	local elements = frame.Totems.elements
-	for i = 1, MAX_TOTEMS do
+	for i = 1, MAX_CLASS_TOTEMS do
 		if (elements[i].text) then
 			TimerTextAlignmentLogic(elements[i].text, elements[i].textFrame, layout_option_get(frame, 'timer_text_side'), 0, 0)
 			local font, fontsize = self:GetFont(frame)
@@ -637,7 +526,7 @@ end
 function PitBull4_Totems:UpdateIconColor(frame)
 	if frame.Totems and frame.Totems.elements then
 		local elements = frame.Totems.elements
-		for i = 1, MAX_TOTEMS do
+		for i = 1, MAX_CLASS_TOTEMS do
 			if elements[i].frame and elements[i].frame.border then
 				elements[i].frame.border:Hide()
 				if global_option_get('totem_borders_per_element') then
@@ -695,14 +584,12 @@ function PitBull4_Totems.button_scripts:OnUpdate(elapsed)
 		self.last_update = 0
 		if not self.pulse_active then
 			-- Pulse isn't active yet so we start it
-			local icon = self.texture
 			if self:IsVisible() then
 				local pulse = self.pulse
 				if pulse then
 					pulse.scale = 1
 					pulse.icon:SetTexture(self.totem_icon)
 					self.pulse_active = true
-					--dbg("DEBUG: Starting pulse on slot %i, elapsed is: %s", self.slot, tostring(elapsed))
 				end
 			end
 		else
@@ -727,11 +614,8 @@ function PitBull4_Totems.button_scripts:OnUpdate(elapsed)
 				if self.hide_inactive then
 					self:Hide()
 				end
-
-				--dbg("DEBUG: Stopping pulse on slot %i", self.slot)
 			else
 				-- Applying the new scaling (animation frame)
-				--dbg("DEBUG: Showing with scale %s", tostring(pulse.scale))
 				pulse.icon:Show()
 				pulse.icon:SetHeight(pulse:GetHeight() * pulse.scale)
 				pulse.icon:SetWidth(pulse:GetWidth() * pulse.scale)
@@ -746,10 +630,14 @@ end
 
 function PitBull4_Totems:PLAYER_TOTEM_UPDATE(event, slot)
 	if not slot or slot < 1 or slot > MAX_TOTEMS then return end
+	self.totem_is_down[slot] = nil
 
-	local haveTotem, name, startTime, duration, icon = GetTotemInfo(slot)
-	if ( haveTotem and name ~= "") then
+	local haveTotem, name = GetTotemInfo(slot)
+	if name == "" then return end
+
+	if haveTotem then
 		-- New totem created
+		self.totem_is_down[slot] = true
 		self:ActivateTotem(slot)
 	else
 		-- Totem just got removed or killed.
@@ -761,7 +649,6 @@ function PitBull4_Totems:PLAYER_TOTEM_UPDATE(event, slot)
 			if LibSharedMedia then
 				soundpath = LibSharedMedia:Fetch("sound", global_option_get("sound_slot"..tostring(slot)))
 			end
-			--dbg('Playing Death sound for slot %s: %s', tostring(slot), tostring(soundpath))
 			PlaySoundFile(soundpath)
 		end
 	end
@@ -795,11 +682,11 @@ function PitBull4_Totems:BuildFrames(frame)
 	local ttf = frame.Totems
 
 	if (layout_option_get(frame,'totem_direction') == "h") then
-		ttf:SetWidth((MAX_TOTEMS*TOTEM_SIZE)+((MAX_TOTEMS-1)*tSpacing))
+		ttf:SetWidth((MAX_CLASS_TOTEMS*TOTEM_SIZE)+((MAX_CLASS_TOTEMS-1)*tSpacing))
 		ttf:SetHeight(TOTEM_SIZE)
 	else
 		ttf:SetWidth(TOTEM_SIZE)
-		ttf:SetHeight((MAX_TOTEMS*TOTEM_SIZE)+((MAX_TOTEMS-1)*tSpacing))
+		ttf:SetHeight((MAX_CLASS_TOTEMS*TOTEM_SIZE)+((MAX_CLASS_TOTEMS-1)*tSpacing))
 	end
 	ttf:Show()
 
@@ -813,7 +700,7 @@ function PitBull4_Totems:BuildFrames(frame)
 
 	-- Now create the main timer frames for each totem element
 	local elements = {}
-	for i = 1, MAX_TOTEMS do
+	for i = 1, MAX_CLASS_TOTEMS do
 		-------------------------------
 		-- Main totem slot frame
 		elements[i] = {}
@@ -826,7 +713,7 @@ function PitBull4_Totems:BuildFrames(frame)
 		frm:SetHeight(TOTEM_SIZE)
 		frm:SetFrameLevel(frame:GetFrameLevel() + 13)
 		frm:Hide()
-		frm.slot = i
+		frm.slot = TOTEM_ORDER[i]
 		frm.hide_inactive = layout_option_get(frame,'hide_inactive')
 
 		if frm.totem_icon then -- we're already supposed to show something!
@@ -931,12 +818,12 @@ function PitBull4_Totems:ApplyLayoutSettings(frame)
 
 	local elements = frame.Totems.elements
 
-	for i = 1, MAX_TOTEMS do
+	for i = 1, MAX_CLASS_TOTEMS do
 		elements[i].frame.hide_inactive = layout_option_get(frame,'hide_inactive')
 
 		elements[i].frame.totem_tooltips = global_option_get('totem_tooltips')
 
-		self:SpiralUpdate(frame, i, nil, nil)
+		self:SpiralUpdate(frame, elements[i].frame.slot, nil, nil)
 	end
 
 
@@ -1011,7 +898,7 @@ function PitBull4_Totems:ClearFrame(frame)
 	-- we're not stopping the timer anymore because we're not the only possible frame active
 
 	--cleanup the element frames
-	for i = 1, MAX_TOTEMS do
+	for i = 1, MAX_CLASS_TOTEMS do
 		local element = frame.Totems.elements[i]
 
 		if element.pulse and element.pulse.icon then
@@ -1054,10 +941,6 @@ end
 function PitBull4_Totems:OnInitialize()
 	-- Initialize Timer variables
 	self.totem_is_down = {}
-	for i = 1,MAX_TOTEMS do
-		self.totem_is_down[i] = false
-	end
-
 	self.timer_handle = nil	-- used for storing the reference to the ace3 timer
 end
 
@@ -1272,33 +1155,6 @@ PitBull4_Totems:SetLayoutOptionsFunction(function(self)
 	}
 end)
 
-local function get_order_option_group()
-	local oo = {}
-	oo['order_description'] = {
-		type = 'description',
-		name = L["Define your preferred order in which the lements will be displayed. The numbers describe positions from left to right."],
-		order = 1,
-	}
-	for i = 1, MAX_TOTEMS do
-		local verbose_name = get_verbose_slot_name(i)
-		local slot = {
-			type = 'select',
-			style = 'dropdown',
-			width = 'double',
-			name = verbose_name,
-			desc = verbose_name,
-			values = list_order,
-			get = get_order_as_string,
-			set = set_order,
-			arg = i,
-			order = 10+i,
-			--disabled = getHide,
-		}
-		oo["slot"..tostring(i)] = slot
-	end
-	return oo
-end
-
 local function get_elements_color_group()
 	local function get(info)
 		return color_option_get(info, 1,1,1,1 )
@@ -1433,15 +1289,6 @@ PitBull4_Totems:SetGlobalOptionsFunction(function(self)
 				disabled = function() return not global_option_get('expiry_pulse') end
 			},
 		},
-	},
-
-	'group_totem_order', {
-		type = 'group',
-		name = L["Order"],
-		desc = L["The order in which the elements appear."],
-		order = 113,
-		inline = true,
-		args = get_order_option_group(),
 	},
 	'group_totem_sound', {
 		type = 'group',
