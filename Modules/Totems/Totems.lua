@@ -1,5 +1,5 @@
 local player_class = select(2, UnitClass("player"))
-if player_class ~= "SHAMAN" and player_class ~= "DRUID" and player_class ~= "MONK" and player_class ~= "MAGE" and player_class ~= "PALADIN" then
+if player_class ~= "SHAMAN" and player_class ~= "DRUID" and player_class ~= "MONK" and player_class ~= "MAGE" and player_class ~= "PALADIN" and player_class ~= "PRIEST" then
 	return
 end
 
@@ -33,6 +33,11 @@ elseif player_class == "PALADIN" then
 	REQUIRED_SPELL = {
 		26573, -- Consecration (Holy/Protection)
 		205228, -- Consecration (Retribution)
+	}
+elseif player_class == "PRIEST" then
+	MAX_TOTEMS = 1
+	REQUIRED_SPELL = {
+		34433, -- Shadowfiend (Holy/Discipline)
 	}
 end
 local FIRE_TOTEM_SLOT  = FIRE_TOTEM_SLOT  or 1
