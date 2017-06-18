@@ -10,7 +10,14 @@ local TOTEM_ORDER = { 1, 2, 3, 4 }
 
 local MAX_CLASS_TOTEMS
 local REQUIRED_SPELL
-if player_class == "DRUID" then
+if player_class == "DEATHKNIGHT" then
+	-- The "All Will Serve" talent additional minion is slot 4, not sure if we should show it.
+	MAX_CLASS_TOTEMS = 1
+	TOTEM_ORDER = { 3, 4, 1, 2 } -- Gargoyle is slot 3
+	REQUIRED_SPELL = {
+		49206, -- Summon Gargoyle (Unholy)
+	}
+elseif player_class == "DRUID" then
 	MAX_CLASS_TOTEMS = 1
 	REQUIRED_SPELL = {
 		145205, -- Efflorescence (Restoration)
