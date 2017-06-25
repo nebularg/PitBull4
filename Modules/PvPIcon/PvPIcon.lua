@@ -162,7 +162,7 @@ function PitBull4_PvPIcon:UpdateFrame(frame)
 		container.PrestigeBadge = PrestigeBadge
 	end
 
-	local prestige = UnitPrestige(frame.unit)
+	local prestige = frame.unit and UnitPrestige(frame.unit) or 0
 	if prestige > 0 and self:GetLayoutDB(frame).show_prestige then
 		container.PrestigePortrait:SetTexCoord(unpack(PRESTIGE_TEX_COORDS[texture]))
 		container.PrestigeBadge:SetTexture(GetPrestigeInfo(prestige))
