@@ -9,6 +9,15 @@ PitBull4_Sounds:SetName(L["Sounds"])
 PitBull4_Sounds:SetDescription(L["Play certain sounds when various unit-based events occur."])
 PitBull4_Sounds:SetDefaults()
 
+-- 7.3.0 compat
+local SOUNDKIT = _G.SOUNDKIT or {
+	IG_PVP_UPDATE = "igCreatureAggroSelect",
+	IG_CREATURE_AGGRO_SELECT = "igCreatureAggroSelect",
+	IG_CHARACTER_NPC_SELECT = "igCharacterNPCSelect",
+	IG_CREATURE_NEUTRAL_SELECT = "igCreatureNeutralSelect",
+	INTERFACE_SOUND_LOST_TARGET_UNIT = "INTERFACESOUND_LOSTTARGETUNIT",
+}
+
 function PitBull4_Sounds:OnEnable()
 	self:RegisterEvent("UNIT_FACTION")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
@@ -16,8 +25,6 @@ function PitBull4_Sounds:OnEnable()
 	self:CheckPvP()
 end
 
-function PitBull4_Sounds:OnDisable()
-end
 
 function PitBull4_Sounds:UNIT_FACTION(event, unit)
 	if unit == "player" then
@@ -29,22 +36,22 @@ local last_pvp = false
 function PitBull4_Sounds:CheckPvP()
 	local pvp = not not (UnitIsPVPFreeForAll("player") or UnitIsPVP("player"))
 	if pvp and not last_pvp then
-		PlaySound("igPVPUpdate")
+		PlaySound(SOUNDKIT.IG_PVP_UPDATE)
 	end
 	last_pvp = pvp
 end
 
 function PitBull4_Sounds:PLAYER_unit_CHANGED(unit)
 	if UnitExists(unit) then
-		if UnitIsEnemy(unit, "player") then
-			PlaySound("igCreatureAggroSelect")
+		if UnitIsEnemy("player", unit) then
+			PlaySound(SOUNDKIT.IG_CREATURE_AGGRO_SELECT)
 		elseif UnitIsFriend("player", unit) then
-			PlaySound("igCharacterNPCSelect")
+			PlaySound(SOUNDKIT.IG_CHARACTER_NPC_SELECT)
 		else
-			PlaySound("igCreatureNeutralSelect")
+			PlaySound(SOUNDKIT.IG_CREATURE_NEUTRAL_SELECT)
 		end
 	else
-		PlaySound("INTERFACESOUND_LOSTTARGETUNIT")
+		PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT)
 	end
 end
 
