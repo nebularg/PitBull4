@@ -1,4 +1,4 @@
-## Interface: 70200
+## Interface: 70300
 ## Title: PitBull Unit Frames 4.0
 ## Notes: Dog-themed unit frames. Woof. Arf. Yip.
 ## Notes-deDE: @localization(locale="deDE", key="Dog-themed unit frames. Woof. Arf. Yip.")@
@@ -11,7 +11,7 @@
 ## Notes-ruRU: @localization(locale="ruRU", key="Dog-themed unit frames. Woof. Arf. Yip.")@
 ## Notes-zhCN: @localization(locale="zhCN", key="Dog-themed unit frames. Woof. Arf. Yip.")@
 ## Notes-zhTW: @localization(locale="zhTW", key="Dog-themed unit frames. Woof. Arf. Yip.")@
-## Author: ckknight, Shekfi
+## Author: ckknight, Shekfi, Nebula
 ## SavedVariables: PitBull4DB
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDBIcon-1.0, LibBossIDs-1.0, LibDualSpec-1.0, LibPlayerSpells-1.0, Clique, Masque
 ## Version: @project-version@
