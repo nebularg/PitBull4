@@ -9,22 +9,12 @@ PitBull4_Sounds:SetName(L["Sounds"])
 PitBull4_Sounds:SetDescription(L["Play certain sounds when various unit-based events occur."])
 PitBull4_Sounds:SetDefaults()
 
--- 7.3.0 compat
-local SOUNDKIT = _G.SOUNDKIT or {
-	IG_PVP_UPDATE = "igCreatureAggroSelect",
-	IG_CREATURE_AGGRO_SELECT = "igCreatureAggroSelect",
-	IG_CHARACTER_NPC_SELECT = "igCharacterNPCSelect",
-	IG_CREATURE_NEUTRAL_SELECT = "igCreatureNeutralSelect",
-	INTERFACE_SOUND_LOST_TARGET_UNIT = "INTERFACESOUND_LOSTTARGETUNIT",
-}
-
 function PitBull4_Sounds:OnEnable()
 	self:RegisterEvent("UNIT_FACTION")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterEvent("PLAYER_FOCUS_CHANGED")
 	self:CheckPvP()
 end
-
 
 function PitBull4_Sounds:UNIT_FACTION(event, unit)
 	if unit == "player" then
