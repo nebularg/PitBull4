@@ -145,13 +145,13 @@ function PitBull4_Portrait:UpdateFrame(frame)
 
 	local portrait = frame.Portrait
 
+	if pirate and style == "three_dimensional" and not falling_back and UnitIsPlayer(unit) then
+		style = "pirate"
+	end
+
 	if portrait and portrait.style ~= style then
 		self:ClearFrame(frame)
 		portrait = nil
-	end
-
-	if pirate and style == "three_dimensional" and not falling_back and UnitIsPlayer(unit) then
-		style = "pirate"
 	end
 
 	local created = not portrait
