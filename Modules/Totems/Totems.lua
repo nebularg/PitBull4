@@ -349,7 +349,9 @@ end
 
 function PitBull4_Totems:SpiralUpdate(frame,slot,start,left)
 	if not frame.Totems then return end
-	local tspiral = frame.Totems.elements[TOTEM_SLOT_TO_INDEX[slot]].spiral
+	local index = TOTEM_SLOT_TO_INDEX[slot]
+	if not frame.Totems.elements[index] then return end
+	local tspiral = frame.Totems.elements[index].spiral
 	local startTime = start or select(3, MyGetTotemInfo(slot,frame))
 	local timeLeft = left or MyGetTotemTimeLeft(slot,frame)
 
@@ -363,15 +365,15 @@ end
 
 
 function PitBull4_Totems:ActivateTotem(slot)
+	local index = TOTEM_SLOT_TO_INDEX[slot]
 	for frame in PitBull4:IterateFrames() do
 		local unit = frame.unit
-		if unit and UnitIsUnit(unit,"player") and self:GetLayoutDB(frame).enabled and frame.Totems then
+		if unit and UnitIsUnit(unit,"player") and self:GetLayoutDB(frame).enabled and frame.Totems and frame.Totems.elements[index] then
 			local _, _, startTime, _, icon = MyGetTotemInfo(slot, frame)
 			local timeLeft = MyGetTotemTimeLeft(slot, frame)
 
-			local i = TOTEM_SLOT_TO_INDEX[slot]
-			local tframe = frame.Totems.elements[i].frame
-			local ttext = frame.Totems.elements[i].text
+			local tframe = frame.Totems.elements[index].frame
+			local ttext = frame.Totems.elements[index].text
 
 			tframe:SetNormalTexture(icon)
 			tframe.totem_icon = icon
@@ -393,10 +395,10 @@ function PitBull4_Totems:ActivateTotem(slot)
 end
 
 function PitBull4_Totems:DeactivateTotem(slot)
+	local index = TOTEM_SLOT_TO_INDEX[slot]
 	for frame in PitBull4:IterateFrames() do
 		local unit = frame.unit
-		local index = TOTEM_SLOT_TO_INDEX[slot]
-		if unit and UnitIsUnit(unit,"player") and self:GetLayoutDB(frame).enabled and frame.Totems then
+		if unit and UnitIsUnit(unit,"player") and self:GetLayoutDB(frame).enabled and frame.Totems and frame.Totems.elements[index] then
 			local tframe = frame.Totems.elements[index].frame
 			local ttext = frame.Totems.elements[index].text
 			local tspiral = frame.Totems.elements[index].spiral
