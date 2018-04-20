@@ -4,6 +4,8 @@ local L = PitBull4.L
 
 local PitBull4_LuaTexts = PitBull4:NewModule("LuaTexts", "AceEvent-3.0", "AceHook-3.0")
 
+local bfa_800 = select(4, GetBuildInfo()) >= 80000
+
 local texts = {}
 local no_update = {}
 local event_cache = {}
@@ -507,7 +509,7 @@ return ConfigMode()]],
 	},
 	[L["Combo points"]] = {
 		[L["Standard"]] = {
-			events = {['UNIT_POWER']=true},
+			events = {['UNIT_POWER']=true}, -- XXX bfa_800
 			code = [[
 local combos = Combos()
 if combos ~= 0 then
@@ -690,6 +692,9 @@ local protected_events = {
 -- Provide a way to update changed events so existing LuaTexts configs
 -- continue to work transparently to end users.
 local compat_event_map = {}
+if bfa_800 then
+	compat_event_map.UNIT_POWER = 'UNIT_POWER_UPDATE'
+end
 compat_event_map.UNIT_HEALTHMAX = 'UNIT_MAXHEALTH'
 compat_event_map.UNIT_MANA = 'UNIT_POWER_FREQUENT'
 compat_event_map.UNIT_MAXMANA = 'UNIT_MAXPOWER'
@@ -762,7 +767,7 @@ local function fix_power_texts()
 								if not text.events["UNIT_MAXPOWER"] then
 									text.events["UNIT_MAXPOWER"] = true
 								end
-								if not text.events["UNIT_POWER_FREQUENT"] and not text.events["UNIT_POWER"] then
+								if not text.events["UNIT_POWER_FREQUENT"] and not text.events["UNIT_POWER"] and not text.events["UNIT_POWER_UPDATE"] then -- XXX bfa_800
 									text.events["UNIT_POWER_FREQUENT"] = true
 								end
 							end
@@ -935,15 +940,20 @@ local function update_text(font_string, event)
 	font_string:SetWordWrap(not not PitBull4_LuaTexts.word_wrap)
 end
 
-local next_spell, next_rank, next_target
-function PitBull4_LuaTexts:UNIT_SPELLCAST_SENT(event, unit, spell, rank, target)
+local next_spell, next_target -- XXX bfa_800
+function PitBull4_LuaTexts:UNIT_SPELLCAST_SENT(event, unit, ...)
 	if unit ~= "player" then return end
 
-	next_spell = spell
-	next_rank = rank and tonumber(rank:match("%d+"))
-	next_target = target ~= "" and target or nil
+	local cast_id, spell_id, spell, target, _
+	if bfa_800 then
+		cast_id, spell_id = ...
+	else
+		spell, _, target, cast_id = ...
+		next_spell = spell
+		next_target = target ~= "" and target or nil
+	end
 
-	self:OnEvent(event, unit, spell, rank, target)
+	self:OnEvent(event, unit, cast_id, spell_id)
 end
 
 local pool = setmetatable({}, {__mode='k'})
@@ -971,7 +981,7 @@ local function copy(t)
 	return n
 end
 
-local function update_cast_data(event, unit, event_spell, event_rank, event_cast_id)
+local function update_cast_data(event, unit, event_cast_id, event_spell_id)
 	if not unit then return end
 	local guid = UnitGUID(unit)
 	if not guid then return end
@@ -981,16 +991,24 @@ local function update_cast_data(event, unit, event_spell, event_rank, event_cast
 		cast_data[guid] = data
 	end
 
-	local spell, rank, _, _, start_time, end_time, _, cast_id, uninterruptible = UnitCastingInfo(unit)
+	local spell, start_time, end_time, cast_id, uninterruptible, _
+	if not bfa_800 then
+		spell, _, _, _, start_time, end_time, _, cast_id, uninterruptible = UnitCastingInfo(unit)
+	else
+		spell, _, _, start_time, end_time, _, cast_id, uninterruptible = UnitCastingInfo(unit)
+	end
 	local channeling = false
 	if not spell then
-		spell, rank, _, _, start_time, end_time, uninterruptible = UnitChannelInfo(unit)
+		if not bfa_800 then
+			spell, _, _, _, start_time, end_time, uninterruptible = UnitChannelInfo(unit)
+		else
+			spell, _, _, start_time, end_time, uninterruptible = UnitChannelInfo(unit)
+		end
+
 		channeling = true
 	end
 	if spell then
 		data.spell = spell
-		rank = rank and tonumber(rank:match("%d+"))
-		data.rank = rank
 		local old_start = data.start_time
 		start_time = start_time * 0.001
 		data.start_time = start_time
@@ -1000,7 +1018,7 @@ local function update_cast_data(event, unit, event_spell, event_rank, event_cast
 		else
 			data.delay = 0
 		end
-		if guid == player_guid and spell == next_spell and rank == next_rank then
+		if not bfa_800 and guid == player_guid and spell == next_spell then
 			data.target = next_target
 		end
 		data.casting = not channeling

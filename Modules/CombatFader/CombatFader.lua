@@ -4,6 +4,8 @@ local L = PitBull4.L
 
 local PitBull4_CombatFader = PitBull4:NewModule("CombatFader", "AceEvent-3.0")
 
+local bfa_800 = select(4, GetBuildInfo()) >= 80000
+
 PitBull4_CombatFader:SetModuleType("fader")
 PitBull4_CombatFader:SetName(L["Combat fader"])
 PitBull4_CombatFader:SetDescription(L["Make the unit frame fade if out of combat."])
@@ -32,7 +34,7 @@ function PitBull4_CombatFader:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterEvent("UNIT_HEALTH")
-	self:RegisterEvent("UNIT_POWER","UNIT_HEALTH")
+	self:RegisterEvent(bfa_800 and "UNIT_POWER_UPDATE" or "UNIT_POWER","UNIT_HEALTH")
 	self:RegisterEvent("UNIT_DISPLAYPOWER","UNIT_HEALTH")
 
 	self:RecalculateState()

@@ -3,10 +3,12 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
 local EXAMPLE_VALUE = 0.4
-local EXAMPLE_ICON = [[Interface\Icons\Spell_Shadow_Teleport]]
-local TEMP_ICON = [[Interface\Icons\Temp]]
+local EXAMPLE_ICON = 136222 -- Spell_Shadow_Teleport
+local TEMP_ICON = [[Interface\Icons\Temp]] -- XXX bfa_800
 
 local PitBull4_CastBar = PitBull4:NewModule("CastBar", "AceEvent-3.0")
+
+local bfa_800 = select(4, GetBuildInfo()) >= 80000
 
 PitBull4_CastBar:SetModuleType("bar")
 PitBull4_CastBar:SetName(L["Cast bar"])
@@ -39,17 +41,17 @@ function PitBull4_CastBar:OnEnable()
 
 	timer_frame:Show()
 
-	self:RegisterEvent("UNIT_SPELLCAST_START")
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
-	self:RegisterEvent("UNIT_SPELLCAST_STOP")
-	self:RegisterEvent("UNIT_SPELLCAST_FAILED")
-	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
-	self:RegisterEvent("UNIT_SPELLCAST_DELAYED")
-	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE")
-	self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE")
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
+	self:RegisterEvent("UNIT_SPELLCAST_START", "UpdateInfo")
+	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", "UpdateInfo")
+	self:RegisterEvent("UNIT_SPELLCAST_STOP", "UpdateInfo")
+	self:RegisterEvent("UNIT_SPELLCAST_FAILED", "UpdateInfo")
+	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED", "UpdateInfo")
+	self:RegisterEvent("UNIT_SPELLCAST_DELAYED", "UpdateInfo")
+	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "UpdateInfo")
+	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE", "UpdateInfo")
+	self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE", "UpdateInfo")
+	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "UpdateInfo")
+	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", "UpdateInfo")
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
 end
 
@@ -212,7 +214,14 @@ function PitBull4_CastBar:ClearFramesByGUID(guid)
 	end
 end
 
-function PitBull4_CastBar:UpdateInfo(event, unit, event_spell, event_rank, event_cast_id)
+function PitBull4_CastBar:UpdateInfo(event, unit, ...)
+	local event_cast_id, _
+	if bfa_800 then
+		event_cast_id = ...
+	else
+		_, _, event_cast_id = ...
+	end
+
 	local guid = UnitGUID(unit)
 	if not guid then
 		return
@@ -223,10 +232,19 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_spell, event_rank, event
 		cast_data[guid] = data
 	end
 
-	local spell, rank, display_name, icon, start_time, end_time, is_trade_skill, cast_id, uninterruptible = UnitCastingInfo(unit)
+	local spell, icon, start_time, end_time,cast_id, uninterruptible
+	if bfa_800 then
+		spell, _, icon, start_time, end_time, _, cast_id, uninterruptible = UnitCastingInfo(unit)
+	else
+		spell, _, _, icon, start_time, end_time, _, cast_id, uninterruptible = UnitCastingInfo(unit)
+	end
 	local channeling = false
 	if not spell then
-		spell, rank, display_name, icon, start_time, end_time, is_trade_skill, uninterruptible = UnitChannelInfo(unit)
+		if bfa_800 then
+			spell, _, icon, start_time, end_time, _, uninterruptible = UnitChannelInfo(unit)
+		else
+			spell, _, _, icon, start_time, end_time, _, uninterruptible = UnitChannelInfo(unit)
+		end
 		channeling = true
 	end
 	if spell then
@@ -331,20 +349,8 @@ function PitBull4_CastBar:FixCastData()
 	wipe(tmp)
 end
 
-PitBull4_CastBar.UNIT_SPELLCAST_START = PitBull4_CastBar.UpdateInfo
-PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_START = PitBull4_CastBar.UpdateInfo
-PitBull4_CastBar.UNIT_SPELLCAST_STOP = PitBull4_CastBar.UpdateInfo
-PitBull4_CastBar.UNIT_SPELLCAST_FAILED = PitBull4_CastBar.UpdateInfo
-PitBull4_CastBar.UNIT_SPELLCAST_INTERRUPTED = PitBull4_CastBar.UpdateInfo
-PitBull4_CastBar.UNIT_SPELLCAST_SUCCEEDED = PitBull4_CastBar.UpdateInfo
-PitBull4_CastBar.UNIT_SPELLCAST_DELAYED = PitBull4_CastBar.UpdateInfo
-PitBull4_CastBar.UNIT_SPELLCAST_INTERRUPTIBLE = PitBull4_CastBar.UpdateInfo
-PitBull4_CastBar.UNIT_SPELLCAST_NOT_INTERRUPTIBLE = PitBull4_CastBar.UpdateInfo
-PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_UPDATE = PitBull4_CastBar.UpdateInfo
-PitBull4_CastBar.UNIT_SPELLCAST_CHANNEL_STOP = PitBull4_CastBar.UpdateInfo
-
 function PitBull4_CastBar:INSTANCE_ENCOUNTER_ENGAGE_UNIT()
-	for i=1, MAX_BOSS_FRAMES do
+	for i=1, _G.MAX_BOSS_FRAMES do
 		local unit = ("boss%d"):format(i)
 		self:UpdateInfo(nil, unit)
 	end

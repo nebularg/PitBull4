@@ -1382,14 +1382,11 @@ PitBull4_Aura:RegisterFilterType('Spell id',L["Spell id"],id_filter,function(sel
 				db.id_list = id_list
 			end
 			for k in pairs(id_list) do
-				local name, rank = GetSpellInfo(k)
+				local name = GetSpellInfo(k)
 				if not name then
 					name = L["Unknown"]
 				end
-				if not rank then
-					rank = ""
-				end
-				t[k] = format("%s (%s) [%s]",name,rank,k)
+				t[k] = format("%s [%s]",name,k)
 			end
 			return t
 		end,

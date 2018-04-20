@@ -641,12 +641,21 @@ local function DruidForm(unit)
 			return L["Bear"]
 		elseif power == 3 then
 			return L["Cat"]
-		elseif UnitAura(unit, MOONKIN_FORM) then
-			return L["Moonkin"]
-		elseif UnitAura(unit, TRAVEL_FORM) then
-			return L["Travel"]
-		elseif UnitAura(unit, TREE_OF_LIFE) then
-			return L["Tree"]
+		else
+			local i = 1
+			repeat
+				local name = UnitAura(unit, i, "HELPFUL")
+				if name then
+					if name == MOONKIN_FORM then
+						return L["Moonkin"]
+					elseif name == TRAVEL_FORM then
+						return L["Travel"]
+					elseif name == TREE_OF_LIFE then
+						return L["Tree"]
+					end
+				end
+				i = i + 1
+			until not name
 		end
 	end
 end

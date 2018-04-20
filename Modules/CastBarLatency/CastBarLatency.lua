@@ -3,6 +3,8 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_CastBar = PitBull4:GetModule("CastBar")
 
+local bfa_800 = select(4, GetBuildInfo()) >= 80000
+
 -- CONSTANTS ----------------------------------------------------------------
 
 local ALPHA_MODIFIER = 0.6 -- Multiplied to the main CastBar's alpha at any point of time.
@@ -61,21 +63,33 @@ timerFrame:SetScript("OnUpdate", function()
 
 	end)
 
-function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, spell, spellrank)
+function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, ...)
 	if unit ~= 'player' then
 		return
 	end
 
+	local _, spell_id
+	if bfa_800 then
+		_, spell_id = ...
+	else
+		_, _, _, spell_id = ...
+	end
+
 	-- Try to determine GCD
 	local gcd_time = 0
-	if show_gcd and spell then
-		local _, duration = GetSpellCooldown(spell)
+	if show_gcd and spell_id then
+		local _, duration = GetSpellCooldown(spell_id)
 		if duration and duration > 0 and duration <= MAX_GCD_TIME then
 			gcd_time = duration
 		end
 	end
 
-	local name, _, _, _, new_start, new_end, _, _ = UnitCastingInfo(unit)
+	local name, new_start, new_end
+	if bfa_800 then
+		name, _, _, new_start, new_end = UnitCastingInfo(unit)
+	else
+		name, _, _, _, new_start, new_end = UnitCastingInfo(unit)
+	end
 	if not name then
 		return
 	end
@@ -99,21 +113,33 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, spell, spellr
 	--print(string.format("DBG-USStart: GCD_time: %s; MAX_time: %s; LAG_time: %s", tostring(gcd_time), tostring(max_time), tostring(lag_time)))
 end
 
-function PitBull4_CastBarLatency:UNIT_SPELLCAST_CHANNEL_START(event, unit, spell, spellrank)
+function PitBull4_CastBarLatency:UNIT_SPELLCAST_CHANNEL_START(event, unit, ...)
 	if unit ~= 'player' then
 		return
 	end
 
+	local _, spell_id
+	if bfa_800 then
+		_, spell_id = ...
+	else
+		_, _, _, spell_id = ...
+	end
+
 	-- Try to determine GCD
 	local gcd_time = 0
-	if show_gcd and spell then
-		local _, duration = GetSpellCooldown(spell)
+	if show_gcd and spell_id then
+		local _, duration = GetSpellCooldown(spell_id)
 		if duration and duration > 0 and duration <= MAX_GCD_TIME then
 			gcd_time = duration
 		end
 	end
 
-	local name, _, _, _, new_start, new_end, _, _ = UnitChannelInfo(unit)
+	local name, new_start, new_end
+	if bfa_800 then
+		name, _, _, new_start, new_end = UnitChannelInfo(unit)
+	else
+		name, _, _, _, new_start, new_end = UnitChannelInfo(unit)
+	end
 	if not name then
 		return
 	end
@@ -137,14 +163,14 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_CHANNEL_START(event, unit, spell
 end
 
 
-function PitBull4_CastBarLatency:UNIT_SPELLCAST_SENT(event, unit, spell, spellrank)
+function PitBull4_CastBarLatency:UNIT_SPELLCAST_SENT(event, unit)
 	if unit ~= 'player' then
 		return
 	end
 	send_time = GetTime()
 end
 
-function PitBull4_CastBarLatency:UNIT_SPELLCAST_STOP(event, unit, spell)
+function PitBull4_CastBarLatency:UNIT_SPELLCAST_STOP(event, unit)
 	if unit ~= 'player' then
 		return
 	end

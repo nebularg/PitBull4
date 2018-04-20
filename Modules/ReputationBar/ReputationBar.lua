@@ -66,11 +66,14 @@ function PitBull4_ReputationBar:GetExampleColor(frame)
 	return color[1], color[2], color[3]
 end
 
-hooksecurefunc("MainMenuBar_UpdateExperienceBars", function()
-	if not PitBull4_ReputationBar:IsEnabled() then
-		return
-	end
+local function Update()
+	if not PitBull4_ReputationBar:IsEnabled() then return end
 	for frame in PitBull4:IterateFramesForUnitID("player") do
 		PitBull4_ReputationBar:Update(frame)
 	end
-end)
+end
+if MainMenuBar_UpdateExperienceBars then
+	hooksecurefunc("MainMenuBar_UpdateExperienceBars", Update)
+else
+	hooksecurefunc(StatusTrackingBarManager, "UpdateBarsShown", Update)
+end

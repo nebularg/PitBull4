@@ -1,6 +1,8 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
+local bfa_800 = select(4, GetBuildInfo()) >= 80000
+
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
 local deep_copy = PitBull4.Utils.deep_copy
@@ -1911,13 +1913,17 @@ function GroupHeader:ConfigureChildren()
 			-- update our unit event references
 			frame:SetScript("OnUpdate", nil)
 			frame:UnregisterEvent("UNIT_NAME_UPDATE")
-			frame:UnregisterEvent("ARENA_OPPONENT_UPDATE")
+			if not bfa_800 then
+				frame:UnregisterEvent("ARENA_OPPONENT_UPDATE")
+			end
 			frame:UnregisterEvent("UNIT_TARGETABLE_CHANGED")
 			frame:UnregisterEvent("UNIT_TARGET")
 			frame:UnregisterEvent("UNIT_PET")
 
 			frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
-			frame:RegisterUnitEvent("ARENA_OPPONENT_UPDATE", unit)
+			if not bfa_800 then
+				frame:RegisterUnitEvent("ARENA_OPPONENT_UPDATE", unit)
+			end
 			frame:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", unit)
 
 			local unitsuffix = frame:GetAttribute("unitsuffix")

@@ -5,6 +5,8 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
+local bfa_800 = select(4, GetBuildInfo()) >= 80000
+
 local UnitAura = _G.UnitAura
 local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
 local ceil = _G.math.ceil
@@ -124,11 +126,20 @@ local function get_aura_list(list, unit, db, is_buff, frame)
 		end
 
 		-- Note entry[2] says if the aura is a weapon enchant
-		entry[1], entry[2], entry[3], entry[4], entry[5], entry[6],
-			entry[7], entry[8], entry[9], entry[10], entry[11],
-			entry[12], entry[13], entry[14], entry[15], entry[16],
-			entry[17] =
-			id, nil, nil, is_buff, UnitAura(unit, id, filter)
+		if not bfa_800 then
+			entry[1], entry[2], entry[3], entry[4], entry[5], entry[6],
+				entry[7], entry[8], entry[9], entry[10], entry[11],
+				entry[12], entry[13], entry[14], entry[15], entry[16],
+				entry[17] =
+				id, nil, nil, is_buff, UnitAura(unit, id, filter)
+		else
+			-- entry[6] (rank text) was removed in 8.0
+			entry[1], entry[2], entry[3], entry[4], entry[5],
+				entry[7], entry[8], entry[9], entry[10], entry[11],
+				entry[12], entry[13], entry[14], entry[15], entry[16],
+				entry[17] =
+				id, nil, nil, is_buff, UnitAura(unit, id, filter)
+		end
 
 		if not entry[5] then
 			-- No more auras, break the outer loop
