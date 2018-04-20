@@ -537,6 +537,14 @@ local ShortRace_abbrev = {
 	[L["Troll"]] = L["Troll_short"],
 	[L["Undead"]] = L["Undead_short"],
 	[L["Worgen"]] = L["Worgen_short"],
+	[L["Dark Iron Dwarf"]] = L["Dark Iron Dwarf_short"],
+	[L["Highmountain Tauren"]] = L["Highmountain Tauren_short"],
+	[L["Kul Tiran Human"]] = L["Kul Tiran Human_short"],
+	[L["Lightforged Draenei"]] = L["Lightforged Draenei_short"],
+	[L["Mag'har Orc"]] = L["Mag'har Orc_short"],
+	[L["Nightborne"]] = L["Nightborne_short"],
+	[L["Void Elf"]] = L["Void Elf_short"],
+	[L["Zandalari Troll"]] = L["Zandalari Troll_short"],
 
 	[L["Blood Elf_female"]] = L["Blood Elf_short"],
 	[L["Draenei_female"]] = L["Draenei_short"],
@@ -551,6 +559,14 @@ local ShortRace_abbrev = {
 	[L["Troll_female"]] = L["Troll_short"],
 	[L["Undead_female"]] = L["Undead_short"],
 	[L["Worgen_female"]] = L["Worgen_short"],
+	[L["Dark Iron Dwarf_female"]] = L["Dark Iron Dwarf_short"],
+	[L["Highmountain Tauren_female"]] = L["Highmountain Tauren_short"],
+	[L["Kul Tiran Human_female"]] = L["Kul Tiran Human_short"],
+	[L["Lightforged Draenei_female"]] = L["Lightforged Draenei_short"],
+	[L["Mag'har Orc_female"]] = L["Mag'har Orc_short"],
+	[L["Nightborne_female"]] = L["Nightborne_short"],
+	[L["Void Elf_female"]] = L["Void Elf_short"],
+	[L["Zandalari Troll_female"]] = L["Zandalari Troll_short"],
 }
 
 local function ShortRace(arg)
