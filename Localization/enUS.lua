@@ -447,6 +447,7 @@ L["Game window"] = true
 L["Gaps for missing pets"] = true
 L["General"] = true
 L["Ghost"] = true
+L["Globally enable or disable modules."] = true
 L["Globally enable this module."] = true
 L["Gnome"] = true
 L["Gnome friend buffs"] = true

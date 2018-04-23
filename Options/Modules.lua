@@ -27,8 +27,15 @@ function PitBull4.Options.get_module_options()
 		type = 'group',
 		name = L["Modules"],
 		desc = L["Modules provide actual functionality for PitBull."],
-		args = {},
 		childGroups = "tree",
+		args = {
+			header = {
+				type = "description",
+				name = L["Globally enable or disable modules."].."\n",
+				fontSize = "medium",
+				order = 1,
+			},
+		},
 	}
 
 	local function merge_onto(dict, ...)
@@ -49,7 +56,7 @@ function PitBull4.Options.get_module_options()
 		module_options.args[module.id .. "_toggle"] = {
 			type = "toggle",
 			name = module.name,
-			desc = (module.description or "") .. "\n\n" .. L["Globally enable this module."],
+			desc = module.description,
 			get = function(info)
 				return module:IsEnabled()
 			end,
@@ -59,7 +66,8 @@ function PitBull4.Options.get_module_options()
 				else
 					PitBull4:DisableModuleAndSaveState(module)
 				end
-			end
+			end,
+			order = 10,
 		}
 
 		if global_functions[module] then
@@ -156,7 +164,7 @@ function PitBull4.Options.get_module_options()
 		module_options.args[id .. "_toggle"] = {
 			type = "toggle",
 			name = name,
-			desc = (notes or "") .. "\n\n" .. L["Globally enable this module."],
+			desc = notes,
 			get = function(info)
 				return false
 			end,
