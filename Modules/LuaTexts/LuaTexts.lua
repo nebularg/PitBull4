@@ -946,12 +946,13 @@ function PitBull4_LuaTexts:UNIT_SPELLCAST_SENT(event, unit, ...)
 
 	local cast_id, spell_id, spell, target, _
 	if bfa_800 then
-		cast_id, spell_id = ...
+		cast_id, spell_id, target = ...
+		next_spell = spell_id
 	else
 		spell, _, target, cast_id = ...
 		next_spell = spell
-		next_target = target ~= "" and target or nil
 	end
+	next_target = target ~= "" and target or nil
 
 	self:OnEvent(event, unit, cast_id, spell_id)
 end
@@ -991,20 +992,19 @@ local function update_cast_data(event, unit, event_cast_id, event_spell_id)
 		cast_data[guid] = data
 	end
 
-	local spell, start_time, end_time, cast_id, uninterruptible, _
+	local spell, start_time, end_time, cast_id, uninterruptible, spell_id, _
 	if not bfa_800 then
-		spell, _, _, _, start_time, end_time, _, cast_id, uninterruptible = UnitCastingInfo(unit)
+		spell, _, _, _, start_time, end_time, _, cast_id, uninterruptible, spell_id = UnitCastingInfo(unit)
 	else
-		spell, _, _, start_time, end_time, _, cast_id, uninterruptible = UnitCastingInfo(unit)
+		spell, _, _, start_time, end_time, _, cast_id, uninterruptible, spell_id = UnitCastingInfo(unit)
 	end
 	local channeling = false
 	if not spell then
 		if not bfa_800 then
 			spell, _, _, _, start_time, end_time, _, uninterruptible = UnitChannelInfo(unit)
 		else
-			spell, _, _, start_time, end_time, _, uninterruptible = UnitChannelInfo(unit)
+			spell, _, _, start_time, end_time, _, uninterruptible, spell_id = UnitChannelInfo(unit)
 		end
-
 		channeling = true
 	end
 	if spell then
@@ -1018,8 +1018,14 @@ local function update_cast_data(event, unit, event_cast_id, event_spell_id)
 		else
 			data.delay = 0
 		end
-		if not bfa_800 and guid == player_guid and spell == next_spell then
-			data.target = next_target
+		if bfa_800 then
+			if guid == player_guid and spell_id == next_spell then
+				data.target = next_target
+			end
+		else
+			if guid == player_guid and spell == next_spell then
+				data.target = next_target
+			end
 		end
 		data.casting = not channeling
 		data.channeling = channeling
@@ -1028,6 +1034,7 @@ local function update_cast_data(event, unit, event_cast_id, event_spell_id)
 		if event ~= "UNIT_SPELLCAST_INTERRUPTED" then
 			-- We can't update the cache of the cast_id on UNIT_SPELLCAST_INTERRUPTED  because
 			-- for whatever reason it ends up giving us 0 inside this event.
+			-- XXX (This might change for bfa_800)
 			data.cast_id = cast_id
 		end
 		data.stop_time = nil
