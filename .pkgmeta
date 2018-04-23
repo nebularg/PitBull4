@@ -27,6 +27,7 @@ externals:
 ignore:
     - Docs
     - spec.txt
+    - README.md
 
 tools-used:
     - libdatabroker-1-1
