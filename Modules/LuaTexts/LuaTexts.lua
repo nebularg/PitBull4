@@ -1000,9 +1000,9 @@ local function update_cast_data(event, unit, event_cast_id, event_spell_id)
 	local channeling = false
 	if not spell then
 		if not bfa_800 then
-			spell, _, _, _, start_time, end_time, uninterruptible = UnitChannelInfo(unit)
+			spell, _, _, _, start_time, end_time, _, uninterruptible = UnitChannelInfo(unit)
 		else
-			spell, _, _, start_time, end_time, uninterruptible = UnitChannelInfo(unit)
+			spell, _, _, start_time, end_time, _, uninterruptible = UnitChannelInfo(unit)
 		end
 
 		channeling = true
