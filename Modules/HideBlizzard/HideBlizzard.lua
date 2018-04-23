@@ -221,29 +221,29 @@ function showers:castbar()
 	unhook_frames(CastingBarFrame, PetCastingBarFrame)
 end
 
-function hiders:runebar()
-	hook_frames(TotemFrame, RuneFrame, PriestBarFrame)
-	if PlayerFrame.classPowerBar then
-		hook_frames(PlayerFrame.classPowerBar)
-	end
-end
-
-function showers:runebar()
-	unhook_frames(TotemFrame, RuneFrame, PriestBarFrame)
-	TotemFrame_Update()
-
-	if PlayerFrame.classPowerBar then
-		unhook_frame(PlayerFrame.classPowerBar)
-		PlayerFrame.classPowerBar:Setup()
-	end
-	local _, class = UnitClass("player")
-	if class == "DEATHKNIGHT" then
-		RuneFrame:Show()
-		RuneFrame:GetScript("OnEvent")(RuneFrame, "PLAYER_ENTERING_WORLD")
-	elseif class == "PRIEST" then
-		PriestBarFrame_CheckAndShow()
-	end
-end
+-- function hiders:runebar()
+-- 	hook_frames(TotemFrame, RuneFrame, PriestBarFrame)
+-- 	if PlayerFrame.classPowerBar then
+-- 		hook_frames(PlayerFrame.classPowerBar)
+-- 	end
+-- end
+--
+-- function showers:runebar()
+-- 	unhook_frames(TotemFrame, RuneFrame, PriestBarFrame)
+-- 	TotemFrame_Update()
+--
+-- 	if PlayerFrame.classPowerBar then
+-- 		unhook_frame(PlayerFrame.classPowerBar)
+-- 		PlayerFrame.classPowerBar:Setup()
+-- 	end
+-- 	local _, class = UnitClass("player")
+-- 	if class == "DEATHKNIGHT" then
+-- 		RuneFrame:Show()
+-- 		RuneFrame:GetScript("OnEvent")(RuneFrame, "PLAYER_ENTERING_WORLD")
+-- 	elseif class == "PRIEST" then
+-- 		PriestBarFrame_CheckAndShow()
+-- 	end
+-- end
 
 function hiders:aura()
 	hook_frames(BuffFrame, TemporaryEnchantFrame)
@@ -319,14 +319,14 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		get = get,
 		set = set,
 		hidden = hidden,
-	}, 'runebar', {
-		type = 'toggle',
-		name = L["Class power bar"],
-		desc = L["Hides the class resource bar attached to your player frame."],
-		get = get,
-		set = set,
-		hidden = hidden,
-		disabled = function() return self.db.profile.global.player end,
+	-- }, 'runebar', {
+	-- 	type = 'toggle',
+	-- 	name = L["Class power bar"],
+	-- 	desc = L["Hides the class resource bar attached to your player frame."],
+	-- 	get = get,
+	-- 	set = set,
+	-- 	hidden = hidden,
+	-- 	disabled = function() return self.db.profile.global.player end,
 	}, 'party', {
 		type = 'toggle',
 		name = L["Party"],
