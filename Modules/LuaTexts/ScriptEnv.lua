@@ -4,6 +4,8 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_LuaTexts = PitBull4:GetModule("LuaTexts")
 
+local bfa_800 = select(4, GetBuildInfo()) >= 80000
+
 -- The ScriptEnv table serves as the environment that the scripts run
 -- under LuaTexts run under.  The functions included in it are accessible
 -- to this scripts as though they were local functions to it.  Functions
@@ -926,6 +928,15 @@ local function ArtifactPower()
 			xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent, tier)
 		end
 		return xp, xpForNextPoint, numPoints, pointsSpent
+	elseif bfa_800 then
+		local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem()
+		if azeriteItemLocation then
+			local artifactXP, totalLevelXP = C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation)
+			local xpForNextPoint = totalLevelXP - artifactXP
+			local numPoints = 0 -- XXX can we get items with unset bonuses?
+			local level = C_AzeriteItem.GetPowerLevel(azeriteItemLocation)
+			return artifactXP, xpForNextPoint, numPoints, level
+		end
 	end
 	return 0, 0, 0, 0
 end
