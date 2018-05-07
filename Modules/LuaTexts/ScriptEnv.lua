@@ -465,7 +465,13 @@ local function Class(unit)
 	if UnitIsPlayer(unit) then
 		return UnitClass(unit) or UNKNOWN
 	else
-		return UnitClassBase(unit) or UNKNOWN
+		if bfa_800 then
+			local _, classId = UnitClassBase(unit)
+			local classInfo = classId and C_CreatureInfo.GetClassInfo(classId)
+			return classInfo and classInfo.className or UNKNOWN
+		else
+			return UnitClassBase(unit) or UNKNOWN
+		end
 	end
 end
 ScriptEnv.Class = Class
@@ -932,10 +938,9 @@ local function ArtifactPower()
 		local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem()
 		if azeriteItemLocation then
 			local artifactXP, totalLevelXP = C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation)
-			local xpForNextPoint = totalLevelXP - artifactXP
-			local numPoints = 0 -- XXX can we get items with unset bonuses?
+			local numPoints = AzeriteUtil.GetEquippedItemsUnselectedPowersCount()
 			local level = C_AzeriteItem.GetPowerLevel(azeriteItemLocation)
-			return artifactXP, xpForNextPoint, numPoints, level
+			return artifactXP, totalLevelXP, numPoints, level
 		end
 	end
 	return 0, 0, 0, 0

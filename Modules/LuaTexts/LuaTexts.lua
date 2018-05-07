@@ -394,7 +394,7 @@ return ConfigMode()]],
 	},
 	[L["Artifact power"]] = {
 		[L["Absolute"]] = {
-			events = {['ARTIFACT_XP_UPDATE']=true},
+			events = {['ARTIFACT_XP_UPDATE']=true,['AZERITE_ITEM_EXPERIENCE_CHANGED']=bfa_800 or nil,['AZERITE_ITEM_POWER_LEVEL_CHANGED']=bfa_800 or nil,['AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED']=bfa_800 or nil},
 			code = [[
 local cur,max,points = ArtifactPower()
 if max > 0 then
@@ -406,7 +406,7 @@ end
 return ConfigMode()]],
 		},
 		[L["Absolute short"]] = {
-			events = {['ARTIFACT_XP_UPDATE']=true},
+			events = {['ARTIFACT_XP_UPDATE']=true,['AZERITE_ITEM_EXPERIENCE_CHANGED']=bfa_800 or nil,['AZERITE_ITEM_POWER_LEVEL_CHANGED']=bfa_800 or nil,['AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED']=bfa_800 or nil},
 			code = [[
 local cur,max,points = ArtifactPower()
 if max > 0 then
@@ -418,7 +418,7 @@ end
 return ConfigMode()]],
 		},
 		[L["Difference"]] = {
-			events = {['ARTIFACT_XP_UPDATE']=true},
+			events = {['ARTIFACT_XP_UPDATE']=true,['AZERITE_ITEM_EXPERIENCE_CHANGED']=bfa_800 or nil,['AZERITE_ITEM_POWER_LEVEL_CHANGED']=bfa_800 or nil,['AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED']=bfa_800 or nil},
 			code = [[
 local cur,max,points = ArtifactPower()
 if max > 0 then
@@ -431,7 +431,7 @@ end
 return ConfigMode()]],
 		},
 		[L["Percent"]] = {
-			events = {['ARTIFACT_XP_UPDATE']=true},
+			events = {['ARTIFACT_XP_UPDATE']=true,['AZERITE_ITEM_EXPERIENCE_CHANGED']=bfa_800 or nil,['AZERITE_ITEM_POWER_LEVEL_CHANGED']=bfa_800 or nil,['AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED']=bfa_800 or nil},
 			code = [[
 local cur,max,points = ArtifactPower()
 if max > 0 then
@@ -443,7 +443,7 @@ end
 return ConfigMode()]],
 		},
 		[L["Mini"]] = {
-			events = {['ARTIFACT_XP_UPDATE']=true},
+			events = {['ARTIFACT_XP_UPDATE']=true,['AZERITE_ITEM_EXPERIENCE_CHANGED']=bfa_800 or nil,['AZERITE_ITEM_POWER_LEVEL_CHANGED']=bfa_800 or nil,['AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED']=bfa_800 or nil},
 			code = [[
 local cur,max,points = ArtifactPower()
 if max > 0 then
@@ -509,7 +509,7 @@ return ConfigMode()]],
 	},
 	[L["Combo points"]] = {
 		[L["Standard"]] = {
-			events = {['UNIT_POWER']=true}, -- XXX bfa_800
+			events = {['UNIT_POWER']=not bfa_800 or nil,['UNIT_POWER_UPDATE']=bfa_800 or nil},
 			code = [[
 local combos = Combos()
 if combos ~= 0 then
@@ -646,6 +646,11 @@ do
 		-- every text on every one of these events.  /sigh
 		['UNIT_THREAT_LIST_UPDATE'] = {all=true},
 		['UNIT_THREAT_SITUATION_UPDATE'] = {all=true},
+
+		-- XXX bfa_800
+		['AZERITE_ITEM_EXPERIENCE_CHANGED'] = bfa_800 and {player=true} or nil,
+		['AZERITE_ITEM_POWER_LEVEL_CHANGED'] = bfa_800 and {player=true} or nil,
+		['AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED'] = bfa_800 and {player=true} or nil,
 	}
 
 	-- Iterate the provided codes to fill in all the rest
@@ -940,13 +945,13 @@ local function update_text(font_string, event)
 	font_string:SetWordWrap(not not PitBull4_LuaTexts.word_wrap)
 end
 
-local next_spell, next_target -- XXX bfa_800
+local next_spell, next_target
 function PitBull4_LuaTexts:UNIT_SPELLCAST_SENT(event, unit, ...)
 	if unit ~= "player" then return end
 
 	local cast_id, spell_id, spell, target, _
 	if bfa_800 then
-		cast_id, spell_id, target = ...
+		target, cast_id, spell_id = ...
 		next_spell = spell_id
 	else
 		spell, _, target, cast_id = ...
@@ -1256,7 +1261,7 @@ function PitBull4_LuaTexts:OnEvent(event, unit, ...)
 		all = true
 	end
 
-	if unit then
+	if by_unit and unit then
 		guid = UnitGUID(unit)
 	end
 

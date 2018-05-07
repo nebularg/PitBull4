@@ -30,10 +30,9 @@ local function GetArtifactXP()
 		return artifactXP, xpForNextPoint
 	elseif bfa_800 then
 		local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem()
-		if not azeriteItemLocation then return end
-
-		local artifactXP, totalLevelXP = C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation)
-		return artifactXP, totalLevelXP
+		if azeriteItemLocation then
+			return C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation)
+		end
 	end
 end
 
