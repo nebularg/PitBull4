@@ -1750,7 +1750,7 @@ local function header_OnEvent(self, event, arg1)
 	for _, frame in self:IterateMembers() do
 		local unit = frame.unit
 		if unit then -- XXX need to track down how the frame is created but it doesn't have a unit set
-			local update = not not UnitExists(unit) -- want true/false
+			local update = UnitExists(unit) or ShowBossFrameWhenUninteractable(unit) or false
 			frame:UpdateGUID(UnitGUID(unit), update)
 		else
 			frame:UpdateGUID(nil, false)
@@ -1762,7 +1762,7 @@ local function frame_OnEvent(self, event, unit)
 	local group_db = self:GetParent().group_db -- XXX somehow group_db isn't set sometimes
 	if not group_db or not group_db.enabled then return end
 
-	if UnitExists(self.unit) then
+	if UnitExists(self.unit) or ShowBossFrameWhenUninteractable(self.unit) then
 		self:UpdateGUID(UnitGUID(self.unit), true)
 	end
 end
@@ -1772,7 +1772,7 @@ local function frame_OnUpdate(self, elapsed)
 	if self.elapsed < 0.5 then return end
 	self.elapsed = self.elapsed - 0.5
 
-	if UnitExists(self.unit) then
+	if UnitExists(self.unit) or ShowBossFrameWhenUninteractable(self.unit) then
 		self:UpdateGUID(UnitGUID(self.unit))
 	end
 end

@@ -36,7 +36,7 @@ local Singleton_OnAttributeChanged = [[
   elseif value == "hide" then
     self:Hide()
   else
-    if UnitExists(self:GetAttribute("unit")) then
+    if self:GetAttribute("state-unitexists") then
       self:Show()
     else
       self:Hide()

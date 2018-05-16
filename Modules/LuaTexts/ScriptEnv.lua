@@ -102,7 +102,7 @@ end
 ScriptEnv.VehicleName = VehicleName
 
 local function Name(unit)
-	if unit ~= "player" and not UnitExists(unit) then
+	if unit ~= "player" and not UnitExists(unit) and not ShowBossFrameWhenUninteractable(unit) then
 		return UnitToLocale[unit]
 	else
 		if unit:match("%d*pet%d*$") then
