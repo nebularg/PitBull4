@@ -4,6 +4,8 @@ local L = PitBull4.L
 
 local PitBull4_PvPIcon = PitBull4:NewModule("PvPIcon", "AceEvent-3.0")
 
+local bfa_800 = select(4, GetBuildInfo()) >= 80000
+
 PitBull4_PvPIcon:SetModuleType("indicator")
 PitBull4_PvPIcon:SetName(L["PvP icon"])
 PitBull4_PvPIcon:SetDescription(L["Show an icon on the unit frame when the unit is in PvP mode."])
@@ -49,7 +51,9 @@ function PitBull4_PvPIcon:OnEnable()
 	self:RegisterEvent("UPDATE_FACTION")
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "UPDATE_FACTION")
 	self:RegisterEvent("UNIT_FACTION", "UPDATE_FACTION")
-	self:RegisterEvent("HONOR_PRESTIGE_UPDATE", "UPDATE_FACTION")
+	if not bfa_800 then
+		self:RegisterEvent("HONOR_PRESTIGE_UPDATE", "UPDATE_FACTION")
+	end
 end
 
 function PitBull4_PvPIcon:GetTexture(frame)
@@ -103,6 +107,17 @@ function PitBull4_PvPIcon:UPDATE_FACTION(event, unit)
 		self:UpdateForUnitID(unit_pet)
 	end
 end
+
+
+if bfa_800 then
+
+function PitBull4_PvPIcon:GetTexCoord(frame, texture)
+	local tex_coord = TEX_COORDS[texture]
+	return tex_coord[1], tex_coord[2], tex_coord[3], tex_coord[4]
+end
+PitBull4_PvPIcon.GetExampleTexCoord = PitBull4_PvPIcon.GetTexCoord
+
+else
 
 function PitBull4_PvPIcon:ClearFrame(frame)
 	local container = frame.PvPIcon
@@ -174,6 +189,7 @@ function PitBull4_PvPIcon:UpdateFrame(frame)
 		container.PvPIcon:SetTexCoord(unpack(TEX_COORDS[texture]))
 		container.PvPIcon:Show()
 	end
+
 	container:Show()
 
 	return made_control
@@ -195,3 +211,5 @@ PitBull4_PvPIcon:SetLayoutOptionsFunction(function(self)
 		set = set,
 	}
 end)
+
+end
