@@ -55,13 +55,15 @@ function PitBull4_Aura:HighlightFilterIterator(frame, db, is_buff)
 		if not bfa_800 then
 			entry[1], entry[2], entry[3], entry[4], entry[5], entry[6],
 				entry[7], entry[8], entry[9], entry[10], entry[11],
-				entry[12], entry[13], entry[14], entry[15] =
+				entry[12], entry[13], entry[14], entry[15], entry[16],
+				entry[17], entry[18], entry[19], entry[20] =
 				id, nil, nil, is_buff, UnitAura(unit, id, filter)
 		else
 			-- entry[6] (rank text) was removed in 8.0
 			entry[1], entry[2], entry[3], entry[4], entry[5],
 				entry[7], entry[8], entry[9], entry[10], entry[11],
-				entry[12], entry[13], entry[14], entry[15] =
+				entry[12], entry[13], entry[14], entry[15], entry[16],
+				entry[17], entry[18], entry[19], entry[20] =
 				id, nil, nil, is_buff, UnitAura(unit, id, filter)
 		end
 

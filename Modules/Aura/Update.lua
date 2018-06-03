@@ -45,10 +45,10 @@ local wipe = _G.table.wipe
 -- [15] = spell_id
 -- [16] = can_apply_aura
 -- [17] = boss_debuff
--- (not set)
 -- [18] = cast_by_player
 -- [19] = nameplate_show_all
 -- [20] = time_mod
+
 local list = {}
 
 -- pool of available entries to be used in list
@@ -56,7 +56,7 @@ local pool = {}
 
 -- The final index of the entries.  We need this so we can always
 -- get all values when copying or using unpack.
-local ENTRY_END = 17
+local ENTRY_END = 20
 
 -- Table we store the weapon enchant info in.
 -- This table is never cleared and entries are reused.
@@ -130,14 +130,14 @@ local function get_aura_list(list, unit, db, is_buff, frame)
 			entry[1], entry[2], entry[3], entry[4], entry[5], entry[6],
 				entry[7], entry[8], entry[9], entry[10], entry[11],
 				entry[12], entry[13], entry[14], entry[15], entry[16],
-				entry[17] =
+				entry[17], entry[18], entry[19], entry[20] =
 				id, nil, nil, is_buff, UnitAura(unit, id, filter)
 		else
 			-- entry[6] (rank text) was removed in 8.0
 			entry[1], entry[2], entry[3], entry[4], entry[5],
 				entry[7], entry[8], entry[9], entry[10], entry[11],
 				entry[12], entry[13], entry[14], entry[15], entry[16],
-				entry[17] =
+				entry[17], entry[18], entry[19], entry[20] =
 				id, nil, nil, is_buff, UnitAura(unit, id, filter)
 		end
 
@@ -225,7 +225,7 @@ local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 			entry[12]  = (i - num_entries < 5) and "player" or nil -- caster (show 4 player entries)
 		end
 		entry[4]  = is_buff
-		entry[6]  = "" -- rank
+		entry[6]  = not bfa_800 and "" or nil -- rank
 		entry[7]  = is_buff and sample_buff_icon or sample_debuff_icon
 		entry[8]  = i -- count set to index to make order show
 		entry[10]  = 0 -- duration
@@ -235,6 +235,9 @@ local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 		entry[15] = nil -- spell_id
 		entry[16] = nil -- can_apply_aura
 		entry[17] = nil -- boss_debuff
+		entry[18] = nil -- cast_by_player
+		entry[19] = nil -- nameplate_show_all
+		entry[20] = nil -- time_mod
 	end
 end
 
@@ -320,7 +323,7 @@ local function set_weapon_entry(list, is_enchant, time_left, expiration_time, co
 	entry[3] = quality
 	entry[4] = true -- is_buff
 	entry[5] = name
-	entry[6] = "" -- rank
+	entry[6] = not bfa_800 and "" or nil -- rank
 	entry[7] = texture
 	entry[8] = count
 	entry[9] = nil
@@ -332,6 +335,9 @@ local function set_weapon_entry(list, is_enchant, time_left, expiration_time, co
 	entry[15] = nil -- spell_id
 	entry[16] = nil -- can_apply_aura
 	entry[17] = nil -- boss_debuff
+	entry[18] = nil -- cast_by_player
+	entry[19] = nil -- nameplate_show_all
+	entry[20] = nil -- time_mod
 end
 
 -- If the src table has a valid weapon enchant entry for the slot

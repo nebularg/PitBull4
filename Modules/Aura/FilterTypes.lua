@@ -1304,7 +1304,7 @@ PitBull4_Aura:RegisterFilterType('Should consolidate',L["Personal nameplate"],pe
 	options.personal_nameplate_filter = {
 		type = 'select',
 		name = L["Personal nameplate"],
-		desc = L["Filter by if the aura is eligible to show on your personal nameplate."],
+		desc = L["Filter by if the aura is flagged to show on your personal nameplate."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			return db.should_consolidate and "yes" or "no"
@@ -1431,6 +1431,34 @@ PitBull4_Aura:RegisterFilterType('Spell id',L["Spell id"],id_filter,function(sel
 	}
 end)
 
+-- Can apply aura, true for auras the player can apply (not necessarily if the
+-- player _did_ apply the aura, just if the player _can_ apply the aura)
+local function can_apply_aura_filter(self, entry)
+	if PitBull4_Aura:GetFilterDB(self).can_apply_aura then
+		return not not entry[16]
+	else
+		return not entry[16]
+	end
+end
+PitBull4_Aura:RegisterFilterType('Can apply aura',L["Can apply aura"],can_apply_aura_filter,function(self,options)
+	options.can_apply_aura_filter = {
+		type = 'select',
+		name = L["Can apply aura"],
+		desc = L["Filter by if the aura can be applied by you."],
+		get = function(info)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			return db.can_apply_aura and "yes" or "no"
+		end,
+		set = function(info, value)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			db.can_apply_aura = value == "yes"
+			PitBull4_Aura:UpdateAll()
+		end,
+		values = bool_values,
+		order = 1,
+	}
+end)
+
 -- Boss, filter by if the aura is applied by a boss
 local function boss_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).boss_debuff then
@@ -1451,6 +1479,68 @@ PitBull4_Aura:RegisterFilterType('Boss debuff',L["Boss"],boss_filter,function(se
 		set = function(info, value)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			db.boss_debuff = value == "yes"
+			PitBull4_Aura:UpdateAll()
+		end,
+		values = bool_values,
+		order = 1,
+	}
+end)
+
+-- Cast by a player
+local function caster_is_player_filter(self, entry)
+	if PitBull4_Aura:GetFilterDB(self).caster_is_player then
+		return not not entry[18]
+	else
+		return not entry[18]
+	end
+end
+PitBull4_Aura:RegisterFilterType('Cast by a player',L["Cast by a player"],caster_is_player_filter,function(self,options)
+	options.caster_is_player_filter = {
+		type = 'select',
+		name = L["Cast by a player"],
+		desc = L["Filter by if the aura was cast by a player."],
+		get = function(info)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			return db.caster_is_player and "yes" or "no"
+		end,
+		set = function(info, value)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			if value == "yes" then
+				db.caster_is_player = true
+			else
+				db.caster_is_player = false
+			end
+			PitBull4_Aura:UpdateAll()
+		end,
+		values = bool_values,
+		order = 1,
+	}
+end)
+
+-- Global nameplate aura, Filter by if the aura is eligible to show on all nameplates
+local function global_nameplate_filter(self, entry)
+	if PitBull4_Aura:GetFilterDB(self).global_nameplate then
+		return not not entry[19]
+	else
+		return not entry[19]
+	end
+end
+PitBull4_Aura:RegisterFilterType('Global nameplate',L["Global nameplate"],global_nameplate_filter,function(self,options)
+	options.global_nameplate_filter = {
+		type = 'select',
+		name = L["Global nameplate"],
+		desc = L["Filter by if the aura is flagged to show on all nameplates."],
+		get = function(info)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			return db.global_nameplate and "yes" or "no"
+		end,
+		set = function(info, value)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			if value == "yes" then
+				db.global_nameplate = true
+			else
+				db.global_nameplate = false
+			end
 			PitBull4_Aura:UpdateAll()
 		end,
 		values = bool_values,

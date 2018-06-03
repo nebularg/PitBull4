@@ -266,8 +266,8 @@ PitBull4_Aura:SetDefaults({
 	filters = {
 		-- default filters are indexed by two character codes.
 		-- The first character follows the following format:
-		-- ! Master Filters
-		-- # Intermediate Filters
+		-- ! Master filters
+		-- # Intermediate filters
 		-- % Race map filters
 		-- & Class map filters
 		-- * Extra filters
@@ -427,6 +427,27 @@ PitBull4_Aura:SetDefaults({
 			display_name = L["Personal nameplate"],
 			filter_type = 'Should consolidate',
 			should_consolidate = true,
+			disabled = true,
+			built_in = true,
+		},
+		['@S'] = {
+			display_name = L["Global nameplate"],
+			filter_type = 'Global nameplate',
+			global_nameplate = true,
+			disabled = true,
+			built_in = true,
+		},
+		['@T'] = {
+			display_name = L["Cast by a player"],
+			filter_type = 'Cast by a player',
+			caster_is_player = true,
+			disabled = true,
+			built_in = true,
+		},
+		['@U'] = {
+			display_name = L["Can apply aura"],
+			filter_type = 'Can apply aura',
+			can_apply_aura = true,
 			disabled = true,
 			built_in = true,
 		},
