@@ -48,9 +48,6 @@ local wipe = _G.table.wipe
 -- [18] = cast_by_player
 -- [19] = nameplate_show_all
 -- [20] = time_mod
--- [21] = unit_is_player
--- [22] = unit_is_pet
--- [23] = player_can_attack_unit
 
 local list = {}
 
@@ -143,7 +140,6 @@ local function get_aura_list(list, unit, db, is_buff, frame)
 				entry[17], entry[18], entry[19], entry[20] =
 				id, nil, nil, is_buff, UnitAura(unit, id, filter)
 		end
-		entry[21], entry[22], entry[23] = UnitIsPlayer(unit), UnitIsOtherPlayersPet(unit), UnitCanAttack("player", unit)
 
 		if not entry[5] then
 			-- No more auras, break the outer loop
@@ -242,9 +238,6 @@ local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 		entry[18] = false -- cast_by_player
 		entry[19] = false -- nameplate_show_all
 		entry[20] = nil -- time_mod
-		entry[21] = false -- unit_is_player
-		entry[22] = false -- unit_is_pet
-		entry[23] = true -- player_can_attack_unit
 	end
 end
 

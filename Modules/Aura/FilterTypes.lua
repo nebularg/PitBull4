@@ -1354,7 +1354,7 @@ PitBull4_Aura:RegisterFilterType('global nameplate',L["Global nameplate"],global
 	}
 end)
 
--- Global nameplate aura, Filter by if the aura is eligible to show on all nameplates
+-- Is caster a player(not an npc)
 local function caster_is_player_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).caster_is_player then
 		return not not entry[18]
@@ -1409,12 +1409,12 @@ local function blizzard_default_filter(self, entry, frame)
 		return filter_result
 	end
 
-	local casterIsAPlayer = entry[18]
-	local targetIsFriendly = not entry[23]
-	local targetIsAPlayer =  entry[21]
-	local targetIsAPlayerPet = entry[22]
+	local caster_is_a_player = entry[18]
+	local target_is_friendly = not UnitCanAttack("player", unit)
+	local target_is_a_player = UnitIsPlayer(unit)
+	local target_is_a_player_pet = UnitIsOtherPlayersPet(unit)
 
-	if (not targetIsAPlayer and not targetIsAPlayerPet and not targetIsFriendly and casterIsAPlayer) then
+	if (not target_is_a_player and not target_is_a_player_pet and not target_is_friendly and caster_is_a_player) then
         return not filter_result
     end
 
