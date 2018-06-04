@@ -66,7 +66,6 @@ function PitBull4_Aura:HighlightFilterIterator(frame, db, is_buff)
 				entry[17], entry[18], entry[19], entry[20] =
 				id, nil, nil, is_buff, UnitAura(unit, id, filter)
 		end
-		entry[21], entry[22], entry[23] = UnitIsPlayer(unit), UnitIsOtherPlayersPet(unit), UnitCanAttack("player", unit)
 
 		-- No more auras
 		if not entry[5] then
