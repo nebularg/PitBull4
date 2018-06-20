@@ -243,33 +243,39 @@ end
 ScriptEnv.FormatDuration = FormatDuration
 
 -- Depends upon the local t = {} above FormatDuration
+local LARGE_NUMBER_SEPERATOR, DECIMAL_SEPERATOR = LARGE_NUMBER_SEPERATOR, DECIMAL_SEPERATOR
 local function SeparateDigits(number, thousands, decimal)
-	if not thousands then
-		thousands = ","
+	local symbol
+	if type(number) == "string" then
+		local value
+		value, symbol = number:match("^([-%d.]+)(.*)")
+		if not value then
+			return number
+		end
+		number = tonumber(value)
 	end
-	if not decimal then
-		decimal = "."
+	local int = math.abs(math.floor(number))
+	local rest = tostring(number):match("^[-%d.]+%.(%d+)") -- fuck off precision errors
+	if number < 0 then
+		t[#t+1] = "-"
 	end
-	local int = math.floor(number)
-	local rest = number % 1
-	if int == 0 then
-		t[#t+1] = 0
+	if int < 1000 then
+		t[#t+1] = int
 	else
 		local digits = math.log10(int)
 		local segments = math.floor(digits / 3)
 		t[#t+1] = math.floor(int / 1000^segments)
 		for i = segments-1, 0, -1 do
-			t[#t+1] = thousands
+			t[#t+1] = thousands or LARGE_NUMBER_SEPERATOR
 			t[#t+1] = ("%03d"):format(math.floor(int / 1000^i) % 1000)
 		end
 	end
-	if rest ~= 0 then
-		t[#t+1] = decimal
-		rest = math.floor(rest * 10^6)
-		while rest % 10 == 0 do
-			rest = rest / 10
-		end
+	if rest then
+		t[#t+1] = decimal or DECIMAL_SEPERATOR
 		t[#t+1] = rest
+	end
+	if symbol then
+		t[#t+1] = symbol
 	end
 	local s = table.concat(t)
 	wipe(t)
