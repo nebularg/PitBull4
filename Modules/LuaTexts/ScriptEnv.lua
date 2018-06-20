@@ -730,135 +730,174 @@ local function Round(number, digits)
 end
 ScriptEnv.Round = Round
 
-local function Short(value,format)
-	if type(value) == "number" then
-		local fmt
-		if value >= 1000000000 or value <= -1000000000 then
-			fmt = "%.1fb"
-			value = value / 1000000000
-		elseif value >= 10000000 or value <= -10000000 then
-			fmt = "%.1fm"
-			value = value / 1000000
-		elseif value >= 1000000 or value <= -1000000 then
-			fmt = "%.2fm"
-			value = value / 1000000
-		elseif value >= 100000 or value <= -100000 then
-			fmt = "%.0fk"
-			value = value / 1000
-		elseif value >= 10000 or value <= -10000 then
-			fmt = "%.1fk"
-			value = value / 1000
-		else
-			fmt = "%d"
-			value = math.floor(value + 0.5)
-		end
-		if format then
-			return fmt:format(value)
-		end
-		return fmt, value
-	else
-		local fmt_a, fmt_b
-		local a, b = value:match("^(%d+)/(%d+)$")
-		if a then
-			a, b = tonumber(a), tonumber(b)
-			if a >= 1000000000 or a <= -1000000000 then
-				fmt_a = "%.1fb"
-				a = a / 1000000000
-			elseif a >= 10000000 or a <= -10000000 then
-				fmt_a = "%.1fm"
-				a = a / 1000000
-			elseif a >= 1000000 or a <= -1000000 then
-				fmt_a = "%.2fm"
-				a = a / 1000000
-			elseif a >= 100000 or a <= -100000 then
-				fmt_a = "%.0fk"
-				a = a / 1000
-			elseif a >= 10000 or a <= -10000 then
-				fmt_a = "%.1fk"
-				a = a / 1000
-			end
-			if b >= 1000000000 or b <= -1000000000 then
-				fmt_b = "%.1fb"
-				b = b / 1000000000
-			elseif b >= 10000000 or b <= -10000000 then
-				fmt_b = "%.1fm"
-				b = b / 1000000
-			elseif b >= 1000000 or b <= -1000000 then
-				fmt_b = "%.2fm"
-				b = b / 1000000
-			elseif b >= 100000 or b <= -100000 then
-				fmt_b = "%.0fk"
-				b = b / 1000
-			elseif b >= 10000 or b <= -10000 then
-				fmt_b = "%.1fk"
-				b = b / 1000
-			end
-			local fmt = ("%s/%s"):format(fmt_a, fmt_b)
-			if format then
-				return fmt:format(a, b)
-			end
-			return fmt, a, b
-		else
-			return value
-		end
-	end
-end
-ScriptEnv.Short = Short
+local Short, VeryShort
+local locale = GetLocale()
+if locale == "zhCN" or locale == "zhTW" or locale == "koKR" then
+	local FIRST_NUMBER_CAP_NO_SPACE = FIRST_NUMBER_CAP_NO_SPACE
+	local SECOND_NUMBER_CAP_NO_SPACE = SECOND_NUMBER_CAP_NO_SPACE
 
-local function VeryShort(value,format)
-	if type(value) == "number" then
-		local fmt
-		if value >= 1000000000 or value <= -1000000000 then
-			fmt = "%.1fb"
-			value = value / 1000000000
-		elseif value >= 1000000 or value <= -1000000 then
-			fmt = "%.0fm"
-			value = value / 1000000
-		elseif value >= 1000 or value <= -1000 then
-			fmt = "%.0fk"
-			value = value / 1000
-		else
-			fmt = "%.0f"
+	function Short(value, format)
+		if type(value) == "number" then
+			local v = math.abs(value)
+			local fmt
+			if v >= 100000000000 then
+				fmt = "%.0f" .. SECOND_NUMBER_CAP_NO_SPACE
+				value = value / 100000000
+			elseif v >= 10000000000 then
+				fmt = "%.1f" .. SECOND_NUMBER_CAP_NO_SPACE
+				value = value / 100000000
+			elseif v >= 100000000 then
+				fmt = "%.2f" .. SECOND_NUMBER_CAP_NO_SPACE
+				value = value / 100000000
+			elseif v >= 10000000 then
+				fmt = "%.0f" .. FIRST_NUMBER_CAP_NO_SPACE
+				value = value / 10000
+			elseif v >= 1000000 then
+				fmt = "%.1f" .. FIRST_NUMBER_CAP_NO_SPACE
+				value = value / 10000
+			elseif v >= 10000 then
+				fmt = "%.2f" .. FIRST_NUMBER_CAP_NO_SPACE
+				value = value / 10000
+			else
+				fmt = "%.0f"
+			end
+			if format then
+				return fmt:format(value)
+			end
+			return fmt, value
 		end
-		if format then
-			return fmt:format(value)
-		end
-		return fmt, value
-	else
 		local a, b = value:match("^(%d+)/(%d+)")
 		if a then
 			local fmt_a, fmt_b
-			a, b = tonumber(a), tonumber(b)
-			if b >= 1000000000 or b <= -1000000000 then
-				fmt_b = "%.1fb"
-				b = b / 1000000000
-			elseif b >= 1000000 or b <= -1000000 then
-				fmt_b = "%.0fm"
-				b = b / 1000000
-			elseif b >= 1000 or b <= -1000 then
-				fmt_b = "%.0fk"
-				b = b / 1000
-			end
-			if a >= 1000000000 or a <= -1000000000 then
-				fmt_a = "%.1fb"
-				a = a / 1000000000
-			elseif a >= 1000000 or a <= -1000000 then
-				fmt_a = "%.0fm"
-				a = a / 1000000
-			elseif a >= 1000 or a <= -1000 then
-				fmt_a = "%.0fk"
-				a = a / 1000
-			end
+			fmt_b, b = Short(tonumber(b))
+			fmt_a, a = Short(tonumber(a))
 			local fmt = ("%s/%s"):format(fmt_a, fmt_b)
 			if format then
 				return fmt:format(a, b)
 			end
 			return fmt, a, b
-		else
-			return value
 		end
+		return value
+	end
+
+	function VeryShort(value, format)
+		if type(value) == "number" then
+			local v = abs(value)
+			local fmt
+			if v >= 100000000 then
+				fmt = "%.0f" .. SECOND_NUMBER_CAP_NO_SPACE
+				value = value / 100000000
+			elseif v >= 10000 then
+				fmt = "%.0f" .. FIRST_NUMBER_CAP_NO_SPACE
+				value = value / 10000
+			else
+				fmt = "%.0f"
+			end
+			if format then
+				return fmt:format(value)
+			end
+			return fmt, value
+		end
+		local a, b = value:match("^(%d+)/(%d+)")
+		if a then
+			local fmt_a, fmt_b
+			fmt_b, b = VeryShort(tonumber(b))
+			fmt_a, a = VeryShort(tonumber(a))
+			local fmt = ("%s/%s"):format(fmt_a, fmt_b)
+			if format then
+				return fmt:format(a, b)
+			end
+			return fmt, a, b
+		end
+		return value
+	end
+else
+	local BILLION_NUMBER = 10^9
+	-- Use the correct symbol for long scale number locales
+	if locale == "frFR" or locale == "esMX" or locale == "esES" then
+		BILLION_NUMBER = 10^12
+	end
+
+	function Short(value, format)
+		if type(value) == "number" then
+			local v = abs(value)
+			local fmt
+			if v >= BILLION_NUMBER then
+				fmt = "%.1fb"
+				value = value / BILLION_NUMBER
+			elseif v >= 1000000000 then
+				fmt = "%.0fm"
+				value = value / 1000000
+			elseif v >= 10000000 then
+				fmt = "%.1fm"
+				value = value / 1000000
+			elseif v >= 1000000 then
+				fmt = "%.2fm"
+				value = value / 1000000
+			elseif v >= 100000 then
+				fmt = "%.0fk"
+				value = value / 1000
+			elseif v >= 10000 then
+				fmt = "%.1fk"
+				value = value / 1000
+			else
+				fmt = "%.0f"
+			end
+			if format then
+				return fmt:format(value)
+			end
+			return fmt, value
+		end
+		local a, b = value:match("^(%d+)/(%d+)")
+		if a then
+			local fmt_a, fmt_b
+			fmt_b, b = Short(tonumber(b))
+			fmt_a, a = Short(tonumber(a))
+			local fmt = ("%s/%s"):format(fmt_a, fmt_b)
+			if format then
+				return fmt:format(a, b)
+			end
+			return fmt, a, b
+		end
+		return value
+	end
+
+	function VeryShort(value, format)
+		if type(value) == "number" then
+			local v = abs(value)
+			local fmt
+			if v >= BILLION_NUMBER then
+				fmt = "%.0fb"
+				value = value / BILLION_NUMBER
+			elseif v >= 1000000 then
+				fmt = "%.0fm"
+				value = value / 1000000
+			elseif v >= 1000 then
+				fmt = "%.0fk"
+				value = value / 1000
+			else
+				fmt = "%.0f"
+			end
+			if format then
+				return fmt:format(value)
+			end
+			return fmt, value
+		end
+		local a, b = value:match("^(%d+)/(%d+)")
+		if a then
+			local fmt_a, fmt_b
+			fmt_b, b = VeryShort(tonumber(b))
+			fmt_a, a = VeryShort(tonumber(a))
+			local fmt = ("%s/%s"):format(fmt_a, fmt_b)
+			if format then
+				return fmt:format(a, b)
+			end
+			return fmt, a, b
+		end
+		return value
 	end
 end
+ScriptEnv.Short = Short
 ScriptEnv.VeryShort = VeryShort
 
 local function IsMouseOver()
