@@ -1323,6 +1323,127 @@ PitBull4_Aura:RegisterFilterType('Should consolidate',L["Personal nameplate"],pe
 	}
 end)
 
+-- Global nameplate aura, Filter by if the aura is eligible to show on all nameplates
+local function global_nameplate_filter(self, entry)
+	if PitBull4_Aura:GetFilterDB(self).global_nameplate then
+		return not not entry[19]
+	else
+		return not entry[19]
+	end
+end
+PitBull4_Aura:RegisterFilterType('global nameplate',L["Global nameplate"],global_nameplate_filter,function(self,options)
+	options.global_nameplate_filter = {
+		type = 'select',
+		name = L["Global nameplate"],
+		desc = L["Filter by if the aura is eligible to show on all nameplates."],
+		get = function(info)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			return db.global_nameplate and "yes" or "no"
+		end,
+		set = function(info, value)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			if value == "yes" then
+				db.global_nameplate = true
+			else
+				db.global_nameplate = false
+			end
+			PitBull4_Aura:UpdateAll()
+		end,
+		values = bool_values,
+		order = 1,
+	}
+end)
+
+-- Is caster a player(not an npc)
+local function caster_is_player_filter(self, entry)
+	if PitBull4_Aura:GetFilterDB(self).caster_is_player then
+		return not not entry[18]
+	else
+		return not entry[18]
+	end
+end
+PitBull4_Aura:RegisterFilterType('caster is a player',L["Caster is a player"],caster_is_player_filter,function(self,options)
+	options.caster_is_player_filter = {
+		type = 'select',
+		name = L["Caster is a player"],
+		desc = L["Filter by if the aura is cast by a player(not a mob)."],
+		get = function(info)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			return db.caster_is_player and "yes" or "no"
+		end,
+		set = function(info, value)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			if value == "yes" then
+				db.caster_is_player = true
+			else
+				db.caster_is_player = false
+			end
+			PitBull4_Aura:UpdateAll()
+		end,
+		values = bool_values,
+		order = 1,
+	}
+end)
+
+-- Same function as used in blizz default target frame
+local function blizzard_default_filter(self, entry, frame)
+	local filter_result = true
+	if PitBull4_Aura:GetFilterDB(self).blizzard_would_show then
+		filter_result = true
+	else
+		filter_result = false
+	end
+
+	if entry[19] then --nameplateShowAll
+		return filter_result
+	end
+
+	local unit = frame.unit
+	local caster = entry[12]
+
+	if (caster and (UnitIsUnit("player", caster) or UnitIsOwnerOrControllerOfUnit("player", caster))) then
+		return filter_result
+	end
+
+	if (UnitIsUnit("player", unit)) then
+		return filter_result
+	end
+
+	local caster_is_a_player = entry[18]
+	local target_is_friendly = not UnitCanAttack("player", unit)
+	local target_is_a_player = UnitIsPlayer(unit)
+	local target_is_a_player_pet = UnitIsOtherPlayersPet(unit)
+
+	if (not target_is_a_player and not target_is_a_player_pet and not target_is_friendly and caster_is_a_player) then
+        return not filter_result
+    end
+
+    return filter_result;
+
+end
+PitBull4_Aura:RegisterFilterType('blizzard default filter',L["Blizzard default debuff filter"],blizzard_default_filter,function(self,options)
+	options.blizzard_default_filter = {
+		type = 'select',
+		name = L["Blizzard default debuff filter"],
+		desc = L["Blizzard default target frame debuff filter."],
+		get = function(info)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			return db.blizzard_would_show and "yes" or "no"
+		end,
+		set = function(info, value)
+			local db = PitBull4_Aura:GetFilterDB(self)
+			if value == "yes" then
+				db.blizzard_would_show = true
+			else
+				db.blizzard_would_show = false
+			end
+			PitBull4_Aura:UpdateAll()
+		end,
+		values = bool_values,
+		order = 1,
+	}
+end)
+
 -- Spell ID, allows filtering by the spell id that created the aura
 local function id_filter(self, entry)
 	local cfg = PitBull4_Aura:GetFilterDB(self)
