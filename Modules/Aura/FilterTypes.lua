@@ -708,6 +708,7 @@ local function time_left_filter(self, entry, frame)
 	local units = cfg.time_unit
 	local duration = entry[10]
 	local expiration_time = entry[11]
+	local time_mod = entry[20]
 
 	-- No duration and no expiration time means it never expires
 	-- so it has an infinite amount of time left.  Can't really
@@ -730,7 +731,12 @@ local function time_left_filter(self, entry, frame)
 		end
 	end
 
-	local time_left = math.floor(expiration_time - GetTime())
+	local time_left = expiration_time - GetTime()
+	if time_mod > 0 then
+		time_left = time_left / time_mod
+	end
+	time_left = math.floor(time_left)
+
 	if units == 'h' then
 		value = value * 3600
 	elseif units == 'm' then

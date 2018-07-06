@@ -456,7 +456,7 @@ end
 local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	local control = aura_controls[i]
 
-	local id, slot, quality, is_buff, name, _, icon, count, debuff_type, duration, expiration_time, caster, _, _, spell_id = unpack(aura, 1, ENTRY_END)
+	local id, slot, quality, is_buff, name, _, icon, count, debuff_type, duration, expiration_time, caster, _, _, spell_id, _, _, _, _, time_mod = unpack(aura, 1, ENTRY_END)
 
 	local is_mine = my_units[caster]
 	local who = is_mine and "my" or "other"
@@ -474,7 +474,7 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	local layout = is_buff and db.layout.buff or db.layout.debuff
 	control:SetFrameLevel(frame:GetFrameLevel() + layout.frame_level)
 
-	local unchanged = id == control.id and expiration_time == control.expiration_time and spell_id == control.spell_id and slot == control.slot and is_buff == control.is_buff and caster == control.caster and count == control.count and duration == control.duration
+	local unchanged = id == control.id and expiration_time == control.expiration_time and spell_id == control.spell_id and slot == control.slot and is_buff == control.is_buff and caster == control.caster and count == control.count and duration == control.duration and time_mod == control.time_mod
 
 	control.id = id
 	control.is_mine = is_mine
@@ -487,6 +487,7 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	control.slot = slot
 	control.caster = caster
 	control.spell_id = spell_id
+	control.time_mod = time_mod
 
 	local class_db = frame.classification_db
 	if not db.click_through and class_db and not class_db.click_through then
@@ -688,6 +689,10 @@ local function update_cooldown_text(aura)
 
 	local current_time = GetTime()
 	local time_left = expiration_time - current_time
+	if aura.time_mod > 0 then
+		time_left = time_left / aura.time_mod
+	end
+
 	local new_time
 	if time_left >= 0 then
 		if time_left >= 3600 then
