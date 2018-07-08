@@ -451,6 +451,41 @@ PitBull4_Aura:SetDefaults({
 			disabled = true,
 			built_in = true,
 		},
+		['@V'] = {
+			display_name = L["Self buff"],
+			filter_type = 'Self buff',
+			self_buff = true,
+			disabled = true,
+			built_in = true,
+		},
+		['@W'] = {
+			display_name = L["Any player"],
+			filter_type = 'Unit',
+			unit_operator = 'player',
+			disabled = true,
+			built_in = true,
+		},
+		['@X'] = {
+			display_name = L["Other player pet"],
+			filter_type = 'Unit',
+			unit_operator = 'other_player_pet',
+			disabled = true,
+			built_in = true,
+		},
+		['@Y'] = {
+			display_name = L["Has custom visibility"],
+			filter_type = 'Has custom visibility',
+			custom_visibility = true,
+			disabled = true,
+			built_in = true,
+		},
+		['@Z'] = {
+			display_name = L["Custom show"],
+			filter_type = 'Should show',
+			should_show = true,
+			disabled = true,
+			built_in = true,
+		},
 		[',3'] = {
 			display_name = L["Druid can dispel"],
 			filter_type = 'Aura Type',
@@ -1454,6 +1489,42 @@ PitBull4_Aura:SetDefaults({
 			operators = {'&','&','&'},
 			built_in = true,
 			display_when = "highlight",
+		},
+		['!M'] = {
+			-- NameplateBuffContainerMixin:ShouldShowBuff
+			display_name = L["Blizzard buffs, nameplate"],
+			filter_type = 'Meta',
+			filters = {'@S','@R','@H'},
+			operators = {'|','&'},
+			built_in = true,
+			display_when = "buff",
+		},
+		['!N'] = {
+			-- CompactUnitFrame_UtilShouldDisplayBuff
+			display_name = L["Blizzard buffs, group"],
+			filter_type = 'Meta',
+			filters = {'@Z','@Y','@H','@U','@V'},
+			operators = {'|~','&','&','&~'},
+			built_in = true,
+			display_when = "buff",
+		},
+		['!P'] = {
+			-- TargetFrame_ShouldShowDebuffs
+			display_name = L["Blizzard debuffs, target"],
+			filter_type = 'Meta',
+			filters = {'@S','@H','@G','@W','@D','@X','@T'},
+			operators = {'|','|','|','|','|','|~'},
+			built_in = true,
+			display_when = "debuff",
+		},
+		['!Q'] = {
+			--- CompactUnitFrame_UtilShouldDisplayDebuff
+			display_name = L["Blizzard debuffs, group"],
+			filter_type = 'Meta',
+			filters = {'@Z','@Y','@I'},
+			operators = {'|~','&'},
+			built_in = true,
+			display_when = "debuff",
 		},
 	},
 })
