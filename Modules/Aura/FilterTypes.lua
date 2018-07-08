@@ -98,11 +98,9 @@ local function compare_unit(unit,op,value,frame)
 		return not string.match(unit,value)
 	elseif op == "combat" then
 		if not unit then return false end
-		PitBull4_Aura:RequestTimedFilterUpdate(frame)
 		return UnitAffectingCombat(unit)
 	elseif op == "nocombat" then
 		if not unit then return false end
-		PitBull4_Aura:RequestTimedFilterUpdate(frame)
 		return not UnitAffectingCombat(unit)
 	end
 end

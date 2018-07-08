@@ -36,6 +36,8 @@ end)
 
 
 function PitBull4_Aura:OnEnable()
+	self:RegisterEvent("PLAYER_REGEN_DISABLED", "UpdateAll")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateAll")
 	self:RegisterEvent("UNIT_AURA")
 	timerFrame:Show()
 

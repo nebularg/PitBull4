@@ -972,3 +972,10 @@ function PitBull4_Aura:OnUpdate()
 
 	self:UpdateFilters()
 end
+
+function PitBull4_Aura:UpdateAll()
+	for frame in PitBull4:IterateFrames() do
+		self:Update(frame)
+	end
+	wipe(guids_to_update)
+end
