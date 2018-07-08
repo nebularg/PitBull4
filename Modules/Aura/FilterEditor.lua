@@ -222,7 +222,6 @@ function PitBull4_Aura:GetFilterEditor()
 				type = 'input',
 				name = L["Add friend buff"],
 				desc = L["Add a friend buff to the extra friend buff filter."],
-				get = function(info) return "" end,
 				set = function(info, value)
 					local name_list = PitBull4_Aura:GetFilterDB('*A').name_list
 					name_list[value] = true
@@ -233,6 +232,28 @@ function PitBull4_Aura:GetFilterEditor()
 						return L["Must be at least 3 characters long."]
 					end
 					return true
+				end,
+				order = 2,
+			},
+			friend_buffs_remove = {
+				type = 'select',
+				name = L["Remove friend buff"],
+				set = function(info, value)
+					local name_list = PitBull4_Aura:GetFilterDB('*A').name_list
+					name_list[value] = nil
+					PitBull4_Aura:UpdateAll()
+				end,
+				values = function(info)
+					local t = {}
+					local name_list = PitBull4_Aura:GetFilterDB('*A').name_list
+					for k in next, name_list do
+						t[k] = k
+					end
+					return t
+				end,
+				disabled = function(info)
+					local name_list = PitBull4_Aura:GetFilterDB('*A').name_list
+					return not next(name_list)
 				end,
 				order = 2,
 			},
@@ -271,7 +292,6 @@ function PitBull4_Aura:GetFilterEditor()
 				type = 'input',
 				name = L["Add friend debuff"],
 				desc = L["Add a friend debuff to the extra friend debuff filter."],
-				get = function(info) return "" end,
 				set = function(info, value)
 					local name_list = PitBull4_Aura:GetFilterDB('*B').name_list
 					name_list[value] = true
@@ -282,6 +302,28 @@ function PitBull4_Aura:GetFilterEditor()
 						return L["Must be at least 3 characters long."]
 					end
 					return true
+				end,
+				order = 5,
+			},
+			friend_debuffs_remove = {
+				type = 'select',
+				name = L["Remove friend debuff"],
+				set = function(info, value)
+					local name_list = PitBull4_Aura:GetFilterDB('*B').name_list
+					name_list[value] = nil
+					PitBull4_Aura:UpdateAll()
+				end,
+				values = function(info)
+					local t = {}
+					local name_list = PitBull4_Aura:GetFilterDB('*B').name_list
+					for k in next, name_list do
+						t[k] = k
+					end
+					return t
+				end,
+				disabled = function(info)
+					local name_list = PitBull4_Aura:GetFilterDB('*B').name_list
+					return not next(name_list)
 				end,
 				order = 5,
 			},
@@ -319,7 +361,6 @@ function PitBull4_Aura:GetFilterEditor()
 				type = 'input',
 				name = L["Add enemy debuff"],
 				desc = L["Add a enemy debuff to the extra enemy debuff filter."],
-				get = function(info) return "" end,
 				set = function(info, value)
 					local name_list = PitBull4_Aura:GetFilterDB('*C').name_list
 					name_list[value] = true
@@ -330,6 +371,28 @@ function PitBull4_Aura:GetFilterEditor()
 						return L["Must be at least 3 characters long."]
 					end
 					return true
+				end,
+				order = 8,
+			},
+			enemy_debuffs_remove = {
+				type = 'select',
+				name = L["Remove enemy debuff"],
+				set = function(info, value)
+					local name_list = PitBull4_Aura:GetFilterDB('*C').name_list
+					name_list[value] = nil
+					PitBull4_Aura:UpdateAll()
+				end,
+				values = function(info)
+					local t = {}
+					local name_list = PitBull4_Aura:GetFilterDB('*C').name_list
+					for k in next, name_list do
+						t[k] = k
+					end
+					return t
+				end,
+				disabled = function(info)
+					local name_list = PitBull4_Aura:GetFilterDB('*C').name_list
+					return not next(name_list)
 				end,
 				order = 8,
 			},
@@ -365,7 +428,6 @@ function PitBull4_Aura:GetFilterEditor()
 				type = 'input',
 				name = L["Add friend highlight"],
 				desc = L["Add a friend debuff to the extra friend debuff highlights."],
-				get = function(info) return "" end,
 				set = function(info, value)
 					local name_list = PitBull4_Aura:GetFilterDB('*D').name_list
 					name_list[value] = true
@@ -376,6 +438,28 @@ function PitBull4_Aura:GetFilterEditor()
 						return L["Must be at least 3 characters long."]
 					end
 					return true
+				end,
+				order = 11,
+			},
+			friend_highlights_remove = {
+				type = 'select',
+				name = L["Remove friend highlight"],
+				set = function(info, value)
+					local name_list = PitBull4_Aura:GetFilterDB('*D').name_list
+					name_list[value] = nil
+					PitBull4_Aura:UpdateAll()
+				end,
+				values = function(info)
+					local t = {}
+					local name_list = PitBull4_Aura:GetFilterDB('*D').name_list
+					for k in next, name_list do
+						t[k] = k
+					end
+					return t
+				end,
+				disabled = function(info)
+					local name_list = PitBull4_Aura:GetFilterDB('*D').name_list
+					return not next(name_list)
 				end,
 				order = 11,
 			},
@@ -411,7 +495,6 @@ function PitBull4_Aura:GetFilterEditor()
 				type = 'input',
 				name = L["Add enemy highlight"],
 				desc = L["Add an enemy buff to the extra enemy buff highlights."],
-				get = function(info) return "" end,
 				set = function(info, value)
 					local name_list = PitBull4_Aura:GetFilterDB('*E').name_list
 					name_list[value] = true
@@ -422,6 +505,28 @@ function PitBull4_Aura:GetFilterEditor()
 						return L["Must be at least 3 characters long."]
 					end
 					return true
+				end,
+				order = 14,
+			},
+			enemy_highlights_remove = {
+				type = 'select',
+				name = L["Remove enemy highlight"],
+				set = function(info, value)
+					local name_list = PitBull4_Aura:GetFilterDB('*E').name_list
+					name_list[value] = nil
+					PitBull4_Aura:UpdateAll()
+				end,
+				values = function(info)
+					local t = {}
+					local name_list = PitBull4_Aura:GetFilterDB('*E').name_list
+					for k in next, name_list do
+						t[k] = k
+					end
+					return t
+				end,
+				disabled = function(info)
+					local name_list = PitBull4_Aura:GetFilterDB('*E').name_list
+					return not next(name_list)
 				end,
 				order = 14,
 			},

@@ -1705,16 +1705,11 @@ PitBull4_Aura:SetGlobalOptionsFunction(function(self)
 	},
 	'div', {
 		type = "header",
-		name = "",
+		name = L["Filter Editor"],
 		hidden = function(info)
 			-- don't show the divider if there are no other shown options
 			return not self:IsEnabled() or not MSQ
 		end,
-	},
-	'filter_editor', {
-		type = "description",
-		name =  L["Configure the filters for the aura modules."],
-		fontSize = "medium",
 	},
 	PitBull4_Aura:GetFilterEditor()
 end)
