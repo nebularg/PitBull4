@@ -755,7 +755,6 @@ local function fix_legacy_events()
 	end
 end
 
--- add missing power events
 local function fix_power_texts()
 	local sv = PitBull4.db:GetNamespace("LuaTexts").profiles
 	for _, profile in next, sv do
@@ -765,6 +764,7 @@ local function fix_power_texts()
 				local elements = layout.elements
 				if elements then
 					for _, text in next, elements do
+						-- add missing power events
 						if text.code and text.code:find("Power(unit)", nil, true) then
 							if not text.events then
 								text.events = { ["UNIT_POWER_FREQUENT"] = true, ["UNIT_MAXPOWER"] = true }
@@ -776,6 +776,12 @@ local function fix_power_texts()
 									text.events["UNIT_POWER_FREQUENT"] = true
 								end
 							end
+						end
+						-- add azerite events to artifact power texts
+						if bfa_800 and text.events and text.events["ARTIFACT_XP_UPDATE"] and not text.events["AZERITE_ITEM_EXPERIENCE_CHANGED"] then
+							text.events['AZERITE_ITEM_EXPERIENCE_CHANGED'] = true
+							text.events['AZERITE_ITEM_POWER_LEVEL_CHANGED'] = true
+							text.events['AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED'] = true
 						end
 					end
 				end
