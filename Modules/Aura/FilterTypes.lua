@@ -174,6 +174,8 @@ end
 local meta_operators = {
 	['&'] = 'AND',
 	['|'] = 'OR',
+	['&~'] = 'AND NOT',
+	['|~'] = 'OR NOT',
 }
 local meta_filter_funcs = {}
 
@@ -208,7 +210,7 @@ local function meta_filter(self, entry, frame)
 	local luastring = 'return function(entry, frame) return '
 	for i=1,#funcs do
 		if i~= 1 then
-			local op = ops[i-1] == '&' and 'and' or 'or'
+			local op = meta_operators[ops[i-1]]:lower()
 			luastring = luastring .. op .. ' '
 		end
 		luastring = luastring .. 'funcs['..i..'](names['..i..'], entry, frame) '
