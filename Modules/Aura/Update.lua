@@ -5,8 +5,6 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
-local bfa_800 = select(4, GetBuildInfo()) >= 80000
-
 local UnitAura = _G.UnitAura
 local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
 local ceil = _G.math.ceil
@@ -126,20 +124,12 @@ local function get_aura_list(list, unit, db, is_buff, frame)
 		end
 
 		-- Note entry[2] says if the aura is a weapon enchant
-		if not bfa_800 then
-			entry[1], entry[2], entry[3], entry[4], entry[5], entry[6],
-				entry[7], entry[8], entry[9], entry[10], entry[11],
-				entry[12], entry[13], entry[14], entry[15], entry[16],
-				entry[17], entry[18], entry[19], entry[20] =
-				id, nil, nil, is_buff, UnitAura(unit, id, filter)
-		else
-			-- entry[6] (rank text) was removed in 8.0
-			entry[1], entry[2], entry[3], entry[4], entry[5],
-				entry[7], entry[8], entry[9], entry[10], entry[11],
-				entry[12], entry[13], entry[14], entry[15], entry[16],
-				entry[17], entry[18], entry[19], entry[20] =
-				id, nil, nil, is_buff, UnitAura(unit, id, filter)
-		end
+		-- entry[6] (rank text) was removed in 8.0
+		entry[1], entry[2], entry[3], entry[4], entry[5],
+			entry[7], entry[8], entry[9], entry[10], entry[11],
+			entry[12], entry[13], entry[14], entry[15], entry[16],
+			entry[17], entry[18], entry[19], entry[20] =
+			id, nil, nil, is_buff, UnitAura(unit, id, filter)
 
 		if not entry[5] then
 			-- No more auras, break the outer loop
@@ -225,7 +215,7 @@ local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 			entry[12]  = (i - num_entries < 5) and "player" or nil -- caster (show 4 player entries)
 		end
 		entry[4]  = is_buff
-		entry[6]  = not bfa_800 and "" or nil -- rank
+		entry[6]  = nil -- rank
 		entry[7]  = is_buff and sample_buff_icon or sample_debuff_icon
 		entry[8]  = i -- count set to index to make order show
 		entry[10]  = 0 -- duration
@@ -323,7 +313,7 @@ local function set_weapon_entry(list, is_enchant, time_left, expiration_time, co
 	entry[3] = quality
 	entry[4] = true -- is_buff
 	entry[5] = name
-	entry[6] = not bfa_800 and "" or nil -- rank
+	entry[6] = nil -- rank
 	entry[7] = texture
 	entry[8] = count
 	entry[9] = nil

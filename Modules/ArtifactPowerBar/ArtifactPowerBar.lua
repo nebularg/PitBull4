@@ -6,8 +6,6 @@ local EXAMPLE_VALUE = 0.3
 
 local PitBull4_ArtifactPowerBar = PitBull4:NewModule("ArtifactPowerBar", "AceEvent-3.0")
 
-local bfa_800 = select(4, GetBuildInfo()) >= 80000
-
 PitBull4_ArtifactPowerBar:SetModuleType("bar")
 PitBull4_ArtifactPowerBar:SetName(L["Artifact power bar"])
 PitBull4_ArtifactPowerBar:SetDescription(L["Show an artifact power bar."])
@@ -28,7 +26,7 @@ local function GetArtifactXP()
 			xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent, artifactTier)
 		end
 		return artifactXP, xpForNextPoint
-	elseif bfa_800 then
+	else
 		local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem()
 		if azeriteItemLocation then
 			return C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation)
@@ -38,9 +36,7 @@ end
 
 function PitBull4_ArtifactPowerBar:OnEnable()
 	self:RegisterEvent("ARTIFACT_XP_UPDATE")
-	if bfa_800 then
-		self:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", "ARTIFACT_XP_UPDATE")
-	end
+	self:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", "ARTIFACT_XP_UPDATE")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ARTIFACT_XP_UPDATE")
 	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED") -- handle (un)equip
 end

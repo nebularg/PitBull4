@@ -1,7 +1,4 @@
 
-local bfa_800 = select(4, GetBuildInfo()) >= 80000
-if not bfa_800 then return end
-
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 

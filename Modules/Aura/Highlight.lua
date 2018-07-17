@@ -4,8 +4,6 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
-local bfa_800 = select(4, GetBuildInfo()) >= 80000
-
 local wipe = _G.table.wipe
 
 local HighlightNormal_path = [[Interface\AddOns\PitBull4\Modules\Aura\HighlightNormal]]
@@ -52,20 +50,12 @@ function PitBull4_Aura:HighlightFilterIterator(frame, db, is_buff)
 	-- Loop through the auras
 	while true do
 		-- Note entry[2] says if the aura is a weapon enchant
-		if not bfa_800 then
-			entry[1], entry[2], entry[3], entry[4], entry[5], entry[6],
-				entry[7], entry[8], entry[9], entry[10], entry[11],
-				entry[12], entry[13], entry[14], entry[15], entry[16],
-				entry[17], entry[18], entry[19], entry[20] =
-				id, nil, nil, is_buff, UnitAura(unit, id, filter)
-		else
-			-- entry[6] (rank text) was removed in 8.0
-			entry[1], entry[2], entry[3], entry[4], entry[5],
-				entry[7], entry[8], entry[9], entry[10], entry[11],
-				entry[12], entry[13], entry[14], entry[15], entry[16],
-				entry[17], entry[18], entry[19], entry[20] =
-				id, nil, nil, is_buff, UnitAura(unit, id, filter)
-		end
+		-- entry[6] (rank text) was removed in 8.0
+		entry[1], entry[2], entry[3], entry[4], entry[5],
+			entry[7], entry[8], entry[9], entry[10], entry[11],
+			entry[12], entry[13], entry[14], entry[15], entry[16],
+			entry[17], entry[18], entry[19], entry[20] =
+			id, nil, nil, is_buff, UnitAura(unit, id, filter)
 
 		-- No more auras
 		if not entry[5] then

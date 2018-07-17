@@ -3,8 +3,6 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_CastBar = PitBull4:GetModule("CastBar")
 
-local bfa_800 = select(4, GetBuildInfo()) >= 80000
-
 -- CONSTANTS ----------------------------------------------------------------
 
 local ALPHA_MODIFIER = 0.6 -- Multiplied to the main CastBar's alpha at any point of time.
@@ -63,16 +61,9 @@ timerFrame:SetScript("OnUpdate", function()
 
 	end)
 
-function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, ...)
+function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, _, spell_id)
 	if unit ~= 'player' then
 		return
-	end
-
-	local _, spell_id
-	if bfa_800 then
-		_, spell_id = ...
-	else
-		_, _, _, spell_id = ...
 	end
 
 	-- Try to determine GCD
@@ -84,12 +75,7 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, ...)
 		end
 	end
 
-	local name, new_start, new_end
-	if bfa_800 then
-		name, _, _, new_start, new_end = UnitCastingInfo(unit)
-	else
-		name, _, _, _, new_start, new_end = UnitCastingInfo(unit)
-	end
+	local name, _, _, new_start, new_end = UnitCastingInfo(unit)
 	if not name then
 		return
 	end
@@ -113,16 +99,9 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, ...)
 	--print(string.format("DBG-USStart: GCD_time: %s; MAX_time: %s; LAG_time: %s", tostring(gcd_time), tostring(max_time), tostring(lag_time)))
 end
 
-function PitBull4_CastBarLatency:UNIT_SPELLCAST_CHANNEL_START(event, unit, ...)
+function PitBull4_CastBarLatency:UNIT_SPELLCAST_CHANNEL_START(event, unit, _, spell_id)
 	if unit ~= 'player' then
 		return
-	end
-
-	local _, spell_id
-	if bfa_800 then
-		_, spell_id = ...
-	else
-		_, _, _, spell_id = ...
 	end
 
 	-- Try to determine GCD
@@ -134,12 +113,7 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_CHANNEL_START(event, unit, ...)
 		end
 	end
 
-	local name, new_start, new_end
-	if bfa_800 then
-		name, _, _, new_start, new_end = UnitChannelInfo(unit)
-	else
-		name, _, _, _, new_start, new_end = UnitChannelInfo(unit)
-	end
+	local name, _, _, new_start, new_end = UnitChannelInfo(unit)
 	if not name then
 		return
 	end

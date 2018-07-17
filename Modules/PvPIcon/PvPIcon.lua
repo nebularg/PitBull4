@@ -4,8 +4,6 @@ local L = PitBull4.L
 
 local PitBull4_PvPIcon = PitBull4:NewModule("PvPIcon", "AceEvent-3.0")
 
-local bfa_800 = select(4, GetBuildInfo()) >= 80000
-
 PitBull4_PvPIcon:SetModuleType("indicator")
 PitBull4_PvPIcon:SetName(L["PvP icon"])
 PitBull4_PvPIcon:SetDescription(L["Show an icon on the unit frame when the unit is in PvP mode."])
@@ -13,7 +11,6 @@ PitBull4_PvPIcon:SetDefaults({
 	attach_to = "root",
 	location = "edge_top_right",
 	position = 1,
-	show_prestige = true,
 })
 
 local INDICATOR_SIZE = 15
@@ -51,9 +48,6 @@ function PitBull4_PvPIcon:OnEnable()
 	self:RegisterEvent("UPDATE_FACTION")
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "UPDATE_FACTION")
 	self:RegisterEvent("UNIT_FACTION", "UPDATE_FACTION")
-	if not bfa_800 then
-		self:RegisterEvent("HONOR_PRESTIGE_UPDATE", "UPDATE_FACTION")
-	end
 end
 
 function PitBull4_PvPIcon:GetTexture(frame)
@@ -108,108 +102,8 @@ function PitBull4_PvPIcon:UPDATE_FACTION(event, unit)
 	end
 end
 
-
-if bfa_800 then
-
 function PitBull4_PvPIcon:GetTexCoord(frame, texture)
 	local tex_coord = TEX_COORDS[texture]
 	return tex_coord[1], tex_coord[2], tex_coord[3], tex_coord[4]
 end
 PitBull4_PvPIcon.GetExampleTexCoord = PitBull4_PvPIcon.GetTexCoord
-
-else
-
-function PitBull4_PvPIcon:ClearFrame(frame)
-	local container = frame.PvPIcon
-	if not container then
-		return false
-	end
-
-	container.PrestigePortrait = container.PrestigePortrait:Delete()
-	container.PrestigeBadge = container.PrestigeBadge:Delete()
-	container.PrestigeIcon = container.PrestigeIcon:Delete()
-	container.PvPIcon = container.PvPIcon:Delete()
-	frame.PvPIcon = container:Delete()
-
-	return true
-end
-
-function PitBull4_PvPIcon:UpdateFrame(frame)
-	local texture
-	if frame.guid and frame.unit then
-		texture = self:GetTexture(frame)
-	end
-	if not texture and frame.force_show then
-		texture = self:GetExampleTexture(frame)
-	end
-
-	if not texture then
-		return self:ClearFrame(frame)
-	end
-
-	local container = frame.PvPIcon
-	local made_control = not container
-	if made_control then
-		container = PitBull4.Controls.MakeFrame(frame)
-		container:SetFrameLevel(frame:GetFrameLevel() + 13)
-		container:SetSize(INDICATOR_SIZE, INDICATOR_SIZE)
-		frame.PvPIcon = container
-
-		local PvPIcon = PitBull4.Controls.MakeTexture(container, "ARTWORK")
-		PvPIcon:SetAllPoints(container)
-		container.PvPIcon = PvPIcon
-
-		local PrestigeIcon = PitBull4.Controls.MakeFrame(container)
-		PrestigeIcon:SetPoint("CENTER")
-		PrestigeIcon:SetSize(30, 30)
-		PrestigeIcon:SetScale(0.5)
-		container.PrestigeIcon = PrestigeIcon
-
-		local PrestigePortrait = PitBull4.Controls.MakeTexture(PrestigeIcon, "ARTWORK")
-		PrestigePortrait:SetPoint("CENTER")
-		PrestigePortrait:SetSize(50, 52)
-		PrestigePortrait:SetTexture([[Interface\PVPFrame\PvPPrestigeIcons]])
-		container.PrestigePortrait = PrestigePortrait
-
-		local PrestigeBadge = PitBull4.Controls.MakeTexture(PrestigeIcon, "ARTWORK", 1)
-		PrestigeBadge:SetPoint("CENTER")
-		PrestigeBadge:SetSize(30, 30)
-		container.PrestigeBadge = PrestigeBadge
-	end
-
-	local prestige = frame.unit and UnitPrestige(frame.unit) or 0
-	if prestige > 0 and self:GetLayoutDB(frame).show_prestige then
-		container.PrestigePortrait:SetTexCoord(unpack(PRESTIGE_TEX_COORDS[texture]))
-		container.PrestigeBadge:SetTexture(GetPrestigeInfo(prestige))
-		container.PrestigeIcon:Show()
-		container.PvPIcon:Hide()
-	else
-		container.PrestigeIcon:Hide()
-		container.PvPIcon:SetTexture(texture)
-		container.PvPIcon:SetTexCoord(unpack(TEX_COORDS[texture]))
-		container.PvPIcon:Show()
-	end
-
-	container:Show()
-
-	return made_control
-end
-
-PitBull4_PvPIcon:SetLayoutOptionsFunction(function(self)
-	local function get(info)
-		return PitBull4.Options.GetLayoutDB(self)[info[#info]]
-	end
-	local function set(info, value)
-		PitBull4.Options.GetLayoutDB(self)[info[#info]] = value
-		PitBull4.Options.UpdateFrames()
-	end
-
-	return "show_prestige", {
-		type = "toggle",
-		name = L["Show prestige rank"],
-		get = get,
-		set = set,
-	}
-end)
-
-end

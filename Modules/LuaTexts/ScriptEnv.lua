@@ -4,8 +4,6 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_LuaTexts = PitBull4:GetModule("LuaTexts")
 
-local bfa_800 = select(4, GetBuildInfo()) >= 80000
-
 -- The ScriptEnv table serves as the environment that the scripts run
 -- under LuaTexts run under.  The functions included in it are accessible
 -- to this scripts as though they were local functions to it.  Functions
@@ -471,13 +469,9 @@ local function Class(unit)
 	if UnitIsPlayer(unit) then
 		return UnitClass(unit) or UNKNOWN
 	else
-		if bfa_800 then
-			local _, classId = UnitClassBase(unit)
-			local classInfo = classId and C_CreatureInfo.GetClassInfo(classId)
-			return classInfo and classInfo.className or UNKNOWN
-		else
-			return UnitClassBase(unit) or UNKNOWN
-		end
+		local _, classId = UnitClassBase(unit)
+		local classInfo = classId and C_CreatureInfo.GetClassInfo(classId)
+		return classInfo and classInfo.className or UNKNOWN
 	end
 end
 ScriptEnv.Class = Class
@@ -979,7 +973,7 @@ local function ArtifactPower()
 			xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent, tier)
 		end
 		return xp, xpForNextPoint, numPoints, pointsSpent
-	elseif bfa_800 then
+	else
 		local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem()
 		if azeriteItemLocation then
 			local artifactXP, totalLevelXP = C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation)

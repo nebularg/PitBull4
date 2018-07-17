@@ -4,11 +4,9 @@ local L = PitBull4.L
 
 local EXAMPLE_VALUE = 0.4
 local EXAMPLE_ICON = 136222 -- Spell_Shadow_Teleport
-local TEMP_ICON = [[Interface\Icons\Temp]] -- XXX bfa_800
+local TEMP_ICON = [[Interface\Icons\Temp]]
 
 local PitBull4_CastBar = PitBull4:NewModule("CastBar", "AceEvent-3.0")
-
-local bfa_800 = select(4, GetBuildInfo()) >= 80000
 
 PitBull4_CastBar:SetModuleType("bar")
 PitBull4_CastBar:SetName(L["Cast bar"])
@@ -214,14 +212,7 @@ function PitBull4_CastBar:ClearFramesByGUID(guid)
 	end
 end
 
-function PitBull4_CastBar:UpdateInfo(event, unit, ...)
-	local event_cast_id, _
-	if bfa_800 then
-		event_cast_id = ...
-	else
-		_, _, event_cast_id = ...
-	end
-
+function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
 	local guid = UnitGUID(unit)
 	if not guid then
 		return
@@ -232,19 +223,10 @@ function PitBull4_CastBar:UpdateInfo(event, unit, ...)
 		cast_data[guid] = data
 	end
 
-	local spell, icon, start_time, end_time,cast_id, uninterruptible
-	if bfa_800 then
-		spell, _, icon, start_time, end_time, _, cast_id, uninterruptible = UnitCastingInfo(unit)
-	else
-		spell, _, _, icon, start_time, end_time, _, cast_id, uninterruptible = UnitCastingInfo(unit)
-	end
+	local spell, _, icon, start_time, end_time, _, cast_id, uninterruptible = UnitCastingInfo(unit)
 	local channeling = false
 	if not spell then
-		if bfa_800 then
-			spell, _, icon, start_time, end_time, _, uninterruptible = UnitChannelInfo(unit)
-		else
-			spell, _, _, icon, start_time, end_time, _, uninterruptible = UnitChannelInfo(unit)
-		end
+		spell, _, icon, start_time, end_time, _, uninterruptible = UnitChannelInfo(unit)
 		channeling = true
 	end
 	if spell then
