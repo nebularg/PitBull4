@@ -36,7 +36,6 @@ PitBull4_Runes:SetDefaults({
 
 function PitBull4_Runes:OnEnable()
 	self:RegisterEvent("RUNE_POWER_UPDATE")
-	self:RegisterEvent("RUNE_TYPE_UPDATE", "RUNE_POWER_UPDATE")
 	self:RegisterEvent("UNIT_MAXPOWER")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
