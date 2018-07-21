@@ -912,7 +912,7 @@ local function Combos()
 	if UnitHasVehicleUI("player") then
 		return GetComboPoints("vehicle")
 	end
-	return UnitPower("player", 4) -- Enum.PowerType.ComboPoints
+	return UnitPower("player", Enum.PowerType.ComboPoints)
 end
 ScriptEnv.Combos = Combos
 
@@ -1099,10 +1099,31 @@ local function HPColor(cur, max)
 end
 ScriptEnv.HPColor = HPColor
 
+local power_type_to_string = {
+	[Enum.PowerType.Mana] = "MANA",
+	[Enum.PowerType.Rage] = "RAGE",
+	[Enum.PowerType.Focus] = "FOCUS",
+	[Enum.PowerType.Energy] = "ENERGY",
+	[Enum.PowerType.ComboPoints] = "COMBO_POINTS",
+	[Enum.PowerType.Runes] = "RUNES",
+	[Enum.PowerType.RunicPower] = "RUNIC_POWER",
+	[Enum.PowerType.SoulShards] = "SOUL_SHARDS",
+	[Enum.PowerType.LunarPower] = "LUNAR_POWER",
+	[Enum.PowerType.HolyPower] = "HOLY_POWER",
+	[Enum.PowerType.Maelstrom] = "MAELSTROM",
+	[Enum.PowerType.Chi] = "CHI",
+	[Enum.PowerType.Insanity] = "INSANITY",
+	[Enum.PowerType.ArcaneCharges] = "ARCANE_CHARGES",
+	[Enum.PowerType.Fury] = "FURY",
+	[Enum.PowerType.Pain] = "PAIN",
+}
 local function PowerColor(power_type)
+	if type(power_type) == "number" then
+		power_type = power_type_to_string[power_type]
+	end
 	local color = PitBull4.PowerColors[power_type]
 	if not color then
-		return 0.7, 0.7, 0.7
+		return 178.5, 178.5, 178.5
 	end
 	return color[1] * 255, color[2] * 255, color[3] * 255
 end
