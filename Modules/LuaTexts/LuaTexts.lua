@@ -2,7 +2,9 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_LuaTexts = PitBull4:NewModule("LuaTexts", "AceEvent-3.0", "AceHook-3.0")
+local PitBull4_LuaTexts = PitBull4:NewModule("LuaTexts", "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0")
+
+local test_frame = CreateFrame("Frame") -- Event validation
 
 local texts = {}
 local no_update = {}
@@ -719,9 +721,9 @@ local function update_events(events)
 			events[new_event] = value
 		end
 	end
-	-- prune "false" entries
+	-- prune "false" and old invalid entries
 	for event, value in next, events do
-		if not value then
+		if not value or not pcall(test_frame.RegisterEvent, test_frame, event) then
 			events[event] = nil
 		end
 	end
@@ -747,6 +749,7 @@ local function fix_legacy_events()
 			end
 		end
 	end
+	test_frame:UnregisterAllEvents()
 end
 
 local function fix_power_texts()
@@ -1545,6 +1548,16 @@ local function update()
 	end
 end
 
+-- Event validation
+local validate_timer = nil
+local function ClearStatusText()
+	local frame = LibStub("AceConfigDialog-3.0").OpenFrames["PitBull4"]
+	if frame then
+		local user = frame:GetUserDataTable()
+		user.rootframe:SetStatusText("")
+	end
+end
+
 PitBull4_LuaTexts:SetLayoutOptionsFunction(function(self)
 	local values = {}
 	local value_key_to_entry = {}
@@ -1689,9 +1702,13 @@ PitBull4_LuaTexts:SetGlobalOptionsFunction(function(self)
 			CURRENT_EVENT = value
 		end,
 		validate = function(info, value)
-			if value:len() < 3 then
-				return L["Must be at least 3 characters long."]
+			local success, err = pcall(test_frame.RegisterEvent, test_frame, value)
+			if not success then
+				if validate_timer then PitBull4_LuaTexts:CancelTimer(validate_timer) end
+				validate_timer = PitBull4_LuaTexts:ScheduleTimer(ClearStatusText, 3)
+				return err
 			end
+			test_frame:UnregisterAllEvents()
 			return true
 		end,
 		hidden = hidden,
