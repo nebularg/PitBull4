@@ -17,6 +17,10 @@ PitBull4_ArtifactPowerBar:SetDefaults({
 local C_ArtifactUI = _G.C_ArtifactUI
 
 local function GetArtifactXP()
+	local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem()
+	if azeriteItemLocation then
+		return C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation)
+	end
 	if HasArtifactEquipped() then
 		local _, _, _, _, artifactXP, pointsSpent, _, _, _, _, _, _, artifactTier = C_ArtifactUI.GetEquippedArtifactInfo()
 		local xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent, artifactTier)
@@ -26,11 +30,6 @@ local function GetArtifactXP()
 			xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent, artifactTier)
 		end
 		return artifactXP, xpForNextPoint
-	else
-		local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem()
-		if azeriteItemLocation then
-			return C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation)
-		end
 	end
 end
 
