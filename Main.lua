@@ -306,6 +306,30 @@ local DEFAULT_UNITS =  {
 	},
 }
 
+local LOCALIZED_NAMES = {}
+do
+	for i = 1, GetNumClasses() do
+		local info = C_CreatureInfo.GetClassInfo(i)
+		LOCALIZED_NAMES[info.classFile] = info.className
+	end
+
+	local i = 1
+	local info = C_CreatureInfo.GetRaceInfo(i)
+	repeat
+		if not LOCALIZED_NAMES[info.clientFileString] then
+			LOCALIZED_NAMES[info.clientFileString] = info.raceName
+		end
+		i = i + 1
+		info = C_CreatureInfo.GetRaceInfo(i)
+	until not info
+
+	setmetatable(LOCALIZED_NAMES, { __index = function(self, key)
+		self[key] = key
+		return key
+	end })
+end
+
+
 
 -----------------------------------------------------------------------------
 
@@ -325,6 +349,8 @@ PitBull4.L = L
 
 PitBull4.SINGLETON_CLASSIFICATIONS = SINGLETON_CLASSIFICATIONS
 PitBull4.UNIT_GROUPS = UNIT_GROUPS
+
+PitBull4.LOCALIZED_NAMES = LOCALIZED_NAMES
 
 local db
 

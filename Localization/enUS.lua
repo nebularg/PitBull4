@@ -5,7 +5,15 @@ silent = nil
 
 local L = LibStub("AceLocale-3.0"):NewLocale("PitBull4", "enUS", true, silent)
 
+L["%s can dispel"] = true
+L["%s can purge"] = true
+L["%s enemy debuffs"] = true
+L["%s friend buffs"] = true
+L["%s friend debuffs"] = true
 L["'%s' is already a text."] = true
+L["%s pet buffs"] = true
+L["%s self buffs"] = true
+L["%s self debuffs"] = true
 L["%s target"] = true
 L["%s targets"] = true
 L["%s: Could not load module '%s': %s"] = true

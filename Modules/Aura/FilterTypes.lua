@@ -1059,6 +1059,7 @@ end)
 
 -- Mapping filter, to allow using a different filter based on
 -- player race or class
+local LN = PitBull4.LOCALIZED_NAMES
 local _,player_class = UnitClass("player")
 local _,player_race  = UnitRace("player")
 local classes = {
@@ -1075,20 +1076,10 @@ local classes = {
 	'MONK',
 	'DEMONHUNTER',
 }
-local class_names = {
-	L["Death Knight"],
-	L["Druid"],
-	L["Hunter"],
-	L["Mage"],
-	L["Paladin"],
-	L["Priest"],
-	L["Rogue"],
-	L["Shaman"],
-	L["Warlock"],
-	L["Warrior"],
-	L["Monk"],
-	L["Demon Hunter"],
-}
+local class_names = {}
+for i, v in ipairs(classes) do
+	class_names[i] = LN[v]
+end
 local races = {
 	'Human',
 	'Dwarf',
@@ -1104,21 +1095,10 @@ local races = {
 	'Goblin',
 	'Pandaren',
 }
-local race_names = {
-	L["Human"],
-	L["Dwarf"],
-	L["Night Elf"],
-	L["Gnome"],
-	L["Draenei"],
-	L["Orc"],
-	L["Undead"],
-	L["Tauren"],
-	L["Troll"],
-	L["Blood Elf"],
-	L["Worgen"],
-	L["Goblin"],
-	L["Pandaren"],
-}
+local race_names = {}
+for i, v in ipairs(races) do
+	race_names[i] = LN[v]
+end
 local function map_filter(self, entry, frame)
 	local filters = PitBull4_Aura.db.profile.global.filters
 	local db = filters[self]
