@@ -43,12 +43,11 @@ do
 		res_spells[#res_spells+1] = GetSpellInfo(2006) -- Resurrection
 	elseif class == "DRUID" then
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(8921) -- Moonfire
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(5185) -- Healing Touch
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(8936) -- Regrowth
 		res_spells[#res_spells+1] = GetSpellInfo(50769) -- Revive
-		res_spells[#res_spells+1] = GetSpellInfo(20484) -- Rebirth
 	elseif class == "PALADIN" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(20271) -- Judgement
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(19750) -- Flash of Light
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(62124) -- Hand of Reckoning
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(1044) -- Hand of Freedom
 		res_spells[#res_spells+1] = GetSpellInfo(7328) -- Redemption
 	elseif class == "SHAMAN" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(51514) -- Hex
@@ -75,17 +74,18 @@ do
 	elseif class == "ROGUE" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(36554) -- Shadowstep
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(185763) -- Pistol Shot
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(57934) -- Tricks of the Trade
 	elseif class == "WARRIOR" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(100) -- Charge
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(355) -- Taunt
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(198304) -- Intercept (Protection)
 	elseif class == "MONK" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(115546) -- Provoke
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(116694) -- Effuse
+		-- long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(117952) -- Crackling Jade Lightning
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(116670) -- Vivify
 		res_spells[#res_spells+1] = GetSpellInfo(115178) -- Resuscitate
 	elseif class == "DEMONHUNTER" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(183752) -- Consume Magic
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(185123) -- Throw Glaive
 	end
 
 	function friendly_is_in_range(unit)
