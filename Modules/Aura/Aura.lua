@@ -43,7 +43,7 @@ function PitBull4_Aura:OnEnable()
 
 	-- Need to track spec changes since it can change what they can dispel.
 	local _,player_class = UnitClass("player")
-	if player_class == "DRUID" or player_class == "MONK" or player_class == "PALADIN" or player_class == "PRIEST" or player_class == "SHAMAN" then
+	if player_class == "DRUID" or player_class == "HUNTER" or player_class == "MONK" or player_class == "PALADIN" or player_class == "PRIEST" or player_class == "SHAMAN" or player_class == "WARLOCK" then
 		self:RegisterEvent("PLAYER_TALENT_UPDATE")
 		self:RegisterEvent("SPELLS_CHANGED", "PLAYER_TALENT_UPDATE")
 		self:PLAYER_TALENT_UPDATE()

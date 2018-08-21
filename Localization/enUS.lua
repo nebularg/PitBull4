@@ -296,6 +296,7 @@ L["Delete current event."] = true
 L["Delete current filter."] = true
 L["Delete this layout."] = true
 L["Demon Hunter"] = true
+L["Demon Hunter can purge"] = true
 L["Demon Hunter enemy debuffs"] = true
 L["Demon Hunter friend buffs"] = true
 L["Demon Hunter friend debuffs"] = true
