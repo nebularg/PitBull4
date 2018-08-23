@@ -1094,6 +1094,14 @@ local races = {
 	'Worgen',
 	'Goblin',
 	'Pandaren',
+	'DarkIronDwarf',
+	'LightforgedDraenei',
+	'VoidElf',
+	-- 'KulTiranHuman',
+	'MagharOrc',
+	'HighmountainTauren',
+	'Nightborne',
+	-- 'ZandalariTroll',
 }
 local race_names = {}
 for i, v in ipairs(races) do

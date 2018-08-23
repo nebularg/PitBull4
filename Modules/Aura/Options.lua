@@ -286,18 +286,26 @@ PitBull4_Aura:SetDefaults({
 		-- 3 Warlock
 		-- 4 Warrior
 		-- 5 Human
+		-- 55 Kul Tiran Human
 		-- 6 Dwarf
+		-- 66 Dark Iron Dwarf
 		-- 7 Night Elf
+		-- 77 Void Elf
 		-- 8 Gnome
 		-- 9 Draenei
+		-- 99 Lightforged Draenei
 		-- : Orc
+		-- :: Mag'har Orc
 		-- ; Undead
 		-- < Taruen
+		-- << Highmountain Tauren
 		-- = Troll
+		-- == Zandalari Troll
 		-- > Blood Elf
-		-- ?? Goblin
+		-- >> Nightborne
 		-- ? Worgen
-		-- @ Pandaren (shared with the one below, race filters are always followed by a number)
+		-- ?? Goblin
+		-- @ Pandaren (shared, race filters are always followed by a number)
 		-- @ Simple filters
 		--
 		-- New classes and races are being added with two characters
@@ -852,6 +860,13 @@ PitBull4_Aura:SetDefaults({
 			name_list = self_buffs.Dwarf,
 			built_in = true,
 		},
+		['660'] = {
+			display_name = L["%s self buffs"]:format(LN.DarkIronDwarf),
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.DarkIronDwarf,
+			built_in = true,
+		},
 		['70'] = {
 			display_name = L["%s self buffs"]:format(LN.NightElf),
 			filter_type = 'Name',
@@ -864,6 +879,13 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = self_buffs.Orc,
+			built_in = true,
+		},
+		['::0'] = {
+			display_name = L["%s self buffs"]:format(LN.MagharOrc),
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.MagharOrc,
 			built_in = true,
 		},
 		[';0'] = {
@@ -894,6 +916,13 @@ PitBull4_Aura:SetDefaults({
 			name_list = self_buffs.Worgen,
 			built_in = true,
 		},
+		['770'] = {
+			display_name = L["%s self buffs"]:format(LN.VoidElf),
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.VoidElf,
+			built_in = true,
+		},
 		['52'] = {
 			display_name = L["%s friend buffs"]:format(LN.Human),
 			filter_type = 'Name',
@@ -901,11 +930,25 @@ PitBull4_Aura:SetDefaults({
 			name_list = friend_buffs.Human,
 			built_in = true,
 		},
+		-- ['552'] = {
+		-- 	display_name = L["%s friend buffs"]:format(LN.KulTiranHuman),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = friend_buffs.KulTiranHuman,
+		-- 	built_in = true,
+		-- },
 		['62'] = {
 			display_name = L["%s friend buffs"]:format(LN.Dwarf),
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.Dwarf,
+			built_in = true,
+		},
+		['662'] = {
+			display_name = L["%s friend buffs"]:format(LN.DarkIronDwarf),
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.DarkIronDwarf,
 			built_in = true,
 		},
 		['72'] = {
@@ -929,11 +972,25 @@ PitBull4_Aura:SetDefaults({
 			name_list = friend_buffs.Draenei,
 			built_in = true,
 		},
+		['992'] = {
+			display_name = L["%s friend buffs"]:format(LN.LightforgedDraenei),
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.LightforgedDraenei,
+			built_in = true,
+		},
 		[':2'] = {
 			display_name = L["%s friend buffs"]:format(LN.Orc),
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = friend_buffs.Orc,
+			built_in = true,
+		},
+		['::2'] = {
+			display_name = L["%s friend buffs"]:format(LN.MagharOrc),
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.MagharOrc,
 			built_in = true,
 		},
 		[';2'] = {
@@ -950,6 +1007,13 @@ PitBull4_Aura:SetDefaults({
 			name_list = friend_buffs.Tauren,
 			built_in = true,
 		},
+		['<<2'] = {
+			display_name = L["%s friend buffs"]:format(LN.HighmountainTauren),
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.HighmountainTauren,
+			built_in = true,
+		},
 		['=2'] = {
 			display_name = L["%s friend buffs"]:format(LN.Troll),
 			filter_type = 'Name',
@@ -957,6 +1021,13 @@ PitBull4_Aura:SetDefaults({
 			name_list = friend_buffs.Troll,
 			built_in = true,
 		},
+		-- ['==2'] = {
+		-- 	display_name = L["%s friend buffs"]:format(LN.ZandalariTroll),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = friend_buffs.ZandalariTroll,
+		-- 	built_in = true,
+		-- },
 		['>2'] = {
 			display_name = L["%s friend buffs"]:format(LN.BloodElf),
 			filter_type = 'Name',
@@ -985,6 +1056,20 @@ PitBull4_Aura:SetDefaults({
 			name_list = friend_buffs.Pandaren,
 			built_in = true,
 		},
+		['>>2'] = {
+			display_name = L["%s friend buffs"]:format(LN.Nightborne),
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.Nightborne,
+			built_in = true,
+		},
+		['772'] = {
+			display_name = L["%s friend buffs"]:format(LN.VoidElf),
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.VoidElf,
+			built_in = true,
+		},
 		['<6'] = {
 			display_name = L["%s enemy debuffs"]:format(LN.Tauren),
 			filter_type = 'Name',
@@ -992,11 +1077,25 @@ PitBull4_Aura:SetDefaults({
 			name_list = enemy_debuffs.Tauren,
 			built_in = true,
 		},
+		['<<6'] = {
+			display_name = L["%s enemy debuffs"]:format(LN.HighmountainTauren),
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = enemy_debuffs.HighmountainTauren,
+			built_in = true,
+		},
 		['@6'] = {
 			display_name = L["%s enemy debuffs"]:format(LN.Pandaren),
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = enemy_debuffs.Pandaren,
+			built_in = true,
+		},
+		['>>6'] = {
+			display_name = L["%s enemy debuffs"]:format(LN.Nightborne),
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = enemy_debuffs.Nightborne,
 			built_in = true,
 		},
 		['.4'] = {
@@ -1247,6 +1346,14 @@ PitBull4_Aura:SetDefaults({
 				['Worgen'] = '?0',
 				['Goblin'] = '@J',
 				['Pandaren'] = '@J',
+				['DarkIronDwarf'] = '660',
+				['LightforgedDraenei'] = '@J',
+				['VoidElf'] = '770',
+				-- ['KulTiranHuman'] = '@J',
+				['MagharOrc'] = '::0',
+				['HighmountainTauren'] = '@J',
+				['Nightborne'] = '@J',
+				-- ['ZandalariTroll'] = '@J',
 			},
 			built_in = true,
 		},
@@ -1268,6 +1375,14 @@ PitBull4_Aura:SetDefaults({
 				['Worgen'] = '?2',
 				['Goblin'] = '??2',
 				['Pandaren'] = '@2',
+				['DarkIronDwarf'] = '662',
+				['LightforgedDraenei'] = '992',
+				['VoidElf'] = '772',
+				-- ['KulTiranHuman'] = '552',
+				['MagharOrc'] = '::2',
+				['HighmountainTauren'] = '<<2',
+				['Nightborne'] = '>>2',
+				-- ['ZandalariTroll'] = '==2',
 			},
 			built_in = true,
 		},
@@ -1289,6 +1404,14 @@ PitBull4_Aura:SetDefaults({
 				['Worgen'] = '@J',
 				['Goblin'] = '@J',
 				['Pandaren'] = '@6',
+				['DarkIronDwarf'] = '@J',
+				['LightforgedDraenei'] = '@J',
+				['VoidElf'] = '@J',
+				-- ['KulTiranHuman'] = '@J',
+				['MagharOrc'] = '@J',
+				['HighmountainTauren'] = '<<6',
+				['Nightborne'] = '>>6',
+				-- ['ZandalariTroll'] = '@J',
 			},
 			built_in = true,
 		},
@@ -1310,6 +1433,14 @@ PitBull4_Aura:SetDefaults({
 				['Worgen'] = '@J',
 				['Goblin'] = '@J',
 				['Pandaren'] = '@J',
+				['DarkIronDwarf'] = '@J',
+				['LightforgedDraenei'] = '@J',
+				['VoidElf'] = '@J',
+				-- ['KulTiranHuman'] = '@J',
+				['MagharOrc'] = '@J',
+				['HighmountainTauren'] = '@J',
+				['Nightborne'] = '@J',
+				-- ['ZandalariTroll'] = '@J',
 			},
 			built_in = true,
 		},
