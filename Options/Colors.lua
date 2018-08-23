@@ -2,6 +2,7 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local LN = PitBull4.LOCALIZED_NAMES
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
 
@@ -33,27 +34,12 @@ local function get_class_options()
 		args = {},
 	}
 
-	local class_translations = {
-		WARRIOR = L["Warriors"],
-		DRUID = L["Druids"],
-		ROGUE = L["Rogues"],
-		PRIEST = L["Priests"],
-		DEATHKNIGHT = L["Death Knights"],
-		SHAMAN = L["Shamans"],
-		PALADIN = L["Paladins"],
-		MAGE = L["Mages"],
-		WARLOCK = L["Warlocks"],
-		HUNTER = L["Hunters"],
-		MONK = L["Monks"],
-		DEMONHUNTER = L["Demon Hunters"],
-	}
-
 	local option = {
 		type = 'color',
 		name = function(info)
 			local class = info[#info]
 
-			return class_translations[class] or class
+			return LN[class] or class
 		end,
 		hasAlpha = false,
 		get = function(info)

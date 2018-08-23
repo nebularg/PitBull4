@@ -2,6 +2,8 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local LN = PitBull4.LOCALIZED_NAMES
+
 local CURRENT_UNIT = L["Player"]
 local CURRENT_GROUP = L["Party"]
 
@@ -1486,22 +1488,8 @@ function PitBull4.Options.get_unit_options()
 			return not RAID_CLASS_COLORS[start]
 		end
 	}
-	local class_translations = {
-		WARRIOR = L["Warriors"],
-		DRUID = L["Druids"],
-		ROGUE = L["Rogues"],
-		PRIEST = L["Priests"],
-		DEATHKNIGHT = L["Death Knights"],
-		SHAMAN = L["Shamans"],
-		PALADIN = L["Paladins"],
-		MAGE = L["Mages"],
-		WARLOCK = L["Warlocks"],
-		HUNTER = L["Hunters"],
-		MONK = L["Monks"],
-		DEMONHUNTER = L["Demon Hunters"],
-	}
 	for class in pairs(RAID_CLASS_COLORS) do
-		group_filtering_args.group_filter_class.values[class] = class_translations[class] or class
+		group_filtering_args.group_filter_class.values[class] = LN[class] or class
 	end
 
 	local args = {}
@@ -1525,7 +1513,7 @@ function PitBull4.Options.get_unit_options()
 		order = next_order()
 	}
 
-	local args = {}
+	args = {}
 	for k, v in pairs(shared_args) do
 		args[k] = v
 	end

@@ -4,6 +4,8 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_LuaTexts = PitBull4:GetModule("LuaTexts")
 
+-- luacheck: globals Enum AzeriteUtil
+
 -- The ScriptEnv table serves as the environment that the scripts run
 -- under LuaTexts run under.  The functions included in it are accessible
 -- to this scripts as though they were local functions to it.  Functions
@@ -477,38 +479,34 @@ end
 ScriptEnv.Class = Class
 
 local ShortClass_abbrev = {
-	[LOCALIZED_CLASS_NAMES_MALE.DEATHKNIGHT] = L["Death Knight_short"],
-	[LOCALIZED_CLASS_NAMES_MALE.DEMONHUNTER] = L["Demon Hunter_short"],
-	[LOCALIZED_CLASS_NAMES_MALE.DRUID] = L["Druid_short"],
-	[LOCALIZED_CLASS_NAMES_MALE.HUNTER] = L["Hunter_short"],
-	[LOCALIZED_CLASS_NAMES_MALE.MAGE] = L["Mage_short"],
-	[LOCALIZED_CLASS_NAMES_MALE.MONK] = L["Monk_short"],
-	[LOCALIZED_CLASS_NAMES_MALE.PALADIN] = L["Paladin_short"],
-	[LOCALIZED_CLASS_NAMES_MALE.PRIEST] = L["Priest_short"],
-	[LOCALIZED_CLASS_NAMES_MALE.ROGUE] = L["Rogue_short"],
-	[LOCALIZED_CLASS_NAMES_MALE.SHAMAN] = L["Shaman_short"],
-	[LOCALIZED_CLASS_NAMES_MALE.WARLOCK] = L["Warlock_short"],
-	[LOCALIZED_CLASS_NAMES_MALE.WARRIOR] = L["Warrior_short"],
-
-	[LOCALIZED_CLASS_NAMES_FEMALE.DEATHKNIGHT] = L["Death Knight_short"],
-	[LOCALIZED_CLASS_NAMES_FEMALE.DEMONHUNTER] = L["Demon Hunter_short"],
-	[LOCALIZED_CLASS_NAMES_FEMALE.DRUID] = L["Druid_short"],
-	[LOCALIZED_CLASS_NAMES_FEMALE.HUNTER] = L["Hunter_short"],
-	[LOCALIZED_CLASS_NAMES_FEMALE.MAGE] = L["Mage_short"],
-	[LOCALIZED_CLASS_NAMES_FEMALE.MONK] = L["Monk_short"],
-	[LOCALIZED_CLASS_NAMES_FEMALE.PALADIN] = L["Paladin_short"],
-	[LOCALIZED_CLASS_NAMES_FEMALE.PRIEST] = L["Priest_short"],
-	[LOCALIZED_CLASS_NAMES_FEMALE.ROGUE] = L["Rogue_short"],
-	[LOCALIZED_CLASS_NAMES_FEMALE.SHAMAN] = L["Shaman_short"],
-	[LOCALIZED_CLASS_NAMES_FEMALE.WARLOCK] = L["Warlock_short"],
-	[LOCALIZED_CLASS_NAMES_FEMALE.WARRIOR] = L["Warrior_short"],
+	DEATHKNIGHT = L["Death Knight_short"],
+	DEMONHUNTER = L["Demon Hunter_short"],
+	DRUID = L["Druid_short"],
+	HUNTER = L["Hunter_short"],
+	MAGE = L["Mage_short"],
+	MONK = L["Monk_short"],
+	PALADIN = L["Paladin_short"],
+	PRIEST = L["Priest_short"],
+	ROGUE = L["Rogue_short"],
+	SHAMAN = L["Shaman_short"],
+	WARLOCK = L["Warlock_short"],
+	WARRIOR = L["Warrior_short"],
 }
 
 local function ShortClass(arg)
 	local short = ShortClass_abbrev[arg]
 	if not short and PitBull4.Utils.GetBestUnitID(arg) then
 		-- If it's empty then maybe arg is a unit
-		short = ShortClass_abbrev[Class(arg)]
+		if UnitIsPlayer(arg) then
+			local _, class = UnitClass(arg)
+			short = ShortClass_abbrev[class]
+		else
+			local _, classId = UnitClassBase(arg)
+			local classInfo = classId and C_CreatureInfo.GetClassInfo(classId)
+			if classInfo then
+				short = ShortClass_abbrev[classInfo.classFile]
+			end
+		end
 	end
 	return short
 end
@@ -532,56 +530,35 @@ end
 ScriptEnv.SmartRace = SmartRace
 
 local ShortRace_abbrev = {
-	[L["Blood Elf"]] = L["Blood Elf_short"],
-	[L["Draenei"]] = L["Draenei_short"],
-	[L["Dwarf"]] = L["Dwarf_short"],
-	[L["Gnome"]] = L["Gnome_short"],
-	[L["Goblin"]] = L["Goblin_short"],
-	[L["Human"]] = L["Human_short"],
-	[L["Night Elf"]] = L["Night Elf_short"],
-	[L["Orc"]] = L["Orc_short"],
-	[L["Pandaren"]] = L["Pandaren_short"],
-	[L["Tauren"]] = L["Tauren_short"],
-	[L["Troll"]] = L["Troll_short"],
-	[L["Undead"]] = L["Undead_short"],
-	[L["Worgen"]] = L["Worgen_short"],
-	[L["Dark Iron Dwarf"]] = L["Dark Iron Dwarf_short"],
-	[L["Highmountain Tauren"]] = L["Highmountain Tauren_short"],
-	[L["Kul Tiran Human"]] = L["Kul Tiran Human_short"],
-	[L["Lightforged Draenei"]] = L["Lightforged Draenei_short"],
-	[L["Mag'har Orc"]] = L["Mag'har Orc_short"],
-	[L["Nightborne"]] = L["Nightborne_short"],
-	[L["Void Elf"]] = L["Void Elf_short"],
-	[L["Zandalari Troll"]] = L["Zandalari Troll_short"],
-
-	[L["Blood Elf_female"]] = L["Blood Elf_short"],
-	[L["Draenei_female"]] = L["Draenei_short"],
-	[L["Dwarf_female"]] = L["Dwarf_short"],
-	[L["Gnome_female"]] = L["Gnome_short"],
-	[L["Goblin_female"]] = L["Goblin_short"],
-	[L["Human_female"]] = L["Human_short"],
-	[L["Night Elf_female"]] = L["Night Elf_short"],
-	[L["Orc_female"]] = L["Orc_short"],
-	[L["Pandaren_female"]] = L["Pandaren_short"],
-	[L["Tauren_female"]] = L["Tauren_short"],
-	[L["Troll_female"]] = L["Troll_short"],
-	[L["Undead_female"]] = L["Undead_short"],
-	[L["Worgen_female"]] = L["Worgen_short"],
-	[L["Dark Iron Dwarf_female"]] = L["Dark Iron Dwarf_short"],
-	[L["Highmountain Tauren_female"]] = L["Highmountain Tauren_short"],
-	[L["Kul Tiran Human_female"]] = L["Kul Tiran Human_short"],
-	[L["Lightforged Draenei_female"]] = L["Lightforged Draenei_short"],
-	[L["Mag'har Orc_female"]] = L["Mag'har Orc_short"],
-	[L["Nightborne_female"]] = L["Nightborne_short"],
-	[L["Void Elf_female"]] = L["Void Elf_short"],
-	[L["Zandalari Troll_female"]] = L["Zandalari Troll_short"],
+	BloodElf = L["Blood Elf_short"],
+	Draenei = L["Draenei_short"],
+	Dwarf = L["Dwarf_short"],
+	Gnome = L["Gnome_short"],
+	Goblin = L["Goblin_short"],
+	Human = L["Human_short"],
+	NightElf = L["Night Elf_short"],
+	Orc = L["Orc_short"],
+	Pandaren = L["Pandaren_short"],
+	Tauren = L["Tauren_short"],
+	Troll = L["Troll_short"],
+	Undead = L["Undead_short"],
+	Worgen = L["Worgen_short"],
+	DarkIronDwarf = L["Dark Iron Dwarf_short"],
+	HighmountainTauren = L["Highmountain Tauren_short"],
+	KulTiranHuman = L["Kul Tiran Human_short"],
+	LightforgedDraenei = L["Lightforged Draenei_short"],
+	MagharOrc = L["Mag'har Orc_short"],
+	Nightborne = L["Nightborne_short"],
+	VoidElf = L["Void Elf_short"],
+	ZandalariTroll = L["Zandalari Troll_short"],
 }
 
 local function ShortRace(arg)
 	local short = ShortRace_abbrev[arg]
 	if not short and PitBull4.Utils.GetBestUnitID(arg) then
 		-- If it's empty then maybe arg is a unit
-		short = ShortRace_abbrev[UnitRace(arg)]
+		local _, race = UnitRace(arg)
+		short = ShortRace_abbrev[race]
 	end
 	return short
 end
