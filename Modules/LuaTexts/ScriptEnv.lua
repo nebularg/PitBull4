@@ -936,6 +936,13 @@ end
 ScriptEnv.RestXP = RestXP
 
 local function ArtifactPower()
+	local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem()
+	if azeriteItemLocation then
+		local artifactXP, totalLevelXP = C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation)
+		local numPoints = AzeriteUtil.GetEquippedItemsUnselectedPowersCount()
+		local level = C_AzeriteItem.GetPowerLevel(azeriteItemLocation)
+		return artifactXP, totalLevelXP, numPoints, level
+	end
 	if HasArtifactEquipped() then
 		local _, _, _, _, xp, pointsSpent, _, _, _, _, _, _, tier = C_ArtifactUI.GetEquippedArtifactInfo()
 
@@ -950,14 +957,6 @@ local function ArtifactPower()
 			xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent, tier)
 		end
 		return xp, xpForNextPoint, numPoints, pointsSpent
-	else
-		local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem()
-		if azeriteItemLocation then
-			local artifactXP, totalLevelXP = C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation)
-			local numPoints = AzeriteUtil.GetEquippedItemsUnselectedPowersCount()
-			local level = C_AzeriteItem.GetPowerLevel(azeriteItemLocation)
-			return artifactXP, totalLevelXP, numPoints, level
-		end
 	end
 	return 0, 0, 0, 0
 end
