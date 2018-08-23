@@ -2,6 +2,8 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+-- luacheck: globals ChatFontNormal ClickCastHeader GameTooltip_UnitColor GameTooltipTextLeft1 SecureButton_GetModifiedUnit
+
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
 local frames_to_anchor = PitBull4.frames_to_anchor
@@ -484,13 +486,11 @@ function UnitFrame:RefreshVehicle()
 		return
 	end
 
-	local config_value = classification_db.vehicle_swap or nil
-	local frame_value = self:GetAttribute("toggleForVehicle")
-	if self:CanChangeAttribute() and frame_value ~= config_value then
-		self:SetAttribute("toggleForVehicle", config_value)
-		local unit = self.unit
-		if unit then
-			PitBull4:UNIT_ENTERED_VEHICLE(nil, unit)
+	local config_value = classification_db.vehicle_swap
+	if self:CanChangeAttribute() then
+		self:SetAttribute("pb4-vehicleswap", config_value)
+		if self:ProxySetAttribute("toggleForVehicle", config_value) and self.unit then
+			PitBull4:UNIT_ENTERED_VEHICLE(nil, self.unit)
 		end
 	end
 end
@@ -812,7 +812,7 @@ end
 
 local function iter(frame, id)
 	local func, t = PitBull4:IterateEnabledModules()
-	local id, module = func(t, id)
+	local id, module = func(t, id) -- luacheck: ignore
 	if id == nil then
 		return nil
 	end
@@ -834,7 +834,7 @@ end
 local iters = setmetatable({}, {__index=function(iters, module_type)
 	local function iter(frame, id)
 		local func, t = PitBull4:IterateModulesOfType(module_type)
-		local id, module = func(t, id)
+		local id, module = func(t, id) -- luacheck: ignore
 		if id == nil then
 			return nil
 		end

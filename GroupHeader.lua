@@ -1,7 +1,7 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
--- luacheck: globals oRA3 ClickCastHeader SecureButton_GetModifiedUnit SecureHandler_OnLoad
+-- luacheck: globals oRA3 ClickCastHeader SecureButton_GetModifiedUnit
 
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
@@ -673,7 +673,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	end
 	self:SetAttribute("sortMethod", sort_method)
 	self:SetAttribute("sortDir", sort_direction)
-	self:SetAttribute("template", "PitBull4_UnitTemplate_Clique")
+	self:SetAttribute("template", ClickCastHeader and "ClickCastUnitTemplate,PitBull4_UnitTemplate" or "PitBull4_UnitTemplate")
 	self:SetAttribute("templateType", "Button")
 	self:SetAttribute("groupBy", group_by)
 	local order = GROUPING_ORDER[group_db.group_by]
@@ -1637,8 +1637,8 @@ function MemberUnitFrame:SetClickThroughState(state)
 	if not state ~= mouse_state then
 		if ClickCastHeader then
 			local header = self:GetParent()
-			header:SetFrameRef("pb4_temp",self)
-			header:Execute(not mouse_state and clickcast_register or clickcast_unregister)
+			SecureHandlerSetFrameRef(header, "pb4_temp", self)
+			SecureHandlerExecute(header, not mouse_state and clickcast_register or clickcast_unregister)
 		end
 		self:EnableMouse(not mouse_state)
 	end
@@ -1816,8 +1816,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 	end
 
 	if ClickCastHeader then
-		SecureHandler_OnLoad(header)
-		header:SetFrameRef("clickcast_header", ClickCastHeader)
+		SecureHandlerSetFrameRef(header, "clickcast_header", ClickCastHeader)
 	end
 
 	if header.group_based then
@@ -1892,7 +1891,7 @@ function GroupHeader:ConfigureChildren()
 		if not frame then
 			-- make a singleton unit frame and tack it onto our header
 			local frame_name = self:GetName() .. "UnitButton" .. frame_num
-			frame = CreateFrame("Button", frame_name, self, "SecureUnitButtonTemplate,SecureHandlerBaseTemplate,PitBull4_UnitTemplate_Clique")
+			frame = CreateFrame("Button", frame_name, self, "PitBull4_UnitTemplate,SecureHandlerBaseTemplate")
 			frame:Hide()
 			frame:EnableMouse(false) -- start disabled so the state change registers the button with Clique
 
