@@ -15,6 +15,7 @@ PitBull4_PhaseIcon:SetDefaults({
 
 function PitBull4_PhaseIcon:OnEnable()
 	self:RegisterEvent("UNIT_PHASE")
+	self:RegisterEvent("UNIT_FLAGS", "UNIT_PHASE")
 	self:RegisterEvent("PARTY_MEMBER_ENABLE")
 	self:RegisterEvent("PARTY_MEMBER_DISABLE","PARTY_MEMBER_ENABLE")
 end
@@ -23,7 +24,7 @@ end
 function PitBull4_PhaseIcon:GetTexture(frame)
 	local unit = frame.unit
 	-- Note the UnitInPhase function doesn't work for pets.
-	if not unit or not UnitIsPlayer(unit) or UnitInPhase(unit) or not UnitExists(unit) then
+	if not unit or not UnitIsPlayer(unit) or (UnitInPhase(unit) and not UnitIsWarModePhased(unit)) or not UnitExists(unit) or not UnitIsConnected(unit) then
 		return nil
 	end
 
@@ -34,12 +35,12 @@ function PitBull4_PhaseIcon:GetExampleTexture(frame)
 	return [[Interface\TargetingFrame\UI-PhasingIcon]]
 end
 
-function PitBull4_PhaseIcon:UNIT_PHASE(event, unit)
+function PitBull4_PhaseIcon:UNIT_PHASE(_, unit)
 	-- UNIT_PHASE fires for some units at different points than for others.
 	-- So we update by GUID rather than by unit id to increase accuracy
 	self:UpdateForGUID(UnitGUID(unit))
 end
 
-function PitBull4_PhaseIcon:PARTY_MEMBER_ENABLE(event, unit)
+function PitBull4_PhaseIcon:PARTY_MEMBER_ENABLE(_, unit)
 	self:UpdateAll()
 end
