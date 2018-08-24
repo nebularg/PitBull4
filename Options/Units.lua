@@ -1288,10 +1288,6 @@ function PitBull4.Options.get_unit_options()
 				return 'ALL'
 			end
 
-			if group_filter == "" then
-				return 'NUMBER'
-			end
-
 			local start = ((","):split(group_filter))
 
 			if tonumber(start) then
@@ -1364,7 +1360,11 @@ function PitBull4.Options.get_unit_options()
 		for k in pairs(set) do
 			t[#t+1] = k
 		end
-		return table.concat(t, ",")
+		local value = table.concat(t, ",")
+		if value == "" then
+			value = nil
+		end
+		return value
 	end
 
 	local function get_filter(info, key)
@@ -1406,7 +1406,7 @@ function PitBull4.Options.get_unit_options()
 
 			local group_filter = db.group_filter
 
-			if not group_filter or group_filter == "" then
+			if not group_filter then
 				return true
 			end
 
@@ -1443,10 +1443,6 @@ function PitBull4.Options.get_unit_options()
 				return true
 			end
 
-			if group_filter == "" then
-				return false
-			end
-
 			local start = ((","):split(group_filter))
 
 			return not tonumber(start)
@@ -1479,7 +1475,7 @@ function PitBull4.Options.get_unit_options()
 
 			local group_filter = db.group_filter
 
-			if not group_filter or group_filter == "" then
+			if not group_filter then
 				return true
 			end
 

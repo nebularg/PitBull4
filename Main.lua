@@ -1,6 +1,8 @@
 -- Constants ----------------------------------------------------------------
 local _G = _G
 
+-- luacheck: globals ReloadUI SecureButton_GetModifiedUnit
+
 local L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
 
 local SINGLETON_CLASSIFICATIONS = {
@@ -76,7 +78,7 @@ if LibSharedMedia and not LibSharedMedia:IsValid("font", DEFAULT_LSM_FONT) then 
 	DEFAULT_LSM_FONT = LibSharedMedia:GetDefault("font")
 end
 
-local CURRENT_CONFIG_VERSION = 3
+local CURRENT_CONFIG_VERSION = 4
 
 local DATABASE_DEFAULTS = {
 	profile = {
@@ -1163,6 +1165,24 @@ local upgrade_functions = {
 			profile_db.addon_states_migrated = nil
 		end
 		sv.global.addon_states_migrated = nil
+
+		return true
+	end,
+	[3] = function(sv)
+		-- Disable groups that are set to filter everything and reset the
+		-- group_filter value.
+		if not sv.profiles then return true end
+
+		for profile, profile_db in next, sv.profiles do
+			if profile_db.groups then
+				for group, group_db in next, profile_db.groups do
+					if group_db and group_db.group_filter == "" then
+						group_db.group_filter = nil
+						group_db.enabled = nil
+					end
+				end
+			end
+		end
 
 		return true
 	end,

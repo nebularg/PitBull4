@@ -1,12 +1,19 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
+-- luacheck: globals oRA3 ClickCastHeader SecureButton_GetModifiedUnit SecureHandler_OnLoad
+
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
 local deep_copy = PitBull4.Utils.deep_copy
 local frames_to_anchor = PitBull4.frames_to_anchor
 
+local MAX_PARTY_MEMBERS =  _G.MAX_PARTY_MEMBERS
 local MAX_PARTY_MEMBERS_WITH_PLAYER = MAX_PARTY_MEMBERS + 1
+local MAX_RAID_MEMBERS = _G.MAX_RAID_MEMBERS
+local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
+local MEMBERS_PER_RAID_GROUP = _G.MEMBERS_PER_RAID_GROUP
+local NUM_RAID_GROUPS = _G.NUM_RAID_GROUPS
 local NUM_CLASSES = #CLASS_SORT_ORDER
 local MINIMUM_EXAMPLE_GROUP = 2
 
@@ -1243,11 +1250,6 @@ function GroupHeader:GetMaxUnits(ignore_filters)
 		if not ignore_filters and self.group_db then
 			local group_filter = self.group_db.group_filter
 			if group_filter then
-				if group_filter == "" then
-				-- Everything filtered, but always have at least one unit
-					return 1
-				end
-
 				-- If we're filtering by raid group we may not need all 40
 				-- units for this group header.
 				local by_raid_group,count = get_filter_type_count(strsplit(",",group_filter))
