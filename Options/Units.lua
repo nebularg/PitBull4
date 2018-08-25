@@ -881,6 +881,7 @@ function PitBull4.Options.get_unit_options()
 	local party_values = {
 		INDEX = L["By index"],
 		NAME = L["By name"],
+		ASSIGNEDROLE = L["By role"],
 	}
 
 	local raid_values = {
@@ -912,9 +913,13 @@ function PitBull4.Options.get_unit_options()
 		end,
 		get = function(info)
 			local db = get_group_db()
+			local group_by = db.group_by
 			if db.unit_group:sub(1, 4) == "raid" then
-				local group_by = db.group_by
 				if group_by == "CLASS" or group_by == "GROUP" or group_by == "ASSIGNEDROLE" then
+					return group_by
+				end
+			elseif db.unit_group:sub(1, 5) == "party" then
+				if group_by == "ASSIGNEDROLE" then
 					return group_by
 				end
 			end
@@ -1161,7 +1166,7 @@ function PitBull4.Options.get_unit_options()
 				refresh_role_sort_values()
 				role_last_db = db
 			end
-			if db.unit_group:sub(1, 5) ~= "party" then
+			if db.unit_group:sub(1, 5) == "party" or db.unit_group:sub(1, 4) == "raid" then
 				local group_by = db.group_by
 				return group_by ~= "ASSIGNEDROLE"
 			end
@@ -1259,6 +1264,20 @@ function PitBull4.Options.get_unit_options()
 		disabled = disabled,
 	}
 
+	local group_filter_raid_options = {
+		ALL = L["Show all"],
+		NUMBER = L["By raid group"],
+		CLASS = L["By class"],
+		ROLE = L["By role"],
+		MAINTANK = L["Main tanks"],
+		MAINASSIST = L["Main assists"],
+	}
+
+	local group_filter_party_options = {
+		ALL = L["Show all"],
+		ROLE = L["By role"],
+	}
+
 	local group_filter_roles = {
 		TANK = TANK,
 		HEALER = HEALER,
@@ -1271,16 +1290,23 @@ function PitBull4.Options.get_unit_options()
 		desc = L["What type of filter to run on the unit group."],
 		order = next_order(),
 		type = 'select',
-		values = {
-			ALL = L["Show all"],
-			NUMBER = L["By raid group"],
-			CLASS = L["By class"],
-			ROLE = L["By role"],
-			MAINTANK = L["Main tanks"],
-			MAINASSIST = L["Main assists"],
-		},
+		values = function(info)
+			local db = get_group_db()
+
+			local unit_group = db.unit_group
+			local party_based = unit_group:sub(1, 5) == "party"
+
+			if party_based then
+				return group_filter_party_options
+			end
+
+			return group_filter_raid_options
+		end,
 		get = function(info)
 			local db = get_group_db()
+
+			local unit_group = db.unit_group
+			local raid_based = unit_group:sub(1, 5) == "raid"
 
 			local group_filter = db.group_filter
 
@@ -1290,32 +1316,31 @@ function PitBull4.Options.get_unit_options()
 
 			local start = ((","):split(group_filter))
 
-			if tonumber(start) then
-				return 'NUMBER'
-			end
-
-			if RAID_CLASS_COLORS[start] then
-				return 'CLASS'
-			end
-
-			if start == 'MAINTANK' or start == 'MAINASSIST' then
-				return start
-			end
-
 			if group_filter_roles[start] then
 				return 'ROLE'
 			end
 
-			-- WTF here, should never happen
+			if raid_based then
+				if tonumber(start) then
+					return 'NUMBER'
+				end
+
+				if RAID_CLASS_COLORS[start] then
+					return 'CLASS'
+				end
+
+				if start == 'MAINTANK' or start == 'MAINASSIST' then
+					return start
+				end
+			end
+
 			db.group_filter = nil
 			return 'ALL'
 		end,
 		set = function(info, value)
 			local db = get_group_db()
 
-			if value == 'ALL' then
-				db.group_filter = nil
-			elseif value == 'NUMBER' then
+			if value == 'NUMBER' then
 				local t = {}
 				for i = 1, _G.NUM_RAID_GROUPS do
 					t[#t+1] = i..""
@@ -1329,8 +1354,10 @@ function PitBull4.Options.get_unit_options()
 				db.group_filter = table.concat(t, ",")
 			elseif value == 'ROLE' then
 				db.group_filter = "TANK,HEALER,DAMAGER,NONE"
-			else--if value == 'MAINTANK' or value == 'MAINASSIST' then
+			elseif value == 'MAINTANK' or value == 'MAINASSIST' then
 				db.group_filter = value
+			else--if value == 'ALL' then
+				db.group_filter = nil
 			end
 
 			refresh_group('groups')
@@ -1339,10 +1366,7 @@ function PitBull4.Options.get_unit_options()
 		hidden = function(info)
 			local db = get_group_db()
 
-			local unit_group = db.unit_group
-			local raid_based = unit_group:sub(1, 4) == "raid"
-
-			return not raid_based -- only show in raid
+			return db.unit_group:sub(1, 4) ~= "raid" and db.unit_group:sub(1, 5) ~= "party"
 		end
 	}
 
@@ -1369,7 +1393,16 @@ function PitBull4.Options.get_unit_options()
 
 	local function get_filter(info, key)
 		local db = get_group_db()
-		return not not db.group_filter:match(key)
+
+		local set = {(","):split(db.group_filter)}
+
+		for _, v in next, set do
+			if v == key then
+				return true
+			end
+		end
+
+		return false
 	end
 
 	local function set_filter(info, key, value)
@@ -1395,14 +1428,6 @@ function PitBull4.Options.get_unit_options()
 		disabled = disabled,
 		hidden = function(info)
 			local db = get_group_db()
-
-			local unit_group = db.unit_group
-			local party_based = unit_group:sub(1, 5) == "party"
-
-			if party_based then
-				-- only show in raid
-				return true
-			end
 
 			local group_filter = db.group_filter
 
@@ -1464,14 +1489,6 @@ function PitBull4.Options.get_unit_options()
 		disabled = disabled,
 		hidden = function(info)
 			local db = get_group_db()
-
-			local unit_group = db.unit_group
-			local party_based = unit_group:sub(1, 5) == "party"
-
-			if party_based then
-				-- only show in raid
-				return true
-			end
 
 			local group_filter = db.group_filter
 

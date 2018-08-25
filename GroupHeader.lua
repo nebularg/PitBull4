@@ -17,6 +17,13 @@ local NUM_RAID_GROUPS = _G.NUM_RAID_GROUPS
 local NUM_CLASSES = #CLASS_SORT_ORDER
 local MINIMUM_EXAMPLE_GROUP = 2
 
+local GROUP_ROLES = {
+	TANK = TANK,
+	HEALER = HEALER,
+	DAMAGER = DAMAGER,
+	NONE = NONE,
+}
+
 -- lock to prevent the SecureGroupHeader_Update for doing unnecessary
 -- work when running ForceShow
 local in_force_show = false
@@ -557,7 +564,7 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 	if group_based then
 		show_solo = include_player and show_solo
 	end
-	local group_filter = unit_group:sub(1, 4) == "raid" and group_db.group_filter or nil
+	local group_filter = group_based and group_db.group_filter or nil
 	local sort_direction = group_db.sort_direction
 	local sort_method = group_db.sort_method
 	local group_by = group_db.group_by
@@ -594,6 +601,12 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 			self:SetAttribute("showPlayer", include_player and true or nil)
 			self:SetAttribute("showSolo", show_solo and true or nil)
 			self:SetAttribute("groupFilter", nil)
+			if group_filter then
+				local first = (","):split(group_filter)
+				if GROUP_ROLES[first] then
+					self:SetAttribute("groupFilter", group_filter)
+				end
+			end
 		elseif not group_based then
 			self:UnregisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
 			self:UnregisterEvent("UPDATE_BATTLEFIELD_STATUS")
