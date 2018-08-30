@@ -48,6 +48,7 @@ function PitBull4_Aura:OnEnable()
 		self:RegisterEvent("SPELLS_CHANGED", "PLAYER_TALENT_UPDATE")
 		self:PLAYER_TALENT_UPDATE()
 	end
+	self:PLAYER_TALENT_UPDATE()
 end
 
 function PitBull4_Aura:OnDisable()

@@ -138,6 +138,33 @@ function PitBull4_Aura:PLAYER_TALENT_UPDATE()
 
 	can_purge.WARLOCK.Magic = IsSpellKnown(19505, true)
 	self:GetFilterDB('37').aura_type_list.Magic = can_purge.WARLOCK.Magic
+
+	-- Blood Elf Arcane Torrent
+	local _, race = UnitRace("player")
+	if race == "BloodElf" then
+		can_purge.player.Magic = true
+		if player_class == "DEATHKNIGHT" then
+			self:GetFilterDB('+7').aura_type_list.Magic = true
+		elseif player_class == "DEMONHUNTER" then
+			self:GetFilterDB(',,7').aura_type_list.Magic = true
+		elseif player_class == "HUNTER" then
+			self:GetFilterDB('-7').aura_type_list.Magic = true
+		elseif player_class == "MAGE" then
+			self:GetFilterDB('.7').aura_type_list.Magic = true
+		elseif player_class == "MONK" then
+			self:GetFilterDB('//7').aura_type_list.Magic = true
+		elseif player_class == "PALADIN" then
+			self:GetFilterDB('/7').aura_type_list.Magic = true
+		elseif player_class == "PRIEST" then
+			self:GetFilterDB('07').aura_type_list.Magic = true
+		elseif player_class == "ROGUE" then
+			self:GetFilterDB('17').aura_type_list.Magic = true
+		elseif player_class == "WARLOCK" then
+			self:GetFilterDB('37').aura_type_list.Magic = true
+		elseif player_class == "WARRIOR" then
+			self:GetFilterDB('47').aura_type_list.Magic = true
+		end
+	end
 end
 
 -- Setup the data for which auras belong to whom
