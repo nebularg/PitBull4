@@ -227,7 +227,7 @@ local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 		entry[17] = nil -- boss_debuff
 		entry[18] = nil -- cast_by_player
 		entry[19] = nil -- nameplate_show_all
-		entry[20] = nil -- time_mod
+		entry[20] = 0 -- time_mod
 	end
 end
 
@@ -327,7 +327,7 @@ local function set_weapon_entry(list, is_enchant, time_left, expiration_time, co
 	entry[17] = nil -- boss_debuff
 	entry[18] = nil -- cast_by_player
 	entry[19] = nil -- nameplate_show_all
-	entry[20] = nil -- time_mod
+	entry[20] = 0 -- time_mod
 end
 
 -- If the src table has a valid weapon enchant entry for the slot
