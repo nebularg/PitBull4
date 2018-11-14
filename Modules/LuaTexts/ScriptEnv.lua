@@ -101,7 +101,7 @@ local function VehicleName(unit)
 end
 ScriptEnv.VehicleName = VehicleName
 
-local function Name(unit)
+local function Name(unit, show_server)
 	if unit ~= "player" and not UnitExists(unit) and not ShowBossFrameWhenUninteractable(unit) then
 		return UnitToLocale[unit]
 	else
@@ -114,7 +114,11 @@ local function Name(unit)
 			return VehicleName(unit)
 		end
 	end
-	return UnitName(unit)
+	local name, server = UnitName(unit)
+	if show_server and server and server ~= "" then
+		name = FULL_PLAYER_NAME:format(name, server)
+	end
+	return name
 end
 ScriptEnv.Name = Name
 
