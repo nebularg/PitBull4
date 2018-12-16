@@ -37,10 +37,12 @@
 <Include file="Modules\ReadyCheckIcon\load.xml"/>
 <Include file="Modules\ReputationBar\load.xml"/>
 <Include file="Modules\RestIcon\load.xml"/>
+<Include file="Modules\ResurrectionIcon\load.xml"/>
 <Include file="Modules\RoleIcon\load.xml"/>
 <Include file="Modules\Runes\load.xml"/>
 <Include file="Modules\SoulShards\load.xml"/>
 <Include file="Modules\Sounds\load.xml"/>
+<Include file="Modules\SummonIcon\load.xml"/>
 <Include file="Modules\ThreatBar\load.xml"/>
 <Include file="Modules\Totems\load.xml"/>
 <Include file="Modules\VisualHeal\load.xml"/>
