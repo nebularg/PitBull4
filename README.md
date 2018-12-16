@@ -17,27 +17,30 @@ You can help translate PitBull for your language with the [localization tool](ht
 
 ## Changelog Highlights ![OhMyDog](https://static-cdn.jtvnw.net/emoticons/v1/65/1.0)
 
+### v4.1.17 changes
+
+- Added `ResurrectionIcon` indictor to show incoming and pending resurrection spells.
+- Added `SummonIcon` indictor to show incoming and pending summons.
+- Updated `PhaseIcon` indicator to show on players with a different warmode setting.
+- Updated the vehicle swap handling to work like the default UI. For example, this
+  fixes being able to click on the person in the pod in the Antoran High Command
+  encounter from your raid frames. Unfortunately, it only works in raid, so things like
+  selecting the player in the Tol Dagor cannon are still cumbersome.
+- Added sorting and filtering party groups by role.
+- Aura: Added Arcane Torrent for Blood Elves and updated purge filters.
+
 ### v4.1.16 changes
 
 - Updated class spells for RangeFinder.
 - Updated class purge and dispel Aura filters (fixed highlighting).
 - Added allied race Aura filters.
 
-### v4.1.15 changes
-
-- Fixed Artifact Power bar/text from showing the values from an artifact weapon before an azerite artifact.
-
 ### v4.1.12 changes
 
 - Added some Aura filters based on what the default UI shows (personal buffs, group buffs, target debuffs, group debuffs).
-- Added VoiceIcon module.
+- Added `VoiceIcon` indicator module.
 - Updated Short and VeryShort LuaTexts to be locale-aware.
 - Added inactive boss frames support (previously hidden boss frames will be shown now, thanks TheDanW).
-
-### v4.1.10 changes
-
-- Added support for Battle for Azeroth.
-- Added Allied races for LuaText functions.
 
 ### v4.1.0 changes
 
@@ -47,7 +50,7 @@ You can help translate PitBull for your language with the [localization tool](ht
   - Due to how the indicator offset system works, it makes fine-tuning the position of secondary resource icons awkward. You can now create a duplicate unit frame for positioning your combo points exactly where you want.
   - Frame names now use the unit frame label instead of the unit. For example, PitBull4\_Frames\_player is now PitBull4\_Frames\_Player, PitBull4\_Frames\_targettarget is now "PitBull4\_Frames\_Target's target". You'll need to update any addons (**kgPanels**) that anchor to your unit frames. You can check the name of the frame with `/framestack`.
 - **Default frame positions**. Starting from scratch no longer dumps all of the frames in the middle of your screen. They will now show in a layout similar to the Blizzard layout.
-- **Added Masque support for auras.** If you use Masque, you can set the skin for the layout under Aura->Display or in Masque under "PitBull4 Aura". Two PitBull skins are provided that will work with hiding/showing the border as set in the settings, or you can disable Masque support completely in the module options (Modules->Aura).
+- **Added Masque support for auras.** If you use Masque, you can set the skin for the layout under Aura-&gt;Display or in Masque under "PitBull4 Aura". Two PitBull skins are provided that will work with hiding/showing the border as set in the settings, or you can disable Masque support completely in the module options (Modules-&gt;Aura).
 
 ---
 
