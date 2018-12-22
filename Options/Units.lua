@@ -49,8 +49,12 @@ function PitBull4.Options.get_unit_options()
 		order = 1,
 		values = function(info)
 			local t = {}
-			for name in pairs(PitBull4.db.profile.units) do
-				t[name] = name
+			for name, db in pairs(PitBull4.db.profile.units) do
+				if not db.enabled then
+					t[name] = ("|cff7f7f7f%s|r"):format(name)
+				else
+					t[name] = name
+				end
 			end
 			return t
 		end,
@@ -104,8 +108,12 @@ function PitBull4.Options.get_unit_options()
 		order = 1,
 		values = function(info)
 			local t = {}
-			for name in pairs(PitBull4.db.profile.groups) do
-				t[name] = name
+			for name, db in pairs(PitBull4.db.profile.groups) do
+				if not db.enabled then
+					t[name] = ("|cff7f7f7f%s|r"):format(name)
+				else
+					t[name] = name
+				end
 			end
 			return t
 		end,
