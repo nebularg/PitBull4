@@ -16,6 +16,7 @@ PitBull4_SummonIcon:SetDefaults({
 
 function PitBull4_SummonIcon:OnEnable()
 	self:RegisterEvent("INCOMING_SUMMON_CHANGED", "UpdateAll")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateAll")
 end
 
 

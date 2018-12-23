@@ -6,7 +6,7 @@ local PitBull4_ResurrectionIcon = PitBull4:NewModule("ResurrectionIcon", "AceEve
 
 PitBull4_ResurrectionIcon:SetModuleType("indicator")
 PitBull4_ResurrectionIcon:SetName(L["Resurrection icon"])
-PitBull4_ResurrectionIcon:SetDescription(L["Show an icon if there is an incoming resurrection."])
+PitBull4_ResurrectionIcon:SetDescription(L["Show an icon if there is an incoming or pending resurrection."])
 PitBull4_ResurrectionIcon:SetDefaults({
 	attach_to = "root",
 	location = "in_center",
@@ -16,6 +16,7 @@ PitBull4_ResurrectionIcon:SetDefaults({
 
 function PitBull4_ResurrectionIcon:OnEnable()
 	self:RegisterEvent("INCOMING_RESURRECT_CHANGED", "UpdateAll")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateAll")
 end
 
 
