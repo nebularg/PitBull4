@@ -17,6 +17,12 @@ You can help translate PitBull for your language with the [localization tool](ht
 
 ## Changelog Highlights ![OhMyDog](https://static-cdn.jtvnw.net/emoticons/v1/65/1.0)
 
+### v4.1.18 changes
+
+- Updated `ArtifactPowerBar` to hide if your azerite item is not equipped.
+- Fixed `ResurrectionIcon` and `SummonIcon` getting stuck shown after zoning.
+- Updated unit and group selector dropdowns to show which items are disabled.
+
 ### v4.1.17 changes
 
 - Added `ResurrectionIcon` indictor to show incoming and pending resurrection spells.
