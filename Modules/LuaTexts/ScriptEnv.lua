@@ -946,9 +946,9 @@ local function ArtifactPower()
 		if azeriteItemLocation.bagID and (azeriteItemLocation.bagID < 0 or azeriteItemLocation.bagID > NUM_BAG_SLOTS) then
 			return 0, 1, 0, -1
 		end
-		local artifactXP, totalLevelXP = C_AzeriteItem.GetAzeriteItemXPInfo(C_AzeriteItem.FindActiveAzeriteItem())
+		local artifactXP, totalLevelXP = C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation)
 		local numPoints = AzeriteUtil.GetEquippedItemsUnselectedPowersCount()
-		local level = C_AzeriteItem.GetPowerLevel(C_AzeriteItem.FindActiveAzeriteItem())
+		local level = C_AzeriteItem.GetPowerLevel(azeriteItemLocation)
 		return artifactXP, totalLevelXP, numPoints, level
 	end
 	return 0, 0, 0, 0
