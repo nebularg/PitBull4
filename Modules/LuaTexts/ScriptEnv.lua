@@ -942,25 +942,14 @@ ScriptEnv.RestXP = RestXP
 local function ArtifactPower()
 	local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem()
 	if azeriteItemLocation then
-		local artifactXP, totalLevelXP = C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation)
-		local numPoints = AzeriteUtil.GetEquippedItemsUnselectedPowersCount()
-		local level = C_AzeriteItem.GetPowerLevel(azeriteItemLocation)
-		return artifactXP, totalLevelXP, numPoints, level
-	end
-	if HasArtifactEquipped() then
-		local _, _, _, _, xp, pointsSpent, _, _, _, _, _, _, tier = C_ArtifactUI.GetEquippedArtifactInfo()
-
-		local numPoints = 0
-		local xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent, tier)
-		while xp >= xpForNextPoint and xpForNextPoint > 0 do
-			xp = xp - xpForNextPoint
-
-			pointsSpent = pointsSpent + 1
-			numPoints = numPoints + 1
-
-			xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent, tier)
+		-- api can error if the active item is in your bank
+		if azeriteItemLocation.bagID and (azeriteItemLocation.bagID < 0 or azeriteItemLocation.bagID > NUM_BAG_SLOTS) then
+			return 0, 1, 0, -1
 		end
-		return xp, xpForNextPoint, numPoints, pointsSpent
+		local artifactXP, totalLevelXP = C_AzeriteItem.GetAzeriteItemXPInfo(C_AzeriteItem.FindActiveAzeriteItem())
+		local numPoints = AzeriteUtil.GetEquippedItemsUnselectedPowersCount()
+		local level = C_AzeriteItem.GetPowerLevel(C_AzeriteItem.FindActiveAzeriteItem())
+		return artifactXP, totalLevelXP, numPoints, level
 	end
 	return 0, 0, 0, 0
 end

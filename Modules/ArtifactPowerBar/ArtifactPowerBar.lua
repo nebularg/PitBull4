@@ -14,38 +14,36 @@ PitBull4_ArtifactPowerBar:SetDefaults({
 	position = 8,
 })
 
-local C_ArtifactUI = _G.C_ArtifactUI
-
 local function GetArtifactXP()
 	local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem()
 	if azeriteItemLocation then
-		return C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation)
-	end
-	if HasArtifactEquipped() then
-		local _, _, _, _, artifactXP, pointsSpent, _, _, _, _, _, _, artifactTier = C_ArtifactUI.GetEquippedArtifactInfo()
-		local xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent, artifactTier)
-		while artifactXP >= xpForNextPoint and xpForNextPoint > 0 do
-			artifactXP = artifactXP - xpForNextPoint
-			pointsSpent = pointsSpent + 1
-			xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent, artifactTier)
+		-- default UI shows an empty bar if the azerite item is in your bank (api can error)
+		-- if azeriteItemLocation.bagID and (azeriteItemLocation.bagID < 0 or azeriteItemLocation.bagID > NUM_BAG_SLOTS) then
+		-- 	return 0, 1
+		-- end
+
+		-- hide if not equipped
+		if not azeriteItemLocation:IsEquipmentSlot() then
+			return
 		end
-		return artifactXP, xpForNextPoint
+
+		return C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation)
 	end
 end
 
 function PitBull4_ArtifactPowerBar:OnEnable()
-	self:RegisterEvent("ARTIFACT_XP_UPDATE")
-	self:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", "ARTIFACT_XP_UPDATE")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ARTIFACT_XP_UPDATE")
+	self:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "AZERITE_ITEM_EXPERIENCE_CHANGED")
+	-- self:RegisterEvent("BAG_UPDATE_DELAYED", "AZERITE_ITEM_EXPERIENCE_CHANGED")
 	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED") -- handle (un)equip
 end
 
-function PitBull4_ArtifactPowerBar:ARTIFACT_XP_UPDATE()
+function PitBull4_ArtifactPowerBar:AZERITE_ITEM_EXPERIENCE_CHANGED()
 	self:UpdateForUnitID("player")
 end
 
 function PitBull4_ArtifactPowerBar:PLAYER_EQUIPMENT_CHANGED(_, slot)
-	if slot == 16 or slot == 17 or slot == 2 then -- weapon slots (legion)/neck (bfa)
+	if slot == 2 then -- neck
 		self:UpdateForUnitID("player")
 	end
 end
