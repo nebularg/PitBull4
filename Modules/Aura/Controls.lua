@@ -189,7 +189,7 @@ end, function(control)
 			Border = control.border,
 			-- Count = control.count_text,
 			-- Duration = control.cooldown_text,
-		})
+		}, "Legacy")
 	else
 		-- reset the control layout
 		local texture = control.texture
@@ -214,8 +214,14 @@ end, function(control)
 	local group = control:GetParent().masque_group
 	if group then
 		group:RemoveButton(control)
+
+		-- Stop frame level tampering (Masque 8.0)
+		control.__MSQ_Cooldown = nil
+
+		-- Remove the "Blizzard" skin
+		local texture = control.__MSQ_Normal or control.__MSQ_NormalTexture
+		if texture then
+			texture:SetTexture(nil)
+		end
 	end
-	control.__MSQ_Cooldown = nil
-	control.__MSQ_NormalTexture = nil
-	control:SetNormalTexture(nil)
 end)

@@ -2536,13 +2536,6 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 		PitBull4.Options.UpdateFrames()
 	end
 
-	local masque_skins = {}
-	if MSQ then
-		for id in next, MSQ:GetSkins() do
-			masque_skins[id] = id
-		end
-	end
-
 	return 	true, 'display', {
 		type = 'group',
 		name = L["Display"],
@@ -2663,14 +2656,21 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				type = "select",
 				name = L["Skin"],
 				desc = L["Select a Masque skin to apply to the auras for this layout. For more options, open the Masque interface options with /msq."],
-				values = masque_skins,
+				values = function()
+					local list = {}
+					for id in next, MSQ:GetSkins() do
+						list[id] = id
+					end
+					return list
+				end,
 				get = function(info)
 					local group = MSQ:Group("PitBull4 Aura", PitBull4.Options.GetCurrentLayout())
-					return group.db.SkinID or "Blizzard"
+					return MSQ:GetSkin(group.db.SkinID) and group.db.SkinID or "Blizzard"
 				end,
 				set = function(info, value)
 					local group = MSQ:Group("PitBull4 Aura", PitBull4.Options.GetCurrentLayout())
-					group:SetOption("SkinID", value)
+					group.db.SkinID = value
+					group:ReSkin()
 				end,
 				hidden = function(info) return not MSQ or not self.db.profile.global.skin end,
 				order = 8,

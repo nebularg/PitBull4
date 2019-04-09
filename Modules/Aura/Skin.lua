@@ -37,19 +37,20 @@ end
 
 if MSQ then
 	-- Add skins similar to what PitBull uses without Masque.
-	-- You can't raise the cooldown frame above the border, but that
-	-- should be the only difference between using Masque or not.
 	-- Too bad you can't set a default skin when registering a group :|
 	MSQ:AddSkin("PitBull", {
 		Template = "Blizzard",
+		Backdrop = { Hide = true },
 		Icon = { TexCoords = {0, 1, 0, 1} },
 		Normal = { Hide = true },
-		Border = { Texture = [[Interface\AddOns\PitBull4\Modules\Aura\border]] },
+		Border = { Texture = [[Interface\AddOns\PitBull4\Modules\Aura\border]], BlendMode = "BLEND" },
+		Cooldown = { Width = 36, Height = 36 },
 	})
 	MSQ:AddSkin("PitBull Zoomed", {
 		Template = "Zoomed",
+		Backdrop = { Hide = true },
 		Icon = { TexCoords = {0.07, 0.93, 0.07, 0.93} },
-		Border = { Texture = [[Interface\AddOns\PitBull4\Modules\Aura\border]] },
+		Border = { Texture = [[Interface\AddOns\PitBull4\Modules\Aura\border]], BlendMode = "BLEND" },
 	})
 
 	PitBull4_Aura.OnProfileChanged_funcs[#PitBull4_Aura.OnProfileChanged_funcs+1] = PitBull4_Aura.UpdateSkins
