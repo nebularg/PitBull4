@@ -333,128 +333,65 @@ if UnitPowerType(unit) ~= 0 then
 end]],
 		},
 	},
-	[L["Alternate power"]] = {
-		[L["Absolute"]] = {
-			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
-			code = [[
-local max = MaxPower(unit,ALTERNATE_POWER_INDEX)
-if max > 0 then
-	return "%s/%s",Power(unit,ALTERNATE_POWER_INDEX),max
-end
-return ConfigMode()]],
-		},
-		[L["Absolute short"]] = {
-			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
-			code = [[
-local max = MaxPower(unit,ALTERNATE_POWER_INDEX)
-if max > 0 then
-  return "%s/%s",Short(Power(unit,ALTERNATE_POWER_INDEX),true),Short(max,true)
-end
-return ConfigMode()]],
-		},
-		[L["Difference"]] = {
-			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
-			code = [[
-local max = MaxPower(unit, ALTERNATE_POWER_INDEX)
-if max > 0 then
-  return -(max - Power(unit,ALTERNATE_POWER_INDEX))
-end
-return ConfigMode()]],
-		},
-		[L["Percent"]] = {
-			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
-			code = [[
-local max = MaxPower(unit,ALTERNATE_POWER_INDEX)
-if max > 0 then
-  return "%s%%",Percent(Power(unit,ALTERNATE_POWER_INDEX),max)
-end
-return ConfigMode()]],
-		},
-		[L["Mini"]] = {
-			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
-			code = [[
-local max = MaxPower(unit,ALTERNATE_POWER_INDEX)
-if max > 0 then
-  return VeryShort(Power(unit,ALTERNATE_POWER_INDEX))
-end
-return ConfigMode()]],
-		},
-		[L["Smart"]] = {
-			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
-			code = [[
-local max = MaxPower(unit, ALTERNATE_POWER_INDEX)
-if max > 0 then
-	local miss = max - Power(unit,ALTERNATE_POWER_INDEX)
-  if miss ~= 0 then
-    return "|cffc12267%s|r",Short(miss,true)
-  end
-end
-return ConfigMode()]],
-		},
-	},
-	[L["Artifact power"]] = {
-		[L["Absolute"]] = {
-			events = {['ARTIFACT_XP_UPDATE']=true,['AZERITE_ITEM_EXPERIENCE_CHANGED']=true,['AZERITE_ITEM_POWER_LEVEL_CHANGED']=true,['AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED']=true},
-			code = [[
-local cur,max,points = ArtifactPower()
-if max > 0 then
-  if points > 0 then
-    return "%s/%s (%d)",cur,max,points
-  end
-  return "%s/%s",cur,max
-end
-return ConfigMode()]],
-		},
-		[L["Absolute short"]] = {
-			events = {['ARTIFACT_XP_UPDATE']=true,['AZERITE_ITEM_EXPERIENCE_CHANGED']=true,['AZERITE_ITEM_POWER_LEVEL_CHANGED']=true,['AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED']=true},
-			code = [[
-local cur,max,points = ArtifactPower()
-if max > 0 then
-  if points > 0 then
-    return "%s/%s (%d)",Short(cur,true),Short(max,true),points
-  end
-  return "%s/%s",Short(cur,true),Short(max,true)
-end
-return ConfigMode()]],
-		},
-		[L["Difference"]] = {
-			events = {['ARTIFACT_XP_UPDATE']=true,['AZERITE_ITEM_EXPERIENCE_CHANGED']=true,['AZERITE_ITEM_POWER_LEVEL_CHANGED']=true,['AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED']=true},
-			code = [[
-local cur,max,points = ArtifactPower()
-if max > 0 then
-  local missing = -(max-cur)
-  if points > 0 then
-    return "%d (%d)",missing,points
-  end
-  return missing
-end
-return ConfigMode()]],
-		},
-		[L["Percent"]] = {
-			events = {['ARTIFACT_XP_UPDATE']=true,['AZERITE_ITEM_EXPERIENCE_CHANGED']=true,['AZERITE_ITEM_POWER_LEVEL_CHANGED']=true,['AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED']=true},
-			code = [[
-local cur,max,points = ArtifactPower()
-if max > 0 then
-  if points > 0 then
-    return "%s%% (%d)",Percent(cur,max),points
-  end
-  return "%s%%",Percent(cur,max)
-end
-return ConfigMode()]],
-		},
-		[L["Mini"]] = {
-			events = {['ARTIFACT_XP_UPDATE']=true,['AZERITE_ITEM_EXPERIENCE_CHANGED']=true,['AZERITE_ITEM_POWER_LEVEL_CHANGED']=true,['AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED']=true},
-			code = [[
-local cur,max,points = ArtifactPower()
-if max > 0 then
-  if points > 0 then
-    return "%s (%d)",VeryShort(cur,true),points
-  end
-  return VeryShort(cur)
-end
-return ConfigMode()]],
-		},
-	},
+-- 	[L["Alternate power"]] = {
+-- 		[L["Absolute"]] = {
+-- 			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
+-- 			code = [[
+-- local max = MaxPower(unit,ALTERNATE_POWER_INDEX)
+-- if max > 0 then
+-- 	return "%s/%s",Power(unit,ALTERNATE_POWER_INDEX),max
+-- end
+-- return ConfigMode()]],
+-- 		},
+-- 		[L["Absolute short"]] = {
+-- 			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
+-- 			code = [[
+-- local max = MaxPower(unit,ALTERNATE_POWER_INDEX)
+-- if max > 0 then
+--   return "%s/%s",Short(Power(unit,ALTERNATE_POWER_INDEX),true),Short(max,true)
+-- end
+-- return ConfigMode()]],
+-- 		},
+-- 		[L["Difference"]] = {
+-- 			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
+-- 			code = [[
+-- local max = MaxPower(unit, ALTERNATE_POWER_INDEX)
+-- if max > 0 then
+--   return -(max - Power(unit,ALTERNATE_POWER_INDEX))
+-- end
+-- return ConfigMode()]],
+-- 		},
+-- 		[L["Percent"]] = {
+-- 			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
+-- 			code = [[
+-- local max = MaxPower(unit,ALTERNATE_POWER_INDEX)
+-- if max > 0 then
+--   return "%s%%",Percent(Power(unit,ALTERNATE_POWER_INDEX),max)
+-- end
+-- return ConfigMode()]],
+-- 		},
+-- 		[L["Mini"]] = {
+-- 			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
+-- 			code = [[
+-- local max = MaxPower(unit,ALTERNATE_POWER_INDEX)
+-- if max > 0 then
+--   return VeryShort(Power(unit,ALTERNATE_POWER_INDEX))
+-- end
+-- return ConfigMode()]],
+-- 		},
+-- 		[L["Smart"]] = {
+-- 			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
+-- 			code = [[
+-- local max = MaxPower(unit, ALTERNATE_POWER_INDEX)
+-- if max > 0 then
+-- 	local miss = max - Power(unit,ALTERNATE_POWER_INDEX)
+--   if miss ~= 0 then
+--     return "|cffc12267%s|r",Short(miss,true)
+--   end
+-- end
+-- return ConfigMode()]],
+-- 		},
+-- 	},
 	[L["Threat"]] = {
 		[L["Percent"]] = {
 			events = {['UNIT_THREAT_LIST_UPDATE']=true,['UNIT_THREAT_SITUATION_UPDATE']=true},
@@ -629,18 +566,14 @@ do
 		-- Harcoded events basically the ones that aren't just unit=true ones
 		['UNIT_PET_EXPERIENCE'] = {pet=true},
 		['PLAYER_XP_UPDATE'] = {player=true},
-		['ARTIFACT_XP_UPDATE'] = {player=true},
-		['AZERITE_ITEM_EXPERIENCE_CHANGED'] = {player=true},
-		['AZERITE_ITEM_POWER_LEVEL_CHANGED'] = {player=true},
-		['AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED'] = {player=true},
 		['UPDATE_FACTION'] = {all=true},
 		['UNIT_LEVEL'] = {all=true},
 
 		-- They pass the unit but they don't provide the pairing (e.g.
 		-- the target changes) so we'll miss updates if we don't update
 		-- every text on every one of these events.  /sigh
-		['UNIT_THREAT_LIST_UPDATE'] = {all=true},
-		['UNIT_THREAT_SITUATION_UPDATE'] = {all=true},
+		-- ['UNIT_THREAT_LIST_UPDATE'] = {all=true},
+		-- ['UNIT_THREAT_SITUATION_UPDATE'] = {all=true},
 	}
 
 	-- Iterate the provided codes to fill in all the rest
@@ -765,12 +698,6 @@ local function fix_power_texts()
 									text.events["UNIT_POWER_FREQUENT"] = true
 								end
 							end
-						end
-						-- add azerite events to artifact power texts
-						if text.events and text.events["ARTIFACT_XP_UPDATE"] and not text.events["AZERITE_ITEM_EXPERIENCE_CHANGED"] then
-							text.events['AZERITE_ITEM_EXPERIENCE_CHANGED'] = true
-							text.events['AZERITE_ITEM_POWER_LEVEL_CHANGED'] = true
-							text.events['AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED'] = true
 						end
 					end
 				end
@@ -1373,18 +1300,18 @@ function PitBull4_LuaTexts:OnNewLayout(layout)
 			events = copy(PROVIDED_CODES[L["PVPTimer"]][L["Standard"]].events),
 			location = "out_right_top"
 		},
-		["Lua:"..L["Alternate power"]] = {
-			code = PROVIDED_CODES[L["Alternate power"]][L["Percent"]].code,
-			events = copy(PROVIDED_CODES[L["Alternate power"]][L["Percent"]].events),
-			attach_to = "AltPowerBar",
-			location = "right"
-		},
-		["Lua:"..L["Artifact power"]] = {
-			code = PROVIDED_CODES[L["Artifact power"]][L["Absolute"]].code,
-			events = copy(PROVIDED_CODES[L["Artifact power"]][L["Absolute"]].events),
-			attach_to = "ArtifactPowerBar",
-			location = "center"
-		},
+		-- ["Lua:"..L["Alternate power"]] = {
+		-- 	code = PROVIDED_CODES[L["Alternate power"]][L["Percent"]].code,
+		-- 	events = copy(PROVIDED_CODES[L["Alternate power"]][L["Percent"]].events),
+		-- 	attach_to = "AltPowerBar",
+		-- 	location = "right"
+		-- },
+		-- ["Lua:"..L["Artifact power"]] = {
+		-- 	code = PROVIDED_CODES[L["Artifact power"]][L["Absolute"]].code,
+		-- 	events = copy(PROVIDED_CODES[L["Artifact power"]][L["Absolute"]].events),
+		-- 	attach_to = "ArtifactPowerBar",
+		-- 	location = "center"
+		-- },
 	} do
 		local text_db = text_elements[name]
 		text_db.exists = true
