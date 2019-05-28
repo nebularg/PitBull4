@@ -607,18 +607,18 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 					self:SetAttribute("groupFilter", group_filter)
 				end
 			end
-		elseif not group_based then
-			self:UnregisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
-			self:UnregisterEvent("UPDATE_BATTLEFIELD_STATUS")
-			if unit_group:sub(1, 4) == "boss" then
-				self.super_unit_group = "boss"
-				self.unitsuffix = unit_group:sub(5)
-				self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
-			elseif unit_group:sub(1, 5) == "arena" then
-				self.super_unit_group = "arena"
-				self.unitsuffix = unit_group:sub(6)
-				self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
-			end
+		-- elseif not group_based then
+		-- 	self:UnregisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
+		-- 	self:UnregisterEvent("UPDATE_BATTLEFIELD_STATUS")
+		-- 	if unit_group:sub(1, 4) == "boss" then
+		-- 		self.super_unit_group = "boss"
+		-- 		self.unitsuffix = unit_group:sub(5)
+		-- 		self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
+		-- 	elseif unit_group:sub(1, 5) == "arena" then
+		-- 		self.super_unit_group = "arena"
+		-- 		self.unitsuffix = unit_group:sub(6)
+		-- 		self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
+		-- 	end
 		else
 			self.super_unit_group = "raid"
 			self.unitsuffix = unit_group:sub(5)
@@ -886,23 +886,23 @@ local function get_group_roster_info(super_unit_group, index)
 	if super_unit_group == "raid" then
 		unit = "raid"..index
 		name, _, subgroup, _, _, class_name, _, _, _, role, _, assigned_role = GetRaidRosterInfo(index)
-	elseif super_unit_group == "boss" then
-		unit = "boss"..index
-		if UnitExists(unit) then
-			name = UnitName(unit)
-			_, class_name = UnitClassBase(unit)
-			subgroup = 1
-		end
-	elseif super_unit_group == "arena" then
-		unit = "arena"..index
-		if UnitExists(unit) then
-			name, server = UnitName(unit)
-			if server and server ~= "" then
-				name = name.."-"..server
-			end
-			_, class_name = UnitClass(unit)
-			subgroup = 1
-		end
+	-- elseif super_unit_group == "boss" then
+	-- 	unit = "boss"..index
+	-- 	if UnitExists(unit) then
+	-- 		name = UnitName(unit)
+	-- 		_, class_name = UnitClassBase(unit)
+	-- 		subgroup = 1
+	-- 	end
+	-- elseif super_unit_group == "arena" then
+	-- 	unit = "arena"..index
+	-- 	if UnitExists(unit) then
+	-- 		name, server = UnitName(unit)
+	-- 		if server and server ~= "" then
+	-- 			name = name.."-"..server
+	-- 		end
+	-- 		_, class_name = UnitClass(unit)
+	-- 		subgroup = 1
+	-- 	end
 	else
 		if index > 0 then
 			unit = "party"..index
@@ -1274,10 +1274,10 @@ function GroupHeader:GetMaxUnits(ignore_filters)
 
 		-- Everything else we're gonna have to go by max.
 		return MAX_RAID_MEMBERS
-	elseif self.super_unit_group == "boss" then
-		return MAX_BOSS_FRAMES
-	elseif self.super_unit_group == "arena" then
-		return MAX_PARTY_MEMBERS_WITH_PLAYER
+	-- elseif self.super_unit_group == "boss" then
+	-- 	return MAX_BOSS_FRAMES
+	-- elseif self.super_unit_group == "arena" then
+	-- 	return MAX_PARTY_MEMBERS_WITH_PLAYER
 	else
 		if self.include_player then
 			return MAX_PARTY_MEMBERS_WITH_PLAYER
@@ -1929,16 +1929,16 @@ function GroupHeader:ConfigureChildren()
 			-- update our unit event references
 			frame:SetScript("OnUpdate", nil)
 			frame:UnregisterEvent("UNIT_NAME_UPDATE")
-			frame:UnregisterEvent("ARENA_OPPONENT_UPDATE")
+			-- frame:UnregisterEvent("ARENA_OPPONENT_UPDATE")
 			frame:UnregisterEvent("UNIT_TARGETABLE_CHANGED")
 			frame:UnregisterEvent("UNIT_TARGET")
 			frame:UnregisterEvent("UNIT_PET")
 
 			frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
-			if unit:match("^arena") then
-				-- not really a unit event, this will probably be split into UPDATE and CLEARED in the future
-				frame:RegisterEvent("ARENA_OPPONENT_UPDATE")
-			end
+			-- if unit:match("^arena") then
+			-- 	-- not really a unit event, this will probably be split into UPDATE and CLEARED in the future
+			-- 	-- frame:RegisterEvent("ARENA_OPPONENT_UPDATE")
+			-- end
 			frame:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", unit)
 
 			local unitsuffix = frame:GetAttribute("unitsuffix")

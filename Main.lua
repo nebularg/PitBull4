@@ -12,9 +12,9 @@ local SINGLETON_CLASSIFICATIONS = {
 	"target",
 	"targettarget",
 	"targettargettarget",
-	"focus",
-	"focustarget",
-	"focustargettarget",
+	-- "focus",
+	-- "focustarget",
+	-- "focustargettarget",
 }
 
 local UNIT_GROUPS = {
@@ -24,44 +24,44 @@ local UNIT_GROUPS = {
 	"partypet",
 	"partypettarget",
 	"partypettargettarget",
-	"arena",
-	"arenatarget",
-	"arenatargettarget",
-	"arenapet",
-	"arenapettarget",
-	"arenapettargettarget",
+	-- "arena",
+	-- "arenatarget",
+	-- "arenatargettarget",
+	-- "arenapet",
+	-- "arenapettarget",
+	-- "arenapettargettarget",
 	"raid",
 	"raidtarget",
 	"raidtargettarget",
 	"raidpet",
 	"raidpettarget",
 	"raidpettargettarget",
-	"boss",
-	"bosstarget",
-	"bosstargettarget",
+	-- "boss",
+	-- "bosstarget",
+	-- "bosstargettarget",
 }
 
 local NORMAL_UNITS = {
 	"player",
 	"pet",
 	"target",
-	"focus",
+	-- "focus",
 	-- "mouseover",
 }
 for i = 1, _G.MAX_PARTY_MEMBERS do
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "party" .. i
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "partypet" .. i
 end
-for i = 1, 5 do
-	NORMAL_UNITS[#NORMAL_UNITS+1] = "arena" .. i
-	NORMAL_UNITS[#NORMAL_UNITS+1] = "arenapet" .. i
-end
+-- for i = 1, 5 do
+-- 	NORMAL_UNITS[#NORMAL_UNITS+1] = "arena" .. i
+-- 	NORMAL_UNITS[#NORMAL_UNITS+1] = "arenapet" .. i
+-- end
 for i = 1, _G.MAX_RAID_MEMBERS do
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "raid" .. i
 end
-for i = 1, _G.MAX_BOSS_FRAMES do
-	NORMAL_UNITS[#NORMAL_UNITS+1] = "boss" .. i
-end
+-- for i = 1, _G.MAX_BOSS_FRAMES do
+-- 	NORMAL_UNITS[#NORMAL_UNITS+1] = "boss" .. i
+-- end
 
 do
 	local tmp = NORMAL_UNITS
@@ -226,26 +226,26 @@ local DEFAULT_GROUPS = {
 		unit_group = "partypet",
 		exists = true,
 	},
-	[L["Boss"]] = {
-		enabled = true,
-		unit_group = "boss",
-		exists = true,
-		anchor = "", -- automatic from growth direction
-		relative_to = "0", -- UIParent
-		relative_point = "RIGHT",
-		position_x = -290,
-		position_y = 225,
-		show_when = {
-			solo = true,
-			party = true,
-			raid = true,
-			raid10 = true,
-			raid15 = true,
-			raid20 = true,
-			raid25 = true,
-			raid40 = true,
-		},
-	}
+	-- [L["Boss"]] = {
+	-- 	enabled = true,
+	-- 	unit_group = "boss",
+	-- 	exists = true,
+	-- 	anchor = "", -- automatic from growth direction
+	-- 	relative_to = "0", -- UIParent
+	-- 	relative_point = "RIGHT",
+	-- 	position_x = -290,
+	-- 	position_y = 225,
+	-- 	show_when = {
+	-- 		solo = true,
+	-- 		party = true,
+	-- 		raid = true,
+	-- 		raid10 = true,
+	-- 		raid15 = true,
+	-- 		raid20 = true,
+	-- 		raid25 = true,
+	-- 		raid40 = true,
+	-- 	},
+	-- }
 }
 
 local DEFAULT_UNITS =  {
@@ -291,21 +291,21 @@ local DEFAULT_UNITS =  {
 	[format(L["%s's target"],format(L["%s's target"],L["Target"]))] = {
 		unit = "targettargettarget",
 	},
-	[L["Focus"]] = {
-		enabled = true,
-		unit = "focus",
-		anchor = "TOPLEFT",
-		relative_to = "0", -- UIParent
-		relative_point = "TOPLEFT",
-		position_x = 250,
-		position_y = -260,
-	},
-	[format(L["%s's target"],L["Focus"])]= {
-		unit = "focustarget",
-	},
-	[format(L["%s's target"],format(L["%s's target"],L["Focus"]))] = {
-		unit = "focustargettarget",
-	},
+	-- [L["Focus"]] = {
+	-- 	enabled = true,
+	-- 	unit = "focus",
+	-- 	anchor = "TOPLEFT",
+	-- 	relative_to = "0", -- UIParent
+	-- 	relative_point = "TOPLEFT",
+	-- 	position_x = 250,
+	-- 	position_y = -260,
+	-- },
+	-- [format(L["%s's target"],L["Focus"])]= {
+	-- 	unit = "focustarget",
+	-- },
+	-- [format(L["%s's target"],format(L["%s's target"],L["Focus"]))] = {
+	-- 	unit = "focustargettarget",
+	-- },
 }
 
 local LOCALIZED_NAMES = {}
@@ -1596,16 +1596,16 @@ function PitBull4:OnEnable()
 
 	-- register unit change events
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
-	self:RegisterEvent("PLAYER_FOCUS_CHANGED")
+	-- self:RegisterEvent("PLAYER_FOCUS_CHANGED")
 	self:RegisterEvent("UNIT_TARGET")
 	self:RegisterEvent("UNIT_PET")
 
 	-- register events for core handled bar coloring
 	self:RegisterEvent("UNIT_FACTION")
 
-	self:RegisterEvent("UNIT_ENTERED_VEHICLE")
-	self:RegisterEvent("UNIT_EXITED_VEHICLE")
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+	-- self:RegisterEvent("UNIT_ENTERED_VEHICLE")
+	-- self:RegisterEvent("UNIT_EXITED_VEHICLE")
+	-- self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 
 	-- enter/leave combat for :RunOnLeaveCombat
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -1717,11 +1717,11 @@ function PitBull4:CheckGUIDForUnitID(unit, is_pet)
 	end
 end
 
-function PitBull4:PLAYER_FOCUS_CHANGED()
-	self:CheckGUIDForUnitID("focus")
-	self:CheckGUIDForUnitID("focustarget")
-	self:CheckGUIDForUnitID("focustargettarget")
-end
+-- function PitBull4:PLAYER_FOCUS_CHANGED()
+-- 	self:CheckGUIDForUnitID("focus")
+-- 	self:CheckGUIDForUnitID("focustarget")
+-- 	self:CheckGUIDForUnitID("focustargettarget")
+-- end
 
 function PitBull4:PLAYER_TARGET_CHANGED()
 	self:CheckGUIDForUnitID("target")
@@ -1752,50 +1752,50 @@ function PitBull4:UNIT_FACTION(_, unit)
 	end
 end
 
-local tmp = {}
-function PitBull4:UNIT_ENTERED_VEHICLE(event, unit)
-	if (event == "UNIT_ENTERED_VEHICLE" and unit == "player" and not UnitHasVehiclePlayerFrameUI("player")) then
-		-- Ignore swapping units when the vehicle player frame ui is disabled.
-		-- This is a workaround for the fact that SecureButton_GetModifiedUnit
-		-- is not properly respecting not to swap frames (heck the default
-		-- UI does weird stuff itself).  Clicking on the frame will be
-		-- wrong but we'll at least look right and you can't really target
-		-- the unit inside the vehicle anyway so it's not the end of the world.
-		return
-	end
-	tmp[unit] = true
-	tmp[PitBull4.Utils.GetBestUnitID(unit)] = true
-	local pet = PitBull4.Utils.GetBestUnitID(unit .. "pet")
-	tmp[unit .. "pet"] = true
-	if pet then
-		tmp[pet] = true
-	end
-	local non_pet = unit:gsub("pet", "")
-	if non_pet == "" then
-		non_pet = "player"
-	end
-	tmp[non_pet] = true
-	for frame in self:IterateFrames(true) do
-		if tmp[frame:GetAttribute("unit")] then
-			local new_unit = SecureButton_GetModifiedUnit(frame, "LeftButton")
-			local old_unit = frame.unit
-			if old_unit ~= new_unit then
-				frame.unit = new_unit
-				if old_unit then
-					PitBull4.unit_id_to_frames[old_unit][frame] = nil
-					PitBull4.unit_id_to_frames_with_wacky[old_unit][frame] = nil
-				end
-				if new_unit then
-					PitBull4.unit_id_to_frames[new_unit][frame] = true
-					PitBull4.unit_id_to_frames_with_wacky[new_unit][frame] = true
-				end
-				frame:UpdateGUID(UnitGUID(new_unit), true)
-			end
-		end
-	end
-	wipe(tmp)
-end
-PitBull4.UNIT_EXITED_VEHICLE = PitBull4.UNIT_ENTERED_VEHICLE
+-- local tmp = {}
+-- function PitBull4:UNIT_ENTERED_VEHICLE(event, unit)
+-- 	if (event == "UNIT_ENTERED_VEHICLE" and unit == "player" and not UnitHasVehiclePlayerFrameUI("player")) then
+-- 		-- Ignore swapping units when the vehicle player frame ui is disabled.
+-- 		-- This is a workaround for the fact that SecureButton_GetModifiedUnit
+-- 		-- is not properly respecting not to swap frames (heck the default
+-- 		-- UI does weird stuff itself).  Clicking on the frame will be
+-- 		-- wrong but we'll at least look right and you can't really target
+-- 		-- the unit inside the vehicle anyway so it's not the end of the world.
+-- 		return
+-- 	end
+-- 	tmp[unit] = true
+-- 	tmp[PitBull4.Utils.GetBestUnitID(unit)] = true
+-- 	local pet = PitBull4.Utils.GetBestUnitID(unit .. "pet")
+-- 	tmp[unit .. "pet"] = true
+-- 	if pet then
+-- 		tmp[pet] = true
+-- 	end
+-- 	local non_pet = unit:gsub("pet", "")
+-- 	if non_pet == "" then
+-- 		non_pet = "player"
+-- 	end
+-- 	tmp[non_pet] = true
+-- 	for frame in self:IterateFrames(true) do
+-- 		if tmp[frame:GetAttribute("unit")] then
+-- 			local new_unit = SecureButton_GetModifiedUnit(frame, "LeftButton")
+-- 			local old_unit = frame.unit
+-- 			if old_unit ~= new_unit then
+-- 				frame.unit = new_unit
+-- 				if old_unit then
+-- 					PitBull4.unit_id_to_frames[old_unit][frame] = nil
+-- 					PitBull4.unit_id_to_frames_with_wacky[old_unit][frame] = nil
+-- 				end
+-- 				if new_unit then
+-- 					PitBull4.unit_id_to_frames[new_unit][frame] = true
+-- 					PitBull4.unit_id_to_frames_with_wacky[new_unit][frame] = true
+-- 				end
+-- 				frame:UpdateGUID(UnitGUID(new_unit), true)
+-- 			end
+-- 		end
+-- 	end
+-- 	wipe(tmp)
+-- end
+-- PitBull4.UNIT_EXITED_VEHICLE = PitBull4.UNIT_ENTERED_VEHICLE
 
 function PitBull4:ZONE_CHANGED_NEW_AREA()
 	-- When we change zones if we lose the vehicle we don't get events for it.
