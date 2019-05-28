@@ -186,7 +186,7 @@ local DATABASE_DEFAULTS = {
 		colors = {
 			class = {}, -- filled in by RAID_CLASS_COLORS
 			power = { -- filled in by PowerBarColor
-				["PB4_ALTERNATE"] = { 0.7, 0.7, 0.6 }, -- Fallback alternate power color
+				-- ["PB4_ALTERNATE"] = { 0.7, 0.7, 0.6 }, -- Fallback alternate power color
 			},
 			reaction = { -- filled in by FACTION_BAR_COLORS
 				civilian = { 48/255, 113/255, 191/255 }
@@ -310,9 +310,11 @@ local DEFAULT_UNITS =  {
 
 local LOCALIZED_NAMES = {}
 do
-	for i = 1, GetNumClasses() do
+	for i = 1, 12 do
 		local info = C_CreatureInfo.GetClassInfo(i)
-		LOCALIZED_NAMES[info.classFile] = info.className
+		if info then
+			LOCALIZED_NAMES[info.classFile] = info.className
+		end
 	end
 
 	local i = 1
@@ -325,10 +327,10 @@ do
 		info = C_CreatureInfo.GetRaceInfo(i)
 	until not info
 
-	setmetatable(LOCALIZED_NAMES, { __index = function(self, key)
-		self[key] = key
-		return key
-	end })
+	-- setmetatable(LOCALIZED_NAMES, { __index = function(self, key)
+	-- 	self[key] = key
+	-- 	return key
+	-- end })
 end
 
 

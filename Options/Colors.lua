@@ -60,7 +60,9 @@ local function get_class_options()
 	}
 
 	for class in pairs(RAID_CLASS_COLORS) do
-		class_options.args[class] = option
+		if LN[class] then
+			class_options.args[class] = option
+		end
 	end
 
 
