@@ -549,14 +549,6 @@ local name, _, min , max, value, id = GetWatchedFactionInfo()
 if IsMouseOver() then
   return name or ConfigMode()
 else
-  local fs_id, fs_rep, _, _, _, _, _, fs_threshold, next_fs_threshold = GetFriendshipReputation(id)
-  if fs_id then
-    if next_fs_threshold then
-      min, max, value = fs_threshold, next_fs_threshold, fs_rep
-    else
-      min, max, value = 0, 1, 1
-    end
-  end
   local bar_cur,bar_max = value-min,max-min
   return "%d/%d (%s%%)",bar_cur,bar_max,Percent(bar_cur,bar_max)
 end]],
@@ -787,33 +779,6 @@ local function fix_power_texts()
 	end
 end
 
--- update pre-mop default rep text for friendships
-local function fix_rep_std_text()
-	local OLD_CODE = [[
-local name,_,min,max,value = GetWatchedFactionInfo()
-if IsMouseOver() then
-  return name or ConfigMode()
-else
-  local bar_cur,bar_max = value-min,max-min
-  return "%d/%d (%s%%)",bar_cur,bar_max,Percent(bar_cur,bar_max)
-end]]
-	local sv = PitBull4.db:GetNamespace("LuaTexts").profiles
-	for _, profile in next, sv do
-		local layouts = profile.layouts
-		if layouts then
-			for _, layout in next, layouts do
-				local elements = layout.elements
-				if elements then
-					for _, text in next, elements do
-						if text.code == OLD_CODE then
-							text.code = PROVIDED_CODES[L["Reputation"]][L["Standard"]].code
-						end
-					end
-				end
-			end
-		end
-	end
-end
 
 local timerframe = CreateFrame("Frame")
 PitBull4_LuaTexts.timerframe = timerframe
@@ -828,7 +793,6 @@ function PitBull4_LuaTexts:OnInitialize()
 	-- should probably switch to a global db version check/upgrade process
 	-- this doesn't need to run every load
 	fix_legacy_events()
-	fix_rep_std_text()
 	fix_power_texts()
 end
 

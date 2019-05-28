@@ -23,17 +23,6 @@ function PitBull4_ReputationBar:GetValue(frame)
 	if not name then
 		return nil
 	end
-	-- Rather than doing the sane thing Blizzard had to invent a new system that makes things overly complex
-	-- Apparently something was wrong with using the existing min, max, values
-	local fs_id, fs_rep, _, _, _, _, _, fs_threshold, next_fs_threshold = GetFriendshipReputation(id)
-	if fs_id then
-		if next_fs_threshold then
-			min, max, value = fs_threshold, next_fs_threshold, fs_rep
-		else
-			-- max rank, make it look like a full bar
-			min, max, value = 0, 1, 1
-		end
-	end
 	-- Normalize values
 	max = max - min
 	value = value - min
@@ -53,9 +42,6 @@ end
 
 function PitBull4_ReputationBar:GetColor(frame, value)
 	local _, reaction, _, _, _, id = GetWatchedFactionInfo()
-	if GetFriendshipReputation(id) then
-		reaction = 5 -- always color friendships "green"
-	end
 	local color = PitBull4.ReactionColors[reaction]
 	if color then
 		return color[1], color[2], color[3]
@@ -72,8 +58,4 @@ local function Update()
 		PitBull4_ReputationBar:Update(frame)
 	end
 end
-if MainMenuBar_UpdateExperienceBars then
-	hooksecurefunc("MainMenuBar_UpdateExperienceBars", Update)
-else
-	hooksecurefunc(StatusTrackingBarManager, "UpdateBarsShown", Update)
-end
+hooksecurefunc("MainMenuBar_UpdateExperienceBars", Update)
