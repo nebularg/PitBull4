@@ -411,9 +411,6 @@ end
 ScriptEnv.ClassColor = ClassColor
 
 local function Level(unit)
-	if UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit) then
-		return UnitBattlePetLevel(unit)
-	end
 	local level = UnitLevel(unit)
 	if level <= 0 then
 		level = "??"
@@ -517,9 +514,6 @@ end
 ScriptEnv.ShortClass = ShortClass
 
 local function Creature(unit)
-	if UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit) then
-		return _G["BATTLE_PET_NAME_"..UnitBattlePetType(unit)].." "..TOOLTIP_BATTLE_PET
-	end
 	return UnitCreatureFamily(unit) or UnitCreatureType(unit) or UNKNOWN
 end
 ScriptEnv.Creature = Creature
