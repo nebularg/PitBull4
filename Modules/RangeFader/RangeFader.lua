@@ -10,7 +10,7 @@ PitBull4_RangeFader:SetDescription(L["Make the unit frame fade if out of range."
 PitBull4_RangeFader:SetDefaults({
 	enabled = false,
 	out_of_range_opacity = 0.6,
-	check_method = 'class',
+	check_method = "class",
 })
 
 function PitBull4_RangeFader:OnEnable()
@@ -33,59 +33,39 @@ do
 	local res_spells = {}
 
 	local _,class = UnitClass("player")
-
-	if class == "PRIEST" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(528) -- Dispel Magic
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(585) -- Smite
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(15407) -- Mind Flay
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(2061) -- Flash Heal
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(17) -- Power Word: Shield
-		res_spells[#res_spells+1] = GetSpellInfo(2006) -- Resurrection
-	elseif class == "DRUID" then
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(8921) -- Moonfire
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(8936) -- Regrowth
-		res_spells[#res_spells+1] = GetSpellInfo(50769) -- Revive
+	if class == "DRUID" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(8921) -- Moonfire (30)
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(5185) -- Healing Touch
+		res_spells[#res_spells+1] = GetSpellInfo(20739) -- Rebirth
+	elseif class == "HUNTER" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(1978) -- Serpent Sting (8-35)
+		pet_spells[#pet_spells+1] = GetSpellInfo(136) -- Mend Pet (20)
+		pet_spells[#pet_spells+1] = GetSpellInfo(2641) -- Dismiss Pet (10)
+	elseif class == "MAGE" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(118) -- Polymorph (30)
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(1459) -- Arcane Intellect
 	elseif class == "PALADIN" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(62124) -- Hand of Reckoning
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(1044) -- Hand of Freedom
+		enemy_spells[#long_enemy_spells+1] = GetSpellInfo(879) -- Exorcism (30)
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(635) -- Holy Light
 		res_spells[#res_spells+1] = GetSpellInfo(7328) -- Redemption
+	elseif class == "PRIEST" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(585) -- Smite (30)
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(2050) -- Lesser Heal
+		res_spells[#res_spells+1] = GetSpellInfo(2006) -- Resurrection
+	elseif class == "ROGUE" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(1725) -- Distract (30)
 	elseif class == "SHAMAN" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(51514) -- Hex
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(403) -- Lightning Bolt
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(8004) -- Healing Surge
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(403) -- Lightning Bolt (30)
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(331) -- Healing Wave
 		res_spells[#res_spells+1] = GetSpellInfo(2008) -- Ancestral Spirit
 	elseif class == "WARLOCK" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(5782) -- Fear
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(196657) -- Shadow Bolt
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(5782) -- Fear (20)
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(686) -- Shadow Bolt (30)
 		pet_spells[#pet_spells+1] = GetSpellInfo(755) -- Health Funnel
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(5697) -- Unending Breath
 		res_spells[#res_spells+1] = GetSpellInfo(20707) -- Soulstone
-	elseif class == "MAGE" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(118) -- Polymorph
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(2139) -- Counterspell
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(130) -- Slow Fall
-	elseif class == "HUNTER" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(147362) -- Counter Shot
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(190925) -- Harpoon
-		pet_spells[#pet_spells+1] = GetSpellInfo(136) -- Mend Pet
-	elseif class == "DEATHKNIGHT" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(49576) -- Death Grip
-		res_spells[#res_spells+1] = GetSpellInfo(61999) -- Raise Ally
-	elseif class == "ROGUE" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(36554) -- Shadowstep
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(185763) -- Pistol Shot
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(57934) -- Tricks of the Trade
 	elseif class == "WARRIOR" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(100) -- Charge
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(355) -- Taunt
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(198304) -- Intercept (Protection)
-	elseif class == "MONK" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(115546) -- Provoke
-		-- long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(117952) -- Crackling Jade Lightning
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(116670) -- Vivify
-		res_spells[#res_spells+1] = GetSpellInfo(115178) -- Resuscitate
-	elseif class == "DEMONHUNTER" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(183752) -- Consume Magic
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(100) -- Charge (8-25)
 	end
 
 	function friendly_is_in_range(unit)
@@ -185,12 +165,6 @@ function PitBull4_RangeFader:GetOpacity(frame)
 		else
 			return db.out_of_range_opacity
 		end
-	elseif check_method == "helpful" then
-		if UnitInRange(unit) then
-			return 1
-		else
-			return db.out_of_range_opacity
-		end
 	elseif check_method == "visible" then
 		if UnitIsVisible(unit) then
 			return 1
@@ -250,7 +224,6 @@ PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 		name = L["Range check method"],
 		desc = L["Choose the method to determine if the unit is in range."],
 		values = {
-			helpful = L["Helpful spells (~40 yards)"],
 			class = L["Class abilities"],
 			follow = L["Follow (~28 yards)"],
 			trade = L["Trade (~11 yards)"],
