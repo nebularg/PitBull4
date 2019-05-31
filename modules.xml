@@ -17,7 +17,7 @@
 <Include file="Modules\CombatFader\load.xml"/>
 <Include file="Modules\CombatIcon\load.xml"/>
 <Include file="Modules\CombatText\load.xml"/>
-<!-- <Include file="Modules\ComboPoints\load.xml"/> -->
+<Include file="Modules\ComboPoints\load.xml"/>
 <!-- <Include file="Modules\DogTagTexts\load.xml"/> -->
 <Include file="Modules\ExperienceBar\load.xml"/>
 <Include file="Modules\HealthBar\load.xml"/>

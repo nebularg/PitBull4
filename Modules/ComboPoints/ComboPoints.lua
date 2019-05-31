@@ -10,7 +10,7 @@ local is_druid = player_class == "DRUID"
 
 local BASE_TEXTURE_PATH = [[Interface\AddOns\PitBull4\Modules\ComboPoints\]]
 
-local SPELL_POWER_COMBO_POINTS = 4 -- Enum.PowerType.ComboPoints
+local SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints
 
 local TEXTURES = {
 	default = L["Default"],
@@ -42,22 +42,21 @@ PitBull4_ComboPoints:SetDefaults({
 function PitBull4_ComboPoints:OnEnable()
 	self:RegisterEvent("UNIT_DISPLAYPOWER")
 	self:RegisterEvent("UNIT_POWER_FREQUENT")
-	self:RegisterEvent("UNIT_EXITED_VEHICLE", "UNIT_DISPLAYPOWER")
 end
 
-function PitBull4_ComboPoints:UNIT_POWER_FREQUENT(event, unit, power_type)
-	if unit ~= "player" and unit ~= "pet" then return end
+function PitBull4_ComboPoints:UNIT_POWER_FREQUENT(_, unit, power_type)
+	if unit ~= "player" then return end
 	if power_type ~= "COMBO_POINTS" then return end
 
-	for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
+	for frame in PitBull4:IterateFramesForUnitIDs("player", "target") do
 		self:Update(frame)
 	end
 end
 
-function PitBull4_ComboPoints:UNIT_DISPLAYPOWER(event, unit)
-	if unit ~= "player" and unit ~= "pet" then return end
+function PitBull4_ComboPoints:UNIT_DISPLAYPOWER(_, unit)
+	if unit ~= "player" then return end
 
-	for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
+	for frame in PitBull4:IterateFramesForUnitIDs("player", "target") do
 		self:Update(frame)
 	end
 end
@@ -81,16 +80,11 @@ function PitBull4_ComboPoints:ClearFrame(frame)
 end
 
 function PitBull4_ComboPoints:UpdateFrame(frame)
-	if frame.unit ~= "target" and frame.unit ~= "player" and frame.unit ~= "pet" then
+	if frame.unit ~= "target" and frame.unit ~= "player" then
 		return self:ClearFrame(frame)
 	end
 
-	local has_vehicle = UnitHasVehicleUI("player")
-	if frame.unit == "pet" and not has_vehicle then
-		return self:ClearFrame(frame)
-	end
-
-	local num_combos = has_vehicle and GetComboPoints("vehicle", "target") or UnitPower("player", SPELL_POWER_COMBO_POINTS)
+	local num_combos = UnitPower("player", SPELL_POWER_COMBO_POINTS)
 
 	-- While non-rogues and non-druids typically don't have combo points, certain game
 	-- mechanics may add them anyway (e.g. Malygos vehicles). Always show the combo
@@ -199,7 +193,7 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 	local function set(info, value)
 		PitBull4.Options.GetLayoutDB(self)[info[#info]] = value
 
-		for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
+		for frame in PitBull4:IterateFramesForUnitIDs("player", "target") do
 			self:Clear(frame)
 			self:Update(frame)
 		end
@@ -248,7 +242,7 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 			local color = PitBull4.Options.GetLayoutDB(self).color
 			color[1], color[2], color[3] = r, g, b
 
-			for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
+			for frame in PitBull4:IterateFramesForUnitIDs("player", "target") do
 				self:Clear(frame)
 				self:Update(frame)
 			end
@@ -271,7 +265,7 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 			local color = PitBull4.Options.GetLayoutDB(self).background_color
 			color[1], color[2], color[3], color[4] = r, g, b, a
 
-			for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
+			for frame in PitBull4:IterateFramesForUnitIDs("player", "target") do
 				self:Clear(frame)
 				self:Update(frame)
 			end
