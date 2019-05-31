@@ -847,7 +847,6 @@ end)
 local my_units = {
 	player = true,
 	pet = true,
-	vehicle = true,
 }
 
 -- Mine, Filter by if you cast it or not.
@@ -1063,7 +1062,6 @@ local LN = PitBull4.LOCALIZED_NAMES
 local _,player_class = UnitClass("player")
 local _,player_race  = UnitRace("player")
 local classes = {
-	'DEATHKNIGHT',
 	'DRUID',
 	'HUNTER',
 	'MAGE',
@@ -1073,8 +1071,6 @@ local classes = {
 	'SHAMAN',
 	'WARLOCK',
 	'WARRIOR',
-	'MONK',
-	'DEMONHUNTER',
 }
 local class_names = {}
 for i, v in ipairs(classes) do
@@ -1085,23 +1081,10 @@ local races = {
 	'Dwarf',
 	'NightElf',
 	'Gnome',
-	'Draenei',
 	'Orc',
 	'Scourge',
 	'Tauren',
 	'Troll',
-	'BloodElf',
-	'Worgen',
-	'Goblin',
-	'Pandaren',
-	'DarkIronDwarf',
-	'LightforgedDraenei',
-	'VoidElf',
-	-- 'KulTiranHuman',
-	'MagharOrc',
-	'HighmountainTauren',
-	'Nightborne',
-	-- 'ZandalariTroll',
 }
 local race_names = {}
 for i, v in ipairs(races) do

@@ -2,7 +2,7 @@
 local PitBull4 = _G.PitBull4
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
-local MSQ = LibStub("Masque", true)
+-- local MSQ = LibStub("Masque", true)
 
 -- Called from UpdateFrame to set the layout group and catch layout changes
 function PitBull4_Aura:UpdateSkin(frame)
