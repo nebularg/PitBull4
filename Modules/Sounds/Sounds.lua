@@ -12,7 +12,6 @@ PitBull4_Sounds:SetDefaults()
 function PitBull4_Sounds:OnEnable()
 	self:RegisterEvent("UNIT_FACTION")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
-	self:RegisterEvent("PLAYER_FOCUS_CHANGED")
 	self:CheckPvP()
 end
 
@@ -43,10 +42,6 @@ function PitBull4_Sounds:PLAYER_unit_CHANGED(unit)
 	else
 		PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT)
 	end
-end
-
-function PitBull4_Sounds:PLAYER_FOCUS_CHANGED()
-	self:PLAYER_unit_CHANGED("focus")
 end
 
 function PitBull4_Sounds:PLAYER_TARGET_CHANGED()
