@@ -46,11 +46,8 @@ function PitBull4_CastBar:OnEnable()
 	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED", "UpdateInfo")
 	self:RegisterEvent("UNIT_SPELLCAST_DELAYED", "UpdateInfo")
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "UpdateInfo")
-	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE", "UpdateInfo")
-	self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE", "UpdateInfo")
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "UpdateInfo")
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", "UpdateInfo")
-	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
 end
 
 function PitBull4_CastBar:OnDisable()
@@ -81,6 +78,7 @@ do
 end
 
 function PitBull4_CastBar:GetValue(frame)
+	if frame.unit ~= "player" then return end
 	local guid = frame.guid
 	local data = cast_data[guid]
 	if frame.is_wacky or not data then
@@ -213,6 +211,7 @@ function PitBull4_CastBar:ClearFramesByGUID(guid)
 end
 
 function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
+	if unit ~= "player" then return end
 	local guid = UnitGUID(unit)
 	if not guid then
 		return
@@ -223,10 +222,10 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
 		cast_data[guid] = data
 	end
 
-	local spell, _, icon, start_time, end_time, _, cast_id, uninterruptible = UnitCastingInfo(unit)
+	local spell, _, icon, start_time, end_time, _, cast_id, uninterruptible = CastingInfo()
 	local channeling = false
 	if not spell then
-		spell, _, icon, start_time, end_time, _, uninterruptible = UnitChannelInfo(unit)
+		spell, _, icon, start_time, end_time, _, uninterruptible = ChannelInfo()
 		channeling = true
 	end
 	if spell then
@@ -329,13 +328,6 @@ function PitBull4_CastBar:FixCastData()
 		timer_frame:Hide()
 	end
 	wipe(tmp)
-end
-
-function PitBull4_CastBar:INSTANCE_ENCOUNTER_ENGAGE_UNIT()
-	for i=1, _G.MAX_BOSS_FRAMES do
-		local unit = ("boss%d"):format(i)
-		self:UpdateInfo(nil, unit)
-	end
 end
 
 PitBull4_CastBar:SetLayoutOptionsFunction(function(self)

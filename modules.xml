@@ -11,8 +11,8 @@
 <!-- <Include file="Modules\BattlePet\load.xml"/> -->
 <Include file="Modules\BlankSpace\load.xml"/>
 <Include file="Modules\Border\load.xml"/>
-<!-- <Include file="Modules\CastBar\load.xml"/> -->
-<!-- <Include file="Modules\CastBarLatency\load.xml"/> -->
+<Include file="Modules\CastBar\load.xml"/>
+<Include file="Modules\CastBarLatency\load.xml"/>
 <!-- <Include file="Modules\Chi\load.xml"/> -->
 <Include file="Modules\CombatFader\load.xml"/>
 <Include file="Modules\CombatIcon\load.xml"/>

@@ -75,7 +75,7 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, _, spell_id)
 		end
 	end
 
-	local name, _, _, new_start, new_end = UnitCastingInfo(unit)
+	local name, _, _, new_start, new_end = CastingInfo()
 	if not name then
 		return
 	end
@@ -113,7 +113,7 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_CHANNEL_START(event, unit, _, sp
 		end
 	end
 
-	local name, _, _, new_start, new_end = UnitChannelInfo(unit)
+	local name, _, _, new_start, new_end = ChannelInfo()
 	if not name then
 		return
 	end

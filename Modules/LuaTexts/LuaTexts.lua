@@ -875,7 +875,7 @@ local function copy(t)
 end
 
 local function update_cast_data(event, unit, event_cast_id, event_spell_id)
-	if not unit then return end
+	if unit ~= "player" then return end
 	local guid = UnitGUID(unit)
 	if not guid then return end
 	local data = cast_data[guid]
@@ -884,10 +884,10 @@ local function update_cast_data(event, unit, event_cast_id, event_spell_id)
 		cast_data[guid] = data
 	end
 
-	local spell, _, _, start_time, end_time, _, cast_id, uninterruptible, spell_id = UnitCastingInfo(unit)
+	local spell, _, _, start_time, end_time, _, cast_id, uninterruptible, spell_id = CastingInfo()
 	local channeling = false
 	if not spell then
-		spell, _, _, start_time, end_time, _, uninterruptible, spell_id = UnitChannelInfo(unit)
+		spell, _, _, start_time, end_time, _, uninterruptible, spell_id = ChannelInfo()
 		channeling = true
 	end
 	if spell then
