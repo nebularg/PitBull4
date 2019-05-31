@@ -169,10 +169,9 @@ function PitBull4.Options.get_unit_options()
 		end
 	end
 
-	local update, refresh_group, refresh_layout, refresh_vehicle
+	local update, refresh_group, refresh_layout
 	do
 		local update_funcs, refresh_group_funcs, refresh_layout_funcs = {}, {}, {}
-		local refresh_vehicle_funcs = {}
 
 		function update(type)
 			return update_funcs[type]()
@@ -184,10 +183,6 @@ function PitBull4.Options.get_unit_options()
 
 		function refresh_layout(type)
 			return refresh_layout_funcs[type]()
-		end
-
-		function refresh_vehicle(type)
-			return refresh_vehicle_funcs[type]()
 		end
 
 		function update_funcs.groups()
@@ -220,20 +215,6 @@ function PitBull4.Options.get_unit_options()
 			end
 		end
 		refresh_layout_funcs.units = refresh_group_funcs.units
-
-		function refresh_vehicle_funcs.units()
-			for frame in PitBull4:IterateFramesForClassification(CURRENT_UNIT, true) do
-				frame:RefreshVehicle()
-			end
-		end
-
-		function refresh_vehicle_funcs.groups()
-			for header in PitBull4:IterateHeadersForName(CURRENT_GROUP) do
-				for _,frame in header:IterateMembers(false) do
-					frame:RefreshVehicle()
-				end
-			end
-		end
 	end
 
 	local function round(value)
@@ -393,11 +374,6 @@ function PitBull4.Options.get_unit_options()
 	local function set_with_update(info, value)
 		if set(info, value) then
 			update(info[1])
-		end
-	end
-	local function set_with_refresh_vehicle(info, value)
-		if set(info, value) then
-			refresh_vehicle(info[1])
 		end
 	end
 	local function set_with_swap_template(info, value)
@@ -815,49 +791,6 @@ function PitBull4.Options.get_unit_options()
 		step = 1,
 		bigStep = 5,
 		disabled = disabled,
-	}
-
-	shared_args.vehicle_swap = {
-		name = function (info)
-			local pet_unit = false
-			if info[1] == "units" and CURRENT_UNIT:match("pet") then
-				pet_unit = true
-			end
-			if info[1] == "groups" and get_group_db().unit_group:match("pet") then
-				pet_unit = true
-			end
-			if pet_unit then
-				return L["Swap with owner"]
-			else
-				return L["Swap with vehicle"]
-			end
-		end,
-		desc = function (info)
-			local pet_unit = false
-			if info[1] == "units" and CURRENT_UNIT:match("pet") then
-				pet_unit = true
-			end
-			if info[1] == "groups" and get_group_db().unit_group:match("pet") then
-				pet_unit = true
-			end
-			if pet_unit then
-				return L["Show the owner instead of the vehicle."]
-			else
-				return L["Show the vehicle instead of the owner."]
-			end
-		end,
-		order = next_order(),
-		type = 'toggle',
-		get = get,
-		set = set_with_refresh_vehicle,
-		disabled = disabled,
-		hidden = function(info)
-			if info[1] == "units" then
-				return CURRENT_UNIT:match("focus") or CURRENT_UNIT:match("target")
-			else
-				return get_group_db().unit_group:match("target")
-			end
-		end,
 	}
 
 	group_args.include_player = {
