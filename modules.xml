@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 
 <!-- <Include file="Modules\Aggro\load.xml"/> -->
-<!-- <Include file="Modules\AltManaBar\load.xml"/> -->
+<Include file="Modules\AltManaBar\load.xml"/>
 <!-- <Include file="Modules\AltPowerBar\load.xml"/> -->
 <!-- <Include file="Modules\ArcaneCharges\load.xml"/> -->
 <!-- <Include file="Modules\ArtifactPowerBar\load.xml"/> -->

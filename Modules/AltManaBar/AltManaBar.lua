@@ -1,5 +1,5 @@
 local _, player_class = UnitClass("player")
-if player_class ~= "DRUID" and player_class ~= "PRIEST" and player_class ~= "SHAMAN" then
+if player_class ~= "DRUID" then
 	return
 end
 
@@ -20,8 +20,7 @@ PitBull4_AltManaBar:SetDefaults({
 })
 
 -- constants
-local SPELL_POWER_MANA = 0 -- Enum.PowerType.Mana
-local DISPLAY_INFO = _G.ALT_MANA_BAR_PAIR_DISPLAY_INFO[player_class]
+local SPELL_POWER_MANA = Enum.PowerType.Mana
 
 -- cached power type for optimization
 local power_type = nil
@@ -42,16 +41,8 @@ function PitBull4_AltManaBar:GetValue(frame)
 		return nil
 	end
 
-	if UnitHasVehiclePlayerFrameUI("player") then
-		return nil
-	end
-
 	local max = UnitPowerMax("player", SPELL_POWER_MANA)
 	if max == 0 then
-		return nil
-	end
-
-	if not DISPLAY_INFO[power_type] and (player_class ~= "DRUID" or not self:GetLayoutDB(frame).show_in_forms) then
 		return nil
 	end
 
