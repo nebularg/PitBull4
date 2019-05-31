@@ -21,7 +21,7 @@
 <!-- <Include file="Modules\DogTagTexts\load.xml"/> -->
 <Include file="Modules\ExperienceBar\load.xml"/>
 <Include file="Modules\HealthBar\load.xml"/>
-<!-- <Include file="Modules\HideBlizzard\load.xml"/> -->
+<Include file="Modules\HideBlizzard\load.xml"/>
 <Include file="Modules\Highlight\load.xml"/>
 <!-- <Include file="Modules\HolyPower\load.xml"/> -->
 <Include file="Modules\HostilityFader\load.xml"/>

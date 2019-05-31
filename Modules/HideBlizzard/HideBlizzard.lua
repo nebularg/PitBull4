@@ -14,12 +14,8 @@ PitBull4_HideBlizzard:SetDefaults({}, {
 	party = true,
 	raid = false,
 	target = true,
-	focus = true,
 	castbar = true,
 	aura = false,
-	runebar = true,
-	altpower = false,
-	boss = false,
 })
 
 function PitBull4_HideBlizzard:OnEnable()
@@ -205,14 +201,6 @@ function showers:target()
 	ComboFrame:Show()
 end
 
-function hiders:focus()
-	hook_frames(FocusFrame)
-end
-
-function showers:focus()
-	unhook_frames(FocusFrame)
-end
-
 function hiders:castbar()
 	rawhook_frames(CastingBarFrame, PetCastingBarFrame)
 end
@@ -220,30 +208,6 @@ end
 function showers:castbar()
 	unhook_frames(CastingBarFrame, PetCastingBarFrame)
 end
-
--- function hiders:runebar()
--- 	hook_frames(TotemFrame, RuneFrame, PriestBarFrame)
--- 	if PlayerFrame.classPowerBar then
--- 		hook_frames(PlayerFrame.classPowerBar)
--- 	end
--- end
---
--- function showers:runebar()
--- 	unhook_frames(TotemFrame, RuneFrame, PriestBarFrame)
--- 	TotemFrame_Update()
---
--- 	if PlayerFrame.classPowerBar then
--- 		unhook_frame(PlayerFrame.classPowerBar)
--- 		PlayerFrame.classPowerBar:Setup()
--- 	end
--- 	local _, class = UnitClass("player")
--- 	if class == "DEATHKNIGHT" then
--- 		RuneFrame:Show()
--- 		RuneFrame:GetScript("OnEvent")(RuneFrame, "PLAYER_ENTERING_WORLD")
--- 	elseif class == "PRIEST" then
--- 		PriestBarFrame_CheckAndShow()
--- 	end
--- end
 
 function hiders:aura()
 	hook_frames(BuffFrame, TemporaryEnchantFrame)
@@ -257,38 +221,6 @@ function showers:aura()
 	BuffFrame:Show()
 
 	TemporaryEnchantFrame:Show()
-end
-
-function hiders:altpower()
-	hook_frames(PlayerPowerBarAlt)
-end
-
-function showers:altpower()
-	unhook_frames_without_init(PlayerPowerBarAlt)
-	PlayerPowerBarAlt:RegisterEvent("UNIT_POWER_BAR_SHOW")
-	PlayerPowerBarAlt:RegisterEvent("UNIT_POWER_BAR_HIDE")
-	PlayerPowerBarAlt:RegisterEvent("PLAYER_ENTERING_WORLD")
-	UnitPowerBarAlt_UpdateAll(PlayerPowerBarAlt)
-end
-
-function hiders:boss()
-	for i=1, MAX_BOSS_FRAMES do
-		local frame = _G["Boss"..i.."TargetFrame"]
-		hook_frames(frame)
-	end
-end
-
-function showers:boss()
-	for i=1, MAX_BOSS_FRAMES do
-		local frame = _G["Boss"..i.."TargetFrame"]
-		unhook_frames_without_init(frame)
-		if i == 1 then
-			BossTargetFrame_OnLoad(frame, "boss1", "INSTANCE_ENCOUNTER_ENGAGE_UNIT")
-		else
-			BossTargetFrame_OnLoad(frame, "boss"..i)
-		end
-		Target_Spellbar_OnEvent(frame.spellbar, "INSTANCE_ENCOUNTER_ENGAGE_UNIT")
-	end
 end
 
 for k, v in pairs(hiders) do
@@ -319,14 +251,6 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		get = get,
 		set = set,
 		hidden = hidden,
-	-- }, 'runebar', {
-	-- 	type = 'toggle',
-	-- 	name = L["Class power bar"],
-	-- 	desc = L["Hides the class resource bar attached to your player frame."],
-	-- 	get = get,
-	-- 	set = set,
-	-- 	hidden = hidden,
-	-- 	disabled = function() return self.db.profile.global.player end,
 	}, 'party', {
 		type = 'toggle',
 		name = L["Party"],
@@ -348,13 +272,6 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		get = get,
 		set = set,
 		hidden = hidden,
-	}, 'focus', {
-		type = 'toggle',
-		name = L["Focus"],
-		desc = L["Hide the standard focus frame."],
-		get = get,
-		set = set,
-		hidden = hidden,
 	}, 'castbar', {
 		type = 'toggle',
 		name = L["Cast bar"],
@@ -366,20 +283,6 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		type = 'toggle',
 		name = L["Buffs/debuffs"],
 		desc = L["Hides the standard buff/debuff frame in the top-right corner of the screen."],
-		get = get,
-		set = set,
-		hidden = hidden,
-	}, 'altpower', {
-		type = 'toggle',
-		name = L["Alternate power"],
-		desc = L["Hides the standard alternate power bar shown in some encounters and quests."],
-		get = get,
-		set = set,
-		hidden = hidden,
-	}, 'boss', {
-		type = 'toggle',
-		name = L["Boss"],
-		desc = L["Hides the standard boss frames."],
 		get = get,
 		set = set,
 		hidden = hidden,
