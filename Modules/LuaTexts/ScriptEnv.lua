@@ -650,7 +650,7 @@ end
 ScriptEnv.Status = Status
 
 local function HP(unit, no_fast)
-	local hp = UnitHealth(unit)
+	local hp = RealMobHealth and RealMobHealth.GetHealth(unit, true) or UnitHealth(unit)
 	if not no_fast then
 		hp_cache[ScriptEnv.font_string] = true
 	end
@@ -661,12 +661,15 @@ local function HP(unit, no_fast)
 end
 ScriptEnv.HP = HP
 
--- Just use the Blizzard API no change needed
--- only reason this is here is for symmetry,
--- it feels weird to have HP (which we need
--- to avoid the hp = 1 while dead crap), but
--- not have MaxHP
-local MaxHP = UnitHealthMax
+local function MaxHP(unit)
+	if RealMobHealth then
+		local _, max_hp = RealMobHealth.GetHealth(unit, true)
+		if max_hp then
+			return max_hp
+		end
+	end
+	return UnitHealthMax(unit)
+end
 ScriptEnv.MaxHP = MaxHP
 
 local function Power(unit, power_type)
