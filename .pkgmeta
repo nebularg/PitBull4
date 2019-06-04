@@ -23,6 +23,7 @@ externals:
     Modules/Aggro/Libs/LibBanzai-2.0: https://repos.wowace.com/wow/libbanzai-2-0/trunk
     Modules/DogTagTexts/Libs/LibDogTag-3.0: https://repos.wowace.com/wow/libdogtag-3-0
     Modules/DogTagTexts/Libs/LibDogTag-Unit-3.0: https://repos.wowace.com/wow/libdogtag-unit-3-0
+    Modules/VisualHeal/Libs/LibHealComm-4.0: https://repos.wowace.com/wow/libhealcomm-4-0
 
 ignore:
     - Docs

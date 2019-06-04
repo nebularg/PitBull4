@@ -1,4 +1,9 @@
 
+local LibHealComm = LibStub("LibHealComm-4.0", true)
+if not LibHealComm then
+	error("PitBull4_VisualHeal requires the library LibHealComm-4.0 to be available.")
+end
+
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
@@ -18,12 +23,10 @@ PitBull4_VisualHeal:SetName(L["Visual heal"])
 PitBull4_VisualHeal:SetDescription(L["Visualises healing done by you and your group members before it happens."])
 PitBull4_VisualHeal:SetDefaults({
 	show_overheal = true,
-	show_overabsorb = true,
 }, {
 	incoming_color = { 0.4, 0.6, 0.4, 0.75 },
 	outgoing_color = { 0, 1, 0, 1 },
 	outgoing_color_overheal = { 1, 0, 0, 0.65 },
-	absorb_color = { .4, .258, .619, 1},
 	auto_luminance = true,
 })
 
@@ -37,11 +40,25 @@ local function clamp(value, min, max)
 	end
 end
 
+local player_guid = UnitGUID("player")
+local player_is_casting = false
+local player_healing_guids = {}
+local player_end_time = nil
+
 function PitBull4_VisualHeal:OnEnable()
-	self:RegisterEvent("UNIT_HEAL_PREDICTION")
-	self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UNIT_HEAL_PREDICTION")
-	self:RegisterEvent("UNIT_MAXHEALTH", "UNIT_HEAL_PREDICTION")
-	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", "UNIT_HEAL_PREDICTION")
+	LibHealComm.RegisterCallback(self, "HealComm_HealStarted")
+	LibHealComm.RegisterCallback(self, "HealComm_HealUpdated")
+	LibHealComm.RegisterCallback(self, "HealComm_HealStopped")
+	LibHealComm.RegisterCallback(self, "HealComm_HealDelayed")
+	LibHealComm.RegisterCallback(self, "HealComm_ModifierChanged")
+	LibHealComm.RegisterCallback(self, "HealComm_GUIDDisappeared")
+
+	self:RegisterEvent("UNIT_HEALTH")
+	self:RegisterEvent("UNIT_MAXHEALTH", "UNIT_HEALTH")
+end
+
+function PitBull4_VisualHeal:OnDisable()
+	LibHealComm.UnregisterAllCallbacks(self)
 end
 
 function PitBull4_VisualHeal:UpdateFrame(frame)
@@ -52,32 +69,34 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 		return self:ClearFrame(frame)
 	end
 
-	local player_healing = UnitGetIncomingHeals(unit, 'player')
-	local all_healing = UnitGetIncomingHeals(unit)
-	local all_absorbs = UnitGetTotalAbsorbs(unit)
+	local current_time = GetTime()
+	local time_band = 4 -- default to a 4 second window
+	if player_is_casting and player_healing_guids[guid] then
+		time_band = math.min(player_end_time - current_time, 4)
+	end
+
+	local player_healing = LibHealComm:GetHealAmount(guid, LibHealComm.ALL_HEALS, current_time + time_band, player_guid)
+	local others_healing = LibHealComm:GetOthersHealAmount(guid, LibHealComm.ALL_HEALS, current_time + time_band)
+
 	-- Bail out early if nothing going on for this unit
-	if not player_healing and not all_healing and not all_absorbs then
+	if not player_healing and not others_healing then
 		return self:ClearFrame(frame)
 	end
-	player_healing = player_healing or 0
-	all_healing = all_healing or 0
-	all_absorbs = all_absorbs or 0
-	local others_healing = all_healing - player_healing
 
+	local heal_modifier = LibHealComm:GetHealModifier(guid)
 
 	local unit_health_max = UnitHealthMax(unit)
+
 	local current_percent = 0
 	local others_percent = 0
 	local player_percent = 0
-	local absorb_percent = 0
 	if unit_health_max ~= 0 then
 		current_percent = UnitHealth(unit) / unit_health_max
-		others_percent = others_healing and others_healing / unit_health_max
-		player_percent = player_healing and player_healing / unit_health_max
-		absorb_percent = all_absorbs and all_absorbs / unit_health_max
+		others_percent = others_healing and heal_modifier * others_healing / unit_health_max or 0
+		player_percent = player_healing and heal_modifier * player_healing / unit_health_max or 0
 	end
 
-	if others_percent <= 0 and player_percent <= 0 and absorb_percent <= 0 then
+	if others_percent <= 0 and player_percent <= 0 then
 		return self:ClearFrame(frame)
 	end
 
@@ -89,7 +108,6 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 	end
 
 	local show_overheal = self:GetLayoutDB(frame).show_overheal
-	local show_overabsorb = self:GetLayoutDB(frame).show_overabsorb
 
 	-- If the user has selected to not show overheal we make sure to not set a value that goes beyond 100%.
 	if not show_overheal and ((others_percent+current_percent) > 1) then
@@ -103,12 +121,6 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 	end
 
 	bar:SetExtraValue(player_percent)
-
-	if not show_overabsorb and ((player_percent+others_percent+current_percent+absorb_percent) > 1) then
-		absorb_percent = 1 - (player_percent+others_percent+current_percent)
-	end
-	bar:SetExtra2Value(absorb_percent)
-
 	bar:SetTexture(health_bar:GetTexture())
 
 	local deficit = health_bar.deficit
@@ -178,17 +190,10 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 		bar:SetExtraAlpha(a)
 	end
 
-	if absorb_percent > 0 then
-		local r, g, b, a = unpack(db.absorb_color)
-		bar:SetExtra2Color(r, g, b)
-		bar:SetExtra2Alpha(a)
-	end
-
 	return true
 end
 
-function PitBull4_VisualHeal:UNIT_HEAL_PREDICTION(_, unit)
-	if not unit then return end
+function PitBull4_VisualHeal:UNIT_HEALTH(_, unit)
 	self:UpdateForUnitID(unit)
 end
 
@@ -202,6 +207,55 @@ function PitBull4_VisualHeal:ClearFrame(frame)
 end
 
 PitBull4_VisualHeal.OnHide = PitBull4_VisualHeal.ClearFrame
+
+function PitBull4_VisualHeal:HealComm_HealStarted(event, caster_guid, spell_id, heal_type, end_time, ...)
+	if caster_guid == player_guid and bit.band(heal_type,LibHealComm.DIRECT_HEALS) ~= 0 then
+		player_is_casting = true
+		wipe(player_healing_guids)
+		for i=1,select('#',...) do
+			player_healing_guids[select(i,...)] = true
+		end
+		player_end_time = end_time
+	end
+
+	for frame in PitBull4:IterateFramesForGUIDs(...) do
+		self:Update(frame)
+	end
+end
+
+function PitBull4_VisualHeal:HealComm_HealUpdated(event, caster_guid, spell_id, heal_type, end_time, ...)
+	for frame in PitBull4:IterateFramesForGUIDs(...) do
+		self:Update(frame)
+	end
+end
+
+function PitBull4_VisualHeal:HealComm_HealDelayed(event, caster_guid, spell_id, heal_type, end_time, ...)
+	if caster_guid == player_guid then
+		player_end_time = end_time
+	end
+
+	for frame in PitBull4:IterateFramesForGUIDs(...) do
+		self:Update(frame)
+	end
+end
+
+function PitBull4_VisualHeal:HealComm_HealStopped(event, caster_guid, spell_id, heal_type, interrupted, ...)
+	if caster_guid == player_guid and bit.band(heal_type,LibHealComm.DIRECT_HEALS) ~= 0 then
+		player_is_casting = false
+	end
+
+	for frame in PitBull4:IterateFramesForGUIDs(...) do
+		self:Update(frame)
+	end
+end
+
+function PitBull4_VisualHeal:HealComm_ModifierChanged(event, guid)
+	self:UpdateForGUID(guid)
+end
+
+function PitBull4_VisualHeal:HealComm_GUIDDisappeared(event, guid)
+	self:UpdateForGUID(guid)
+end
 
 PitBull4_VisualHeal:SetColorOptionsFunction(function(self)
 	local function get(info)
@@ -239,15 +293,6 @@ PitBull4_VisualHeal:SetColorOptionsFunction(function(self)
 		hasAlpha = true,
 		width = 'double',
 	},
-	'absorb_color', {
-		type = 'color',
-		name = L["Absorb color"],
-		desc = L["The color of the bar that shows absorption shields."],
-		get = get,
-		set = set,
-		hasAlpha = true,
-		width = 'double',
-	},
 	'auto_luminance', {
 		type = 'toggle',
 		name = L["Auto-luminance"],
@@ -265,7 +310,6 @@ PitBull4_VisualHeal:SetColorOptionsFunction(function(self)
 		self.db.profile.global.incoming_color = { 0.4, 0.6, 0.4, 0.75 }
 		self.db.profile.global.outgoing_color = { 0, 1, 0, 1 }
 		self.db.profile.global.outgoing_color_overheal = { 1, 0, 0, 0.65 }
-		self.db.profile.global.absorb_color = { .4, .258, .619, 1}
 		self.db.profile.global.auto_luminance = true
 	end
 end)
@@ -286,17 +330,5 @@ PitBull4_VisualHeal:SetLayoutOptionsFunction(function(self)
 			PitBull4.Options.GetLayoutDB(self).show_overheal = value
 		end,
 		disabled = disabled,
-	}, 'show_overabsorb', {
-		type = 'toggle',
-		name = L["Show overabsorb"],
-		desc = L["Show absorb past the end of the health bar."],
-		get = function(info)
-			return PitBull4.Options.GetLayoutDB(self).show_overabsorb
-		end,
-		set = function(info, value)
-			PitBull4.Options.GetLayoutDB(self).show_overabsorb = value
-		end,
-		disabled = disabled,
 	}
-
 end)
