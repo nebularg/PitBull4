@@ -49,38 +49,52 @@ PitBull4_Aura.can_purge = can_purge
 
 -- Rescan specialization spells that can change what we can dispel and purge.
 function PitBull4_Aura:PLAYER_TALENT_UPDATE()
-	can_dispel.DRUID.Curse = IsPlayerSpell(2782)
-	self:GetFilterDB(',3').aura_type_list.Curse = can_dispel.DRUID.Curse
-	can_dispel.DRUID.Poison = IsPlayerSpell(2893) or IsPlayerSpell(8946)
-	self:GetFilterDB(',3').aura_type_list.Poison = can_dispel.DRUID.Poison
+	if player_class == "DRUID" then
+		can_dispel.DRUID.Curse = IsPlayerSpell(2782) -- Remove Curse
+		self:GetFilterDB(',3').aura_type_list.Curse = can_dispel.DRUID.Curse
+		can_dispel.DRUID.Poison = IsPlayerSpell(2893) or IsPlayerSpell(8946) -- Cure Poison, Abolish Poison
+		self:GetFilterDB(',3').aura_type_list.Poison = can_dispel.DRUID.Poison
 
-	can_dispel.MAGE.Curse = IsPlayerSpell(475)
-	self:GetFilterDB('.3').aura_type_list.Curse = can_dispel.MAGE.Curse
+	elseif player_class == "HUNTER" then
+		can_purge.HUNTER.Enrage = IsPlayerSpell(19801) -- Tranuilizing Shot
+		self:GetFilterDB('-7').aura_type_list.Enrage = can_purge.HUNTER.Enrage
 
-	can_dispel.PALADIN.Magic = IsPlayerSpell(4987)
-	self:GetFilterDB('/3').aura_type_list.Magic = can_dispel.PALADIN.Magic
-	can_dispel.PALADIN.Disease = IsPlayerSpell(1152) or IsPlayerSpell(4987)
-	self:GetFilterDB('/3').aura_type_list.Disease = can_dispel.PALADIN.Disease
-	can_dispel.PALADIN.Poison = can_dispel.PALADIN.Disease
-	self:GetFilterDB('/3').aura_type_list.Poison = can_dispel.PALADIN.Poison
+	elseif player_class == "MAGE" then
+		can_dispel.MAGE.Curse = IsPlayerSpell(475) -- Remove Lesser Curse
+		self:GetFilterDB('.3').aura_type_list.Curse = can_dispel.MAGE.Curse
 
-	can_dispel.PRIEST.Magic = IsPlayerSpell(527) or IsPlayerSpell(988)
-	self:GetFilterDB('03').aura_type_list.Magic = can_dispel.PRIEST.Magic
-	can_dispel.PRIEST.Disease = IsPlayerSpell(528)
-	self:GetFilterDB('03').aura_type_list.Disease = can_dispel.PRIEST.Disease
+	elseif player_class == "PALADIN" then
+		can_dispel.PALADIN.Magic = IsPlayerSpell(4987) -- Cleanse
+		self:GetFilterDB('/3').aura_type_list.Magic = can_dispel.PALADIN.Magic
+		can_dispel.PALADIN.Disease = IsPlayerSpell(1152) or IsPlayerSpell(4987) -- Purify
+		self:GetFilterDB('/3').aura_type_list.Disease = can_dispel.PALADIN.Disease
+		can_dispel.PALADIN.Poison = can_dispel.PALADIN.Disease
+		self:GetFilterDB('/3').aura_type_list.Poison = can_dispel.PALADIN.Poison
 
-	can_dispel.SHAMAN.Magic = IsPlayerSpell(77130)
-	self:GetFilterDB('23').aura_type_list.Magic = can_dispel.SHAMAN.Magic
-	can_dispel.SHAMAN.Disease = IsPlayerSpell(2870) -- or IsPlayerSpell(8170) -- Totem
-	self:GetFilterDB('23').aura_type_list.Disease = can_dispel.SHAMAN.Disease
-	can_dispel.SHAMAN.Poison = IsPlayerSpell(526) -- or IsPlayerSpell(8166) -- Totem
-	self:GetFilterDB('23').aura_type_list.Poison = can_dispel.SHAMAN.Poison
+	elseif player_class == "PRIEST" then
+		can_dispel.PRIEST.Magic = IsPlayerSpell(527) or IsPlayerSpell(988) -- Dispel Magic
+		self:GetFilterDB('03').aura_type_list.Magic = can_dispel.PRIEST.Magic
+		can_dispel.PRIEST.Disease = IsPlayerSpell(528) or IsPlayerSpell(552) -- Cure Disease, Abolish Disease
+		self:GetFilterDB('03').aura_type_list.Disease = can_dispel.PRIEST.Disease
 
-	can_purge.SHAMAN.Magic = IsPlayerSpell(370) or IsPlayerSpell(8012)
-	self:GetFilterDB('27').aura_type_list.Magic = can_purge.SHAMAN.Magic
+	elseif player_class == "SHAMAN" then
+		can_dispel.SHAMAN.Disease = IsPlayerSpell(2870) -- or IsPlayerSpell(8170) -- Cure Disease, Disease Cleansing Totem
+		self:GetFilterDB('23').aura_type_list.Disease = can_dispel.SHAMAN.Disease
+		can_dispel.SHAMAN.Poison = IsPlayerSpell(526) -- or IsPlayerSpell(8166) -- Cure Poison, Poison Cleansing Totem
+		self:GetFilterDB('23').aura_type_list.Poison = can_dispel.SHAMAN.Poison
 
-	can_purge.WARLOCK.Magic = IsSpellKnown(19505, true) or IsSpellKnown(19731, true) or IsSpellKnown(19734, true) or IsSpellKnown(19736, true)
-	self:GetFilterDB('37').aura_type_list.Magic = can_purge.WARLOCK.Magic
+		can_purge.SHAMAN.Magic = IsPlayerSpell(370) or IsPlayerSpell(8012) -- Purge
+		self:GetFilterDB('27').aura_type_list.Magic = can_purge.SHAMAN.Magic
+
+	elseif player_class == "WARLOCK" then
+		can_purge.WARLOCK.Magic = IsSpellKnown(19505, true) or IsSpellKnown(19731, true) or IsSpellKnown(19734, true) or IsSpellKnown(19736, true) -- Devour Magic
+		self:GetFilterDB('37').aura_type_list.Magic = can_purge.WARLOCK.Magic
+
+	elseif player_class == "WARRIOR" then
+		can_purge.WARRIOR.Magic = IsPlayerSpell(23922) or IsPlayerSpell(23923) or IsPlayerSpell(23924) or IsPlayerSpell(23925) -- Shield Slam
+		self:GetFilterDB('47').aura_type_list.Magic = can_purge.WARRIOR.Magic
+
+	end
 end
 
 -- Setup the data for which auras belong to whom

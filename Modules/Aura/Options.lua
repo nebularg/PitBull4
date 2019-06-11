@@ -273,12 +273,9 @@ PitBull4_Aura:SetDefaults({
 		-- % Race map filters
 		-- & Class map filters
 		-- * Extra filters
-		-- + Death Knight
-		-- ,, Demon Hunter
 		-- , Druid
 		-- - Hunter
 		-- . Mage
-		-- // Monk
 		-- / Paladin
 		-- 0 Priest
 		-- 1 Rogue
@@ -286,26 +283,14 @@ PitBull4_Aura:SetDefaults({
 		-- 3 Warlock
 		-- 4 Warrior
 		-- 5 Human
-		-- 55 Kul Tiran Human
 		-- 6 Dwarf
-		-- 66 Dark Iron Dwarf
 		-- 7 Night Elf
-		-- 77 Void Elf
 		-- 8 Gnome
-		-- 9 Draenei
-		-- 99 Lightforged Draenei
 		-- : Orc
-		-- :: Mag'har Orc
 		-- ; Undead
 		-- < Taruen
-		-- << Highmountain Tauren
 		-- = Troll
-		-- == Zandalari Troll
 		-- > Blood Elf
-		-- >> Nightborne
-		-- ? Worgen
-		-- ?? Goblin
-		-- @ Pandaren (shared, race filters are always followed by a number)
 		-- @ Simple filters
 		--
 		-- New classes and races are being added with two characters
@@ -529,13 +514,6 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_dispel.SHAMAN,
-			built_in = true,
-		},
-		['33'] = {
-			display_name = L["%s can dispel"]:format(LN.WARLOCK),
-			filter_type = 'Aura Type',
-			whitelist = true,
-			aura_type_list = can_dispel.WARLOCK,
 			built_in = true,
 		},
 		[',0'] = {
@@ -895,46 +873,11 @@ PitBull4_Aura:SetDefaults({
 			name_list = self_debuffs.WARRIOR,
 			built_in = true,
 		},
-		[',7'] = {
-			display_name = L["%s can purge"]:format(LN.DRUID),
-			filter_type = 'Aura Type',
-			whitelist = true,
-			aura_type_list = can_purge.DRUID,
-			built_in = true,
-		},
 		['-7'] = {
 			display_name = L["%s can purge"]:format(LN.HUNTER),
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_purge.HUNTER,
-			built_in = true,
-		},
-		['.7'] = {
-			display_name = L["%s can purge"]:format(LN.MAGE),
-			filter_type = 'Aura Type',
-			whitelist = true,
-			aura_type_list = can_purge.MAGE,
-			built_in = true,
-		},
-		['/7'] = {
-			display_name = L["%s can purge"]:format(LN.PALADIN),
-			filter_type = 'Aura Type',
-			whitelist = true,
-			aura_type_list = can_purge.PALADIN,
-			built_in = true,
-		},
-		['07'] = {
-			display_name = L["%s can purge"]:format(LN.PRIEST),
-			filter_type = 'Aura Type',
-			whitelist = true,
-			aura_type_list = can_purge.PRIEST,
-			built_in = true,
-		},
-		['17'] = {
-			display_name = L["%s can purge"]:format(LN.ROGUE),
-			filter_type = 'Aura Type',
-			whitelist = true,
-			aura_type_list = can_purge.ROGUE,
 			built_in = true,
 		},
 		['27'] = {
@@ -970,7 +913,7 @@ PitBull4_Aura:SetDefaults({
 				['PRIEST'] = '03',
 				['ROGUE'] = '@J',
 				['SHAMAN'] = '23',
-				['WARLOCK'] = '33',
+				['WARLOCK'] = '@J',
 				['WARRIOR'] = '@J',
 			},
 			built_in = true,
@@ -1082,12 +1025,12 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
-				['DRUID'] = ',7',
+				['DRUID'] = '@J',
 				['HUNTER'] = '-7',
-				['MAGE'] = '.7',
-				['PALADIN'] = '/7',
-				['PRIEST'] = '07',
-				['ROGUE'] = '17',
+				['MAGE'] = '@J',
+				['PALADIN'] = '@J',
+				['PRIEST'] = '@J',
+				['ROGUE'] = '@J',
 				['SHAMAN'] = '27',
 				['WARLOCK'] = '37',
 				['WARRIOR'] = '47',
