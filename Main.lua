@@ -189,6 +189,11 @@ local DATABASE_DEFAULTS = {
 			reaction = { -- filled in by FACTION_BAR_COLORS
 				civilian = { 48/255, 113/255, 191/255 }
 			},
+			happiness = {
+				happy = { 0, 1, 0 },
+				content = { 1, 1, 0 },
+				unhappy = { 1, 0, 0 },
+			},
 		},
 		class_order = {},
 		role_order = { "TANK", "HEALER", "DAMAGER", "NONE" },
@@ -1470,6 +1475,7 @@ function PitBull4:OnProfileChanged()
 	self.ClassColors = db.profile.colors.class
 	self.PowerColors = db.profile.colors.power
 	self.ReactionColors = db.profile.colors.reaction
+	self.HappinessColors = db.profile.colors.happiness
 	self.ClassOrder = db.profile.class_order
 	self.RoleOrder = db.profile.role_order
 	for i, v in ipairs(CLASS_SORT_ORDER) do

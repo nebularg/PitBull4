@@ -630,6 +630,23 @@ function PitBull4.Options.get_layout_editor_bar_options()
 		disabled = disabled,
 	}
 
+	bar_args.color_by_happiness = {
+		type = 'toggle',
+		name = L["Color by happiness"],
+		desc = L["Color the bar by the units' happiness."],
+		order = -56,
+		get = function(info)
+			return get_current_layout_db(info).color_by_happiness
+		end,
+		set = function(info, value)
+			get_current_layout_db(info).color_by_happiness = value
+
+			UpdateFrames()
+		end,
+		hidden = player_class ~= "HUNTER",
+		disabled = disabled,
+	}
+
 	bar_args.toggle_custom_color = {
 		type = 'toggle',
 		name = L["Custom color"],
