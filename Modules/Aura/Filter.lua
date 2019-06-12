@@ -102,11 +102,53 @@ local friend_buffs,friend_debuffs,self_buffs,self_debuffs,pet_buffs,enemy_debuff
 
 -- Druid
 friend_buffs.DRUID = {}
+friend_buffs.DRUID = {
+	[2893] = 8, -- Abolish Poison
+	[22812] = 15, -- Barkskin
+	[21849] = true, [21850] = true, -- Gift of the Wild
+	[29166] = 20, -- Innervate
+	[1126] = true, [5232] = true, [6756] = true, [5234] = true, [8907] = true, [9884] = true, [9885] = true, -- Mark of the Wild
+	[16810] = 45, [16811] = 45, [16812] = 45, [16813] = 45, [17329] = 45, -- Nature's Grasp
+	[8936] = 21, [8938] = 21, [8939] = 21, [8940] = 21, [8941] = 21, [9750] = 21, [9856] = 21, [9857] = 21, [9858] = 21, -- Regrowth
+	[774] = 12, [1058] = 12, [1430] = 12, [2090] = 12, [2091] = 12, [3627] = 12, [8910] = 12, [9839] = 12, [9840] = 12, [9841] = 12, [25299] = 12, -- Rejuvenation
+	[467] = 600, [782] = 600, [1075] = 600, [8914] = 600, [9756] = 600,	[9756] = 600, -- Thorns
+}
 friend_debuffs.DRUID = {}
 self_buffs.DRUID = {}
+self_buffs.DRUID = {
+	[1066] = true, -- Aquatic Form
+	[5487] = true, [9634] = true, -- Bear Form
+	[768] = true, -- Cat Form
+	[1850] = 15, [9821] = 15, -- Dash
+	[5229] = 10, -- Enrage
+	[22842] = 10, [22895] = 10, [22896] = 10, -- Frenzied Regeneration
+	[5215] = true, [6783] = true, [9913] = true, -- Prowl
+	[5217] = 6, [6793] = 6, [9845] = 6, [9846] = 6, -- Tiger's Fury
+	[740] = 10, [8918] = 10, [9862] = 10, [9863] = 10, -- Tranquility
+	[783] = true, -- Travel Form
+}
 self_debuffs.DRUID = {}
 pet_buffs.DRUID = {}
 enemy_debuffs.DRUID = {}
+enemy_debuffs.DRUID = {
+	[5211] = 2, [6798] = 3, [8983] = 4, -- Bash
+	[5209] = 6, -- Challenging Roar
+	[99] = 30, [1735] = 30, [9490] = 30, [9747] = 30, [9898] = 30, -- Demoralizing Roar
+	[339] = 12, [1062] = 15, [5195] = 18, [5196] = 21, [9852] = 24, [9853] = 27, -- Entangling Roots
+	[770] = 40, [778] = 40, [9749] = 40, [9907] = 40, -- Faerie Fire
+	[17390] = 40, [17391] = 40, [17392] = 40, -- Faerie Fire (Feral)
+	[6795] = 3, -- Growl
+	[2637] = 20, [18657] = 30, [18658] = 40, -- Hibernate
+	[17401] = 10, [17402] = 10, -- Hurricane
+	[5570] = 12, [24974] = 12, [24975] = 12, [24976] = 12, [24977] = 12, -- Insect Swarm
+	[8921] = 9, [8924] = 12, [8925] = 12, [8926] = 12, [8927] = 12, [8928] = 12, [8929] = 12, [9833] = 12, [9834] = 12, [9835] = 12, -- Moonfire
+	[9005] = 2, [9823] = 2, [9827] = 2, -- Pounce
+	[9007] = 18, [9824] = 18, [9826] = 18, -- Pounce Bleed
+	[1822] = 9, [1823] = 9, [1824] = 9, [9904] = 9, -- Rake
+	[1079] = 12, [9492] = 12, [9493] = 12, [9752] = 12, [9894] = 12, [9896] = 12, -- Rip
+	[2908] = 15, [8955] = 15, [9901] = 15, -- Soothe Animal
+	[16922] = 3, -- Starfire Stun
+}
 
 -- Hunter
 friend_buffs.HUNTER = {}
