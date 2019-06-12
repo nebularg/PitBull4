@@ -188,7 +188,7 @@ friend_buffs.Dwarf = {
 }
 friend_debuffs.Dwarf = {}
 self_buffs.Dwarf = {
-	[20594] = true, -- Stoneform
+	[20594] = 8, -- Stoneform
 }
 self_debuffs.Dwarf = {}
 pet_buffs.Dwarf = {}
@@ -223,7 +223,7 @@ friend_buffs.Orc = {
 }
 friend_debuffs.Orc = {}
 self_buffs.Orc = {
-	[20572] = true, -- Blood Fury (Attack power)
+	[20572] = 25, -- Blood Fury (Attack power)
 }
 self_debuffs.Orc = {}
 pet_buffs.Orc = {}
@@ -235,8 +235,8 @@ friend_buffs.Scourge = {
 }
 friend_debuffs.Scourge = {}
 self_buffs.Scourge = {
-	[20577] = true, -- Cannibalize
-	[7744]  = true, -- Will of the Forsaken
+	[20578] = 10, -- Cannibalize
+	[7744]  = 5, -- Will of the Forsaken
 }
 self_debuffs.Scourge = {}
 pet_buffs.Scourge = {}
@@ -251,7 +251,7 @@ self_buffs.Tauren = {}
 self_debuffs.Tauren = {}
 pet_buffs.Tauren = {}
 enemy_debuffs.Tauren = {
-	[20549] = true, -- War Stomp
+	[20549] = 2, -- War Stomp
 }
 
 -- Troll
@@ -260,7 +260,7 @@ friend_buffs.Troll = {
 }
 friend_debuffs.Troll = {}
 self_buffs.Troll = {
-	[26297] = true, -- Berserking
+	[26635] = 10, -- Berserking
 }
 self_debuffs.Troll = {}
 pet_buffs.Troll = {}
@@ -278,7 +278,7 @@ local function turn(t, shallow)
 			if not spell then
 				DEFAULT_CHAT_FRAME:AddMessage(string.format("PitBull4_Aura: Unknown spell ID: %s", id))
 			else
-				tmp[spell] = v
+				tmp[spell] = v and true
 			end
 		end
 		wipe(entry)
