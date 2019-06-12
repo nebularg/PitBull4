@@ -619,7 +619,7 @@ end
 ScriptEnv.Status = Status
 
 local function HP(unit, no_fast)
-	local hp = RealMobHealth and RealMobHealth.GetHealth(unit, true) or UnitHealth(unit)
+	local hp = RealMobHealth and RealMobHealth.GetUnitHealth(unit, true) or UnitHealth(unit)
 	if not no_fast then
 		hp_cache[ScriptEnv.font_string] = true
 	end
@@ -632,7 +632,7 @@ ScriptEnv.HP = HP
 
 local function MaxHP(unit)
 	if RealMobHealth then
-		local _, max_hp = RealMobHealth.GetHealth(unit, true)
+		local _, max_hp = RealMobHealth.GetUnitHealth(unit, true)
 		if max_hp then
 			return max_hp
 		end
