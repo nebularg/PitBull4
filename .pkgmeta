@@ -19,7 +19,6 @@ externals:
     Libs/LibSharedMedia-3.0: https://repos.wowace.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
     Libs/AceGUI-3.0-SharedMediaWidgets: https://repos.wowace.com/wow/ace-gui-3-0-shared-media-widgets/trunk/AceGUI-3.0-SharedMediaWidgets
     Libs/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
-    Modules/Aura/Libs/LibPlayerSpells-1.0: https://github.com/AdiAddons/LibPlayerSpells-1.0.git
     Modules/DogTagTexts/Libs/LibDogTag-3.0: https://repos.wowace.com/wow/libdogtag-3-0
     Modules/DogTagTexts/Libs/LibDogTag-Unit-3.0: https://repos.wowace.com/wow/libdogtag-unit-3-0
     Modules/VisualHeal/Libs/LibHealComm-4.0: https://repos.wowace.com/wow/libhealcomm-4-0
