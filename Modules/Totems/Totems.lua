@@ -1,4 +1,6 @@
-local player_class = select(2, UnitClass("player"))
+if select(2, UnitClass("player")) ~= "SHAMAN" then
+	return
+end
 
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
@@ -6,56 +8,15 @@ local L = PitBull4.L
 -- CONSTANTS ----------------------------------------------------------------
 
 local MAX_TOTEMS = 4
-local TOTEM_ORDER = { 1, 2, 3, 4 }
-
-local MAX_CLASS_TOTEMS
-local REQUIRED_SPELL
-if player_class == "DEATHKNIGHT" then
-	-- The "All Will Serve" talent additional minion is slot 4, not sure if we should show it.
-	MAX_CLASS_TOTEMS = 1
-	TOTEM_ORDER = { 3, 4, 1, 2 } -- Gargoyle is slot 3
-	REQUIRED_SPELL = {
-		49206, -- Summon Gargoyle (Unholy)
-	}
-elseif player_class == "DRUID" then
-	MAX_CLASS_TOTEMS = 1
-	REQUIRED_SPELL = {
-		145205, -- Efflorescence (Restoration)
-	}
-elseif player_class == "MONK" then
-	MAX_CLASS_TOTEMS = 1
-	REQUIRED_SPELL = {
-		115313, -- Summon Jade Serpent Statue (Mistweaver)
-		115315, -- Summon Black Ox Statue (Brewmaster/Windwalker)
-	}
-elseif player_class == "MAGE" then
-	MAX_CLASS_TOTEMS = 1
-	REQUIRED_SPELL = {
-		116011 -- Rune of Power
-	}
-elseif player_class == "PALADIN" then
-	MAX_CLASS_TOTEMS = 1
-	REQUIRED_SPELL = {
-		26573, -- Consecration (Holy/Protection)
-		205228, -- Consecration (Retribution)
-	}
-elseif player_class == "PRIEST" then
-	MAX_CLASS_TOTEMS = 1
-	REQUIRED_SPELL = {
-		34433, -- Shadowfiend (Holy/Discipline)
-	}
-elseif player_class == "SHAMAN" then
-	MAX_CLASS_TOTEMS = MAX_TOTEMS
-	-- TOTEM_ORDER = { 2, 1, 3, 4 }
-end
+local TOTEM_ORDER = { 2, 1, 3, 4 }
 local TOTEM_SLOT_TO_INDEX = tInvert(TOTEM_ORDER)
 
 local TOTEM_SIZE = 50 -- fixed value used for internal frame creation, change the final size ingame only!
 
 local CONFIG_MODE_ICON = [[Interface\Icons\Spell_Fire_TotemOfWrath]]
 local BORDER_PATH  = [[Interface\AddOns\PitBull4\Modules\Totems\border]]
-local DEFAULT_SOUND_NAME = 'Drop'
-local DEFAULT_SOUND_PATH =  [[Sound\interface\DropOnGround.wav]]
+local DEFAULT_SOUND_NAME = "Drop"
+local DEFAULT_SOUND_PATH = [[Sound\Interface\DropOnGround.ogg]]
 
 local COLOR_DEFAULTS = {
 	main_background = {0, 0, 0, 0.5},
@@ -85,7 +46,6 @@ local LAYOUT_DEFAULTS = {
 }
 
 local GLOBAL_DEFAULTS = {
-	totem_tooltips = true,
 	expiry_pulse = true,
 	expiry_pulse_time = 5,
 	recast_enabled = false,
@@ -112,8 +72,6 @@ local GetTotemTimeLeft = _G.GetTotemTimeLeft
 local GetTotemInfo = _G.GetTotemInfo
 
 -----------------------------------------------------------------------------
-
-if not MAX_CLASS_TOTEMS then return end
 
 local PitBull4_Totems = PitBull4:NewModule("Totems", "AceEvent-3.0", "AceTimer-3.0")
 
@@ -431,8 +389,8 @@ function PitBull4_Totems:ResizeMainFrame(frame)
 		return
 	end
 	local tSpacing = layout_option_get(frame,'totem_spacing')
-	local lbreak = min(MAX_CLASS_TOTEMS, layout_option_get(frame,'line_break'))
-	local nlines = ceil(MAX_CLASS_TOTEMS / lbreak)
+	local lbreak = min(MAX_TOTEMS, layout_option_get(frame,'line_break'))
+	local nlines = ceil(MAX_TOTEMS / lbreak)
 	local ttf = frame.Totems
 	local width = nil
 	local height = nil
@@ -450,12 +408,12 @@ function PitBull4_Totems:ResizeMainFrame(frame)
 end
 
 function PitBull4_Totems:RealignTotems(frame)
-	local lbreak = min(MAX_CLASS_TOTEMS, layout_option_get(frame,'line_break') or MAX_TOTEMS)
+	local lbreak = min(MAX_TOTEMS, layout_option_get(frame,'line_break') or MAX_TOTEMS)
 	local tspacing = layout_option_get(frame,'totem_spacing') or 0
 
 	if frame.Totems then
 		local elements = frame.Totems.elements
-		for i = 1, MAX_CLASS_TOTEMS do
+		for i = 1, MAX_TOTEMS do
 			if i == 1 then
 				elements[i].frame:ClearAllPoints()
 				elements[i].frame:SetPoint("TOPLEFT", frame.Totems, "TOPLEFT", 0, 0)
@@ -516,7 +474,7 @@ function PitBull4_Totems:RealignTimerTexts(frame)
 	if not frame or not frame.Totems then return end
 
 	local elements = frame.Totems.elements
-	for i = 1, MAX_CLASS_TOTEMS do
+	for i = 1, MAX_TOTEMS do
 		if (elements[i].text) then
 			TimerTextAlignmentLogic(elements[i].text, elements[i].textFrame, layout_option_get(frame, 'timer_text_side'), 0, 0)
 			local font, fontsize = self:GetFont(frame)
@@ -534,45 +492,22 @@ end
 
 function PitBull4_Totems:UpdateIconColor(frame)
 	if frame.Totems and frame.Totems.elements then
-		local elements = frame.Totems.elements
-		for i = 1, MAX_CLASS_TOTEMS do
-			if elements[i].frame and elements[i].frame.border then
-				elements[i].frame.border:Hide()
+		for i = 1, MAX_TOTEMS do
+			local frame = frame.Totems.elements[i] and frame.Totems.elements[i].frame
+			if frame and frame.border then
+				frame.border:Hide()
 				if global_option_get('totem_borders_per_element') then
-					elements[i].frame.border:SetVertexColor(color_option_get('slot'..tostring(i), 1,1,1,1))
+					frame.border:SetVertexColor(color_option_get('slot'..tostring(frame.slot), 1,1,1,1))
 				else
-					elements[i].frame.border:SetVertexColor(color_option_get('totem_border'))
+					frame.border:SetVertexColor(color_option_get('totem_border'))
 				end
-				elements[i].frame.border:Show()
+				frame.border:Show()
 			end
 		end
 	end
 end
 
 PitBull4_Totems.button_scripts = {}
-
-function PitBull4_Totems.button_scripts:OnClick(mousebutton)
-	if (mousebutton == "RightButton" and self.slot and not self.force_show) then
-		DestroyTotem( self.slot )
-	end
-end
-
-function PitBull4_Totems.button_scripts:OnEnter()
-	if self.force_show then return end
-	if ( self.slot and self.totem_tooltips ) then
-		-- setting the tooltip
-		GameTooltip_SetDefaultAnchor(GameTooltip, self)
-		GameTooltip:SetTotem(self.slot)
-	end
-end
-
-function PitBull4_Totems.button_scripts:OnLeave()
-	if self.force_show then return end
-	if ( self.totem_tooltips ) then
-		-- hiding the tooltip
-		GameTooltip:Hide()
-	end
-end
 
 -- inline credits: Parts of the following function were heavily inspired by the addon CooldownButtons by Dodge (permission given)
 function PitBull4_Totems.button_scripts:OnUpdate(elapsed)
@@ -691,11 +626,11 @@ function PitBull4_Totems:BuildFrames(frame)
 	local ttf = frame.Totems
 
 	if (layout_option_get(frame,'totem_direction') == "h") then
-		ttf:SetWidth((MAX_CLASS_TOTEMS*TOTEM_SIZE)+((MAX_CLASS_TOTEMS-1)*tSpacing))
+		ttf:SetWidth((MAX_TOTEMS*TOTEM_SIZE)+((MAX_TOTEMS-1)*tSpacing))
 		ttf:SetHeight(TOTEM_SIZE)
 	else
 		ttf:SetWidth(TOTEM_SIZE)
-		ttf:SetHeight((MAX_CLASS_TOTEMS*TOTEM_SIZE)+((MAX_CLASS_TOTEMS-1)*tSpacing))
+		ttf:SetHeight((MAX_TOTEMS*TOTEM_SIZE)+((MAX_TOTEMS-1)*tSpacing))
 	end
 	ttf:Show()
 
@@ -709,7 +644,7 @@ function PitBull4_Totems:BuildFrames(frame)
 
 	-- Now create the main timer frames for each totem element
 	local elements = {}
-	for i = 1, MAX_CLASS_TOTEMS do
+	for i = 1, MAX_TOTEMS do
 		-------------------------------
 		-- Main totem slot frame
 		elements[i] = {}
@@ -718,6 +653,7 @@ function PitBull4_Totems:BuildFrames(frame)
 		end
 		local frm = elements[i].frame
 
+		frm:EnableMouse(false)
 		frm:SetWidth(TOTEM_SIZE)
 		frm:SetHeight(TOTEM_SIZE)
 		frm:SetFrameLevel(frame:GetFrameLevel() + 13)
@@ -802,16 +738,6 @@ function PitBull4_Totems:BuildFrames(frame)
 		pulse.icon:Hide()
 		frm.pulse_active = false
 		frm.pulse_start = false
-
-
-		-----------------
-		-- Click handling
-		-- click handling for destroying single totems
-		-- frm:RegisterForClicks("RightButtonUp")
-		-- frm:SetScript("OnClick", self.button_scripts.OnClick)
-		-- tooltip handling
-		frm:SetScript("OnEnter", self.button_scripts.OnEnter)
-		frm:SetScript("OnLeave", self.button_scripts.OnLeave)
 		frm.last_update = 1
 		frm:SetScript("OnUpdate", self.button_scripts.OnUpdate)
 	end
@@ -827,10 +753,8 @@ function PitBull4_Totems:ApplyLayoutSettings(frame)
 
 	local elements = frame.Totems.elements
 
-	for i = 1, MAX_CLASS_TOTEMS do
+	for i = 1, MAX_TOTEMS do
 		elements[i].frame.hide_inactive = layout_option_get(frame,'hide_inactive')
-
-		elements[i].frame.totem_tooltips = global_option_get('totem_tooltips')
 
 		self:SpiralUpdate(frame, elements[i].frame.slot, nil, nil)
 	end
@@ -848,15 +772,6 @@ function PitBull4_Totems:ApplyLayoutSettings(frame)
 	self:RealignTimerTexts(frame)
 end
 
-local function HasRequiredSpell()
-	for _, spell in next, REQUIRED_SPELL do
-		if IsPlayerSpell(spell) then
-			return true
-		end
-	end
-	return false
-end
-
 function PitBull4_Totems:UpdateFrame(frame)
 	local unit = frame.unit
 	if not unit or not UnitIsUnit(unit,"player") then -- we only work for the player unit itself
@@ -864,9 +779,6 @@ function PitBull4_Totems:UpdateFrame(frame)
 	end
 	if frame.is_wacky then
 		-- Disable for wacky frames, because something... wacky is going on with their updates.
-		return self:ClearFrame(frame)
-	end
-	if REQUIRED_SPELL and not HasRequiredSpell() then
 		return self:ClearFrame(frame)
 	end
 
@@ -907,7 +819,7 @@ function PitBull4_Totems:ClearFrame(frame)
 	-- we're not stopping the timer anymore because we're not the only possible frame active
 
 	--cleanup the element frames
-	for i = 1, MAX_CLASS_TOTEMS do
+	for i = 1, MAX_TOTEMS do
 		local element = frame.Totems.elements[i]
 
 		if element.pulse and element.pulse.icon then
@@ -943,7 +855,6 @@ end
 function PitBull4_Totems:OnEnable()
 	self:RegisterEvent("PLAYER_TOTEM_UPDATE")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	self:RegisterEvent("PLAYER_TALENT_UPDATE")
 	self:RegisterEvent("CHARACTER_POINTS_CHANGED","PLAYER_TALENT_UPDATE")
 end
 
@@ -1258,15 +1169,6 @@ PitBull4_Totems:SetGlobalOptionsFunction(function(self)
 		name = L["There are more options for this module in the Layout editor -> Indicators -> Totems section."],
 		order = 129,
 		width = 'full',
-	},
-	'totem_tooltips', {
-		type = 'toggle',
-		width = 'full',
-		name = L["Totem tooltips"],
-		desc = L["Enables tooltips when hovering over the icons."],
-		get = global_option_get,
-		set = gOptSet,
-		order = 110,
 	},
 	'group_pulse', {
 		type = 'group',
