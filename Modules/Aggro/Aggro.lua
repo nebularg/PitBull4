@@ -114,8 +114,7 @@ do
 		end
 	end)
 
-	function PitBull4_Aggro:UnitHasAggro(unit)
-		local guid = UnitGUID(unit)
+	function PitBull4_Aggro:HasAggro(guid)
 		return aggro[guid]
 	end
 end
@@ -167,7 +166,7 @@ end
 function PitBull4_Aggro:HealthBar_GetColor(module, frame, value)
 	local unit = frame.unit
 	local db = self:GetLayoutDB(frame)
-	if unit and db.enabled and db.kind == "HealthBar" and UnitIsFriend("player", unit) and self:UnitHasAggro(unit) then
+	if unit and db.enabled and db.kind == "HealthBar" and UnitIsFriend("player", unit) and self:HasAggro(frame.guid) then
 		local aggro_color = self.db.profile.global.aggro_color
 		return aggro_color[1], aggro_color[2], aggro_color[3], nil, true
 	end
@@ -187,7 +186,7 @@ function PitBull4_Aggro:Border_GetTextureAndColor(module, frame)
 		texture, r, g, b, a = self.hooks[module].GetTextureAndColor(module, frame)
 	end
 
-	if unit and db.enabled and db.kind == "Border" and UnitIsFriend("player", unit) and self:UnitHasAggro(unit) then
+	if unit and db.enabled and db.kind == "Border" and UnitIsFriend("player", unit) and self:HasAggro(frame.guid) then
 		r, g, b, a = unpack(self.db.profile.global.aggro_color)
 		if not texture or texture == "None" then
 			texture = "Blizzard Tooltip"
@@ -209,7 +208,7 @@ function PitBull4_Aggro:Background_GetColor(module, frame)
 		r, g, b, a = self.hooks[module].GetColor(module, frame)
 	end
 
-	if unit and db.enabled and db.kind == "Background" and UnitIsFriend("player", unit) and self:UnitHasAggro(unit) then
+	if unit and db.enabled and db.kind == "Background" and UnitIsFriend("player", unit) and self:HasAggro(frame.guid) then
 		local a2
 		r, g, b, a2 = unpack(self.db.profile.global.aggro_color)
 		if a then
