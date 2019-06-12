@@ -99,52 +99,78 @@ end
 
 -- Setup the data for which auras belong to whom
 local friend_buffs,friend_debuffs,self_buffs,self_debuffs,pet_buffs,enemy_debuffs = {},{},{},{},{},{}
-for _, class in next, CLASS_SORT_ORDER do
-	friend_buffs[class] = {}
-	friend_debuffs[class] = {}
-	self_buffs[class] = {}
-	self_debuffs[class] = {}
-	pet_buffs[class] = {}
-	enemy_debuffs[class] = {}
-end
 
--- Build the class filters
-do
-	-- some shenanigans to only load LPS if the module is enabled (for nolib installs)
-	local LibPlayerSpells = LibStub("LibPlayerSpells-1.0", true)
-	if LibPlayerSpells then
-		local AURA = LibPlayerSpells.constants.AURA
-		local INVERT_AURA = LibPlayerSpells.constants.INVERT_AURA
-		local HELPFUL = LibPlayerSpells.constants.HELPFUL
-		local HARMFUL = LibPlayerSpells.constants.HARMFUL
-		local PERSONAL = LibPlayerSpells.constants.PERSONAL
-		local PET = LibPlayerSpells.constants.PET
-		local TARGETING = LibPlayerSpells.masks.TARGETING
+-- Druid
+friend_buffs.DRUID = {}
+friend_debuffs.DRUID = {}
+self_buffs.DRUID = {}
+self_debuffs.DRUID = {}
+pet_buffs.DRUID = {}
+enemy_debuffs.DRUID = {}
 
-		for _, class in next, CLASS_SORT_ORDER do
-			for spell, flags in next, LibPlayerSpells.__categories[class] do
-				if bit.band(flags, AURA) ~= 0 then
-					local target = bit.band(flags, TARGETING)
-					local inverted = bit.band(flags, INVERT_AURA) ~= 0 -- friend debuff
+-- Hunter
+friend_buffs.HUNTER = {}
+friend_debuffs.HUNTER = {}
+self_buffs.HUNTER = {}
+self_debuffs.HUNTER = {}
+pet_buffs.HUNTER = {}
+enemy_debuffs.HUNTER = {}
 
-					if target == HELPFUL and not inverted then
-						friend_buffs[class][spell] = true
-					elseif (target == HELPFUL or target == PET) and inverted then
-						friend_debuffs[class][spell] = true
-					elseif target == PERSONAL and not inverted then
-						self_buffs[class][spell] = true
-					elseif target == PERSONAL and inverted then
-						self_debuffs[class][spell] = true
-					elseif target == PET and not inverted then
-						pet_buffs[class][spell] = true
-					elseif target == HARMFUL then
-						enemy_debuffs[class][spell] = true
-					end
-				end
-			end
-		end
-	end
-end
+-- Mage
+friend_buffs.MAGE = {}
+friend_debuffs.MAGE = {}
+self_buffs.MAGE = {}
+self_debuffs.MAGE = {}
+pet_buffs.MAGE = {}
+enemy_debuffs.MAGE = {}
+
+-- Paladin
+friend_buffs.PALADIN = {}
+friend_debuffs.PALADIN = {}
+self_buffs.PALADIN = {}
+self_debuffs.PALADIN = {}
+pet_buffs.PALADIN = {}
+enemy_debuffs.PALADIN = {}
+
+-- Priest
+friend_buffs.PRIEST = {}
+friend_debuffs.PRIEST = {}
+self_buffs.PRIEST = {}
+self_debuffs.PRIEST = {}
+pet_buffs.PRIEST = {}
+enemy_debuffs.PRIEST = {}
+
+-- Rogue
+friend_buffs.ROGUE = {}
+friend_debuffs.ROGUE = {}
+self_buffs.ROGUE = {}
+self_debuffs.ROGUE = {}
+pet_buffs.ROGUE = {}
+enemy_debuffs.ROGUE = {}
+
+-- Shaman
+friend_buffs.SHAMAN = {}
+friend_debuffs.SHAMAN = {}
+self_buffs.SHAMAN = {}
+self_debuffs.SHAMAN = {}
+pet_buffs.SHAMAN = {}
+enemy_debuffs.SHAMAN = {}
+
+-- Warlock
+friend_buffs.WARLOCK = {}
+friend_debuffs.WARLOCK = {}
+self_buffs.WARLOCK = {}
+self_debuffs.WARLOCK = {}
+pet_buffs.WARLOCK = {}
+enemy_debuffs.WARLOCK = {}
+
+-- Warrior
+friend_buffs.WARRIOR = {}
+friend_debuffs.WARRIOR = {}
+self_buffs.WARRIOR = {}
+self_debuffs.WARRIOR = {}
+pet_buffs.WARRIOR = {}
+enemy_debuffs.WARRIOR = {}
 
 -- Human
 friend_buffs.Human = {
