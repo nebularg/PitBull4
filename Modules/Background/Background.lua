@@ -51,7 +51,7 @@ function PitBull4_Background:UpdateFrame(frame)
 
 	local unit = frame.unit
 	local falling_back = false
-	if not unit or (not UnitExists(unit) and not ShowBossFrameWhenUninteractable(unit)) or not UnitIsConnected(unit) or not UnitIsVisible(unit) then
+	if not unit or not UnitExists(unit) or not UnitIsConnected(unit) or not UnitIsVisible(unit) then
 		falling_back = true
 	end
 

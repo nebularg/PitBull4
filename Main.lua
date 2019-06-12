@@ -12,9 +12,6 @@ local SINGLETON_CLASSIFICATIONS = {
 	"target",
 	"targettarget",
 	"targettargettarget",
-	-- "focus",
-	-- "focustarget",
-	-- "focustargettarget",
 }
 
 local UNIT_GROUPS = {
@@ -24,44 +21,27 @@ local UNIT_GROUPS = {
 	"partypet",
 	"partypettarget",
 	"partypettargettarget",
-	-- "arena",
-	-- "arenatarget",
-	-- "arenatargettarget",
-	-- "arenapet",
-	-- "arenapettarget",
-	-- "arenapettargettarget",
 	"raid",
 	"raidtarget",
 	"raidtargettarget",
 	"raidpet",
 	"raidpettarget",
 	"raidpettargettarget",
-	-- "boss",
-	-- "bosstarget",
-	-- "bosstargettarget",
 }
 
 local NORMAL_UNITS = {
 	"player",
 	"pet",
 	"target",
-	-- "focus",
 	-- "mouseover",
 }
 for i = 1, _G.MAX_PARTY_MEMBERS do
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "party" .. i
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "partypet" .. i
 end
--- for i = 1, 5 do
--- 	NORMAL_UNITS[#NORMAL_UNITS+1] = "arena" .. i
--- 	NORMAL_UNITS[#NORMAL_UNITS+1] = "arenapet" .. i
--- end
 for i = 1, _G.MAX_RAID_MEMBERS do
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "raid" .. i
 end
--- for i = 1, _G.MAX_BOSS_FRAMES do
--- 	NORMAL_UNITS[#NORMAL_UNITS+1] = "boss" .. i
--- end
 
 do
 	local tmp = NORMAL_UNITS
@@ -183,9 +163,7 @@ local DATABASE_DEFAULTS = {
 		},
 		colors = {
 			class = {}, -- filled in by RAID_CLASS_COLORS
-			power = { -- filled in by PowerBarColor
-				-- ["PB4_ALTERNATE"] = { 0.7, 0.7, 0.6 }, -- Fallback alternate power color
-			},
+			power = {}, -- filled in by PowerBarColor
 			reaction = { -- filled in by FACTION_BAR_COLORS
 				civilian = { 48/255, 113/255, 191/255 }
 			},
@@ -229,26 +207,6 @@ local DEFAULT_GROUPS = {
 		unit_group = "partypet",
 		exists = true,
 	},
-	-- [L["Boss"]] = {
-	-- 	enabled = true,
-	-- 	unit_group = "boss",
-	-- 	exists = true,
-	-- 	anchor = "", -- automatic from growth direction
-	-- 	relative_to = "0", -- UIParent
-	-- 	relative_point = "RIGHT",
-	-- 	position_x = -290,
-	-- 	position_y = 225,
-	-- 	show_when = {
-	-- 		solo = true,
-	-- 		party = true,
-	-- 		raid = true,
-	-- 		raid10 = true,
-	-- 		raid15 = true,
-	-- 		raid20 = true,
-	-- 		raid25 = true,
-	-- 		raid40 = true,
-	-- 	},
-	-- }
 }
 
 local DEFAULT_UNITS =  {
@@ -294,21 +252,6 @@ local DEFAULT_UNITS =  {
 	[format(L["%s's target"],format(L["%s's target"],L["Target"]))] = {
 		unit = "targettargettarget",
 	},
-	-- [L["Focus"]] = {
-	-- 	enabled = true,
-	-- 	unit = "focus",
-	-- 	anchor = "TOPLEFT",
-	-- 	relative_to = "0", -- UIParent
-	-- 	relative_point = "TOPLEFT",
-	-- 	position_x = 250,
-	-- 	position_y = -260,
-	-- },
-	-- [format(L["%s's target"],L["Focus"])]= {
-	-- 	unit = "focustarget",
-	-- },
-	-- [format(L["%s's target"],format(L["%s's target"],L["Focus"]))] = {
-	-- 	unit = "focustargettarget",
-	-- },
 }
 
 local LOCALIZED_NAMES = {}
@@ -1602,7 +1545,6 @@ function PitBull4:OnEnable()
 
 	-- register unit change events
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
-	-- self:RegisterEvent("PLAYER_FOCUS_CHANGED")
 	self:RegisterEvent("UNIT_TARGET")
 	self:RegisterEvent("UNIT_PET")
 
@@ -1716,12 +1658,6 @@ function PitBull4:CheckGUIDForUnitID(unit, is_pet)
 		frame:UpdateGUID(guid,update)
 	end
 end
-
--- function PitBull4:PLAYER_FOCUS_CHANGED()
--- 	self:CheckGUIDForUnitID("focus")
--- 	self:CheckGUIDForUnitID("focustarget")
--- 	self:CheckGUIDForUnitID("focustargettarget")
--- end
 
 function PitBull4:PLAYER_TARGET_CHANGED()
 	self:CheckGUIDForUnitID("target")

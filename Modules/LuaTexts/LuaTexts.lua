@@ -333,65 +333,6 @@ if UnitPowerType(unit) ~= 0 then
 end]],
 		},
 	},
--- 	[L["Alternate power"]] = {
--- 		[L["Absolute"]] = {
--- 			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
--- 			code = [[
--- local max = MaxPower(unit,ALTERNATE_POWER_INDEX)
--- if max > 0 then
--- 	return "%s/%s",Power(unit,ALTERNATE_POWER_INDEX),max
--- end
--- return ConfigMode()]],
--- 		},
--- 		[L["Absolute short"]] = {
--- 			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
--- 			code = [[
--- local max = MaxPower(unit,ALTERNATE_POWER_INDEX)
--- if max > 0 then
---   return "%s/%s",Short(Power(unit,ALTERNATE_POWER_INDEX),true),Short(max,true)
--- end
--- return ConfigMode()]],
--- 		},
--- 		[L["Difference"]] = {
--- 			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
--- 			code = [[
--- local max = MaxPower(unit, ALTERNATE_POWER_INDEX)
--- if max > 0 then
---   return -(max - Power(unit,ALTERNATE_POWER_INDEX))
--- end
--- return ConfigMode()]],
--- 		},
--- 		[L["Percent"]] = {
--- 			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
--- 			code = [[
--- local max = MaxPower(unit,ALTERNATE_POWER_INDEX)
--- if max > 0 then
---   return "%s%%",Percent(Power(unit,ALTERNATE_POWER_INDEX),max)
--- end
--- return ConfigMode()]],
--- 		},
--- 		[L["Mini"]] = {
--- 			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
--- 			code = [[
--- local max = MaxPower(unit,ALTERNATE_POWER_INDEX)
--- if max > 0 then
---   return VeryShort(Power(unit,ALTERNATE_POWER_INDEX))
--- end
--- return ConfigMode()]],
--- 		},
--- 		[L["Smart"]] = {
--- 			events = {['UNIT_POWER_FREQUENT']=true,['UNIT_MAXPOWER']=true},
--- 			code = [[
--- local max = MaxPower(unit, ALTERNATE_POWER_INDEX)
--- if max > 0 then
--- 	local miss = max - Power(unit,ALTERNATE_POWER_INDEX)
---   if miss ~= 0 then
---     return "|cffc12267%s|r",Short(miss,true)
---   end
--- end
--- return ConfigMode()]],
--- 		},
--- 	},
 	[L["Threat"]] = {
 		[L["Percent"]] = {
 			events = {['UNIT_THREAT_LIST_UPDATE']=true,['UNIT_THREAT_SITUATION_UPDATE']=true},
@@ -568,12 +509,6 @@ do
 		['PLAYER_XP_UPDATE'] = {player=true},
 		['UPDATE_FACTION'] = {all=true},
 		['UNIT_LEVEL'] = {all=true},
-
-		-- They pass the unit but they don't provide the pairing (e.g.
-		-- the target changes) so we'll miss updates if we don't update
-		-- every text on every one of these events.  /sigh
-		-- ['UNIT_THREAT_LIST_UPDATE'] = {all=true},
-		-- ['UNIT_THREAT_SITUATION_UPDATE'] = {all=true},
 	}
 
 	-- Iterate the provided codes to fill in all the rest
@@ -1300,18 +1235,6 @@ function PitBull4_LuaTexts:OnNewLayout(layout)
 			events = copy(PROVIDED_CODES[L["PVPTimer"]][L["Standard"]].events),
 			location = "out_right_top"
 		},
-		-- ["Lua:"..L["Alternate power"]] = {
-		-- 	code = PROVIDED_CODES[L["Alternate power"]][L["Percent"]].code,
-		-- 	events = copy(PROVIDED_CODES[L["Alternate power"]][L["Percent"]].events),
-		-- 	attach_to = "AltPowerBar",
-		-- 	location = "right"
-		-- },
-		-- ["Lua:"..L["Artifact power"]] = {
-		-- 	code = PROVIDED_CODES[L["Artifact power"]][L["Absolute"]].code,
-		-- 	events = copy(PROVIDED_CODES[L["Artifact power"]][L["Absolute"]].events),
-		-- 	attach_to = "ArtifactPowerBar",
-		-- 	location = "center"
-		-- },
 	} do
 		local text_db = text_elements[name]
 		text_db.exists = true

@@ -23,7 +23,6 @@ local FRIENDLY_CLASSIFICATIONS = {
 	raid = true,
 	raidpet = true,
 	targettarget = true,
-	bosstarget = true,
 }
 
 local OPPOSITE_PLAYER_FACTION = {

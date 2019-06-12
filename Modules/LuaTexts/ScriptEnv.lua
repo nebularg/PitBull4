@@ -54,14 +54,6 @@ setmetatable(UnitToLocale, {__index=function(self, unit)
 			local num = unit:match("^party(%d)$")
 			self[unit] = L["Party member #%d"]:format(num)
 			return self[unit]
-		-- elseif unit:find("^arena%d$") then
-		-- 	local num = unit:match("^arena(%d)$")
-		-- 	self[unit] = L["Arena enemy #%d"]:format(num)
-		-- 	return self[unit]
-		elseif unit:find("^boss%d$") then
-			local num = unit:match("^boss(%d)$")
-			self[unit] = L["Boss #%d"]:format(num)
-			return self[unit]
 		elseif unit:find("^raid%d%d?$") then
 			local num = unit:match("^raid(%d%d?)$")
 			self[unit] = L["Raid member #%d"]:format(num)
@@ -70,10 +62,6 @@ setmetatable(UnitToLocale, {__index=function(self, unit)
 			local num = unit:match("^partypet(%d)$")
 			self[unit] = UnitToLocale["party" .. num .. "pet"]
 			return self[unit]
-		-- elseif unit:find("^arenapet%d$") then
-		-- 	local num = unit:match("^arenapet(%d)$")
-		-- 	self[unit] = UnitToLocale["arena" .. num .. "pet"]
-		-- 	return self[unit]
 		elseif unit:find("^raidpet%d%d?$") then
 			local num = unit:match("^raidpet(%d%d?)$")
 			self[unit] = UnitToLocale["raid" .. num .. "pet"]
@@ -102,7 +90,7 @@ end
 ScriptEnv.VehicleName = VehicleName
 
 local function Name(unit, show_server)
-	if unit ~= "player" and not UnitExists(unit) and not ShowBossFrameWhenUninteractable(unit) then
+	if unit ~= "player" and not UnitExists(unit) then
 		return UnitToLocale[unit]
 	else
 		if unit:match("%d*pet%d*$") then
@@ -480,12 +468,9 @@ end
 ScriptEnv.Class = Class
 
 local ShortClass_abbrev = {
-	DEATHKNIGHT = L["Death Knight_short"],
-	DEMONHUNTER = L["Demon Hunter_short"],
 	DRUID = L["Druid_short"],
 	HUNTER = L["Hunter_short"],
 	MAGE = L["Mage_short"],
-	MONK = L["Monk_short"],
 	PALADIN = L["Paladin_short"],
 	PRIEST = L["Priest_short"],
 	ROGUE = L["Rogue_short"],
@@ -528,27 +513,14 @@ end
 ScriptEnv.SmartRace = SmartRace
 
 local ShortRace_abbrev = {
-	BloodElf = L["Blood Elf_short"],
-	Draenei = L["Draenei_short"],
 	Dwarf = L["Dwarf_short"],
 	Gnome = L["Gnome_short"],
-	Goblin = L["Goblin_short"],
 	Human = L["Human_short"],
 	NightElf = L["Night Elf_short"],
 	Orc = L["Orc_short"],
-	Pandaren = L["Pandaren_short"],
 	Tauren = L["Tauren_short"],
 	Troll = L["Troll_short"],
 	Undead = L["Undead_short"],
-	Worgen = L["Worgen_short"],
-	DarkIronDwarf = L["Dark Iron Dwarf_short"],
-	HighmountainTauren = L["Highmountain Tauren_short"],
-	KulTiranHuman = L["Kul Tiran Human_short"],
-	LightforgedDraenei = L["Lightforged Draenei_short"],
-	MagharOrc = L["Mag'har Orc_short"],
-	Nightborne = L["Nightborne_short"],
-	VoidElf = L["Void Elf_short"],
-	ZandalariTroll = L["Zandalari Troll_short"],
 }
 
 local function ShortRace(arg)
@@ -614,7 +586,6 @@ ScriptEnv.Dead = Dead
 
 local MOONKIN_FORM = GetSpellInfo(24858)
 local TRAVEL_FORM = GetSpellInfo(783)
-local TREE_OF_LIFE = GetSpellInfo(33891)
 
 local function DruidForm(unit)
 	local _, class = UnitClass(unit)
@@ -633,8 +604,6 @@ local function DruidForm(unit)
 						return L["Moonkin"]
 					elseif name == TRAVEL_FORM then
 						return L["Travel"]
-					elseif name == TREE_OF_LIFE then
-						return L["Tree"]
 					end
 				end
 				i = i + 1
@@ -932,22 +901,6 @@ local function RestXP(unit)
 	return 0
 end
 ScriptEnv.RestXP = RestXP
-
-local function ArtifactPower()
-	local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem()
-	if azeriteItemLocation then
-		-- api can error if the active item is in your bank
-		if azeriteItemLocation.bagID and (azeriteItemLocation.bagID < 0 or azeriteItemLocation.bagID > NUM_BAG_SLOTS) then
-			return 0, 1, 0, -1
-		end
-		local artifactXP, totalLevelXP = C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation)
-		local numPoints = AzeriteUtil.GetEquippedItemsUnselectedPowersCount()
-		local level = C_AzeriteItem.GetPowerLevel(azeriteItemLocation)
-		return artifactXP, totalLevelXP, numPoints, level
-	end
-	return 0, 0, 0, 0
-end
-ScriptEnv.ArtifactPower = ArtifactPower
 
 local function ThreatPair(unit)
 	if UnitIsFriend("player", unit) then
