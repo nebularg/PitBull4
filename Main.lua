@@ -1,7 +1,7 @@
 -- Constants ----------------------------------------------------------------
 local _G = _G
 
--- luacheck: globals ReloadUI SecureButton_GetModifiedUnit
+-- luacheck: globals oRA3 ReloadUI SecureButton_GetModifiedUnit
 
 local L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
 
@@ -1204,8 +1204,8 @@ function PitBull4:OnInitialize()
 	end
 
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED", "OnTanksUpdated")
-	if _G.oRA3 then
-		_G.oRA3.RegisterCallback(self, "OnTanksUpdated")
+	if oRA3 then
+		oRA3.RegisterCallback(self, "OnTanksUpdated")
 	end
 end
 
@@ -1280,108 +1280,31 @@ PitBull4.modules_not_loaded = modules_not_loaded
 --- Load Load-on-demand modules if they are enabled and exist.
 -- @usage PitBull4:LoadModules()
 function PitBull4:LoadModules()
-	local blacklist = {
-		PitBull4_Aggro = true,
-		PitBull4_AltManaBar = true,
-		PitBull4_AltPowerBar = true,
-		PitBull4_ArcaneCharges = true,
-		PitBull4_ArtifactPowerBar = true,
-		PitBull4_Aura = true,
-		PitBull4_Background = true,
-		PitBull4_BattlePet = true,
-		PitBull4_BlankSpace = true,
-		PitBull4_Border = true,
-		PitBull4_BurningEmbers = true,
-		PitBull4_CastBar = true,
-		PitBull4_CastBarLatency = true,
-		PitBull4_Chi = true,
-		PitBull4_CombatFader = true,
-		PitBull4_CombatIcon = true,
-		PitBull4_CombatText = true,
-		PitBull4_ComboPoints = true,
-		PitBull4_DemonicFury = true,
-		PitBull4_DogTagTexts = true,
-		PitBull4_DruidMana = true,
-		PitBull4_Eclipse = true,
-		PitBull4_ExperienceBar = true,
-		PitBull4_HealthBar = true,
-		PitBull4_HideBlizzard = true,
-		PitBull4_Highlight = true,
-		PitBull4_HolyPower = true,
-		PitBull4_HostilityFader = true,
-		PitBull4_LeaderIcon = true,
-		PitBull4_LuaTexts = true,
-		PitBull4_MasterLooterIcon = true,
-		PitBull4_PhaseIcon = true,
-		PitBull4_Portrait = true,
-		PitBull4_PowerBar = true,
-		PitBull4_PvPIcon = true,
-		PitBull4_RaidTargetIcon = true,
-		PitBull4_QuestIcon = true,
-		PitBull4_RangeFader = true,
-		PitBull4_ReadyCheckIcon = true,
-		PitBull4_ReputationBar = true,
-		PitBull4_RestIcon = true,
-		PitBull4_RoleIcon = true,
-		PitBull4_Runes = true,
-		PitBull4_ShadowOrb = true,
-		PitBull4_SoulShards = true,
-		PitBull4_Sounds = true,
-		PitBull4_ThreatBar = true,
-		PitBull4_Totems = true,
-		PitBull4_VisualHeal = true,
-		PitBull4_VoiceIcon = true,
-	}
-	local blacklisted_module_loaded = false
-
 	local current_profile = self.db:GetCurrentProfile()
 	local sv = self.db.sv
 	local sv_namespaces = sv and sv.namespaces
 	for i, name, module_name in self:IterateLoadOnDemandModules() do
-		if blacklist[name] then
-			if GetAddOnEnableState(nil, name) > 0 then
-				-- print(("Found bad module '%s'."):format(module_name))
-				DisableAddOn(name, true)
-				blacklisted_module_loaded = true
-			end
-		else
-			local module_sv = sv_namespaces and sv_namespaces[module_name]
-			local module_profile_db = module_sv and module_sv.profiles and module_sv.profiles[current_profile]
-			local enabled = module_profile_db and module_profile_db.global and module_profile_db.global.enabled
 
-			if enabled == nil then
-				-- we have to figure out the default state
-				local default_state = GetAddOnMetadata(name, "X-PitBull4-DefaultState")
-				enabled = (default_state ~= "disabled")
-			end
+		local module_sv = sv_namespaces and sv_namespaces[module_name]
+		local module_profile_db = module_sv and module_sv.profiles and module_sv.profiles[current_profile]
+		local enabled = module_profile_db and module_profile_db.global and module_profile_db.global.enabled
 
-			local loaded
-			if enabled then
-				-- print(("Found module '%s', attempting to load."):format(module_name))
-				loaded = LoadAddOn(name)
-			end
-
-			if not loaded then
-				-- print(("Found module '%s', not loaded."):format(module_name))
-				modules_not_loaded[module_name] = true
-			end
+		if enabled == nil then
+			-- we have to figure out the default state
+			local default_state = GetAddOnMetadata(name, "X-PitBull4-DefaultState")
+			enabled = (default_state ~= "disabled")
 		end
-	end
 
-	if blacklisted_module_loaded then
-		C_Timer.After(7, function()
-			StaticPopupDialogs["PITBULL4_OUTDATED_MODULES"] = {
-				text = L["You have out-dated PitBull4 modules enabled that can cause errors. Please reload your UI to disable the addons for these modules."],
-				button1 = RELOADUI,
-				button2 = CANCEL,
-				OnAccept = function() ReloadUI() end,
-				hideOnEscape = false,
-				timeout = 0,
-				exclusive = false,
-				showAlert = true,
-			}
-			StaticPopup_Show("PITBULL4_OUTDATED_MODULES")
-		end)
+		local loaded
+		if enabled then
+			-- print(("Found module '%s', attempting to load."):format(module_name))
+			loaded = LoadAddOn(name)
+		end
+
+		if not loaded then
+			-- print(("Found module '%s', not loaded."):format(module_name))
+			modules_not_loaded[module_name] = true
+		end
 	end
 end
 
