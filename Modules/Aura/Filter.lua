@@ -166,11 +166,51 @@ enemy_debuffs.WARLOCK = {}
 
 -- Warrior
 friend_buffs.WARRIOR = {}
+friend_buffs.WARRIOR = {
+	[5242] = 120, [6192] = 120, [6673] = 120, [11549] = 120, [11550] = 120, [11551] = 120, [25289] = 120, -- Battle Shout
+}
 friend_debuffs.WARRIOR = {}
 self_buffs.WARRIOR = {}
+self_buffs.WARRIOR = {
+	[18499] = 10, -- Berserker Rage
+	[23885] = 8, 	[23886] = 8, 	[23887] = 8, 	[23888] = 8, -- Bloodthirst
+	[29131] = 10, -- Blood Rage
+	[12328] = 30, -- Death Wish
+	[12880] = 12, [14201] = 12, [14202] = 12, [14203] = 12, [14204] = 12, -- Enrage
+	[12966] = 15, [12967] = 15, [12968] = 15, [12969] = 15, [12970] = 15, -- Flurry
+	[12976] = 20, -- Last Stand
+	[1719] = 15, -- Recklessness
+	[20230] = 15, -- Retaliation
+	[2565] = 6, -- Shield Block
+	[871] = 10, -- Shield Wall
+	[12292] = 10, -- Sweeping Strikes
+}
 self_debuffs.WARRIOR = {}
 pet_buffs.WARRIOR = {}
 enemy_debuffs.WARRIOR = {}
+enemy_debuffs.WARRIOR = {
+	[1161] = 6, -- Challenging Shout
+	[7922] = 1, -- Charge Stun
+	[12809] = 5, -- Concussion Blow
+	[12721] = 12, -- Deep Wounds
+	[1160] = 30, [6190] = 30, [11554] = 30, [11555] = 30, [11556] = 30, -- Demoralizing Shout
+	[676] = 10, -- Disarm
+	[1715] = 15, [7372] = 15, [7373] = 15, -- Hamstring
+	[23694] = 5, -- Improved Hamstring
+	[20253] = 3, [20614] = 3, [20615] = 3, -- Intercept Stun
+	[5246] = 8, -- Intimidating Shout
+	[12705] = 6, -- Long Daze (Improved Pummel)
+	[5530] = 3, -- Mace Stun Effect
+	[694] = 6, [7400] = 6, [7402] = 6, [20559] = 6, [20560] = 6, -- Mocking Blow
+	[12294] = 10, -- Mortal Strike
+	[12323] = 6, -- Piercing Howl
+	[772] = 9, [6546] = 12, [6547] = 15, [6548] = 18, [11572] = 21, [11573] = 21, [11574] = 21, -- Rend
+	[12798] = 3, -- Revenge Stun
+	[18498] = 3, -- Shield Bash - Silenced
+	[7386] = 30, [7405] = 30, [8380] = 30, [11596] = 30, [11597] = 30, -- Sunder Armor
+	[355] = 3, -- Taunt
+	[6343] = 10, [8198] = 14, [8204] = 18, [8205] = 22, [11580] = 26, [11581] = 30, -- Thunder Clap
+}
 
 -- Human
 friend_buffs.Human = {
