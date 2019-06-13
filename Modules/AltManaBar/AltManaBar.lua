@@ -97,8 +97,5 @@ PitBull4_AltManaBar:SetLayoutOptionsFunction(function(self)
 			PitBull4.Options.GetLayoutDB(self).show_in_forms = value
 			PitBull4.Options.UpdateFrames()
 		end,
-		hidden = function()
-			return player_class ~= "DRUID"
-		end,
 	}
 end)

@@ -16,7 +16,7 @@ local TOTEM_SIZE = 50 -- fixed value used for internal frame creation, change th
 local CONFIG_MODE_ICON = [[Interface\Icons\Spell_Fire_TotemOfWrath]]
 local BORDER_PATH  = [[Interface\AddOns\PitBull4\Modules\Totems\border]]
 local DEFAULT_SOUND_NAME = "Drop"
-local DEFAULT_SOUND_PATH = [[Sound\Interface\DropOnGround.ogg]]
+local DEFAULT_SOUND_PATH = [[Sound\Interface\DropOnGround.ogg]] -- 567460
 
 local COLOR_DEFAULTS = {
 	main_background = {0, 0, 0, 0.5},

@@ -48,7 +48,6 @@ do
 		vehicle = "pet",
 		playerpet = "pet",
 		mouseover = "mouseover",
-		focus = "focus",
 		target = "target",
 		playertarget = "target",
 		npc = "npc",
@@ -62,17 +61,6 @@ do
 		better_unit_ids["raid" .. i] = "raid" .. i
 		better_unit_ids["raidpet" .. i] = "raidpet" .. i
 		better_unit_ids["raid" .. i .. "pet"] = "raidpet" .. i
-	end
-	-- There's no good constant for this.  We used to use
-	-- MAX_ARENA_TEAM_MEMBERS which doesn't make sense and broke
-	-- when 5.2 moved it into the PVPUI addon.
-	for i = 1, 5 do
-		better_unit_ids["arena" .. i] = "arena" .. i
-		better_unit_ids["arenapet" .. i] = "arenapet" .. i
-		better_unit_ids["arena" .. i .. "pet"] = "arenapet" .. i
-	end
-	for i = 1, _G.MAX_BOSS_FRAMES do
-		better_unit_ids["boss" .. i] = "boss" .. i
 	end
 	for i = 1, 40 do
 		better_unit_ids["nameplate" .. i] = "nameplate" .. i
@@ -91,16 +79,8 @@ do
 		player = true,
 		pet = true,
 		mouseover = true,
-		focus = true,
 		target = true,
 	}
-	for i = 1, 5 do
-		valid_singleton_unit_ids["arena" .. i] = true
-		valid_singleton_unit_ids["arenapet" .. i] = true
-	end
-	for i = 1, _G.MAX_BOSS_FRAMES do
-		valid_singleton_unit_ids["boss" .. i] = true
-	end
 	setmetatable(valid_singleton_unit_ids, target_same_mt)
 
 	--- Return whether the UnitID provided is a singleton
@@ -116,17 +96,11 @@ do
 		player = true,
 		pet = true,
 		mouseover = true,
-		focus = true,
 		target = true,
 		party = true,
 		partypet = true,
 		raid = true,
 		raidpet = true,
-		boss = true,
-		arena = true,
-		arenapet = true,
-		battleground = true,
-		battlegroundpet = true,
 	}
 	setmetatable(valid_classifications, target_same_mt)
 
@@ -146,17 +120,11 @@ do
 		player = true,
 		pet = true,
 		mouseover = true,
-		focus = true,
 		target = true,
 		party = true,
 		partypet = true,
 		raid = true,
 		raidpet = true,
-		boss = true,
-		arena = true,
-		arenapet = true,
-		battleground = true,
-		battlegroundpet = true,
 	}
 
 	--- Return whether the classification provided is considered "wacky"
@@ -179,18 +147,11 @@ do
 		party_sing = L["Party"],
 		partypet = L["Party pets"],
 		partypet_sing = L["Party pet"],
-		arena = L["Arena"],
-		arena_sing = L["Arena"],
-		arenapet = L["Arena pets"],
-		arenapet_sing = L["Arena pet"],
 		raid = L["Raid"],
 		raid_sing = L["Raid"],
 		raidpet = L["Raid pets"],
 		raidpet_sing = L["Raid pet"],
-		boss = L["Boss"],
-		boss_sing = L["Boss"],
 		mouseover = L["Mouse-over"],
-		focus = L["Focus"],
 		maintank = L["Main tanks"],
 		maintank_sing = L["Main tank"],
 		mainassist = L["Main assists"],
@@ -209,7 +170,7 @@ do
 			return group
 		end
 		local good
-		if group:find("^player") or group:find("^pet") or group:find("^mouseover") or group:find("^target") or group:find("^focus") then
+		if group:find("^player") or group:find("^pet") or group:find("^mouseover") or group:find("^target") then
 			good = L["%s's target"]:format(self[nonTarget])
 		elseif singular then
 			good = L["%s target"]:format(self[nonTarget .. "_sing"])
