@@ -18,26 +18,78 @@ PitBull4_CastBar:SetDefaults({
 	auto_hide = false,
 	idle_background = false,
 },{
-	casting_interruptible_color   = { 1, 0.7, 0 },
-	casting_uninterruptible_color = { 1, 222/255, 144/255},
+	casting_interruptible_color = { 1, 0.7, 0 },
 	casting_complete_color = { 0, 1, 0 },
 	casting_failed_color = { 1, 0, 0 },
-	channel_interruptible_color   = { 0, 0, 1 },
-	channel_uninterruptible_color = { 96/255, 180/255, 211/255 },
+	channel_interruptible_color = { 0, 0, 1 },
 })
+
+local player_guid = UnitGUID("player")
 
 local cast_data = {}
 PitBull4_CastBar.cast_data = cast_data
+
+local channel_spells = {
+	-- Druid
+	[17401] = 10, [17402] = 10, -- Hurricane
+	[740] = 10, [8918] = 10, [9862] = 10, [9863] = 10, -- Tranquility
+	-- Hunter
+	[6197] = 60, -- Eagle Eye
+	[1002] = 60, -- Eyes of the Beast
+	[136] = 5, [3111] = 5, [3661] = 5, [3662] = 5, [13542] = 5, [13543] = 5, [13544] = 5, -- Mend Pet
+	[1510] = 6, [14294] = 6, [14295] = 6, -- Volley
+	-- Mage
+	[5143] = 3, [5144] = 4, [5145] = 5, [8416] = 5, [8417] = 5, [10211] = 5, [10212] = 5, [25345] = 5, -- Arcane Missiles
+	[10] = 8, [6141] = 8, [8427] = 8, [10185] = 8, [10186] = 8, [10187] = 8, -- Blizzard
+	[12051] = 8, -- Evocation
+	-- Priest
+	[605] = 60, [10911] = 60, [10912] = 60, -- Mind Control
+	[15407] = 3, [17311] = 3, [17312] = 3, [17313] = 3, [17314] = 3, [18807] = 3, -- Mind Flay
+	[2096] = 60, [10909] = 60, -- Mind Vision
+	-- Shaman
+	[6196] = 60, -- Far Sight
+	-- Warlock
+	[689] = 5, [699] = 5, [709] = 5, [7651] = 5, [11699] = 5, [11700] = 5, -- Drain Life
+	[5138] = 5, [6226] = 5, [11703] = 5, [11704] = 5, -- Drain Mana
+	[1120] = 15, [8288] = 15, [8289] = 15, [11675] = 15, -- Drain Soul
+	[126] = 45, -- Eye of Kilrogg
+	[755] = 10, [3698] = 10, [3699] = 10, [3700] = 10, [11693] = 10, [11694] = 10,  [11695] = 10, -- Health Funnel
+	[1949] = 15, [11683] = 15, [11684] = 15, -- Hellfire
+	[5740] = 8, [6219] = 8, [11677] = 8, [11678] = 8, -- Rain of Fire
+	[18540] = 60,-- Ritual of Doom
+	[23598] = 600, -- Ritual of Summoning
+	-- Racial
+	[10797] = 6, [19296] = 6, [19299] = 6, [19302] = 6, [19303] = 6, [19304] = 6, [19305] = 6, -- Starshards (Night Elf Priest)
+	[20577] = 10, [20578] = 10, -- Cannibalize (Undead)
+	-- Professions
+	[746] = 6, [1159] = 6, [3267] = 7, [3268] = 7, [7926] = 8, [7927] = 8, [23569] = 8, [24412] = 8, [10838] = 8, -- First Aid
+	[10839] = 8, [23568] = 8, [24413] = 8, [18608] = 8, [18610] = 8, [23696] = 8, [23567] = 8, [24414] = 8, -- First Aid
+	-- [7620] = 30, -- Fishing (no aura)
+	[13278] = 4, -- Gnomish Death Ray
+}
+PitBull4_CastBar.channel_spells = channel_spells
 
 local timer_frame = CreateFrame("Frame")
 timer_frame:Hide()
 timer_frame:SetScript("OnUpdate", function() PitBull4_CastBar:FixCastDataAndUpdateAll() end)
 
-local player_guid
-function PitBull4_CastBar:OnEnable()
-	player_guid = UnitGUID("player")
+timer_frame:SetScript("OnEvent", function()
+	local _, event, _, src_guid, _, _, _, dst_guid, _, _, _, spell_id = CombatLogGetCurrentEventInfo()
+	if event == "SPELL_CAST_START" or event == "SPELL_CAST_SUCCESS" or event == "SPELL_CAST_FAILED" then
+		PitBull4_CastBar:UpdateInfoFromLog(event, src_guid, spell_id)
+		if event == "SPELL_CAST_SUCCESS" and channel_spells[spell_id] then
+			-- channeled spells don't have cast events
+			PitBull4_CastBar:UpdateInfoFromLog("SPELL_CAST_START", src_guid, spell_id, true)
+		end
+	elseif event == "SPELL_AURA_REMOVED" and channel_spells[spell_id] then
+		-- catch the end of a channel from when the aura is removed
+		PitBull4_CastBar:UpdateInfoFromLog("SPELL_CAST_SUCCESS", src_guid, spell_id, true)
+	end
+end)
 
+function PitBull4_CastBar:OnEnable()
 	timer_frame:Show()
+	timer_frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 
 	self:RegisterEvent("UNIT_SPELLCAST_START", "UpdateInfo")
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", "UpdateInfo")
@@ -51,6 +103,7 @@ function PitBull4_CastBar:OnEnable()
 end
 
 function PitBull4_CastBar:OnDisable()
+	timer_frame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	timer_frame:Hide()
 end
 
@@ -78,13 +131,8 @@ do
 end
 
 function PitBull4_CastBar:GetValue(frame)
-	if frame.unit ~= "player" then return end
 	local guid = frame.guid
 	local data = cast_data[guid]
-	if frame.is_wacky or not data then
-		self:UpdateInfo(nil, frame.unit)
-		data = cast_data[guid]
-	end
 
 	local db = self:GetLayoutDB(frame)
 	if not data then
@@ -125,21 +173,11 @@ function PitBull4_CastBar:GetColor(frame, value)
 	end
 
 	if data.casting then
-		if data.interruptible then
-			local r, g, b = unpack(self.db.profile.global.casting_interruptible_color)
-			return r, g, b, 1
-		else
-			local r, g, b = unpack(self.db.profile.global.casting_uninterruptible_color)
-			return r, g, b, 1
-		end
+		local r, g, b = unpack(self.db.profile.global.casting_interruptible_color)
+		return r, g, b, 1
 	elseif data.channeling then
-		if data.interruptible then
-			local r, g, b = unpack(self.db.profile.global.channel_interruptible_color)
-			return r, g, b, 1
-		else
-			local r, g, b = unpack(self.db.profile.global.channel_uninterruptible_color)
-			return r, g, b, 1
-		end
+		local r, g, b = unpack(self.db.profile.global.channel_interruptible_color)
+		return r, g, b, 1
 	elseif data.fade_out then
 		local alpha, r, g, b
 		local stop_time = data.stop_time
@@ -161,12 +199,8 @@ function PitBull4_CastBar:GetColor(frame, value)
 				else
 					r, g, b = unpack(self.db.profile.global.casting_complete_color)
 				end
-			else
-				if data.interruptible then -- Last cast was a channel...
-					r, g, b = unpack(self.db.profile.global.channel_interruptible_color)
-				else
-					r, g, b = unpack(self.db.profile.global.channel_uninterruptible_color)
-				end
+			else -- Last cast was a channel...
+				r, g, b = unpack(self.db.profile.global.channel_interruptible_color)
 			end
 			return r, g, b, alpha
 		end
@@ -222,10 +256,10 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
 		cast_data[guid] = data
 	end
 
-	local spell, _, icon, start_time, end_time, _, cast_id, uninterruptible = CastingInfo()
+	local spell, _, icon, start_time, end_time, _, cast_id = CastingInfo()
 	local channeling = false
 	if not spell then
-		spell, _, icon, start_time, end_time, _, uninterruptible = ChannelInfo()
+		spell, _, icon, start_time, end_time = ChannelInfo()
 		channeling = true
 	end
 	if spell then
@@ -237,7 +271,6 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
 		data.end_time = end_time * 0.001
 		data.casting = not channeling
 		data.channeling = channeling
-		data.interruptible = not uninterruptible
 		data.fade_out = false
 		data.was_channeling = channeling -- persistent state even after interrupted
 		data.stop_time = nil
@@ -278,6 +311,55 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
 	end
 end
 
+function PitBull4_CastBar:UpdateInfoFromLog(event, guid, spell_id, channeling)
+	if not guid or guid == player_guid then return end
+
+	local spell, _, icon, cast_time = GetSpellInfo(spell_id)
+	if channeling then
+		cast_time = channel_spells[spell_id] * 1000
+	end
+	if not cast_time or cast_time == 0 then return end
+
+	local data = cast_data[guid]
+	if not data then
+		data = new()
+		cast_data[guid] = data
+	end
+
+	if event == "SPELL_CAST_START" then
+		local start_time = GetTime()
+		local end_time = start_time + (cast_time * 0.001)
+		if icon == TEMP_ICON then
+			icon = nil
+		end
+		data.icon = icon
+		data.start_time = start_time
+		data.end_time = end_time
+		data.casting = not channeling
+		data.channeling = channeling
+		data.fade_out = false
+		data.was_channeling = channeling -- persistent state even after interrupted
+		data.stop_time = nil
+		timer_frame:Show()
+		return
+	end
+
+	if not data.icon then
+		cast_data[guid] = del(data)
+		if not next(cast_data) then
+			timer_frame:Hide()
+		end
+		return
+	end
+
+	data.casting = false
+	data.channeling = false
+	data.fade_out = true
+	if not data.stop_time then
+		data.stop_time = GetTime()
+	end
+end
+
 local tmp = {}
 function PitBull4_CastBar:FixCastData()
 	local frame
@@ -291,7 +373,8 @@ function PitBull4_CastBar:FixCastData()
 			if self:GetLayoutDB(frame).enabled then
 				found = true
 				if data.casting then
-					if current_time > data.end_time and player_guid ~= guid then
+					if current_time > data.end_time and not data.cast_id then
+						-- no pushback handling
 						data.casting = false
 						data.fade_out = true
 						data.stop_time = current_time
@@ -321,7 +404,9 @@ function PitBull4_CastBar:FixCastData()
 			end
 		end
 		if not found then
-			cast_data[guid] = del(data)
+			if data.cast_id or current_time > data.end_time then
+				cast_data[guid] = del(data)
+			end
 		end
 	end
 	if not next(cast_data) then
@@ -422,103 +507,59 @@ PitBull4_CastBar:SetLayoutOptionsFunction(function(self)
 end)
 
 PitBull4_CastBar:SetColorOptionsFunction(function(self)
-	return 'casting', {
-		type = 'group',
+	return 'casting_interruptible_color', {
+		type = 'color',
 		name = L["Casting"],
-		inline = true,
-		args = {
-			casting_interruptible_color = {
-				type = 'color',
-				name = L["Interruptible"],
-				desc = L["Sets which color to use on casting bar of casts that are interruptible."],
-				get = function(info)
-					return unpack(self.db.profile.global.casting_interruptible_color)
-				end,
-				set = function(info, r, g, b)
-					self.db.profile.global.casting_interruptible_color = { r, g, b }
-					self:UpdateAll()
-				end,
-				order = 1,
-			},
-			casting_uninterruptible_color = {
-				type = 'color',
-				name = L["Uninterruptible"],
-				desc = L["Sets which color to use on casting bar of casts that are not interruptible."],
-				get = function(info)
-					return unpack(self.db.profile.global.casting_uninterruptible_color)
-				end,
-				set = function(info, r, g, b)
-					self.db.profile.global.casting_uninterruptible_color = { r, g, b }
-					self:UpdateAll()
-				end,
-				order = 2,
-			},
-			casting_complete_color = {
-				type = 'color',
-				name = L["Complete"],
-				desc = L["Sets which color to use on casting bar of casts that completed."],
-				get = function(info)
-					return unpack(self.db.profile.global.casting_complete_color)
-				end,
-				set = function(info, r, g, b)
-					self.db.profile.global.casting_complete_color = { r, g, b }
-					self:UpdateAll()
-				end,
-				order = 3,
-			},
-			casting_failed_color = {
-				type = 'color',
-				name = L["Failed"],
-				desc = L["Sets which color to use on casting bar of casts that failed."],
-				get = function(info)
-					return unpack(self.db.profile.global.casting_failed_color)
-				end,
-				set = function(info, r, g, b)
-					self.db.profile.global.casting_failed_color = { r, g, b }
-					self:UpdateAll()
-				end,
-				order = 4,
-			},
-		},
-	}, 'channeling', {
-		type = 'group',
+		desc = L["Sets which color to use on casting bar of casts that are interruptible."],
+		get = function(info)
+			return unpack(self.db.profile.global.casting_interruptible_color)
+		end,
+		set = function(info, r, g, b)
+			self.db.profile.global.casting_interruptible_color = { r, g, b }
+			self:UpdateAll()
+		end,
+		order = 1,
+	},'channel_interruptible_color', {
+		type = 'color',
 		name = L["Channeling"],
-		inline = true,
-		args = {
-			channel_interruptible_color = {
-				type = 'color',
-				name = L["Interruptible"],
-				desc = L["Sets which color to use on casting bar of channeled casts that are interruptible."],
-				get = function(info)
-					return unpack(self.db.profile.global.channel_interruptible_color)
-				end,
-				set = function(info, r, g, b)
-					self.db.profile.global.channel_interruptible_color = { r, g, b }
-					self:UpdateAll()
-				end,
-				order = 1,
-			},
-			channel_uninterruptible_color = {
-				type = 'color',
-				name = L["Uninterruptible"],
-				desc = L["Sets which color to use on casting bar of channeled casts that are not interruptible."],
-				get = function(info)
-					return unpack(self.db.profile.global.channel_uninterruptible_color)
-				end,
-				set = function(info, r, g, b)
-					self.db.profile.global.channel_uninterruptible_color = { r, g, b }
-					self:UpdateAll()
-				end,
-				order = 2,
-			},
-		},
+		desc = L["Sets which color to use on casting bar of channeled casts that are interruptible."],
+		get = function(info)
+			return unpack(self.db.profile.global.channel_interruptible_color)
+		end,
+		set = function(info, r, g, b)
+			self.db.profile.global.channel_interruptible_color = { r, g, b }
+			self:UpdateAll()
+		end,
+		order = 2,
+	},'casting_complete_color', {
+		type = 'color',
+		name = L["Complete"],
+		desc = L["Sets which color to use on casting bar of casts that completed."],
+		get = function(info)
+			return unpack(self.db.profile.global.casting_complete_color)
+		end,
+		set = function(info, r, g, b)
+			self.db.profile.global.casting_complete_color = { r, g, b }
+			self:UpdateAll()
+		end,
+		order = 3,
+	},'casting_failed_color', {
+		type = 'color',
+		name = L["Failed"],
+		desc = L["Sets which color to use on casting bar of casts that failed."],
+		get = function(info)
+			return unpack(self.db.profile.global.casting_failed_color)
+		end,
+		set = function(info, r, g, b)
+			self.db.profile.global.casting_failed_color = { r, g, b }
+			self:UpdateAll()
+		end,
+		order = 4,
 	},
 	function(info)
 		self.db.profile.global.casting_interruptible_color = { 1, 0.7, 0 }
-		self.db.profile.global.casting_uninterruptible_color = { 1, 222/255, 144/255 }
 		self.db.profile.global.casting_complete_color = { 0, 1, 0 }
 		self.db.profile.global.casting_failed_color = { 1, 0, 0 }
 		self.db.profile.global.channel_interruptible_color = { 0, 0, 1 }
-		self.db.profile.global.channel_uninterruptible_color = { 96/255, 180/255, 211/255 }
 	end
 end)

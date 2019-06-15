@@ -42,6 +42,8 @@ local player_guid
 local predicted_power = true
 local predicted_health = true
 
+local channel_spells = PitBull4:GetModule("CastBar").channel_spells
+
 local PROVIDED_CODES = {
 	[L["Class"]] = {
 		[L["Standard"]] = {
@@ -676,12 +678,14 @@ function PitBull4_LuaTexts:OnEnable()
 	self:SetCVar()
 
 	timerframe:Show()
+	timerframe:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 end
 
 function PitBull4_LuaTexts:OnDisable()
 	self:RemoveFrameScriptHook("OnEnter")
 	self:RemoveFrameScriptHook("OnLeave")
 	timerframe:Hide()
+	timerframe:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 end
 
 local function set_text(font_string, ...)
@@ -819,10 +823,10 @@ local function update_cast_data(event, unit, event_cast_id, event_spell_id)
 		cast_data[guid] = data
 	end
 
-	local spell, _, _, start_time, end_time, _, cast_id, uninterruptible, spell_id = CastingInfo()
+	local spell, _, _, start_time, end_time, _, cast_id, _, spell_id = CastingInfo()
 	local channeling = false
 	if not spell then
-		spell, _, _, start_time, end_time, _, uninterruptible, spell_id = ChannelInfo()
+		spell, _, _, start_time, end_time, _, _, spell_id = ChannelInfo()
 		channeling = true
 	end
 	if spell then
@@ -842,7 +846,6 @@ local function update_cast_data(event, unit, event_cast_id, event_spell_id)
 		data.casting = not channeling
 		data.channeling = channeling
 		data.fade_out = false
-		data.interruptible = not uninterruptible
 		if event ~= "UNIT_SPELLCAST_INTERRUPTED" then
 			-- We can't update the cache of the cast_id on UNIT_SPELLCAST_INTERRUPTED  because
 			-- for whatever reason it ends up giving us 0 inside this event.
@@ -878,6 +881,71 @@ local function update_cast_data(event, unit, event_cast_id, event_spell_id)
 	end
 end
 
+local function update_cast_data_log(event, guid, spell_id, failed, channeling)
+	if not guid or guid == player_guid then return end
+
+	local spell, _, icon, cast_time = GetSpellInfo(spell_id)
+	if channeling then
+		cast_time = channel_spells[spell_id] * 1000
+	end
+	if not cast_time or cast_time == 0 then return end
+
+	local data = cast_data[guid]
+	if not data then
+		data = new()
+		cast_data[guid] = data
+	end
+
+	if event == "SPELL_CAST_START" then
+		local start_time = GetTime()
+		local end_time = start_time + (cast_time * 0.001)
+		data.spell = spell
+		data.start_time = start_time
+		data.end_time = end_time
+		data.delay = 0
+		data.casting = not channeling
+		data.channeling = channeling
+		data.fade_out = false
+		data.stop_time = nil
+		data.stop_message = nil
+		return
+	end
+
+	if not data.spell then
+		cast_data[guid] = del(data)
+		return
+	end
+
+	if event == "SPELL_CAST_FAILED" then
+		data.stop_message = failed
+	elseif event == "SPELL_CAST_SUCCESS" then
+		-- Sometimes the interrupt event happens just before the
+		-- success event so clear the stop_message if we get succeded.
+		data.stop_message = nil
+	end
+
+	data.casting = false
+	data.channeling = false
+	data.fade_out = true
+	if not data.stop_time then
+		data.stop_time = GetTime()
+	end
+end
+
+timerframe:SetScript("OnEvent", function()
+	local _, event, _, src_guid, _, _, _, dst_guid, _, _, _, spell_id, _, _, failed = CombatLogGetCurrentEventInfo()
+	if event == "SPELL_CAST_START" or event == "SPELL_CAST_SUCCESS" or event == "SPELL_CAST_FAILED" then
+		update_cast_data_log(event, src_guid, spell_id, failed)
+		if event == "SPELL_CAST_SUCCESS" and channel_spells[spell_id] then
+			-- channeled spells don't have cast events
+			update_cast_data_log("SPELL_CAST_START", src_guid, spell_id, nil, true)
+		elseif event == "SPELL_AURA_REMOVED" and channel_spells[spell_id] then
+			-- catch the end of a channel from when the aura is removed
+			update_cast_data_log("SPELL_CAST_SUCCESS", src_guid, spell_id, nil, true)
+		end
+	end
+end)
+
 local tmp = {}
 local function fix_cast_data()
 	local current_time = GetTime()
@@ -886,7 +954,8 @@ local function fix_cast_data()
 	end
 	for guid, data in pairs(tmp) do
 		if data.casting then
-			if current_time > data.end_time and player_guid ~= guid then
+			if current_time > data.end_time and not data.cast_id then
+				-- no pushback handling
 				data.casting = false
 				data.fade_out = true
 				data.stop_time = current_time
@@ -917,8 +986,8 @@ local function fix_cast_data()
 				to_update[font_string] = 0 -- update now
 			end
 		end
-		if not found then
-			if cast_data[guid] then
+		if not found and cast_data[guid] then
+			if data.cast_id or current_time > data.end_time then
 				cast_data[guid] = del(data)
 			end
 		end
