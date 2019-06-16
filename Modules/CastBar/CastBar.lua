@@ -31,7 +31,7 @@ PitBull4_CastBar.cast_data = cast_data
 
 local channel_spells = {
 	-- Druid
-	[17401] = 10, [17402] = 10, -- Hurricane
+	[17401] = 10, [17402] = 10, -- Hurricane (no aura)
 	[740] = 10, [8918] = 10, [9862] = 10, [9863] = 10, -- Tranquility
 	-- Hunter
 	[6197] = 60, -- Eagle Eye
@@ -74,13 +74,15 @@ timer_frame:Hide()
 timer_frame:SetScript("OnUpdate", function() PitBull4_CastBar:FixCastDataAndUpdateAll() end)
 
 timer_frame:SetScript("OnEvent", function()
-	local _, event, _, src_guid, _, _, _, dst_guid, _, _, _, spell_id = CombatLogGetCurrentEventInfo()
+	local _, event, _, src_guid, _, _, _, dst_guid, _, _, _, spell_id, _, _, extra_spell_id = CombatLogGetCurrentEventInfo()
 	if event == "SPELL_CAST_START" or event == "SPELL_CAST_SUCCESS" or event == "SPELL_CAST_FAILED" then
 		PitBull4_CastBar:UpdateInfoFromLog(event, src_guid, spell_id)
 		if event == "SPELL_CAST_SUCCESS" and channel_spells[spell_id] then
 			-- channeled spells don't have cast events
 			PitBull4_CastBar:UpdateInfoFromLog("SPELL_CAST_START", src_guid, spell_id, true)
 		end
+	elseif event == "SPELL_INTERRUPT" then
+		PitBull4_CastBar:UpdateInfoFromLog(event, dst_guid, extra_spell_id)
 	elseif event == "SPELL_AURA_REMOVED" and channel_spells[spell_id] then
 		-- catch the end of a channel from when the aura is removed
 		PitBull4_CastBar:UpdateInfoFromLog("SPELL_CAST_SUCCESS", src_guid, spell_id, true)
