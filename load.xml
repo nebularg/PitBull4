@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 
-<!--@debug@--> 
+<!--@debug@-->
 <Script file="Debug.lua"/>
 <!--@end-debug@-->
 
@@ -10,6 +10,8 @@
 <Include file="Templates.xml"/>
 
 <Script file="Main.lua"/>
+
+<Script file="Spells.lua"/>
 
 <Script file="Utils.lua"/>
 

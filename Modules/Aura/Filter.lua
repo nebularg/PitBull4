@@ -4,6 +4,8 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
+local spells = PitBull4.Spells.spell_durations
+
 local _, player_class = UnitClass("player")
 
 --- Return the DB dictionary for the specified filter.
@@ -98,7 +100,6 @@ function PitBull4_Aura:PLAYER_TALENT_UPDATE()
 end
 
 -- Setup the data for which auras belong to whom
-local spells = {}
 local friend_buffs,friend_debuffs,self_buffs,self_debuffs,pet_buffs,enemy_debuffs = {},{},{},{},{},{}
 
 -- Druid
@@ -390,7 +391,6 @@ turn(pet_buffs)
 turn(enemy_debuffs)
 turn(extra_buffs, true)
 
-PitBull4_Aura.spells = spells
 PitBull4_Aura.friend_buffs = friend_buffs
 PitBull4_Aura.friend_debuffs = friend_debuffs
 PitBull4_Aura.self_buffs = self_buffs

@@ -2,8 +2,6 @@ local PitBull4 = _G.PitBull4
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 local module = PitBull4_Aura:NewModule("AuraDuration", "AceEvent-3.0")
 
-local spells = PitBull4_Aura.spells
-
 local bit_band = bit.band
 local player_guid = UnitGUID("player")
 
@@ -51,6 +49,8 @@ local function get(t, ...)
 end
 
 local auras = new()
+
+local spells = PitBull4.Spells.spell_durations
 
 local is_group = bit.bor(COMBATLOG_OBJECT_AFFILIATION_MINE, COMBATLOG_OBJECT_AFFILIATION_PARTY, COMBATLOG_OBJECT_AFFILIATION_RAID)
 

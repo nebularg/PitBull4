@@ -24,50 +24,12 @@ PitBull4_CastBar:SetDefaults({
 	channel_interruptible_color = { 0, 0, 1 },
 })
 
-local player_guid = UnitGUID("player")
+local channel_spells = PitBull4.Spells.channel_spells
+local disable_spells = PitBull4.Spells.disable_spells
 
 local cast_data = {}
-PitBull4_CastBar.cast_data = cast_data
 
-local channel_spells = {
-	-- Druid
-	[17401] = 10, [17402] = 10, -- Hurricane (no aura)
-	[740] = 10, [8918] = 10, [9862] = 10, [9863] = 10, -- Tranquility
-	-- Hunter
-	[6197] = 60, -- Eagle Eye
-	[1002] = 60, -- Eyes of the Beast
-	[136] = 5, [3111] = 5, [3661] = 5, [3662] = 5, [13542] = 5, [13543] = 5, [13544] = 5, -- Mend Pet
-	[1510] = 6, [14294] = 6, [14295] = 6, -- Volley
-	-- Mage
-	[5143] = 3, [5144] = 4, [5145] = 5, [8416] = 5, [8417] = 5, [10211] = 5, [10212] = 5, [25345] = 5, -- Arcane Missiles
-	[10] = 8, [6141] = 8, [8427] = 8, [10185] = 8, [10186] = 8, [10187] = 8, -- Blizzard
-	[12051] = 8, -- Evocation
-	-- Priest
-	[605] = 60, [10911] = 60, [10912] = 60, -- Mind Control
-	[15407] = 3, [17311] = 3, [17312] = 3, [17313] = 3, [17314] = 3, [18807] = 3, -- Mind Flay
-	[2096] = 60, [10909] = 60, -- Mind Vision
-	-- Shaman
-	[6196] = 60, -- Far Sight
-	-- Warlock
-	[689] = 5, [699] = 5, [709] = 5, [7651] = 5, [11699] = 5, [11700] = 5, -- Drain Life
-	[5138] = 5, [6226] = 5, [11703] = 5, [11704] = 5, -- Drain Mana
-	[1120] = 15, [8288] = 15, [8289] = 15, [11675] = 15, -- Drain Soul
-	[126] = 45, -- Eye of Kilrogg
-	[755] = 10, [3698] = 10, [3699] = 10, [3700] = 10, [11693] = 10, [11694] = 10,  [11695] = 10, -- Health Funnel
-	[1949] = 15, [11683] = 15, [11684] = 15, -- Hellfire
-	[5740] = 8, [6219] = 8, [11677] = 8, [11678] = 8, -- Rain of Fire
-	[18540] = 60,-- Ritual of Doom
-	[23598] = 600, -- Ritual of Summoning
-	-- Racial
-	[10797] = 6, [19296] = 6, [19299] = 6, [19302] = 6, [19303] = 6, [19304] = 6, [19305] = 6, -- Starshards (Night Elf Priest)
-	[20577] = 10, [20578] = 10, -- Cannibalize (Undead)
-	-- Professions
-	[746] = 6, [1159] = 6, [3267] = 7, [3268] = 7, [7926] = 8, [7927] = 8, [23569] = 8, [24412] = 8, [10838] = 8, -- First Aid
-	[10839] = 8, [23568] = 8, [24413] = 8, [18608] = 8, [18610] = 8, [23696] = 8, [23567] = 8, [24414] = 8, -- First Aid
-	-- [7620] = 30, -- Fishing (no aura)
-	[13278] = 4, -- Gnomish Death Ray
-}
-PitBull4_CastBar.channel_spells = channel_spells
+local player_guid = UnitGUID("player")
 
 local timer_frame = CreateFrame("Frame")
 timer_frame:Hide()

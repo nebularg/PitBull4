@@ -4,6 +4,8 @@ local L = PitBull4.L
 
 local PitBull4_LuaTexts = PitBull4:NewModule("LuaTexts", "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0")
 
+local channel_spells = PitBull4.Spells.channel_spells
+
 local test_frame = CreateFrame("Frame") -- Event validation
 
 local texts = {}
@@ -41,8 +43,6 @@ PitBull4_LuaTexts.dead_times = dead_times
 local player_guid
 local predicted_power = true
 local predicted_health = true
-
-local channel_spells = PitBull4:GetModule("CastBar").channel_spells
 
 local PROVIDED_CODES = {
 	[L["Class"]] = {
