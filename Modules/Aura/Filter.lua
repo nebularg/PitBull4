@@ -193,12 +193,45 @@ pet_buffs.ROGUE = {}
 enemy_debuffs.ROGUE = {}
 
 -- Shaman
-friend_buffs.SHAMAN = {}
+friend_buffs.SHAMAN = {
+	[6177] = 15, [16236] = 15, [16237] = 15, -- Ancestral Fortitude
+	[8185] = true, -- Fire Resistance Totem
+	[8182] = true, -- Frost Resistance Totem
+	[8836] = true, -- Grace of Air Totem
+	[29203] = 15, -- Healing Way
+	[5672] = true, -- Healing Stream Totem
+	[324] = 600, [325] = 600, [905] = 600, [945] = 600, [8134] = 600, [10431] = 600, [10432] = 600, -- Lightning Shield
+	[5677] = true, -- Mana Spring Totem
+	[16191] = true, -- Mana Tide Totem
+	[10596] = true, -- Nature Resistance Totem
+	[6495] = true, -- Sentry Totem
+	[8072] = true, -- Stoneskin Totem
+	[8076] = true, -- Strength of Earth Totem
+	[25909] = true, -- Tranquil Air Totem
+	[131] = 600, -- Water Breathing
+	[546] = 600, -- Water Walking
+	[15108] = true, -- Windwall Totem
+}
 friend_debuffs.SHAMAN = {}
-self_buffs.SHAMAN = {}
+self_buffs.SHAMAN = {
+	[16246] = 15, -- Clearcasting
+	[30165] = 10, [29177] = 10, [29178] = 10, -- Elemental Devastation
+	[16166] = true, -- Elemental Mastery
+	[6196] = 60, -- Far Sight
+	[29063] = 6, -- Focused Casting
+	[16257] = 15, [16277] = 15, [16278] = 15, [16279] = 15, [16280] = 15, -- Flurry
+	[2645] = true, -- Ghost Wolf
+	[16188] = true, -- Nature's Swiftness
+}
 self_debuffs.SHAMAN = {}
 pet_buffs.SHAMAN = {}
-enemy_debuffs.SHAMAN = {}
+enemy_debuffs.SHAMAN = {
+	[3600] = true, -- Earthbind
+	[8056] = 8, [8058] = 8, [10472] = 8, [10473] = 8, -- Frost Shock
+	[8034] = 8, [8037] = 8, [10458] = 8, [16352] = 8, [16353] = 8, -- Frostbrand Attack
+	[8050] = 12, [8052] = 12, [8053] = 12, [10447] = 12, [10448] = 12, [29228] = 12, -- Flame Shock
+	[17364] = 12, -- Stormstrike
+}
 
 -- Warlock
 friend_buffs.WARLOCK = {}
