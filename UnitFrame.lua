@@ -129,6 +129,52 @@ PitBull4.UnitFrame__scripts = UnitFrame__scripts
 PitBull4.SingletonUnitFrame__scripts = SingletonUnitFrame__scripts
 PitBull4.MemberUnitFrame__scripts = MemberUnitFrame__scripts
 
+-- Custom dropdown until Blizzard fixes togglemenu
+do
+	local PitBull4_UnitFrame_DropDown = CreateFrame("Frame", "PitBull4_UnitFrame_DropDown", UIParent, "UIDropDownMenuTemplate")
+
+	local function initialize_dropdown_menu(self)
+		local unit = self.unit
+		if not unit then return end
+
+		local unitType = string.match(unit, "^([a-z]+)[0-9]+$") or unit
+
+		local menu
+		if unitType == "party" then
+			menu = "PARTY"
+		elseif UnitIsUnit(unit, "player") then
+			menu = "SELF"
+		elseif UnitIsUnit(unit, "vehicle") then
+			menu = "VEHICLE"
+		elseif UnitIsUnit(unit, "pet") then
+			menu = "PET"
+		elseif UnitIsOtherPlayersPet(unit) then
+			menu = "OTHERPET"
+		-- Last ditch checks
+		elseif UnitIsPlayer(unit) then
+			if UnitInRaid(unit) then
+				menu = "RAID_PLAYER"
+			elseif UnitInParty(unit) then
+				menu = "PARTY"
+			else
+				menu = "PLAYER"
+			end
+		elseif UnitIsUnit(unit, "target") then
+			menu = "TARGET"
+		end
+
+		if menu then
+			UnitPopup_ShowMenu(self, menu, unit)
+		end
+	end
+	UIDropDownMenu_Initialize(PitBull4_UnitFrame_DropDown, initialize_dropdown_menu, "MENU")
+
+	function UnitFrame:menu(unit)
+		PitBull4_UnitFrame_DropDown.unit = unit
+		ToggleDropDownMenu(1, nil, PitBull4_UnitFrame_DropDown, "cursor")
+	end
+end
+
 function UnitFrame:ProxySetAttribute(key, value)
 	if self:GetAttribute(key) ~= value then
 		self:SetAttribute(key, value)
@@ -444,7 +490,7 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 			if frame.is_singleton then
 				frame:SetMovable(true)
 				frame:SetAttribute("*type1", "target")
-				frame:SetAttribute("*type2", "togglemenu")
+				frame:SetAttribute("*type2", "menu")
 			end
 			frame:RegisterForDrag("LeftButton")
 			frame:RegisterForClicks("AnyUp")
