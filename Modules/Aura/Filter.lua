@@ -103,35 +103,35 @@ end
 local friend_buffs,friend_debuffs,self_buffs,self_debuffs,pet_buffs,enemy_debuffs = {},{},{},{},{},{}
 
 -- Druid
-friend_buffs.DRUID = {}
 friend_buffs.DRUID = {
 	[2893] = 8, -- Abolish Poison
 	[22812] = 15, -- Barkskin
-	[21849] = true, [21850] = true, -- Gift of the Wild
+	[21849] = true, -- Gift of the Wild (60m)
 	[29166] = 20, -- Innervate
-	[1126] = true, [5232] = true, [6756] = true, [5234] = true, [8907] = true, [9884] = true, [9885] = true, -- Mark of the Wild
+	[1126] = true , -- Mark of the Wild (30m)
 	[16810] = 45, [16811] = 45, [16812] = 45, [16813] = 45, [17329] = 45, -- Nature's Grasp
 	[8936] = 21, [8938] = 21, [8939] = 21, [8940] = 21, [8941] = 21, [9750] = 21, [9856] = 21, [9857] = 21, [9858] = 21, -- Regrowth
 	[774] = 12, [1058] = 12, [1430] = 12, [2090] = 12, [2091] = 12, [3627] = 12, [8910] = 12, [9839] = 12, [9840] = 12, [9841] = 12, [25299] = 12, -- Rejuvenation
 	[467] = 600, [782] = 600, [1075] = 600, [8914] = 600, [9756] = 600,	[9756] = 600, -- Thorns
 }
 friend_debuffs.DRUID = {}
-self_buffs.DRUID = {}
 self_buffs.DRUID = {
 	[1066] = true, -- Aquatic Form
-	[5487] = true, [9634] = true, -- Bear Form
+	[5487] = true, -- Bear Form
+	[9634] = true, -- Dire Bear Form
 	[768] = true, -- Cat Form
+	[16870] = 15, -- Clearcasting
 	[1850] = 15, [9821] = 15, -- Dash
 	[5229] = 10, -- Enrage
 	[22842] = 10, [22895] = 10, [22896] = 10, -- Frenzied Regeneration
-	[5215] = true, [6783] = true, [9913] = true, -- Prowl
+	[17116] = true, -- Nature's Swiftness
+	[5215] = true, -- Prowl
 	[5217] = 6, [6793] = 6, [9845] = 6, [9846] = 6, -- Tiger's Fury
 	[740] = 10, [8918] = 10, [9862] = 10, [9863] = 10, -- Tranquility
 	[783] = true, -- Travel Form
 }
 self_debuffs.DRUID = {}
 pet_buffs.DRUID = {}
-enemy_debuffs.DRUID = {}
 enemy_debuffs.DRUID = {
 	[5211] = 2, [6798] = 3, [8983] = 4, -- Bash
 	[5209] = 6, -- Challenging Roar
@@ -139,6 +139,7 @@ enemy_debuffs.DRUID = {
 	[339] = 12, [1062] = 15, [5195] = 18, [5196] = 21, [9852] = 24, [9853] = 27, -- Entangling Roots
 	[770] = 40, [778] = 40, [9749] = 40, [9907] = 40, -- Faerie Fire
 	[17390] = 40, [17391] = 40, [17392] = 40, -- Faerie Fire (Feral)
+	[19675] = 4, -- Feral Charge
 	[6795] = 3, -- Growl
 	[2637] = 20, [18657] = 30, [18658] = 40, -- Hibernate
 	[17401] = 10, [17402] = 10, -- Hurricane
@@ -163,7 +164,9 @@ enemy_debuffs.HUNTER = {}
 -- Mage
 friend_buffs.MAGE = {}
 friend_debuffs.MAGE = {}
-self_buffs.MAGE = {}
+self_buffs.MAGE = {
+	[12536] = 15, -- Clearcasting
+}
 self_debuffs.MAGE = {}
 pet_buffs.MAGE = {}
 enemy_debuffs.MAGE = {}
@@ -179,7 +182,9 @@ enemy_debuffs.PALADIN = {}
 -- Priest
 friend_buffs.PRIEST = {}
 friend_debuffs.PRIEST = {}
-self_buffs.PRIEST = {}
+self_buffs.PRIEST = {
+	[14743] = 6, [27828] = 6, -- Focused Casting
+}
 self_debuffs.PRIEST = {}
 pet_buffs.PRIEST = {}
 enemy_debuffs.PRIEST = {}
@@ -242,12 +247,10 @@ pet_buffs.WARLOCK = {}
 enemy_debuffs.WARLOCK = {}
 
 -- Warrior
-friend_buffs.WARRIOR = {}
 friend_buffs.WARRIOR = {
 	[5242] = 120, [6192] = 120, [6673] = 120, [11549] = 120, [11550] = 120, [11551] = 120, [25289] = 120, -- Battle Shout
 }
 friend_debuffs.WARRIOR = {}
-self_buffs.WARRIOR = {}
 self_buffs.WARRIOR = {
 	[18499] = 10, -- Berserker Rage
 	[23885] = 8, 	[23886] = 8, 	[23887] = 8, 	[23888] = 8, -- Bloodthirst
@@ -264,7 +267,6 @@ self_buffs.WARRIOR = {
 }
 self_debuffs.WARRIOR = {}
 pet_buffs.WARRIOR = {}
-enemy_debuffs.WARRIOR = {}
 enemy_debuffs.WARRIOR = {
 	[1161] = 6, -- Challenging Shout
 	[7922] = 1, -- Charge Stun
@@ -321,7 +323,9 @@ self_buffs.NightElf = {
 }
 self_debuffs.NightElf = {}
 pet_buffs.NightElf = {}
-enemy_debuffs.NightElf = {}
+enemy_debuffs.NightElf = {
+	[10797] = 6, [19296] = 6, [19299] = 6, [19302] = 6, [19303] = 6, [19304] = 6, [19305] = 6, -- Starshards
+}
 
 -- Gnome
 friend_buffs.Gnome = {
