@@ -65,11 +65,6 @@ function PitBull4_PvPIcon:GetTexture(frame)
 		return nil
 	end
 
-	-- Handle "Mercenary Mode" added in 6.2.2. This is only used for PlayerFrame
-	-- so I'm assumming other units don't require this check.
-	if unit == "player" and UnitIsMercenary(unit) then
-		faction = OPPOSITE_PLAYER_FACTION[faction]
-	end
 	return [[Interface\TargetingFrame\UI-PVP-]] .. faction
 end
 
