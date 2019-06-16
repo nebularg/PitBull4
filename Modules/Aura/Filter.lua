@@ -98,6 +98,7 @@ function PitBull4_Aura:PLAYER_TALENT_UPDATE()
 end
 
 -- Setup the data for which auras belong to whom
+local spells = {}
 local friend_buffs,friend_debuffs,self_buffs,self_debuffs,pet_buffs,enemy_debuffs = {},{},{},{},{},{}
 
 -- Druid
@@ -361,6 +362,9 @@ local function turn(t, shallow)
 				DEFAULT_CHAT_FRAME:AddMessage(string.format("PitBull4_Aura: Unknown spell ID: %s", id))
 			else
 				tmp[spell] = v and true
+				if v ~= true then
+					spells[id] = v
+				end
 			end
 		end
 		wipe(entry)
@@ -386,6 +390,7 @@ turn(pet_buffs)
 turn(enemy_debuffs)
 turn(extra_buffs, true)
 
+PitBull4_Aura.spells = spells
 PitBull4_Aura.friend_buffs = friend_buffs
 PitBull4_Aura.friend_debuffs = friend_debuffs
 PitBull4_Aura.self_buffs = self_buffs
