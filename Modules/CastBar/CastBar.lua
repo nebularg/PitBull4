@@ -45,6 +45,10 @@ timer_frame:SetScript("OnEvent", function()
 		end
 	elseif event == "SPELL_INTERRUPT" then
 		PitBull4_CastBar:UpdateInfoFromLog(event, dst_guid, extra_spell_id)
+	elseif event == "SPELL_AURA_APPLIED" then
+		if disable_spells[spell_id] and cast_data[dst_guid] then
+			PitBull4_CastBar:UpdateInfoFromLog("SPELL_INTERRUPT", dst_guid, cast_data[dst_guid].spell_id)
+		end
 	elseif event == "SPELL_AURA_REMOVED" and channel_spells[spell_id] then
 		-- catch the end of a channel from when the aura is removed
 		PitBull4_CastBar:UpdateInfoFromLog("SPELL_CAST_SUCCESS", src_guid, spell_id, true)
@@ -276,7 +280,7 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
 end
 
 function PitBull4_CastBar:UpdateInfoFromLog(event, guid, spell_id, channeling)
-	if not guid or guid == player_guid then return end
+	if not guid or guid == player_guid or not spell_id then return end
 
 	local spell, _, icon, cast_time = GetSpellInfo(spell_id)
 	if channeling then
@@ -296,6 +300,7 @@ function PitBull4_CastBar:UpdateInfoFromLog(event, guid, spell_id, channeling)
 		if icon == TEMP_ICON then
 			icon = nil
 		end
+		data.spell_id = spell_id
 		data.icon = icon
 		data.start_time = start_time
 		data.end_time = end_time
