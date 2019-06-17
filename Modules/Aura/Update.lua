@@ -450,9 +450,9 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 
 	local id, slot, quality, is_buff, name, _, icon, count, debuff_type, duration, expiration_time, caster, _, _, spell_id, _, _, _, _, time_mod = unpack(aura, 1, ENTRY_END)
 
-	local caster_guid = caster and UnitGUID(caster)
-	if player_guid ~= frame.guid and caster_guid then
-		duration, expiration_time = PitBull4_Aura:GetDuration(caster_guid, frame.guid, spell_id)
+	if player_guid ~= frame.guid and duration == 0 and expiration_time == 0 then
+		local caster_guid = caster and UnitGUID(caster)
+		duration, expiration_time = PitBull4_Aura:GetDuration(caster_guid, frame.guid, spell_id, list, id)
 	end
 
 	local is_mine = my_units[caster]

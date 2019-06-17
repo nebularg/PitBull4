@@ -3,6 +3,7 @@ local PitBull4_Aura = PitBull4:GetModule("Aura")
 local module = PitBull4_Aura:NewModule("AuraDuration", "AceEvent-3.0")
 
 local bit_band = bit.band
+
 local player_guid = UnitGUID("player")
 
 local new, del do
@@ -125,7 +126,7 @@ frame:SetScript("OnEvent", function(self)
 		return
 	end
 
-	if event_list[event] and spells[spell_id] and bit_band(src_flags, is_group) > 0 then
+	if event_list[event] and spells[spell_id] then -- and bit_band(src_flags, is_group) > 0
 		if event == "SPELL_AURA_REMOVED" or event == "SPELL_AURA_REFRESH" then
 			add_dr(dst_guid, spell_id, bit_band(dst_flags, is_player) > 0)
 		end
@@ -156,7 +157,7 @@ function module:PLAYER_ENTERING_WORLD()
 	-- tidy up
 	local purge = not IsInGroup()
 	for guid in next, auras do
-		if purge or not guid:match("^Player") then
+		if purge or guid:sub(1, 6) ~= "Player" then
 			auras[guid] = del(auras[guid])
 		end
 	end
@@ -165,11 +166,48 @@ function module:PLAYER_ENTERING_WORLD()
 	end
 end
 
-function PitBull4_Aura:GetDuration(src_guid, dst_guid, spell_id)
+local tmp = {}
+function PitBull4_Aura:GetDuration(src_guid, dst_guid, spell_id, aura_list, aura_index)
 	if spells[spell_id] then
-		local entry = get(auras, dst_guid, spell_id, src_guid)
-		if entry then
-			return entry[1], entry[2]
+		if src_guid then
+			local entry = get(auras, dst_guid, spell_id, src_guid)
+			if entry then
+				if entry[2] > GetTime() then
+					return entry[1], entry[2]
+				end
+				auras[dst_guid][spell_id][src_guid] = del(entry)
+			end
+		else
+			-- The aura has no caster, assign it one of the expirations we have
+			local casters = get(auras, dst_guid, spell_id)
+			if casters then
+				wipe(tmp)
+				local t = GetTime()
+				-- Build an indexed table of the caster guids and sort by expiration
+				for guid, entry in next, casters do
+					if entry[2] > t then
+						tmp[#tmp+1] = guid
+					else
+						auras[dst_guid][spell_id][guid] = del(entry)
+					end
+				end
+				sort(tmp, function(a, b) return casters[a][2] > casters[b][2] end)
+
+				-- Find which instance of the aura is being updated
+				local index = 0
+				for i=1, #aura_list do
+					if aura_list[i].spell_id == spell_id or i == aura_index then -- (the data hasn't been updated yet so always count our aura)
+						index = index + 1
+					end
+					if i == aura_index then break	end
+				end
+
+				-- Pick the caster to go with the aura
+				if index >= 1 and index <= #tmp then
+					local guid = tmp[index]
+					return casters[guid][1], casters[guid][2]
+				end
+			end
 		end
 	end
 	return 0, 0
