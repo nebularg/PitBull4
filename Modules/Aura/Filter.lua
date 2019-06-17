@@ -268,12 +268,64 @@ enemy_debuffs.MAGE = {
 }
 
 -- Paladin
-friend_buffs.PALADIN = {}
-friend_debuffs.PALADIN = {}
-self_buffs.PALADIN = {}
+friend_buffs.PALADIN = {
+	[1044] = 10, -- Blessing of Freedom
+	[19977] = 300, [19978] = 300, [19979 ] = 300, -- Blessing of Light
+	[20217] = 300, -- Blessing of Kings
+	[19740] = 300, [19834] = 300, [19835] = 300, [19836] = 300, [19837] = 300, [19838] = 300, [25291] = 300, -- Blessing of Might
+	[1022] = 6, [5599] = 8, [10278] = 10, -- Blessing of Protection
+	[6940] = 10, [20729] = 10, -- Blessing of Sacrifice
+	[20911] = 300, [20912] = 300, [20913] = 300, -- Blessing of Sanctuary
+	[1038] = 300, -- Blessing of Salvation
+	[19742] = 300, [19850] = 300, [19852] = 300, [19853] = 300, [19854] = 300, [25290] = 300, -- Blessing of Wisdom
+	[19746] = true, -- Concentration Aura
+	[465] = true, -- Devotion Aura
+	[19891] = true, -- Fire Resistance Aura
+	[19888] = true, -- Frost Resistance Aura
+	[25890] = 900, -- Greater Blessing of Light
+	[25898] = 900, -- Greater Blessing of Kings
+	[25782] = 900, [25916] = 900, -- Greater Blessing of Might
+	[25899] = 900, -- Greater Blessing of Sanctuary
+	[25895] = 900, -- Greater Blessing of Salvation
+	[25894] = 900, [25918] = 900, -- Greater Blessing of Wisdom
+	[20233] = 120, [20236] = 120, -- Improved Lay on Hands
+	[7294] = true, -- Retribution Aura
+	[19876] = true, -- Shadow Resistance Aura
+}
+friend_debuffs.PALADIN = {
+	[25771] = 60, -- Forbearance
+}
+self_buffs.PALADIN = {
+	[19753] = 180, -- Divine Intervention
+	[20216] = true, -- Divine Favor
+	[498] = 6, [5573] = 8, -- Divine Protection
+	[642] = 10, [1020] = 12, -- Divine Shield
+	[20925] = 10, [20927] = 10, [20928] = 10, -- Holy Shield
+	[20128] = 10, -- Redoubt
+	[25780] = true, -- Righteous Fury
+	[20375] = 30, [20915] = 30, [20918] = 30, [20919] = 30, [20920] = 30, -- Seal of Command
+	[20164] = 30, -- Seal of Justice
+	[20165] = 30, [20347] = 30, [20348] = 30, [20349] = 30, -- Seal of Light
+	[21084] = 30, [20287] = 30, [20288] = 30, [20289] = 30, [20290] = 30, [20291] = 30, [20292] = 30, [20293] = 30, -- Seal of Righteousness
+	[20162] = 30, [20305] = 30, [20306] = 30, [20307] = 30, [20308] = 30, [21082] = 30, -- Seal of the Crusader
+	[20166] = 30, [20356] = 30, [20357] = 30, -- Seal of Wisdom
+	[23214] = true, -- Summon Charger
+	[13819] = true, -- Summon Warhorse
+}
 self_debuffs.PALADIN = {}
 pet_buffs.PALADIN = {}
-enemy_debuffs.PALADIN = {}
+enemy_debuffs.PALADIN = {
+	[26573] = 8, [20116] = 8, [20922] = 8, [20923] = 8, [20924] = 8, -- Consecration
+	[853] = 3, [5588] = 4, [5589] = 5, [10308] = 6, -- Hammer of Justice
+	[20185] = 10, [20344] = 10, [20345] = 10, [20346] = 10, -- Judgement of Light
+	[20184] = 10, -- Judgement of Justice
+	[21183] = 10, [20188] = 10, [20300] = 10, [20301] = 10, [20302] = 10, [20303] = 10, -- Judgement of the Crusader
+	[20186] = 10, [20354] = 10, [20355] = 10, -- Judgement of Wisdom
+	[20066] = 6, -- Repentance
+	[2878] = 10, [5627] = 15, [5627] = 20, -- Turn Undead
+	[20050] = 8, -- Vengeance
+	[67] = 10, -- Vindication
+}
 
 -- Priest
 friend_buffs.PRIEST = {
