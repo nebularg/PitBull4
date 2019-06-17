@@ -221,14 +221,51 @@ enemy_debuffs.HUNTER = {
 }
 
 -- Mage
-friend_buffs.MAGE = {}
+friend_buffs.MAGE = {
+	[1008] = 600, [8455] = 600, [10169] = 600, [10170] = 600, -- Amplify Magic
+	[23028] = true, -- Arcane Brilliance (60m)
+	[1459] = true, -- Arcane Intellect (30m)
+	[2855] = 120, -- Detect Magic
+	[604] = 600, [8450] = 600, [8451] = 600, [10173] = 600, [10174] = 600, -- Dampen Magic
+	[130] = 30, -- Slow Fall
+}
 friend_debuffs.MAGE = {}
 self_buffs.MAGE = {
+	[12042] = 15, -- Arcane Power
+	[5143] = true, [7268] = true, -- Arcane Missiles
+	[10] = 8, -- Blizzard
 	[12536] = 15, -- Clearcasting
+	[28682] = true, -- Combustion
+	[12051] = 8, -- Evocation
+	[543] = 30, [8457] = 30, [8458] = 30, [10223] = 30, [10225] = 30, -- Fire Ward
+	[6136] = 5, -- Frost Armor
+	[6143] = 30, [8461] = 30, [8462] = 30, [10177] = 30, [28609] = 30, -- Frost Ward
+	[11426] = 60, [13031] = 60, [13032] = 60, [13033] = 60, -- Ice Barrier
+	[11958] = 10, -- Ice Block
+	[6117] = true, -- Mage Armor (30m)
+	[1463] = 60, [8494] = 60, [8495] = 60, [10191] = 60, [10192] = 60, [10193] = 60, -- Mana Shield
+	[12043] = 16, -- Presence of Mind
 }
 self_debuffs.MAGE = {}
 pet_buffs.MAGE = {}
-enemy_debuffs.MAGE = {}
+enemy_debuffs.MAGE = {
+	[11113] = 6, [13018] = 6, [13019] = 6, [13020] = 6, [13021] = 6, -- Blast Wave
+	[12484] = 1.5, [12485] = 1.5, [12486] = 1.5, -- Chilled (Improved Blizzard)
+	[120] = 8, [8492] = 8, [10159] = 8, [10160] = 8, [10161] = 8, -- Cone of Cold
+	[18469] = 4, -- Counterspell - Silence (Improved Counterspell)
+	[2855] = 120, -- Detect Magic
+	[22959] = 30, -- Fire Vulnerability
+	[133] = 4, [143] = 6, [145] = 6, [3140] = 8, [8400] = 8, [8401] = 8, [8402] = 8, [10148] = 8, [10149] = 8, [10150] = 8, [10151] = 8, [25306] = 8, -- Fireball
+	[2120] = 8, [2121] = 8, [8422] = 8, [8423] = 8, [10215] = 8, [10216] = 8, -- Flamestrike
+	[122] = 8, [865] = 8, [6131] = 8, [10230] = 8, -- Frost Nova
+	[12494] = 5, -- Frostbite
+	[116] = 5, [205] = 6, [837] = 6, [7322] = 7, [8406] = 7, [8407] = 8, [8408] = 8, [10179] = 9, [10180] = 9, [10181] = 9, [25304] = 9, -- Frostbolt
+	[12654] = 4, -- Ignite
+	[12355] = 2, -- Impact
+	[118] = 20, [12824] = 30, [12825] = 40, [12826] = 50, [28270] = 50, [28271] = 50, [28272] = 50, -- Polymorph
+	[11366] = 12, [12505] = 12, [12522] = 12, [12523] = 12, [12524] = 12, [12525] = 12, [12526] = 12, [18809] = 12, -- Pyroblast
+	[12579] = 15, -- Winter's Chill
+}
 
 -- Paladin
 friend_buffs.PALADIN = {}
