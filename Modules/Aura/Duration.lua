@@ -1,10 +1,11 @@
 local PitBull4 = _G.PitBull4
 local PitBull4_Aura = PitBull4:GetModule("Aura")
-local module = PitBull4_Aura:NewModule("AuraDuration", "AceEvent-3.0")
+local PitBull4_AuraDuration = PitBull4_Aura:NewModule("AuraDuration", "AceEvent-3.0")
 
 local bit_band = bit.band
 
-local player_guid = UnitGUID("player")
+local spells = PitBull4.Spells.spell_durations
+local dr_spells = PitBull4.Spells.dr_spells
 
 local new, del do
 	local pool = {}
@@ -50,7 +51,10 @@ local function get(t, ...)
 end
 
 local auras = new()
+PitBull4_AuraDuration.auras = auras
+
 local diminished_returns = new()
+PitBull4_AuraDuration.diminished_returns = diminished_returns
 
 -- DR is 15 seconds, but the server only checks every 5 seconds, so it can reset any time between 15 and 20 seconds.
 local DR_RESET_TIME = 18
@@ -63,9 +67,6 @@ local dr_pve_categories = {
 	-- kidneyshot - true,
 }
 
-local spells = PitBull4.Spells.spell_durations
-local dr_spells = PitBull4.Spells.dr_spells
-
 -- This uses the logic provided by Shadowed in DRData-1.0 (it's his fault if it doesn't work right!)
 -- DR is applied when the debuff fades
 local function add_dr(dst_guid, spell_id, is_player)
@@ -74,14 +75,14 @@ local function add_dr(dst_guid, spell_id, is_player)
 	if not is_player and not dr_pve_categories[cat] then return end
 
 	local entry = diminished_returns[dst_guid][cat]
-	entry[0] = GetTime() + DR_RESET_TIME
-	local diminished = get(entry, 1) or 1
+	entry[1] = GetTime() + DR_RESET_TIME
+	local diminished = get(entry, 2) or 1
 	if diminished == 1 then
-		entry[1] = 0.5
+		entry[2] = 0.5
 	elseif diminished == 0.5 then
-		entry[1] = 0.25
+		entry[2] = 0.25
 	else
-		entry[1] = 0
+		entry[2] = 0
 	end
 end
 
@@ -90,10 +91,10 @@ local function get_dr(dst_guid, spell_id, is_player)
 	local cat = dr_spells[spell_id]
 	if cat and (is_player or dr_pve_categories[cat]) then
 		local entry = diminished_returns[dst_guid][cat]
-		if get(entry, 0) and entry[0] <= GetTime() then
+		if get(entry, 1) and entry[1] <= GetTime() then
 			wipe(entry)
 		end
-		return get(entry, 1) or 1
+		return get(entry, 2) or 1
 	end
 	return 1
 end
@@ -107,6 +108,8 @@ local event_list = {
 	SPELL_AURA_REFRESH = true,
 	SPELL_AURA_REMOVED = true,
 }
+
+local player_guid = UnitGUID("player")
 
 local frame = CreateFrame("Frame")
 frame:SetScript("OnEvent", function(self)
@@ -143,17 +146,17 @@ frame:SetScript("OnEvent", function(self)
 	end
 end)
 
-function module:OnEnable()
+function PitBull4_AuraDuration:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 end
 
-function module:OnDisable()
+function PitBull4_AuraDuration:OnDisable()
 	frame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	self:PLAYER_ENTERING_WORLD()
 end
 
-function module:PLAYER_ENTERING_WORLD()
+function PitBull4_AuraDuration:PLAYER_ENTERING_WORLD()
 	-- tidy up
 	local purge = not IsInGroup()
 	for guid in next, auras do
