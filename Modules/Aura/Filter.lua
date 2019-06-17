@@ -154,12 +154,71 @@ enemy_debuffs.DRUID = {
 }
 
 -- Hunter
-friend_buffs.HUNTER = {}
+friend_buffs.HUNTER = {
+	[20043] = true, -- Aspect of the Wild
+	[13159] = true, -- Aspect of the Pack
+	[19506] = true, -- Trueshot Aura (30m)
+}
 friend_debuffs.HUNTER = {}
-self_buffs.HUNTER = {}
+self_buffs.HUNTER = {
+	[13161] = true, -- Aspect of the Beast
+	[5118] = true, -- Aspect of the Cheetah
+	[13165] = true, -- Aspect of the Hawk
+	[13163] = true, -- Aspect of the Monkey
+	[19263] = 10, -- Deterrence
+	[6197] = true, -- Eagle Eye
+	[1002] = 60, -- Eyes of the Beast
+	[5384] = 360, -- Feign Death
+	[24604] = 10, [24605] = 10, [24603] = 10, [24597] = 10, -- Furious Howl (Wolf pet)
+	[3045] = 15, -- Rapid Fire
+	[1494] = true, -- Track Beasts
+	[19878] = true, -- Track Demons
+	[19879] = true, -- Track Dragonkin
+	[19880] = true, -- Track Elementals
+	[19882] = true, -- Track Giants
+	[19885] = true, -- Track Hidden
+	[19883] = true, -- Track Humanoids
+	[19884] = true, -- Track Undead
+	[19579] = true, -- Spirit Bond
+}
 self_debuffs.HUNTER = {}
-pet_buffs.HUNTER = {}
-enemy_debuffs.HUNTER = {}
+pet_buffs.HUNTER = {
+	[1462] = 30, -- Beast Lore
+	[19574] = 18, -- Bestial Wrath
+	[23099] = 15, [23109] = 15, [23110] = 15, -- Dash
+	[23145] = 15, [23147] = 15, [23148] = 15, -- Dive
+	[1002] = 60, -- Eyes of the Beast
+	[1539] = 20, -- Feed Pet
+	[19615] = 8, -- Frenzy
+	[136] = 5, [3111] = 5, [3661] = 5, [3662] = 5, [13542] = 5, [13543] = 5, [13544] = 5, -- Mend Pet
+	[24450] = true, -- Prowl (Cat pet)
+	[26064] = 12, -- Shell Shield (Turtle pet)
+	[19579] = true, -- Spirit Bond
+}
+enemy_debuffs.HUNTER = {
+	[1462] = 30, -- Beast Lore
+	[25999] = 1, [26177] = 1, [26178] = 1, [26179] = 1, [26201] = 1, [27685] = 1, -- Boar Charge (Boar pet)
+	[5116] = 4, -- Concussion Shot
+	[19306] = 5, [20909] = 5, [20910] = 5, -- Counterattack
+	[19185] = 5, -- Entrapment
+	[13812] = 20, [14314] = 20, [14315] = 20, -- Explosive Trap
+	[3355] = 10, [14308] = 15, [14309] = 20, -- Freezing Trap
+	[1130] = 120, [14323] = 120, [14324] = 120, [14325] = 120, -- Hunter's Mark
+	[13797] = 20, [14298] = 20, [14299] = 20, [14300] = 20, [14301] = 20, -- Immolation Trap
+	[19410] = 3, -- Improved Concussion Shot
+	[19229] = 5, -- Improved Wing Clip
+	[24394] = 3, -- Intimidation
+	[1513] = 10, [14326] = 15, [14327] = 20, -- Scare Beast
+	[19503] = 4, -- Scatter Shot
+	[24423] = 4, [24577] = 4, [24578] = 4, [24579] = 4, -- Screech (Bat pet)
+	[24640] = 10, [24583] = 10, [24586] = 10, [24587] = 10, -- Scorpid Poison (Scorpid pet)
+	[3043] = 20, [14275] = 20, [14276] = 20, [14277] = 20, -- Scorpid Sting
+	[1978] = 15, [13549] = 15, [13550] = 15, [13551] = 15, [13552] = 15, [13553] = 15, [13554] = 15, [13555] = 15, [25295] = 15, -- Serpent Sting
+	[1515] = 20, -- Tame Beast
+	[3034] = 8, [14279] = 8, [14280] = 8, -- Viper Sting
+	[2974] = 10, [14267] = 10, [14268] = 10, -- Wing Clip
+	[19386] = 12, [24132] = 12, [24133] = 12, -- Wyvern Sting
+}
 
 -- Mage
 friend_buffs.MAGE = {}
