@@ -58,7 +58,7 @@ if LibSharedMedia and not LibSharedMedia:IsValid("font", DEFAULT_LSM_FONT) then 
 	DEFAULT_LSM_FONT = LibSharedMedia:GetDefault("font")
 end
 
-local CURRENT_CONFIG_VERSION = 4
+local CURRENT_CONFIG_VERSION = 5
 
 local DATABASE_DEFAULTS = {
 	profile = {
@@ -1119,7 +1119,6 @@ local upgrade_functions = {
 		-- Disable groups that are set to filter everything and reset the
 		-- group_filter value.
 		if not sv.profiles then return true end
-
 		for profile, profile_db in next, sv.profiles do
 			if profile_db.groups then
 				for group, group_db in next, profile_db.groups do
@@ -1130,7 +1129,50 @@ local upgrade_functions = {
 				end
 			end
 		end
-
+		return true
+	end,
+	[4] = function(sv)
+		-- Remove old frames for classic. sssssh, it's for the best.
+		if not sv.profiles then return true end
+		-- reset the position of any orphaned frames
+		local function reset_pos(f, t)
+			if not f then return end
+			for _, db in next, f do
+				if t[db.relative_to] then
+					db.anchor = nil
+					db.relative_to = nil
+					db.relative_point = nil
+					db.position_x = nil
+					db.position_y = nil
+				end
+			end
+		end
+		for profile, profile_db in next, sv.profiles do
+			local removed = {}
+			local units = profile_db.units
+			if units then
+				for unit, unit_db in next, units do
+					local id = PitBull4.Utils.GetBestUnitID(unit_db.unit)
+					if not PitBull4.Utils.IsSingletonUnitID(id) then
+						units[unit] = nil
+						removed["S"..unit] = true
+					end
+				end
+			end
+			local groups = profile_db.groups
+			if groups then
+				for group, group_db in next, groups do
+					local id = group_db.unit_group
+					if not PitBull4.Utils.IsValidClassification(id) then
+						groups[group] = nil
+						removed["g"..group] = true
+						removed["f"..group] = true
+					end
+				end
+			end
+			reset_pos(units, removed)
+			reset_pos(groups, removed)
+		end
 		return true
 	end,
 }
