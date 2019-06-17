@@ -386,10 +386,39 @@ enemy_debuffs.PRIEST = {
 -- Rogue
 friend_buffs.ROGUE = {}
 friend_debuffs.ROGUE = {}
-self_buffs.ROGUE = {}
+self_buffs.ROGUE = {
+	[13750] = 15, -- Adrenaline Rush
+	[13877] = 15, -- Blade Flurry
+	[14177] = true, -- Cold Blood
+	[2836] = true, -- Detect Traps
+	[5277] = 15, -- Evasion
+	[14278] = 7, -- Ghostly Strike
+	[14143] = 20, -- Remorseless
+	[5171] = true, -- Slice and Dice (6+3*combo points)
+	[2983] = 15, [8696] = 15, [11305] = 15, -- Sprint
+	[1784] = true, -- Stealth
+	[11327] = 10, [11329] = 10, -- Vanish
+}
 self_debuffs.ROGUE = {}
 pet_buffs.ROGUE = {}
-enemy_debuffs.ROGUE = {}
+enemy_debuffs.ROGUE = {
+	[2094] = 10, -- Blind
+	[1833] = 4, -- Cheap Shot
+	[3409] = 12, [11201] = 12, -- Crippling Poison
+	[2818] = 12, [2819] = 12, [11353] = 12, [11354] = 12, [25349] = 12, -- Deadly Poison
+	[8647] = 30, [8649] = 30, [8650] = 30, [11197] = 30, [11198] = 30, -- Expose Armor
+	[703] = 18, [8631] = 18, [8632] = 18, [8633] = 18, [11289] = 18, [11290] = 18, -- Garrote
+	[1776] = 4, [1777] = 4, [8629] = 4, [11285] = 4, [11286] = 4, -- Gouge
+	[16511] = 15, [17347] = 15, [17348] = 15, -- Hemorrhage
+	[18425] = 2, -- Kick - Silenced (Improved Kick)
+	[408] = 5, [8643] = 6, -- Kidney Shot (0/1+combo points)
+	[5530] = 3, -- Mace Stun Effect (Mace Specialization)
+	[5760] = 10, [8692] = 12, [11398] = 14, -- Mind-numbing Poison
+	[14251] = 6, -- Riposte
+	[1943] = 16, [8639] = 16, [8640] = 16, [11273] = 16, [11274] = 16, [11275] = 16, -- Rupture (6+2*combo points)
+	[6770] = 25, [2070] = 35, [11297] = 45, -- Sap
+	[13218] = 15, [13222] = 15, [13223] = 15, [13224] = 15, -- Wound Poison
+}
 
 -- Shaman
 friend_buffs.SHAMAN = {
