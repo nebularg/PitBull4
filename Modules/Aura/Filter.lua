@@ -180,14 +180,60 @@ pet_buffs.PALADIN = {}
 enemy_debuffs.PALADIN = {}
 
 -- Priest
-friend_buffs.PRIEST = {}
-friend_debuffs.PRIEST = {}
+friend_buffs.PRIEST = {
+	[552] = 20, -- Abolish Disease
+	[14752] = true, -- Divine Spirit (30m)
+	[6346] = 600, -- Fear Ward (Dwarf)
+	[14893] = 15, [15357] = 15, [15359] = 15, -- Inspiration
+	[1706] = 120, -- Levitate
+	[7001] = 10, [27873] = 10, [27874] = 10, -- Lightwell Renew
+	[605] = true, -- Mind Control
+	[2096] = 60, [10909] = 60, -- Mind Vision
+	[10060] = 15, -- Power Infusion
+	[1243] = true, -- Power Word: Fortitude (30m)
+	[17] = 30, [592] = 30, [600] = 30, [3747] = 30, [6065] = 30, [6066] = 30, [10898] = 30, [10899] = 30, [10900] = 30, [10901] = 30, -- Power Word: Shield
+	[21562] = true, -- Prayer of Fortitude (60m)
+	[27683] = true, -- Prayer of Shadow Protection (20m)
+	[27681] = true, -- Prayer of Spirit (60m)
+	[139] = 15, [6074] = 15, [6075] = 15, [6076] = 15, [6077] = 15, [6078] = 15, [10927] = 15, [10928] = 15, [10929] = 15, [25315] = 15, -- Renew
+	[10958] = 600, -- Shadow Protection
+}
+friend_debuffs.PRIEST = {
+	[6788] = 15, -- Weakened Soul
+}
 self_buffs.PRIEST = {
+	[27813] = 6, [27817] = 6, [27818] = 6, -- Blessed Recovery
+	[2651] = 15, [19289] = 15, [19291] = 15, [19292] = 15, [19293] = 15, -- Elune's Grace (Night Elf)
+	[586] = 10, [9578] = 10, [9579] = 10, [9592] = 10, [10941] = 10, [10942] = 10, -- Fade
+	[13896] = 15, [19271] = 15, [19273] = 15, [19274] = 15, [19275] = 15, -- Feedback (Human)
 	[14743] = 6, [27828] = 6, -- Focused Casting
+	[588] = 600, [7128] = 600, [602] = 600, [1006] = 600, [1006] = 600, [10952] = 600, -- Inner Fire
+	[14751] = true, -- Inner Focus
+	[15473] = true, -- Shadow Form
+	[18137] = 600, [19308] = 600, [19309] = 600, [19310] = 600, [19311] = 600, [19312] = 600, -- Shadowguard (Troll)
+	[27827] = 10, -- Spirit of Redemption
+	[15271] = 15, -- Spirit Tap
+	[2652] = 600, [19261] = 600, [19262] = 600, [19264] = 600, [19265] = 600, [19266] = 600, -- Touch of Weakness (Undead)
 }
 self_debuffs.PRIEST = {}
 pet_buffs.PRIEST = {}
-enemy_debuffs.PRIEST = {}
+enemy_debuffs.PRIEST = {
+	[15269] = 3, -- Blackout
+	[2944] = 24, [19276] = 24, [19277] = 24, [19278] = 24, [19279] = 24, [19280] = 24, -- Devouring Plague (Undead)
+	[9035] = 120, [19281] = 120, [19282] = 120, [19283] = 120, [19284] = 120, [19285] = 120, -- Hex of Weakness (Troll)
+	[14914] = 10, [15261] = 10, [15262] = 10, [15263] = 10, [15264] = 10, [15265] = 10, [15266] = 10, [15267] = 10, -- Holy Fire
+	[605] = 60, [10911] = 60, [10912] = 60, -- Mind Control
+	[15407] = 3, [17311] = 3, [17312] = 3, [17313] = 3, [17314] = 3, [18807] = 3, -- Mind Flay
+	[453] = 15, [8192] = 15, [10953] = 15, -- Mind Soothe
+	[2096] = true, -- Mind Vision
+	[8122] = 8, [8124] = 8, [10888] = 8, [10890] = 8, -- Psychic Scream
+	[9484] = 30, [9485] = 40, [10955] = 50, -- Shackle Undead
+	[15258] = 15, -- Shadow Vulnerability
+	[589] = 8, [594] = 8, [970] = 8, [992] = 8, [2767] = 8, [10892] = 8, [10893] = 8, [10894] = 8, -- Shadow Word: Pain
+	[15487] = 5, -- Silence
+	[10797] = 6, [19296] = 6, [19299] = 6, [19302] = 6, [19303] = 6, [19304] = 6, [19305] = 6, -- Starshards (Night Elf)
+	[15286] = 60, -- Vampiric Embrace
+}
 
 -- Rogue
 friend_buffs.ROGUE = {}
@@ -296,13 +342,16 @@ friend_buffs.Human = {
 	[23333] = true -- Warsong Flag
 }
 friend_debuffs.Human = {}
-self_buffs.Human = {}
+self_buffs.Human = {
+	[13896] = true, -- Feedback (Priest)
+}
 self_debuffs.Human = {}
 pet_buffs.Human = {}
 enemy_debuffs.Human = {}
 
 -- Dwarf
 friend_buffs.Dwarf = {
+	[6346] = true, -- Fear Ward
 	[23333] = true -- Warsong Flag
 }
 friend_debuffs.Dwarf = {}
@@ -319,12 +368,13 @@ friend_buffs.NightElf = {
 }
 friend_debuffs.NightElf = {}
 self_buffs.NightElf = {
+	[2651] = true, -- Elune's Grace (Priest)
 	[20580] = true, -- Shadowmeld
 }
 self_debuffs.NightElf = {}
 pet_buffs.NightElf = {}
 enemy_debuffs.NightElf = {
-	[10797] = 6, [19296] = 6, [19299] = 6, [19302] = 6, [19303] = 6, [19304] = 6, [19305] = 6, -- Starshards
+	[10797] = true, -- Starshards (Priest)
 }
 
 -- Gnome
@@ -357,7 +407,9 @@ friend_buffs.Scourge = {
 friend_debuffs.Scourge = {}
 self_buffs.Scourge = {
 	[20578] = 10, -- Cannibalize
-	[7744]  = 5, -- Will of the Forsaken
+	[2944] = true, -- Devouring Plague (Priest)
+	[2652] = true, -- Touch of Weakness (Priest)
+	[7744] = 5, -- Will of the Forsaken
 }
 self_debuffs.Scourge = {}
 pet_buffs.Scourge = {}
@@ -382,10 +434,13 @@ friend_buffs.Troll = {
 friend_debuffs.Troll = {}
 self_buffs.Troll = {
 	[26635] = 10, -- Berserking
+	[18137] = true, -- Shadowguard (Priest)
 }
 self_debuffs.Troll = {}
 pet_buffs.Troll = {}
-enemy_debuffs.Troll = {}
+enemy_debuffs.Troll = {
+	[9035] = true, -- Hex of Weakness (Priest)
+}
 
 
 -- Everyone
