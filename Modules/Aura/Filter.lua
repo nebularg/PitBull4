@@ -462,12 +462,76 @@ enemy_debuffs.SHAMAN = {
 }
 
 -- Warlock
-friend_buffs.WARLOCK = {}
+friend_buffs.WARLOCK = {
+	[132] = 600, [2970] = 600, [11743] = 600, -- Detect Invisibility
+	[1098] = 300, [11725] = 300, [11726] = 300, -- Enslave Demon
+	[2947] = 180, [8316] = 180, [8317] = 180, [11770] = 180, [11771] = 180, -- Fire Shield (Imp)
+	[19480] = true, -- Paranoia
+	[20707] = true, -- Soulstone Resurrection (30m)
+	[19478] = 60, [19655] = 60, [19656] = 60, [19660] = 60, -- Tainted Blood (Felhunter)
+	[5697] = 600, -- Unending Breath
+}
 friend_debuffs.WARLOCK = {}
-self_buffs.WARLOCK = {}
+self_buffs.WARLOCK = {
+	[18288] = 30, -- Amplify Curse
+	[18789] = true, -- Burning Wish (Demonic Sacrifice) (30m)
+	[706] = true, -- Demon Armor (30m)
+	[687] = true, -- Demon Skin (30m)
+	[126] = 45, -- Eye of Kilrogg
+	[18708] = 15, -- Fel Domination
+	[18792] = true, -- Fel Energy (Demonic Sacrifice) (30m)
+	[18790] = true, -- Fel Stamina (Demonic Sacrifice) (30m)
+	[755] = 10, [3698] = 10, [3699] = 10, [3700] = 10, [11693] = 10, [11694] = 10, [11695] = 10, -- Health Funnel
+	[1949] = 15, [11683] = 15, [11684] = 15, -- Hellfire
+	[23841] = true, -- Master Demonologist
+	[5740] = 8, [6219] = 8, [11677] = 8, [11678] = 8, -- Rain of Fire
+	[7812] = 30, [19438] = 30, [19440] = 30, [19441] = 30, [19442] = 30, [19443] = 30, -- Sacrifice (Voidwalker)
+	[17941] = 10, -- Shadow Trance (Nightfall)
+	[6229] = 30, [11739] = 30, [11740] = 30, [28610] = 30, -- Shadow Ward
+	[128] = 60, [17729] = 60, -- Spellstone
+	[25228] = true, -- Soul Link
+	[18371] = 10, -- Soul Siphon (Improved Drain Soul)
+	[5784] = true, -- Summon Felsteed
+	[23161] = true, -- Summon Dreadsteed
+	[18791] = true, -- Touch of Shadow (Demonic Sacrifice) (30m)
+}
 self_debuffs.WARLOCK = {}
-pet_buffs.WARLOCK = {}
-enemy_debuffs.WARLOCK = {}
+pet_buffs.WARLOCK = {
+	[6307] = true, -- Blood Pact (Imp)
+	[17767] = 10, [17850] = 10, [17851] = 10, [17852] = 10, [17853] = 10, [17854] = 10, -- Consume Shadows (Voidwalker)
+	[2947] = true, -- Fire Shield (Imp)
+	[755] = true, -- Health Funnel
+	[7870] = 300, -- Lesser Invisibility (Succubus)
+	[23841] = true, -- Master Demonologist
+	[4511] = true, -- Phase Shift
+	[25228] = true, -- Soul Link
+}
+enemy_debuffs.WARLOCK = {
+	[18118] = 5, -- Aftermath
+	[710] = 20, [18647] = 30, -- Banish
+	[172] = 12, [6222] = 15, [6223] = 18, [7648] = 18, [11671] = 18, [11672] = 18, [25311] = 18, -- Corruption
+	[980] = 24, [1014] = 24, [6217] = 24, [11711] = 24, [11712] = 24, [11713] = 24, -- Curse of Agony
+	[603] = 60, -- Curse of Doom
+	[1490] = 300, [11721] = 300, [11722] = 300, -- Curse of Elements
+	[18223] = 12, -- Curse of Exhaustion
+	[704] = 300, [7658] = 300, [7659] = 300, [11717] = 300, -- Curse of Recklessness
+	[17862] = 300, [17937] = 300, -- Curse of Shadows
+	[1714] = 30, [11719] = 30, -- Curse of Tongues
+	[702] = 120, [1108] = 120, [6205] = 120, [7646] = 120, [11707] = 120, [11708] = 120, -- Curse of Weakness
+	[6789] = 3, [17925] = 3, [17926] = 3, -- Death Coil
+	[689] = 5, [699] = 5, [709] = 5, [7651] = 5, [11699] = 5, [11700] = 5, -- Drain Life
+	[5138] = 5, [6226] = 5, [11703] = 5, [11704] = 5, -- Drain Mana
+	[1120] = 15, [8288] = 15, [8289] = 15, [11675] = 15, -- Drain Soul
+	[5782] = 10, [6213] = 15, [6215] = 20, -- Fear
+	[5484] = 10, [17928] = 15, -- Howl of Terror
+	[348] = 15, [707] = 15, [1094] = 15, [2941] = 15, [11665] = 15, [11667] = 15, [11668] = 15, [25309] = 15, -- Immolate
+	[18093] = 3, -- Pyroclasm
+	[6358] = 15, -- Seduction (Succubus)
+	[17877] = 5, [18867] = 5, [18868] = 5, [18869] = 5, [18870] = 5, [18871] = 5, -- Shadowburn
+	[18265] = 30, [18879] = 30, [18880] = 30, [18881] = 30, -- Siphon Life
+	[24259] = 3, -- Spell Lock
+	[17794] = 12, [17798] = 12, [17797] = 12, [17799] = 12, [17800] = 12, -- Shadow Vulnerability
+}
 
 -- Warrior
 friend_buffs.WARRIOR = {
@@ -504,7 +568,7 @@ enemy_debuffs.WARRIOR = {
 	[12705] = 6, -- Long Daze (Improved Pummel)
 	[5530] = 3, -- Mace Stun Effect
 	[694] = 6, [7400] = 6, [7402] = 6, [20559] = 6, [20560] = 6, -- Mocking Blow
-	[12294] = 10, -- Mortal Strike
+	[12294] = 10, [21551] = 10, [21552] = 10, [21553] = 10, -- Mortal Strike
 	[12323] = 6, -- Piercing Howl
 	[772] = 9, [6546] = 12, [6547] = 15, [6548] = 18, [11572] = 21, [11573] = 21, [11574] = 21, -- Rend
 	[12798] = 3, -- Revenge Stun

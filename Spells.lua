@@ -69,6 +69,7 @@ PitBull4.Spells.disable_spells = {
 	[12355] = true, -- Impact (Mage)
 	[20170] = true, -- Seal of Justice (Paladin)
 	[15269] = true, -- Blackout (Priest)
+	[18093] = true, -- Pyroclasm (Warlock)
 	[12798] = true, -- Improved Revenge (Warrior)
 	[5726] = true, [5727] = true, -- Stunning Blow (Staff Specialization)
 	[5530] = true, -- Mace Stun (Mace Specialization)
