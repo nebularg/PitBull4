@@ -17,6 +17,7 @@
 <Include file="Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml"/>
 <!--@end-no-lib-strip@-->
 <Script file="Libs\SimpleSticky.lua"/>
+<Script file="Libs\LibUnitEvent-1.0\LibUnitEvent-1.0.lua"/>
 <Script file="Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
 <!--@no-lib-strip@-->
 <Script file="Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua"/>
