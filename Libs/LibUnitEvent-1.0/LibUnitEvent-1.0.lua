@@ -50,9 +50,9 @@ function lib.OnEvent(self, event, unit, ...)
 		if func then
 			used = true
 			if type(func) == "function" then
-				func(event, unit, ...)
+				xpcall(func, CallErrorHandler, event, unit, ...)
 			else
-				module[func](module, event, unit, ...)
+				xpcall(module[func], CallErrorHandler, module, event, unit, ...)
 			end
 		end
 	end
