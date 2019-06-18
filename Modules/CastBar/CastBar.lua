@@ -6,7 +6,7 @@ local EXAMPLE_VALUE = 0.4
 local EXAMPLE_ICON = 136222 -- Spell_Shadow_Teleport
 local TEMP_ICON = [[Interface\Icons\Temp]]
 
-local PitBull4_CastBar = PitBull4:NewModule("CastBar", "AceEvent-3.0")
+local PitBull4_CastBar = PitBull4:NewModule("CastBar")
 
 PitBull4_CastBar:SetModuleType("bar")
 PitBull4_CastBar:SetName(L["Cast bar"])
@@ -59,15 +59,15 @@ function PitBull4_CastBar:OnEnable()
 	timer_frame:Show()
 	timer_frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 
-	self:RegisterEvent("UNIT_SPELLCAST_START", "UpdateInfo")
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", "UpdateInfo")
-	self:RegisterEvent("UNIT_SPELLCAST_STOP", "UpdateInfo")
-	self:RegisterEvent("UNIT_SPELLCAST_FAILED", "UpdateInfo")
-	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED", "UpdateInfo")
-	self:RegisterEvent("UNIT_SPELLCAST_DELAYED", "UpdateInfo")
-	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "UpdateInfo")
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "UpdateInfo")
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", "UpdateInfo")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_START", "UpdateInfo", "player")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", "UpdateInfo", "player")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", "UpdateInfo", "player")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", "UpdateInfo", "player")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "UpdateInfo", "player")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_DELAYED", "UpdateInfo", "player")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "UpdateInfo", "player")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "UpdateInfo", "player")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", "UpdateInfo", "player")
 end
 
 function PitBull4_CastBar:OnDisable()

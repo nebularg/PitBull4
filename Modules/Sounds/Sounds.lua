@@ -2,7 +2,7 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_Sounds = PitBull4:NewModule("Sounds", "AceEvent-3.0")
+local PitBull4_Sounds = PitBull4:NewModule("Sounds")
 
 PitBull4_Sounds:SetModuleType("custom")
 PitBull4_Sounds:SetName(L["Sounds"])

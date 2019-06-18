@@ -2,7 +2,7 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_Border = PitBull4:NewModule("Border", "AceEvent-3.0")
+local PitBull4_Border = PitBull4:NewModule("Border")
 
 PitBull4_Border:SetModuleType("custom")
 PitBull4_Border:SetName(L["Border"])

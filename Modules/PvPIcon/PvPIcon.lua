@@ -2,7 +2,7 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_PvPIcon = PitBull4:NewModule("PvPIcon", "AceEvent-3.0")
+local PitBull4_PvPIcon = PitBull4:NewModule("PvPIcon")
 
 PitBull4_PvPIcon:SetModuleType("indicator")
 PitBull4_PvPIcon:SetName(L["PvP icon"])

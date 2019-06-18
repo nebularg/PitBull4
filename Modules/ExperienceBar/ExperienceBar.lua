@@ -5,7 +5,7 @@ local L = PitBull4.L
 local MAX_PLAYER_LEVEL = _G.MAX_PLAYER_LEVEL
 local EXAMPLE_VALUE = 0.25
 
-local PitBull4_ExperienceBar = PitBull4:NewModule("ExperienceBar", "AceEvent-3.0")
+local PitBull4_ExperienceBar = PitBull4:NewModule("ExperienceBar")
 
 PitBull4_ExperienceBar:SetModuleType("bar")
 PitBull4_ExperienceBar:SetName(L["Experience bar"])

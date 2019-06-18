@@ -21,7 +21,7 @@ local BORDER_SIZE = 3
 
 -----------------------------------------------------------------------------
 
-local PitBull4_ComboPoints = PitBull4:NewModule("ComboPoints", "AceEvent-3.0")
+local PitBull4_ComboPoints = PitBull4:NewModule("ComboPoints")
 
 PitBull4_ComboPoints:SetModuleType("indicator")
 PitBull4_ComboPoints:SetName(L["Combo points"])
@@ -40,8 +40,8 @@ PitBull4_ComboPoints:SetDefaults({
 })
 
 function PitBull4_ComboPoints:OnEnable()
-	self:RegisterEvent("UNIT_DISPLAYPOWER")
-	self:RegisterEvent("UNIT_POWER_FREQUENT")
+	self:RegisterUnitEvent("UNIT_DISPLAYPOWER", nil, "player")
+	self:RegisterUnitEvent("UNIT_POWER_FREQUENT", nil, "player")
 end
 
 function PitBull4_ComboPoints:UNIT_POWER_FREQUENT(_, unit, power_type)

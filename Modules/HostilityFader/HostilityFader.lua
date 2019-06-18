@@ -2,7 +2,7 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_HostilityFader = PitBull4:NewModule("HostilityFader","AceEvent-3.0")
+local PitBull4_HostilityFader = PitBull4:NewModule("HostilityFader")
 
 PitBull4_HostilityFader:SetModuleType("fader")
 PitBull4_HostilityFader:SetName(L["Hostility fader"])

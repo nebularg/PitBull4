@@ -2,7 +2,7 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_LuaTexts = PitBull4:NewModule("LuaTexts", "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0")
+local PitBull4_LuaTexts = PitBull4:NewModule("LuaTexts", "AceTimer-3.0", "AceHook-3.0")
 
 local channel_spells = PitBull4.Spells.channel_spells
 

@@ -73,7 +73,7 @@ local GetTotemInfo = _G.GetTotemInfo
 
 -----------------------------------------------------------------------------
 
-local PitBull4_Totems = PitBull4:NewModule("Totems", "AceEvent-3.0", "AceTimer-3.0")
+local PitBull4_Totems = PitBull4:NewModule("Totems", "AceTimer-3.0")
 
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 if LibSharedMedia then

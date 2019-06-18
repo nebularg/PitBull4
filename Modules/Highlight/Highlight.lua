@@ -11,7 +11,7 @@ if LibSharedMedia then
 	LibSharedMedia:Register("background","Blizzard QuestLogTitleHighlight", [[Interface\QuestFrame\UI-QuestLogTitleHighlight]])
 end
 
-local PitBull4_Highlight = PitBull4:NewModule("Highlight", "AceEvent-3.0")
+local PitBull4_Highlight = PitBull4:NewModule("Highlight")
 
 PitBull4_Highlight:SetModuleType("custom")
 PitBull4_Highlight:SetName(L["Highlight"])

@@ -5,7 +5,7 @@ end
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_HappinessIcon = PitBull4:NewModule("HappinessIcon", "AceEvent-3.0")
+local PitBull4_HappinessIcon = PitBull4:NewModule("HappinessIcon")
 
 PitBull4_HappinessIcon:SetModuleType("indicator")
 PitBull4_HappinessIcon:SetName(L["Happiness icon"])

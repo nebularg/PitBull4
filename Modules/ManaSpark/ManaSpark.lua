@@ -6,7 +6,7 @@ end
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_ManaSpark = PitBull4:NewModule("ManaSpark", "AceEvent-3.0")
+local PitBull4_ManaSpark = PitBull4:NewModule("ManaSpark")
 
 PitBull4_ManaSpark:SetModuleType("custom")
 PitBull4_ManaSpark:SetName(L["Mana spark"])
@@ -32,10 +32,10 @@ local spellcast_finish_time = 0
 function PitBull4_ManaSpark:OnEnable()
 	timerFrame:Show()
 
-	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	self:RegisterEvent("UNIT_POWER_FREQUENT")
-	self:RegisterEvent("UNIT_MAXPOWER")
-	self:RegisterEvent("UNIT_DISPLAYPOWER", "UNIT_MAXPOWER")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", nil, "player")
+	self:RegisterUnitEvent("UNIT_POWER_FREQUENT", nil, "player")
+	self:RegisterUnitEvent("UNIT_MAXPOWER", nil, "player")
+	self:RegisterUnitEvent("UNIT_DISPLAYPOWER", "UNIT_MAXPOWER", "player")
 
 	current_mana = UnitPower("player", SPELL_POWER_MANA)
 end
