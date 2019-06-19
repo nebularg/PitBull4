@@ -213,11 +213,33 @@ local talent_mods = {
 }
 talent_mods = talent_mods[player_class]
 
+local combo_point_spells = {
+	-- Kidney Shot
+	[408] = true, [8643] = true,
+	-- Rupture
+	[1943] = true, [8639] = true, [8640] = true, [11273] = true, [11274] = true, [11275] = true,
+}
+
 local duration_mods = {}
 
 local function get_mod(src_guid, spell_id)
 	if src_guid ~= player_guid then
 		return 0
+	end
+	if combo_point_spells[spell_id] then
+		-- these are the full duration so we need to subtract the default 5cp duration
+		local duration = spells[spell_id]
+		local combo_points = UnitPower("player", 14)
+		if spell_id == 408 then
+			-- Kidney Shot (Rank 1)
+			return -duration + combo_points
+		elseif spell_id == 8643 then
+			-- Kidney Shot (Rank 2)
+			return -duration + 1 + combo_points
+		else
+			-- Rupture
+			return -duration + 6 + combo_points * 2
+		end
 	end
 	return duration_mods[spell_id] or 0
 end
