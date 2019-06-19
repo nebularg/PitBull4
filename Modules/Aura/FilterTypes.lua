@@ -157,7 +157,7 @@ end
 function PitBull4_Aura:FilterReferences(filter_name, reference)
 	if not filter_name or filter_name == "" then return false end
 	local filter = self:GetFilterDB(filter_name)
-	local filter_ref_func = filter_types[filter.filter_type].references
+	local filter_ref_func = filter and filter_types[filter.filter_type].references
 	if not filter_ref_func then return false end
 	local references = filter_ref_func(filter_name)
 	for i=1,#references do
