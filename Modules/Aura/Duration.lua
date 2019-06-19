@@ -110,9 +110,7 @@ local talent_mods = {
 				5211, 6798, 8983, -- Bash
 				9005, 9823, 9827, -- Pounce
 			},
-			mod = function(rank)
-				return rank * 0.5
-			end,
+			mod = 0.5,
 		},
 	},
 	HUNTER = {
@@ -122,9 +120,8 @@ local talent_mods = {
 				3355, 14308, 14309, -- Freezing Trap
 				13810, -- Frost Trap
 			},
-			mod = function(rank)
-				return rank * 0.15, true
-			end,
+			mod = 0.15,
+			percent = true,
 		},
 	},
 	MAGE = {
@@ -136,9 +133,7 @@ local talent_mods = {
 				120, 8492, 10159, 10160, 10161, -- Cone of Cold
 				116, 205, 837, 7322, 8406, 8407, 8408, 10179, 10180, 10181, 25304, -- Frostbolt
 			},
-			mod = function(rank)
-				return rank
-			end,
+			mod = 1,
 		},
 	},
 	PALADIN = {
@@ -148,34 +143,26 @@ local talent_mods = {
 				20185, 20344, 20345, 20346, -- Judgement of Light
 				20186, 20354, 20355, -- Judgement of Wisdom
 			},
-			mod = function(rank)
-				return rank * 10
-			end,
+			mod = 10,
 		},
 		{ -- Guardian's Favor (Protection)
 			talents = {20174, 20175},
 			spells = {1044}, -- Blessing of Freedom
-			mod = function(rank)
-				return rank * 3
-			end,
+			mod = 3,
 		},
 	},
 	PRIEST = {
 		{ -- Improved Shadow Word: Pain (Shadow)
 			talents = {15275, 15317},
 			spells = {589, 594, 970, 992, 2767, 10892, 10893, 10894}, -- Shadow Word: Pain
-			mod = function(rank)
-				return rank * 3
-			end,
+			mod = 3,
 		},
 	},
 	ROGUE = {
 		{ -- Improved Gouge (Combat)
 			talents = {13741, 13793, 13792},
 			spells = {1776, 1777, 8629, 11285, 11286}, -- Gouge
-			mod = function(rank)
-				return rank * 0.5
-			end,
+			mod = 0.5,
 		},
 	},
 	WARLOCK = {
@@ -186,9 +173,8 @@ local talent_mods = {
 				-- 7870, -- Lesser Invisibility
 				-- 6360, 7813, 11784, 11785, -- Soothing Kiss
 			},
-			mod = function(rank)
-				return rank * 0.1, true
-			end,
+			mod = 0.1,
+			percent = true,
 		},
 	},
 	WARRIOR = {
@@ -198,16 +184,13 @@ local talent_mods = {
 				5242, 6192, 6673, 11549, 11550, 11551, 25289, -- Battle Shout
 				1160, 6190, 11554, 11555, 11556, -- Demoralizing Shout
 			},
-			mod = function(rank)
-				return rank * 0.1, true
-			end,
+			mod = 0.1,
+			percent = true,
 		},
 		{ -- Improved Disarm (Protection)
 			talents = {12313, 12804, 12807},
 			spells = {676}, -- Disarm
-			mod = function(rank)
-				return rank
-			end,
+			mod = 1,
 		},
 	},
 }
@@ -315,9 +298,9 @@ function PitBull4_AuraDuration:CHARACTER_POINTS_CHANGED(_, change)
 		end
 		for i = 1, #info.spells do
 			local spell_id = info.spells[i]
-			local mod, percent = info.mod(rank)
+			local mod = rank * info.mod
 			if mod > 0 then
-				if percent then
+				if info.percent then
 					mod = spells[spell_id] * mod
 				end
 				duration_mods[spell_id] = mod
@@ -340,6 +323,7 @@ function PitBull4_AuraDuration:PLAYER_ENTERING_WORLD()
 		diminished_returns[guid] = del(diminished_returns[guid])
 	end
 end
+
 
 local tmp = {}
 function PitBull4_Aura:GetDuration(src_guid, dst_guid, spell_id, aura_list, aura_index)
@@ -378,7 +362,7 @@ function PitBull4_Aura:GetDuration(src_guid, dst_guid, spell_id, aura_list, aura
 				end
 
 				-- Pick the caster to go with the aura
-				if index >= 1 and index <= #tmp then
+				if 1 <= index and index <= #tmp then
 					local guid = tmp[index]
 					return casters[guid][1], casters[guid][2]
 				end
