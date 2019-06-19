@@ -1384,15 +1384,15 @@ function PitBull4:OnProfileChanged()
 	self.ReactionColors = db.profile.colors.reaction
 	self.HappinessColors = db.profile.colors.happiness
 	self.ClassOrder = db.profile.class_order
-	for i, v in ipairs(CLASS_SORT_ORDER) do
-		local found = false
-		for j, u in ipairs(self.ClassOrder) do
-			if v == u then
-				found = true
-				break
-			end
+	for i = #self.ClassOrder, 1, -1 do
+		local v = self.ClassOrder[i]
+		if not tContains(CLASS_SORT_ORDER, v) then
+			tremove(self.ClassOrder, i)
 		end
-		if not found then
+	end
+	for i = 1, #CLASS_SORT_ORDER do
+		local v = CLASS_SORT_ORDER[i]
+		if not tContains(self.ClassOrder, v) then
 			self.ClassOrder[#self.ClassOrder + 1] = v
 		end
 	end
