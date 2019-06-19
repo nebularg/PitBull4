@@ -275,6 +275,7 @@ end
 GROUPING_ORDER.CLASS = function()
 	return table.concat(PitBull4.ClassOrder, ",")
 end
+GROUPING_ORDER.ASSIGNEDROLE = ""
 
 local function position_label(self, label)
 	label:ClearAllPoints()

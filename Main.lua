@@ -1167,6 +1167,8 @@ local upgrade_functions = {
 						groups[group] = nil
 						removed["g"..group] = true
 						removed["f"..group] = true
+					elseif group_db.group_by == "ASSIGNEDROLE" then
+						group_db.group_by = nil
 					end
 				end
 			end
