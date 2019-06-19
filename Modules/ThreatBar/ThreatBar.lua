@@ -2,6 +2,11 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local ThreatLib = LibStub("Threat-2.0", true)
+if not ThreatLib then
+	error("PitBull4_ThreatBar requires the library Threat-2.0 to be available.")
+end
+
 local EXAMPLE_VALUE = 0.6
 
 local PitBull4_ThreatBar = PitBull4:NewModule("ThreatBar")
@@ -15,12 +20,22 @@ PitBull4_ThreatBar:SetDefaults({
 	show_solo = false,
 })
 
+local threat_colors = {
+	[0] = {0.69, 0.69, 0.69}, -- not tanking, lower threat than tank.
+	[1] = {1, 1, 0.47},       -- not tanking, higher threat than tank.
+	[2] = {1, 0.6, 0},        -- insecurely tanking, another unit have higher threat but not tanking.
+	[3] = {1, 0, 0},          -- securely tanking, highest threat
+}
+
 function PitBull4_ThreatBar:OnEnable()
+	ThreatLib.RegisterCallback(self, "Activate", "UpdateAll")
+	ThreatLib.RegisterCallback(self, "ThreatUpdated", "UpdateAll")
+	ThreatLib.RegisterCallback(self, "ThreatCleared", "UpdateAll")
+	ThreatLib.RegisterCallback(self, "Deactivate", "UpdateAll")
+
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateAll")
-	self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", "UpdateAll")
-	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", "UpdateAll")
 	self:RegisterEvent("GROUP_ROSTER_UPDATE")
-	self:RegisterEvent("UNIT_PET")
+	self:RegisterUnitEvent("UNIT_PET", nil, "player")
 
 	self:GROUP_ROSTER_UPDATE()
 end
@@ -54,15 +69,22 @@ function PitBull4_ThreatBar:UNIT_PET(_, unit)
 end
 
 function PitBull4_ThreatBar:GetValue(frame)
-	if not check_classification(frame) or (not self:GetLayoutDB(frame).show_solo and not player_in_group) then
+	if not ThreatLib:IsActive() or not check_classification(frame) or (not self:GetLayoutDB(frame).show_solo and not player_in_group) then
 		return nil
 	end
 
-	local _, _, scaled_percent = UnitDetailedThreatSituation(frame.unit, "target")
-	if not scaled_percent then
+	local target_guid = UnitGUID(("%starget"):format(frame.unit))
+	if not target_guid then
 		return nil
 	end
-	return scaled_percent / 100
+
+	local max = ThreatLib:GetMaxThreatOnTarget(target_guid)
+	if max == 0 then
+		return 0
+	end
+	local current = ThreatLib:GetThreat(frame.guid, target_guid)
+
+	return current / max
 end
 function PitBull4_ThreatBar:GetExampleValue(frame)
 	if frame and not check_classification(frame) then
@@ -73,13 +95,29 @@ end
 
 function PitBull4_ThreatBar:GetColor(frame, value)
 	if frame.guid then
-		local _, status = UnitDetailedThreatSituation(frame.unit, "target")
-		return GetThreatStatusColor(status)
+		if UnitCanAttack(frame.unit, ("%starget"):format(frame.unit)) and UnitIsFriend(frame.unit, ("%stargettarget"):format(frame.unit)) then
+			local target_guid = UnitGUID(target_unit)
+			local tank_guid = UnitGUID(tank_unit)
+			if frame.guid == tank_guid then -- tanking
+				local _, max_guid = ThreatLib:GetMaxThreatOnTarget(target_guid)
+				if tank_guid == max_guid then
+					return unpack(threat_colors[3]) -- highest threat
+				else
+					return unpack(threat_colors[2]) -- not highest threat
+				end
+			else
+				local threat = ThreatLib:GetThreat(frame.guid, target_guid)
+				local tank_threat = ThreatLib:GetThreat(tank_guid, target_guid)
+				if threat > tank_threat then
+					return unpack(threat_colors[1]) -- higher threat than tank
+				end
+			end
+		end
 	end
-	return GetThreatStatusColor(0)
+	return unpack(threat_colors[0])
 end
 function PitBull4_ThreatBar:GetExampleColor(frame, value)
-	return GetThreatStatusColor(0)
+	return unpack(threat_colors[0])
 end
 
 PitBull4_ThreatBar:SetLayoutOptionsFunction(function(self)
