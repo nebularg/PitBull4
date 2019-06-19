@@ -108,7 +108,9 @@ friend_buffs.DRUID = {
 	[22812] = 15, -- Barkskin
 	[21849] = true, -- Gift of the Wild (60m)
 	[29166] = 20, -- Innervate
+	[24932] = true, -- Leader of the Pack
 	[1126] = true , -- Mark of the Wild (30m)
+	[24907] = true, -- Moonkin Aura
 	[16810] = 45, [16811] = 45, [16812] = 45, [16813] = 45, [17329] = 45, -- Nature's Grasp
 	[8936] = 21, [8938] = 21, [8939] = 21, [8940] = 21, [8941] = 21, [9750] = 21, [9856] = 21, [9857] = 21, [9858] = 21, -- Regrowth
 	[774] = 12, [1058] = 12, [1430] = 12, [2090] = 12, [2091] = 12, [3627] = 12, [8910] = 12, [9839] = 12, [9840] = 12, [9841] = 12, [25299] = 12, -- Rejuvenation
@@ -124,6 +126,7 @@ self_buffs.DRUID = {
 	[1850] = 15, [9821] = 15, -- Dash
 	[5229] = 10, -- Enrage
 	[22842] = 10, [22895] = 10, [22896] = 10, -- Frenzied Regeneration
+	[24858] = true, -- Moonkin Form
 	[17116] = true, -- Nature's Swiftness
 	[5215] = true, -- Prowl
 	[5217] = 6, [6793] = 6, [9845] = 6, [9846] = 6, -- Tiger's Fury
@@ -203,8 +206,9 @@ enemy_debuffs.HUNTER = {
 	[19185] = 5, -- Entrapment
 	[13812] = 20, [14314] = 20, [14315] = 20, -- Explosive Trap
 	[3355] = 10, [14308] = 15, [14309] = 20, -- Freezing Trap
+	[13810] = 30, -- Frost Trap
 	[1130] = 120, [14323] = 120, [14324] = 120, [14325] = 120, -- Hunter's Mark
-	[13797] = 20, [14298] = 20, [14299] = 20, [14300] = 20, [14301] = 20, -- Immolation Trap
+	[13797] = 15, [14298] = 15, [14299] = 15, [14300] = 15, [14301] = 15, -- Immolation Trap
 	[19410] = 3, -- Improved Concussion Shot
 	[19229] = 5, -- Improved Wing Clip
 	[24394] = 3, -- Intimidation
@@ -217,7 +221,8 @@ enemy_debuffs.HUNTER = {
 	[1515] = 20, -- Tame Beast
 	[3034] = 8, [14279] = 8, [14280] = 8, -- Viper Sting
 	[2974] = 10, [14267] = 10, [14268] = 10, -- Wing Clip
-	[19386] = 12, [24132] = 12, [24133] = 12, -- Wyvern Sting
+	[19386] = 12, [24132] = 12, [24133] = 12, -- Wyvern Sting (Sleep)
+	[24131] = 12, [24134] = 12, [24135] = 12, -- Wyvern Sting (Damage)
 }
 
 -- Mage
@@ -238,7 +243,6 @@ self_buffs.MAGE = {
 	[28682] = true, -- Combustion
 	[12051] = 8, -- Evocation
 	[543] = 30, [8457] = 30, [8458] = 30, [10223] = 30, [10225] = 30, -- Fire Ward
-	[6136] = 5, -- Frost Armor
 	[6143] = 30, [8461] = 30, [8462] = 30, [10177] = 30, [28609] = 30, -- Frost Ward
 	[11426] = 60, [13031] = 60, [13032] = 60, [13033] = 60, -- Ice Barrier
 	[11958] = 10, -- Ice Block
@@ -250,6 +254,7 @@ self_debuffs.MAGE = {}
 pet_buffs.MAGE = {}
 enemy_debuffs.MAGE = {
 	[11113] = 6, [13018] = 6, [13019] = 6, [13020] = 6, [13021] = 6, -- Blast Wave
+	[6136] = 5, -- Chilled (Frost Armor)
 	[12484] = 1.5, [12485] = 1.5, [12486] = 1.5, -- Chilled (Improved Blizzard)
 	[120] = 8, [8492] = 8, [10159] = 8, [10160] = 8, [10161] = 8, -- Cone of Cold
 	[18469] = 4, -- Counterspell - Silence (Improved Counterspell)
@@ -564,7 +569,7 @@ enemy_debuffs.WARRIOR = {
 	[1715] = 15, [7372] = 15, [7373] = 15, -- Hamstring
 	[23694] = 5, -- Improved Hamstring
 	[20253] = 3, [20614] = 3, [20615] = 3, -- Intercept Stun
-	[5246] = 8, -- Intimidating Shout
+	[5246] = 8, [20511] = 8, -- Intimidating Shout
 	[12705] = 6, -- Long Daze (Improved Pummel)
 	[5530] = 3, -- Mace Stun Effect
 	[694] = 6, [7400] = 6, [7402] = 6, [20559] = 6, [20560] = 6, -- Mocking Blow
