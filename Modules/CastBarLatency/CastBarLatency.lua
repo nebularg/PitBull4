@@ -165,7 +165,7 @@ end
 function PitBull4_CastBarLatency:OnEnable()
 	timerFrame:Show()
 
-	self:RegisterUnitEvent("UNIT_SPELLCAST_SENT", nil, "player")
+	self:RegisterEvent("UNIT_SPELLCAST_SENT")
 	self:RegisterUnitEvent("UNIT_SPELLCAST_START", nil, "player")
 	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", nil, "player")
 	self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", nil, "player")
