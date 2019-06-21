@@ -22,12 +22,26 @@ PitBull4_CastBar:SetDefaults({
 	casting_complete_color = { 0, 1, 0 },
 	casting_failed_color = { 1, 0, 0 },
 	channel_interruptible_color = { 0, 0, 1 },
+	delay_color = { 1, 0, 0 },
 })
+
+local bit_band = bit.band
 
 local channel_spells = PitBull4.Spells.channel_spells
 local disable_spells = PitBull4.Spells.disable_spells
+local cast_mod_spells = {
+	-- slows
+	[1714] = 0.5, [11719] = 0.6, -- Curse of Tongues (Warlock)
+	[5760] = 0.4, [8692] = 0.5, [11398] = 0.6, -- Mind-numbing Poison (Rogue)
+	-- pushback reduction
+	[22812] = 0, -- Barkskin (Druid)
+	[19746] = -0.65, -- Concentration Aura (Paladin)
+	[14743] = 0, [27828] = 0, -- Focused Casting (Priest)
+	[29063] = 0, -- Focused Casting (Shaman)
+}
 
 local cast_data = {}
+local aura_data = {}
 
 local player_guid = UnitGUID("player")
 
@@ -35,23 +49,44 @@ local timer_frame = CreateFrame("Frame")
 timer_frame:Hide()
 timer_frame:SetScript("OnUpdate", function() PitBull4_CastBar:FixCastDataAndUpdateAll() end)
 
+local is_player = bit.bor(COMBATLOG_OBJECT_TYPE_PLAYER, COMBATLOG_OBJECT_CONTROL_PLAYER)
+
 timer_frame:SetScript("OnEvent", function()
-	local _, event, _, src_guid, _, _, _, dst_guid, _, _, _, spell_id, _, _, extra_spell_id = CombatLogGetCurrentEventInfo()
+	local _, event, _, src_guid, _, _, _, dst_guid, _, dst_flags, _, spell_id, _, _, extra_spell_id = CombatLogGetCurrentEventInfo()
 	if event == "SPELL_CAST_START" or event == "SPELL_CAST_SUCCESS" or event == "SPELL_CAST_FAILED" then
 		PitBull4_CastBar:UpdateInfoFromLog(event, src_guid, spell_id)
 		if event == "SPELL_CAST_SUCCESS" and channel_spells[spell_id] then
-			-- channeled spells don't have cast events
+			-- Channeled spells don't have cast events
 			PitBull4_CastBar:UpdateInfoFromLog("SPELL_CAST_START", src_guid, spell_id, true)
 		end
 	elseif event == "SPELL_INTERRUPT" then
 		PitBull4_CastBar:UpdateInfoFromLog(event, dst_guid, extra_spell_id)
 	elseif event == "SPELL_AURA_APPLIED" then
-		if disable_spells[spell_id] and cast_data[dst_guid] then
+		if cast_mod_spells[spell_id] then
+			PitBull4_CastBar:UpdateDelayFromLog(event, dst_guid, spell_id)
+		elseif disable_spells[spell_id] and cast_data[dst_guid] then
 			PitBull4_CastBar:UpdateInfoFromLog("SPELL_INTERRUPT", dst_guid, cast_data[dst_guid].spell_id)
 		end
-	elseif event == "SPELL_AURA_REMOVED" and channel_spells[spell_id] then
-		-- catch the end of a channel from when the aura is removed
-		PitBull4_CastBar:UpdateInfoFromLog("SPELL_CAST_SUCCESS", src_guid, spell_id, true)
+	elseif event == "SPELL_AURA_REMOVED" then
+		if channel_spells[spell_id] then
+			-- Catch the end of a channel from when the aura is removed
+			PitBull4_CastBar:UpdateInfoFromLog("SPELL_CAST_SUCCESS", src_guid, spell_id, true)
+		elseif cast_mod_spells[spell_id] then
+			PitBull4_CastBar:UpdateDelayFromLog(event, dst_guid, spell_id)
+		end
+	elseif (event == "SPELL_DAMAGE" or event == "SWING_DAMAGE" or event == "RANGE_DAMAGE" or event == "ENVIRONMENTAL_DAMAGE") and bit_band(dst_flags, is_player) > 0 then
+		local resisted, blocked, absorbed
+		if event == "SWING_DAMAGE" then
+			resisted, blocked, absorbed = select(15, CombatLogGetCurrentEventInfo())
+		elseif event == "ENVIRONMENTAL_DAMAGE" then
+			resisted, blocked, absorbed = select(16, CombatLogGetCurrentEventInfo())
+		else
+			resisted, blocked, absorbed = select(18, CombatLogGetCurrentEventInfo())
+		end
+		if resisted or blocked or absorbed then return end
+
+		-- Add pushback
+		PitBull4_CastBar:UpdateDelayFromLog(event, dst_guid)
 	end
 end)
 
@@ -68,6 +103,8 @@ function PitBull4_CastBar:OnEnable()
 	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "UpdateInfo", "player")
 	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "UpdateInfo", "player")
 	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", "UpdateInfo", "player")
+
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
 function PitBull4_CastBar:OnDisable()
@@ -75,9 +112,22 @@ function PitBull4_CastBar:OnDisable()
 	timer_frame:Hide()
 end
 
+function PitBull4_CastBar:PLAYER_ENTERING_WORLD()
+	for guid, data in next, cast_data do
+		cast_data[guid] = del(data)
+	end
+	for guid, data in next, aura_data do
+		aura_data[guid] = del(data)
+	end
+	self:FixCastDataAndUpdateAll()
+end
+
 function PitBull4_CastBar:FixCastDataAndUpdateAll()
 	self:FixCastData()
-	self:UpdateAll()
+	for frame in PitBull4:IterateFrames() do
+		self:Update(frame)
+		self:UpdateBarDelay(frame)
+	end
 end
 
 local new, del
@@ -212,6 +262,68 @@ function PitBull4_CastBar:ClearFramesByGUID(guid)
 	end
 end
 
+function PitBull4_CastBar:UpdateBarDelay(frame)
+	local data = cast_data[frame.guid]
+	local bar = frame.CastBar
+	if not bar or not data or data.delay == 0 or data.fade_out then
+		if frame.CastBarDelay then
+			frame.CastBarDelay = frame.CastBarDelay:Delete()
+		end
+		return
+	end
+
+	local danger_zone = frame.CastBarDelay
+	if not danger_zone then
+		danger_zone = PitBull4.Controls.MakeBetterStatusBar(frame)
+		danger_zone:SetTexture(bar:GetTexture())
+		danger_zone:SetValue(0)
+		danger_zone:SetColor(unpack(self.db.profile.global.delay_color))
+		danger_zone:SetBackgroundAlpha(0)
+
+		frame.CastBarDelay = danger_zone
+	end
+	danger_zone:SetAllPoints(bar)
+
+	-- Get the castbar's alpha and apply it with a modifier
+	local _, _, _, bar_alpha = PitBull4_CastBar:GetColor(frame)
+	if bar_alpha then
+		danger_zone:SetAlpha(bar_alpha*0.6)
+	end
+
+	-- Apply user settings
+	danger_zone:SetFrameLevel(bar:GetFrameLevel() + 1)
+	danger_zone:SetOrientation(bar:GetOrientation())
+
+	local reverse = not bar:GetReverse()
+	local icon_position = not bar:GetIconPosition()
+	if bar:GetDeficit() then
+		reverse = not reverse
+		icon_position = not icon_position
+	end
+	if data.channeling then
+		reverse = not reverse
+		icon_position = not icon_position
+	end
+	danger_zone:SetReverse(reverse)
+
+	-- Set the value, reducing it to fit the cast bar
+	local value = data.delay / (data.end_time - data.start_time)
+	local overlap = value + frame.CastBar:GetValue() - 1
+	if overlap > 0 then
+		value = value - overlap
+	end
+	danger_zone:SetValue(value)
+	danger_zone:Show()
+
+	-- Pad for the icon
+	if bar.icon then
+		danger_zone:SetIcon("")
+		danger_zone:SetIconPosition(icon_position)
+	else
+		danger_zone:SetIcon(nil)
+	end
+end
+
 function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
 	if unit ~= "player" then return end
 	local guid = UnitGUID(unit)
@@ -237,6 +349,7 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
 		data.icon = icon
 		data.start_time = start_time * 0.001
 		data.end_time = end_time * 0.001
+		data.delay = 0
 		data.casting = not channeling
 		data.channeling = channeling
 		data.fade_out = false
@@ -280,7 +393,8 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
 end
 
 function PitBull4_CastBar:UpdateInfoFromLog(event, guid, spell_id, channeling)
-	if not guid or guid == player_guid or not spell_id then return end
+	if not guid or not spell_id then return end
+	if guid == player_guid then return end
 
 	local spell, _, icon, cast_time = GetSpellInfo(spell_id)
 	if channeling then
@@ -304,6 +418,9 @@ function PitBull4_CastBar:UpdateInfoFromLog(event, guid, spell_id, channeling)
 		data.icon = icon
 		data.start_time = start_time
 		data.end_time = end_time
+		data.cast_time = cast_time * 0.001
+		data.time_mod = 1
+		data.delay = 0
 		data.casting = not channeling
 		data.channeling = channeling
 		data.fade_out = false
@@ -329,6 +446,59 @@ function PitBull4_CastBar:UpdateInfoFromLog(event, guid, spell_id, channeling)
 	end
 end
 
+function PitBull4_CastBar:UpdateDelayFromLog(event, guid, spell_id)
+	if guid == player_guid then return end
+
+	local auras = aura_data[guid]
+	if event == "SPELL_AURA_APPLIED" then
+		if not auras then
+			auras = new()
+			aura_data[guid] = auras
+		end
+		auras[spell_id] = cast_mod_spells[spell_id]
+	elseif event == "SPELL_AURA_REMOVED" then
+		if not auras then return end
+		auras[spell_id] = nil
+		if not next(auras) then
+			aura_data[guid] = del(auras)
+		end
+	end
+
+	local data = cast_data[guid]
+	if not data then return end
+
+	local time_mod = 1
+	local delay_mod = -1
+
+	if auras then
+		-- Find the strongest effects
+		for _, mod in next, auras do
+			if mod > time_mod then
+				time_mod = mod
+			end
+			if mod <= 0 and mod > delay_mod then
+				delay_mod = mod
+			end
+		end
+	end
+	data.time_mod = time_mod
+
+	if not spell_id then
+		if data.casting then -- cast times are increased by 0.3 seconds to 1 second (seemly at random)
+			local delay = 0.8 * -delay_mod
+			data.delay = data.delay + delay
+			data.cast_time = data.cast_time + delay
+		elseif data.channeling then -- channel times are reduced by 25%
+			-- XXX 25% of the base channel time or 25% of the remaining time?
+			local delay = data.cast_time * (0.25 * -delay_mod)
+			data.delay = data.delay + delay
+			data.cast_time = data.cast_time - delay
+		end
+	end
+
+	data.end_time = data.start_time + data.cast_time * time_mod
+end
+
 local tmp = {}
 function PitBull4_CastBar:FixCastData()
 	local frame
@@ -343,7 +513,6 @@ function PitBull4_CastBar:FixCastData()
 				found = true
 				if data.casting then
 					if current_time > data.end_time and not data.cast_id then
-						-- no pushback handling
 						data.casting = false
 						data.fade_out = true
 						data.stop_time = current_time
@@ -524,11 +693,27 @@ PitBull4_CastBar:SetColorOptionsFunction(function(self)
 			self:UpdateAll()
 		end,
 		order = 4,
+	},'delay_color', {
+		type = 'color',
+		name = L["Delay"],
+		desc = L["Sets which color the pushback overlay on the castbar is using."],
+		get = function(info)
+			return unpack(self.db.profile.global.delay_color)
+		end,
+		set = function(info, r, g, b)
+			self.db.profile.global.delay_color = { r, g, b }
+			for frame in PitBull4:IterateFrames() do
+				self:Update(frame)
+				self:UpdateBarDelay(frame)
+			end
+		end,
+		order = 4,
 	},
 	function(info)
 		self.db.profile.global.casting_interruptible_color = { 1, 0.7, 0 }
 		self.db.profile.global.casting_complete_color = { 0, 1, 0 }
 		self.db.profile.global.casting_failed_color = { 1, 0, 0 }
 		self.db.profile.global.channel_interruptible_color = { 0, 0, 1 }
+		self.db.profile.global.delay_color = { 1, 0, 0 }
 	end
 end)
