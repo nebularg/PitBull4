@@ -1007,7 +1007,7 @@ local function update_cast_data(event, unit, event_cast_id, event_spell_id)
 		data.end_time = end_time * 0.001
 		if event == "UNIT_SPELLCAST_DELAYED" or event == "UNIT_SPELLCAST_CHANNEL_UPDATE" then
 			data.delay = (data.delay or 0) + (start_time - (old_start or start_time))
-		else
+		elseif event then
 			data.delay = 0
 		end
 		if guid == player_guid and spell_id == next_spell then
