@@ -7,6 +7,7 @@ local PitBull4_LuaTexts = PitBull4:NewModule("LuaTexts", "AceTimer-3.0", "AceHoo
 local channel_spells = PitBull4.Spells.channel_spells
 
 local test_frame = CreateFrame("Frame") -- Event validation
+local combat_log_handler
 
 local texts = {}
 local no_update = {}
@@ -665,6 +666,7 @@ function PitBull4_LuaTexts:OnEnable()
 	-- additional data not always available.
 	self:RegisterEvent("UNIT_SPELLCAST_SENT")
 	self:RegisterEvent("GROUP_ROSTER_UPDATE")
+	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", combat_log_handler)
 
 	-- Hooks to trap OnEnter/OnLeave for the frames.
 	self:AddFrameScriptHook("OnEnter")
@@ -678,14 +680,12 @@ function PitBull4_LuaTexts:OnEnable()
 	self:SetCVar()
 
 	timerframe:Show()
-	timerframe:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 end
 
 function PitBull4_LuaTexts:OnDisable()
 	self:RemoveFrameScriptHook("OnEnter")
 	self:RemoveFrameScriptHook("OnLeave")
 	timerframe:Hide()
-	timerframe:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 end
 
 local function set_text(font_string, ...)
@@ -932,7 +932,7 @@ local function update_cast_data_log(event, guid, spell_id, failed, channeling)
 	end
 end
 
-timerframe:SetScript("OnEvent", function()
+function combat_log_handler()
 	local _, event, _, src_guid, _, _, _, dst_guid, _, _, _, spell_id, _, _, failed = CombatLogGetCurrentEventInfo()
 	if event == "SPELL_CAST_START" or event == "SPELL_CAST_SUCCESS" or event == "SPELL_CAST_FAILED" then
 		update_cast_data_log(event, src_guid, spell_id, failed)
@@ -944,7 +944,7 @@ timerframe:SetScript("OnEvent", function()
 			update_cast_data_log("SPELL_CAST_SUCCESS", src_guid, spell_id, nil, true)
 		end
 	end
-end)
+end
 
 local tmp = {}
 local function fix_cast_data()

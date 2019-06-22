@@ -237,8 +237,7 @@ local event_list = {
 	SPELL_AURA_REMOVED = true,
 }
 
-local frame = CreateFrame("Frame")
-frame:SetScript("OnEvent", function(self)
+local function combat_log_handler()
 	local _, event, _, src_guid, _, src_flags, _, dst_guid, _, dst_flags, _, spell_id = CombatLogGetCurrentEventInfo()
 
 	if dst_guid == player_guid then
@@ -270,18 +269,17 @@ frame:SetScript("OnEvent", function(self)
 			auras[dst_guid][spell_id][src_guid] = del(auras[dst_guid][spell_id][src_guid])
 		end
 	end
-end)
+end
 
 function PitBull4_AuraDuration:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("CHARACTER_POINTS_CHANGED")
-	frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", combat_log_handler)
 
 	self:CHARACTER_POINTS_CHANGED()
 end
 
 function PitBull4_AuraDuration:OnDisable()
-	frame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	self:PLAYER_ENTERING_WORLD()
 end
 

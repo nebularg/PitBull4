@@ -51,7 +51,7 @@ timer_frame:SetScript("OnUpdate", function() PitBull4_CastBar:FixCastDataAndUpda
 
 local is_player = bit.bor(COMBATLOG_OBJECT_TYPE_PLAYER, COMBATLOG_OBJECT_CONTROL_PLAYER)
 
-timer_frame:SetScript("OnEvent", function()
+local function combat_log_handler()
 	local _, event, _, src_guid, _, _, _, dst_guid, _, dst_flags, _, spell_id, _, _, extra_spell_id = CombatLogGetCurrentEventInfo()
 	if event == "SPELL_CAST_START" or event == "SPELL_CAST_SUCCESS" or event == "SPELL_CAST_FAILED" then
 		PitBull4_CastBar:UpdateInfoFromLog(event, src_guid, spell_id)
@@ -88,11 +88,10 @@ timer_frame:SetScript("OnEvent", function()
 		-- Add pushback
 		PitBull4_CastBar:UpdateDelayFromLog(event, dst_guid)
 	end
-end)
+end
 
 function PitBull4_CastBar:OnEnable()
 	timer_frame:Show()
-	timer_frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 
 	self:RegisterUnitEvent("UNIT_SPELLCAST_START", "UpdateInfo", "player")
 	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", "UpdateInfo", "player")
@@ -105,10 +104,10 @@ function PitBull4_CastBar:OnEnable()
 	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", "UpdateInfo", "player")
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", combat_log_handler)
 end
 
 function PitBull4_CastBar:OnDisable()
-	timer_frame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	timer_frame:Hide()
 end
 
