@@ -4,7 +4,7 @@ local L = PitBull4.L
 
 local EXAMPLE_VALUE = 0.4
 local EXAMPLE_ICON = 136222 -- Spell_Shadow_Teleport
-local TEMP_ICON = [[Interface\Icons\Temp]]
+local TEMP_ICON = 136235
 
 local PitBull4_CastBar = PitBull4:NewModule("CastBar", "AceEvent-3.0")
 
@@ -233,6 +233,7 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
 		if icon == TEMP_ICON then
 			icon = nil
 		end
+		data.spell = spell
 		data.icon = icon
 		data.start_time = start_time * 0.001
 		data.end_time = end_time * 0.001
@@ -251,7 +252,7 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
 		return
 	end
 
-	if not data.icon then
+	if not data.spell then
 		cast_data[guid] = del(data)
 		if not next(cast_data) then
 			timer_frame:Hide()
