@@ -4,7 +4,7 @@ local L = PitBull4.L
 
 local EXAMPLE_VALUE = 0.4
 local EXAMPLE_ICON = 136222 -- Spell_Shadow_Teleport
-local TEMP_ICON = [[Interface\Icons\Temp]]
+local TEMP_ICON = 136235
 
 local PitBull4_CastBar = PitBull4:NewModule("CastBar")
 
