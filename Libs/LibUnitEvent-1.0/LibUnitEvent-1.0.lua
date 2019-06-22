@@ -93,7 +93,7 @@ function lib:RegisterUnitEvent(event, func, ...)
 		if not frame then
 			frame = CreateFrame("Frame")
 			frame:SetScript("OnEvent", lib.OnEvent)
-			frame[unit] = frame
+			frames[unit] = frame
 		end
 		events[self][event][unit] = func
 		frame:RegisterUnitEvent(event, unit)
