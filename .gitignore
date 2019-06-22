@@ -1,0 +1,5 @@
+.release
+.vscode
+**/Libs
+Localization/_export.lua
+Babelfish.lua
