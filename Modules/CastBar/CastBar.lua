@@ -363,7 +363,7 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
 		return
 	end
 
-	if not data.icon then
+	if not data.cast_id then
 		cast_data[guid] = del(data)
 		if not next(cast_data) then
 			timer_frame:Hide()
@@ -395,7 +395,7 @@ function PitBull4_CastBar:UpdateInfoFromLog(event, guid, spell_id, channeling)
 	if not guid or not spell_id then return end
 	if guid == player_guid then return end
 
-	local spell, _, icon, cast_time = GetSpellInfo(spell_id)
+	local _, _, icon, cast_time = GetSpellInfo(spell_id)
 	if channeling then
 		cast_time = channel_spells[spell_id] * 1000
 	end
@@ -429,7 +429,7 @@ function PitBull4_CastBar:UpdateInfoFromLog(event, guid, spell_id, channeling)
 		return
 	end
 
-	if not data.icon then
+	if not data.spell_id then
 		cast_data[guid] = del(data)
 		if not next(cast_data) then
 			timer_frame:Hide()
