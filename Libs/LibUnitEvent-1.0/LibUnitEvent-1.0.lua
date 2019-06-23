@@ -44,20 +44,12 @@ local function normalize(unit)
 end
 
 function lib.OnEvent(self, event, unit, ...)
-	local used = nil
-	for module, unitEvents in next, events do
-		local func = unitEvents[event] and unitEvents[event][unit]
-		if func then
-			used = true
-			if type(func) == "function" then
-				xpcall(func, CallErrorHandler, event, unit, ...)
-			else
-				xpcall(module[func], CallErrorHandler, module, event, unit, ...)
-			end
+	for module, func in next, events[event][unit] do
+		if type(func) == "function" then
+			xpcall(func, CallErrorHandler, event, unit, ...)
+		else
+			xpcall(module[func], CallErrorHandler, module, event, unit, ...)
 		end
-	end
-	if not used then
-		self:UnregisterEvent(event)
 	end
 end
 
@@ -82,8 +74,7 @@ function lib:RegisterUnitEvent(event, func, ...)
 		error("Usage: RegisterUnitEvent(event, method, unit...): 'unit' - string expected.", 2)
 	end
 
-	if not events[self] then events[self] = {} end
-	if not events[self][event] then events[self][event] = {} end
+	if not events[event] then events[event] = {} end
 	for i = 1, select("#", ...) do
 		local unit = normalize(select(i, ...))
 		if not validUnits[unit] then
@@ -95,7 +86,8 @@ function lib:RegisterUnitEvent(event, func, ...)
 			frame:SetScript("OnEvent", lib.OnEvent)
 			frames[unit] = frame
 		end
-		events[self][event][unit] = func
+		if not events[event][unit] then events[event][unit] = {} end
+		events[event][unit][self] = func
 		frame:RegisterUnitEvent(event, unit)
 	end
 end
@@ -111,33 +103,29 @@ function lib:UnregisterUnitEvent(event, ...)
 	if select("#", ...) == 0 then
 		error("Usage: UnregisterUnitEvent(event, unit...): 'unit' - string expected.", 2)
 	end
-
-	local units = events[self] and events[self][event]
-	if not units then return end
+	if not events[event] then return end
 
 	for i = 1, select("#", ...) do
 		local unit = normalize(select(i, ...))
 		if not validUnits[unit] then
 			error("Usage: UnregisterUnitEvent(event, unit...): 'unit' - unit '"..tostring(unit).."' invalid.", 2)
 		end
-		units[unit] = nil
-		-- Events remain registered on a frame until the event fires and has no target
-	end
-
-	-- Cleanup
-	if not next(units) then
-		events[self][event] = nil
-		if not next(events[self]) then
-			events[self] = nil
+		if events[event][unit] then
+			events[event][unit][self] = nil
+			if not next(events[event][unit]) and frames[unit] then
+				frames[unit]:UnregisterEvent(event)
+			end
 		end
 	end
 end
 
 --- Unregister all unit events
 function lib:UnregisterAllUnitEvents()
-	for event, units in next, events[self] do
-		for unit in next, units do
-			self:UnregisterUnitEvent(event, unit)
+	for event, units in next, events do
+		for unit, modules in next, units do
+			if modules[self] then
+				self:UnregisterUnitEvent(event, unit)
+			end
 		end
 	end
 end
