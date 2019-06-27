@@ -1,3 +1,5 @@
+if select(4, GetBuildInfo()) ~= 11302 then error("PitBull4: Wrong game version.") end
+
 -- Constants ----------------------------------------------------------------
 local _G = _G
 
