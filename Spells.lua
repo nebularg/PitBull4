@@ -11,7 +11,7 @@ PitBull4.Spells.dr_spells = {
 	-- Disorient/Incapacitate
 	[2637] = "disorient", [18657] = "disorient", [18658] = "disorient", -- Hibernate (Druid)
 	[3355] = "disorient", [14308] = "disorient", [14309] = "disorient", -- Freezing Trap (Hunter)
-	-- [19503] = "disorient", -- Scatter Shot (Hunter)
+	[19503] = "disorient", -- Scatter Shot (Hunter)
 	[19386] = "disorient", [24132] = "disorient", [24133] = "disorient", -- Wyvern Sting (Hunter)
 	[118] = "disorient", [12824] = "disorient", [12825] = "disorient", [12826] = "disorient", [28271] = "disorient", [28272] = "disorient", -- Polymorph (Mage)
 	[20066] = "disorient", -- Repentance (Paladin)
