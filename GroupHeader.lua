@@ -1,7 +1,7 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
--- luacheck: globals oRA3 ClickCastHeader SecureButton_GetModifiedUnit
+-- luacheck: globals oRA3 ClickCastHeader SecureButton_GetModifiedUnit RAID_CLASS_COLORS
 
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
@@ -59,8 +59,10 @@ function PitBull4:MakeGroupHeader(group)
 			else
 				template = "SecureGroupHeaderTemplate"
 			end
+		else
+			template = "SecureFrameTemplate"
 		end
-		header = CreateFrame("Frame", header_name, UIParent, template or "SecureFrameTemplate")
+		header = CreateFrame("Frame", header_name, UIParent, template)
 		header:Hide() -- it will be shown later and attributes being set won't cause lag
 
 		header.name = group
