@@ -392,7 +392,7 @@ local function ClassColor(unit)
 	local _, class = UnitClass(unit)
 	local color = PitBull4.ClassColors[class]
 	if not color then
-		return 0.8, 0.8, 0.8 -- UNKNOWN
+		return 204, 204, 204 -- UNKNOWN (0.8, 0.8, 0.8)
 	end
 	return color[1] * 255, color[2] * 255, color[3] * 255
 end
