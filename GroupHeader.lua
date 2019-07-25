@@ -1499,6 +1499,11 @@ function GroupHeader__scripts:OnShow()
 		self.clear_timer = nil
 		self.clear_index = nil
 	end
+
+	if not self.force_show then
+		-- Force a SecureGroupHeader_Update to fix the listing if unit info wasn't ready on join (ticket 1251)
+		PitBull4:ScheduleTimer(self.Update, 1, self)
+	end
 end
 
 local moving_frame = nil
