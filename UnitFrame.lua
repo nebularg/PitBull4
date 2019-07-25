@@ -397,6 +397,11 @@ function UnitFrame__scripts:OnShow()
 	end
 
 	self:SetAlpha(PitBull4:GetFinalFrameOpacity(self))
+
+	if not self.force_show then
+		-- Force an update to fix the frame if the unit info wasn't ready (ticket 1251)
+		PitBull4:ScheduleTimer(self.UpdateLayout, 1, self, true)
+	end
 end
 
 function UnitFrame__scripts:OnHide()
