@@ -11,8 +11,6 @@
 
 <Script file="Main.lua"/>
 
-<Script file="Spells.lua"/>
-
 <Script file="Utils.lua"/>
 
 <Include file="ModuleHandling\load.xml"/>

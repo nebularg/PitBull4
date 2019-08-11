@@ -27,68 +27,11 @@ PitBull4_CastBar:SetDefaults({
 
 local bit_band = bit.band
 
-local channel_spells = PitBull4.Spells.channel_spells
-local disable_spells = PitBull4.Spells.disable_spells
-local cast_mod_spells = {
-	-- slows
-	[1714] = 0.5, [11719] = 0.6, -- Curse of Tongues (Warlock)
-	[5760] = 0.4, [8692] = 0.5, [11398] = 0.6, -- Mind-numbing Poison (Rogue)
-	-- pushback reduction
-	[22812] = 0, -- Barkskin (Druid)
-	[19746] = -0.65, -- Concentration Aura (Paladin)
-	[14743] = 0, [27828] = 0, -- Focused Casting (Priest)
-	[29063] = 0, -- Focused Casting (Shaman)
-}
-
 local cast_data = {}
-local aura_data = {}
-
-local player_guid = UnitGUID("player")
 
 local timer_frame = CreateFrame("Frame")
 timer_frame:Hide()
 timer_frame:SetScript("OnUpdate", function() PitBull4_CastBar:FixCastDataAndUpdateAll() end)
-
-local is_player = bit.bor(COMBATLOG_OBJECT_TYPE_PLAYER, COMBATLOG_OBJECT_CONTROL_PLAYER)
-
-local function combat_log_handler()
-	local _, event, _, src_guid, _, _, _, dst_guid, _, dst_flags, _, spell_id, _, _, extra_spell_id = CombatLogGetCurrentEventInfo()
-	if event == "SPELL_CAST_START" or event == "SPELL_CAST_SUCCESS" or event == "SPELL_CAST_FAILED" then
-		PitBull4_CastBar:UpdateInfoFromLog(event, src_guid, spell_id)
-		if event == "SPELL_CAST_SUCCESS" and channel_spells[spell_id] then
-			-- Channeled spells don't have cast events
-			PitBull4_CastBar:UpdateInfoFromLog("SPELL_CAST_START", src_guid, spell_id, true)
-		end
-	elseif event == "SPELL_INTERRUPT" then
-		PitBull4_CastBar:UpdateInfoFromLog(event, dst_guid, extra_spell_id)
-	elseif event == "SPELL_AURA_APPLIED" then
-		if cast_mod_spells[spell_id] then
-			PitBull4_CastBar:UpdateDelayFromLog(event, dst_guid, spell_id)
-		elseif disable_spells[spell_id] and cast_data[dst_guid] then
-			PitBull4_CastBar:UpdateInfoFromLog("SPELL_INTERRUPT", dst_guid, cast_data[dst_guid].spell_id)
-		end
-	elseif event == "SPELL_AURA_REMOVED" then
-		if channel_spells[spell_id] then
-			-- Catch the end of a channel from when the aura is removed
-			PitBull4_CastBar:UpdateInfoFromLog("SPELL_CAST_SUCCESS", src_guid, spell_id, true)
-		elseif cast_mod_spells[spell_id] then
-			PitBull4_CastBar:UpdateDelayFromLog(event, dst_guid, spell_id)
-		end
-	elseif (event == "SPELL_DAMAGE" or event == "SWING_DAMAGE" or event == "RANGE_DAMAGE" or event == "ENVIRONMENTAL_DAMAGE") and bit_band(dst_flags, is_player) > 0 then
-		local resisted, blocked, absorbed
-		if event == "SWING_DAMAGE" then
-			resisted, blocked, absorbed = select(15, CombatLogGetCurrentEventInfo())
-		elseif event == "ENVIRONMENTAL_DAMAGE" then
-			resisted, blocked, absorbed = select(16, CombatLogGetCurrentEventInfo())
-		else
-			resisted, blocked, absorbed = select(18, CombatLogGetCurrentEventInfo())
-		end
-		if resisted or blocked or absorbed then return end
-
-		-- Add pushback
-		PitBull4_CastBar:UpdateDelayFromLog(event, dst_guid)
-	end
-end
 
 function PitBull4_CastBar:OnEnable()
 	timer_frame:Show()
@@ -104,7 +47,6 @@ function PitBull4_CastBar:OnEnable()
 	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", "UpdateInfo", "player")
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", combat_log_handler)
 end
 
 function PitBull4_CastBar:OnDisable()
@@ -114,9 +56,6 @@ end
 function PitBull4_CastBar:PLAYER_ENTERING_WORLD()
 	for guid, data in next, cast_data do
 		cast_data[guid] = del(data)
-	end
-	for guid, data in next, aura_data do
-		aura_data[guid] = del(data)
 	end
 	self:FixCastDataAndUpdateAll()
 end
@@ -389,113 +328,6 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
 	if not data.stop_time then
 		data.stop_time = GetTime()
 	end
-end
-
-function PitBull4_CastBar:UpdateInfoFromLog(event, guid, spell_id, channeling)
-	if not guid or not spell_id then return end
-	if guid == player_guid then return end
-
-	local _, _, icon, cast_time = GetSpellInfo(spell_id)
-	if channeling then
-		cast_time = channel_spells[spell_id] * 1000
-	end
-	if not cast_time or cast_time == 0 then return end
-
-	local data = cast_data[guid]
-	if not data then
-		data = new()
-		cast_data[guid] = data
-	end
-
-	if event == "SPELL_CAST_START" then
-		local start_time = GetTime()
-		local end_time = start_time + (cast_time * 0.001)
-		if icon == TEMP_ICON then
-			icon = nil
-		end
-		data.spell_id = spell_id
-		data.icon = icon
-		data.start_time = start_time
-		data.end_time = end_time
-		data.cast_time = cast_time * 0.001
-		data.time_mod = 1
-		data.delay = 0
-		data.casting = not channeling
-		data.channeling = channeling
-		data.fade_out = false
-		data.was_channeling = channeling -- persistent state even after interrupted
-		data.stop_time = nil
-		timer_frame:Show()
-		return
-	end
-
-	if not data.spell_id then
-		cast_data[guid] = del(data)
-		if not next(cast_data) then
-			timer_frame:Hide()
-		end
-		return
-	end
-
-	data.casting = false
-	data.channeling = false
-	data.fade_out = true
-	if not data.stop_time then
-		data.stop_time = GetTime()
-	end
-end
-
-function PitBull4_CastBar:UpdateDelayFromLog(event, guid, spell_id)
-	if guid == player_guid then return end
-
-	local auras = aura_data[guid]
-	if event == "SPELL_AURA_APPLIED" then
-		if not auras then
-			auras = new()
-			aura_data[guid] = auras
-		end
-		auras[spell_id] = cast_mod_spells[spell_id]
-	elseif event == "SPELL_AURA_REMOVED" then
-		if not auras then return end
-		auras[spell_id] = nil
-		if not next(auras) then
-			aura_data[guid] = del(auras)
-		end
-	end
-
-	local data = cast_data[guid]
-	if not data then return end
-
-	local time_mod = 1
-	local delay_mod = -1
-
-	if auras then
-		-- Find the strongest effects
-		for _, mod in next, auras do
-			if mod > time_mod then
-				time_mod = mod
-			end
-			if mod <= 0 and mod > delay_mod then
-				delay_mod = mod
-			end
-		end
-	end
-	data.time_mod = time_mod
-
-	if not spell_id then
-		if data.casting then -- cast times are increased by 0.3 seconds to 1 second (seemly at random)
-			local delay = 0.8 * -delay_mod
-			data.delay = data.delay + delay
-			data.cast_time = data.cast_time + delay
-		elseif data.channeling then -- channel times are reduced by 25%
-			-- XXX 25% of the base channel time or 25% of the remaining time?
-			local delay = data.cast_time * (0.25 * -delay_mod)
-			data.delay = data.delay + delay
-			data.cast_time = data.cast_time - delay
-		end
-	end
-
-	data.end_time = data.start_time + data.cast_time * time_mod
 end
 
 local tmp = {}

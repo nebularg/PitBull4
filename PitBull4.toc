@@ -13,7 +13,7 @@
 ## Notes-zhTW: @localization(locale="zhTW", key="Dog-themed unit frames. Woof. Arf. Yip.")@
 ## Author: ckknight, Shekfi, Nebula
 ## SavedVariables: PitBull4DB
-## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDBIcon-1.0, Clique, RealMobHealth
+## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDBIcon-1.0, Clique, RealMobHealth, LibClassicDurations
 ## Version: @project-version@
 
 ## X-Curse-Project-ID: 7522

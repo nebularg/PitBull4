@@ -5,6 +5,9 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
+local LibClassicDurations = LibStub("LibClassicDurations")
+LibClassicDurations:Register(PitBull4_Aura)
+
 local UnitAura = _G.UnitAura
 local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
 local ceil = _G.math.ceil
@@ -450,9 +453,9 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 
 	local id, slot, quality, is_buff, name, _, icon, count, debuff_type, duration, expiration_time, caster, _, _, spell_id, _, _, _, _, time_mod = unpack(aura, 1, ENTRY_END)
 
-	if player_guid ~= frame.guid and duration == 0 and expiration_time == 0 then
-		local caster_guid = caster and UnitGUID(caster)
-		duration, expiration_time = PitBull4_Aura:GetDuration(caster_guid, frame.guid, spell_id, list, id)
+	if player_guid ~= frame.guid and duration == 0 and expiration_time == 0 and caster then
+		local caster_guid = UnitGUID(caster)
+		duration, expiration_time = LibClassicDurations:GetAuraDurationByGUID(frame.guid, spell_id, caster_guid, name)
 	end
 
 	local is_mine = my_units[caster]
