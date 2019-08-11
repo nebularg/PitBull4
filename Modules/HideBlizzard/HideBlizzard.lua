@@ -132,8 +132,8 @@ end
 function hiders:party()
 	for i = 1, MAX_PARTY_MEMBERS do
 		local frame = _G["PartyMemberFrame" .. i]
-		rawhook_frames(frame)
-		-- hook_reparent_frames(frame)
+		frame:SetAttribute("statehidden", true)
+		hook_frames(frame)
 	end
 
 	UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
@@ -142,6 +142,7 @@ end
 function showers:party()
 	for i = 1, MAX_PARTY_MEMBERS do
 		local frame = _G["PartyMemberFrame" .. i]
+		frame:SetAttribute("statehidden", nil)
 		unhook_frames(frame)
 		frame:GetScript("OnEvent")(frame, "GROUP_ROSTER_UPDATE")
 	end
