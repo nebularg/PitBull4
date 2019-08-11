@@ -15,7 +15,17 @@ You can help translate PitBull for your language with the [localization tool](ht
 
 ---
 
-## Changelog Highlights ![OhMyDog](https://static-cdn.jtvnw.net/emoticons/v1/65/1.0)
+## Changelog Highlights ![OhMyDog](https://static-cdn.jtvnw.net/emoticons/v1/65/1.0))
+
+### v4.1.20 changes
+
+- Fixed frames getting stuck with incomplete unit infomation. This should
+  fix things like the name getting stuck as "Unknown" and class colors being
+  wrong.
+
+### v4.1.19 changes
+
+- Update for 8.2
 
 ### v4.1.18 changes
 
@@ -34,19 +44,6 @@ You can help translate PitBull for your language with the [localization tool](ht
   selecting the player in the Tol Dagor cannon are still cumbersome.
 - Added sorting and filtering party groups by role.
 - Aura: Added Arcane Torrent for Blood Elves and updated purge filters.
-
-### v4.1.16 changes
-
-- Updated class spells for RangeFinder.
-- Updated class purge and dispel Aura filters (fixed highlighting).
-- Added allied race Aura filters.
-
-### v4.1.12 changes
-
-- Added some Aura filters based on what the default UI shows (personal buffs, group buffs, target debuffs, group debuffs).
-- Added `VoiceIcon` indicator module.
-- Updated Short and VeryShort LuaTexts to be locale-aware.
-- Added inactive boss frames support (previously hidden boss frames will be shown now, thanks TheDanW).
 
 ### v4.1.0 changes
 
