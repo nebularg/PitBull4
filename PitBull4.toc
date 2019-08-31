@@ -1,16 +1,16 @@
 ## Interface: 11302
 ## Title: PitBull Unit Frames 4.0
 ## Notes: Dog-themed unit frames. Woof. Arf. Yip.
-## Notes-deDE: @localization(locale="deDE", key="Dog-themed unit frames. Woof. Arf. Yip.")@
-## Notes-esES: @localization(locale="esES", key="Dog-themed unit frames. Woof. Arf. Yip.")@
-## Notes-esMX: @localization(locale="esMX", key="Dog-themed unit frames. Woof. Arf. Yip.")@
-## Notes-frFR: @localization(locale="frFR", key="Dog-themed unit frames. Woof. Arf. Yip.")@
-## Notes-itIT: @localization(locale="itIT", key="Dog-themed unit frames. Woof. Arf. Yip.")@
-## Notes-koKR: @localization(locale="koKR", key="Dog-themed unit frames. Woof. Arf. Yip.")@
-## Notes-ptBR: @localization(locale="ptBR", key="Dog-themed unit frames. Woof. Arf. Yip.")@
-## Notes-ruRU: @localization(locale="ruRU", key="Dog-themed unit frames. Woof. Arf. Yip.")@
-## Notes-zhCN: @localization(locale="zhCN", key="Dog-themed unit frames. Woof. Arf. Yip.")@
-## Notes-zhTW: @localization(locale="zhTW", key="Dog-themed unit frames. Woof. Arf. Yip.")@
+## Notes-deDE: Dog-themed unit frames. Woof. Arf. Yip.
+## Notes-esES: Dog-themed unit frames. Woof. Arf. Yip.
+## Notes-esMX: Dog-themed unit frames. Woof. Arf. Yip.
+## Notes-frFR: Dog-themed unit frames. Woof. Arf. Yip.
+## Notes-itIT: Dog-themed unit frames. Woof. Arf. Yip.
+## Notes-koKR: 강아지-테마의 유닛 프레임입니다. 으르렁. 왈왈. 깨갱.
+## Notes-ptBR: Dog-themed unit frames. Woof. Arf. Yip.
+## Notes-ruRU: Dog-themed unit frames. Woof. Arf. Yip.
+## Notes-zhCN: 以狗为主题的单位框架。呜呜。汪汪。嗷呜。
+## Notes-zhTW: Dog-themed unit frames. Woof. Arf. Yip.
 ## Author: ckknight, Shekfi, Nebula
 ## SavedVariables: PitBull4DB
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDBIcon-1.0, Clique, RealMobHealth, LibClassicDurations
