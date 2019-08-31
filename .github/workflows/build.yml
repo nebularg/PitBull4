@@ -1,0 +1,25 @@
+name: Package Classic
+
+on:
+  push:
+    tags:
+      - '*classic*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Lint with luacheck
+      run: |
+        sudo apt-get install luarocks
+        luarocks install --local luacheck
+        ~/.luarocks/bin/luacheck . -qo 011
+
+    - name: Package and Publish
+      run: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh | bash -s -- -g 1.13.2
+      env:
+        CF_API_KEY: ${{ secrets.CF_API_KEY }}
+        WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
+        # GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
