@@ -20,7 +20,12 @@ externals:
         url: https://github.com/rgd87/LibClassicDurations
         curse-slug: libclassicdurations
 
+manual-changelog:
+    filename: CHANGELOG.md
+    markup-type: markdown
+
 ignore:
+    - create_changelog.sh
     - Docs
     - spec.txt
     - README.md

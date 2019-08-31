@@ -17,6 +17,11 @@ jobs:
         luarocks install --local luacheck
         ~/.luarocks/bin/luacheck . -qo 011
 
+    - name: Create CHANGELOG.md
+      run: |
+        ./create_changelog.sh
+        cat CHANGELOG.md
+
     - name: Package and Publish
       run: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh | bash -s -- -g 1.13.2
       env:
