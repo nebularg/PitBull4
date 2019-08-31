@@ -11,11 +11,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Lint with luacheck
-      run: |
-        sudo apt-get install luarocks
+
+    - name: Install dependencies
+    - run: |
+        sudo apt-get install luarocks pandoc
         luarocks install --local luacheck
-        ~/.luarocks/bin/luacheck . -qo 011
+
+    - name: Lint with luacheck
+      run: ~/.luarocks/bin/luacheck . -qo 011
 
     - name: Create CHANGELOG.md
       run: |
