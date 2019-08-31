@@ -45,19 +45,10 @@ function PitBull4_CastBar:OnEnable()
 	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "UpdateInfo", "player")
 	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "UpdateInfo", "player")
 	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", "UpdateInfo", "player")
-
-	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
 function PitBull4_CastBar:OnDisable()
 	timer_frame:Hide()
-end
-
-function PitBull4_CastBar:PLAYER_ENTERING_WORLD()
-	for guid, data in next, cast_data do
-		cast_data[guid] = del(data)
-	end
-	self:FixCastDataAndUpdateAll()
 end
 
 function PitBull4_CastBar:FixCastDataAndUpdateAll()
