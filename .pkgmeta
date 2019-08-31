@@ -1,12 +1,9 @@
 package-as: PitBull4
+enable-nolib-creation: no
 
 externals:
-    Libs/LibStub:
-        url: https://repos.wowace.com/wow/libstub/trunk
-        tag: latest
-    Libs/CallbackHandler-1.0:
-        url: https://repos.wowace.com/wow/callbackhandler/trunk/CallbackHandler-1.0
-        tag: latest
+    Libs/LibStub: https://repos.wowace.com/wow/libstub/tags/1.0
+    Libs/CallbackHandler-1.0: https://repos.wowace.com/wow/callbackhandler/trunk/CallbackHandler-1.0
     Libs/AceAddon-3.0: https://repos.wowace.com/wow/ace3/trunk/AceAddon-3.0
     Libs/AceConfig-3.0: https://repos.wowace.com/wow/ace3/trunk/AceConfig-3.0
     Libs/AceDB-3.0: https://repos.wowace.com/wow/ace3/trunk/AceDB-3.0
@@ -31,5 +28,9 @@ ignore:
     - Modules/ThreatBar
     - Modules/VisualHeal
 
-tools-used:
+embedded-libraries:
     - libdatabroker-1-1
+
+optional-dependencies:
+    - clique
+    - real-mob-health
