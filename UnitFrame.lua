@@ -400,7 +400,8 @@ function UnitFrame__scripts:OnShow()
 
 	if not self.force_show then
 		-- Force an update to fix the frame if the unit info wasn't ready (ticket 1251)
-		PitBull4:ScheduleTimer(self.UpdateLayout, 1, self, true)
+		PitBull4:ScheduleTimer(self.UpdateLayout, 0.5, self, true)
+		PitBull4:ScheduleTimer(self.UpdateLayout, 2, self, true)
 	end
 end
 
