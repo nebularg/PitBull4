@@ -8,6 +8,8 @@ local TEMP_ICON = 136235
 
 local PitBull4_CastBar = PitBull4:NewModule("CastBar")
 
+local LibClassicCasterino = LibStub("LibClassicCasterino")
+
 PitBull4_CastBar:SetModuleType("bar")
 PitBull4_CastBar:SetName(L["Cast bar"])
 PitBull4_CastBar:SetDescription(L["Show a cast bar."])
@@ -36,15 +38,15 @@ timer_frame:SetScript("OnUpdate", function() PitBull4_CastBar:FixCastDataAndUpda
 function PitBull4_CastBar:OnEnable()
 	timer_frame:Show()
 
-	self:RegisterUnitEvent("UNIT_SPELLCAST_START", "UpdateInfo", "player")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", "UpdateInfo", "player")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", "UpdateInfo", "player")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", "UpdateInfo", "player")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "UpdateInfo", "player")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_DELAYED", "UpdateInfo", "player")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "UpdateInfo", "player")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "UpdateInfo", "player")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", "UpdateInfo", "player")
+	LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_START", "UpdateInfo")
+	LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_STOP", "UpdateInfo")
+	LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_FAILED", "UpdateInfo")
+	LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_INTERRUPTED", "UpdateInfo")
+	LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_DELAYED",  "UpdateInfo")
+	LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_SUCCEEDED", "UpdateInfo")
+	LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_CHANNEL_START", "UpdateInfo")
+	LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_CHANNEL_UPDATE", "UpdateInfo")
+	LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_CHANNEL_STOP", "UpdateInfo")
 end
 
 function PitBull4_CastBar:OnDisable()
@@ -254,7 +256,6 @@ function PitBull4_CastBar:UpdateBarDelay(frame)
 end
 
 function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
-	if unit ~= "player" then return end
 	local guid = UnitGUID(unit)
 	if not guid then
 		return
@@ -265,16 +266,17 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
 		cast_data[guid] = data
 	end
 
-	local spell, _, icon, start_time, end_time, _, cast_id = CastingInfo()
+	local spell, _, icon, start_time, end_time, _, cast_id = LibClassicCasterino:UnitCastingInfo(unit)
 	local channeling = false
 	if not spell then
-		spell, _, icon, start_time, end_time = ChannelInfo()
+		spell, _, icon, start_time, end_time = LibClassicCasterino:UnitChannelInfo(unit)
 		channeling = true
 	end
 	if spell then
 		if icon == TEMP_ICON then
 			icon = nil
 		end
+		data.spell = spell
 		data.icon = icon
 		data.start_time = start_time * 0.001
 		data.end_time = end_time * 0.001
@@ -284,24 +286,14 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
 		data.fade_out = false
 		data.was_channeling = channeling -- persistent state even after interrupted
 		data.stop_time = nil
-		if event ~= "UNIT_SPELLCAST_INTERRUPTED" then
-			-- We can't update the cache of teh cast_id on UNIT_SPELLCAST_INTERRUPTED because
-			-- for whatever reason it ends up giving us 0 inside this event.
+		if cast_id then
 			data.cast_id = cast_id
 		end
 		timer_frame:Show()
 		return
 	end
 
-	if not data.cast_id then
-		cast_data[guid] = del(data)
-		if not next(cast_data) then
-			timer_frame:Hide()
-		end
-		return
-	end
-
-	if data.cast_id == event_cast_id then
+	if event_cast_id and data.cast_id == event_cast_id then
 		-- The event was for the cast we're currently casting
 		if event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" then
 			data.failed = true

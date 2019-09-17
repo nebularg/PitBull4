@@ -4,6 +4,19 @@ local L = PitBull4.L
 
 local PitBull4_LuaTexts = PitBull4:NewModule("LuaTexts", "AceTimer-3.0", "AceHook-3.0")
 
+local LibClassicCasterino = LibStub("LibClassicCasterino")
+
+local casterino_events = {
+	UNIT_SPELLCAST_START = true,
+	UNIT_SPELLCAST_DELAYED = true,
+	UNIT_SPELLCAST_STOP = true,
+	UNIT_SPELLCAST_FAILED = true,
+	UNIT_SPELLCAST_INTERRUPTED = true,
+	UNIT_SPELLCAST_CHANNEL_START = true,
+	UNIT_SPELLCAST_CHANNEL_UPDATE = true,
+	UNIT_SPELLCAST_CHANNEL_STOP = true,
+}
+
 local test_frame = CreateFrame("Frame") -- Event validation
 
 local texts = {}
@@ -781,7 +794,7 @@ function PitBull4_LuaTexts:UNIT_SPELLCAST_SENT(event, unit, target, cast_id, spe
 	next_spell = spell_id
 	next_target = target ~= "" and target or nil
 
-	self:OnEvent(event, unit, cast_id, spell_id)
+	self:OnSpellEvent(event, unit, cast_id, spell_id)
 end
 
 local pool = setmetatable({}, {__mode='k'})
@@ -810,7 +823,6 @@ local function copy(t)
 end
 
 local function update_cast_data(event, unit, event_cast_id, event_spell_id)
-	if not UnitIsUnit("player", unit) then return end
 	local guid = UnitGUID(unit)
 	if not guid then return end
 	local data = cast_data[guid]
@@ -819,10 +831,10 @@ local function update_cast_data(event, unit, event_cast_id, event_spell_id)
 		cast_data[guid] = data
 	end
 
-	local spell, _, _, start_time, end_time, _, cast_id, _, spell_id = CastingInfo()
+	local spell, _, _, start_time, end_time, _, cast_id, _, spell_id = LibClassicCasterino:UnitCastingInfo(unit)
 	local channeling = false
 	if not spell then
-		spell, _, _, start_time, end_time, _, _, spell_id = ChannelInfo()
+		spell, _, _, start_time, end_time, _, _, spell_id = LibClassicCasterino:UnitChannelInfo(unit)
 		channeling = true
 	end
 	if spell then
@@ -842,7 +854,7 @@ local function update_cast_data(event, unit, event_cast_id, event_spell_id)
 		data.casting = not channeling
 		data.channeling = channeling
 		data.fade_out = false
-		if event ~= "UNIT_SPELLCAST_INTERRUPTED" then
+		if cast_id and event ~= "UNIT_SPELLCAST_INTERRUPTED" then
 			-- We can't update the cache of the cast_id on UNIT_SPELLCAST_INTERRUPTED  because
 			-- for whatever reason it ends up giving us 0 inside this event.
 			data.cast_id = cast_id
@@ -856,7 +868,7 @@ local function update_cast_data(event, unit, event_cast_id, event_spell_id)
 		return
 	end
 
-	if data.cast_id == event_cast_id then
+	if event_cast_id and data.cast_id == event_cast_id then
 		-- The event was for the cast we're current casting
 		if event == "UNIT_SELLCAST_FAILED" then
 			data.stop_message = _G.FAILED
@@ -1073,15 +1085,26 @@ function PitBull4_LuaTexts:OnEvent(event, unit, ...)
 
 	if event == "PLAYER_FLAGS_CHANGED" then
 		update_timers()
-	elseif string.sub(event,1,15) == "UNIT_SPELLCAST_" and event ~= "UNIT_SPELLCAST_SENT" then
-		-- spell casting events need to go through
-		update_cast_data(event, unit, ...)
 	end
 
 	for font_string in pairs(event_entry) do
 		local fs_guid = font_string.frame.guid
 		if all or (by_unit and fs_guid == guid) or (player and fs_guid == player_guid) or (pet and fs_guid == UnitGUID("pet")) then
 			update_text(font_string,event)
+		end
+	end
+end
+
+function PitBull4_LuaTexts:OnSpellEvent(event, unit, ...)
+	local event_entry = event_cache[event]
+	if not event_entry then return end
+
+	update_cast_data(event, unit, ...)
+
+	local guid = UnitGUID(unit)
+	for font_string in pairs(event_entry) do
+		if font_string.frame.guid == guid then
+			update_text(font_string, event)
 		end
 	end
 end
@@ -1250,7 +1273,11 @@ local function event_cache_insert(event, font_string)
 		event_entry = {}
 		event_cache[event] = event_entry
 		if not protected_events[event] then
-			PitBull4_LuaTexts:RegisterEvent(event,"OnEvent")
+			if casterino_events[event] then
+				LibClassicCasterino.RegisterCallback(PitBull4_LuaTexts, event, "OnSpellEvent")
+			else
+				PitBull4_LuaTexts:RegisterEvent(event, "OnEvent")
+			end
 		end
 	end
 	event_entry[font_string] = true
@@ -1305,7 +1332,11 @@ function PitBull4_LuaTexts:RemoveFontString(font_string)
 		-- Nobody wants this event so stop watching it.
 		if not next(entry) then
 			if not protected_events[event] then
-				self:UnregisterEvent(event)
+				if casterino_events[event] then
+					LibClassicCasterino.UnregisterCallback(self, event)
+				else
+					self:UnregisterEvent(event)
+				end
 			end
 			event_cache[event] = nil
 		end
