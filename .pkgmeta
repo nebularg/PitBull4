@@ -31,7 +31,6 @@ ignore:
     - spec.txt
     - README.md
     - Modules/DogTagTexts
-    - Modules/ThreatBar
     - Modules/VisualHeal
 
 embedded-libraries:
