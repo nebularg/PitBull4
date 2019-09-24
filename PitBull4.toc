@@ -1,4 +1,4 @@
-## Interface: 80200
+## Interface: 80205
 ## Title: PitBull Unit Frames 4.0
 ## Notes: Dog-themed unit frames. Woof. Arf. Yip.
 ## Notes-deDE: @localization(locale="deDE", key="Dog-themed unit frames. Woof. Arf. Yip.")@
