@@ -29,7 +29,6 @@ ignore:
     - create_changelog.sh
     - Docs
     - spec.txt
-    - README.md
     - Modules/DogTagTexts
     - Modules/VisualHeal
 
