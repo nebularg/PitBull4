@@ -544,6 +544,7 @@ L["Indicators are icons or other graphical displays that convey a specific, usua
 L["Informational"] = true
 L["Initiate a ready check, asking your group members if they are ready to continue."] = true
 L["Initiate a role check, asking your group members to specify their roles."] = true
+L["Insecurely tanking, not highest threat"] = true
 L["Inside"] = true
 L["Inside horizontal padding"] = true
 L["Inside vertical padding"] = true
@@ -679,6 +680,8 @@ L["No LibSharedMedia detected"] = true
 L["None"] = true
 L["Normal"] = true
 L["Not equal"] = true
+L["Not tanking, higher threat than tank"] = true
+L["Not tanking, lower threat than tank"] = true
 L["Number of pixels to offset the auras from the start point horizontally."] = true
 L["Number of pixels to offset the auras from the start point vertically."] = true
 L["Number of pixels to offset the text from the anchor point horizontally."] = true
@@ -823,6 +826,7 @@ L["Sample tempoary weapon enchant created by PitBull to allow you to see the res
 L["Sample Weapon Enchant"] = true
 L["Scale"] = true
 L["Seconds"] = true
+L["Securely tanking, highest threat"] = true
 L["Select a filter to use for highlighting auras."] = true
 L["Select a filter to use for the class."] = true
 L["Select a filter to use for the race."] = true
