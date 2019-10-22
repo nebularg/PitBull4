@@ -20,6 +20,8 @@ externals:
     Modules/Aura/Libs/LibClassicDurations:
         url: https://github.com/rgd87/LibClassicDurations
         curse-slug: libclassicdurations
+    Modules/VisualHeal/Libs/LibHealComm-4.0: https://repos.wowace.com/wow/libhealcomm-4-0
+
 
 manual-changelog:
     filename: CHANGELOG.md
@@ -30,7 +32,6 @@ ignore:
     - Docs
     - spec.txt
     - Modules/DogTagTexts
-    - Modules/VisualHeal
 
 embedded-libraries:
     - libdatabroker-1-1
