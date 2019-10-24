@@ -53,8 +53,8 @@ function PitBull4_VisualHeal:OnEnable()
 	LibHealComm.RegisterCallback(self, "HealComm_ModifierChanged")
 	LibHealComm.RegisterCallback(self, "HealComm_GUIDDisappeared")
 
-	self:RegisterEvent("UNIT_HEALTH")
-	self:RegisterEvent("UNIT_MAXHEALTH", "UNIT_HEALTH")
+	self:RegisterEvent("UNIT_HEALTH_FREQUENT")
+	self:RegisterEvent("UNIT_MAXHEALTH", "UNIT_HEALTH_FREQUENT")
 end
 
 function PitBull4_VisualHeal:OnDisable()
@@ -193,7 +193,7 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 	return true
 end
 
-function PitBull4_VisualHeal:UNIT_HEALTH(_, unit)
+function PitBull4_VisualHeal:UNIT_HEALTH_FREQUENT(_, unit)
 	self:UpdateForUnitID(unit)
 end
 
