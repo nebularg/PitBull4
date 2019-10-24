@@ -293,6 +293,11 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
 		return
 	end
 
+	if not data.spell then
+		cast_data[guid] = del(data)
+		return
+	end
+
 	if event_cast_id and data.cast_id == event_cast_id then
 		-- The event was for the cast we're currently casting
 		if event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" then
