@@ -15,22 +15,25 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'skip ci') != true
 
     steps:
     - uses: actions/checkout@v1
 
     - name: Install dependencies
-    - run: |
+      run: |
         sudo apt-get install luarocks pandoc
         luarocks install --local luacheck
+        wget -O ~/release.sh https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh
+        chmod +x ~/release.sh
 
     - name: Run luacheck
       run: ~/.luarocks/bin/luacheck . -qo 011
 
-    - name: Create CHANGELOG.md
+    - name: Create CHANGELOG
       run: |
         ./create_changelog.sh
         cat CHANGELOG.md
 
     - name: Package and Publish
-      run: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh | bash -s -- -g 1.13.2
+      run: ~/release.sh -g 1.13.2
