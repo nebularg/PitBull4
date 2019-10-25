@@ -23,7 +23,7 @@ EOF
 git log "$previous..$current" --grep="^\[ci\]" --invert-grep --pretty=format:"###%B" \
 	| sed -e 's/^/    /g' -e 's/^ *$//g' -e 's/^    ###/- /g' -e 's/$/  /' \
 	      -e 's/\([a-zA-Z0-9]\)_\([a-zA-Z0-9]\)/\1\\_\2/g' \
-	      -e 's/\[ci skip\]//g' \
+	      -e 's/\[ci skip\]//g' -e 's/\[skip ci\]//g' \
 	      -e '/^\s*This reverts commit [0-9a-f]\{40\}\.\s*$/d' \
 	      -e '/^\s*$/d' \
 	>> "CHANGELOG.md"

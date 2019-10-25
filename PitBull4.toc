@@ -13,7 +13,7 @@
 ## Notes-zhTW: Dog-themed unit frames. Woof. Arf. Yip.
 ## Author: ckknight, Shekfi, Nebula
 ## SavedVariables: PitBull4DB
-## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDBIcon-1.0, Clique, RealMobHealth, LibClassicDurations, LibClassicCasterino, ThreatClassic-1.0, LibHealComm-4.0
+## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibClassicDurations, LibClassicCasterino, LibDBIcon-1.0, LibHealComm-4.0, ThreatClassic-1.0, Clique, RealMobHealth
 ## Version: @project-version@
 
 ## X-Curse-Project-ID: 7522
