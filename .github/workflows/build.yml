@@ -1,4 +1,4 @@
-name: Package
+name: Package Retail
 
 on:
   push:
