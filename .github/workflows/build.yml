@@ -1,0 +1,39 @@
+name: Package
+
+on:
+  push:
+    branches:
+      - master
+    tags-ignore:
+      - '*classic*'
+
+env:
+  CF_API_KEY: ${{ secrets.CF_API_KEY }}
+  WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
+  GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'skip ci') != true
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get install luarocks pandoc
+        luarocks install --local luacheck
+        wget -O ~/release.sh https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh
+        chmod +x ~/release.sh
+
+    - name: Run luacheck
+      run: ~/.luarocks/bin/luacheck . -qo 011
+
+    - name: Create CHANGELOG
+      run: |
+        ./create_changelog.sh
+        cat CHANGELOG.md
+
+    - name: Package and Publish
+      run: ~/release.sh
