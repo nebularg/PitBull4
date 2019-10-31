@@ -1,0 +1,25 @@
+root = true
+
+[*]
+indent_style = tab
+indent_size = 2
+end_of_line = crlf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.md]
+trim_trailing_whitespace = false
+
+[{*.sh,.env}]
+end_of_line = lf
+
+[{*.yml,.pkgmeta}]
+indent_style = space
+indent_size = 2
+
+[**/Libs/**]
+indent_style = unset
+indent_size = unset
+trim_trailing_whitespace = unset
+insert_final_newline = unset
