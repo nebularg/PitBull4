@@ -131,7 +131,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 			end
 		end
 
-		for id, module in PitBull4:IterateModulesOfType("text_provider") do
+		if next(PitBull4:IterateModulesOfType("text_provider")) then
 			return true -- found a module
 		end
 		return L["You have no enabled text providers."]
@@ -147,11 +147,8 @@ function PitBull4.Options.get_layout_editor_text_options()
 			local module = CURRENT_TEXT_PROVIDER_MODULE
 
 			if not module then
-				for id, m in PitBull4:IterateModulesOfType("text_provider") do
-					module = m
-					break
-				end
-
+				local _
+				_, module = next(PitBull4:IterateModulesOfType("text_provider"))
 				assert(module) -- the validate function should verify that at least one module exists
 			end
 
@@ -245,9 +242,9 @@ function PitBull4.Options.get_layout_editor_text_options()
 				end
 
 				if not CURRENT_TEXT_PROVIDER_ID then
-					for id, module in PitBull4:IterateModulesOfType("custom_text") do
+					local _, module = next(PitBull4:IterateModulesOfType("custom_text"))
+					if module then
 						CURRENT_CUSTOM_TEXT_MODULE = module
-						break
 					end
 				end
 			end

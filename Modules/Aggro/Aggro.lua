@@ -54,6 +54,7 @@ do
 	timerFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
 	timerFrame:RegisterEvent("UNIT_PET")
 
+	-- luacheck: globals PitBull4_HealthBar PitBull4_Border PitBull4_Background
 	local function updateFrames(guid)
 		for frame in PitBull4:IterateFramesForGUID(guid) do
 			local db = PitBull4_Aggro:GetLayoutDB(frame)

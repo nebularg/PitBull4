@@ -202,7 +202,7 @@ local function layout_auras(frame, db, is_buff)
 	-- smaller icons stack up next to larger icons
 	-- for a normal fit.
 	local sub_row_origin_x -- the x position we started at
-	local sub_row_origin_y -- the y position we started at
+	-- local sub_row_origin_y -- the y position we started at
 	local origin_row_end -- the y position we can't grow past
 
 	-- Determine when to increase the y position
@@ -331,7 +331,7 @@ local function layout_auras(frame, db, is_buff)
 						row = new_height
 					end
 					sub_row_origin_x = x
-					sub_row_origin_y = y
+					-- sub_row_origin_y = y
 					if use_new_row_height then
 						origin_row_end = y
 						y = y - (row - new_height)
@@ -361,7 +361,7 @@ local function layout_auras(frame, db, is_buff)
 					y = origin_row_end
 				end
 				sub_row_origin_x = nil
-				sub_row_origin_y = nil
+				-- sub_row_origin_y = nil
 				origin_row_end = nil
 			end
 		end

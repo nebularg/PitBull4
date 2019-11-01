@@ -414,7 +414,8 @@ function Module:UpdateNonWacky()
 end
 
 local function enabled_iter(modules, id)
-	local id, module = next(modules, id)
+	local module
+	id, module = next(modules, id)
 	if not id then
 		-- we're out of modules
 		return nil
@@ -438,7 +439,8 @@ end
 local new, del = PitBull4.new, PitBull4.del
 
 local function iter(types, id)
-	local id, module = next(PitBull4.modules, id)
+	local module
+	id, module = next(PitBull4.modules, id)
 	if not id then
 		-- we're out of modules
 		del(types)

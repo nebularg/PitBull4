@@ -155,11 +155,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 			if bar_id then
 				bars[bar_id] = nil
 			end
-			CURRENT_BAR_PROVIDER_ID[id] = nil
-			for k in pairs(bars) do
-				CURRENT_BAR_PROVIDER_ID[id] = k
-				break
-			end
+			CURRENT_BAR_PROVIDER_ID[id] = next(bars)
 
 			UpdateFrames()
 		end,

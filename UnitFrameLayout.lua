@@ -1327,7 +1327,7 @@ local function position_overlapping_texts__helper(frame, attach_frame, left, cen
 		-- clamp left to center
 		if left then
 			local text = frame[left[#left]]
-		 	if text.SetJustifyH then
+			if text.SetJustifyH then
 				text:SetPoint("RIGHT", frame[center[1]], "LEFT", -spacing, 0)
 			end
 		end
