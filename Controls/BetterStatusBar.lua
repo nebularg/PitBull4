@@ -188,7 +188,7 @@ function SetValue_orientation:HORIZONTAL(value, extraValue, extra2Value, run_ani
 			set_horizontal_coord(self.anim, self.reverse, value, value+anim_value)
 		end
 		local start = set_horizontal_coord(self.extra, self.reverse, value+anim_value, value+anim_value+extraValue)
-		local start = set_horizontal_coord(self.extra2, self.reverse, start, start+extra2Value)
+		start = set_horizontal_coord(self.extra2, self.reverse, start, start+extra2Value)
 		set_horizontal_coord(self.bg, self.reverse, start, 1)
 	end
 end
@@ -511,7 +511,7 @@ local function smoother_OnUpdate(self)
 	local anim = self:GetParent():GetParent()
 	local bar = anim:GetParent()
 	local value_delta = anim.value_delta
-	local current_value, current_delta, fg_position
+	local current_delta, fg_position
 	if value_delta > 0 then
 		current_delta = value_delta * progress
 		fg_position = anim.start_value

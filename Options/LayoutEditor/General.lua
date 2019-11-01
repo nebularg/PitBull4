@@ -166,10 +166,9 @@ function PitBull4.Options.get_layout_editor_general_options(layout_options)
 						end
 					end
 
-					local new_layout = L["Normal"]
-					for name in pairs(PitBull4.db.profile.layouts) do
-						new_layout = name
-						break
+					local new_layout = next(PitBull4.db.profile.layouts)
+					if not new_layout then
+						new_layout = L["Normal"]
 					end
 
 					PitBull4.Options.SetCurrentLayout(new_layout)

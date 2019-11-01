@@ -170,19 +170,19 @@ PitBull4_HealthBar:SetColorOptionsFunction(function(self)
 		local color = self.db.profile.global.colors.dead
 		color[1], color[2], color[3] = 0.6, 0.6, 0.6
 
-		local color = self.db.profile.global.colors.disconnected
+		color = self.db.profile.global.colors.disconnected
 		color[1], color[2], color[3] = 0.7, 0.7, 0.7
 
-		local color = self.db.profile.global.colors.tapped
+		color = self.db.profile.global.colors.tapped
 		color[1], color[2], color[3] = 0.5, 0.5, 0.5
 
-		local color = self.db.profile.global.colors.max_health
+		color = self.db.profile.global.colors.max_health
 		color[1], color[2], color[3] = 0, 1, 0
 
-		local color = self.db.profile.global.colors.half_health
+		color = self.db.profile.global.colors.half_health
 		color[1], color[2], color[3] = 1, 1, 0
 
-		local color = self.db.profile.global.colors.min_health
+		color = self.db.profile.global.colors.min_health
 		color[1], color[2], color[3] = 1, 0, 0
 	end
 end)
