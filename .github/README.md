@@ -13,9 +13,25 @@ Getting Started:
 
 You can help translate PitBull for your language with the [localization tool](https://www.wowace.com/projects/pitbull-unit-frames-4-0/localization/).
 
----
+## Classic
+
+PitBull works with WoW Classic! Some things that are different from retail:
+
+- Health is only reported as the percentage (0-100). PitBull supports showing
+  actual values if you also install [Real Mob Health](https://www.curseforge.com/wow/addons/real-mob-health).
+- Aura duration is not available from the API, so PitBull uses [LibClassicDurations](https://www.curseforge.com/wow/addons/libclassicdurations)
+  to show them. The duration can be inaccurate if it's affected by rank or
+  talents.
+- Cast info is only available for your spells from the API. PitBull uses [LibClassicCasterino](https://github.com/rgd87/LibClassicCasterino)
+  to show cast bars for other units, but this can be inaccurate since there is
+  a lot of guess-work involved.
 
 ## Changelog Highlights ![OhMyDog](https://static-cdn.jtvnw.net/emoticons/v1/65/1.0))
+
+### v4.1.21 changes
+
+- Updated for 8.2.5.
+- Added some more initial frame updates.
 
 ### v4.1.20 changes
 
@@ -25,7 +41,7 @@ You can help translate PitBull for your language with the [localization tool](ht
 
 ### v4.1.19 changes
 
-- Update for 8.2
+- Updated for 8.2.0.
 
 ### v4.1.18 changes
 
@@ -55,8 +71,8 @@ You can help translate PitBull for your language with the [localization tool](ht
 - **Default frame positions**. Starting from scratch no longer dumps all of the frames in the middle of your screen. They will now show in a layout similar to the Blizzard layout.
 - **Added Masque support for auras.** If you use Masque, you can set the skin for the layout under Aura-&gt;Display or in Masque under "PitBull4 Aura". Two PitBull skins are provided that will work with hiding/showing the border as set in the settings, or you can disable Masque support completely in the module options (Modules-&gt;Aura).
 
----
-
 ## Download
 
-<https://www.curseforge.com/wow/addons/pitbull-unit-frames-4-0>
+CurseForge: <https://www.curseforge.com/wow/addons/pitbull-unit-frames-4-0>  
+WoWInterface: <https://www.wowinterface.com/downloads/info20021>  
+GitHub: <https://github.com/nebularg/PitBull4/releases>  
