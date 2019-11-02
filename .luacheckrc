@@ -27,7 +27,6 @@ ignore = {
 globals = {
 	-- Third-party
 	"LibStub",
-	"MSQ",
 	"PitBull4",
 	"RealMobHealth",
 

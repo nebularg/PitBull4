@@ -6,7 +6,7 @@ local PitBull4_Aura = PitBull4:GetModule("Aura")
 
 local LN = PitBull4.LOCALIZED_NAMES
 
--- local MSQ = LibStub("Masque", true)
+local MSQ = LibStub("Masque", true)
 
 local can_dispel = PitBull4_Aura.can_dispel
 local friend_buffs = PitBull4_Aura.friend_buffs
