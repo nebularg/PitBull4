@@ -2,40 +2,39 @@ package-as: PitBull4
 enable-nolib-creation: no
 
 externals:
-    Libs/LibStub: https://repos.wowace.com/wow/libstub/tags/1.0
-    Libs/CallbackHandler-1.0: https://repos.wowace.com/wow/callbackhandler/trunk/CallbackHandler-1.0
-    Libs/AceAddon-3.0: https://repos.wowace.com/wow/ace3/trunk/AceAddon-3.0
-    Libs/AceConfig-3.0: https://repos.wowace.com/wow/ace3/trunk/AceConfig-3.0
-    Libs/AceDB-3.0: https://repos.wowace.com/wow/ace3/trunk/AceDB-3.0
-    Libs/AceDBOptions-3.0: https://repos.wowace.com/wow/ace3/trunk/AceDBOptions-3.0
-    Libs/AceEvent-3.0: https://repos.wowace.com/wow/ace3/trunk/AceEvent-3.0
-    Libs/AceGUI-3.0: https://repos.wowace.com/wow/ace3/trunk/AceGUI-3.0
-    Libs/AceHook-3.0: https://repos.wowace.com/wow/ace3/trunk/AceHook-3.0
-    Libs/AceLocale-3.0: https://repos.wowace.com/wow/ace3/trunk/AceLocale-3.0
-    Libs/AceTimer-3.0: https://repos.wowace.com/wow/ace3/trunk/AceTimer-3.0
-    Libs/LibSharedMedia-3.0: https://repos.wowace.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
-    Libs/AceGUI-3.0-SharedMediaWidgets: https://repos.wowace.com/wow/ace-gui-3-0-shared-media-widgets/trunk/AceGUI-3.0-SharedMediaWidgets
-    Libs/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
-    Libs/LibClassicCasterino: https://github.com/rgd87/LibClassicCasterino
-    Modules/Aura/Libs/LibClassicDurations: https://github.com/rgd87/LibClassicDurations
-    Modules/DogTagTexts/Libs/LibDogTag-3.0: https://repos.curseforge.com/wow/libdogtag-3-0
-    Modules/DogTagTexts/Libs/LibDogTag-Unit-3.0: https://repos.curseforge.com/wow/libdogtag-unit-3-0
-    Modules/VisualHeal/Libs/LibHealComm-4.0: https://repos.wowace.com/wow/libhealcomm-4-0
+  Libs/LibStub: https://repos.wowace.com/wow/libstub/tags/1.0
+  Libs/CallbackHandler-1.0: https://repos.wowace.com/wow/callbackhandler/trunk/CallbackHandler-1.0
+  Libs/AceAddon-3.0: https://repos.wowace.com/wow/ace3/trunk/AceAddon-3.0
+  Libs/AceConfig-3.0: https://repos.wowace.com/wow/ace3/trunk/AceConfig-3.0
+  Libs/AceDB-3.0: https://repos.wowace.com/wow/ace3/trunk/AceDB-3.0
+  Libs/AceDBOptions-3.0: https://repos.wowace.com/wow/ace3/trunk/AceDBOptions-3.0
+  Libs/AceEvent-3.0: https://repos.wowace.com/wow/ace3/trunk/AceEvent-3.0
+  Libs/AceGUI-3.0: https://repos.wowace.com/wow/ace3/trunk/AceGUI-3.0
+  Libs/AceHook-3.0: https://repos.wowace.com/wow/ace3/trunk/AceHook-3.0
+  Libs/AceLocale-3.0: https://repos.wowace.com/wow/ace3/trunk/AceLocale-3.0
+  Libs/AceTimer-3.0: https://repos.wowace.com/wow/ace3/trunk/AceTimer-3.0
+  Libs/LibSharedMedia-3.0: https://repos.wowace.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
+  Libs/AceGUI-3.0-SharedMediaWidgets: https://repos.wowace.com/wow/ace-gui-3-0-shared-media-widgets/trunk/AceGUI-3.0-SharedMediaWidgets
+  Libs/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
+  Libs/LibClassicCasterino: https://github.com/rgd87/LibClassicCasterino
+  Modules/Aura/Libs/LibClassicDurations: https://github.com/rgd87/LibClassicDurations
+  Modules/DogTagTexts/Libs/LibDogTag-3.0: https://repos.curseforge.com/wow/libdogtag-3-0
+  Modules/DogTagTexts/Libs/LibDogTag-Unit-3.0: https://repos.curseforge.com/wow/libdogtag-unit-3-0
+  Modules/VisualHeal/Libs/LibHealComm-4.0: https://repos.wowace.com/wow/libhealcomm-4-0
 
 manual-changelog:
-    filename: CHANGELOG.md
-    markup-type: markdown
+  filename: CHANGELOG.md
+  markup-type: markdown
 
 ignore:
-    - create_changelog.sh
-    - Docs
-    - spec.txt
-    - Modules/DogTagTexts
+  - Docs
+  - Modules/DogTagTexts
+  - create_changelog.sh
 
 embedded-libraries:
-    - libdatabroker-1-1
-    - libclassicdurations
+  - libdatabroker-1-1
+  - libclassicdurations
 
 optional-dependencies:
-    - clique
-    - real-mob-health
+  - clique
+  - real-mob-health
