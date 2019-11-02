@@ -28,7 +28,6 @@ manual-changelog:
 
 ignore:
   - Docs
-  - Modules/DogTagTexts
   - create_changelog.sh
 
 embedded-libraries:
