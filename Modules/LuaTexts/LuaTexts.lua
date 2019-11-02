@@ -348,11 +348,11 @@ end]],
 	},
 	[L["Threat"]] = {
 		[L["Percent"]] = {
-			events = {['UNIT_THREAT_LIST_UPDATE']=true,['UNIT_THREAT_SITUATION_UPDATE']=true},
+			events = {['ThreatLib_ThreatUpdated']=true},
 			code = [[
 local unit_a,unit_b = ThreatPair(unit)
 if unit_a and unit_b then
-  local _,_,percent = UnitDetailedThreatSituation(unit_a, unit_b)
+  local _,_,percent = ThreatSituation(unit_a, unit_b)
   if percent and percent ~= 0 then
     return "%s%%",Round(percent,1)
   end
@@ -360,11 +360,11 @@ end
 return ConfigMode()]],
 		},
 		[L["Raw percent"]] = {
-			events = {['UNIT_THREAT_LIST_UPDATE']=true,['UNIT_THREAT_SITUATION_UPDATE']=true},
+			events = {['ThreatLib_ThreatUpdated']=true},
 			code = [[
 local unit_a,unit_b = ThreatPair(unit)
 if unit_a and unit_b then
-  local _,_,_,raw_percent = UnitDetailedThreatSituation(unit_a, unit_b)
+  local _,_,_,raw_percent = ThreatSituation(unit_a, unit_b)
     if raw_percent and raw_percent ~= 0 then
     return "%s%%",Round(raw_percent,1)
   end
@@ -372,11 +372,11 @@ end
 return ConfigMode()]],
 		},
 		[L["Colored percent"]] = {
-			events = {['UNIT_THREAT_LIST_UPDATE']=true,['UNIT_THREAT_SITUATION_UPDATE']=true},
+			events = {['ThreatLib_ThreatUpdated']=true},
 			code = [[
 local unit_a,unit_b = ThreatPair(unit)
 if unit_a and unit_b then
-  local _,status,percent = UnitDetailedThreatSituation(unit_a, unit_b)
+  local _,status,percent = ThreatSituation(unit_a, unit_b)
   if percent and percent ~= 0 then
     local r,g,b = ThreatStatusColor(status)
     return "|cff%02x%02x%02x%s%%|r",r,g,b,Round(percent,1)
@@ -385,11 +385,11 @@ end
 return ConfigMode()]],
 		},
 		[L["Colored raw percent"]] = {
-			events = {['UNIT_THREAT_LIST_UPDATE']=true,['UNIT_THREAT_SITUATION_UPDATE']=true},
+			events = {['ThreatLib_ThreatUpdated']=true},
 			code = [[
 local unit_a,unit_b = ThreatPair(unit)
 if unit_a and unit_b then
-  local _,status,_,raw_percent = UnitDetailedThreatSituation(unit_a, unit_b)
+  local _,status,_,raw_percent = ThreatSituation(unit_a, unit_b)
   if raw_percent and raw_percent ~= 0 then
     local r,g,b = ThreatStatusColor(status)
     return "|cff%02x%02x%02x%s%%|r",r,g,b,Round(raw_percent,1)
@@ -522,6 +522,7 @@ do
 		['PLAYER_XP_UPDATE'] = {player=true},
 		['UPDATE_FACTION'] = {all=true},
 		['UNIT_LEVEL'] = {all=true},
+		['ThreatLib_ThreatUpdated'] = {all=true},
 	}
 
 	-- Iterate the provided codes to fill in all the rest
@@ -565,6 +566,10 @@ local protected_events = {
 	['GROUP_ROSTER_UPDATE'] = true,
 }
 
+local custom_events = {
+	['ThreatLib_ThreatUpdated'] = true,
+}
+
 -- Provide a way to update changed events so existing LuaTexts configs
 -- continue to work transparently to end users.
 local compat_event_map = {}
@@ -596,8 +601,10 @@ local function update_events(events)
 	end
 	-- prune "false" and old invalid entries
 	for event, value in next, events do
-		if not value or not pcall(test_frame.RegisterEvent, test_frame, event) then
-			events[event] = nil
+		if not custom_events[event] then
+			if not value or not pcall(test_frame.RegisterEvent, test_frame, event) then
+				events[event] = nil
+			end
 		end
 	end
 end
@@ -654,6 +661,26 @@ local function fix_power_texts()
 	end
 end
 
+local function fix_threat_texts()
+	local sv = PitBull4.db:GetNamespace("LuaTexts").profiles
+	for _, profile in next, sv do
+		local layouts = profile.layouts
+		if layouts then
+			for _, layout in next, layouts do
+				local elements = layout.elements
+				if elements then
+					for name, text in next, elements do
+						if text.code and text.code:find("UnitDetailedThreatSituation", nil, true) then
+							text.code = text.code:gsub("UnitDetailedThreatSituation", "ThreatSituation")
+							text.events = { ["ThreatLib_ThreatUpdated"] = true }
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
 
 local timerframe = CreateFrame("Frame")
 PitBull4_LuaTexts.timerframe = timerframe
@@ -669,6 +696,7 @@ function PitBull4_LuaTexts:OnInitialize()
 	-- this doesn't need to run every load
 	fix_legacy_events()
 	fix_power_texts()
+	fix_threat_texts()
 end
 
 function PitBull4_LuaTexts:OnEnable()
@@ -684,6 +712,19 @@ function PitBull4_LuaTexts:OnEnable()
 	-- Cache the player's guid for later use
 	player_guid = UnitGUID("player")
 	PitBull4.LuaTexts.ScriptEnv.player_guid = player_guid
+
+	-- Handle threat
+	local ThreatLib = LibStub("ThreatClassic-1.0", true)
+	if ThreatLib then
+		self.ThreatLib = ThreatLib
+		local function ThreatUpdate()
+			self:OnEvent("ThreatLib_ThreatUpdated")
+		end
+		ThreatLib.RegisterCallback(self, "Activate", ThreatUpdate)
+		ThreatLib.RegisterCallback(self, "ThreatUpdated", ThreatUpdate) -- source_unit, target_guid, threat
+		ThreatLib.RegisterCallback(self, "ThreatCleared", ThreatUpdate)
+		ThreatLib.RegisterCallback(self, "Deactivate", ThreatUpdate)
+	end
 
 	self:SecureHook("SetCVar")
 	self:SetCVar()
@@ -1272,7 +1313,7 @@ local function event_cache_insert(event, font_string)
 	if not event_entry then
 		event_entry = {}
 		event_cache[event] = event_entry
-		if not protected_events[event] then
+		if not protected_events[event] and not custom_events[event] then
 			if casterino_events[event] then
 				LibClassicCasterino.RegisterCallback(PitBull4_LuaTexts, event, "OnSpellEvent")
 			else
