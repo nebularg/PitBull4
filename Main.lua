@@ -1524,6 +1524,7 @@ function PitBull4:OnEnable()
 
 	-- register events for core handled bar coloring
 	self:RegisterEvent("UNIT_FACTION")
+	self:RegisterEvent("UNIT_HAPPINESS", "UNIT_FACTION")
 
 	-- enter/leave combat for :RunOnLeaveCombat
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")

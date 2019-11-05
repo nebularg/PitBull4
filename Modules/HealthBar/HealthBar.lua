@@ -42,7 +42,6 @@ function PitBull4_HealthBar:OnEnable()
 	self:RegisterEvent("UNIT_HEALTH_FREQUENT")
 	self:RegisterEvent("UNIT_MAXHEALTH", "UNIT_HEALTH_FREQUENT")
 	self:RegisterEvent("UNIT_CONNECTION", "UNIT_HEALTH_FREQUENT")
-	self:RegisterEvent("UNIT_HAPPINESS", "UNIT_HEALTH_FREQUENT")
 	self:RegisterEvent("PLAYER_ALIVE")
 
 	self:UpdateAll()
