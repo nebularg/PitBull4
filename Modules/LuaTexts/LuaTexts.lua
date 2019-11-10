@@ -609,7 +609,7 @@ local function update_events(events)
 	end
 end
 
-local function fix_legacy_events()
+local function fix_texts()
 	local sv = PitBull4.db:GetNamespace("LuaTexts").profiles
 	for _, profile in next, sv do
 		if profile.global and profile.global.events then
@@ -621,37 +621,27 @@ local function fix_legacy_events()
 				local elements = layout.elements
 				if elements then
 					for _, text in next, elements do
+						-- fix legacy events
 						if text.events then
 							update_events(text.events)
 						end
-					end
-				end
-			end
-		end
-	end
-	test_frame:UnregisterAllEvents()
-end
-
-local function fix_power_texts()
-	local sv = PitBull4.db:GetNamespace("LuaTexts").profiles
-	for _, profile in next, sv do
-		local layouts = profile.layouts
-		if layouts then
-			for _, layout in next, layouts do
-				local elements = layout.elements
-				if elements then
-					for _, text in next, elements do
-						-- add missing power events
-						if text.code and text.code:find("Power(unit)", nil, true) then
-							if not text.events then
-								text.events = { ["UNIT_POWER_FREQUENT"] = true, ["UNIT_MAXPOWER"] = true }
-							else
-								if not text.events["UNIT_MAXPOWER"] then
-									text.events["UNIT_MAXPOWER"] = true
+						if text.code then
+							if text.code:find("Power(unit)", nil, true) then
+								-- add missing power events
+								if not text.events then
+									text.events = { ["UNIT_POWER_FREQUENT"] = true, ["UNIT_MAXPOWER"] = true }
+								else
+									if not text.events["UNIT_MAXPOWER"] then
+										text.events["UNIT_MAXPOWER"] = true
+									end
+									if not text.events["UNIT_POWER_FREQUENT"] and not text.events["UNIT_POWER_UPDATE"] then
+										text.events["UNIT_POWER_FREQUENT"] = true
+									end
 								end
-								if not text.events["UNIT_POWER_FREQUENT"] and not text.events["UNIT_POWER_UPDATE"] then
-									text.events["UNIT_POWER_FREQUENT"] = true
-								end
+							elseif text.code:find("UnitDetailedThreatSituation", nil, true) then
+								-- switch threat API to ThreatLib
+								text.code = text.code:gsub("UnitDetailedThreatSituation", "ThreatSituation")
+								text.events = { ["ThreatLib_ThreatUpdated"] = true }
 							end
 						end
 					end
@@ -659,26 +649,7 @@ local function fix_power_texts()
 			end
 		end
 	end
-end
-
-local function fix_threat_texts()
-	local sv = PitBull4.db:GetNamespace("LuaTexts").profiles
-	for _, profile in next, sv do
-		local layouts = profile.layouts
-		if layouts then
-			for _, layout in next, layouts do
-				local elements = layout.elements
-				if elements then
-					for name, text in next, elements do
-						if text.code and text.code:find("UnitDetailedThreatSituation", nil, true) then
-							text.code = text.code:gsub("UnitDetailedThreatSituation", "ThreatSituation")
-							text.events = { ["ThreatLib_ThreatUpdated"] = true }
-						end
-					end
-				end
-			end
-		end
-	end
+	test_frame:UnregisterAllEvents()
 end
 
 
@@ -694,9 +665,7 @@ end
 function PitBull4_LuaTexts:OnInitialize()
 	-- should probably switch to a global db version check/upgrade process
 	-- this doesn't need to run every load
-	fix_legacy_events()
-	fix_power_texts()
-	fix_threat_texts()
+	fix_texts()
 end
 
 function PitBull4_LuaTexts:OnEnable()
