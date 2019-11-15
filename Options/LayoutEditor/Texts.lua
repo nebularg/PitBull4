@@ -8,6 +8,13 @@ local CURRENT_CUSTOM_TEXT_MODULE
 local CURRENT_TEXT_PROVIDER_MODULE
 local CURRENT_TEXT_PROVIDER_ID
 
+-- Helper function in lieu of doing a single loop iteration
+local function get_module_of_type(...)
+	local iter, types, _ = PitBull4:IterateModulesOfType(...)
+	local _, module = iter(types)
+	return module
+end
+
 --- Return the DB dictionary for the current text for the current layout selected in the options frame.
 -- TextProvider modules should be calling this and manipulating data within it.
 -- @usage local db = PitBull.Options.GetTextLayoutDB(); db.some_option = "something"
@@ -121,7 +128,9 @@ function PitBull4.Options.get_layout_editor_text_options()
 			return L["Must be at least 3 characters long."]
 		end
 
+		local has_module = false
 		for id, module in PitBull4:IterateModulesOfType("text_provider") do
+			has_module = true
 			local texts_db = GetLayoutDB(module).elements
 
 			for name in pairs(texts_db) do
@@ -131,7 +140,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 			end
 		end
 
-		if next(PitBull4:IterateModulesOfType("text_provider")) then
+		if has_module then
 			return true -- found a module
 		end
 		return L["You have no enabled text providers."]
@@ -144,13 +153,8 @@ function PitBull4.Options.get_layout_editor_text_options()
 		order = 2,
 		get = function(info) return "" end,
 		set = function(info, value)
-			local module = CURRENT_TEXT_PROVIDER_MODULE
-
-			if not module then
-				local _
-				_, module = next(PitBull4:IterateModulesOfType("text_provider"))
-				assert(module) -- the validate function should verify that at least one module exists
-			end
+			local module = CURRENT_TEXT_PROVIDER_MODULE or get_module_of_type("text_provider")
+			assert(module) -- the validate function should verify that at least one module exists
 
 			local texts_db = GetLayoutDB(module).elements
 			local db = texts_db[value]
@@ -242,7 +246,7 @@ function PitBull4.Options.get_layout_editor_text_options()
 				end
 
 				if not CURRENT_TEXT_PROVIDER_ID then
-					local _, module = next(PitBull4:IterateModulesOfType("custom_text"))
+					local module = get_module_of_type("custom_text")
 					if module then
 						CURRENT_CUSTOM_TEXT_MODULE = module
 					end
