@@ -86,6 +86,7 @@ globals = {
 	"GetScreenWidth",
 	"GetShapeshiftFormID",
 	"GetSpellCooldown",
+	"GetSpellDescription",
 	"GetSpellInfo",
 	"GetTime",
 	"GetWatchedFactionInfo",

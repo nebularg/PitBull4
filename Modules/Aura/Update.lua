@@ -6,9 +6,8 @@ local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
 local LibClassicDurations = LibStub("LibClassicDurations")
-LibClassicDurations:Register(PitBull4_Aura)
 
-local UnitAura = _G.UnitAura
+local UnitAuraWithBuffs = LibClassicDurations.UnitAuraWithBuffs
 local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
 local ceil = _G.math.ceil
 local GetTime = _G.GetTime
@@ -134,7 +133,7 @@ local function get_aura_list(list, unit, db, is_buff, frame)
 			entry[7], entry[8], entry[9], entry[10], entry[11],
 			entry[12], entry[13], entry[14], entry[15], entry[16],
 			entry[17], entry[18], entry[19], entry[20] =
-			id, nil, nil, is_buff, UnitAura(unit, id, filter)
+			id, nil, nil, is_buff, UnitAuraWithBuffs(unit, id, filter)
 
 		if not entry[5] then
 			-- No more auras, break the outer loop
@@ -452,11 +451,6 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	local control = aura_controls[i]
 
 	local id, slot, quality, is_buff, name, _, icon, count, debuff_type, duration, expiration_time, caster, _, _, spell_id, _, _, _, _, time_mod = unpack(aura, 1, ENTRY_END)
-
-	if player_guid ~= frame.guid and duration == 0 and expiration_time == 0 and caster then
-		local caster_guid = UnitGUID(caster)
-		duration, expiration_time = LibClassicDurations:GetAuraDurationByGUID(frame.guid, spell_id, caster_guid, name)
-	end
 
 	local is_mine = my_units[caster]
 	local who = is_mine and "my" or "other"

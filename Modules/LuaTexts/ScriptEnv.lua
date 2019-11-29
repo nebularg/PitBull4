@@ -4,7 +4,7 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_LuaTexts = PitBull4:GetModule("LuaTexts")
 
--- luacheck: globals Enum AzeriteUtil
+local LibClassicDurations = LibStub("LibClassicDurations")
 
 -- The ScriptEnv table serves as the environment that the scripts run
 -- under LuaTexts run under.  The functions included in it are accessible
@@ -598,7 +598,7 @@ local function DruidForm(unit)
 		else
 			local i = 1
 			repeat
-				local name = UnitAura(unit, i, "HELPFUL")
+				local name = LibClassicDurations.UnitAuraWithBuffs(unit, i, "HELPFUL")
 				if name then
 					if name == MOONKIN_FORM then
 						return L["Moonkin"]

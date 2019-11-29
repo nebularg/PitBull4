@@ -4,6 +4,10 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
+local LibClassicDurations = LibStub("LibClassicDurations")
+
+local UnitAuraWithBuffs = LibClassicDurations.UnitAuraWithBuffs
+
 -- Table of functions included into the aura controls
 local Aura = {}
 
@@ -23,12 +27,11 @@ end
 -- Not in the Aura table since it is only active when the
 -- tooltip is displayed.
 local last_aura_OnUpdate = 0
-local function OnUpdate(self)
-	local current_time = GetTime()
-	if last_aura_OnUpdate+0.2 > current_time then
-		return
-	end
-	last_aura_OnUpdate = current_time
+local function OnUpdate(self, elapsed)
+	last_aura_OnUpdate = last_aura_OnUpdate + elapsed
+	if last_aura_OnUpdate < 0.2 then return end
+	last_aura_OnUpdate = 0
+
 	local id = self.id
 	if id > 0 then
 		-- Real Buffs
@@ -42,11 +45,11 @@ local function OnUpdate(self)
 		-- http://www.wowace.com/addons/pitbull4/tickets/532-aura-tooltips-not-matching-icons/
 		-- or
 		-- http://forums.worldofwarcraft.com/thread.html?topicId=16904201555&sid=1&pageNo=9#166
-		local name = UnitAura(unit, id, filter)
+		local name = UnitAuraWithBuffs(unit, id, filter)
 		if name ~= self.name then
 			local i = 1
 			while true do
-				name = UnitAura(unit,i,filter)
+				name = UnitAuraWithBuffs(unit, i, filter)
 				if not name then
 					-- Couldn't find a matching aura so do nothing.
 					return
@@ -67,6 +70,24 @@ local function OnUpdate(self)
 				i = i + 1
 			end
 		end
+
+		-- if filter == "HELPFUL" and not UnitIsFriend("player", unit) and not UnitAura(unit, 1, filter) then
+		-- 	-- Fake the tooltip for enemy buffs
+		-- 	local expiration_time, _, _, _, spell_id = select(6, UnitAuraWithBuffs(unit, id, filter))
+
+		-- 	GameTooltip:ClearLines()
+		-- 	GameTooltip:AddDoubleLine(name, _G.ENEMY, 1, 0.82, 0, 1, 0.82, 0)
+
+		-- 	local spell_description = GetSpellDescription(spell_id) or ""
+		-- 	if spell_description ~= "" then
+		-- 		GameTooltip:AddLine(spell_description, 1, 1, 1, 1)
+		-- 	else
+		-- 		last_aura_OnUpdate = 1 -- don't throttle updates until we have spell data
+		-- 	end
+
+		-- 	GameTooltip:Show()
+		-- 	return
+		-- end
 		GameTooltip:SetUnitAura(unit, id, filter)
 	elseif self.slot then
 		local has_item = GameTooltip:SetInventoryItem("player", self.slot)
@@ -117,7 +138,7 @@ function Aura_scripts:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT")
 	last_aura_OnUpdate = 0
 	self:SetScript("OnUpdate", OnUpdate)
-	OnUpdate(self)
+	OnUpdate(self, 1)
 end
 
 function Aura_scripts:OnLeave()

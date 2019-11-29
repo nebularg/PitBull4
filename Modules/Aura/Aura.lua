@@ -5,6 +5,8 @@ local L = PitBull4.L
 
 local PitBull4_Aura = PitBull4:NewModule("Aura")
 
+local LibClassicDurations = LibStub("LibClassicDurations")
+
 PitBull4_Aura:SetModuleType("custom")
 PitBull4_Aura:SetName(L["Aura"])
 PitBull4_Aura:SetDescription(L["Shows buffs and debuffs for PitBull4 frames."])
@@ -39,6 +41,8 @@ function PitBull4_Aura:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "UpdateAll")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateAll")
 	self:RegisterEvent("UNIT_AURA")
+	LibClassicDurations:Register(self)
+	LibClassicDurations.RegisterCallback(self, "UNIT_BUFF", "UNIT_AURA")
 	timerFrame:Show()
 
 	-- Need to track spec changes since it can change what they can dispel.
@@ -59,6 +63,8 @@ end
 
 function PitBull4_Aura:OnDisable()
 	timerFrame:Hide()
+	LibClassicDurations.UnregisterCallback(self, "UNIT_BUFF")
+	LibClassicDurations:Unregister(self)
 end
 
 function PitBull4_Aura:OnProfileChanged()
