@@ -1308,11 +1308,11 @@ PitBull4_Aura:SetDefaults({
 			display_when = "debuff",
 		},
 		['!Q'] = {
-			--- CompactUnitFrame_UtilShouldDisplayDebuff
+			--- CompactUnitFrame_Util_ShouldDisplayDebuff
 			display_name = L["Blizzard debuffs, group"],
 			filter_type = 'Meta',
-			filters = {'@Z','@Y','@I'},
-			operators = {'|~','&'},
+			filters = {'@Z','@Y'},
+			operators = {'|~'},
 			built_in = true,
 			display_when = "debuff",
 		},
