@@ -30,10 +30,5 @@ jobs:
     - name: Run luacheck
       run: ~/.luarocks/bin/luacheck . -qo 011
 
-    - name: Create CHANGELOG
-      run: |
-        ./create_changelog.sh
-        cat CHANGELOG.md
-
     - name: Package and Publish
-      run: ~/release.sh -g 1.13.2
+      run: ~/release.sh -g 1.13.3

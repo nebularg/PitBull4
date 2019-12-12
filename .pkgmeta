@@ -22,13 +22,8 @@ externals:
   Modules/DogTagTexts/Libs/LibDogTag-Unit-3.0: https://repos.curseforge.com/wow/libdogtag-unit-3-0
   Modules/VisualHeal/Libs/LibHealComm-4.0: https://repos.wowace.com/wow/libhealcomm-4-0
 
-manual-changelog:
-  filename: CHANGELOG.md
-  markup-type: markdown
-
 ignore:
   - Docs
-  - create_changelog.sh
 
 embedded-libraries:
   - libdatabroker-1-1
