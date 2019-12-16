@@ -5,6 +5,8 @@ end
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local LibTotemInfo = LibStub("LibTotemInfo-1.0")
+
 -- CONSTANTS ----------------------------------------------------------------
 
 local MAX_TOTEMS = 4
@@ -68,8 +70,8 @@ local max = _G.math.max
 local min = _G.math.min
 local tostring = _G.tostring
 local type = _G.type
-local GetTotemTimeLeft = _G.GetTotemTimeLeft
-local GetTotemInfo = _G.GetTotemInfo
+local GetTotemTimeLeft = LibTotemInfo.GetTotemTimeLeft
+local GetTotemInfo = LibTotemInfo.GetTotemInfo
 
 -----------------------------------------------------------------------------
 
