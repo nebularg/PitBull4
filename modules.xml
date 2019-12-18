@@ -14,6 +14,7 @@
 <Include file="Modules\CombatText\load.xml"/>
 <Include file="Modules\ComboPoints\load.xml"/>
 <Include file="Modules\DogTagTexts\load.xml"/>
+<Include file="Modules\EnergySpark\load.xml"/>
 <Include file="Modules\ExperienceBar\load.xml"/>
 <Include file="Modules\HappinessIcon\load.xml"/>
 <Include file="Modules\HealthBar\load.xml"/>
