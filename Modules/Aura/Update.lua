@@ -452,6 +452,11 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 
 	local id, slot, quality, is_buff, name, _, icon, count, debuff_type, duration, expiration_time, caster, _, _, spell_id, _, _, _, _, time_mod = unpack(aura, 1, ENTRY_END)
 
+	-- LibClassicDurations doesn't return this for enemy buffs
+	if not time_mod then
+		time_mod = 1
+	end
+
 	local is_mine = my_units[caster]
 	local who = is_mine and "my" or "other"
 	-- No way to know who applied a weapon buff so we have a separate
