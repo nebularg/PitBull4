@@ -25,7 +25,7 @@ PitBull4_ThreatBar:SetDefaults({
 })
 
 function PitBull4_ThreatBar:OnEnable()
-	ThreatLib = LibStub("ThreatClassic-1.0", true)
+	ThreatLib = LibStub("LibThreatClassic2", true) or LibStub("ThreatClassic-1.0", true)
 	if not ThreatLib then
 		-- print("PitBull4_ThreatBar requires the library ThreatClassic-1.0 to be available.")
 		self:Disable()
