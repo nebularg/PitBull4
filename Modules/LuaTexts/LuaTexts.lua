@@ -683,7 +683,7 @@ function PitBull4_LuaTexts:OnEnable()
 	PitBull4.LuaTexts.ScriptEnv.player_guid = player_guid
 
 	-- Handle threat
-	local ThreatLib = LibStub("ThreatClassic-1.0", true)
+	local ThreatLib = LibStub("LibThreatClassic2", true) or LibStub("ThreatClassic-1.0", true)
 	if ThreatLib then
 		self.ThreatLib = ThreatLib
 		local function ThreatUpdate()
