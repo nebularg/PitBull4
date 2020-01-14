@@ -24,12 +24,14 @@ end
 
 function PitBull4_AltPowerBar:GetValue(frame)
 	local unit = frame.unit
-	local bar_type, min_power, _, _, _, hide_from_others, show_on_raid = UnitAlternatePowerInfo(unit)
+	local bar_info = GetUnitPowerBarInfo(unit)
+	if not bar_info then return end
+
 	local visible = false
-	if bar_type then
-		if (unit == "player" or unit == "vehicle" or unit == "pet") or not hide_from_others then
+	if bar_info.barType then
+		if (unit == "player" or unit == "vehicle" or unit == "pet") or not bar_info.hideFromOthers then
 			visible = true
-		elseif show_on_raid and (UnitInRaid(unit) or UnitInParty(unit)) then
+		elseif bar_info.showOnRaid and (UnitInRaid(unit) or UnitInParty(unit)) then
 			visible = true
 		end
 	end
@@ -40,6 +42,7 @@ function PitBull4_AltPowerBar:GetValue(frame)
 		return 0
 	end
 
+	local min_power = bar_info.minPower
 	local current_power = UnitPower(unit, ALTERNATE_POWER_INDEX)
 	if min_power > current_power then
 		current_power = min_power
