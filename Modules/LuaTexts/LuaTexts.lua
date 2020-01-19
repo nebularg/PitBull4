@@ -339,7 +339,7 @@ end]],
 			code = [[
 local max = MaxPower(unit,ALTERNATE_POWER_INDEX)
 if max > 0 then
-	return "%s/%s",Power(unit,ALTERNATE_POWER_INDEX),max
+  return "%s/%s",Power(unit,ALTERNATE_POWER_INDEX),max
 end
 return ConfigMode()]],
 		},
@@ -384,7 +384,7 @@ return ConfigMode()]],
 			code = [[
 local max = MaxPower(unit, ALTERNATE_POWER_INDEX)
 if max > 0 then
-	local miss = max - Power(unit,ALTERNATE_POWER_INDEX)
+  local miss = max - Power(unit,ALTERNATE_POWER_INDEX)
   if miss ~= 0 then
     return "|cffc12267%s|r",Short(miss,true)
   end
