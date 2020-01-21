@@ -96,15 +96,9 @@ function PitBull4:OnModuleCreated(module)
 	recent_modules[#recent_modules+1] = module
 end
 
-LibStub("AceEvent-3.0"):RegisterEvent("ADDON_LOADED", function(event, addon)
-	if not PitBull4.Options or not PitBull4.Options.HandleModuleLoad then
-		return
-	end
-	while true do
+function PitBull4:ADDON_LOADED()
+	while #recent_modules > 0 do
 		local module = table.remove(recent_modules, 1)
-		if not module then
-			break
-		end
 
 		-- add the options for the newly loaded module to the option panels
 		PitBull4.Options.HandleModuleLoad(module)
@@ -124,7 +118,7 @@ LibStub("AceEvent-3.0"):RegisterEvent("ADDON_LOADED", function(event, addon)
 			end
 		end
 	end
-end)
+end
 
 --- Add a script hook for the unit frames.
 -- @name Module:AddFrameScriptHook
