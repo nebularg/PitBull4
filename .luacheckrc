@@ -4,6 +4,8 @@ std = "lua51"
 max_line_length = false
 codes = true
 exclude_files = {
+	".luacheckrc",
+	".release",
 	"**/Libs",
 	"Babelfish.lua",
 	"Localization/_export.lua",
