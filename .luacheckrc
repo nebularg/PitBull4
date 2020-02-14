@@ -6,6 +6,7 @@ codes = true
 exclude_files = {
 	"**/Libs",
 	".luacheckrc",
+	".release",
 	"Babelfish.lua",
 	"Localization/_export.lua",
 }
