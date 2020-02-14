@@ -28,7 +28,7 @@ jobs:
         chmod +x ~/release.sh
 
     - name: Run luacheck
-      run: ~/.luarocks/bin/luacheck . -qo 011
+      run: ~/.luarocks/bin/luacheck . -q
 
     - name: Package and Publish
       run: ~/release.sh
