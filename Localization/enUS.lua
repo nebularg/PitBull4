@@ -31,6 +31,7 @@ L["15-man raid"] = true
 L["20-man raid"] = true
 L["25-man raid"] = true
 L["2D"] = true
+L["30-man raid"] = true
 L["3D"] = true
 L["3D question mark"] = true
 L["40-man raid"] = true
