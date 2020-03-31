@@ -1764,23 +1764,24 @@ local initialConfigFunction = [[
 ]]
 
 local function header_OnEvent(self, event, arg1)
-	if not self:IsVisible() or not self.group_db.enabled then return end
-	if event == "UPDATE_BATTLEFIELD_STATUS" and GetBattlefieldStatus(arg1) ~= "active" then return end
+	if not self:IsShown() then return end
+
+	if event == "UPDATE_BATTLEFIELD_STATUS" and GetBattlefieldStatus(arg1) ~= "active" then
+	 return
+	end
 
 	for _, frame in self:IterateMembers() do
 		local unit = frame.unit
-		if unit then -- XXX need to track down how the frame is created but it doesn't have a unit set
-			local update = UnitExists(unit) or ShowBossFrameWhenUninteractable(unit) or false
-			frame:UpdateGUID(UnitGUID(unit), update)
+		if unit and (UnitExists(unit) or ShowBossFrameWhenUninteractable(unit)) then
+			frame:UpdateGUID(UnitGUID(unit), true)
 		else
-			frame:UpdateGUID(nil, false)
+			frame:UpdateGUID(nil)
 		end
 	end
 end
 
 local function frame_OnEvent(self, event, unit)
-	local group_db = self:GetParent().group_db -- XXX somehow group_db isn't set sometimes
-	if not group_db or not group_db.enabled then return end
+	if not self:IsShown() then return end
 
 	if event == "ARENA_OPPONENT_UPDATE" and unit ~= self.unit then
 		return
@@ -1803,7 +1804,7 @@ end
 
 
 --- Add the proper functions and scripts to a SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate, as well as some initialization.
--- @param frame a Frame which inherits from SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate
+-- @param header a Frame which inherits from SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate
 -- @usage PitBull4:ConvertIntoGroupHeader(header)
 function PitBull4:ConvertIntoGroupHeader(header)
 	if DEBUG then
@@ -1843,7 +1844,7 @@ function PitBull4:ConvertIntoGroupHeader(header)
 end
 
 
---- Creates child frames for an enemy group header and finish configuring them.
+--- Create child frames for an enemy group header and finish configuring them.
 -- @usage header:ConfigureChildren()
 function GroupHeader:ConfigureChildren()
 	if not self.group_db.enabled then return end
@@ -1898,14 +1899,12 @@ function GroupHeader:ConfigureChildren()
 		if not frame then
 			-- make a singleton unit frame and tack it onto our header
 			local frame_name = self:GetName() .. "UnitButton" .. frame_num
-			frame = CreateFrame("Button", frame_name, self, "PitBull4_UnitTemplate,SecureHandlerBaseTemplate")
+			frame = CreateFrame("Button", frame_name, self, self:GetAttribute("template"))
 			frame:Hide()
 			frame:EnableMouse(false) -- start disabled so the state change registers the button with Clique
 
 			self[frame_num] = frame
 			self:InitialConfigFunction()
-			frame:SetAttribute("*type1", "target")
-			frame:SetAttribute("*type2", "togglemenu")
 
 			frame:SetScript("OnEvent", frame_OnEvent)
 
@@ -1933,6 +1932,8 @@ function GroupHeader:ConfigureChildren()
 		local unit = sorting_table[i]
 		frame:SetAttribute("unit", unit)
 		if old_unit ~= unit then
+			frame.unit = unit
+
 			-- update our unit event references
 			frame:SetScript("OnUpdate", nil)
 			frame:UnregisterEvent("UNIT_NAME_UPDATE")
@@ -1943,7 +1944,7 @@ function GroupHeader:ConfigureChildren()
 
 			frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
 			if unit:match("^arena") then
-				-- not really a unit event, this will probably be split into UPDATE and CLEARED in the future
+				-- not an actual unit event :(
 				frame:RegisterEvent("ARENA_OPPONENT_UPDATE")
 			end
 			frame:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", unit)
@@ -1959,7 +1960,7 @@ function GroupHeader:ConfigureChildren()
 					frame:SetScript("OnUpdate", frame_OnUpdate)
 				end
 				if is_pet then
-					frame:RegisterUnitEvent("UNIT_PET", event_unit)
+					frame:RegisterUnitEvent("UNIT_PET", event_unit, unit)
 				end
 			end
 

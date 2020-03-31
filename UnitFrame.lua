@@ -447,10 +447,10 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 
 	if not isExampleFrame then
 		if frame:CanChangeAttribute() then
+			frame:SetAttribute("*type1", "target")
+			frame:SetAttribute("*type2", "togglemenu")
 			if frame.is_singleton then
 				frame:SetMovable(true)
-				frame:SetAttribute("*type1", "target")
-				frame:SetAttribute("*type2", "togglemenu")
 			end
 			frame:RegisterForDrag("LeftButton")
 			frame:RegisterForClicks("AnyUp")
