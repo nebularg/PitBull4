@@ -1781,8 +1781,6 @@ local function header_OnEvent(self, event, arg1)
 end
 
 local function frame_OnEvent(self, event, unit)
-	if not self:IsShown() then return end
-
 	if event == "ARENA_OPPONENT_UPDATE" and unit ~= self.unit then
 		return
 	end
@@ -1802,6 +1800,62 @@ local function frame_OnUpdate(self, elapsed)
 	end
 end
 
+local function frame_OnAttributeChanged(self, key, value)
+	if key ~= "unit" and key ~= "unitsuffix" then return end
+
+	local old_unit = self.unit
+	local new_unit = PitBull4.Utils.GetBestUnitID(SecureButton_GetModifiedUnit(self, "LeftButton")) or nil
+	if old_unit == new_unit then
+		return
+	end
+
+	if old_unit then
+		PitBull4.unit_id_to_frames[old_unit][self] = nil
+		PitBull4.unit_id_to_frames_with_wacky[old_unit][self] = nil
+
+		self:SetScript("OnUpdate", nil)
+		self:UnregisterEvent("UNIT_NAME_UPDATE")
+		self:UnregisterEvent("ARENA_OPPONENT_UPDATE")
+		self:UnregisterEvent("UNIT_TARGETABLE_CHANGED")
+		self:UnregisterEvent("UNIT_TARGET")
+		self:UnregisterEvent("UNIT_PET")
+
+		self.unit = nil
+		self.guid = nil
+	end
+
+	if new_unit then
+		self.unit = new_unit
+		self.guid = UnitGUID(new_unit)
+
+		PitBull4.unit_id_to_frames[new_unit][self] = true
+		PitBull4.unit_id_to_frames_with_wacky[new_unit][self] = true
+
+		if new_unit:match("^arena") then
+			-- not an actual unit event :(
+			self:RegisterEvent("ARENA_OPPONENT_UPDATE")
+		end
+		self:RegisterUnitEvent("UNIT_NAME_UPDATE", new_unit)
+		self:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", new_unit)
+
+		local unitsuffix = self:GetAttribute("unitsuffix")
+		if unitsuffix then
+			local is_pet = unitsuffix:match("pet")
+			local event_unit = is_pet and new_unit.."pet" or new_unit
+
+			if unitsuffix:match("target") then
+				self:RegisterUnitEvent("UNIT_TARGET", event_unit)
+				self.elapsed = 0.5
+				self:SetScript("OnUpdate", frame_OnUpdate)
+			end
+			if is_pet then
+				self:RegisterUnitEvent("UNIT_PET", event_unit, new_unit)
+			end
+		end
+	end
+
+	self:Update(false)
+end
 
 --- Add the proper functions and scripts to a SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate, as well as some initialization.
 -- @param header a Frame which inherits from SecureGroupHeaderTemplate or SecureGroupPetHeaderTemplate
@@ -1907,6 +1961,7 @@ function GroupHeader:ConfigureChildren()
 			self:InitialConfigFunction()
 
 			frame:SetScript("OnEvent", frame_OnEvent)
+			frame:SetScript("OnAttributeChanged", frame_OnAttributeChanged) -- overwrite the UnitFrame__scripts handler
 
 			frame:WrapScript(frame, "OnAttributeChanged", [[
         if name == "config_mode" and self:GetAttribute("config_mode") then
@@ -1916,6 +1971,7 @@ function GroupHeader:ConfigureChildren()
 
 			RegisterUnitWatch(frame)
 		end
+
 		if frame_num == 1 then
 			frame:SetPoint(point, current_anchor, point, 0, 0)
 			if column_anchor_point then
@@ -1928,44 +1984,8 @@ function GroupHeader:ConfigureChildren()
 			frame:SetPoint(point, current_anchor, relative_point, x_multiplier * x_offset, y_multiplier * y_offset)
 		end
 
-		local old_unit = frame:GetAttribute("unit")
 		local unit = sorting_table[i]
 		frame:SetAttribute("unit", unit)
-		if old_unit ~= unit then
-			frame.unit = unit
-
-			-- update our unit event references
-			frame:SetScript("OnUpdate", nil)
-			frame:UnregisterEvent("UNIT_NAME_UPDATE")
-			frame:UnregisterEvent("ARENA_OPPONENT_UPDATE")
-			frame:UnregisterEvent("UNIT_TARGETABLE_CHANGED")
-			frame:UnregisterEvent("UNIT_TARGET")
-			frame:UnregisterEvent("UNIT_PET")
-
-			frame:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
-			if unit:match("^arena") then
-				-- not an actual unit event :(
-				frame:RegisterEvent("ARENA_OPPONENT_UPDATE")
-			end
-			frame:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", unit)
-
-			local unitsuffix = frame:GetAttribute("unitsuffix")
-			if unitsuffix then
-				local is_pet = unitsuffix:match("pet")
-				local event_unit = is_pet and unit.."pet" or unit
-
-				if unitsuffix:match("target") then
-					frame:RegisterUnitEvent("UNIT_TARGET", event_unit)
-					frame.elapsed = 0
-					frame:SetScript("OnUpdate", frame_OnUpdate)
-				end
-				if is_pet then
-					frame:RegisterUnitEvent("UNIT_PET", event_unit, unit)
-				end
-			end
-
-			frame:Update()
-		end
 
 		local classification_db = frame.classification_db
 		if classification_db then
