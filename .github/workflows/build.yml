@@ -1,11 +1,6 @@
-name: Package Classic
+name: Package and Publish
 
-on:
-  push:
-    branches:
-      - classic
-    tags:
-      - '*classic*'
+on: push
 
 env:
   CF_API_KEY: ${{ secrets.CF_API_KEY }}
