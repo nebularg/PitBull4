@@ -146,7 +146,7 @@ local vertical_mirrored_point = setmetatable({}, {__index = function(self, key)
 end})
 
 
-local function layout_auras(frame, db, is_buff)
+local function layout_auras(frame, db, row, is_buff)
 	local list, cfg
 	if is_buff then
 		list = frame.aura_buffs
@@ -193,7 +193,7 @@ local function layout_auras(frame, db, is_buff)
 	local x, y = 0, 0
 
 	-- Current height of the row
-	local row = 0
+--	local row = 0
 	-- Previous width/height on this row
 	local prev_width
 	local prev_height
@@ -259,6 +259,9 @@ local function layout_auras(frame, db, is_buff)
 		step = 1
 	end
 
+	y = y + row
+
+	-- Iterate all auras
 	for i = start_list, end_list, step do
 		local control = list[i]
 		local display = true
@@ -390,13 +393,16 @@ local function layout_auras(frame, db, is_buff)
 			control:Hide()
 		end
 	end
+
+	return row
 end
 
 function PitBull4_Aura:LayoutAuras(frame)
 	local db = self:GetLayoutDB(frame)
 
-	layout_auras(frame, db, true)
-	layout_auras(frame, db, false)
+	local buff_row = layout_auras(frame, db, 0, true)
+	local row = db.prevent_overlap and buff_row or 0
+	layout_auras(frame, db, row, false)
 
 	local group = frame.masque_group
 	if group then
