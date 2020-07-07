@@ -125,6 +125,7 @@ globals = {
 	"UnitClassification",
 	"UnitCreatureFamily",
 	"UnitCreatureType",
+	"UnitDetailedThreatSituation",
 	"UnitExists",
 	"UnitFactionGroup",
 	"UnitGUID",

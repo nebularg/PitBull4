@@ -914,18 +914,12 @@ end
 ScriptEnv.ThreatPair = ThreatPair
 
 local function ThreatSituation(unit, target)
-	if not PitBull4_LuaTexts.ThreatLib then
-		return nil, 0, nil, nil, 0
-	end
-	return PitBull4_LuaTexts.ThreatLib:UnitDetailedThreatSituation(unit, target)
+	return UnitDetailedThreatSituation(unit, target)
 end
 ScriptEnv.ThreatSituation = ThreatSituation
 
 local function ThreatStatusColor(status)
-	if not PitBull4_LuaTexts.ThreatLib then
-		return 255, 255, 255
-	end
-	local r, g, b = PitBull4_LuaTexts.ThreatLib:GetThreatStatusColor(status)
+	local r, g, b = GetThreatStatusColor(status)
 	return r * 255, g * 255, b * 255
 end
 ScriptEnv.ThreatStatusColor = ThreatStatusColor
