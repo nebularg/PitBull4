@@ -181,6 +181,12 @@ local DATABASE_DEFAULTS = {
 				content = { 1, 1, 0 },
 				unhappy = { 1, 0, 0 },
 			},
+			threat = {
+				[0] = {0.69, 0.69, 0.69},
+				[1] = {1, 1, 0.47},
+				[2] = {1, 0.6, 0},
+				[3] = {1, 0, 0},
+			},
 		},
 		class_order = {},
 	}
@@ -1396,6 +1402,7 @@ function PitBull4:OnProfileChanged()
 	self.PowerColors = db.profile.colors.power
 	self.ReactionColors = db.profile.colors.reaction
 	self.HappinessColors = db.profile.colors.happiness
+	self.ThreatColors = db.profile.colors.threat
 	self.ClassOrder = db.profile.class_order
 	for i = #self.ClassOrder, 1, -1 do
 		local v = self.ClassOrder[i]

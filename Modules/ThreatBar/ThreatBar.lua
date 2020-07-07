@@ -13,13 +13,6 @@ PitBull4_ThreatBar:SetDefaults({
 	size = 1,
 	position = 5,
 	show_solo = false,
-},{
-	threat_colors = {
-		[0] = {0.69, 0.69, 0.69}, -- not tanking, lower threat than tank
-		[1] = {1, 1, 0.47},       -- not tanking, higher threat than tank
-		[2] = {1, 0.6, 0},        -- insecurely tanking, another unit has higher threat
-		[3] = {1, 0, 0},          -- securely tanking, highest threat
-	},
 })
 
 function PitBull4_ThreatBar:OnEnable()
@@ -82,13 +75,13 @@ function PitBull4_ThreatBar:GetColor(frame, value)
 	if frame.guid then
 		local _, status = UnitDetailedThreatSituation(frame.unit, "target")
 		if status then
-			return unpack(self.db.profile.global.threat_colors[status])
+			return unpack(PitBull4.ThreatColors[status])
 		end
 	end
-	return unpack(self.db.profile.global.threat_colors[0])
+	return unpack(PitBull4.ThreatColors[0])
 end
 function PitBull4_ThreatBar:GetExampleColor(frame, value)
-	return unpack(self.db.profile.global.threat_colors[0])
+	return unpack(PitBull4.ThreatColors[0])
 end
 
 PitBull4_ThreatBar:SetLayoutOptionsFunction(function(self)
@@ -104,53 +97,4 @@ PitBull4_ThreatBar:SetLayoutOptionsFunction(function(self)
 			PitBull4.Options.UpdateFrames()
 		end,
 	}
-end)
-
-PitBull4_ThreatBar:SetColorOptionsFunction(function(self)
-	local function get(info)
-		return unpack(self.db.profile.global.threat_colors[info.arg])
-	end
-	local function set(info, r, g, b, a)
-		self.db.profile.global.threat_colors[info.arg] = {r, g, b, a}
-		self:UpdateAll()
-	end
-	return 'threat_0_color', {
-		type = "color",
-		name = L["Not tanking, lower threat than tank"],
-		arg = 0,
-		get = get,
-		set = set,
-		width = "full",
-	},
-	'threat_1_color', {
-		type = 'color',
-		name = L["Not tanking, higher threat than tank"],
-		arg = 1,
-		get = get,
-		set = set,
-		width = "full",
-	},
-	'threat_2_color', {
-		type = "color",
-		name = L["Insecurely tanking, not highest threat"],
-		arg = 2,
-		get = get,
-		set = set,
-		width = "full",
-	},
-	'threat_3_color', {
-		type = "color",
-		name = L["Securely tanking, highest threat"],
-		arg = 3,
-		get = get,
-		set = set,
-		width = "full",
-	},
-	function(info)
-		local threat_colors = self.db.profile.global.threat_colors
-		threat_colors[0] = {0.69, 0.69, 0.69}
-		threat_colors[1] = {1, 1, 0.47}
-		threat_colors[2] = {1, 0.6, 0}
-		threat_colors[3] = {1, 0, 0}
-	end
 end)

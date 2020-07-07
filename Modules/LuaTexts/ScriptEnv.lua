@@ -919,8 +919,11 @@ end
 ScriptEnv.ThreatSituation = ThreatSituation
 
 local function ThreatStatusColor(status)
-	local r, g, b = GetThreatStatusColor(status)
-	return r * 255, g * 255, b * 255
+	local color = PitBull4.ThreatColors[status]
+	if not color then
+		return 255, 255, 255
+	end
+	return color[1] * 255, color[2] * 255, color[3] * 255
 end
 ScriptEnv.ThreatStatusColor = ThreatStatusColor
 

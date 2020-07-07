@@ -335,6 +335,79 @@ local function get_happiness_options()
 	return happiness_options
 end
 
+local function get_threat_options()
+	local threat_options = {
+		type = 'group',
+		name = L["Threat"],
+		args = {},
+		get = function(info)
+			return unpack(PitBull4.db.profile.colors.threat[info.arg])
+		end,
+		set = function(info, r, g, b, a)
+			PitBull4.db.profile.colors.threat[info.arg] = {r, g, b, a}
+
+			for frame in PitBull4:IterateFrames() do
+				frame:Update()
+			end
+		end,
+	}
+
+	threat_options.args.threat_0 = {
+		type = 'color',
+		name = L["Not tanking, lower threat than tank"],
+		arg = 0,
+		order = 1,
+		width = "full",
+	}
+	threat_options.args.threat_1 = {
+		type = 'color',
+		name = L["Not tanking, higher threat than tank"],
+		arg = 1,
+		order = 2,
+		width = "full",
+	}
+	threat_options.args.threat_2 = {
+		type = 'color',
+		name = L["Insecurely tanking, not highest threat"],
+		arg = 2,
+		order = 3,
+		width = "full",
+	}
+	threat_options.args.threat_3 = {
+		type = 'color',
+		name = L["Securely tanking, highest threat"],
+		arg = 3,
+		order = 4,
+		width = "full",
+	}
+
+	threat_options.args.reset_sep = {
+		type = 'header',
+		name = '',
+		order = -2,
+	}
+	threat_options.args.reset = {
+		type = 'execute',
+		name = L["Reset to defaults"],
+		confirm = true,
+		confirmText = L["Are you sure you want to reset to defaults?"],
+		order = -1,
+		func = function(info)
+			local db_color = PitBull4.db.profile.colors.threat
+			db_color[0] = {0.69, 0.69, 0.69}
+			db_color[1] = {1, 1, 0.47}
+			db_color[2] = {1, 0.6, 0}
+			db_color[3] = {1, 0, 0}
+
+			for frame in PitBull4:IterateFrames() do
+				frame:Update()
+			end
+		end,
+	}
+
+	return threat_options
+end
+
 function PitBull4.Options.get_color_options()
 	local color_options = {
 		type = 'group',
@@ -348,6 +421,8 @@ function PitBull4.Options.get_color_options()
 	color_options.args.power = get_power_options()
 	color_options.args.reaction = get_reaction_options()
 	color_options.args.happiness = get_happiness_options()
+	color_options.args.threat = get_threat_options()
+
 
 	function PitBull4.Options.colors_handle_module_load(module)
 		if color_functions[module] then
