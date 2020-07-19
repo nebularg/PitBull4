@@ -63,6 +63,7 @@ globals = {
 	"GetBattlefieldStatus",
 	"GetCVarBool",
 	"GetComboPoints",
+	"GetBuildInfo",
 	"GetFriendshipReputation",
 	"GetInventoryItemLink",
 	"GetItemInfo",

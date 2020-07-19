@@ -1,3 +1,4 @@
+local wow_900 = select(4, GetBuildInfo()) > 90000
 
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
@@ -39,7 +40,7 @@ end
 
 function PitBull4_VisualHeal:OnEnable()
 	self:RegisterEvent("UNIT_HEAL_PREDICTION")
-	self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UNIT_HEAL_PREDICTION")
+	self:RegisterEvent(wow_900 and "UNIT_HEALTH" or "UNIT_HEALTH_FREQUENT", "UNIT_HEAL_PREDICTION")
 	self:RegisterEvent("UNIT_MAXHEALTH", "UNIT_HEAL_PREDICTION")
 	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", "UNIT_HEAL_PREDICTION")
 end
