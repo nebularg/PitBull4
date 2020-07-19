@@ -1,3 +1,5 @@
+local wow_900 = select(4, GetBuildInfo()) > 90000
+
 local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
@@ -582,7 +584,12 @@ SingletonUnitFrame.RefixSizeAndPosition = PitBull4:OutOfCombatWrapper(SingletonU
 -- @usage frame:Activate()
 function SingletonUnitFrame:Activate()
 	RegisterUnitWatch(self, true)
-	RegisterStateDriver(self, "pb4visibility", "[petbattle] hide; default")
+	if wow_900 then
+		-- unitExistsCache is only ever true for a unit since 34902
+		RegisterStateDriver(self, "pb4visibility", "[petbattle] hide; [@"..self.unit..",noexists] hide; default")
+	else
+		RegisterStateDriver(self, "pb4visibility", "[petbattle] hide; default")
+	end
 end
 SingletonUnitFrame.Activate = PitBull4:OutOfCombatWrapper(SingletonUnitFrame.Activate)
 
