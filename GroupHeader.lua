@@ -2002,7 +2002,7 @@ function GroupHeader:ConfigureChildren()
 
 			if wow_900 then
 				frame:WrapScript(frame, "OnAttributeChanged", Singleton_OnAttributeChanged)
-				RegisterStateDriver(self, "pb4visibility", "[@"..sorting_table[i]..",noexists] hide; default")
+				RegisterStateDriver(frame, "pb4visibility", "[@"..sorting_table[i]..",noexists] hide; default")
 				RegisterUnitWatch(frame, true)
 			else
 				RegisterUnitWatch(frame)
