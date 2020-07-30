@@ -26,7 +26,28 @@ PitBull works with WoW Classic! Some things that are different from retail:
   to show cast bars for other units, but this can be inaccurate since there is
   a lot of guess-work involved.
 
-## Changelog Highlights ![OhMyDog](https://static-cdn.jtvnw.net/emoticons/v1/65/1.0))
+## Changelog Highlights ![OhMyDog](https://static-cdn.jtvnw.net/emoticons/v1/65/1.0)
+
+### v4.1.26 changes
+
+- Fixed an issue with '30-man raid' filtering that would hide groups when your
+  group size was between 26 and 30.
+
+### v4.1.25 changes
+
+- Updated `PhaseIcon` to show a tooltip with the phase reason.
+- Fixed `PhaseIcon` for 9.0.1.
+- Fixed boss frames not hiding for 9.0.1.
+
+### v4.1.24 changes
+
+- Added '30-man raid' to groups filtering.
+- Updated for 9.0.1.
+
+### v4.1.22 changes
+
+- Updated for 8.3.0.
+- Updated `ArtifactPowerBar` to hide if your azerite item is at max level.
 
 ### v4.1.21 changes
 
