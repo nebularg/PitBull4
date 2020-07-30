@@ -1,3 +1,4 @@
+local wow_900 = select(4, GetBuildInfo()) > 90000
 
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
@@ -24,7 +25,15 @@ end
 function PitBull4_PhaseIcon:GetTexture(frame)
 	local unit = frame.unit
 	-- Note the UnitInPhase function doesn't work for pets.
-	if not unit or not UnitIsPlayer(unit) or (UnitInPhase(unit) and not UnitIsWarModePhased(unit)) or not UnitExists(unit) or not UnitIsConnected(unit) then
+	if not unit or not UnitIsPlayer(unit) or not UnitExists(unit) or not UnitIsConnected(unit) then
+		return nil
+	end
+
+	if wow_900 then
+		if not UnitPhaseReason() then
+			return nil
+		end
+	elseif UnitInPhase(unit) and not UnitIsWarModePhased(unit) then
 		return nil
 	end
 

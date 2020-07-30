@@ -143,7 +143,7 @@ globals = {
 	"UnitHealth",
 	"UnitHealthMax",
 	"UnitInParty",
-	"UnitInPhase",
+	"UnitInPhase", -- gone in wow_900
 	"UnitInRaid",
 	"UnitInRange",
 	"UnitIsAFK",
@@ -166,7 +166,7 @@ globals = {
 	"UnitIsTapDenied",
 	"UnitIsUnit",
 	"UnitIsVisible",
-	"UnitIsWarModePhased",
+	"UnitIsWarModePhased", -- gone in wow_900
 	"UnitIsWildBattlePet",
 	"UnitLevel",
 	"UnitName",
@@ -176,6 +176,7 @@ globals = {
 	"UnitPowerDisplayMod",
 	"UnitPowerMax",
 	"UnitPowerType",
+	"UnitPhaseReason",
 	"UnitRace",
 	"UnitReaction",
 	"UnitSelectionColor",
