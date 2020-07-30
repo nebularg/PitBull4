@@ -12,6 +12,7 @@ PitBull4_PhaseIcon:SetDefaults({
 	attach_to = "root",
 	location = "edge_top_left",
 	position = 1,
+	click_through = false,
 })
 
 function PitBull4_PhaseIcon:OnEnable()
@@ -21,6 +22,37 @@ function PitBull4_PhaseIcon:OnEnable()
 	self:RegisterEvent("PARTY_MEMBER_DISABLE","PARTY_MEMBER_ENABLE")
 end
 
+
+function PitBull4_PhaseIcon:GetEnableMouse(frame)
+	local db = self:GetLayoutDB(frame)
+	return not db.click_through
+end
+
+function PitBull4_PhaseIcon:OnEnter()
+	local unit = self:GetParent().unit
+	local tooltip = _G.PARTY_PHASED_MESSAGE
+	if wow_900 then
+		local phaseReason = UnitPhaseReason(unit)
+		if phaseReason then
+			tooltip = PartyUtil.GetPhasedReasonString(phaseReason, unit)
+		end
+	else
+		if UnitIsWarModePhased(unit) then
+			if C_PvP.IsWarModeDesired() then
+				tooltip = _G.PARTY_PLAYER_WARMODE_DISABLED
+			else
+				tooltip = _G.PARTY_PLAYER_WARMODE_ENABLED
+			end
+		end
+	end
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+	GameTooltip:SetText(tooltip, nil, nil, nil, nil, true)
+	GameTooltip:Show()
+end
+
+function PitBull4_PhaseIcon:OnLeave()
+	GameTooltip:Hide()
+end
 
 function PitBull4_PhaseIcon:GetTexture(frame)
 	local unit = frame.unit
@@ -53,3 +85,24 @@ end
 function PitBull4_PhaseIcon:PARTY_MEMBER_ENABLE(_, unit)
 	self:UpdateAll()
 end
+
+
+PitBull4_PhaseIcon:SetLayoutOptionsFunction(function(self)
+	return 'click_through', {
+		type = 'toggle',
+		name = L["Click-through"],
+		desc = L["Disable capturing clicks on icons, allowing the click to fall through to the window underneath the icon."],
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).click_through
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).click_through = value
+
+			for frame in PitBull4:IterateFrames() do
+				self:Clear(frame)
+				self:Update(frame)
+			end
+		end,
+		order = 100,
+	}
+end)
