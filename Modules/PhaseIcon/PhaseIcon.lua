@@ -62,7 +62,7 @@ function PitBull4_PhaseIcon:GetTexture(frame)
 	end
 
 	if wow_900 then
-		if not UnitPhaseReason() then
+		if not UnitPhaseReason(unit) then
 			return nil
 		end
 	elseif UnitInPhase(unit) and not UnitIsWarModePhased(unit) then
