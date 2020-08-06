@@ -1,5 +1,3 @@
-local wow_900 = select(4, GetBuildInfo()) > 90000
-
 local _G = _G
 local PitBull4 = _G.PitBull4
 
@@ -25,31 +23,6 @@ local GROUP_ROLES = {
 	DAMAGER = DAMAGER,
 	NONE = NONE,
 }
-
--- Handles hiding and showing singleton unit frames.
-local Singleton_OnAttributeChanged = [[
-  if name ~= "state-pb4visibility" and name ~= "state-unitexists" then return end
-
-  if name ~= "state-pb4visibility" then
-    -- Replace the value with the state handler state if we weren't called
-    -- on its state change
-    value = self:GetAttribute("state-pb4visibility")
-  end
-
-  if self:GetAttribute("config_mode") then
-    self:Show()
-  elseif value == "show" then
-    self:Show()
-  elseif value == "hide" then
-    self:Hide()
-  else
-    if self:GetAttribute("state-unitexists") then
-      self:Show()
-    else
-      self:Hide()
-    end
-  end
-]]
 
 -- lock to prevent the SecureGroupHeader_Update for doing unnecessary
 -- work when running ForceShow
@@ -1695,10 +1668,8 @@ function MemberUnitFrame:ForceShow()
 		self.force_show = true
 
 		-- Continue to watch the frame but do the hiding and showing ourself
-		if not wow_900 or self.header.group_based then
-			UnregisterUnitWatch(self)
-			RegisterUnitWatch(self, true)
-		end
+		UnregisterUnitWatch(self)
+		RegisterUnitWatch(self, true)
 	end
 
 	-- Always make sure the frame is shown even if we think it already is
@@ -1713,10 +1684,8 @@ function MemberUnitFrame:UnforceShow()
 	self.force_show = nil
 
 	-- Ask the SecureStateDriver to show/hide the frame for us
-	if not wow_900 or self.header.group_based then
-		UnregisterUnitWatch(self)
-		RegisterUnitWatch(self)
-	end
+	UnregisterUnitWatch(self)
+	RegisterUnitWatch(self)
 
 	-- If we're visible force an update so everything is properly in a
 	-- non-config mode state
@@ -2000,13 +1969,7 @@ function GroupHeader:ConfigureChildren()
         end
       ]])
 
-			if wow_900 then
-				frame:WrapScript(frame, "OnAttributeChanged", Singleton_OnAttributeChanged)
-				RegisterStateDriver(frame, "pb4visibility", "[@"..sorting_table[i]..",noexists] hide; default")
-				RegisterUnitWatch(frame, true)
-			else
-				RegisterUnitWatch(frame)
-			end
+			RegisterUnitWatch(frame)
 		end
 
 		if frame_num == 1 then
