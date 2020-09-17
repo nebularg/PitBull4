@@ -2,6 +2,8 @@ if select(2, UnitClass("player")) ~= "PALADIN" then
 	return
 end
 
+local wow_900 = select(4, GetBuildInfo()) > 90000
+
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
@@ -119,7 +121,7 @@ local function update_container_size(container, vertical, max_holy_power)
 end
 
 function PitBull4_HolyPower:UpdateFrame(frame)
-	if frame.unit ~= "player" or GetSpecialization() ~= SPEC_PALADIN_RETRIBUTION or player_level < PALADINPOWERBAR_SHOW_LEVEL then
+	if frame.unit ~= "player" or (not wow_900 and GetSpecialization() ~= SPEC_PALADIN_RETRIBUTION) or player_level < PALADINPOWERBAR_SHOW_LEVEL then
 		return self:ClearFrame(frame)
 	end
 
