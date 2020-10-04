@@ -1,6 +1,12 @@
-name: Package and Publish
+name: Package
 
-on: push
+on:
+  push:
+    branches:
+      - master
+      - classic
+    tags:
+      - '*'
 
 env:
   CF_API_KEY: ${{ secrets.CF_API_KEY }}
@@ -15,15 +21,8 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get install luarocks pandoc
-        luarocks install --local luacheck
-        wget -O ~/release.sh https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh
-        chmod +x ~/release.sh
-
     - name: Run luacheck
-      run: ~/.luarocks/bin/luacheck . -q
+      uses: nebularg/actions-luacheck@v1
 
-    - name: Package and Publish
-      run: ~/release.sh
+    - name: Package and release
+      uses: nebularg/packager@develop
