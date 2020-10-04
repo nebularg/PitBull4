@@ -39,6 +39,7 @@ PitBull4_Portrait:SetDefaults({
 	location = "out_left",
 	position = 1,
 	full_body = false,
+	camera_distance = 1,
 	style = "three_dimensional",
 	fallback_style = "three_dimensional",
 	side = "left",
@@ -51,6 +52,7 @@ PitBull4_Portrait.can_set_side_to_center = true
 
 function PitBull4_Portrait:OnEnable()
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE")
+	-- self:RegisterEvent("UNIT_MODEL_CHANGED", "UNIT_PORTRAIT_UPDATE")
 	if not pirate_day then
 		-- Clear it so it turns on every pirate day and doesn't forever
 		-- chew up a spot in the config file
@@ -203,6 +205,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 			portrait.model:SetUnit(frame.unit)
 			portrait.model:SetPortraitZoom(full_body and 0 or 1)
 			portrait.model:SetPosition(0, 0, 0)
+			portrait.model:SetCamDistanceScale(layout_db.camera_distance)
 		else
 			portrait.model:SetModelScale(1) -- the scale gets screwed up if not reset before SetModel
 			portrait.model:SetModel([[Interface\Buttons\talktomequestionmark.mdx]])
@@ -215,6 +218,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 		portrait.model:SetScript("OnUpdate", portrait_OnModelLoaded)
 		portrait.model:SetPortraitZoom(full_body and 0 or 1)
 		portrait.model:SetPosition(0, 0, 0)
+		portrait.model:SetCamDistanceScale(layout_db.camera_distance)
 	elseif style == "two_dimensional" then
 		portrait.texture:SetTexCoord(0.14644660941, 0.85355339059, 0.14644660941, 0.85355339059)
 		if unit then
@@ -272,21 +276,23 @@ end
 
 
 PitBull4_Portrait:SetLayoutOptionsFunction(function(self)
-	return 'full_body', {
-		type = 'toggle',
-		name = L["Full body"],
-		desc = L["Show the full body of the unit when in 3D mode."],
+	return 'color', {
+		type = 'color',
+		name = L["Background color"],
+		desc = L["Color that the background behind the portrait should be."],
+		hasAlpha = true,
 		get = function(info)
-			return PitBull4.Options.GetLayoutDB(self).full_body
+			return unpack(PitBull4.Options.GetLayoutDB(self).color)
 		end,
-		set = function(info, value)
-			PitBull4.Options.GetLayoutDB(self).full_body = value
+		set = function(info, r, g, b, a)
+			local color = PitBull4.Options.GetLayoutDB(self).color
+			color[1], color[2], color[3], color[4] = r, g, b, a
 
 			for frame in PitBull4:IterateFrames() do
 				self:Clear(frame)
 			end
 			self:UpdateAll()
-		end
+		end,
 	}, 'style', {
 		type = 'select',
 		name = L["Style"],
@@ -329,22 +335,41 @@ PitBull4_Portrait:SetLayoutOptionsFunction(function(self)
 			["blank"] = L["Blank"],
 			["hide"] = L["Hide completely"],
 		},
-	}, 'color', {
-		type = 'color',
-		name = L["Background color"],
-		desc = L["Color that the background behind the portrait should be."],
-		hasAlpha = true,
+	}, 'camera_distance', {
+		type = 'range', min = 0.5, softMax = 10, step = 0.1,
+		name = L["Camera distance"],
+		desc = L["Set the camera distance when in 3D mode."],
 		get = function(info)
-			return unpack(PitBull4.Options.GetLayoutDB(self).color)
+			return PitBull4.Options.GetLayoutDB(self).camera_distance
 		end,
-		set = function(info, r, g, b, a)
-			local color = PitBull4.Options.GetLayoutDB(self).color
-			color[1], color[2], color[3], color[4] = r, g, b, a
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).camera_distance = value
 
 			for frame in PitBull4:IterateFrames() do
 				self:Clear(frame)
 			end
 			self:UpdateAll()
+		end,
+		disabled = function(info)
+			return PitBull4.Options.GetLayoutDB(self).style ~= "three_dimensional"
+		end,
+	}, 'full_body', {
+		type = 'toggle',
+		name = L["Full body"],
+		desc = L["Show the full body of the unit when in 3D mode."],
+		get = function(info)
+			return PitBull4.Options.GetLayoutDB(self).full_body
+		end,
+		set = function(info, value)
+			PitBull4.Options.GetLayoutDB(self).full_body = value
+
+			for frame in PitBull4:IterateFrames() do
+				self:Clear(frame)
+			end
+			self:UpdateAll()
+		end,
+		disabled = function(info)
+			return PitBull4.Options.GetLayoutDB(self).style ~= "three_dimensional"
 		end,
 	}
 end)
