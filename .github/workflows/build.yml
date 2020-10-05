@@ -19,10 +19,11 @@ jobs:
     if: startsWith(github.ref, 'refs/tags') == true || contains(github.event.head_commit.message, 'skip ci') != true
 
     steps:
-    - uses: actions/checkout@v1
+    - name: Checkout project
+      uses: actions/checkout@v1
 
     - name: Run luacheck
       uses: nebularg/actions-luacheck@v1
 
     - name: Package and release
-      uses: nebularg/packager@develop
+      uses: BigWigsMods/packager@master
