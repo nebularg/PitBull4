@@ -2,14 +2,11 @@ if select(2, UnitClass("player")) ~= "PALADIN" then
 	return
 end
 
-local wow_900 = select(4, GetBuildInfo()) > 90000
-
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
 -- CONSTANTS ----------------------------------------------------------------
 
-local PALADINPOWERBAR_SHOW_LEVEL = _G.PALADINPOWERBAR_SHOW_LEVEL
 local SPELL_POWER_HOLY_POWER = 9 -- Enum.PowerType.HolyPower
 local SPEC_PALADIN_RETRIBUTION = _G.SPEC_PALADIN_RETRIBUTION
 
@@ -42,18 +39,11 @@ PitBull4_HolyPower:SetDefaults({
 	background_color = { 0, 0, 0, 0.5 }
 })
 
-local player_level = UnitLevel("player")
-
 function PitBull4_HolyPower:OnEnable()
-	player_level = UnitLevel("player")
-
 	self:RegisterEvent("UNIT_POWER_FREQUENT")
 	self:RegisterEvent("UNIT_DISPLAYPOWER")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("PLAYER_TALENT_UPDATE", "PLAYER_ENTERING_WORLD")
-	if player_level < PALADINPOWERBAR_SHOW_LEVEL then
-		self:RegisterEvent("PLAYER_LEVEL_UP")
-	end
 end
 
 local function update_player(self)
@@ -80,14 +70,6 @@ end
 
 function PitBull4_HolyPower:PLAYER_ENTERING_WORLD(event)
 	update_player(self)
-end
-
-function PitBull4_HolyPower:PLAYER_LEVEL_UP(event, level)
-	player_level = level
-	if player_level >= PALADINPOWERBAR_SHOW_LEVEL then
-		self:UnregisterEvent("PLAYER_LEVEL_UP")
-		update_player(self)
-	end
 end
 
 function PitBull4_HolyPower:ClearFrame(frame)
@@ -121,7 +103,7 @@ local function update_container_size(container, vertical, max_holy_power)
 end
 
 function PitBull4_HolyPower:UpdateFrame(frame)
-	if frame.unit ~= "player" or (not wow_900 and GetSpecialization() ~= SPEC_PALADIN_RETRIBUTION) or player_level < PALADINPOWERBAR_SHOW_LEVEL then
+	if frame.unit ~= "player" then
 		return self:ClearFrame(frame)
 	end
 

@@ -1,5 +1,3 @@
-local wow_900 = select(4, GetBuildInfo()) > 90000
-
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
@@ -697,9 +695,7 @@ local protected_events = {
 -- continue to work transparently to end users.
 local compat_event_map = {}
 compat_event_map.UNIT_POWER = 'UNIT_POWER_UPDATE'
-if wow_900 then
-	compat_event_map.UNIT_HEALTH_FREQUENT = 'UNIT_HEALTH'
-end
+compat_event_map.UNIT_HEALTH_FREQUENT = 'UNIT_HEALTH'
 compat_event_map.UNIT_HEALTHMAX = 'UNIT_MAXHEALTH'
 compat_event_map.UNIT_MANA = 'UNIT_POWER_FREQUENT'
 compat_event_map.UNIT_MAXMANA = 'UNIT_MAXPOWER'

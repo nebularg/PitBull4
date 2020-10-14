@@ -1,5 +1,3 @@
-local wow_900 = select(4, GetBuildInfo()) > 90000
-
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
@@ -31,19 +29,9 @@ end
 function PitBull4_PhaseIcon:OnEnter()
 	local unit = self:GetParent().unit
 	local tooltip = _G.PARTY_PHASED_MESSAGE
-	if wow_900 then
-		local phaseReason = UnitPhaseReason(unit)
-		if phaseReason then
-			tooltip = PartyUtil.GetPhasedReasonString(phaseReason, unit)
-		end
-	else
-		if UnitIsWarModePhased(unit) then
-			if C_PvP.IsWarModeDesired() then
-				tooltip = _G.PARTY_PLAYER_WARMODE_DISABLED
-			else
-				tooltip = _G.PARTY_PLAYER_WARMODE_ENABLED
-			end
-		end
+	local phaseReason = UnitPhaseReason(unit)
+	if phaseReason then
+		tooltip = PartyUtil.GetPhasedReasonString(phaseReason, unit)
 	end
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 	GameTooltip:SetText(tooltip, nil, nil, nil, nil, true)
@@ -61,11 +49,7 @@ function PitBull4_PhaseIcon:GetTexture(frame)
 		return nil
 	end
 
-	if wow_900 then
-		if not UnitPhaseReason(unit) then
-			return nil
-		end
-	elseif UnitInPhase(unit) and not UnitIsWarModePhased(unit) then
+	if not UnitPhaseReason(unit) then
 		return nil
 	end
 

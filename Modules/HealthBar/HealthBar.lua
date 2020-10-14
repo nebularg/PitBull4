@@ -1,5 +1,3 @@
-local wow_900 = select(4, GetBuildInfo()) > 90000
-
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
@@ -40,7 +38,7 @@ function PitBull4_HealthBar:OnEnable()
 
 	timerFrame:Show()
 
-	self:RegisterEvent(wow_900 and "UNIT_HEALTH" or "UNIT_HEALTH_FREQUENT", "UNIT_HEALTH")
+	self:RegisterEvent("UNIT_HEALTH")
 	self:RegisterEvent("UNIT_MAXHEALTH", "UNIT_HEALTH")
 	self:RegisterEvent("UNIT_CONNECTION", "UNIT_HEALTH")
 	self:RegisterEvent("PLAYER_ALIVE")
