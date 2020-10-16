@@ -107,7 +107,6 @@ globals = {
 	"IsSpellInRange",
 	"IsSpellKnown",
 	"LoadAddOn",
-	"MainMenuBar_UpdateExperienceBars",
 	"PartyUtil",
 	"PlaySound",
 	"PlaySoundFile",
