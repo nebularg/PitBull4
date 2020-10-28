@@ -34,58 +34,56 @@ do
 
 	local _,class = UnitClass("player")
 
-	if class == "PRIEST" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(528) -- Dispel Magic
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(585) -- Smite
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(15407) -- Mind Flay
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(2061) -- Flash Heal
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(17) -- Power Word: Shield
-		res_spells[#res_spells+1] = GetSpellInfo(2006) -- Resurrection
+	if class == "DEATHKNIGHT" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(45524) -- Chains of Ice
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(47541) -- Death Coil
+		res_spells[#res_spells+1] = GetSpellInfo(61999) -- Raise Ally
+	elseif class == "DEMONHUNTER" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(185245) -- Torment
 	elseif class == "DRUID" then
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(8921) -- Moonfire
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(5176) -- Wrath
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(8936) -- Regrowth
 		res_spells[#res_spells+1] = GetSpellInfo(50769) -- Revive
+	elseif class == "HUNTER" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(185358) -- Arcane Shot
+		pet_spells[#pet_spells+1] = GetSpellInfo(136) -- Mend Pet
+	elseif class == "MAGE" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(118) -- Polymorph
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(116) -- Frostbolt
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(130) -- Slow Fall
+	elseif class == "MONK" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(115546) -- Provoke
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(117952) -- Crackling Jade Lightning
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(116670) -- Vivify
+		res_spells[#res_spells+1] = GetSpellInfo(115178) -- Resuscitate
 	elseif class == "PALADIN" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(62124) -- Hand of Reckoning
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(1044) -- Hand of Freedom
 		res_spells[#res_spells+1] = GetSpellInfo(7328) -- Redemption
+	elseif class == "PRIEST" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(528) -- Dispel Magic
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(585) -- Smite
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(2061) -- Flash Heal
+		res_spells[#res_spells+1] = GetSpellInfo(2006) -- Resurrection
+	elseif class == "ROGUE" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(36554) -- Shadowstep
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(185763) -- Pistol Shot
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(57934) -- Tricks of the Trade
 	elseif class == "SHAMAN" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(51514) -- Hex
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(57994) -- Wind Shear
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(403) -- Lightning Bolt
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(8004) -- Healing Surge
 		res_spells[#res_spells+1] = GetSpellInfo(2008) -- Ancestral Spirit
 	elseif class == "WARLOCK" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(5782) -- Fear
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(196657) -- Shadow Bolt
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(686) -- Shadow Bolt
 		pet_spells[#pet_spells+1] = GetSpellInfo(755) -- Health Funnel
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(5697) -- Unending Breath
 		res_spells[#res_spells+1] = GetSpellInfo(20707) -- Soulstone
-	elseif class == "MAGE" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(118) -- Polymorph
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(2139) -- Counterspell
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(130) -- Slow Fall
-	elseif class == "HUNTER" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(147362) -- Counter Shot
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(190925) -- Harpoon
-		pet_spells[#pet_spells+1] = GetSpellInfo(136) -- Mend Pet
-	elseif class == "DEATHKNIGHT" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(49576) -- Death Grip
-		res_spells[#res_spells+1] = GetSpellInfo(61999) -- Raise Ally
-	elseif class == "ROGUE" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(36554) -- Shadowstep
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(185763) -- Pistol Shot
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(57934) -- Tricks of the Trade
 	elseif class == "WARRIOR" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(100) -- Charge
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(355) -- Taunt
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(198304) -- Intercept (Protection)
-	elseif class == "MONK" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(115546) -- Provoke
-		-- long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(117952) -- Crackling Jade Lightning
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(116670) -- Vivify
-		res_spells[#res_spells+1] = GetSpellInfo(115178) -- Resuscitate
-	elseif class == "DEMONHUNTER" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(183752) -- Consume Magic
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(3411) -- Intervene
 	end
 
 	function friendly_is_in_range(unit)
