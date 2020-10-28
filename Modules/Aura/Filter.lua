@@ -66,7 +66,10 @@ local can_purge = {
 	DRUID = {
 		Enrage = true,
 	},
-	HUNTER = {},
+	HUNTER = {
+		Enrage = true,
+		Magic = true,
+	},
 	MAGE = {
 		Magic = true,
 	},
@@ -87,29 +90,6 @@ local can_purge = {
 can_purge.player = can_purge[player_class]
 PitBull4_Aura.can_purge = can_purge
 
-local can_pet_purge do
-	local pet_dispels = {
-		264028, -- Chi-Ji's Tranquility
-		264055, -- Serenity Dust
-		264056, -- Spore Cloud
-		264262, -- Soothing Water
-		264263, -- Sonic Blast
-		264264, -- Nether Shock
-		264265, -- Spirit Shock
-		264266, -- Nature's Grace
-	}
-	function can_pet_purge()
-		if player_class == "HUNTER" then
-			for _, spellId in next, pet_dispels do
-				if IsSpellKnown(spellId, true) then
-					return true
-				end
-			end
-		end
-		return false
-	end
-end
-
 -- Rescan specialization spells that can change what we can dispel and purge.
 function PitBull4_Aura:PLAYER_TALENT_UPDATE()
 	can_dispel.DRUID.Magic = IsPlayerSpell(88423)
@@ -129,12 +109,6 @@ function PitBull4_Aura:PLAYER_TALENT_UPDATE()
 
 	can_dispel.WARLOCK.Magic = IsSpellKnown(89808, true)
 	self:GetFilterDB('33').aura_type_list.Magic = can_dispel.WARLOCK.Magic
-
-	local hunter_can_purge = can_pet_purge()
-	can_purge.HUNTER.Enrage = hunter_can_purge
-	self:GetFilterDB('-7').aura_type_list.Enrage = hunter_can_purge
-	can_purge.HUNTER.Magic = hunter_can_purge
-	self:GetFilterDB('-7').aura_type_list.Magic = hunter_can_purge
 
 	can_purge.WARLOCK.Magic = IsSpellKnown(19505, true)
 	self:GetFilterDB('37').aura_type_list.Magic = can_purge.WARLOCK.Magic
