@@ -8,7 +8,6 @@ local L = PitBull4.L
 -- CONSTANTS ----------------------------------------------------------------
 
 local SPELL_POWER_HOLY_POWER = 9 -- Enum.PowerType.HolyPower
-local SPEC_PALADIN_RETRIBUTION = _G.SPEC_PALADIN_RETRIBUTION
 
 local MAX_POWER = 5
 

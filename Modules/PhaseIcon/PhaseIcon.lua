@@ -28,11 +28,8 @@ end
 
 function PitBull4_PhaseIcon:OnEnter()
 	local unit = self:GetParent().unit
-	local tooltip = _G.PARTY_PHASED_MESSAGE
 	local phaseReason = UnitPhaseReason(unit)
-	if phaseReason then
-		tooltip = PartyUtil.GetPhasedReasonString(phaseReason, unit)
-	end
+	local tooltip = PartyUtil.GetPhasedReasonString(phaseReason, unit) or _G.PARTY_PHASED_MESSAGE
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 	GameTooltip:SetText(tooltip, nil, nil, nil, nil, true)
 	GameTooltip:Show()

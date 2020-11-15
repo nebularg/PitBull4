@@ -4,7 +4,6 @@ end
 
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
-local is_725 = _G.ClassNameplateBarWarlockShardMixin and true
 
 -- CONSTANTS ----------------------------------------------------------------
 
@@ -12,10 +11,10 @@ local SPELL_POWER_SOUL_SHARDS = 7 -- Enum.PowerType.SoulShards
 
 local MAX_SHARDS = 5
 
-local STANDARD_WIDTH  = is_725 and 17 or 15
-local STANDARD_HEIGHT = is_725 and 22 or 15
+local STANDARD_WIDTH = 17
+local STANDARD_HEIGHT = 22
 local BORDER_SIZE = 3
-local SPACING = is_725 and 6 or 3
+local SPACING = 6
 
 local HALF_STANDARD_WIDTH = STANDARD_WIDTH / 2
 local HALF_STANDARD_HEIGHT = STANDARD_HEIGHT / 2
