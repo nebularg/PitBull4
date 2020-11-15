@@ -30,7 +30,6 @@ globals = {
 	-- Third-party
 	"LibStub",
 	"PitBull4",
-	"RealMobHealth",
 
 	-- Frames/tables/misc
 	"ChatFontNormal",
