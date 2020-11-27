@@ -820,7 +820,7 @@ local function copy(t)
 end
 
 local function update_cast_data(event, unit, event_cast_id, event_spell_id)
-	local guid = UnitGUID(unit)
+	local guid = unit and UnitGUID(unit)
 	if not guid then return end
 	local data = cast_data[guid]
 	if not data then
