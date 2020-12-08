@@ -91,6 +91,7 @@ local function rawhook_frames(...)
 		local frame = select(i, ...)
 		frame:UnregisterAllEvents()
 		PitBull4_HideBlizzard:RawHook(frame, "Show", noop, true)
+		PitBull4_HideBlizzard:RawHook(frame, "SetPoint", noop, true)
 		frame:Hide()
 	end
 end
@@ -104,6 +105,7 @@ local function unhook_frame(frame)
 		end
 	elseif PitBull4_HideBlizzard:IsHooked(frame, "Show") then
 		PitBull4_HideBlizzard:Unhook(frame, "Show")
+		PitBull4_HideBlizzard:Unhook(frame, "SetPoint")
 	end
 end
 
