@@ -47,13 +47,21 @@ do
 	local function not_empty()
 		return UnitPower("player") > 0
 	end
+	local function lunar_not_empty()
+		local _,_,_,t,_,_,_,_,_,_,_ = GetTalentInfoBySpecialization(1,1,1)
+		if t then
+			return UnitPower("player") ~= 50 and UnitPower("player") ~= 51
+		else
+			return UnitPower("player") > 0
+		end
+	end
 	power_check = {
 		MANA = not_full,
 		RAGE = not_empty,
 		FOCUS = not_full,
 		ENERGY = not_full,
 		RUNIC_POWER = not_empty,
-		LUNAR_POWER = not_empty,
+		LUNAR_POWER = lunar_not_empty,
 		MAELSTROM = not_empty,
 		INSANITY = not_empty,
 		FURY = not_empty,
