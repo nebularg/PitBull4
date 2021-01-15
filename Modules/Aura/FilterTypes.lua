@@ -1485,8 +1485,11 @@ PitBull4_Aura:RegisterFilterType('Self buff',L["Self buff"],self_buff_filter,fun
 end)
 
 local function has_custom_visibility_filter(self, entry, frame)
-	local state = UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT"
-	local hasCustom = SpellGetVisibilityInfo(entry[15], state)
+	local hasCustom = false
+	if entry[15] then
+		local state = UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT"
+		hasCustom = SpellGetVisibilityInfo(entry[15], state)
+	end
 	if PitBull4_Aura:GetFilterDB(self).custom_visibility then
 		return hasCustom
 	else
@@ -1517,9 +1520,12 @@ PitBull4_Aura:RegisterFilterType('Has custom visibility',L["Has custom visibilit
 end)
 
 local function should_show_filter(self, entry, frame)
-	local state = UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT"
-	local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(entry[15], state)
-	local show = hasCustom and (showForMySpec or (alwaysShowMine and my_units[entry[12]]))
+	local show = false
+	if entry[15] then
+		local state = UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT"
+		local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(entry[15], state)
+		show = hasCustom and (showForMySpec or (alwaysShowMine and my_units[entry[12]]))
+	end
 	if PitBull4_Aura:GetFilterDB(self).should_show then
 		return show
 	else
