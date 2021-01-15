@@ -48,12 +48,12 @@ do
 		return UnitPower("player") > 0
 	end
 	local function lunar_not_empty()
-		local _,_,_,t,_,_,_,_,_,_,_ = GetTalentInfoBySpecialization(1,1,1)
-		if t then
-			return UnitPower("player") ~= 50 and UnitPower("player") ~= 51
-		else
-			return UnitPower("player") > 0
+		local _, _, _, selected = GetTalentInfoBySpecialization(1, 1, 1) -- Nature's Balance
+		if selected then
+			local power = UnitPower("player")
+			return power < 50 or power > 51
 		end
+		return UnitPower("player") > 0
 	end
 	power_check = {
 		MANA = not_full,

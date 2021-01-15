@@ -89,6 +89,7 @@ globals = {
 	"GetSpecialization",
 	"GetSpellCooldown",
 	"GetSpellInfo",
+	"GetTalentInfoBySpecialization",
 	"GetThreatStatusColor",
 	"GetTime",
 	"GetUnitPowerBarInfo",
