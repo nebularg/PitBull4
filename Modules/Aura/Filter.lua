@@ -125,6 +125,7 @@ self_buffs.DRUID = {
 	[5229] = true, -- Enrage
 	[22842] = true, -- Frenzied Regeneration
 	[24858] = true, -- Moonkin Form
+	[16886] = true, -- Nature's Grace
 	[17116] = true, -- Nature's Swiftness
 	[5215] = true, -- Prowl
 	[5217] = true, -- Tiger's Fury
