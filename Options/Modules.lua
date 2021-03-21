@@ -172,7 +172,7 @@ function PitBull4.Options.get_module_options()
 				PitBull4:LoadAndEnableModule(id)
 			end,
 			disabled = function(info)
-				return GetAddOnEnableState(player_name, addon_name) == 0 or not select(4, GetAddOnInfo(addon_name))
+				return GetAddOnEnableState(player_name, addon_name) == 0 or not IsAddOnLoadOnDemand(addon_name)
 			end,
 		}
 
