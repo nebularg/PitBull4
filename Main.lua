@@ -1375,7 +1375,6 @@ function PitBull4:LoadModules()
 		PitBull4_CombatText = true,
 		PitBull4_ComboPoints = true,
 		PitBull4_DemonicFury = true,
-		PitBull4_DogTagTexts = true,
 		PitBull4_DruidMana = true,
 		PitBull4_Eclipse = true,
 		PitBull4_ExperienceBar = true,

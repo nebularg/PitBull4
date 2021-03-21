@@ -24,6 +24,9 @@ externals:
   Modules/DogTagTexts/Libs/LibDogTag-3.0: https://repos.wowace.com/wow/libdogtag-3-0
   Modules/DogTagTexts/Libs/LibDogTag-Unit-3.0: https://repos.wowace.com/wow/libdogtag-unit-3-0
 
+move-folders:
+  PitBull4/Modules/DogTagTexts: PitBull4_DogTagTexts
+
 ignore:
   - Docs
 
