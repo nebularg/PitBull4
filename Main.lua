@@ -1325,7 +1325,7 @@ do
 
 	local function iter(num_addons, i)
 		i = i + 1
-		if i >= num_addons then
+		if i > num_addons then
 			-- and we're done
 			return nil
 		end
