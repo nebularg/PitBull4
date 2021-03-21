@@ -174,6 +174,7 @@ globals = {
 	"bit",
 	"ceil",
 	"date",
+	"debugstack",
 	"floor",
 	"format",
 	"geterrorhandler",
