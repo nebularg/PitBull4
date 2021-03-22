@@ -18,7 +18,9 @@
 <Include file="Modules\CombatIcon\load.xml"/>
 <Include file="Modules\CombatText\load.xml"/>
 <Include file="Modules\ComboPoints\load.xml"/>
+<!--@do-not-package@-->
 <Include file="Modules\DogTagTexts\load.xml"/>
+<!--@end-do-not-package@-->
 <Include file="Modules\ExperienceBar\load.xml"/>
 <Include file="Modules\HealthBar\load.xml"/>
 <Include file="Modules\HideBlizzard\load.xml"/>
