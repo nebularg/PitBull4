@@ -80,7 +80,7 @@ function PitBull4_ManaSpark:UpdateFrame(frame)
 	end
 
 	spark:ClearAllPoints()
-	local reverse = bar:GetReverse()
+	local reverse = not bar:GetReverse()
 	if bar:GetOrientation() == "HORIZONTAL" then
 		spark:SetWidth(20)
 		spark:SetHeight(bar:GetHeight() * 2)
