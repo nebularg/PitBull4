@@ -1,18 +1,21 @@
 
 -- Twitch client dun fucked up
-if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
-	C_Timer.After(7, function()
-		print("You are using the WoW Classic version of PitBull4. Reinstall the retail version of PitBull4 and relaunch WoW. If you use the Twitch client, exit out and reopen it to make sure you have the latest version.")
+if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and WOW_PROJECT_ID ~= WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
+	C_Timer.After(5, function()
+		print("You are using the Classic version of PitBull4. Reinstall the retail version of PitBull4 and relaunch WoW. If you use the Twitch client, exit out and reopen it to make sure you have the latest version.")
 	end)
 	return
 end
 
+-- luacheck: globals oRA3 ReloadUI SecureButton_GetModifiedUnit
+
 -- Constants ----------------------------------------------------------------
 local _G = _G
 
--- luacheck: globals oRA3 ReloadUI SecureButton_GetModifiedUnit
-
 local L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
+
+local wow_classic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or nil
+local wow_bcc = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC or nil
 
 local SINGLETON_CLASSIFICATIONS = {
 	"player",
@@ -308,6 +311,9 @@ PitBull4.version = "@project-version@"
 if PitBull4.version:match("@") then
 	PitBull4.version = "Development"
 end
+
+PitBull4.wow_classic = wow_classic
+PitBull4.wow_bcc = wow_bcc
 
 PitBull4.L = L
 

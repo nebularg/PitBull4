@@ -1,4 +1,6 @@
-## Interface: 11306
+## Interface: 20501
+## Interface-Classic: 11307
+## Interface-BCC: 20501
 ## Title: PitBull Unit Frames 4.0
 ## Notes: Dog-themed unit frames. Woof. Arf. Yip.
 ## Notes-deDE: Dog-themed unit frames. Woof. Arf. Yip.
@@ -12,13 +14,24 @@
 ## Notes-zhCN: 以狗为主题的单位框架。呜呜。汪汪。嗷呜。
 ## Notes-zhTW: Dog-themed unit frames. Woof. Arf. Yip.
 ## Author: ckknight, Shekfi, Nebula
-## SavedVariables: PitBull4DB
-## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibClassicDurations, LibClassicCasterino, LibDBIcon-1.0, LibHealComm-4.0, Clique
 ## Version: @project-version@
+
+## SavedVariables: PitBull4DB
+#@version-bcc@#
+## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDBIcon-1.0, LibHealComm-4.0, Clique
+#@end-version-bcc@#
+#@non-version-bcc@#
+# ## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibClassicDurations, LibClassicCasterino, LibDBIcon-1.0, LibHealComm-4.0, Clique
+#@end-non-version-bcc@#
 
 ## X-Curse-Project-ID: 7522
 ## X-WoWI-ID: 25020
 
 libs.xml
+#@non-version-bcc@#
+# Libs\LibClassicCasterino\LibClassicCasterino.lua
+# Libs\LibClassicDurations\LibClassicDurations.xml
+#@end-non-version-bcc@#
+
 load.xml
 modules.xml
