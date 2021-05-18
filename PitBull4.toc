@@ -16,6 +16,9 @@
 ## Author: ckknight, Shekfi, Nebula
 ## Version: @project-version@
 
+## X-Curse-Project-ID: 7522
+## X-WoWI-ID: 25020
+
 ## SavedVariables: PitBull4DB
 #@version-bcc@#
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDBIcon-1.0, LibHealComm-4.0, Clique
@@ -24,8 +27,7 @@
 # ## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibClassicDurations, LibClassicCasterino, LibDBIcon-1.0, LibHealComm-4.0, Clique
 #@end-non-version-bcc@#
 
-## X-Curse-Project-ID: 7522
-## X-WoWI-ID: 25020
+WrongVersion.lua
 
 libs.xml
 #@non-version-bcc@#
