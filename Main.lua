@@ -24,6 +24,9 @@ local SINGLETON_CLASSIFICATIONS = {
 	"target",
 	"targettarget",
 	"targettargettarget",
+	wow_bcc and "focus",
+	wow_bcc and "focustarget",
+	wow_bcc and "focustargettarget",
 }
 
 local UNIT_GROUPS = {
@@ -45,6 +48,7 @@ local NORMAL_UNITS = {
 	"player",
 	"pet",
 	"target",
+	wow_bcc and "focus",
 	-- "mouseover",
 }
 for i = 1, _G.MAX_PARTY_MEMBERS do
@@ -70,7 +74,7 @@ if LibSharedMedia and not LibSharedMedia:IsValid("font", DEFAULT_LSM_FONT) then 
 	DEFAULT_LSM_FONT = LibSharedMedia:GetDefault("font")
 end
 
-local CURRENT_CONFIG_VERSION = 5
+local CURRENT_CONFIG_VERSION = 6
 
 local DATABASE_DEFAULTS = {
 	profile = {
@@ -270,6 +274,23 @@ local DEFAULT_UNITS =  {
 		unit = "targettargettarget",
 	},
 }
+if wow_bcc then
+	DEFAULT_UNITS[L["Focus"]] = {
+		enabled = true,
+		unit = "focus",
+		anchor = "TOPLEFT",
+		relative_to = "0", -- UIParent
+		relative_point = "TOPLEFT",
+		position_x = 250,
+		position_y = -260,
+	}
+	DEFAULT_UNITS[format(L["%s's target"],L["Focus"])]= {
+		unit = "focustarget",
+	}
+	DEFAULT_UNITS[format(L["%s's target"],format(L["%s's target"],L["Focus"]))] = {
+		unit = "focustargettarget",
+	}
+end
 
 local LOCALIZED_NAMES = {}
 do
@@ -1198,6 +1219,26 @@ local upgrade_functions = {
 		end
 		return true
 	end,
+	[5] = function(sv)
+		-- Ok, maybe it wasn't for the best. Add back default focus frames for BCC.
+		if wow_classic then return true end
+		if not sv.profiles then return true end
+		local focus_frames = {
+			L["Focus"],
+			L["%s's target"]:format(L["Focus"]),
+			L["%s's target"]:format(L["%s's target"]:format(L["Focus"])),
+		}
+		for profile, profile_db in next, sv.profiles do
+			if profile_db.made_units then
+				for _, name in next, focus_frames do
+					if not profile_db.units[name] then
+						profile_db.units[name] = CopyTable(DEFAULT_UNITS[name])
+					end
+				end
+			end
+		end
+		return true
+	end,
 }
 
 local function check_config_version(sv)
@@ -1534,6 +1575,9 @@ function PitBull4:OnEnable()
 
 	-- register unit change events
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
+	if wow_bcc then
+		self:RegisterEvent("PLAYER_FOCUS_CHANGED")
+	end
 	self:RegisterEvent("UNIT_TARGET")
 	self:RegisterEvent("UNIT_PET")
 
@@ -1647,6 +1691,12 @@ function PitBull4:CheckGUIDForUnitID(unit, is_pet)
 	for frame in self:IterateFramesForUnitID(unit,not not guid) do
 		frame:UpdateGUID(guid,update)
 	end
+end
+
+function PitBull4:PLAYER_FOCUS_CHANGED()
+	self:CheckGUIDForUnitID("focus")
+	self:CheckGUIDForUnitID("focustarget")
+	self:CheckGUIDForUnitID("focustargettarget")
 end
 
 function PitBull4:PLAYER_TARGET_CHANGED()

@@ -6,6 +6,8 @@ local L = PitBull4.L
 
 local PitBull4_HideBlizzard = PitBull4:NewModule("HideBlizzard", "AceHook-3.0")
 
+local wow_bcc = PitBull4.wow_bcc
+
 PitBull4_HideBlizzard:SetModuleType("custom")
 PitBull4_HideBlizzard:SetName(L["Hide Blizzard frames"])
 PitBull4_HideBlizzard:SetDescription(L["Hide Blizzard frames that are no longer needed."])
@@ -14,6 +16,7 @@ PitBull4_HideBlizzard:SetDefaults({}, {
 	party = true,
 	raid = false,
 	target = true,
+	focus = true,
 	castbar = true,
 	aura = false,
 })
@@ -202,6 +205,16 @@ function showers:target()
 	ComboFrame:Show()
 end
 
+function hiders:focus()
+	if not wow_bcc then return end
+	hook_frames(FocusFrame)
+end
+
+function showers:focus()
+	if not wow_bcc then return end
+	unhook_frames(FocusFrame)
+end
+
 function hiders:castbar()
 	rawhook_frames(CastingBarFrame, PetCastingBarFrame)
 end
@@ -273,6 +286,13 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		get = get,
 		set = set,
 		hidden = hidden,
+	}, 'focus', {
+		type = 'toggle',
+		name = L["Focus"],
+		desc = L["Hide the standard focus frame."],
+		get = get,
+		set = set,
+		hidden = function(info) return not wow_bcc or hidden(info) end,
 	}, 'castbar', {
 		type = 'toggle',
 		name = L["Cast bar"],
