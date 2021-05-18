@@ -89,6 +89,8 @@ globals = {
 	"GetSpellDescription",
 	"GetSpellInfo",
 	"GetTime",
+	"GetTotemInfo",
+	"GetTotemTimeLeft",
 	"GetWatchedFactionInfo",
 	"GetXPExhaustion",
 	"InCombatLockdown",

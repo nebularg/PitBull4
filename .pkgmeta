@@ -20,7 +20,6 @@ externals:
   Modules/Aura/Libs/LibClassicDurations: https://github.com/rgd87/LibClassicDurations
   Modules/DogTagTexts/Libs/LibDogTag-3.0: https://repos.curseforge.com/wow/libdogtag-3-0
   Modules/DogTagTexts/Libs/LibDogTag-Unit-3.0: https://repos.curseforge.com/wow/libdogtag-unit-3-0
-  Modules/Totems/Libs/LibTotemInfo-1.0: https://github.com/SwimmingTiger/LibTotemInfo.git
   Modules/VisualHeal/Libs/LibHealComm-4.0: https://repos.wowace.com/wow/libhealcomm-4-0
 
 ignore:
@@ -29,7 +28,6 @@ ignore:
 embedded-libraries:
   - libclassicdurations
   - libdatabroker-1-1
-  - libtoteminfo
 
 optional-dependencies:
   - clique
