@@ -425,7 +425,7 @@ enemy_debuffs.ROGUE = {
 
 -- Shaman
 friend_buffs.SHAMAN = {
-	[6177] = true, -- Ancestral Fortitude
+	[16177] = true, -- Ancestral Fortitude
 	[8185] = true, -- Fire Resistance Totem
 	[8182] = true, -- Frost Resistance Totem
 	[8836] = true, -- Grace of Air Totem
