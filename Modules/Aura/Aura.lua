@@ -5,8 +5,6 @@ local L = PitBull4.L
 
 local PitBull4_Aura = PitBull4:NewModule("Aura")
 
-local LibClassicDurations = PitBull4.wow_classic and LibStub("LibClassicDurations", true)
-
 PitBull4_Aura:SetModuleType("custom")
 PitBull4_Aura:SetName(L["Aura"])
 PitBull4_Aura:SetDescription(L["Shows buffs and debuffs for PitBull4 frames."])
@@ -20,6 +18,15 @@ local elapsed_since_text_update = 0
 timerFrame:SetScript("OnUpdate",function(self, elapsed)
 	timer = timer + elapsed
 	if timer >= 0.2 then
+		-- XXX Don't blast errors while I work through this
+		if not PitBull4_Aura.db then
+			self:Hide()
+			geterrorhandler()("PitBull4_Aura: There was an error loading the module")
+			for frame in PitBull4:IterateFrames() do
+				PitBull4_Aura:ClearFrame(frame)
+			end
+			return
+		end
 		PitBull4_Aura:OnUpdate()
 		timer = 0
 	end
@@ -41,10 +48,13 @@ function PitBull4_Aura:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "UpdateAll")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateAll")
 	self:RegisterEvent("UNIT_AURA")
+
+	local LibClassicDurations = PitBull4.wow_classic and LibStub("LibClassicDurations", true)
 	if LibClassicDurations then
 		LibClassicDurations:Register(self)
 		LibClassicDurations.RegisterCallback(self, "UNIT_BUFF", "UNIT_AURA")
 	end
+
 	timerFrame:Show()
 
 	-- Need to track spec changes since it can change what they can dispel.
@@ -65,6 +75,8 @@ end
 
 function PitBull4_Aura:OnDisable()
 	timerFrame:Hide()
+
+	local LibClassicDurations = PitBull4.wow_classic and LibStub("LibClassicDurations", true)
 	if LibClassicDurations then
 		LibClassicDurations.UnregisterCallback(self, "UNIT_BUFF")
 		LibClassicDurations:Unregister(self)
