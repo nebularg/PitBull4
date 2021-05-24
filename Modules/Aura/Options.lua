@@ -902,7 +902,7 @@ PitBull4_Aura:SetDefaults({
 			name_list = self_buffs.Troll,
 			built_in = true,
 		},
-		['>0'] = {
+		['>0'] = LN.BloodElf and {
 			display_name = L["%s self buffs"]:format(LN.BloodElf),
 			filter_type = 'Name',
 			whitelist = true,
@@ -965,7 +965,7 @@ PitBull4_Aura:SetDefaults({
 			name_list = friend_buffs.Gnome,
 			built_in = true,
 		},
-		['92'] = {
+		['92'] = LN.Draenei and {
 			display_name = L["%s friend buffs"]:format(LN.Draenei),
 			filter_type = 'Name',
 			whitelist = true,
@@ -1028,7 +1028,7 @@ PitBull4_Aura:SetDefaults({
 		-- 	name_list = friend_buffs.ZandalariTroll,
 		-- 	built_in = true,
 		-- },
-		['>2'] = {
+		['>2'] = LN.BloodElf and {
 			display_name = L["%s friend buffs"]:format(LN.BloodElf),
 			filter_type = 'Name',
 			whitelist = true,
