@@ -4,6 +4,9 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
+local wow_classic = PitBull4.wow_classic
+local wow_bcc = PitBull4.wow_bcc
+
 local _, player_class = UnitClass("player")
 
 --- Return the DB dictionary for the specified filter.
@@ -18,9 +21,12 @@ end
 -- Setup the data for who can dispel what types of auras.
 -- dispel in this context means remove from friendly players
 local can_dispel = {
+	DEATHKNIGHT = {},
+	DEMONHUNTER = {},
 	DRUID = {},
 	HUNTER = {},
 	MAGE = {},
+	MONK = {},
 	PALADIN = {},
 	PRIEST = {},
 	ROGUE = {},
@@ -34,9 +40,12 @@ PitBull4_Aura.can_dispel = can_dispel
 -- Setup the data for who can purge what types of auras.
 -- purge in this context means remove from enemies.
 local can_purge = {
+	DEATHKNIGHT = {},
+	DEMONHUNTER = {},
 	DRUID = {},
 	HUNTER = {},
 	MAGE = {},
+	MONK = {},
 	PALADIN = {},
 	PRIEST = {},
 	ROGUE = {},
@@ -631,6 +640,76 @@ self_debuffs.Gnome = {}
 pet_buffs.Gnome = {}
 enemy_debuffs.Gnome = {}
 
+if wow_bcc then
+	-- Draenei
+	friend_buffs.Draenei = {
+		[28880] = true, -- Gift of the Naaru
+	}
+	friend_debuffs.Draenei = {
+		[23333] = true -- Warsong Flag
+	}
+	self_buffs.Draenei = {}
+	self_debuffs.Draenei = {}
+	pet_buffs.Draenei = {}
+	enemy_debuffs.Draenei = {}
+end
+
+-- -- Worgen
+-- friend_buffs.Worgen = {
+-- 	[23333] = true -- Warsong Flag
+-- }
+-- friend_debuffs.Worgen = {}
+-- self_buffs.Worgen = {
+-- 	[68992] = true, -- Darkflight
+-- 	[87840] = true, -- Running Wild
+-- }
+-- self_debuffs.Worgen = {}
+-- pet_buffs.Worgen = {}
+-- enemy_debuffs.Worgen = {}
+
+-- -- Dark Iron Dwarf
+-- friend_buffs.DarkIronDwarf = {
+-- 	[23333] = true -- Warsong Flag
+-- }
+-- friend_debuffs.DarkIronDwarf = {}
+-- self_buffs.DarkIronDwarf = {
+-- 	[273104] = true, -- Fireblood
+-- }
+-- self_debuffs.DarkIronDwarf = {}
+-- pet_buffs.DarkIronDwarf = {}
+-- enemy_debuffs.DarkIronDwarf = {}
+
+-- -- Lightforged Draenei
+-- friend_buffs.LightforgedDraenei = {
+-- 	[23333] = true -- Warsong Flag
+-- }
+-- friend_debuffs.LightforgedDraenei = {}
+-- self_buffs.LightforgedDraenei = {}
+-- self_debuffs.LightforgedDraenei = {}
+-- pet_buffs.LightforgedDraenei = {}
+-- enemy_debuffs.LightforgedDraenei = {}
+
+-- -- Void Elf
+-- friend_buffs.VoidElf = {
+-- 	[23333] = true -- Warsong Flag
+-- }
+-- friend_debuffs.VoidElf = {}
+-- self_buffs.VoidElf = {
+-- 	[256948] = true, -- Spatial Rift
+-- }
+-- self_debuffs.VoidElf = {}
+-- pet_buffs.VoidElf = {}
+-- enemy_debuffs.VoidElf = {}
+
+-- -- Kul Tiran Human
+-- friend_buffs.KulTiranHuman = {
+-- 	[23333] = true -- Warsong Flag
+-- }
+-- friend_debuffs.KulTiranHuman = {}
+-- self_buffs.KulTiranHuman = {}
+-- self_debuffs.KulTiranHuman = {}
+-- pet_buffs.KulTiranHuman = {}
+-- enemy_debuffs.KulTiranHuman = {}
 
 -- Orc
 friend_buffs.Orc = {
@@ -686,9 +765,97 @@ enemy_debuffs.Troll = {
 	[9035] = true, -- Hex of Weakness (Priest)
 }
 
+-- Blood Elf
+if wow_bcc then
+	friend_buffs.BloodElf = {
+		[23335] = true -- Silverwing Flag
+	}
+	friend_debuffs.BloodElf = {}
+	self_buffs.BloodElf = {}
+	self_debuffs.BloodElf = {}
+	pet_buffs.BloodElf = {}
+	enemy_debuffs.BloodElf = {
+		[28730] = true, -- Arcane Torrent
+	}
+end
+
+-- -- Goblin
+-- friend_buffs.Goblin = {
+-- 	[23335] = true -- Silverwing Flag
+-- }
+-- friend_debuffs.Goblin = {}
+-- self_buffs.Goblin = {}
+-- self_debuffs.Goblin = {}
+-- pet_buffs.Goblin = {}
+-- enemy_debuffs.Goblin = {}
+
+-- -- Mag'har Orc
+-- friend_buffs.MagharOrc = {
+-- 	[23335] = true -- Silverwing Flag
+-- }
+-- friend_debuffs.MagharOrc = {}
+-- self_buffs.MagharOrc = {
+-- 	-- Ancestral Call
+-- 	[274739] = true, -- Rictus of the Laughing Skull
+-- 	[274740] = true, -- Zeal of the Burning Blade
+-- 	[274741] = true, -- Ferocity of the Frostwolf
+-- 	[274742] = true, -- Might of the Blackrock
+-- }
+-- self_debuffs.MagharOrc = {}
+-- pet_buffs.MagharOrc = {}
+-- enemy_debuffs.MagharOrc = {}
+
+-- -- Highmountain Tauren
+-- friend_buffs.HighmountainTauren = {
+-- 	[23335] = true -- Silverwing Flag
+-- }
+-- friend_debuffs.HighmountainTauren = {}
+-- self_buffs.HighmountainTauren = {}
+-- self_debuffs.HighmountainTauren = {}
+-- pet_buffs.HighmountainTauren = {}
+-- enemy_debuffs.HighmountainTauren = {
+-- 	[255723] = true, -- Bull Rush
+-- }
+
+-- -- Nightborne
+-- friend_buffs.Nightborne = {
+-- 	[23335] = true -- Silverwing Flag
+-- }
+-- friend_debuffs.Nightborne = {}
+-- self_buffs.Nightborne = {}
+-- self_debuffs.Nightborne = {}
+-- pet_buffs.Nightborne = {}
+-- enemy_debuffs.Nightborne = {
+-- 	[260369] = true, -- Arcane Pulse
+-- }
+
+-- -- Zandalari Troll
+-- friend_buffs.ZandalariTroll = {
+-- 	[23335] = true -- Silverwing Flag
+-- }
+-- friend_debuffs.ZandalariTroll = {}
+-- self_buffs.ZandalariTroll = {}
+-- self_debuffs.ZandalariTroll = {}
+-- pet_buffs.ZandalariTroll = {}
+-- enemy_debuffs.ZandalariTroll = {}
+
+-- -- Pandaren
+-- friend_buffs.Pandaren = {
+-- 	[23335] = UnitFactionGroup("player") == "Horde", -- Silverwing Flag
+-- 	[23333] = UnitFactionGroup("player") == "Alliance", -- Warsong Flag
+-- }
+-- friend_debuffs.Pandaren = {}
+-- self_buffs.Pandaren = {}
+-- self_debuffs.Pandaren = {}
+-- pet_buffs.Pandaren = {}
+-- enemy_debuffs.Pandaren = {
+-- 	[107079] = true, -- Quaking Palm
+-- }
 
 -- Everyone
-local extra_buffs = {}
+local extra_buffs = {
+	[34976] = wow_bcc, -- Netherstorm Flag
+}
 
 local function turn(t, shallow)
 	local tmp = {}
