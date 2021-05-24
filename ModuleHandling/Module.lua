@@ -95,7 +95,7 @@ function PitBull4:OnModuleCreated(module)
 	recent_modules[#recent_modules+1] = module
 end
 
-function PitBull4:ADDON_LOADED()
+function PitBull4:HandleModuleLoad()
 	while #recent_modules > 0 do
 		local module = table.remove(recent_modules, 1)
 
@@ -486,21 +486,13 @@ function PitBull4:IterateModulesOfType(...)
 	return iter, types, nil
 end
 
-do
-	-- we need to hook OnInitialize so that we can handle the database stuff for modules
-	local old_PitBull4_OnInitialize = PitBull4.OnInitialize
-	PitBull4.OnInitialize = function(self)
-		if old_PitBull4_OnInitialize then
-			old_PitBull4_OnInitialize(self)
-		end
-
-		for module, layout_defaults in pairs(module_to_layout_defaults) do
-			fix_db_for_module(module, layout_defaults, module_to_global_defaults[module])
-		end
-		-- no longer need these
-		module_to_layout_defaults = nil
-		module_to_global_defaults = nil
+function PitBull4:InitializeModuleDefaults()
+	for module, layout_defaults in pairs(module_to_layout_defaults) do
+		fix_db_for_module(module, layout_defaults, module_to_global_defaults[module])
 	end
+	-- no longer need these
+	module_to_layout_defaults = nil
+	module_to_global_defaults = nil
 end
 
 --- Enable a module properly.
