@@ -1305,7 +1305,9 @@ function PitBull4:OnInitialize()
 		LibDBIcon:Register("PitBull4", LibDataBrokerLauncher, self.db.profile.minimap_icon)
 	end
 
-	self:RegisterEvent("ADDON_LOADED") -- ModuleHandling\Module.lua
+	-- ModuleHandling\Module.lua
+	self:InitializeModuleDefaults()
+	self:RegisterEvent("ADDON_LOADED", "HandleModuleLoad")
 
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED", "OnTanksUpdated")
 	if oRA3 then
