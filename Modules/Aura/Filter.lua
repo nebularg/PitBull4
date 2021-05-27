@@ -165,24 +165,26 @@ do
 		local PET = LibPlayerSpells.constants.PET
 		local TARGETING = LibPlayerSpells.masks.TARGETING
 
-		for _, class in next, CLASS_SORT_ORDER do
-			for spell, flags in next, LibPlayerSpells.__categories[class] do
-				if bit.band(flags, AURA) ~= 0 then
-					local target = bit.band(flags, TARGETING)
-					local inverted = bit.band(flags, INVERT_AURA) ~= 0 -- friend debuff
+		for class, spells in LibPlayerSpells:IterateCategories() do
+			if CLASS_SORT_ORDER[class] then -- skip RACIAL
+				for spell, flags in next, spells do
+					if bit.band(flags, AURA) ~= 0 then
+						local target = bit.band(flags, TARGETING)
+						local inverted = bit.band(flags, INVERT_AURA) ~= 0 -- friend debuff
 
-					if target == HELPFUL and not inverted then
-						friend_buffs[class][spell] = true
-					elseif (target == HELPFUL or target == PET) and inverted then
-						friend_debuffs[class][spell] = true
-					elseif target == PERSONAL and not inverted then
-						self_buffs[class][spell] = true
-					elseif target == PERSONAL and inverted then
-						self_debuffs[class][spell] = true
-					elseif target == PET and not inverted then
-						pet_buffs[class][spell] = true
-					elseif target == HARMFUL then
-						enemy_debuffs[class][spell] = true
+						if target == HELPFUL and not inverted then
+							friend_buffs[class][spell] = true
+						elseif (target == HELPFUL or target == PET) and inverted then
+							friend_debuffs[class][spell] = true
+						elseif target == PERSONAL and not inverted then
+							self_buffs[class][spell] = true
+						elseif target == PERSONAL and inverted then
+							self_debuffs[class][spell] = true
+						elseif target == PET and not inverted then
+							pet_buffs[class][spell] = true
+						elseif target == HARMFUL then
+							enemy_debuffs[class][spell] = true
+						end
 					end
 				end
 			end
@@ -236,14 +238,7 @@ enemy_debuffs.Gnome = {}
 
 -- Draenei
 friend_buffs.Draenei = {
-	[59545]  = true, -- Gift of the Naaru (Death Knight)
-	[59543]  = true, -- Gift of the Naaru (Hunter)
-	[59548]  = true, -- Gift of the Naaru (Mage)
-	[59542]  = true, -- Gift of the Naaru (Paladin)
-	[59544]  = true, -- Gift of the Naaru (Priest)
-	[59547]  = true, -- Gift of the Naaru (Shaman)
-	[28880]  = true, -- Gift of the Naaru (Warrior)
-	[121093] = true, -- Gift of the Naaru (Monk)
+	[28880]  = true, -- Gift of the Naaru
 }
 friend_debuffs.Draenei = {
 	[23333] = true -- Warsong Flag
@@ -316,9 +311,7 @@ friend_buffs.Orc = {
 }
 friend_debuffs.Orc = {}
 self_buffs.Orc = {
-	[20572] = true, -- Blood Fury (Attack power)
-	[33702] = true, -- Blood Fury (Spell power)
-	[33697] = true, -- Blood Fury (Both)
+	[20572] = true, -- Blood Fury
 }
 self_debuffs.Orc = {}
 pet_buffs.Orc = {}
