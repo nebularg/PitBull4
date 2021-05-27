@@ -18,7 +18,6 @@ local elapsed_since_text_update = 0
 timerFrame:SetScript("OnUpdate",function(self, elapsed)
 	timer = timer + elapsed
 	if timer >= 0.2 then
-		-- XXX Don't blast errors while I work through this
 		if not PitBull4_Aura.db then
 			self:Hide()
 			geterrorhandler()("PitBull4_Aura: There was an error loading the module")
