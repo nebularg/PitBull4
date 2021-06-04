@@ -58,7 +58,7 @@ function PitBull4_PvPIcon:GetTexture(frame)
 		else
 			return [[Interface\TargetingFrame\UI-PVP-FFA]]
 		end
-	elseif faction and faction ~= "Neutral" and UnitIsPVP(unit) or true then
+	elseif faction and faction ~= "Neutral" and UnitIsPVP(unit) then
 		-- Handle "Mercenary Mode" for player
 		if unit == "player" and UnitIsMercenary(unit) then
 			faction = OPPOSITE_PLAYER_FACTION[faction]
