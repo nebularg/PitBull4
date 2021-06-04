@@ -166,7 +166,7 @@ do
 		local TARGETING = LibPlayerSpells.masks.TARGETING
 
 		for class, spells in LibPlayerSpells:IterateCategories() do
-			if CLASS_SORT_ORDER[class] then -- skip RACIAL
+			if RAID_CLASS_COLORS[class] then -- skip RACIAL
 				for spell, flags in next, spells do
 					if bit.band(flags, AURA) ~= 0 then
 						local target = bit.band(flags, TARGETING)
