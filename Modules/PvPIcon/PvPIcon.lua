@@ -11,9 +11,8 @@ PitBull4_PvPIcon:SetDefaults({
 	attach_to = "root",
 	location = "edge_top_right",
 	position = 1,
+	show_prestige = false,
 })
-
-local INDICATOR_SIZE = 15
 
 local FRIENDLY_CLASSIFICATIONS = {
 	player = true,
@@ -38,40 +37,42 @@ local TEX_COORDS = {
 	[ [[Interface\TargetingFrame\UI-PVP-Alliance]] ] = {0.07, 0.58, 0.06, 0.57},
 }
 
-local PRESTIGE_TEX_COORDS = {
-	[ [[Interface\TargetingFrame\UI-PVP-FFA]] ] = {0.0517578, 0.100586, 0.763672, 0.865234}, -- honorsystem-portrait-neutral
-	[ [[Interface\TargetingFrame\UI-PVP-Horde]] ] = {0.000976562, 0.0498047, 0.869141, 0.970703}, -- honorsystem-portrait-horde
-	[ [[Interface\TargetingFrame\UI-PVP-Alliance]] ] = {0.000976562, 0.0498047, 0.763672, 0.865234}, -- honorsystem-portrait-alliance
-}
-
 function PitBull4_PvPIcon:OnEnable()
 	self:RegisterEvent("UPDATE_FACTION")
-	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "UPDATE_FACTION")
 	self:RegisterEvent("UNIT_FACTION", "UPDATE_FACTION")
+	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "UPDATE_FACTION")
+	self:RegisterEvent("HONOR_LEVEL_UPDATE")
 end
 
 function PitBull4_PvPIcon:GetTexture(frame)
 	local unit = frame.unit
-
-	if UnitIsPVPFreeForAll(unit) then
-		return [[Interface\TargetingFrame\UI-PVP-FFA]]
-	end
+	local show_prestige = self:GetLayoutDB(frame).show_prestige
 
 	local faction = UnitFactionGroup(unit)
-	if not faction or faction == "Neutral" then
-		return nil
+	if UnitIsPVPFreeForAll(unit) then
+		local honorLevel = UnitHonorLevel(unit)
+		local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel)
+		if honorRewardInfo and show_prestige then
+			-- self.prestigePortrait:SetAtlas("honorsystem-portrait-neutral", false)
+			return honorRewardInfo.badgeFileDataID
+		else
+			return [[Interface\TargetingFrame\UI-PVP-FFA]]
+		end
+	elseif faction and faction ~= "Neutral" and UnitIsPVP(unit) or true then
+		-- Handle "Mercenary Mode" for player
+		if unit == "player" and UnitIsMercenary(unit) then
+			faction = OPPOSITE_PLAYER_FACTION[faction]
+		end
+		local honorLevel = UnitHonorLevel(unit)
+		local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel)
+		if honorRewardInfo and show_prestige then
+			-- self.prestigePortrait:SetAtlas("honorsystem-portrait-"..faction, false)
+			return honorRewardInfo.badgeFileDataID
+		else
+			return [[Interface\TargetingFrame\UI-PVP-]] .. faction
+		end
 	end
-
-	if not UnitIsPVP(unit) then
-		return nil
-	end
-
-	-- Handle "Mercenary Mode" added in 6.2.2. This is only used for PlayerFrame
-	-- so I'm assumming other units don't require this check.
-	if unit == "player" and UnitIsMercenary(unit) then
-		faction = OPPOSITE_PLAYER_FACTION[faction]
-	end
-	return [[Interface\TargetingFrame\UI-PVP-]] .. faction
+	return nil
 end
 
 function PitBull4_PvPIcon:GetExampleTexture(frame)
@@ -102,8 +103,31 @@ function PitBull4_PvPIcon:UPDATE_FACTION(event, unit)
 	end
 end
 
+function PitBull4_PvPIcon:HONOR_LEVEL_UPDATE()
+	self:UpdateForUnitID("player")
+end
+
 function PitBull4_PvPIcon:GetTexCoord(frame, texture)
 	local tex_coord = TEX_COORDS[texture]
-	return tex_coord[1], tex_coord[2], tex_coord[3], tex_coord[4]
+	if tex_coord then
+		return tex_coord[1], tex_coord[2], tex_coord[3], tex_coord[4]
+	end
+	return 0, 1, 0, 1
 end
 PitBull4_PvPIcon.GetExampleTexCoord = PitBull4_PvPIcon.GetTexCoord
+
+PitBull4_PvPIcon:SetLayoutOptionsFunction(function(self)
+	local function get(info)
+		return PitBull4.Options.GetLayoutDB(self)[info[#info]]
+	end
+	local function set(info, value)
+		PitBull4.Options.GetLayoutDB(self)[info[#info]] = value
+		PitBull4.Options.UpdateFrames()
+	end
+	return "show_prestige", {
+		type = "toggle",
+		name = L["Show honor level icon"],
+		get = get,
+		set = set,
+	}
+end)

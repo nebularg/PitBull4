@@ -916,6 +916,7 @@ L["Show an icon on the unit frame when the unit is the group leader."] = true
 L["Show background on the cast bar when nothing is being cast."] = true
 L["Show combo points on the unit frame if you are a Rogue or Druid in Cat form."] = true
 L["Show Death Knight rune icons."] = true
+L["Show honor level icon"] = true
 L["Show icon"] = true
 L["Show in all shapeshift forms."] = true
 L["Show information like damage taken, healing taken, resists, etc. on the unit frame."] = true

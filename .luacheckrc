@@ -144,6 +144,7 @@ globals = {
 	"UnitHasVehicleUI",
 	"UnitHealth",
 	"UnitHealthMax",
+	"UnitHonorLevel",
 	"UnitInParty",
 	"UnitInRaid",
 	"UnitInRange",
