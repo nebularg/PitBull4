@@ -1,7 +1,7 @@
 local _, player_class = UnitClass("player")
-if player_class ~= "DRUID" and player_class ~= "ROGUE" then
-	return
-end
+-- if player_class ~= "DRUID" and player_class ~= "ROGUE" then
+-- 	return
+-- end
 
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
@@ -22,9 +22,12 @@ timerFrame:SetScript("OnUpdate", function()
 end)
 
 local SPELL_POWER_ENERGY = Enum.PowerType.Energy
+local SPELL_POWER_MANA = Enum.PowerType.Mana
 local ENERGY_REGEN_TIME = 2.0
 local INVERSE_ENERGY_REGEN_TIME = 1 / ENERGY_REGEN_TIME
 local ENERGY_REGEN_LAG = 0.012
+--for warlock life tap  on level56,for different class this will not be same (pal,warlock,mage,druid...5 secends) this will be add sooner 
+local MAXSPELLMANAGEN  = 420 
 
 local current_energy = 0
 local last_energy_gained = 0
@@ -36,8 +39,12 @@ function PitBull4_EnergySpark:OnEnable()
 	self:RegisterUnitEvent("UNIT_POWER_FREQUENT", nil, "player")
 	self:RegisterUnitEvent("UNIT_MAXPOWER", nil, "player")
 	self:RegisterUnitEvent("UNIT_DISPLAYPOWER", "UNIT_MAXPOWER", "player")
-
-	current_energy = UnitPower("player", SPELL_POWER_ENERGY)
+	if UnitPowerType("player") == SPELL_POWER_ENERGY then
+		current_energy = UnitPower("player", SPELL_POWER_ENERGY)
+	end
+	if UnitPowerType("player") == SPELL_POWER_MANA then
+		current_energy = UnitPower("player", SPELL_POWER_MANA)
+	end
 end
 
 function PitBull4_EnergySpark:OnDisable()
@@ -50,7 +57,7 @@ function PitBull4_EnergySpark:UpdateFrame(frame)
 	end
 
 	local bar = frame.PowerBar
-	if not bar or UnitPowerType("player") ~= SPELL_POWER_ENERGY then
+	if not bar or (UnitPowerType("player") ~= SPELL_POWER_ENERGY) and  (UnitPowerType("player") ~= SPELL_POWER_MANA)then
 		return self:ClearFrame(frame)
 	end
 
@@ -82,6 +89,13 @@ function PitBull4_EnergySpark:UpdateFrame(frame)
 		texture:SetAllPoints(spark)
 	end
 
+	local ENERGY_GREEN_B = 0.71
+	local ENERGY_GREEN_E = 0.95
+	if time_since_regen > ENERGY_GREEN_B and time_since_regen < ENERGY_GREEN_E then 
+		spark.texture:SetVertexColor(1, 0, 1, 1)
+	else
+		spark.texture:SetVertexColor(1, 1, 1, 0.6)
+	end
 	spark:ClearAllPoints()
 	local reverse = bar:GetReverse()
 	if bar:GetOrientation() == "HORIZONTAL" then
@@ -126,19 +140,49 @@ end
 PitBull4_EnergySpark.OnHide = PitBull4_EnergySpark.ClearFrame
 
 function PitBull4_EnergySpark:UNIT_POWER_FREQUENT(_, unit, power_type)
-	if unit ~= "player" or power_type ~= "ENERGY" then return end
+	-- if unit ~= "player" or power_type ~= "ENERGY" then return end
 
-	local new_energy = UnitPower("player", SPELL_POWER_ENERGY)
-	if new_energy > current_energy then
-		last_energy_gained = GetTime()
+	-- local new_energy = UnitPower("player", SPELL_POWER_ENERGY)
+	-- if new_energy > current_energy then
+	-- 	last_energy_gained = GetTime()
+	-- end
+	-- current_energy = new_energy
+
+	if unit ~= "player" then return end
+	if power_type == "ENERGY" then
+		local new_energy = UnitPower("player", SPELL_POWER_ENERGY)
+		if new_energy > current_energy then
+			last_energy_gained = GetTime()
+		end
+		current_energy = new_energy
 	end
-	current_energy = new_energy
+	
+	if power_type == "MANA" then
+		local new_energy = UnitPower("player", SPELL_POWER_MANA)
+		if new_energy - current_energy >= MAXSPELLMANAGEN then
+			current_energy = new_energy
+			return
+		end
+		if new_energy > current_energy then
+			last_energy_gained = GetTime()
+		end
+		if new_energy < current_energy then
+			last_energy_gained = 0
+		end
+		current_energy = new_energy
+	end
 end
 
 function PitBull4_EnergySpark:UNIT_MAXPOWER(_, unit)
 	if unit ~= "player" then return end
 
-	current_energy = UnitPower("player", SPELL_POWER_ENERGY)
+	-- current_energy = UnitPower("player", SPELL_POWER_ENERGY)
+	if UnitPowerType("player") == SPELL_POWER_ENERGY then
+		current_energy = UnitPower("player", SPELL_POWER_ENERGY)
+	end
+	if UnitPowerType("player") == SPELL_POWER_MANA then
+		current_energy = UnitPower("player", SPELL_POWER_MANA)
+	end
 end
 
 PitBull4_EnergySpark:SetLayoutOptionsFunction(function(self)
