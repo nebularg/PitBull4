@@ -466,7 +466,9 @@ function BarModule:GetTexture(frame)
 	local texture
 	if LibSharedMedia then
 		texture = LibSharedMedia:Fetch("statusbar", layout_db.texture or frame.layout_db.bar_texture or "Blizzard")
-		texture = texture:gsub("%.tga$", ""):gsub("%.blp$", "")
+		if type(texture) == "string" then
+			texture = texture:gsub("%.tga$", ""):gsub("%.blp$", "")
+		end
 	end
 	return texture or [[Interface\TargetingFrame\UI-StatusBar]]
 end
