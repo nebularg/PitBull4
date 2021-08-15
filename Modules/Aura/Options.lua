@@ -2445,7 +2445,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				set = set_layout,
 				order = 53,
 			},
-			break_5 = {
+			break_6 = {
 				type = 'header',
 				name = '',
 				order = 54,
