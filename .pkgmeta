@@ -20,7 +20,7 @@ externals:
   Libs/LibClassicDurations: https://github.com/rgd87/LibClassicDurations.git
   Modules/DogTagTexts/Libs/LibDogTag-3.0: https://repos.curseforge.com/wow/libdogtag-3-0
   Modules/DogTagTexts/Libs/LibDogTag-Unit-3.0: https://repos.curseforge.com/wow/libdogtag-unit-3-0
-  Modules/VisualHeal/Libs/LibHealComm-4.0: https://github.com/Azilroka/LibHealComm-4.0.git
+  Modules/VisualHeal/Libs/LibHealComm-4.0: https://repos.curseforge.com/wow/libhealcomm-4-0
 
 move-folders:
   PitBull4/Modules/DogTagTexts: PitBull4_DogTagTexts
