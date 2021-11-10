@@ -273,9 +273,12 @@ PitBull4_Aura:SetDefaults({
 		-- % Race map filters
 		-- & Class map filters
 		-- * Extra filters
+		-- + Death Knight
+		-- ,, Demon Hunter
 		-- , Druid
 		-- - Hunter
 		-- . Mage
+		-- // Monk
 		-- / Paladin
 		-- 0 Priest
 		-- 1 Rogue
@@ -283,14 +286,26 @@ PitBull4_Aura:SetDefaults({
 		-- 3 Warlock
 		-- 4 Warrior
 		-- 5 Human
+		-- 55 Kul Tiran Human
 		-- 6 Dwarf
+		-- 66 Dark Iron Dwarf
 		-- 7 Night Elf
+		-- 77 Void Elf
 		-- 8 Gnome
+		-- 9 Draenei
+		-- 99 Lightforged Draenei
 		-- : Orc
+		-- :: Mag'har Orc
 		-- ; Undead
 		-- < Taruen
+		-- << Highmountain Tauren
 		-- = Troll
+		-- == Zandalari Troll
 		-- > Blood Elf
+		-- >> Nightborne
+		-- ? Worgen
+		-- ?? Goblin
+		-- @ Pandaren (shared, race filters are always followed by a number)
 		-- @ Simple filters
 		--
 		-- New classes and races are being added with two characters
@@ -495,6 +510,13 @@ PitBull4_Aura:SetDefaults({
 			aura_type_list = can_dispel.MAGE,
 			built_in = true,
 		},
+		-- ['//3'] = {
+		-- 	display_name = L["%s can dispel"]:format(LN.MONK),
+		-- 	filter_type = 'Aura Type',
+		-- 	whitelist = true,
+		-- 	aura_type_list = can_dispel.MONK,
+		-- 	built_in = true,
+		-- },
 		['/3'] = {
 			display_name = L["%s can dispel"]:format(LN.PALADIN),
 			filter_type = 'Aura Type',
@@ -516,6 +538,27 @@ PitBull4_Aura:SetDefaults({
 			aura_type_list = can_dispel.SHAMAN,
 			built_in = true,
 		},
+		['33'] = {
+			display_name = L["%s can dispel"]:format(LN.WARLOCK),
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_dispel.WARLOCK,
+			built_in = true,
+		},
+		-- ['+0'] = {
+		-- 	display_name = L["%s self buffs"]:format(LN.DEATHKNIGHT),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = self_buffs.DEATHKNIGHT,
+		-- 	built_in = true,
+		-- },
+		-- [',,0'] = {
+		-- 	display_name = L["%s self buffs"]:format(LN.DEMONHUNTER),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = self_buffs.DEMONHUNTER,
+		-- 	built_in = true,
+		-- },
 		[',0'] = {
 			display_name = L["%s self buffs"]:format(LN.DRUID),
 			filter_type = 'Name',
@@ -537,6 +580,13 @@ PitBull4_Aura:SetDefaults({
 			name_list = self_buffs.MAGE,
 			built_in = true,
 		},
+		-- ['//0'] = {
+		-- 	display_name = L["%s self buffs"]:format(LN.MONK),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = self_buffs.MONK,
+		-- 	built_in = true,
+		-- },
 		['/0'] = {
 			display_name = L["%s self buffs"]:format(LN.PALADIN),
 			filter_type = 'Name',
@@ -579,6 +629,13 @@ PitBull4_Aura:SetDefaults({
 			name_list = self_buffs.WARRIOR,
 			built_in = true,
 		},
+		-- ['+1'] = {
+		-- 	display_name = L["%s pet buffs"]:format(LN.DEATHKNIGHT),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = pet_buffs.DEATHKNIGHT,
+		-- 	built_in = true,
+		-- },
 		['-1'] = {
 			display_name = L["%s pet buffs"]:format(LN.HUNTER),
 			filter_type = 'Name',
@@ -593,6 +650,20 @@ PitBull4_Aura:SetDefaults({
 			name_list = pet_buffs.WARLOCK,
 			built_in = true,
 		},
+		-- ['+2'] = {
+		-- 	display_name = L["%s friend buffs"]:format(LN.DEATHKNIGHT),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = friend_buffs.DEATHKNIGHT,
+		-- 	built_in = true,
+		-- },
+		-- [',,2'] = {
+		-- 	display_name = L["%s friend buffs"]:format(LN.DEMONHUNTER),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = friend_buffs.DEMONHUNTER,
+		-- 	built_in = true,
+		-- },
 		[',2'] = {
 			display_name = L["%s friend buffs"]:format(LN.DRUID),
 			filter_type = 'Name',
@@ -614,6 +685,13 @@ PitBull4_Aura:SetDefaults({
 			name_list = friend_buffs.MAGE,
 			built_in = true,
 		},
+		-- ['//2'] = {
+		-- 	display_name = L["%s friend buffs"]:format(LN.MONK),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = friend_buffs.MONK,
+		-- 	built_in = true,
+		-- },
 		['/2'] = {
 			display_name = L["%s friend buffs"]:format(LN.PALADIN),
 			filter_type = 'Name',
@@ -656,6 +734,20 @@ PitBull4_Aura:SetDefaults({
 			name_list = friend_buffs.WARRIOR,
 			built_in = true,
 		},
+		-- ['+6'] = {
+		-- 	display_name = L["%s enemy debuffs"]:format(LN.DEATHKNIGHT),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = enemy_debuffs.DEATHKNIGHT,
+		-- 	built_in = true,
+		-- },
+		-- [',,6'] = {
+		-- 	display_name = L["%s enemy debuffs"]:format(LN.DEMONHUNTER),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = enemy_debuffs.DEMONHUNTER,
+		-- 	built_in = true,
+		-- },
 		[',6'] = {
 			display_name = L["%s enemy debuffs"]:format(LN.DRUID),
 			filter_type = 'Name',
@@ -677,6 +769,13 @@ PitBull4_Aura:SetDefaults({
 			name_list = enemy_debuffs.MAGE,
 			built_in = true,
 		},
+		-- ['//6'] = {
+		-- 	display_name = L["%s enemy debuffs"]:format(LN.MONK),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = enemy_debuffs.MONK,
+		-- 	built_in = true,
+		-- },
 		['/6'] = {
 			display_name = L["%s enemy debuffs"]:format(LN.PALADIN),
 			filter_type = 'Name',
@@ -761,6 +860,13 @@ PitBull4_Aura:SetDefaults({
 			name_list = self_buffs.Dwarf,
 			built_in = true,
 		},
+		-- ['660'] = {
+		-- 	display_name = L["%s self buffs"]:format(LN.DarkIronDwarf),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = self_buffs.DarkIronDwarf,
+		-- 	built_in = true,
+		-- },
 		['70'] = {
 			display_name = L["%s self buffs"]:format(LN.NightElf),
 			filter_type = 'Name',
@@ -775,6 +881,13 @@ PitBull4_Aura:SetDefaults({
 			name_list = self_buffs.Orc,
 			built_in = true,
 		},
+		-- ['::0'] = {
+		-- 	display_name = L["%s self buffs"]:format(LN.MagharOrc),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = self_buffs.MagharOrc,
+		-- 	built_in = true,
+		-- },
 		[';0'] = {
 			display_name = L["%s self buffs"]:format(LN.Scourge),
 			filter_type = 'Name',
@@ -789,6 +902,27 @@ PitBull4_Aura:SetDefaults({
 			name_list = self_buffs.Troll,
 			built_in = true,
 		},
+		['>0'] = LN.BloodElf and {
+			display_name = L["%s self buffs"]:format(LN.BloodElf),
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.BloodElf,
+			built_in = true,
+		},
+		-- ['?0'] = {
+		-- 	display_name = L["%s self buffs"]:format(LN.Worgen),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = self_buffs.Worgen,
+		-- 	built_in = true,
+		-- },
+		-- ['770'] = {
+		-- 	display_name = L["%s self buffs"]:format(LN.VoidElf),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = self_buffs.VoidElf,
+		-- 	built_in = true,
+		-- },
 		['52'] = {
 			display_name = L["%s friend buffs"]:format(LN.Human),
 			filter_type = 'Name',
@@ -796,6 +930,13 @@ PitBull4_Aura:SetDefaults({
 			name_list = friend_buffs.Human,
 			built_in = true,
 		},
+		-- ['552'] = {
+		-- 	display_name = L["%s friend buffs"]:format(LN.KulTiranHuman),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = friend_buffs.KulTiranHuman,
+		-- 	built_in = true,
+		-- },
 		['62'] = {
 			display_name = L["%s friend buffs"]:format(LN.Dwarf),
 			filter_type = 'Name',
@@ -803,6 +944,13 @@ PitBull4_Aura:SetDefaults({
 			name_list = friend_buffs.Dwarf,
 			built_in = true,
 		},
+		-- ['662'] = {
+		-- 	display_name = L["%s friend buffs"]:format(LN.DarkIronDwarf),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = friend_buffs.DarkIronDwarf,
+		-- 	built_in = true,
+		-- },
 		['72'] = {
 			display_name = L["%s friend buffs"]:format(LN.NightElf),
 			filter_type = 'Name',
@@ -817,6 +965,20 @@ PitBull4_Aura:SetDefaults({
 			name_list = friend_buffs.Gnome,
 			built_in = true,
 		},
+		['92'] = LN.Draenei and {
+			display_name = L["%s friend buffs"]:format(LN.Draenei),
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.Draenei,
+			built_in = true,
+		},
+		-- ['992'] = {
+		-- 	display_name = L["%s friend buffs"]:format(LN.LightforgedDraenei),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = friend_buffs.LightforgedDraenei,
+		-- 	built_in = true,
+		-- },
 		[':2'] = {
 			display_name = L["%s friend buffs"]:format(LN.Orc),
 			filter_type = 'Name',
@@ -824,6 +986,13 @@ PitBull4_Aura:SetDefaults({
 			name_list = friend_buffs.Orc,
 			built_in = true,
 		},
+		-- ['::2'] = {
+		-- 	display_name = L["%s friend buffs"]:format(LN.MagharOrc),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = friend_buffs.MagharOrc,
+		-- 	built_in = true,
+		-- },
 		[';2'] = {
 			display_name = L["%s friend buffs"]:format(LN.Scourge),
 			filter_type = 'Name',
@@ -838,6 +1007,13 @@ PitBull4_Aura:SetDefaults({
 			name_list = friend_buffs.Tauren,
 			built_in = true,
 		},
+		-- ['<<2'] = {
+		-- 	display_name = L["%s friend buffs"]:format(LN.HighmountainTauren),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = friend_buffs.HighmountainTauren,
+		-- 	built_in = true,
+		-- },
 		['=2'] = {
 			display_name = L["%s friend buffs"]:format(LN.Troll),
 			filter_type = 'Name',
@@ -845,6 +1021,55 @@ PitBull4_Aura:SetDefaults({
 			name_list = friend_buffs.Troll,
 			built_in = true,
 		},
+		-- ['==2'] = {
+		-- 	display_name = L["%s friend buffs"]:format(LN.ZandalariTroll),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = friend_buffs.ZandalariTroll,
+		-- 	built_in = true,
+		-- },
+		['>2'] = LN.BloodElf and {
+			display_name = L["%s friend buffs"]:format(LN.BloodElf),
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.BloodElf,
+			built_in = true,
+		},
+		-- ['??2'] = {
+		-- 	display_name = L["%s friend buffs"]:format(LN.Goblin),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = friend_buffs.Goblin,
+		-- 	built_in = true,
+		-- },
+		-- ['?2'] = {
+		-- 	display_name = L["%s friend buffs"]:format(LN.Worgen),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = friend_buffs.Worgen,
+		-- 	built_in = true,
+		-- },
+		-- ['@2'] = {
+		-- 	display_name = L["%s friend buffs"]:format(LN.Pandaren),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = friend_buffs.Pandaren,
+		-- 	built_in = true,
+		-- },
+		-- ['>>2'] = {
+		-- 	display_name = L["%s friend buffs"]:format(LN.Nightborne),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = friend_buffs.Nightborne,
+		-- 	built_in = true,
+		-- },
+		-- ['772'] = {
+		-- 	display_name = L["%s friend buffs"]:format(LN.VoidElf),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = friend_buffs.VoidElf,
+		-- 	built_in = true,
+		-- },
 		['<6'] = {
 			display_name = L["%s enemy debuffs"]:format(LN.Tauren),
 			filter_type = 'Name',
@@ -852,6 +1077,27 @@ PitBull4_Aura:SetDefaults({
 			name_list = enemy_debuffs.Tauren,
 			built_in = true,
 		},
+		-- ['<<6'] = {
+		-- 	display_name = L["%s enemy debuffs"]:format(LN.HighmountainTauren),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = enemy_debuffs.HighmountainTauren,
+		-- 	built_in = true,
+		-- },
+		-- ['@6'] = {
+		-- 	display_name = L["%s enemy debuffs"]:format(LN.Pandaren),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = enemy_debuffs.Pandaren,
+		-- 	built_in = true,
+		-- },
+		-- ['>>6'] = {
+		-- 	display_name = L["%s enemy debuffs"]:format(LN.Nightborne),
+		-- 	filter_type = 'Name',
+		-- 	whitelist = true,
+		-- 	name_list = enemy_debuffs.Nightborne,
+		-- 	built_in = true,
+		-- },
 		['.4'] = {
 			display_name = L["%s self debuffs"]:format(LN.MAGE),
 			filter_type = 'Name',
@@ -873,11 +1119,67 @@ PitBull4_Aura:SetDefaults({
 			name_list = self_debuffs.WARRIOR,
 			built_in = true,
 		},
+		-- ['+7'] = {
+		-- 	display_name = L["%s can purge"]:format(LN.DEATHKNIGHT),
+		-- 	filter_type = 'Aura Type',
+		-- 	whitelist = true,
+		-- 	aura_type_list = can_purge.DEATHKNIGHT,
+		-- 	built_in = true,
+		-- },
+		[',7'] = {
+			display_name = L["%s can purge"]:format(LN.DRUID),
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_purge.DRUID,
+			built_in = true,
+		},
+		-- [',,7'] = {
+		-- 	display_name = L["%s can purge"]:format(LN.DEMONHUNTER),
+		-- 	filter_type = 'Aura Type',
+		-- 	whitelist = true,
+		-- 	aura_type_list = can_purge.DEMONHUNTER,
+		-- 	built_in = true,
+		-- },
 		['-7'] = {
 			display_name = L["%s can purge"]:format(LN.HUNTER),
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_purge.HUNTER,
+			built_in = true,
+		},
+		['.7'] = {
+			display_name = L["%s can purge"]:format(LN.MAGE),
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_purge.MAGE,
+			built_in = true,
+		},
+		-- ['//7'] = {
+		-- 	display_name = L["%s can purge"]:format(LN.MONK),
+		-- 	filter_type = 'Aura Type',
+		-- 	whitelist = true,
+		-- 	aura_type_list = can_purge.MONK,
+		-- 	built_in = true,
+		-- },
+		['/7'] = {
+			display_name = L["%s can purge"]:format(LN.PALADIN),
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_purge.PALADIN,
+			built_in = true,
+		},
+		['07'] = {
+			display_name = L["%s can purge"]:format(LN.PRIEST),
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_purge.PRIEST,
+			built_in = true,
+		},
+		['17'] = {
+			display_name = L["%s can purge"]:format(LN.ROGUE),
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_purge.ROGUE,
 			built_in = true,
 		},
 		['27'] = {
@@ -906,14 +1208,17 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
+				-- ['DEATHKNIGHT'] = '@J',
+				-- ['DEMONHUNTER'] = '@J',
 				['DRUID'] = ',3',
 				['HUNTER'] = '@J',
 				['MAGE'] = '.3',
+				-- ['MONK'] = '//3',
 				['PALADIN'] = '/3',
 				['PRIEST'] = '03',
 				['ROGUE'] = '@J',
 				['SHAMAN'] = '23',
-				['WARLOCK'] = '@J',
+				['WARLOCK'] = '33',
 				['WARRIOR'] = '@J',
 			},
 			built_in = true,
@@ -923,9 +1228,12 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
+				-- ['DEATHKNIGHT'] = '+0',
+				-- ['DEMONHUNTER'] = ',,0',
 				['DRUID'] = ',0',
 				['HUNTER'] = '-0',
 				['MAGE'] = '.0',
+				-- ['MONK'] = '//0',
 				['PALADIN'] = '/0',
 				['PRIEST'] = '00',
 				['ROGUE'] = '10',
@@ -940,9 +1248,12 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
+				-- ['DEATHKNIGHT'] = '+1',
+				-- ['DEMONHUNTER'] = '@J',
 				['DRUID'] = '@J',
 				['HUNTER'] = '-1',
 				['MAGE'] = '@J',
+				-- ['MONK'] = '@J',
 				['PALADIN'] = '@J',
 				['PRIEST'] = '@J',
 				['ROGUE'] = '@J',
@@ -957,9 +1268,12 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
+				-- ['DEATHKNIGHT'] = '+2',
+				-- ['DEMONHUNTER'] = ',,2',
 				['DRUID'] = ',2',
 				['HUNTER'] = '-2',
 				['MAGE'] = '.2',
+				-- ['MONK'] = '//2',
 				['PALADIN'] = '/2',
 				['PRIEST'] = '02',
 				['ROGUE'] = '12',
@@ -974,9 +1288,12 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
+				-- ['DEATHKNIGHT'] = '+6',
+				-- ['DEMONHUNTER'] = ',,6',
 				['DRUID'] = ',6',
 				['HUNTER'] = '-6',
 				['MAGE'] = '.6',
+				-- ['MONK'] = '//6',
 				['PALADIN'] = '/6',
 				['PRIEST'] = '06',
 				['ROGUE'] = '16',
@@ -991,9 +1308,12 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
+				-- ['DEATHKNIGHT'] = '@J',
+				-- ['DEMONHUNTER'] = '@J',
 				['DRUID'] = '@J',
 				['HUNTER'] = '-5',
 				['MAGE'] = '.5',
+				-- ['MONK'] = '@J',
 				['PALADIN'] = '/5',
 				['PRIEST'] = '05',
 				['ROGUE'] = '@J',
@@ -1008,9 +1328,12 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
+				-- ['DEATHKNIGHT'] = '@J',
+				-- ['DEMONHUNTER'] = '@J',
 				['DRUID'] = '@J',
 				['HUNTER'] = '@J',
 				['MAGE'] = '.4',
+				-- ['MONK'] = '@J',
 				['PALADIN'] = '@J',
 				['PRIEST'] = '04',
 				['ROGUE'] = '@J',
@@ -1025,12 +1348,15 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
-				['DRUID'] = '@J',
+				-- ['DEATHKNIGHT'] = '+7',
+				-- ['DEMONHUNTER'] = ',,7',
+				['DRUID'] = ',7',
 				['HUNTER'] = '-7',
-				['MAGE'] = '@J',
-				['PALADIN'] = '@J',
-				['PRIEST'] = '@J',
-				['ROGUE'] = '@J',
+				['MAGE'] = '.7',
+				-- ['MONK'] = '//7',
+				['PALADIN'] = '/7',
+				['PRIEST'] = '07',
+				['ROGUE'] = '17',
 				['SHAMAN'] = '27',
 				['WARLOCK'] = '37',
 				['WARRIOR'] = '47',
@@ -1046,10 +1372,23 @@ PitBull4_Aura:SetDefaults({
 				['Dwarf'] = '60',
 				['NightElf'] = '70',
 				['Gnome'] = '@J',
+				['Draenei'] = '@J',
 				['Orc'] = ':0',
 				['Scourge'] = ';0',
 				['Tauren'] = '@J',
 				['Troll'] = '=0',
+				['BloodElf'] = '>0',
+				-- ['Worgen'] = '?0',
+				-- ['Goblin'] = '@J',
+				-- ['Pandaren'] = '@J',
+				-- ['DarkIronDwarf'] = '660',
+				-- ['LightforgedDraenei'] = '@J',
+				-- ['VoidElf'] = '770',
+				-- ['KulTiranHuman'] = '@J',
+				-- ['MagharOrc'] = '::0',
+				-- ['HighmountainTauren'] = '@J',
+				-- ['Nightborne'] = '@J',
+				-- ['ZandalariTroll'] = '@J',
 			},
 			built_in = true,
 		},
@@ -1062,10 +1401,23 @@ PitBull4_Aura:SetDefaults({
 				['Dwarf'] = '62',
 				['NightElf'] = '72',
 				['Gnome'] = '82',
+				['Draenei'] = '92',
 				['Orc'] = ':2',
 				['Scourge'] = ';2',
 				['Tauren'] = '<2',
 				['Troll'] = '=2',
+				['BloodElf'] = '>2',
+				-- ['Worgen'] = '?2',
+				-- ['Goblin'] = '??2',
+				-- ['Pandaren'] = '@2',
+				-- ['DarkIronDwarf'] = '662',
+				-- ['LightforgedDraenei'] = '992',
+				-- ['VoidElf'] = '772',
+				-- ['KulTiranHuman'] = '552',
+				-- ['MagharOrc'] = '::2',
+				-- ['HighmountainTauren'] = '<<2',
+				-- ['Nightborne'] = '>>2',
+				-- ['ZandalariTroll'] = '==2',
 			},
 			built_in = true,
 		},
@@ -1078,10 +1430,23 @@ PitBull4_Aura:SetDefaults({
 				['Dwarf'] = '@J',
 				['NightElf'] = '@J',
 				['Gnome'] = '@J',
+				['Draenei'] = '@J',
 				['Orc'] = '@J',
 				['Scourge'] = '@J',
 				['Tauren'] = '<6',
 				['Troll'] = '@J',
+				['BloodElf'] = '@J',
+				-- ['Worgen'] = '@J',
+				-- ['Goblin'] = '@J',
+				-- ['Pandaren'] = '@6',
+				-- ['DarkIronDwarf'] = '@J',
+				-- ['LightforgedDraenei'] = '@J',
+				-- ['VoidElf'] = '@J',
+				-- ['KulTiranHuman'] = '@J',
+				-- ['MagharOrc'] = '@J',
+				-- ['HighmountainTauren'] = '<<6',
+				-- ['Nightborne'] = '>>6',
+				-- ['ZandalariTroll'] = '@J',
 			},
 			built_in = true,
 		},
@@ -1094,10 +1459,23 @@ PitBull4_Aura:SetDefaults({
 				['Dwarf'] = '@J',
 				['NightElf'] = '@J',
 				['Gnome'] = '@J',
+				['Draenei'] = '@J',
 				['Orc'] = '@J',
 				['Scourge'] = '@J',
 				['Tauren'] = '@J',
 				['Troll'] = '@J',
+				['BloodElf'] = '@J',
+				-- ['Worgen'] = '@J',
+				-- ['Goblin'] = '@J',
+				-- ['Pandaren'] = '@J',
+				-- ['DarkIronDwarf'] = '@J',
+				-- ['LightforgedDraenei'] = '@J',
+				-- ['VoidElf'] = '@J',
+				-- ['KulTiranHuman'] = '@J',
+				-- ['MagharOrc'] = '@J',
+				-- ['HighmountainTauren'] = '@J',
+				-- ['Nightborne'] = '@J',
+				-- ['ZandalariTroll'] = '@J',
 			},
 			built_in = true,
 		},

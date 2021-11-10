@@ -43,6 +43,7 @@ globals = {
 	"UIParent",
 	"WOW_PROJECT_ID",
 	"WOW_PROJECT_CLASSIC",
+	"WOW_PROJECT_BURNING_CRUSADE_CLASSIC",
 
 	-- Functions
 	"C_CreatureInfo",
@@ -89,6 +90,8 @@ globals = {
 	"GetSpellDescription",
 	"GetSpellInfo",
 	"GetTime",
+	"GetTotemInfo",
+	"GetTotemTimeLeft",
 	"GetWatchedFactionInfo",
 	"GetXPExhaustion",
 	"InCombatLockdown",
@@ -171,6 +174,7 @@ globals = {
 	"bit",
 	"ceil",
 	"date",
+	"debugstack",
 	"floor",
 	"format",
 	"geterrorhandler",

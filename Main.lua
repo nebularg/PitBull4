@@ -1,18 +1,17 @@
 
--- Twitch client dun fucked up
-if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
-	C_Timer.After(7, function()
-		print("You are using the WoW Classic version of PitBull4. Reinstall the retail version of PitBull4 and relaunch WoW. If you use the Twitch client, exit out and reopen it to make sure you have the latest version.")
-	end)
-	return
+if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and WOW_PROJECT_ID ~= WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
+	return -- ERROR ALL THE THINGS!
 end
+
+-- luacheck: globals oRA3 ReloadUI SecureButton_GetModifiedUnit
 
 -- Constants ----------------------------------------------------------------
 local _G = _G
 
--- luacheck: globals oRA3 ReloadUI SecureButton_GetModifiedUnit
-
 local L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
+
+local wow_classic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or nil
+local wow_bcc = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC or nil
 
 local SINGLETON_CLASSIFICATIONS = {
 	"player",
@@ -21,6 +20,9 @@ local SINGLETON_CLASSIFICATIONS = {
 	"target",
 	"targettarget",
 	"targettargettarget",
+	wow_bcc and "focus",
+	wow_bcc and "focustarget",
+	wow_bcc and "focustargettarget",
 }
 
 local UNIT_GROUPS = {
@@ -42,6 +44,7 @@ local NORMAL_UNITS = {
 	"player",
 	"pet",
 	"target",
+	wow_bcc and "focus",
 	-- "mouseover",
 }
 for i = 1, _G.MAX_PARTY_MEMBERS do
@@ -67,7 +70,7 @@ if LibSharedMedia and not LibSharedMedia:IsValid("font", DEFAULT_LSM_FONT) then 
 	DEFAULT_LSM_FONT = LibSharedMedia:GetDefault("font")
 end
 
-local CURRENT_CONFIG_VERSION = 5
+local CURRENT_CONFIG_VERSION = 6
 
 local DATABASE_DEFAULTS = {
 	profile = {
@@ -267,6 +270,23 @@ local DEFAULT_UNITS =  {
 		unit = "targettargettarget",
 	},
 }
+if wow_bcc then
+	DEFAULT_UNITS[L["Focus"]] = {
+		enabled = true,
+		unit = "focus",
+		anchor = "TOPLEFT",
+		relative_to = "0", -- UIParent
+		relative_point = "TOPLEFT",
+		position_x = 250,
+		position_y = -260,
+	}
+	DEFAULT_UNITS[format(L["%s's target"],L["Focus"])]= {
+		unit = "focustarget",
+	}
+	DEFAULT_UNITS[format(L["%s's target"],format(L["%s's target"],L["Focus"]))] = {
+		unit = "focustargettarget",
+	}
+end
 
 local LOCALIZED_NAMES = {}
 do
@@ -308,6 +328,9 @@ PitBull4.version = "@project-version@"
 if PitBull4.version:match("@") then
 	PitBull4.version = "Development"
 end
+
+PitBull4.wow_classic = wow_classic
+PitBull4.wow_bcc = wow_bcc
 
 PitBull4.L = L
 
@@ -1192,6 +1215,26 @@ local upgrade_functions = {
 		end
 		return true
 	end,
+	[5] = function(sv)
+		-- Ok, maybe it wasn't for the best. Add back default focus frames for BCC.
+		if wow_classic then return true end
+		if not sv.profiles then return true end
+		local focus_frames = {
+			L["Focus"],
+			L["%s's target"]:format(L["Focus"]),
+			L["%s's target"]:format(L["%s's target"]:format(L["Focus"])),
+		}
+		for profile, profile_db in next, sv.profiles do
+			if profile_db.made_units then
+				for _, name in next, focus_frames do
+					if not profile_db.units[name] then
+						profile_db.units[name] = CopyTable(DEFAULT_UNITS[name])
+					end
+				end
+			end
+		end
+		return true
+	end,
 }
 
 local function check_config_version(sv)
@@ -1234,6 +1277,10 @@ function PitBull4:OnInitialize()
 	self.DEFAULT_COLORS = CopyTable(DATABASE_DEFAULTS.profile.colors.power)
 	DATABASE_DEFAULTS = nil
 
+	-- ModuleHandling\Module.lua
+	self:InitializeModuleDefaults()
+	self:RegisterEvent("ADDON_LOADED", "HandleModuleLoad")
+
 	local LibDataBrokerLauncher = LibStub("LibDataBroker-1.1"):NewDataObject("PitBull4", {
 		type = "launcher",
 		icon = [[Interface\AddOns\PitBull4\pitbull]],
@@ -1262,8 +1309,6 @@ function PitBull4:OnInitialize()
 		LibDBIcon:Register("PitBull4", LibDataBrokerLauncher, self.db.profile.minimap_icon)
 	end
 
-	self:RegisterEvent("ADDON_LOADED") -- ModuleHandling\Module.lua
-
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED", "OnTanksUpdated")
 	if oRA3 then
 		oRA3.RegisterCallback(self, "OnTanksUpdated")
@@ -1282,7 +1327,7 @@ do
 
 	local function iter(num_addons, i)
 		i = i + 1
-		if i >= num_addons then
+		if i > num_addons then
 			-- and we're done
 			return nil
 		end
@@ -1528,6 +1573,9 @@ function PitBull4:OnEnable()
 
 	-- register unit change events
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
+	if wow_bcc then
+		self:RegisterEvent("PLAYER_FOCUS_CHANGED")
+	end
 	self:RegisterEvent("UNIT_TARGET")
 	self:RegisterEvent("UNIT_PET")
 
@@ -1641,6 +1689,12 @@ function PitBull4:CheckGUIDForUnitID(unit, is_pet)
 	for frame in self:IterateFramesForUnitID(unit,not not guid) do
 		frame:UpdateGUID(guid,update)
 	end
+end
+
+function PitBull4:PLAYER_FOCUS_CHANGED()
+	self:CheckGUIDForUnitID("focus")
+	self:CheckGUIDForUnitID("focustarget")
+	self:CheckGUIDForUnitID("focustargettarget")
 end
 
 function PitBull4:PLAYER_TARGET_CHANGED()

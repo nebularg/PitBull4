@@ -4,9 +4,9 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
-local LibClassicDurations = LibStub("LibClassicDurations")
+local LibClassicDurations = PitBull4.wow_classic and LibStub("LibClassicDurations", true)
 
-local UnitAuraWithBuffs = LibClassicDurations.UnitAuraWithBuffs
+local UnitAura = LibClassicDurations and LibClassicDurations.UnitAuraWithBuffs or _G.UnitAura
 
 -- Table of functions included into the aura controls
 local Aura = {}
@@ -45,11 +45,11 @@ local function OnUpdate(self, elapsed)
 		-- http://www.wowace.com/addons/pitbull4/tickets/532-aura-tooltips-not-matching-icons/
 		-- or
 		-- http://forums.worldofwarcraft.com/thread.html?topicId=16904201555&sid=1&pageNo=9#166
-		local name = UnitAuraWithBuffs(unit, id, filter)
+		local name = UnitAura(unit, id, filter)
 		if name ~= self.name then
 			local i = 1
 			while true do
-				name = UnitAuraWithBuffs(unit, i, filter)
+				name = UnitAura(unit, i, filter)
 				if not name then
 					-- Couldn't find a matching aura so do nothing.
 					return
@@ -73,7 +73,7 @@ local function OnUpdate(self, elapsed)
 
 		-- if filter == "HELPFUL" and not UnitIsFriend("player", unit) and not UnitAura(unit, 1, filter) then
 		-- 	-- Fake the tooltip for enemy buffs
-		-- 	local expiration_time, _, _, _, spell_id = select(6, UnitAuraWithBuffs(unit, id, filter))
+		-- 	local expiration_time, _, _, _, spell_id = select(6, UnitAura(unit, id, filter))
 
 		-- 	GameTooltip:ClearLines()
 		-- 	GameTooltip:AddDoubleLine(name, _G.ENEMY, 1, 0.82, 0, 1, 0.82, 0)

@@ -8,7 +8,30 @@ local TEMP_ICON = 136235
 
 local PitBull4_CastBar = PitBull4:NewModule("CastBar")
 
-local LibClassicCasterino = LibStub("LibClassicCasterino")
+local wow_classic = PitBull4.wow_classic
+local wow_bcc = PitBull4.wow_bcc
+
+local UnitCastingInfo = _G.UnitCastingInfo
+local UnitChannelInfo = _G.UnitChannelInfo
+
+local LibClassicCasterino
+if wow_classic then
+	LibClassicCasterino = LibStub("LibClassicCasterino", true)
+	UnitCastingInfo = function(unit)
+		if unit == "player" then
+			return CastingInfo()
+		elseif LibClassicCasterino then
+			return LibClassicCasterino:UnitCastingInfo(unit)
+		end
+	end
+	UnitChannelInfo = function(unit)
+		if unit == "player" then
+			return ChannelInfo()
+		elseif LibClassicCasterino then
+			return LibClassicCasterino:UnitChannelInfo(unit)
+		end
+	end
+end
 
 PitBull4_CastBar:SetModuleType("bar")
 PitBull4_CastBar:SetName(L["Cast bar"])
@@ -38,15 +61,29 @@ timer_frame:SetScript("OnUpdate", function() PitBull4_CastBar:FixCastDataAndUpda
 function PitBull4_CastBar:OnEnable()
 	timer_frame:Show()
 
-	LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_START", "UpdateInfo")
-	LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_STOP", "UpdateInfo")
-	LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_FAILED", "UpdateInfo")
-	LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_INTERRUPTED", "UpdateInfo")
-	LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_DELAYED",  "UpdateInfo")
-	LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_SUCCEEDED", "UpdateInfo")
-	LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_CHANNEL_START", "UpdateInfo")
-	LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_CHANNEL_UPDATE", "UpdateInfo")
-	LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_CHANNEL_STOP", "UpdateInfo")
+	if LibClassicCasterino then
+		LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_START", "UpdateInfo")
+		LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_STOP", "UpdateInfo")
+		LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_FAILED", "UpdateInfo")
+		LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_INTERRUPTED", "UpdateInfo")
+		LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_DELAYED",  "UpdateInfo")
+		LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_SUCCEEDED", "UpdateInfo")
+		LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_CHANNEL_START", "UpdateInfo")
+		LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_CHANNEL_UPDATE", "UpdateInfo")
+		LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_CHANNEL_STOP", "UpdateInfo")
+	elseif wow_bcc then
+		self:RegisterEvent("UNIT_SPELLCAST_START", "UpdateInfo")
+		self:RegisterEvent("UNIT_SPELLCAST_STOP", "UpdateInfo")
+		self:RegisterEvent("UNIT_SPELLCAST_FAILED", "UpdateInfo")
+		self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED", "UpdateInfo")
+		self:RegisterEvent("UNIT_SPELLCAST_DELAYED", "UpdateInfo")
+		self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "UpdateInfo")
+		-- self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE", "UpdateInfo")
+		-- self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE", "UpdateInfo")
+		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", "UpdateInfo")
+		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "UpdateInfo")
+		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", "UpdateInfo")
+	end
 end
 
 function PitBull4_CastBar:OnDisable()
@@ -266,10 +303,10 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
 		cast_data[guid] = data
 	end
 
-	local spell, _, icon, start_time, end_time, _, cast_id = LibClassicCasterino:UnitCastingInfo(unit)
+	local spell, _, icon, start_time, end_time, _, cast_id = UnitCastingInfo(unit)
 	local channeling = false
 	if not spell then
-		spell, _, icon, start_time, end_time = LibClassicCasterino:UnitChannelInfo(unit)
+		spell, _, icon, start_time, end_time = UnitChannelInfo(unit)
 		channeling = true
 	end
 	if spell then

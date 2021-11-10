@@ -847,6 +847,7 @@ end)
 local my_units = {
 	player = true,
 	pet = true,
+	-- vehicle = true,
 }
 
 -- Mine, Filter by if you cast it or not.
@@ -1062,6 +1063,7 @@ local LN = PitBull4.LOCALIZED_NAMES
 local _,player_class = UnitClass("player")
 local _,player_race  = UnitRace("player")
 local classes = {
+	-- 'DEATHKNIGHT',
 	'DRUID',
 	'HUNTER',
 	'MAGE',
@@ -1071,6 +1073,8 @@ local classes = {
 	'SHAMAN',
 	'WARLOCK',
 	'WARRIOR',
+	-- 'MONK',
+	-- 'DEMONHUNTER',
 }
 local class_names = {}
 for i, v in ipairs(classes) do
@@ -1081,10 +1085,23 @@ local races = {
 	'Dwarf',
 	'NightElf',
 	'Gnome',
+	'Draenei',
 	'Orc',
 	'Scourge',
 	'Tauren',
 	'Troll',
+	'BloodElf',
+	-- 'Worgen',
+	-- 'Goblin',
+	-- 'Pandaren',
+	-- 'DarkIronDwarf',
+	-- 'LightforgedDraenei',
+	-- 'VoidElf',
+	-- 'KulTiranHuman',
+	-- 'MagharOrc',
+	-- 'HighmountainTauren',
+	-- 'Nightborne',
+	-- 'ZandalariTroll',
 }
 local race_names = {}
 for i, v in ipairs(races) do
@@ -1468,8 +1485,11 @@ PitBull4_Aura:RegisterFilterType('Self buff',L["Self buff"],self_buff_filter,fun
 end)
 
 local function has_custom_visibility_filter(self, entry, frame)
-	local state = UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT"
-	local hasCustom = SpellGetVisibilityInfo(entry[15], state)
+	local hasCustom = false
+	if entry[15] then
+		local state = UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT"
+		hasCustom = SpellGetVisibilityInfo(entry[15], state)
+	end
 	if PitBull4_Aura:GetFilterDB(self).custom_visibility then
 		return hasCustom
 	else
@@ -1500,9 +1520,12 @@ PitBull4_Aura:RegisterFilterType('Has custom visibility',L["Has custom visibilit
 end)
 
 local function should_show_filter(self, entry, frame)
-	local state = UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT"
-	local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(entry[15], state)
-	local show = hasCustom and (showForMySpec or (alwaysShowMine and my_units[entry[12]]))
+	local show = false
+	if entry[15] then
+		local state = UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT"
+		local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(entry[15], state)
+		show = hasCustom and (showForMySpec or (alwaysShowMine and my_units[entry[12]]))
+	end
 	if PitBull4_Aura:GetFilterDB(self).should_show then
 		return show
 	else

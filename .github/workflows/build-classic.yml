@@ -1,14 +1,14 @@
-name: Package Retail
+name: Package Classic
 
 on:
   push:
     branches:
-      - master
+      - classic
     tags:
-      - '*'
-      - '!**-classic*'
+      - '**-classic*'
     paths-ignore:
       - '.github/**'
+
 
 env:
   CF_API_KEY: ${{ secrets.CF_API_KEY }}
@@ -28,5 +28,12 @@ jobs:
       with:
         args: -q
 
-    - name: Package Retail
+    - name: Package Classic
       uses: BigWigsMods/packager@master
+      with:
+        args: -g classic
+
+    - name: Package BCC
+      uses: BigWigsMods/packager@master
+      with:
+        args: -g bcc

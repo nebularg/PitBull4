@@ -4,18 +4,52 @@ local L = PitBull4.L
 
 local PitBull4_LuaTexts = PitBull4:NewModule("LuaTexts", "AceTimer-3.0", "AceHook-3.0")
 
-local LibClassicCasterino = LibStub("LibClassicCasterino")
+local UnitCastingInfo = _G.UnitCastingInfo
+local UnitChannelInfo = _G.UnitChannelInfo
 
-local casterino_events = {
-	UNIT_SPELLCAST_START = true,
-	UNIT_SPELLCAST_DELAYED = true,
-	UNIT_SPELLCAST_STOP = true,
-	UNIT_SPELLCAST_FAILED = true,
-	UNIT_SPELLCAST_INTERRUPTED = true,
-	UNIT_SPELLCAST_CHANNEL_START = true,
-	UNIT_SPELLCAST_CHANNEL_UPDATE = true,
-	UNIT_SPELLCAST_CHANNEL_STOP = true,
-}
+local LibClassicCasterino
+local casterino_events = {}
+
+if PitBull4.wow_classic then
+	LibClassicCasterino = LibStub("LibClassicCasterino", true)
+	if LibClassicCasterino then
+		casterino_events = {
+			UNIT_SPELLCAST_START = true,
+			UNIT_SPELLCAST_DELAYED = true,
+			UNIT_SPELLCAST_STOP = true,
+			UNIT_SPELLCAST_FAILED = true,
+			UNIT_SPELLCAST_INTERRUPTED = true,
+			UNIT_SPELLCAST_CHANNEL_START = true,
+			UNIT_SPELLCAST_CHANNEL_UPDATE = true,
+			UNIT_SPELLCAST_CHANNEL_STOP = true,
+		}
+	end
+
+	UnitCastingInfo = function(unit)
+		if unit == "player" then
+			return CastingInfo()
+		elseif LibClassicCasterino then
+			return LibClassicCasterino:UnitCastingInfo(unit)
+		end
+	end
+	UnitChannelInfo = function(unit)
+		if unit == "player" then
+			return ChannelInfo()
+		elseif LibClassicCasterino then
+			return LibClassicCasterino:UnitChannelInfo(unit)
+		end
+	end
+elseif PitBull4.wow_bcc then
+	-- nonInterruptible is missing from the returns
+	UnitCastingInfo = function(unit)
+		local name, text, texture, startTime, endTime, isTradeSkill, castID, spellID = _G.UnitCastingInfo(unit)
+		return name, text, texture, startTime, endTime, isTradeSkill, castID, nil, spellID
+	end
+	UnitChannelInfo = function(unit)
+		local name, text, texture, startTime, endTime, isTradeSkill, spellID = _G.UnitChannelInfo(unit)
+		return name, text, texture, startTime, endTime, isTradeSkill, nil, spellID
+	end
+end
 
 local test_frame = CreateFrame("Frame") -- Event validation
 
@@ -828,10 +862,10 @@ local function update_cast_data(event, unit, event_cast_id, event_spell_id)
 		cast_data[guid] = data
 	end
 
-	local spell, _, _, start_time, end_time, _, cast_id, _, spell_id = LibClassicCasterino:UnitCastingInfo(unit)
+	local spell, _, _, start_time, end_time, _, cast_id, _, spell_id = UnitCastingInfo(unit)
 	local channeling = false
 	if not spell then
-		spell, _, _, start_time, end_time, _, _, spell_id = LibClassicCasterino:UnitChannelInfo(unit)
+		spell, _, _, start_time, end_time, _, _, spell_id = UnitChannelInfo(unit)
 		channeling = true
 	end
 	if spell then

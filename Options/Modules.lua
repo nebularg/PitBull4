@@ -15,8 +15,8 @@ local global_functions = {}
 -- end)
 function PitBull4.defaultModulePrototype:SetGlobalOptionsFunction(func)
 	if DEBUG then
-		expect(func, 'typeof', 'function')
-		expect(global_functions[self], '==', nil)
+		expect(func, "typeof", "function")
+		expect(global_functions[self], "==", nil)
 	end
 
 	global_functions[self] = func
@@ -24,7 +24,7 @@ end
 
 function PitBull4.Options.get_module_options()
 	local module_options = {
-		type = 'group',
+		type = "group",
 		name = L["Modules"],
 		desc = L["Modules provide actual functionality for PitBull."],
 		childGroups = "tree",
@@ -39,7 +39,7 @@ function PitBull4.Options.get_module_options()
 	}
 
 	local function merge_onto(dict, ...)
-		for i = 1, select('#', ...), 2 do
+		for i = 1, select("#", ...), 2 do
 			local k, v = select(i, ...)
 			if not v.order then
 				v.order = 100 + i
@@ -67,7 +67,6 @@ function PitBull4.Options.get_module_options()
 					PitBull4:DisableModuleAndSaveState(module)
 				end
 			end,
-			order = 10,
 		}
 
 		if global_functions[module] then
@@ -97,7 +96,7 @@ function PitBull4.Options.get_module_options()
 
 	local function loadable(info)
 		local id = info[#info - 1]
-		local addon_name = 'PitBull4_'..id
+		local addon_name = "PitBull4_"..id
 		return GetAddOnEnableState(player_name, addon_name) > 0 and IsAddOnLoadOnDemand(addon_name)
 	end
 
@@ -106,28 +105,30 @@ function PitBull4.Options.get_module_options()
 	end
 
 	local arg_enabled = {
-		type = 'toggle',
+		type = "execute",
 		name = L["Enable"],
-		desc = L["Globally enable this module."],
-		get = function(info)
-			return false
-		end,
-		set = function(info, value)
+		func = function(info)
 			local id = info[#info - 1]
 			PitBull4:LoadAndEnableModule(id)
+			local module = PitBull4:GetModule(id, true)
+			if module then
+				module_options.args[id] = nil
+				PitBull4.Options.modules_handle_module_load(module)
+			end
 		end,
 		hidden = unloadable,
 	}
 
 	local no_mem_notice = {
-		type = 'description',
+		type = "description",
 		name = L["This module is not loaded and will not take up and memory or processing power until enabled."],
+		fontSize = "medium",
 		order = -1,
 		hidden = unloadable,
 	}
 
 	local unloadable_notice = {
-		type = 'description',
+		type = "description",
 		name = function(info)
 			if not loadable(info) then
 				local id = info[#info - 1]
@@ -145,14 +146,15 @@ function PitBull4.Options.get_module_options()
 				return format(L["This module can not be loaded: %s"], reason)
 			end
 		end,
+		fontSize = "medium",
 		order = -1,
 		hidden = loadable,
 	}
 
 	for id in pairs(modules_not_loaded) do
-		local addon_name = 'PitBull4_' .. id
-		local title = GetAddOnMetadata(addon_name, "Title")
-		local notes = GetAddOnMetadata(addon_name, "Notes")
+		local addon_name = "PitBull4_" .. id
+		local title = GetAddOnMetadata(addon_name, "Title") or ""
+		local notes = GetAddOnMetadata(addon_name, "Notes") or ""
 
 		local name = title:match("%[(.*)%]")
 		if not name then
@@ -164,27 +166,27 @@ function PitBull4.Options.get_module_options()
 		module_options.args[id .. "_toggle"] = {
 			type = "toggle",
 			name = name,
-			desc = notes,
+			desc = notes.."\n\n|cff20ff20"..L["This module is not loaded and will not take up and memory or processing power until enabled."].."|r",
 			get = function(info)
 				return false
 			end,
 			set = function(info, value)
 				PitBull4:LoadAndEnableModule(id)
+				local module = PitBull4:GetModule(id, true)
+				if module then
+					module_options.args[id] = nil
+					PitBull4.Options.modules_handle_module_load(module)
+				end
 			end,
 			disabled = function(info)
-				return GetAddOnEnableState(player_name, addon_name) == 0 or not select(4, GetAddOnInfo(addon_name))
+				return GetAddOnEnableState(player_name, addon_name) == 0 or not IsAddOnLoadOnDemand(addon_name)
 			end,
 		}
 
 		if not module_options.args[id] then
 			module_options.args[id] = {
-				type = 'group',
-				name = function(info)
-					if not loadable(info) then
-						return ("|cff7f7f7f%s|r"):format(name)
-					end
-					return name
-				end,
+				type = "group",
+				name = ("|cff7f7f7f%s|r"):format(name),
 				desc = notes,
 				args = {
 					enabled = arg_enabled,
