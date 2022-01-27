@@ -818,11 +818,12 @@ local function update_text(font_string, event)
 	font_string:SetWordWrap(not not PitBull4_LuaTexts.word_wrap)
 end
 
-local next_spell, next_target
+local next_spell, next_target, next_cast_id
 function PitBull4_LuaTexts:UNIT_SPELLCAST_SENT(event, unit, target, cast_id, spell_id)
 	if unit ~= "player" then return end
 
 	next_spell = spell_id
+	next_cast_id = cast_id
 	next_target = target ~= "" and target or nil
 
 	self:OnSpellEvent(event, unit, cast_id, spell_id)
@@ -879,7 +880,7 @@ local function update_cast_data(event, unit, event_cast_id, event_spell_id)
 		elseif event then
 			data.delay = 0
 		end
-		if guid == player_guid and spell_id == next_spell then
+		if guid == player_guid and (spell_id == next_spell or cast_id == next_cast_id) then
 			data.target = next_target
 		end
 		data.casting = not channeling
