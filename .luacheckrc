@@ -32,6 +32,7 @@ globals = {
 	"PitBull4",
 
 	-- Frames/tables
+	"BasicMessageDialog",
 	"ChatFontNormal",
 	"CombatFeedbackText",
 	"DEFAULT_CHAT_FRAME",
