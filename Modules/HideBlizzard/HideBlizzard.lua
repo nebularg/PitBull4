@@ -128,11 +128,11 @@ local function unhook_frames_without_init(...)
 end
 
 function hiders:player()
-	PlayerFrame:Hide()
+	hook_frames(PlayerFrame)
 end
 
 function showers:player()
-	PlayerFrame:Show()
+	unhook_frames(PlayerFrame)
 end
 
 function hiders:party()
