@@ -133,6 +133,7 @@ end
 
 function showers:player()
 	unhook_frames(PlayerFrame)
+	PlayerFrame:Show()
 end
 
 function hiders:party()
