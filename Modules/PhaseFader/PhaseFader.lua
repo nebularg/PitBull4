@@ -5,7 +5,7 @@ local PitBull4_PhaseFader = PitBull4:NewModule("PhaseFader","AceEvent-3.0")
 
 PitBull4_PhaseFader:SetModuleType("fader")
 PitBull4_PhaseFader:SetName(L["Phase fader"])
-PitBull4_PhaseFader:SetDescription(L["Make the unit frame fade depending on the units phase."])
+PitBull4_PhaseFader:SetDescription(L["Make the unit frame fade depending on the unit's phase."])
 PitBull4_PhaseFader:SetDefaults({
 	enabled = true,
 	phased_opacity = 0.6,
