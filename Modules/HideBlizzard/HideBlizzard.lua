@@ -128,7 +128,7 @@ local function unhook_frames_without_init(...)
 end
 
 function hiders:player()
-	hook_frames(PlayerFrame)
+	hook_reparent_frames(PlayerFrame)
 end
 
 function showers:player()
@@ -201,7 +201,7 @@ do
 end
 
 function hiders:target()
-	hook_frames(TargetFrame, ComboFrame)
+	hook_reparent_frames(TargetFrame, ComboFrame)
 end
 
 function showers:target()
