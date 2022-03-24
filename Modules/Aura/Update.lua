@@ -389,7 +389,7 @@ local function aura_sort(a, b)
 				return true
 			end
 			local a_can_dispel = can_dispel[a_debuff_type]
-			if not a_can_dispel ~= not can_dispel[b_debuff_type] then
+			if (not a_can_dispel) ~= (not can_dispel[b_debuff_type]) then
 				-- show debuffs you can dispel first
 				if a_can_dispel then
 					return true

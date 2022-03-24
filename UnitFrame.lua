@@ -534,7 +534,7 @@ UnitFrame.RefreshLayout = PitBull4:OutOfCombatWrapper(UnitFrame._RefreshLayout)
 -- @usage frame:SetClickThroughState(true)
 function SingletonUnitFrame:SetClickThroughState(state)
 	local mouse_state = not not self:IsMouseEnabled()
-	if not state ~= mouse_state then
+	if (not state) ~= mouse_state then
 		_G.ClickCastFrames[self] = not mouse_state
 		self:EnableMouse(not mouse_state)
 	end

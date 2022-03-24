@@ -1641,7 +1641,7 @@ local clickcast_unregister = [[
 -- @usage frame:SetClickThroughState(true)
 function MemberUnitFrame:SetClickThroughState(state)
 	local mouse_state = not not self:IsMouseEnabled()
-	if not state ~= mouse_state then
+	if (not state) ~= mouse_state then
 		if ClickCastHeader then
 			local header = self:GetParent()
 			SecureHandlerSetFrameRef(header, "pb4_temp", self)
