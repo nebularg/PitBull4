@@ -1,4 +1,5 @@
 package-as: PitBull4
+enable-nolib-creation: no
 
 externals:
   Libs/LibStub:
