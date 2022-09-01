@@ -5,7 +5,7 @@ local EXAMPLE_VALUE = 0.8
 
 local unpack = _G.unpack
 
-local PitBull4_HealthBar = PitBull4:NewModule("HealthBar", "AceEvent-3.0")
+local PitBull4_HealthBar = PitBull4:NewModule("HealthBar")
 
 PitBull4_HealthBar:SetModuleType("bar")
 PitBull4_HealthBar:SetName(L["Health bar"])

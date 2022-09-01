@@ -2,7 +2,7 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_ReadyCheckIcon = PitBull4:NewModule("ReadyCheckIcon", "AceEvent-3.0", "AceTimer-3.0")
+local PitBull4_ReadyCheckIcon = PitBull4:NewModule("ReadyCheckIcon")
 
 PitBull4_ReadyCheckIcon:SetModuleType("indicator")
 PitBull4_ReadyCheckIcon:SetName(L["Ready check icon"])

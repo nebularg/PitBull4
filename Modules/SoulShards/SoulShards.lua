@@ -24,7 +24,7 @@ local CONTAINER_HEIGHT = STANDARD_HEIGHT + BORDER_SIZE * 2
 
 -----------------------------------------------------------------------------
 
-local PitBull4_SoulShards = PitBull4:NewModule("SoulShards", "AceEvent-3.0")
+local PitBull4_SoulShards = PitBull4:NewModule("SoulShards")
 
 PitBull4_SoulShards:SetModuleType("indicator")
 PitBull4_SoulShards:SetName(L["Soul shards"])

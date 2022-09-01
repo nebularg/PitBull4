@@ -2,7 +2,7 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_BattlePet = PitBull4:NewModule("BattlePet","AceEvent-3.0")
+local PitBull4_BattlePet = PitBull4:NewModule("BattlePet")
 
 PitBull4_BattlePet:SetModuleType("indicator")
 PitBull4_BattlePet:SetName(L["Battle pet"])

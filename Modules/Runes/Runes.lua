@@ -19,7 +19,7 @@ local CONTAINER_HEIGHT = STANDARD_SIZE + BORDER_SIZE * 2
 
 -----------------------------------------------------------------------------
 
-local PitBull4_Runes = PitBull4:NewModule("Runes", "AceEvent-3.0")
+local PitBull4_Runes = PitBull4:NewModule("Runes")
 
 PitBull4_Runes:SetModuleType("indicator")
 PitBull4_Runes:SetName(L["Runes"])

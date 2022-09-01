@@ -4,7 +4,7 @@ local L = PitBull4.L
 
 local EXAMPLE_VALUE = 0.3
 
-local PitBull4_ArtifactPowerBar = PitBull4:NewModule("ArtifactPowerBar", "AceEvent-3.0")
+local PitBull4_ArtifactPowerBar = PitBull4:NewModule("ArtifactPowerBar")
 
 PitBull4_ArtifactPowerBar:SetModuleType("bar")
 PitBull4_ArtifactPowerBar:SetName(L["Artifact power bar"])

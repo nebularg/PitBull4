@@ -44,6 +44,7 @@ end
 
 local Module = {}
 PitBull4:SetDefaultModulePrototype(Module)
+PitBull4:SetDefaultModuleLibraries("AceEvent-3.0", "LibUnitEvent-1.0", "AceTimer-3.0")
 
 local do_nothing = function() end
 

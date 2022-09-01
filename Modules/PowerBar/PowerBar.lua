@@ -5,7 +5,7 @@ local L = PitBull4.L
 local EXAMPLE_VALUE = 0.6
 local PowerBarColor = _G.PowerBarColor
 
-local PitBull4_PowerBar = PitBull4:NewModule("PowerBar", "AceEvent-3.0")
+local PitBull4_PowerBar = PitBull4:NewModule("PowerBar")
 
 PitBull4_PowerBar:SetModuleType("bar")
 PitBull4_PowerBar:SetName(L["Power bar"])

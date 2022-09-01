@@ -11,7 +11,7 @@ for k, v in pairs(_G.CLASS_ICON_TCOORDS) do
 	CLASS_TEX_COORDS[k] = { left, right, top, bottom }
 end
 
-local PitBull4_Portrait = PitBull4:NewModule("Portrait", "AceEvent-3.0")
+local PitBull4_Portrait = PitBull4:NewModule("Portrait")
 
 local pirate_day, pirate_costumes
 do

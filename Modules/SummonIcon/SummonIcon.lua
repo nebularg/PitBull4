@@ -2,7 +2,7 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_SummonIcon = PitBull4:NewModule("SummonIcon", "AceEvent-3.0")
+local PitBull4_SummonIcon = PitBull4:NewModule("SummonIcon")
 
 PitBull4_SummonIcon:SetModuleType("indicator")
 PitBull4_SummonIcon:SetName(L["Summon icon"])

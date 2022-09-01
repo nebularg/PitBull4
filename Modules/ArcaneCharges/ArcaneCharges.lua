@@ -23,7 +23,7 @@ local CONTAINER_HEIGHT = STANDARD_SIZE + BORDER_SIZE * 2
 
 -----------------------------------------------------------------------------
 
-local PitBull4_ArcaneCharges = PitBull4:NewModule("ArcaneCharges", "AceEvent-3.0")
+local PitBull4_ArcaneCharges = PitBull4:NewModule("ArcaneCharges")
 
 PitBull4_ArcaneCharges:SetModuleType("indicator")
 PitBull4_ArcaneCharges:SetName(L["Arcane charges"])

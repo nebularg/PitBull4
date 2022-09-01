@@ -2,7 +2,7 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_RaidTargetIcon = PitBull4:NewModule("RaidTargetIcon", "AceEvent-3.0", "AceTimer-3.0")
+local PitBull4_RaidTargetIcon = PitBull4:NewModule("RaidTargetIcon")
 
 PitBull4_RaidTargetIcon:SetModuleType("indicator")
 PitBull4_RaidTargetIcon:SetName(L["Raid target icon"])

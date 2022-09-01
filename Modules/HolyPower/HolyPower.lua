@@ -21,7 +21,7 @@ local CONTAINER_HEIGHT = STANDARD_SIZE + BORDER_SIZE * 2
 
 -----------------------------------------------------------------------------
 
-local PitBull4_HolyPower = PitBull4:NewModule("HolyPower", "AceEvent-3.0")
+local PitBull4_HolyPower = PitBull4:NewModule("HolyPower")
 
 PitBull4_HolyPower:SetModuleType("indicator")
 PitBull4_HolyPower:SetName(L["Holy power"])

@@ -16,7 +16,7 @@ local GetTime = _G.GetTime
 
 -----------------------------------------------------------------------------
 
-local PitBull4_CastBarLatency = PitBull4:NewModule("CastBarLatency", "AceEvent-3.0")
+local PitBull4_CastBarLatency = PitBull4:NewModule("CastBarLatency")
 
 PitBull4_CastBarLatency:SetModuleType("custom")
 PitBull4_CastBarLatency:SetName(L["Cast bar latency"])
@@ -166,13 +166,13 @@ function PitBull4_CastBarLatency:OnEnable()
 	timerFrame:Show()
 
 	self:RegisterEvent("UNIT_SPELLCAST_SENT")
-	self:RegisterEvent("UNIT_SPELLCAST_START")
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
-	self:RegisterEvent("UNIT_SPELLCAST_STOP")
-	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED","UNIT_SPELLCAST_STOP")
-	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED","UNIT_SPELLCAST_STOP")
-	self:RegisterEvent("UNIT_SPELLCAST_FAILED","UNIT_SPELLCAST_STOP")
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP","UNIT_SPELLCAST_STOP")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_START", nil, "player")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", nil, "player")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", nil, "player")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED","UNIT_SPELLCAST_STOP", "player")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED","UNIT_SPELLCAST_STOP", "player")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED","UNIT_SPELLCAST_STOP", "player")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP","UNIT_SPELLCAST_STOP", "player")
 
 	queue_time = self.db.profile.global.queue_time
 	show_queue = self.db.profile.global.show_queue

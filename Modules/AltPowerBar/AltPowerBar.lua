@@ -4,7 +4,7 @@ local L = PitBull4.L
 
 local EXAMPLE_VALUE = 0.6
 
-local PitBull4_AltPowerBar = PitBull4:NewModule("AltPowerBar", "AceEvent-3.0")
+local PitBull4_AltPowerBar = PitBull4:NewModule("AltPowerBar")
 
 PitBull4_AltPowerBar:SetModuleType("bar")
 PitBull4_AltPowerBar:SetName(L["Alternate power bar"])

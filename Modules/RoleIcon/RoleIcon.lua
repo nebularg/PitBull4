@@ -2,7 +2,7 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_RoleIcon = PitBull4:NewModule("RoleIcon", "AceEvent-3.0")
+local PitBull4_RoleIcon = PitBull4:NewModule("RoleIcon")
 
 PitBull4_RoleIcon:SetModuleType("indicator")
 PitBull4_RoleIcon:SetName(L["Role icon"])

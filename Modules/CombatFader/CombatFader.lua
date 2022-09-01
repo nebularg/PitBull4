@@ -2,7 +2,7 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_CombatFader = PitBull4:NewModule("CombatFader", "AceEvent-3.0")
+local PitBull4_CombatFader = PitBull4:NewModule("CombatFader")
 
 PitBull4_CombatFader:SetModuleType("fader")
 PitBull4_CombatFader:SetName(L["Combat fader"])
@@ -29,11 +29,11 @@ end)
 
 function PitBull4_CombatFader:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED")
-	self:RegisterEvent("PLAYER_TARGET_CHANGED")
-	self:RegisterEvent("UNIT_HEALTH")
-	self:RegisterEvent("UNIT_POWER_UPDATE","UNIT_HEALTH")
-	self:RegisterEvent("UNIT_DISPLAYPOWER","UNIT_HEALTH")
+	self:RegisterEvent("PLAYER_REGEN_DISABLED", "PLAYER_REGEN_ENABLED")
+	self:RegisterEvent("PLAYER_TARGET_CHANGED", "PLAYER_REGEN_ENABLED")
+	self:RegisterUnitEvent("UNIT_HEALTH", nil, "player")
+	self:RegisterUnitEvent("UNIT_POWER_UPDATE", "UNIT_HEALTH", "player")
+	self:RegisterUnitEvent("UNIT_DISPLAYPOWER", "UNIT_HEALTH", "player")
 
 	self:RecalculateState()
 	timerFrame:Show()
@@ -91,9 +91,6 @@ function PitBull4_CombatFader:PLAYER_REGEN_ENABLED()
 	-- this is handled through a timer because PLAYER_TARGET_CHANGED looks funny otherwise
 	timerFrame:Show()
 end
-
-PitBull4_CombatFader.PLAYER_REGEN_DISABLED = PitBull4_CombatFader.PLAYER_REGEN_ENABLED
-PitBull4_CombatFader.PLAYER_TARGET_CHANGED = PitBull4_CombatFader.PLAYER_REGEN_ENABLED
 
 function PitBull4_CombatFader:UNIT_HEALTH(event, unit)
 	if unit ~= "player" then

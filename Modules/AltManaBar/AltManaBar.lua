@@ -6,7 +6,7 @@ end
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_AltManaBar = PitBull4:NewModule("DruidManaBar", "AceEvent-3.0")
+local PitBull4_AltManaBar = PitBull4:NewModule("DruidManaBar")
 
 PitBull4_AltManaBar:SetModuleType("bar")
 PitBull4_AltManaBar:SetName(L["Alternate mana bar"])
@@ -27,9 +27,9 @@ local DISPLAY_INFO = _G.ALT_MANA_BAR_PAIR_DISPLAY_INFO[player_class]
 local power_type = nil
 
 function PitBull4_AltManaBar:OnEnable()
-	self:RegisterEvent("UNIT_POWER_FREQUENT")
-	self:RegisterEvent("UNIT_MAXPOWER", "UNIT_POWER_FREQUENT")
-	self:RegisterEvent("UNIT_DISPLAYPOWER", "UNIT_POWER_FREQUENT")
+	self:RegisterUnitEvent("UNIT_POWER_FREQUENT", nil, "player")
+	self:RegisterUnitEvent("UNIT_MAXPOWER", "UNIT_POWER_FREQUENT", "player")
+	self:RegisterUnitEvent("UNIT_DISPLAYPOWER", "UNIT_POWER_FREQUENT", "player")
 end
 
 function PitBull4_AltManaBar:GetValue(frame)

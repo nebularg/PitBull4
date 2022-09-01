@@ -1,3 +1,4 @@
+
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
@@ -10,7 +11,7 @@ local REVERSE_POINT = {
 	BOTTOM = "TOP",
 }
 
-local PitBull4_VisualHeal = PitBull4:NewModule("VisualHeal", "AceEvent-3.0")
+local PitBull4_VisualHeal = PitBull4:NewModule("VisualHeal")
 
 PitBull4_VisualHeal:SetModuleType("custom")
 PitBull4_VisualHeal:SetName(L["Visual heal"])

@@ -115,7 +115,7 @@ local GetTotemInfo = _G.GetTotemInfo
 
 if not MAX_CLASS_TOTEMS then return end
 
-local PitBull4_Totems = PitBull4:NewModule("Totems", "AceEvent-3.0", "AceTimer-3.0")
+local PitBull4_Totems = PitBull4:NewModule("Totems")
 
 local LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 if LibSharedMedia then

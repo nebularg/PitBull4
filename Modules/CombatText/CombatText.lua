@@ -20,7 +20,7 @@ local EXAMPLE_TEXT = "123"
 
 -----------------------------------------------------------------------------
 
-local PitBull4_CombatText = PitBull4:NewModule("CombatText", "AceEvent-3.0")
+local PitBull4_CombatText = PitBull4:NewModule("CombatText")
 
 PitBull4_CombatText:SetModuleType("custom_text")
 PitBull4_CombatText:SetName(L["Combat text"])

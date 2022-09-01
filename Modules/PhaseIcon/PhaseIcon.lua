@@ -1,7 +1,8 @@
+
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_PhaseIcon = PitBull4:NewModule("PhaseIcon", "AceEvent-3.0")
+local PitBull4_PhaseIcon = PitBull4:NewModule("PhaseIcon")
 
 PitBull4_PhaseIcon:SetModuleType("indicator")
 PitBull4_PhaseIcon:SetName(L["Phase icon"])
@@ -17,7 +18,7 @@ function PitBull4_PhaseIcon:OnEnable()
 	self:RegisterEvent("UNIT_PHASE")
 	self:RegisterEvent("UNIT_FLAGS", "UNIT_PHASE")
 	self:RegisterEvent("PARTY_MEMBER_ENABLE")
-	self:RegisterEvent("PARTY_MEMBER_DISABLE","PARTY_MEMBER_ENABLE")
+	self:RegisterEvent("PARTY_MEMBER_DISABLE", "PARTY_MEMBER_ENABLE")
 end
 
 

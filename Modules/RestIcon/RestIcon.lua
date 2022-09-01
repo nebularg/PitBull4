@@ -2,7 +2,7 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_RestIcon = PitBull4:NewModule("RestIcon", "AceEvent-3.0")
+local PitBull4_RestIcon = PitBull4:NewModule("RestIcon")
 
 PitBull4_RestIcon:SetModuleType("indicator")
 PitBull4_RestIcon:SetName(L["Rest icon"])

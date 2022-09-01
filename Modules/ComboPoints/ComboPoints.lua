@@ -21,7 +21,7 @@ local BORDER_SIZE = 3
 
 -----------------------------------------------------------------------------
 
-local PitBull4_ComboPoints = PitBull4:NewModule("ComboPoints", "AceEvent-3.0")
+local PitBull4_ComboPoints = PitBull4:NewModule("ComboPoints")
 
 PitBull4_ComboPoints:SetModuleType("indicator")
 PitBull4_ComboPoints:SetName(L["Combo points"])

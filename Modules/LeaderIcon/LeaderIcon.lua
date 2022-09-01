@@ -2,7 +2,7 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_LeaderIcon = PitBull4:NewModule("LeaderIcon", "AceEvent-3.0", "AceTimer-3.0")
+local PitBull4_LeaderIcon = PitBull4:NewModule("LeaderIcon")
 
 PitBull4_LeaderIcon:SetModuleType("indicator")
 PitBull4_LeaderIcon:SetName(L["Leader icon"])

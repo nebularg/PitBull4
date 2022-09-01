@@ -4,7 +4,7 @@ local L = PitBull4.L
 
 local EXAMPLE_VALUE = 0.6
 
-local PitBull4_ThreatBar = PitBull4:NewModule("ThreatBar", "AceEvent-3.0")
+local PitBull4_ThreatBar = PitBull4:NewModule("ThreatBar")
 
 PitBull4_ThreatBar:SetModuleType("bar")
 PitBull4_ThreatBar:SetName(L["Threat bar"])
