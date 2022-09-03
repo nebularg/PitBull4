@@ -4,7 +4,6 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
-local wow_classic = PitBull4.wow_classic
 local wow_bcc = PitBull4.wow_bcc
 
 local _, player_class = UnitClass("player")
@@ -13,7 +12,7 @@ local _, player_class = UnitClass("player")
 -- Filter Types should use this to get their db.
 -- @param filter the name of the filter
 -- @usage local db = PitBull4_Aura:GetFilterDB("myfilter")
--- @return the DB dictionrary for the specified filter or nil
+-- @return the DB dictionary for the specified filter or nil
 function PitBull4_Aura:GetFilterDB(filter)
 	return self.db.profile.global.filters[filter]
 end

@@ -1,5 +1,5 @@
 
-if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and WOW_PROJECT_ID ~= WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
+if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and WOW_PROJECT_ID ~= WOW_PROJECT_BURNING_CRUSADE_CLASSIC and WOW_PROJECT_ID ~= WOW_PROJECT_WRATH_CLASSIC then
 	return -- ERROR ALL THE THINGS!
 end
 
@@ -10,8 +10,10 @@ local _G = _G
 
 local L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
 
-local wow_classic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or nil
-local wow_bcc = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC or nil
+local wow_classic_era = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or nil
+local wow_bcc = WOW_PROJECT_BURNING_CRUSADE_CLASSIC or nil
+local wow_wrath = WOW_PROJECT_WRATH_CLASSIC or nil
+local wow_classic = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC or WOW_PROJECT_WRATH_CLASSIC or nil
 
 local SINGLETON_CLASSIFICATIONS = {
 	"player",
@@ -20,9 +22,9 @@ local SINGLETON_CLASSIFICATIONS = {
 	"target",
 	"targettarget",
 	"targettargettarget",
-	wow_bcc and "focus",
-	wow_bcc and "focustarget",
-	wow_bcc and "focustargettarget",
+	wow_classic and "focus",
+	wow_classic and "focustarget",
+	wow_classic and "focustargettarget",
 }
 
 local UNIT_GROUPS = {
@@ -44,7 +46,7 @@ local NORMAL_UNITS = {
 	"player",
 	"pet",
 	"target",
-	wow_bcc and "focus",
+	wow_classic and "focus",
 	-- "mouseover",
 }
 for i = 1, _G.MAX_PARTY_MEMBERS do
@@ -270,7 +272,7 @@ local DEFAULT_UNITS =  {
 		unit = "targettargettarget",
 	},
 }
-if wow_bcc then
+if wow_classic then
 	DEFAULT_UNITS[L["Focus"]] = {
 		enabled = true,
 		unit = "focus",
@@ -329,8 +331,10 @@ if PitBull4.version:match("@") then
 	PitBull4.version = "Development"
 end
 
+PitBull4.wow_classic_era = wow_classic_era
 PitBull4.wow_classic = wow_classic
 PitBull4.wow_bcc = wow_bcc
+PitBull4.wow_wrath = wow_wrath
 
 PitBull4.L = L
 
@@ -1217,7 +1221,7 @@ local upgrade_functions = {
 	end,
 	[5] = function(sv)
 		-- Ok, maybe it wasn't for the best. Add back default focus frames for BCC.
-		if wow_classic then return true end
+		if wow_classic_era then return true end
 		if not sv.profiles then return true end
 		local focus_frames = {
 			L["Focus"],
@@ -1573,7 +1577,7 @@ function PitBull4:OnEnable()
 
 	-- register unit change events
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
-	if wow_bcc then
+	if wow_classic then
 		self:RegisterEvent("PLAYER_FOCUS_CHANGED")
 	end
 	self:RegisterEvent("UNIT_TARGET")

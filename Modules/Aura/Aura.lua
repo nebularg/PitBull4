@@ -48,7 +48,7 @@ function PitBull4_Aura:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateAll")
 	self:RegisterEvent("UNIT_AURA")
 
-	local LibClassicDurations = PitBull4.wow_classic and LibStub("LibClassicDurations", true)
+	local LibClassicDurations = PitBull4.wow_classic_era and LibStub("LibClassicDurations", true)
 	if LibClassicDurations then
 		LibClassicDurations:Register(self)
 		LibClassicDurations.RegisterCallback(self, "UNIT_BUFF", "UNIT_AURA")
@@ -75,7 +75,7 @@ end
 function PitBull4_Aura:OnDisable()
 	timerFrame:Hide()
 
-	local LibClassicDurations = PitBull4.wow_classic and LibStub("LibClassicDurations", true)
+	local LibClassicDurations = PitBull4.wow_classic_era and LibStub("LibClassicDurations", true)
 	if LibClassicDurations then
 		LibClassicDurations.UnregisterCallback(self, "UNIT_BUFF")
 		LibClassicDurations:Unregister(self)

@@ -8,14 +8,14 @@ local TEMP_ICON = 136235
 
 local PitBull4_CastBar = PitBull4:NewModule("CastBar")
 
-local wow_classic = PitBull4.wow_classic
+local wow_classic_era = PitBull4.wow_classic_era
 local wow_bcc = PitBull4.wow_bcc
 
 local UnitCastingInfo = _G.UnitCastingInfo
 local UnitChannelInfo = _G.UnitChannelInfo
 
 local LibClassicCasterino
-if wow_classic then
+if wow_classic_era then
 	LibClassicCasterino = LibStub("LibClassicCasterino", true)
 	UnitCastingInfo = function(unit)
 		if unit == "player" then

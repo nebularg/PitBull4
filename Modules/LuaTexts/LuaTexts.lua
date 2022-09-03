@@ -10,7 +10,7 @@ local UnitChannelInfo = _G.UnitChannelInfo
 local LibClassicCasterino
 local casterino_events = {}
 
-if PitBull4.wow_classic then
+if PitBull4.wow_classic_era then
 	LibClassicCasterino = LibStub("LibClassicCasterino", true)
 	if LibClassicCasterino then
 		casterino_events = {
