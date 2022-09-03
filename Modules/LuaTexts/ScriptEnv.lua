@@ -4,7 +4,9 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_LuaTexts = PitBull4:GetModule("LuaTexts")
 
-local LibClassicDurations = LibStub("LibClassicDurations", true)
+local wow_classic_era = PitBull4.wow_classic_era
+
+local LibClassicDurations = wow_classic_era and LibStub("LibClassicDurations", true)
 
 local UnitAura = LibClassicDurations and LibClassicDurations.UnitAuraWithBuffs or _G.UnitAura
 

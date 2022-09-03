@@ -5,7 +5,7 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
-local LibClassicDurations = PitBull4.wow_classic and LibStub("LibClassicDurations", true)
+local LibClassicDurations = PitBull4.wow_classic_era and LibStub("LibClassicDurations", true)
 
 local UnitAura = LibClassicDurations and LibClassicDurations.UnitAuraWithBuffs or _G.UnitAura
 local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo

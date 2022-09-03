@@ -39,16 +39,6 @@ if PitBull4.wow_classic_era then
 			return LibClassicCasterino:UnitChannelInfo(unit)
 		end
 	end
-elseif PitBull4.wow_bcc then
-	-- nonInterruptible is missing from the returns
-	UnitCastingInfo = function(unit)
-		local name, text, texture, startTime, endTime, isTradeSkill, castID, spellID = _G.UnitCastingInfo(unit)
-		return name, text, texture, startTime, endTime, isTradeSkill, castID, nil, spellID
-	end
-	UnitChannelInfo = function(unit)
-		local name, text, texture, startTime, endTime, isTradeSkill, spellID = _G.UnitChannelInfo(unit)
-		return name, text, texture, startTime, endTime, isTradeSkill, nil, spellID
-	end
 end
 
 local test_frame = CreateFrame("Frame") -- Event validation

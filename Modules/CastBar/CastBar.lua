@@ -9,7 +9,6 @@ local TEMP_ICON = 136235
 local PitBull4_CastBar = PitBull4:NewModule("CastBar")
 
 local wow_classic_era = PitBull4.wow_classic_era
-local wow_bcc = PitBull4.wow_bcc
 
 local UnitCastingInfo = _G.UnitCastingInfo
 local UnitChannelInfo = _G.UnitChannelInfo
@@ -71,7 +70,7 @@ function PitBull4_CastBar:OnEnable()
 		LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_CHANNEL_START", "UpdateInfo")
 		LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_CHANNEL_UPDATE", "UpdateInfo")
 		LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_CHANNEL_STOP", "UpdateInfo")
-	elseif wow_bcc then
+	elseif not wow_classic_era then
 		self:RegisterEvent("UNIT_SPELLCAST_START", "UpdateInfo")
 		self:RegisterEvent("UNIT_SPELLCAST_STOP", "UpdateInfo")
 		self:RegisterEvent("UNIT_SPELLCAST_FAILED", "UpdateInfo")
