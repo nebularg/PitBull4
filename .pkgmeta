@@ -25,6 +25,8 @@ externals:
 move-folders:
   PitBull4/Modules/DogTagTexts: PitBull4_DogTagTexts
 
+changelog-title: PitBull Unit Frames 4.0
+
 ignore:
   - Docs
 

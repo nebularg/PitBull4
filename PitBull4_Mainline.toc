@@ -1,8 +1,0 @@
-## Interface: 30400
-## Interface-Classic: 11403
-## Interface-BCC: 20504
-
-## Title: PitBull Unit Frames 4.0 |cffff0000[WRONG VERSION]|r
-## Notes: This version of PitBull4 is for retail only!
-
-Incompatible.lua

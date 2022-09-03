@@ -1,12 +1,7 @@
-
-if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and WOW_PROJECT_ID ~= WOW_PROJECT_BURNING_CRUSADE_CLASSIC and WOW_PROJECT_ID ~= WOW_PROJECT_WRATH_CLASSIC then
-	return -- ERROR ALL THE THINGS!
-end
-
--- luacheck: globals oRA3 ReloadUI SecureButton_GetModifiedUnit
-
 -- Constants ----------------------------------------------------------------
 local _G = _G
+
+-- luacheck: globals oRA3 ReloadUI SecureButton_GetModifiedUnit
 
 local L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
 

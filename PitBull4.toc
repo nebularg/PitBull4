@@ -1,38 +1,5 @@
 ## Interface: 30400
-## Interface-Classic: 11403
-## Interface-BCC: 20504
+## Title: PitBull Unit Frames 4.0 |cffff0000[WRONG VERSION]|r
+## Notes: This version of PitBull4 is for classic only!
 
-## Title: PitBull Unit Frames 4.0
-## Notes: Dog-themed unit frames. Woof. Arf. Yip.
-## Notes-deDE: Dog-themed unit frames. Woof. Arf. Yip.
-## Notes-esES: Dog-themed unit frames. Woof. Arf. Yip.
-## Notes-esMX: Dog-themed unit frames. Woof. Arf. Yip.
-## Notes-frFR: Dog-themed unit frames. Woof. Arf. Yip.
-## Notes-itIT: Dog-themed unit frames. Woof. Arf. Yip.
-## Notes-koKR: 강아지-테마의 유닛 프레임입니다. 으르렁. 왈왈. 깨갱.
-## Notes-ptBR: Dog-themed unit frames. Woof. Arf. Yip.
-## Notes-ruRU: Dog-themed unit frames. Woof. Arf. Yip.
-## Notes-zhCN: 以狗为主题的单位框架。呜呜。汪汪。嗷呜。
-## Notes-zhTW: Dog-themed unit frames. Woof. Arf. Yip.
-## Author: ckknight, Shekfi, Nebula
-## Version: @project-version@
-
-## X-Curse-Project-ID: 7522
-## X-WoWI-ID: 25020
-
-## SavedVariables: PitBull4DB
-#@version-wrath@#
-## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDBIcon-1.0, LibHealComm-4.0, Clique
-#@end-version-wrath@#
-#@non-version-wrath@#
-# ## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibClassicDurations, LibClassicCasterino, LibDBIcon-1.0, LibHealComm-4.0, Clique
-#@end-non-version-wrath@#
-
-libs.xml
-#@non-version-wrath@#
-# Libs\LibClassicCasterino\LibClassicCasterino.lua
-# Libs\LibClassicDurations\LibClassicDurations.xml
-#@end-non-version-wrath@#
-
-load.xml
-modules.xml
+Incompatible.lua
