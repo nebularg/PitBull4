@@ -586,7 +586,7 @@ function PitBull4_Totems:PLAYER_TOTEM_UPDATE(event, slot)
 		self:DeactivateTotem(slot)
 
 		-- Sound functions
-		if global_option_get('death_sound') and not (event == nil) then
+		if global_option_get('death_sound') and event then
 			local soundpath = DEFAULT_SOUND_PATH
 			if LibSharedMedia then
 				soundpath = LibSharedMedia:Fetch("sound", global_option_get("sound_slot"..tostring(slot)))
