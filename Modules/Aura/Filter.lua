@@ -136,6 +136,7 @@ self_buffs.DRUID = {
 	[33943] = wow_bcc, -- Flight Form
 	[22842] = true, -- Frenzied Regeneration
 	[24858] = true, -- Moonkin Form
+	[16886] = true, -- Nature's Grace
 	[17116] = true, -- Nature's Swiftness
 	[5215] = true, -- Prowl
 	[40120] = wow_bcc, -- Swift Flight Form
