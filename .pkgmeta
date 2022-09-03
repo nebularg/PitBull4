@@ -2,12 +2,6 @@ package-as: PitBull4
 enable-nolib-creation: no
 
 externals:
-  Libs/LibStub:
-    url: https://repos.wowace.com/wow/libstub/trunk
-    tag: 1.0
-  Libs/CallbackHandler-1.0:
-    url: https://repos.wowace.com/wow/callbackhandler/trunk/CallbackHandler-1.0
-    tag: latest
   Libs/AceAddon-3.0: https://repos.wowace.com/wow/ace3/trunk/AceAddon-3.0
   Libs/AceConfig-3.0: https://repos.wowace.com/wow/ace3/trunk/AceConfig-3.0
   Libs/AceDB-3.0: https://repos.wowace.com/wow/ace3/trunk/AceDB-3.0
