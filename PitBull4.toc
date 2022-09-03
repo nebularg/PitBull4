@@ -2,4 +2,9 @@
 ## Title: PitBull Unit Frames 4.0 |cffff0000[WRONG VERSION]|r
 ## Notes: This version of PitBull4 is for classic only!
 
+## X-Curse-Project-ID: 7522
+## X-WoWI-ID: 25020
+
+## SavedVariables: PitBull4DB
+
 Incompatible.lua
