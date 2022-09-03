@@ -21,20 +21,18 @@
 ## X-WoWI-ID: 25020
 
 ## SavedVariables: PitBull4DB
-#@version-bcc@#
+#@version-wrath@#
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDBIcon-1.0, LibHealComm-4.0, Clique
-#@end-version-bcc@#
-#@non-version-bcc@#
+#@end-version-wrath@#
+#@non-version-wrath@#
 # ## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibClassicDurations, LibClassicCasterino, LibDBIcon-1.0, LibHealComm-4.0, Clique
-#@end-non-version-bcc@#
-
-WrongVersion.lua
+#@end-non-version-wrath@#
 
 libs.xml
-#@non-version-bcc@#
+#@non-version-wrath@#
 # Libs\LibClassicCasterino\LibClassicCasterino.lua
 # Libs\LibClassicDurations\LibClassicDurations.xml
-#@end-non-version-bcc@#
+#@end-non-version-wrath@#
 
 load.xml
 modules.xml

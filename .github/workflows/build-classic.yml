@@ -33,7 +33,7 @@ jobs:
       with:
         args: -g classic
 
-    - name: Package BCC
+    - name: Package Wrath
       uses: BigWigsMods/packager@master
       with:
-        args: -g bcc
+        args: -g wrath
