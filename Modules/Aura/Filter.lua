@@ -928,7 +928,7 @@ local function turn(t, shallow)
 		for id, v in next, entry do
 			local spell = GetSpellInfo(id)
 			if not spell then
-				DEFAULT_CHAT_FRAME:AddMessage(string.format("PitBull4_Aura: Unknown spell ID: %s", id))
+				-- DEFAULT_CHAT_FRAME:AddMessage(string.format("PitBull4_Aura: Unknown spell ID: %s", id)) -- Temp Disable
 			else
 				tmp[spell] = v and true
 			end
