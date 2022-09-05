@@ -407,6 +407,31 @@ function Module:UpdateNonWacky()
 	end
 end
 
+local function Print(self, frame, ...)
+	local name = self:IsModule() and ("PitBull4_" .. self.moduleName) or "PitBull4"
+	frame:AddMessage(strjoin(" ", tostringall(("|cff33ff99%s|r:"):format(name), ...)))
+end
+
+function Module:Print(...)
+	local frame = ...
+	if type(frame) == "table" and frame.AddMessage then
+		return Print(self, ...)
+	else
+		return Print(self, DEFAULT_CHAT_FRAME, ...)
+	end
+end
+PitBull4.Print = Module.Print
+
+function Module:Printf(...)
+	local frame = ...
+	if type(frame) == "table" and frame.AddMessage then
+		return Print(self, frame, format(select(2, ...)))
+	else
+		return Print(self, DEFAULT_CHAT_FRAME, format(...))
+	end
+end
+PitBull4.Printf = Module.Printf
+
 local function enabled_iter(modules, id)
 	local module
 	id, module = next(modules, id)
