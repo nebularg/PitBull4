@@ -1060,6 +1060,9 @@ local function ReputationColor(reaction)
 end
 ScriptEnv.ReputationColor = ReputationColor
 
+-- Retail compat so the sv doesn't need to be fixed
+ScriptEnv.GetFriendshipReputation = function() end
+
 local function ConfigMode()
 	local font_string = ScriptEnv.font_string
 	local frame = font_string.frame
