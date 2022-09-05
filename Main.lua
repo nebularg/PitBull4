@@ -1402,12 +1402,12 @@ function PitBull4:LoadModules()
 
 		local loaded
 		if enabled then
-			-- print(("Found module '%s', attempting to load."):format(module_name))
+			-- self:Printf("Found module %q, attempting to load.", module_name)
 			loaded = LoadAddOn(name)
 		end
 
 		if not loaded then
-			-- print(("Found module '%s', not loaded."):format(module_name))
+			-- self:Printf("Found module %q, not loaded.", module_name)
 			modules_not_loaded[module_name] = true
 		end
 	end

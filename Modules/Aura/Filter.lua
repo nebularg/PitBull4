@@ -6,6 +6,8 @@ local PitBull4_Aura = PitBull4:GetModule("Aura")
 
 local wow_bcc = PitBull4.wow_bcc
 
+local DEBUG = PitBull4.DEBUG
+
 local _, player_class = UnitClass("player")
 
 --- Return the DB dictionary for the specified filter.
@@ -927,10 +929,10 @@ local function turn(t, shallow)
 	local function turn(entry) -- luacheck: ignore
 		for id, v in next, entry do
 			local spell = GetSpellInfo(id)
-			if not spell then
-				-- DEFAULT_CHAT_FRAME:AddMessage(string.format("PitBull4_Aura: Unknown spell ID: %s", id)) -- Temp Disable
-			else
+			if spell then
 				tmp[spell] = v and true
+			elseif DEBUG then
+				PitBull4_Aura:Printf("Invalid spell ID: %d", id)
 			end
 		end
 		wipe(entry)

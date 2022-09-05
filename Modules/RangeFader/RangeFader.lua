@@ -4,6 +4,8 @@ local L = PitBull4.L
 
 local PitBull4_RangeFader = PitBull4:NewModule("RangeFader", "AceTimer-3.0")
 
+local DEBUG = PitBull4.DEBUG
+
 PitBull4_RangeFader:SetModuleType("fader")
 PitBull4_RangeFader:SetName(L["Range fader"])
 PitBull4_RangeFader:SetDescription(L["Make the unit frame fade if out of range."])
@@ -28,6 +30,8 @@ local function add_spell(t, id)
 	local spell = GetSpellInfo(id)
 	if spell then
 		t[#t+1] = spell
+	elseif DEBUG then
+		PitBull4_RangeFader:Printf("Invalid spell ID: %d", id)
 	end
 end
 

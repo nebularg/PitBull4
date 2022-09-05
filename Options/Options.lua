@@ -4,7 +4,7 @@ local L = PitBull4.L
 
 local AceConfig = LibStub("AceConfig-3.0", true)
 if not AceConfig then
-	print(("PitBull4 requires the library %q and will not work without it."):format("AceConfig-3.0"))
+	PitBull4:Printf("PitBull4 requires the library %q and will not work without it.", "AceConfig-3.0")
 	error(("PitBull4 requires the library %q and will not work without it."):format("AceConfig-3.0"))
 end
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
