@@ -24,6 +24,13 @@ local check_method_to_dist_index = {
 	follow = 4,
 }
 
+local function add_spell(t, id)
+	local spell = GetSpellInfo(id)
+	if spell then
+		t[#t+1] = spell
+	end
+end
+
 local friendly_is_in_range, pet_is_in_range, enemy_is_in_range, enemy_is_in_long_range
 do
 	local friendly_spells = {}
@@ -33,39 +40,55 @@ do
 	local res_spells = {}
 
 	local _,class = UnitClass("player")
-	if class == "DRUID" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(8921) -- Moonfire (30)
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(5185) -- Healing Touch
-		res_spells[#res_spells+1] = GetSpellInfo(20739) -- Rebirth
+	if class == "DEATHKNIGHT" then
+		add_spell(enemy_spells, 49576) -- Death Grip (30)
+		add_spell(friendly_spells, 49016) -- Hysteria (30)
+		add_spell(res_spells, 61999) -- Raise Ally (30)
+	elseif class == "DRUID" then
+		add_spell(enemy_spells, 8921) -- Moonfire (30)
+		add_spell(friendly_spells, 5185) -- Healing Touch (40)
+		add_spell(res_spells, 20739) -- Rebirth (30)
 	elseif class == "HUNTER" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(1978) -- Serpent Sting (8-35)
-		pet_spells[#pet_spells+1] = GetSpellInfo(136) -- Mend Pet (20)
-		pet_spells[#pet_spells+1] = GetSpellInfo(2641) -- Dismiss Pet (10)
+		add_spell(enemy_spells, 75) -- Auto Shot (35)
+		add_spell(pet_spells, 136) -- Mend Pet (20)
+		add_spell(pet_spells, 2641) -- Dismiss Pet (10)
 	elseif class == "MAGE" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(118) -- Polymorph (30)
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(1459) -- Arcane Intellect
+		add_spell(enemy_spells, 118) -- Polymorph (30)
+		add_spell(long_enemy_spells, 133) -- Fireball (35)
+		-- add_spell(friendly_spells, 475) -- Remove Curse (40)
+		add_spell(friendly_spells, 1459) -- Arcane Intellect (30)
 	elseif class == "PALADIN" then
-		enemy_spells[#long_enemy_spells+1] = GetSpellInfo(879) -- Exorcism (30)
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(635) -- Holy Light
-		res_spells[#res_spells+1] = GetSpellInfo(7328) -- Redemption
+		add_spell(enemy_spells, 853) -- Hammer of Justice (10)
+		add_spell(long_enemy_spells, 879) -- Exorcism (30)
+		-- Holy Paladins may have the Enlightened Judgements talent
+		-- add_spell(long_enemy_spells, 20271) -- Judgement of Light (10,35,40)
+		add_spell(friendly_spells, 1044) -- Hand of Freedom (30)
+		add_spell(friendly_spells, 635) -- Holy Light (40)
+		add_spell(res_spells, 7328) -- Redemption (30)
 	elseif class == "PRIEST" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(585) -- Smite (30)
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(2050) -- Lesser Heal
-		res_spells[#res_spells+1] = GetSpellInfo(2006) -- Resurrection
+		add_spell(enemy_spells, 585) -- Smite (30)
+		add_spell(friendly_spells, 2050) -- Lesser Heal (40)
+		add_spell(res_spells, 2006) -- Resurrection (30)
 	elseif class == "ROGUE" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(1725) -- Distract (30)
+		add_spell(enemy_spells, 2094) -- Blind (10)
+		add_spell(long_enemy_spells, 1725) -- Distract (30)
+		add_spell(friendly_spells, 57934) -- Tricks of the Trade (20)
 	elseif class == "SHAMAN" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(403) -- Lightning Bolt (30)
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(331) -- Healing Wave
-		res_spells[#res_spells+1] = GetSpellInfo(2008) -- Ancestral Spirit
+		add_spell(enemy_spells, 8042) -- Earth Shock (25)
+		add_spell(long_enemy_spells, 403) -- Lightning Bolt (30)
+		add_spell(friendly_spells, 331) -- Healing Wave (40)
+		add_spell(res_spells, 2008) -- Ancestral Spirit (30)
 	elseif class == "WARLOCK" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(5782) -- Fear (20)
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(686) -- Shadow Bolt (30)
-		pet_spells[#pet_spells+1] = GetSpellInfo(755) -- Health Funnel
-		friendly_spells[#friendly_spells+1] = GetSpellInfo(5697) -- Unending Breath
-		res_spells[#res_spells+1] = GetSpellInfo(20707) -- Soulstone
+		add_spell(enemy_spells, 5782) -- Fear (20)
+		add_spell(long_enemy_spells, 686) -- Shadow Bolt (30)
+		add_spell(pet_spells, 755) -- Health Funnel (45)
+		add_spell(friendly_spells, 5697) -- Unending Breath (30)
+		add_spell(res_spells, 20707) -- Soulstone (30)
 	elseif class == "WARRIOR" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(100) -- Charge (8-25)
+		add_spell(enemy_spells, 5246) -- Intimidating Shout (8)
+		-- add_spell(enemy_spells, 1161) -- Challenging Shout (10)
+		add_spell(long_enemy_spells, 355) -- Taunt (30)
+		add_spell(friendly_spells, 6673) -- Battle Shout (30)
 	end
 
 	function friendly_is_in_range(unit)
@@ -147,7 +170,7 @@ function PitBull4_RangeFader:GetOpacity(frame)
 		return 1
 	end
 
-	if check_method== "follow" or check_method == "trade" or check_method == "duel" or check_method == "follow" then
+	if check_method == "follow" or check_method == "trade" or check_method == "duel" or check_method == "follow" then
 		if CheckInteractDistance(unit, check_method_to_dist_index[check_method]) then
 			return 1
 		else
@@ -206,12 +229,10 @@ PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 		isPercent = true,
 		get = function(info)
 			local db = PitBull4.Options.GetLayoutDB(self)
-
 			return db.out_of_range_opacity
 		end,
 		set = function(info, value)
 			local db = PitBull4.Options.GetLayoutDB(self)
-
 			db.out_of_range_opacity = value
 
 			PitBull4.Options.UpdateFrames()
@@ -234,12 +255,10 @@ PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 		},
 		get = function(info)
 			local db = PitBull4.Options.GetLayoutDB(self)
-
 			return db.check_method
 		end,
 		set = function(info, value)
 			local db = PitBull4.Options.GetLayoutDB(self)
-
 			db.check_method = value
 
 			PitBull4.Options.UpdateFrames()
@@ -252,12 +271,10 @@ PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 		desc = L["Enter the name of the spell you want use to check the range with."],
 		get = function(info)
 			local db = PitBull4.Options.GetLayoutDB(self)
-
 			return db.custom_spell
 		end,
 		set = function(info, value)
 			local db = PitBull4.Options.GetLayoutDB(self)
-
 			db.custom_spell = value
 
 			PitBull4.Options.UpdateFrames()
@@ -273,12 +290,10 @@ PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 		desc = L["Enter the name of the item you want use to check the range with."],
 		get = function(info)
 			local db = PitBull4.Options.GetLayoutDB(self)
-
 			return db.custom_item
 		end,
 		set = function(info, value)
 			local db = PitBull4.Options.GetLayoutDB(self)
-
 			db.custom_item = value
 
 			PitBull4.Options.UpdateFrames()
