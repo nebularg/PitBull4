@@ -143,21 +143,20 @@ function SingletonUnitFrame__scripts:OnDragStart()
 		return
 	end
 
-	self:StartMoving()
 	moving_frame = self
 
 	if db.frame_snap then
-		-- stop thing is to make WoW move the frame the initial few pixels between
-		-- OnMouseDown and OnDragStart
-		self:StopMovingOrSizing()
-
 		LibStub("LibSimpleSticky-1.0"):StartMoving(self, PitBull4.all_frames_list, 0, 0, 0, 0)
+	else
+		self:StartMoving()
 	end
 end
 
 function SingletonUnitFrame__scripts:OnDragStop()
 	if moving_frame ~= self then return end
+
 	moving_frame = nil
+
 	if PitBull4.db.profile.frame_snap then
 		LibStub("LibSimpleSticky-1.0"):StopMoving(self)
 	else
