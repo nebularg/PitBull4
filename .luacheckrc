@@ -67,6 +67,7 @@ globals = {
 	"GetAddOnInfo",
 	"GetAddOnMetadata",
 	"GetBattlefieldStatus",
+	"GetSpellBookItemName",
 	"GetCVarBool",
 	"GetComboPoints",
 	"GetInventoryItemLink",
