@@ -6,7 +6,8 @@ local L = PitBull4.L
 
 local PitBull4_HideBlizzard = PitBull4:NewModule("HideBlizzard", "AceHook-3.0")
 
-local wow_classic = PitBull4.wow_classic
+local wow_classic_era = PitBull4.wow_classic_era
+local wow_wrath = PitBull4.wow_wrath
 
 PitBull4_HideBlizzard:SetModuleType("custom")
 PitBull4_HideBlizzard:SetName(L["Hide Blizzard frames"])
@@ -20,6 +21,7 @@ PitBull4_HideBlizzard:SetDefaults({}, {
 	castbar = true,
 	aura = false,
 	runebar = true,
+	boss = true,
 })
 
 function PitBull4_HideBlizzard:OnEnable()
@@ -206,14 +208,14 @@ function showers:target()
 	ComboFrame:Show()
 end
 
-function hiders:focus()
-	if not wow_classic then return end
-	hook_frames(FocusFrame)
-end
+if not wow_classic_era then
+	function hiders:focus()
+		hook_frames(FocusFrame)
+	end
 
-function showers:focus()
-	if not wow_classic then return end
-	unhook_frames(FocusFrame)
+	function showers:focus()
+		unhook_frames(FocusFrame)
+	end
 end
 
 function hiders:castbar()
@@ -222,25 +224,6 @@ end
 
 function showers:castbar()
 	unhook_frames(CastingBarFrame, PetCastingBarFrame)
-end
-
-function hiders:runebar()
-	if RuneFrame then
-		hook_frames(RuneFrame)
-		RuneFrame:UnregisterAllEvents()
-		RuneFrame:Hide()
-	end
-end
-
-function showers:runebar()
-	if RuneFrame then
-		local _,class = UnitClass("player")
-		if class == "DEATHKNIGHT" then
-			RuneFrame:Show()
-		end
-		RuneFrame:GetScript("OnLoad")(RuneFrame)
-		RuneFrame:GetScript("OnEvent")(RuneFrame, "PLAYER_ENTERING_WORLD")
-	end
 end
 
 function hiders:aura()
@@ -256,6 +239,44 @@ function showers:aura()
 
 	TemporaryEnchantFrame:Show()
 end
+
+if wow_wrath then
+	function hiders:runebar()
+		hook_frames(RuneFrame)
+		RuneFrame:UnregisterAllEvents()
+		RuneFrame:Hide()
+	end
+
+	function showers:runebar()
+		local _,class = UnitClass("player")
+		if class == "DEATHKNIGHT" then
+			RuneFrame:Show()
+		end
+		RuneFrame:GetScript("OnLoad")(RuneFrame)
+		RuneFrame:GetScript("OnEvent")(RuneFrame, "PLAYER_ENTERING_WORLD")
+	end
+
+	function hiders:boss()
+		for i=1, _G.MAX_BOSS_FRAMES do
+			local frame = _G["Boss"..i.."TargetFrame"]
+			hook_frames(frame)
+		end
+	end
+
+	function showers:boss()
+		for i=1, _G.MAX_BOSS_FRAMES do
+			local frame = _G["Boss"..i.."TargetFrame"]
+			unhook_frames_without_init(frame)
+			if i == 1 then
+				BossTargetFrame_OnLoad(frame, "boss1", "INSTANCE_ENCOUNTER_ENGAGE_UNIT")
+			else
+				BossTargetFrame_OnLoad(frame, "boss"..i)
+			end
+			Target_Spellbar_OnEvent(frame.spellbar, "INSTANCE_ENCOUNTER_ENGAGE_UNIT")
+		end
+	end
+end
+
 
 for k, v in pairs(hiders) do
 	hiders[k] = PitBull4:OutOfCombatWrapper(v)
@@ -291,7 +312,7 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		desc = L["Hides the class resource bar attached to your player frame."],
 		get = get,
 		set = set,
-		hidden = hidden,
+		hidden = not wow_wrath or hidden,
 		disabled = function() return self.db.profile.global.player end,
 	}, 'party', {
 		type = 'toggle',
@@ -320,7 +341,7 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		desc = L["Hide the standard focus frame."],
 		get = get,
 		set = set,
-		hidden = function(info) return not wow_classic or hidden(info) end,
+		hidden = wow_classic_era or hidden,
 	}, 'castbar', {
 		type = 'toggle',
 		name = L["Cast bar"],
@@ -335,5 +356,12 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		get = get,
 		set = set,
 		hidden = hidden,
+	}, 'boss', {
+		type = 'toggle',
+		name = L["Boss"],
+		desc = L["Hides the standard boss frames."],
+		get = get,
+		set = set,
+		hidden = not wow_wrath or hidden,
 	}
 end)
