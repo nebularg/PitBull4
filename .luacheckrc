@@ -86,6 +86,8 @@ globals = {
 	"GetRaidRosterInfo",
 	"GetRaidTargetIndex",
 	"GetReadyCheckStatus",
+	"GetRuneCooldown",
+	"GetRuneType",
 	"GetScreenHeight",
 	"GetScreenWidth",
 	"GetShapeshiftFormID",

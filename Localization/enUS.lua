@@ -820,6 +820,7 @@ L["Role order"] = true
 L["Row spacing"] = true
 L["Rows down"] = true
 L["Rows up"] = true
+L["Rune bar"] = true
 L["Runes"] = true
 L["Sample aura created by PitBull to allow you to see the results of your configuration easily."] = true
 L["Sample Buff"] = true

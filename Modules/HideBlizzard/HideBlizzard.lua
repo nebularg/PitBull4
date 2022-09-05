@@ -19,6 +19,7 @@ PitBull4_HideBlizzard:SetDefaults({}, {
 	focus = true,
 	castbar = true,
 	aura = false,
+	runebar = true,
 })
 
 function PitBull4_HideBlizzard:OnEnable()
@@ -223,6 +224,25 @@ function showers:castbar()
 	unhook_frames(CastingBarFrame, PetCastingBarFrame)
 end
 
+function hiders:runebar()
+	if RuneFrame then
+		hook_frames(RuneFrame)
+		RuneFrame:UnregisterAllEvents()
+		RuneFrame:Hide()
+	end
+end
+
+function showers:runebar()
+	if RuneFrame then
+		local _,class = UnitClass("player")
+		if class == "DEATHKNIGHT" then
+			RuneFrame:Show()
+		end
+		RuneFrame:GetScript("OnLoad")(RuneFrame)
+		RuneFrame:GetScript("OnEvent")(RuneFrame, "PLAYER_ENTERING_WORLD")
+	end
+end
+
 function hiders:aura()
 	hook_frames(BuffFrame, TemporaryEnchantFrame)
 end
@@ -265,6 +285,14 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		get = get,
 		set = set,
 		hidden = hidden,
+	}, 'runebar', {
+		type = 'toggle',
+		name = L["Rune bar"],
+		desc = L["Hides the class resource bar attached to your player frame."],
+		get = get,
+		set = set,
+		hidden = hidden,
+		disabled = function() return self.db.profile.global.player end,
 	}, 'party', {
 		type = 'toggle',
 		name = L["Party"],
