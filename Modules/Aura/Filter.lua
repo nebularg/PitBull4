@@ -4,11 +4,11 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
+local wow_classic_era = PitBull4.wow_classic_era
 local wow_bcc = PitBull4.wow_bcc
+local wow_wrath = PitBull4.wow_wrath
 
 local DEBUG = PitBull4.DEBUG
-
-local _, player_class = UnitClass("player")
 
 --- Return the DB dictionary for the specified filter.
 -- Filter Types should use this to get their db.
@@ -19,15 +19,33 @@ function PitBull4_Aura:GetFilterDB(filter)
 	return self.db.profile.global.filters[filter]
 end
 
+function PitBull4_Aura:FilterEntry(name, entry, frame)
+	if not name or name == "" then return true end
+	local filter = self:GetFilterDB(name)
+	if not filter then return true end
+	local filter_func = self.filter_types[filter.filter_type].filter_func
+	return filter_func(name, entry, frame)
+end
+
+
+local _, player_class = UnitClass("player")
+
+local function IsBookSpell(id)
+	local spell = GetSpellInfo(id)
+	if not spell then return end
+	if GetSpellBookItemName(spell) then
+		return true
+	end
+end
+
 -- Setup the data for who can dispel what types of auras.
 -- dispel in this context means remove from friendly players
+
 local can_dispel = {
 	DEATHKNIGHT = {},
-	DEMONHUNTER = {},
 	DRUID = {},
 	HUNTER = {},
 	MAGE = {},
-	MONK = {},
 	PALADIN = {},
 	PRIEST = {},
 	ROGUE = {},
@@ -42,11 +60,9 @@ PitBull4_Aura.can_dispel = can_dispel
 -- purge in this context means remove from enemies.
 local can_purge = {
 	DEATHKNIGHT = {},
-	DEMONHUNTER = {},
 	DRUID = {},
 	HUNTER = {},
 	MAGE = {},
-	MONK = {},
 	PALADIN = {},
 	PRIEST = {},
 	ROGUE = {},
@@ -62,12 +78,14 @@ function PitBull4_Aura:PLAYER_TALENT_UPDATE()
 	if player_class == "DRUID" then
 		can_dispel.DRUID.Curse = IsPlayerSpell(2782) -- Remove Curse
 		self:GetFilterDB(',3').aura_type_list.Curse = can_dispel.DRUID.Curse
-		can_dispel.DRUID.Poison = IsPlayerSpell(2893) or IsPlayerSpell(8946) -- Cure Poison, Abolish Poison
+		can_dispel.DRUID.Poison = IsPlayerSpell(2893) or IsPlayerSpell(8946) -- Abolish Poison, Cure Poison
 		self:GetFilterDB(',3').aura_type_list.Poison = can_dispel.DRUID.Poison
 
 	elseif player_class == "HUNTER" then
 		can_purge.HUNTER.Enrage = IsPlayerSpell(19801) -- Tranuilizing Shot
 		self:GetFilterDB('-7').aura_type_list.Enrage = can_purge.HUNTER.Enrage
+		can_purge.HUNTER.Magic = wow_wrath and can_purge.HUNTER.Enrage
+		self:GetFilterDB('-7').aura_type_list.Magic = can_purge.HUNTER.Magic
 
 	elseif player_class == "MAGE" then
 		can_dispel.MAGE.Curse = IsPlayerSpell(475) -- Remove Lesser Curse
@@ -76,39 +94,41 @@ function PitBull4_Aura:PLAYER_TALENT_UPDATE()
 	elseif player_class == "PALADIN" then
 		can_dispel.PALADIN.Magic = IsPlayerSpell(4987) -- Cleanse
 		self:GetFilterDB('/3').aura_type_list.Magic = can_dispel.PALADIN.Magic
-		can_dispel.PALADIN.Disease = IsPlayerSpell(1152) or IsPlayerSpell(4987) -- Purify
+		can_dispel.PALADIN.Disease = can_dispel.PALADIN.Magic or IsPlayerSpell(1152) -- Cleanse, Purify
 		self:GetFilterDB('/3').aura_type_list.Disease = can_dispel.PALADIN.Disease
 		can_dispel.PALADIN.Poison = can_dispel.PALADIN.Disease
 		self:GetFilterDB('/3').aura_type_list.Poison = can_dispel.PALADIN.Poison
 
 	elseif player_class == "PRIEST" then
-		can_dispel.PRIEST.Magic = IsPlayerSpell(527) or IsPlayerSpell(988) -- Dispel Magic
+		can_dispel.PRIEST.Magic = IsBookSpell(527) or IsPlayerSpell(32375) -- Dispel Magic, Mass Dispel
 		self:GetFilterDB('03').aura_type_list.Magic = can_dispel.PRIEST.Magic
 		can_dispel.PRIEST.Disease = IsPlayerSpell(528) or IsPlayerSpell(552) -- Cure Disease, Abolish Disease
 		self:GetFilterDB('03').aura_type_list.Disease = can_dispel.PRIEST.Disease
 
 	elseif player_class == "SHAMAN" then
+		can_dispel.SHAMAN.Curse = IsPlayerSpell(51886) -- Cleanse Spirit
+		self:GetFilterDB('23').aura_type_list.Curse = can_dispel.SHAMAN.Curse
 		can_dispel.SHAMAN.Disease = IsPlayerSpell(2870) -- or IsPlayerSpell(8170) -- Cure Disease, Disease Cleansing Totem
 		self:GetFilterDB('23').aura_type_list.Disease = can_dispel.SHAMAN.Disease
 		can_dispel.SHAMAN.Poison = IsPlayerSpell(526) -- or IsPlayerSpell(8166) -- Cure Poison, Poison Cleansing Totem
 		self:GetFilterDB('23').aura_type_list.Poison = can_dispel.SHAMAN.Poison
 
-		can_purge.SHAMAN.Magic = IsPlayerSpell(370) or IsPlayerSpell(8012) -- Purge
+		can_purge.SHAMAN.Magic = IsBookSpell(370) -- Purge
 		self:GetFilterDB('27').aura_type_list.Magic = can_purge.SHAMAN.Magic
 
 	elseif player_class == "WARLOCK" then
-		can_purge.WARLOCK.Magic = IsSpellKnown(19505, true) or IsSpellKnown(19731, true) or IsSpellKnown(19734, true) or IsSpellKnown(19736, true) -- Devour Magic
+		can_purge.WARLOCK.Magic = IsBookSpell(19505) -- Devour Magic
 		self:GetFilterDB('37').aura_type_list.Magic = can_purge.WARLOCK.Magic
 
 	elseif player_class == "WARRIOR" then
-		can_purge.WARRIOR.Magic = IsPlayerSpell(23922) or IsPlayerSpell(23923) or IsPlayerSpell(23924) or IsPlayerSpell(23925) -- Shield Slam
+		can_purge.WARRIOR.Magic = wow_wrath and IsBookSpell(23922) -- Shield Slam
 		self:GetFilterDB('47').aura_type_list.Magic = can_purge.WARRIOR.Magic
 
 	end
 end
 
 -- Setup the data for which auras belong to whom
-local friend_buffs,friend_debuffs,self_buffs,self_debuffs,pet_buffs,enemy_debuffs = {},{},{},{},{},{}
+local friend_buffs,friend_debuffs,self_buffs,self_debuffs,pet_buffs,enemy_debuffs,extra_buffs = {},{},{},{},{},{},{}
 
 -- Druid
 friend_buffs.DRUID = {
@@ -721,72 +741,17 @@ if wow_bcc then
 	enemy_debuffs.Draenei = {}
 end
 
--- -- Worgen
--- friend_buffs.Worgen = {
--- 	[23333] = true -- Warsong Flag
--- }
--- friend_debuffs.Worgen = {}
--- self_buffs.Worgen = {
--- 	[68992] = true, -- Darkflight
--- 	[87840] = true, -- Running Wild
--- }
--- self_debuffs.Worgen = {}
--- pet_buffs.Worgen = {}
--- enemy_debuffs.Worgen = {}
-
--- -- Dark Iron Dwarf
--- friend_buffs.DarkIronDwarf = {
--- 	[23333] = true -- Warsong Flag
--- }
--- friend_debuffs.DarkIronDwarf = {}
--- self_buffs.DarkIronDwarf = {
--- 	[273104] = true, -- Fireblood
--- }
--- self_debuffs.DarkIronDwarf = {}
--- pet_buffs.DarkIronDwarf = {}
--- enemy_debuffs.DarkIronDwarf = {}
-
--- -- Lightforged Draenei
--- friend_buffs.LightforgedDraenei = {
--- 	[23333] = true -- Warsong Flag
--- }
--- friend_debuffs.LightforgedDraenei = {}
--- self_buffs.LightforgedDraenei = {}
--- self_debuffs.LightforgedDraenei = {}
--- pet_buffs.LightforgedDraenei = {}
--- enemy_debuffs.LightforgedDraenei = {}
-
--- -- Void Elf
--- friend_buffs.VoidElf = {
--- 	[23333] = true -- Warsong Flag
--- }
--- friend_debuffs.VoidElf = {}
--- self_buffs.VoidElf = {
--- 	[256948] = true, -- Spatial Rift
--- }
--- self_debuffs.VoidElf = {}
--- pet_buffs.VoidElf = {}
--- enemy_debuffs.VoidElf = {}
-
--- -- Kul Tiran Human
--- friend_buffs.KulTiranHuman = {
--- 	[23333] = true -- Warsong Flag
--- }
--- friend_debuffs.KulTiranHuman = {}
--- self_buffs.KulTiranHuman = {}
--- self_debuffs.KulTiranHuman = {}
--- pet_buffs.KulTiranHuman = {}
--- enemy_debuffs.KulTiranHuman = {}
-
 -- Orc
 friend_buffs.Orc = {
 	[23335] = true -- Silverwing Flag
 }
 friend_debuffs.Orc = {}
 self_buffs.Orc = {
-	[20572] = true, -- Blood Fury (Attack power)
+	[20572] = true, -- Blood Fury
 }
-self_debuffs.Orc = {}
+self_debuffs.Orc = {
+	[23230] = true, -- Blood Fury
+}
 pet_buffs.Orc = {}
 enemy_debuffs.Orc = {}
 
@@ -797,8 +762,8 @@ friend_buffs.Scourge = {
 friend_debuffs.Scourge = {}
 self_buffs.Scourge = {
 	[20578] = true, -- Cannibalize
-	[2944] = true, -- Devouring Plague (Priest)
-	[2652] = true, -- Touch of Weakness (Priest)
+	[2944] = wow_classic_era, -- Devouring Plague (Priest)
+	[2652] = wow_classic_era, -- Touch of Weakness (Priest)
 	[7744] = true, -- Will of the Forsaken
 }
 self_debuffs.Scourge = {}
@@ -824,16 +789,16 @@ friend_buffs.Troll = {
 friend_debuffs.Troll = {}
 self_buffs.Troll = {
 	[26635] = true, -- Berserking
-	[18137] = true, -- Shadowguard (Priest)
+	[18137] = wow_classic_era, -- Shadowguard (Priest)
 }
 self_debuffs.Troll = {}
 pet_buffs.Troll = {}
 enemy_debuffs.Troll = {
-	[9035] = true, -- Hex of Weakness (Priest)
+	[9035] = wow_classic_era, -- Hex of Weakness (Priest)
 }
 
 -- Blood Elf
-if wow_bcc then
+if not wow_classic_era then
 	friend_buffs.BloodElf = {
 		[23335] = true -- Silverwing Flag
 	}
@@ -846,83 +811,8 @@ if wow_bcc then
 	}
 end
 
--- -- Goblin
--- friend_buffs.Goblin = {
--- 	[23335] = true -- Silverwing Flag
--- }
--- friend_debuffs.Goblin = {}
--- self_buffs.Goblin = {}
--- self_debuffs.Goblin = {}
--- pet_buffs.Goblin = {}
--- enemy_debuffs.Goblin = {}
-
--- -- Mag'har Orc
--- friend_buffs.MagharOrc = {
--- 	[23335] = true -- Silverwing Flag
--- }
--- friend_debuffs.MagharOrc = {}
--- self_buffs.MagharOrc = {
--- 	-- Ancestral Call
--- 	[274739] = true, -- Rictus of the Laughing Skull
--- 	[274740] = true, -- Zeal of the Burning Blade
--- 	[274741] = true, -- Ferocity of the Frostwolf
--- 	[274742] = true, -- Might of the Blackrock
--- }
--- self_debuffs.MagharOrc = {}
--- pet_buffs.MagharOrc = {}
--- enemy_debuffs.MagharOrc = {}
-
--- -- Highmountain Tauren
--- friend_buffs.HighmountainTauren = {
--- 	[23335] = true -- Silverwing Flag
--- }
--- friend_debuffs.HighmountainTauren = {}
--- self_buffs.HighmountainTauren = {}
--- self_debuffs.HighmountainTauren = {}
--- pet_buffs.HighmountainTauren = {}
--- enemy_debuffs.HighmountainTauren = {
--- 	[255723] = true, -- Bull Rush
--- }
-
--- -- Nightborne
--- friend_buffs.Nightborne = {
--- 	[23335] = true -- Silverwing Flag
--- }
--- friend_debuffs.Nightborne = {}
--- self_buffs.Nightborne = {}
--- self_debuffs.Nightborne = {}
--- pet_buffs.Nightborne = {}
--- enemy_debuffs.Nightborne = {
--- 	[260369] = true, -- Arcane Pulse
--- }
-
--- -- Zandalari Troll
--- friend_buffs.ZandalariTroll = {
--- 	[23335] = true -- Silverwing Flag
--- }
--- friend_debuffs.ZandalariTroll = {}
--- self_buffs.ZandalariTroll = {}
--- self_debuffs.ZandalariTroll = {}
--- pet_buffs.ZandalariTroll = {}
--- enemy_debuffs.ZandalariTroll = {}
-
--- -- Pandaren
--- friend_buffs.Pandaren = {
--- 	[23335] = UnitFactionGroup("player") == "Horde", -- Silverwing Flag
--- 	[23333] = UnitFactionGroup("player") == "Alliance", -- Warsong Flag
--- }
--- friend_debuffs.Pandaren = {}
--- self_buffs.Pandaren = {}
--- self_debuffs.Pandaren = {}
--- pet_buffs.Pandaren = {}
--- enemy_debuffs.Pandaren = {
--- 	[107079] = true, -- Quaking Palm
--- }
-
 -- Everyone
-local extra_buffs = {
-	[34976] = wow_bcc, -- Netherstorm Flag
-}
+extra_buffs[34976] = not wow_classic_era -- Netherstorm Flag
 
 local function turn(t, shallow)
 	local tmp = {}
@@ -966,17 +856,8 @@ PitBull4_Aura.pet_buffs = pet_buffs
 PitBull4_Aura.enemy_debuffs = enemy_debuffs
 PitBull4_Aura.extra_buffs = extra_buffs
 
-function PitBull4_Aura:FilterEntry(name, entry, frame)
-	if not name or name == "" then return true end
-	local filter = self:GetFilterDB(name)
-	if not filter then return true end
-	local filter_func = self.filter_types[filter.filter_type].filter_func
-	return filter_func(name, entry, frame)
-end
 
-
-PitBull4_Aura.OnProfileChanged_funcs[#PitBull4_Aura.OnProfileChanged_funcs+1] =
-function(self)
+PitBull4_Aura.OnProfileChanged_funcs[#PitBull4_Aura.OnProfileChanged_funcs+1] = function(self)
 	-- Fix name lists containing spell ids (issue in 27703b7)
 	for _, filter in next, PitBull4_Aura.db.profile.global.filters do
 		if filter.name_list then
