@@ -259,25 +259,25 @@ if wow_wrath then
 		RuneFrame:GetScript("OnEvent")(RuneFrame, "PLAYER_ENTERING_WORLD")
 	end
 
-	function hiders:boss()
-		for i=1, _G.MAX_BOSS_FRAMES do
-			local frame = _G["Boss"..i.."TargetFrame"]
-			hook_frames(frame)
-		end
-	end
+	-- function hiders:boss()
+	-- 	for i=1, _G.MAX_BOSS_FRAMES do
+	-- 		local frame = _G["Boss"..i.."TargetFrame"]
+	-- 		hook_frames(frame)
+	-- 	end
+	-- end
 
-	function showers:boss()
-		for i=1, _G.MAX_BOSS_FRAMES do
-			local frame = _G["Boss"..i.."TargetFrame"]
-			unhook_frames_without_init(frame)
-			if i == 1 then
-				BossTargetFrame_OnLoad(frame, "boss1", "INSTANCE_ENCOUNTER_ENGAGE_UNIT")
-			else
-				BossTargetFrame_OnLoad(frame, "boss"..i)
-			end
-			Target_Spellbar_OnEvent(frame.spellbar, "INSTANCE_ENCOUNTER_ENGAGE_UNIT")
-		end
-	end
+	-- function showers:boss()
+	-- 	for i=1, _G.MAX_BOSS_FRAMES do
+	-- 		local frame = _G["Boss"..i.."TargetFrame"]
+	-- 		unhook_frames_without_init(frame)
+	-- 		if i == 1 then
+	-- 			BossTargetFrame_OnLoad(frame, "boss1", "INSTANCE_ENCOUNTER_ENGAGE_UNIT")
+	-- 		else
+	-- 			BossTargetFrame_OnLoad(frame, "boss"..i)
+	-- 		end
+	-- 		Target_Spellbar_OnEvent(frame.spellbar, "INSTANCE_ENCOUNTER_ENGAGE_UNIT")
+	-- 	end
+	-- end
 end
 
 
@@ -365,6 +365,6 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		desc = L["Hides the standard boss frames."],
 		get = get,
 		set = set,
-		hidden = not wow_wrath or hidden,
+		hidden = true, -- not wow_wrath or hidden,
 	}
 end)
