@@ -22,5 +22,7 @@
 
 libs.xml
 
+Templates_Classic.xml
 load.xml
+
 modules.xml

@@ -97,6 +97,7 @@ local DATABASE_DEFAULTS = {
 				layout = L["Normal"],
 				horizontal_mirror = false,
 				vertical_mirror = false,
+				vehicle_swap = true,
 				click_through = false,
 				tooltip = 'always',
 			},
@@ -128,6 +129,7 @@ local DATABASE_DEFAULTS = {
 				layout = L["Normal"],
 				horizontal_mirror = false,
 				vertical_mirror = false,
+				vehicle_swap = true,
 				click_through = false,
 				tooltip = 'always',
 				exists = false, -- used to force the group to exist even if all values are default
@@ -1605,6 +1607,12 @@ function PitBull4:OnEnable()
 	self:RegisterEvent("UNIT_FACTION")
 	self:RegisterEvent("UNIT_HAPPINESS", "UNIT_FACTION")
 
+	if wow_wrath then
+		self:RegisterEvent("UNIT_ENTERED_VEHICLE")
+		self:RegisterEvent("UNIT_EXITED_VEHICLE")
+		self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+	end
+
 	-- enter/leave combat for :RunOnLeaveCombat
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
@@ -1745,6 +1753,59 @@ function PitBull4:UNIT_FACTION(_, unit)
 		for _, module in self:IterateModulesOfType("bar","bar_provider") do
 			module:Update(frame)
 		end
+	end
+end
+
+local tmp = {}
+function PitBull4:UNIT_ENTERED_VEHICLE(event, unit)
+	if (event == "UNIT_ENTERED_VEHICLE" and unit == "player" and not UnitHasVehiclePlayerFrameUI("player")) then
+		-- Ignore swapping units when the vehicle player frame ui is disabled.
+		-- This is a workaround for the fact that SecureButton_GetModifiedUnit
+		-- is not properly respecting not to swap frames (heck the default
+		-- UI does weird stuff itself).  Clicking on the frame will be
+		-- wrong but we'll at least look right and you can't really target
+		-- the unit inside the vehicle anyway so it's not the end of the world.
+		return
+	end
+	tmp[unit] = true
+	tmp[PitBull4.Utils.GetBestUnitID(unit)] = true
+	local pet = PitBull4.Utils.GetBestUnitID(unit .. "pet")
+	tmp[unit .. "pet"] = true
+	if pet then
+		tmp[pet] = true
+	end
+	local non_pet = unit:gsub("pet", "")
+	if non_pet == "" then
+		non_pet = "player"
+	end
+	tmp[non_pet] = true
+	for frame in self:IterateFrames(true) do
+		if tmp[frame:GetAttribute("unit")] then
+			local new_unit = SecureButton_GetModifiedUnit(frame, "LeftButton")
+			local old_unit = frame.unit
+			if old_unit ~= new_unit then
+				frame.unit = new_unit
+				if old_unit then
+					PitBull4.unit_id_to_frames[old_unit][frame] = nil
+					PitBull4.unit_id_to_frames_with_wacky[old_unit][frame] = nil
+				end
+				if new_unit then
+					PitBull4.unit_id_to_frames[new_unit][frame] = true
+					PitBull4.unit_id_to_frames_with_wacky[new_unit][frame] = true
+				end
+				frame:UpdateGUID(UnitGUID(new_unit), true)
+			end
+		end
+	end
+	wipe(tmp)
+end
+PitBull4.UNIT_EXITED_VEHICLE = PitBull4.UNIT_ENTERED_VEHICLE
+
+function PitBull4:ZONE_CHANGED_NEW_AREA()
+	-- When we change zones if we lose the vehicle we don't get events for it.
+	-- So we need to simulate the events for all the relevent units.
+	for unit in pairs(self.unit_id_to_guid) do
+		self:UNIT_EXITED_VEHICLE(nil, unit)
 	end
 end
 

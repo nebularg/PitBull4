@@ -851,7 +851,7 @@ end)
 local my_units = {
 	player = true,
 	pet = true,
-	-- vehicle = true,
+	vehicle = true,
 }
 
 -- Mine, Filter by if you cast it or not.

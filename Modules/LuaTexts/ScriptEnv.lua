@@ -880,6 +880,9 @@ end
 ScriptEnv.IsMouseOver = IsMouseOver
 
 local function Combos()
+	if UnitHasVehicleUI and UnitHasVehicleUI("player") then
+		return GetComboPoints("vehicle")
+	end
 	return UnitPower("player", Enum.PowerType.ComboPoints)
 end
 ScriptEnv.Combos = Combos

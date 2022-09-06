@@ -1495,6 +1495,9 @@ local function update_indicator_and_text_layout(frame)
 				local unscaled_height = element:GetHeight()
 				local height_multiplier = element.height or 1
 				local scale = indicator_size / unscaled_height * element_db.size * height_multiplier
+				if scale == 0 then -- size or height are somehow 0?
+					scale = 1
+				end
 				element:SetScale(scale)
 				scale_cache[element] = scale
 			else

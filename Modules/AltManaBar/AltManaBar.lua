@@ -20,7 +20,7 @@ PitBull4_AltManaBar:SetDefaults({
 })
 
 -- constants
-local SPELL_POWER_MANA = Enum.PowerType.Mana
+local SPELL_POWER_MANA = 0 -- Enum.PowerType.Mana
 
 -- cached power type for optimization
 local power_type = nil
@@ -38,6 +38,10 @@ function PitBull4_AltManaBar:GetValue(frame)
 
 	power_type = UnitPowerType("player")
 	if power_type == SPELL_POWER_MANA then
+		return nil
+	end
+
+	if UnitHasVehiclePlayerFrameUI and UnitHasVehiclePlayerFrameUI("player") then
 		return nil
 	end
 
@@ -83,18 +87,6 @@ PitBull4_AltManaBar:SetLayoutOptionsFunction(function(self)
 		end,
 		set = function(info, value)
 			PitBull4.Options.GetLayoutDB(self).hide_if_full = value
-			PitBull4.Options.UpdateFrames()
-		end,
-	},
-	'show_in_forms', {
-		name = L["Show while shifted"],
-		desc = L["Show in all shapeshift forms."],
-		type = "toggle",
-		get = function(info)
-			return PitBull4.Options.GetLayoutDB(self).show_in_forms
-		end,
-		set = function(info, value)
-			PitBull4.Options.GetLayoutDB(self).show_in_forms = value
 			PitBull4.Options.UpdateFrames()
 		end,
 	}

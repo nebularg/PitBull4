@@ -24,5 +24,7 @@ libs.xml
 Libs\LibClassicCasterino\LibClassicCasterino.lua
 Libs\LibClassicDurations\LibClassicDurations.xml
 
+Templates_Classic.xml
 load.xml
+
 modules.xml
