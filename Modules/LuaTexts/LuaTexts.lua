@@ -853,10 +853,10 @@ local function update_cast_data(event, unit, event_cast_id, event_spell_id)
 		cast_data[guid] = data
 	end
 
-	local spell, _, _, start_time, end_time, _, cast_id, _, spell_id = UnitCastingInfo(unit)
+	local spell, _, _, start_time, end_time, _, cast_id, uninterruptible, spell_id = UnitCastingInfo(unit)
 	local channeling = false
 	if not spell then
-		spell, _, _, start_time, end_time, _, _, spell_id = UnitChannelInfo(unit)
+		spell, _, _, start_time, end_time, _, uninterruptible, spell_id = UnitChannelInfo(unit)
 		channeling = true
 	end
 	if spell then
@@ -876,6 +876,7 @@ local function update_cast_data(event, unit, event_cast_id, event_spell_id)
 		data.casting = not channeling
 		data.channeling = channeling
 		data.fade_out = false
+		data.interruptible = not uninterruptible
 		if cast_id and event ~= "UNIT_SPELLCAST_INTERRUPTED" then
 			-- We can't update the cache of the cast_id on UNIT_SPELLCAST_INTERRUPTED  because
 			-- for whatever reason it ends up giving us 0 inside this event.
