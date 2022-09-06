@@ -1275,6 +1275,11 @@ function PitBull4:OnInitialize()
 	db.RegisterCallback(self, "OnNewProfile")
 	db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
 
+	local LibDualSpec = LibStub("LibDualSpec-1.0", true)
+	if LibDualSpec then
+		LibDualSpec:EnhanceDatabase(db, "PitBull4")
+	end
+
 	self.DEFAULT_COLORS = CopyTable(DATABASE_DEFAULTS.profile.colors.power)
 	DATABASE_DEFAULTS = nil
 

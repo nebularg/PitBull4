@@ -14,6 +14,9 @@ externals:
   Libs/LibSharedMedia-3.0: https://repos.wowace.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
   Libs/AceGUI-3.0-SharedMediaWidgets: https://repos.wowace.com/wow/ace-gui-3-0-shared-media-widgets/trunk/AceGUI-3.0-SharedMediaWidgets
   Libs/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
+  Libs/LibDualSpec-1.0-Classic:
+    url: https://repos.wowace.com/wow/libdualspec-1-0
+    tag: 1.9
   Libs/LibClassicCasterino: https://github.com/rgd87/LibClassicCasterino.git
   Libs/LibClassicDurations: https://github.com/rgd87/LibClassicDurations.git
   Modules/DogTagTexts/Libs/LibDogTag-3.0: https://repos.curseforge.com/wow/libdogtag-3-0
