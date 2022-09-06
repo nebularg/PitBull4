@@ -192,6 +192,12 @@ function PitBull4_RangeFader:GetOpacity(frame)
 		else
 			return db.out_of_range_opacity
 		end
+	elseif check_method == "helpful" then
+		if UnitInRange(unit) then
+			return 1
+		else
+			return db.out_of_range_opacity
+		end
 	elseif check_method == "visible" then
 		if UnitIsVisible(unit) then
 			return 1
@@ -249,6 +255,7 @@ PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 		name = L["Range check method"],
 		desc = L["Choose the method to determine if the unit is in range."],
 		values = {
+			helpful = L["Helpful spells (~40 yards)"],
 			class = L["Class abilities"],
 			follow = L["Follow (~28 yards)"],
 			trade = L["Trade (~11 yards)"],
