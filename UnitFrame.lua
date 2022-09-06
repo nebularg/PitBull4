@@ -149,6 +149,7 @@ function SingletonUnitFrame__scripts:OnDragStart()
 		LibStub("LibSimpleSticky-1.0"):StartMoving(self, PitBull4.all_frames_list, 0, 0, 0, 0)
 	else
 		self:StartMoving()
+		self:ClearAllPoints()
 	end
 end
 
@@ -161,6 +162,7 @@ function SingletonUnitFrame__scripts:OnDragStop()
 		LibStub("LibSimpleSticky-1.0"):StopMoving(self)
 	else
 		self:StopMovingOrSizing()
+		self:ClearAllPoints()
 	end
 
 	local db = self.classification_db
