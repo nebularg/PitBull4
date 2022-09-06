@@ -1,8 +1,6 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
--- luacheck: globals oRA3 ClickCastHeader SecureButton_GetModifiedUnit RAID_CLASS_COLORS
-
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
 local deep_copy = PitBull4.Utils.deep_copy

@@ -2,8 +2,6 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
--- luacheck: globals VoiceActivityManager
-
 local PitBull4_VoiceIcon = PitBull4:NewModule("VoiceIcon")
 
 PitBull4_VoiceIcon:SetModuleType("indicator")

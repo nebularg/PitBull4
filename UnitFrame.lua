@@ -2,8 +2,6 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
--- luacheck: globals ChatFontNormal ClickCastHeader GameTooltip_UnitColor GameTooltipTextLeft1 SecureButton_GetModifiedUnit
-
 local wow_wrath = PitBull4.wow_wrath
 
 local DEBUG = PitBull4.DEBUG
@@ -258,7 +256,7 @@ function UnitFrame__scripts:OnEnter()
 			GameTooltip_SetDefaultAnchor(GameTooltip, self)
 			GameTooltip:SetUnit(self.unit)
 			local r, g, b = GameTooltip_UnitColor(self.unit)
-			GameTooltipTextLeft1:SetTextColor(r, g, b)
+			_G.GameTooltipTextLeft1:SetTextColor(r, g, b)
 		end
 	end
 
@@ -823,7 +821,8 @@ end
 
 local function iter(frame, id)
 	local func, t = PitBull4:IterateEnabledModules()
-	local id, module = func(t, id) -- luacheck: ignore
+	local module
+	id, module = func(t, id)
 	if id == nil then
 		return nil
 	end
@@ -845,7 +844,8 @@ end
 local iters = setmetatable({}, {__index=function(iters, module_type)
 	local function iter(frame, id)
 		local func, t = PitBull4:IterateModulesOfType(module_type)
-		local id, module = func(t, id) -- luacheck: ignore
+		local module
+		id, module = func(t, id)
 		if id == nil then
 			return nil
 		end

@@ -4,6 +4,10 @@ local L = PitBull4.L
 
 local PitBull4_Aggro = PitBull4:NewModule("Aggro", "AceHook-3.0")
 
+local PitBull4_HealthBar
+local PitBull4_Border
+local PitBull4_Background
+
 PitBull4_Aggro:SetModuleType("custom")
 PitBull4_Aggro:SetName(L["Aggro"])
 PitBull4_Aggro:SetDescription(L["Add aggro coloring to the unit frame."])
@@ -55,7 +59,6 @@ do
 	timerFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
 	timerFrame:RegisterEvent("UNIT_PET")
 
-	-- luacheck: globals PitBull4_HealthBar PitBull4_Border PitBull4_Background
 	local function updateFrames(guid)
 		for frame in PitBull4:IterateFramesForGUID(guid) do
 			local db = PitBull4_Aggro:GetLayoutDB(frame)
@@ -120,10 +123,6 @@ do
 		return aggro[guid]
 	end
 end
-
-local PitBull4_HealthBar
-local PitBull4_Border
-local PitBull4_Background
 
 local function set_hooks()
 	if not PitBull4_HealthBar then

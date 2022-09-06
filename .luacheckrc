@@ -28,7 +28,9 @@ ignore = {
 }
 globals = {
 	-- Third-party
+	"ClickCastHeader",
 	"LibStub",
+	"oRA3",
 	"PitBull4",
 
 	"WOW_PROJECT_ID",
@@ -46,10 +48,12 @@ globals = {
 	"DEFAULT_CHAT_FRAME",
 	"Enum",
 	"GameTooltip",
+	"RAID_CLASS_COLORS",
 	"SOUNDKIT",
 	"StaticPopupDialogs",
 	"UIErrorsFrame",
 	"UIParent",
+	"VoiceActivityManager",
 
 	"CopyTable",
 	"tContains",
@@ -68,6 +72,7 @@ globals = {
 	"DestroyTotem",
 	"DisableAddOn",
 	"GameTooltip_SetDefaultAnchor",
+	"GameTooltip_UnitColor",
 	"GetAddOnDependencies",
 	"GetAddOnEnableState",
 	"GetAddOnInfo",
@@ -126,6 +131,7 @@ globals = {
 	"PlaySoundFile",
 	"RegisterAttributeDriver",
 	"RegisterUnitWatch",
+	"SecureButton_GetModifiedUnit",
 	"SecureHandlerExecute",
 	"SecureHandlerSetFrameRef",
 	"SetPortraitTexture",
