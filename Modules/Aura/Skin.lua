@@ -1,5 +1,6 @@
 
 local PitBull4 = _G.PitBull4
+
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
 local MSQ = LibStub("Masque", true)

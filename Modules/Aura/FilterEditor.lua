@@ -2,6 +2,7 @@
 
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
+
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
 -- The type of control to use for multiselect options in the Filter Editor.

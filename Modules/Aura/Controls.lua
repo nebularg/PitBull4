@@ -2,11 +2,20 @@
 
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
+
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
-local LibClassicDurations = PitBull4.wow_classic_era and LibStub("LibClassicDurations", true)
+local wow_classic_era = PitBull4.wow_classic_era
 
-local UnitAura = LibClassicDurations and LibClassicDurations.UnitAuraWithBuffs or _G.UnitAura
+local UnitAura = _G.UnitAura
+
+local LibClassicDurations
+if wow_classic_era then
+	LibClassicDurations = LibStub("LibClassicDurations", true)
+	if LibClassicDurations then
+		UnitAura = LibClassicDurations.UnitAuraWithBuffs
+	end
+end
 
 -- Table of functions included into the aura controls
 local Aura = {}
@@ -70,24 +79,6 @@ local function OnUpdate(self, elapsed)
 				i = i + 1
 			end
 		end
-
-		-- if filter == "HELPFUL" and not UnitIsFriend("player", unit) and not UnitAura(unit, 1, filter) then
-		-- 	-- Fake the tooltip for enemy buffs
-		-- 	local expiration_time, _, _, _, spell_id = select(6, UnitAura(unit, id, filter))
-
-		-- 	GameTooltip:ClearLines()
-		-- 	GameTooltip:AddDoubleLine(name, _G.ENEMY, 1, 0.82, 0, 1, 0.82, 0)
-
-		-- 	local spell_description = GetSpellDescription(spell_id) or ""
-		-- 	if spell_description ~= "" then
-		-- 		GameTooltip:AddLine(spell_description, 1, 1, 1, 1)
-		-- 	else
-		-- 		last_aura_OnUpdate = 1 -- don't throttle updates until we have spell data
-		-- 	end
-
-		-- 	GameTooltip:Show()
-		-- 	return
-		-- end
 		GameTooltip:SetUnitAura(unit, id, filter)
 	elseif self.slot then
 		local has_item = GameTooltip:SetInventoryItem("player", self.slot)

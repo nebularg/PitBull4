@@ -5,6 +5,9 @@ local L = PitBull4.L
 
 local PitBull4_Aura = PitBull4:NewModule("Aura")
 
+local wow_classic_era = PitBull4.wow_classic_era
+local wow_wrath = PitBull4.wow_wrath
+
 PitBull4_Aura:SetModuleType("custom")
 PitBull4_Aura:SetName(L["Aura"])
 PitBull4_Aura:SetDescription(L["Shows buffs and debuffs for PitBull4 frames."])
@@ -48,37 +51,44 @@ function PitBull4_Aura:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateAll")
 	self:RegisterEvent("UNIT_AURA")
 
-	local LibClassicDurations = PitBull4.wow_classic_era and LibStub("LibClassicDurations", true)
-	if LibClassicDurations then
-		LibClassicDurations:Register(self)
-		LibClassicDurations.RegisterCallback(self, "UNIT_BUFF", "UNIT_AURA")
+	if wow_classic_era then
+		local LibClassicDurations = LibStub("LibClassicDurations", true)
+		if LibClassicDurations then
+			LibClassicDurations:Register(self)
+			LibClassicDurations.RegisterCallback(self, "UNIT_BUFF", "UNIT_AURA")
+		end
 	end
 
 	timerFrame:Show()
 
 	-- Need to track spec changes since it can change what they can dispel.
+	local dispel_classes = {
+		DRUID = true,
+		HUNTER = true,
+		MAGE = true,
+		PALADIN = true,
+		PRIEST = true,
+		SHAMAN = true,
+		WARLOCK = true,
+		WARRIOR = wow_wrath,
+	}
 	local _,player_class = UnitClass("player")
-	if player_class == "DRUID" or
-		player_class == "HUNTER" or
-		player_class == "MAGE" or
-		player_class == "PALADIN" or
-		player_class == "PRIEST" or
-		player_class == "SHAMAN" or
-		player_class == "WARLOCK" or
-		player_class == "WARRIOR"
-	then
+	if dispel_classes[player_class] then
+		self:RegisterEvent("PLAYER_TALENT_UPDATE")
 		self:RegisterEvent("SPELLS_CHANGED", "PLAYER_TALENT_UPDATE")
-		self:PLAYER_TALENT_UPDATE()
 	end
+	self:PLAYER_TALENT_UPDATE()
 end
 
 function PitBull4_Aura:OnDisable()
 	timerFrame:Hide()
 
-	local LibClassicDurations = PitBull4.wow_classic_era and LibStub("LibClassicDurations", true)
-	if LibClassicDurations then
-		LibClassicDurations.UnregisterCallback(self, "UNIT_BUFF")
-		LibClassicDurations:Unregister(self)
+	if wow_classic_era then
+		local LibClassicDurations = LibStub("LibClassicDurations", true)
+		if LibClassicDurations then
+			LibClassicDurations.UnregisterCallback(self, "UNIT_BUFF", "UNIT_AURA")
+			LibClassicDurations:Unregister(self)
+		end
 	end
 end
 

@@ -2,6 +2,7 @@
 
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
+
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
 local LN = PitBull4.LOCALIZED_NAMES
@@ -2445,7 +2446,7 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				set = set_layout,
 				order = 53,
 			},
-			break_5 = {
+			break_6 = {
 				type = 'header',
 				name = '',
 				order = 54,

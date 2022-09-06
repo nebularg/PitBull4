@@ -3,17 +3,27 @@
 
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
+
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
-local LibClassicDurations = PitBull4.wow_classic_era and LibStub("LibClassicDurations", true)
+local wow_classic_era = PitBull4.wow_classic_era
+local wow_wrath = PitBull4.wow_wrath
 
-local UnitAura = LibClassicDurations and LibClassicDurations.UnitAuraWithBuffs or _G.UnitAura
+local UnitAura = _G.UnitAura
 local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
 local ceil = _G.math.ceil
 local GetTime = _G.GetTime
 local unpack = _G.unpack
 local sort = _G.table.sort
 local wipe = _G.table.wipe
+
+local LibClassicDurations
+if wow_classic_era then
+	LibClassicDurations = LibStub("LibClassicDurations", true)
+	if LibClassicDurations then
+		UnitAura = LibClassicDurations.UnitAuraWithBuffs
+	end
+end
 
 -- The table we use for gathering the aura data, filtering
 -- and then sorting them.  This table is reused without
@@ -28,26 +38,26 @@ local wipe = _G.table.wipe
 -- any new returns from UnitAura will break the module.
 --
 -- The entry values are as follows
--- [1] = index used to get the Aura with UnitAura or 0 for non UnitAura entries
--- [2] = slot of the weapon enchant or nil if not a weapon enchant
--- [3] = quality of the weapon or nil if not a weapon enchant
--- [4] = is_buff
--- [5] = name
--- [6] = rank
--- [7] = icon
--- [8] = count
--- [9] = debuff_type
--- [10] = duration
--- [11] = expiration_time
--- [12] = caster
--- [13] = is_stealable
--- [14] = nameplate_show_personal
--- [15] = spell_id
--- [16] = can_apply_aura
--- [17] = boss_debuff
--- [18] = cast_by_player
--- [19] = nameplate_show_all
--- [20] = time_mod
+--  [1] = index used to get the Aura with UnitAura or 0 for non UnitAura entries
+--  [2] = slot of the weapon enchant or nil if not a weapon enchant
+--  [3] = quality of the weapon or nil if not a weapon enchant
+--  [4] = is_buff
+--  [5] =  1 name
+--  [6] =    rank
+--  [7] =  2 icon
+--  [8] =  3 count
+--  [9] =  4 debuff_type
+-- [10] =  5 duration
+-- [11] =  6 expiration_time
+-- [12] =  7 caster
+-- [13] =  8 is_stealable
+-- [14] =  9 nameplate_show_personal
+-- [15] = 10 spell_id
+-- [16] = 11 can_apply_aura
+-- [17] = 12 boss_debuff
+-- [18] = 13 cast_by_player
+-- [19] = 14 nameplate_show_all
+-- [20] = 15 time_mod
 
 local list = {}
 
@@ -196,7 +206,7 @@ local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 
 
 		-- Create our bogus aura entry
-		entry[1]  = 0 -- index 0 means PitBull generated aura
+		entry[1] = 0 -- index 0 means PitBull generated aura
 		if i == mainhand then
 			entry[2] = INVSLOT_MAINHAND
 			local link = GetInventoryItemLink("player", INVSLOT_MAINHAND)
@@ -222,8 +232,8 @@ local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 		entry[6]  = nil -- rank
 		entry[7]  = is_buff and sample_buff_icon or sample_debuff_icon
 		entry[8]  = i -- count set to index to make order show
-		entry[10]  = 0 -- duration
-		entry[11]  = 0 -- expiration_time
+		entry[10] = 0 -- duration
+		entry[11] = 0 -- expiration_time
 		entry[13] = nil -- is_stealable
 		entry[14] = nil -- nameplate_show_personal
 		entry[15] = nil -- spell_id
