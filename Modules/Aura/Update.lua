@@ -58,6 +58,7 @@ end
 -- [18] = 13 cast_by_player
 -- [19] = 14 nameplate_show_all
 -- [20] = 15 time_mod
+-- [21] = 16 should_consolidate (Wrath Classic)
 
 local list = {}
 
@@ -142,7 +143,7 @@ local function get_aura_list(list, unit, db, is_buff, frame)
 		entry[1], entry[2], entry[3], entry[4], entry[5],
 			entry[7], entry[8], entry[9], entry[10], entry[11],
 			entry[12], entry[13], entry[14], entry[15], entry[16],
-			entry[17], entry[18], entry[19], entry[20] =
+			entry[17], entry[18], entry[19], entry[20], entry[21] =
 			id, nil, nil, is_buff, UnitAura(unit, id, filter)
 
 		if not entry[5] then
@@ -460,7 +461,7 @@ end
 local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	local control = aura_controls[i]
 
-	local id, slot, quality, is_buff, name, _, icon, count, debuff_type, duration, expiration_time, caster, _, _, spell_id, _, _, _, _, time_mod = unpack(aura, 1, ENTRY_END)
+	local id, slot, quality, is_buff, name, _, icon, count, debuff_type, duration, expiration_time, caster, _, _, spell_id, _, _, _, _, time_mod, value = unpack(aura, 1, ENTRY_END)
 
 	-- LibClassicDurations doesn't return this for enemy buffs
 	if not time_mod then
@@ -497,6 +498,7 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	control.caster = caster
 	control.spell_id = spell_id
 	control.time_mod = time_mod
+	control.should_consolidate = wow_wrath and value
 
 	local class_db = frame.classification_db
 	if not db.click_through and class_db and not class_db.click_through then
