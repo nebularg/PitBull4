@@ -4,13 +4,15 @@ local L = PitBull4.L
 
 local PitBull4_LuaTexts = PitBull4:NewModule("LuaTexts", "AceHook-3.0")
 
+local wow_classic_era = PitBull4.wow_classic_era
+
 local UnitCastingInfo = _G.UnitCastingInfo
 local UnitChannelInfo = _G.UnitChannelInfo
 
 local LibClassicCasterino
 local casterino_events = {}
 
-if PitBull4.wow_classic_era then
+if wow_classic_era then
 	LibClassicCasterino = LibStub("LibClassicCasterino", true)
 	if LibClassicCasterino then
 		casterino_events = {
@@ -546,6 +548,12 @@ do
 		['PLAYER_XP_UPDATE'] = {player=true},
 		['UPDATE_FACTION'] = {all=true},
 		['UNIT_LEVEL'] = {all=true},
+
+		-- They pass the unit but they don't provide the pairing (e.g.
+		-- the target changes) so we'll miss updates if we don't update
+		-- every text on every one of these events.  /sigh
+		['UNIT_THREAT_LIST_UPDATE'] = {all=true},
+		['UNIT_THREAT_SITUATION_UPDATE'] = {all=true},
 	}
 
 	-- Iterate the provided codes to fill in all the rest
@@ -626,7 +634,7 @@ local function update_events(events)
 	end
 end
 
-local function fix_texts()
+local function fix_classic_texts()
 	local sv = PitBull4.db:GetNamespace("LuaTexts").profiles
 	for _, profile in next, sv do
 		if profile.global and profile.global.events then
@@ -689,7 +697,7 @@ end
 function PitBull4_LuaTexts:OnInitialize()
 	-- should probably switch to a global db version check/upgrade process
 	-- this doesn't need to run every load
-	fix_texts()
+	fix_classic_texts()
 end
 
 function PitBull4_LuaTexts:OnEnable()

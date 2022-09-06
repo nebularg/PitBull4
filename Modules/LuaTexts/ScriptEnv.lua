@@ -6,9 +6,15 @@ local PitBull4_LuaTexts = PitBull4:GetModule("LuaTexts")
 
 local wow_classic_era = PitBull4.wow_classic_era
 
-local LibClassicDurations = wow_classic_era and LibStub("LibClassicDurations", true)
+local UnitAura = _G.UnitAura
 
-local UnitAura = LibClassicDurations and LibClassicDurations.UnitAuraWithBuffs or _G.UnitAura
+local LibClassicDurations
+if wow_classic_era then
+	LibClassicDurations = LibStub("LibClassicDurations", true)
+	if LibClassicDurations then
+		UnitAura = LibClassicDurations.UnitAuraWithBuffs
+	end
+end
 
 -- The ScriptEnv table serves as the environment that the scripts run
 -- under LuaTexts run under.  The functions included in it are accessible
@@ -472,9 +478,12 @@ end
 ScriptEnv.Class = Class
 
 local ShortClass_abbrev = {
+	DEATHKNIGHT = L["Death Knight_short"],
+	DEMONHUNTER = L["Demon Hunter_short"],
 	DRUID = L["Druid_short"],
 	HUNTER = L["Hunter_short"],
 	MAGE = L["Mage_short"],
+	MONK = L["Monk_short"],
 	PALADIN = L["Paladin_short"],
 	PRIEST = L["Priest_short"],
 	ROGUE = L["Rogue_short"],
@@ -517,14 +526,27 @@ end
 ScriptEnv.SmartRace = SmartRace
 
 local ShortRace_abbrev = {
+	BloodElf = L["Blood Elf_short"],
+	Draenei = L["Draenei_short"],
 	Dwarf = L["Dwarf_short"],
 	Gnome = L["Gnome_short"],
+	Goblin = L["Goblin_short"],
 	Human = L["Human_short"],
 	NightElf = L["Night Elf_short"],
 	Orc = L["Orc_short"],
+	Pandaren = L["Pandaren_short"],
 	Tauren = L["Tauren_short"],
 	Troll = L["Troll_short"],
 	Undead = L["Undead_short"],
+	Worgen = L["Worgen_short"],
+	DarkIronDwarf = L["Dark Iron Dwarf_short"],
+	HighmountainTauren = L["Highmountain Tauren_short"],
+	KulTiranHuman = L["Kul Tiran Human_short"],
+	LightforgedDraenei = L["Lightforged Draenei_short"],
+	MagharOrc = L["Mag'har Orc_short"],
+	Nightborne = L["Nightborne_short"],
+	VoidElf = L["Void Elf_short"],
+	ZandalariTroll = L["Zandalari Troll_short"],
 }
 
 local function ShortRace(arg)
@@ -590,6 +612,7 @@ ScriptEnv.Dead = Dead
 
 local MOONKIN_FORM = GetSpellInfo(24858)
 local TRAVEL_FORM = GetSpellInfo(783)
+local TREE_OF_LIFE = GetSpellInfo(33891)
 
 local function DruidForm(unit)
 	local _, class = UnitClass(unit)
@@ -608,6 +631,8 @@ local function DruidForm(unit)
 						return L["Moonkin"]
 					elseif name == TRAVEL_FORM then
 						return L["Travel"]
+					elseif name == TREE_OF_LIFE then
+						return L["Tree"]
 					end
 				end
 				i = i + 1
