@@ -93,6 +93,7 @@ local function rawhook_frames(...)
 		local frame = select(i, ...)
 		frame:UnregisterAllEvents()
 		PitBull4_HideBlizzard:RawHook(frame, "Show", noop, true)
+		PitBull4_HideBlizzard:RawHook(frame, "SetPoint", noop, true)
 		frame:Hide()
 	end
 end
@@ -106,6 +107,7 @@ local function unhook_frame(frame)
 		end
 	elseif PitBull4_HideBlizzard:IsHooked(frame, "Show") then
 		PitBull4_HideBlizzard:Unhook(frame, "Show")
+		PitBull4_HideBlizzard:Unhook(frame, "SetPoint")
 	end
 end
 
@@ -128,10 +130,11 @@ local function unhook_frames_without_init(...)
 end
 
 function hiders:player()
-	PlayerFrame:Hide()
+	hook_reparent_frames(PlayerFrame)
 end
 
 function showers:player()
+	unhook_frames(PlayerFrame)
 	PlayerFrame:Show()
 end
 
@@ -200,7 +203,7 @@ do
 end
 
 function hiders:target()
-	hook_frames(TargetFrame, ComboFrame)
+	hook_reparent_frames(TargetFrame, ComboFrame)
 end
 
 function showers:target()
