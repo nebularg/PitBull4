@@ -1,9 +1,9 @@
 -- Constants ----------------------------------------------------------------
 local _G = _G
 
--- luacheck: globals oRA3 ReloadUI SecureButton_GetModifiedUnit
-
 local L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
+
+-- luacheck: globals ReloadUI SecureButton_GetModifiedUnit
 
 local wow_classic_era = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or nil
 local wow_bcc = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC or nil
@@ -1332,8 +1332,8 @@ function PitBull4:OnInitialize()
 	end
 
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED", "OnTanksUpdated")
-	if oRA3 then
-		oRA3.RegisterCallback(self, "OnTanksUpdated")
+	if _G.oRA3 then
+		_G.oRA3.RegisterCallback(self, "OnTanksUpdated")
 	end
 end
 

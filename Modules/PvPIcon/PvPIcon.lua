@@ -13,8 +13,6 @@ PitBull4_PvPIcon:SetDefaults({
 	position = 1,
 })
 
-local INDICATOR_SIZE = 15
-
 local FRIENDLY_CLASSIFICATIONS = {
 	player = true,
 	pet = true,
@@ -45,8 +43,8 @@ local PRESTIGE_TEX_COORDS = {
 
 function PitBull4_PvPIcon:OnEnable()
 	self:RegisterEvent("UPDATE_FACTION")
-	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "UPDATE_FACTION")
 	self:RegisterEvent("UNIT_FACTION", "UPDATE_FACTION")
+	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "UPDATE_FACTION")
 end
 
 function PitBull4_PvPIcon:GetTexture(frame)
@@ -98,6 +96,9 @@ end
 
 function PitBull4_PvPIcon:GetTexCoord(frame, texture)
 	local tex_coord = TEX_COORDS[texture]
-	return tex_coord[1], tex_coord[2], tex_coord[3], tex_coord[4]
+	if tex_coord then
+		return tex_coord[1], tex_coord[2], tex_coord[3], tex_coord[4]
+	end
+	return 0, 1, 0, 1
 end
 PitBull4_PvPIcon.GetExampleTexCoord = PitBull4_PvPIcon.GetTexCoord

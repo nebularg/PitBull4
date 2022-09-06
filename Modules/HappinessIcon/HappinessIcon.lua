@@ -79,7 +79,7 @@ function PitBull4_HappinessIcon.OnEnter(icon, motion)
 		GameTooltip:SetOwner(icon, "ANCHOR_RIGHT")
 		GameTooltip:SetText(_G["PET_HAPPINESS"..happiness])
 		if damage_percentage then
-			GameTooltip:AddLine(format(PET_DAMAGE_PERCENTAGE, damage_percentage), "", 1, 1, 1)
+			GameTooltip:AddLine(format(_G.PET_DAMAGE_PERCENTAGE, damage_percentage), "", 1, 1, 1)
 		end
 		GameTooltip:Show()
 	end

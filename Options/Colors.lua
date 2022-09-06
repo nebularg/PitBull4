@@ -23,7 +23,6 @@ function PitBull4.defaultModulePrototype:SetColorOptionsFunction(func)
 		expect(func, 'typeof', 'function')
 		expect(color_functions[self], '==', nil)
 	end
-
 	color_functions[self] = func
 end
 
@@ -44,12 +43,10 @@ local function get_class_options()
 		hasAlpha = false,
 		get = function(info)
 			local class = info[#info]
-
 			return unpack(PitBull4.db.profile.colors.class[class])
 		end,
 		set = function(info, r, g, b)
 			local class = info[#info]
-
 			local color = PitBull4.db.profile.colors.class[class]
 			color[1], color[2], color[3] = r, g, b
 
@@ -107,12 +104,10 @@ local function get_power_options()
 		hasAlpha = false,
 		get = function(info)
 			local power_token = info[#info]
-
 			return unpack(PitBull4.db.profile.colors.power[power_token])
 		end,
 		set = function(info, r, g, b)
 			local power_token = info[#info]
-
 			local color = PitBull4.db.profile.colors.power[power_token]
 			color[1], color[2], color[3] = r, g, b
 
@@ -166,19 +161,16 @@ local function get_reaction_options()
 		type = 'color',
 		name = function(info)
 			local reaction = info[#info]
-
 			local label = "FACTION_STANDING_LABEL" .. reaction
 			return _G[label] or label
 		end,
 		hasAlpha = false,
 		get = function(info)
-			local reaction = info[#info]+0
-
+			local reaction = tonumber(info[#info])
 			return unpack(PitBull4.db.profile.colors.reaction[reaction])
 		end,
 		set = function(info, r, g, b)
-			local reaction = info[#info]+0
-
+			local reaction = tonumber(info[#info])
 			local color = PitBull4.db.profile.colors.reaction[reaction]
 			color[1], color[2], color[3] = r, g, b
 
@@ -194,7 +186,7 @@ local function get_reaction_options()
 			my_option[k] = v
 		end
 		my_option.order = reaction
-		reaction_options.args[reaction..""] = my_option
+		reaction_options.args[tostring(reaction)] = my_option
 	end
 
 	reaction_options.args.civilan = {
@@ -256,7 +248,7 @@ local function get_happiness_options()
 
 	happiness_options.args.happy = {
 		type = 'color',
-		name = PET_HAPPINESS3,
+		name = _G.PET_HAPPINESS3,
 		get = function(info)
 			return unpack(PitBull4.db.profile.colors.happiness.happy)
 		end,
@@ -273,7 +265,7 @@ local function get_happiness_options()
 
 	happiness_options.args.content = {
 		type = 'color',
-		name = PET_HAPPINESS2,
+		name = _G.PET_HAPPINESS2,
 		get = function(info)
 			return unpack(PitBull4.db.profile.colors.happiness.content)
 		end,
@@ -290,7 +282,7 @@ local function get_happiness_options()
 
 	happiness_options.args.unhappy = {
 		type = 'color',
-		name = PET_HAPPINESS1,
+		name = _G.PET_HAPPINESS1,
 		get = function(info)
 			return unpack(PitBull4.db.profile.colors.happiness.unhappy)
 		end,

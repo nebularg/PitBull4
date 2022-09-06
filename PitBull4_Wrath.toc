@@ -1,7 +1,7 @@
 ## Interface: 30400
 ## Title: PitBull Unit Frames 4.0
 ## Notes: Dog-themed unit frames. Woof. Arf. Yip.
-## Notes-deDE: Dog-themed unit frames. Woof. Arf. Yip.
+## Notes-deDE: Rahmen im Hunde-Design. Wuff-Wuff. Wau.
 ## Notes-esES: Dog-themed unit frames. Woof. Arf. Yip.
 ## Notes-esMX: Dog-themed unit frames. Woof. Arf. Yip.
 ## Notes-frFR: Dog-themed unit frames. Woof. Arf. Yip.

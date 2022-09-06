@@ -5,10 +5,11 @@ local L = PitBull4.L
 
 local LibBossIDs = LibStub("LibBossIDs-1.0", true)
 
-local DEBUG = PitBull4.DEBUG
-local expect = PitBull4.expect
 local wow_classic_era = PitBull4.wow_classic_era
 local wow_wrath = PitBull4.wow_wrath
+
+local DEBUG = PitBull4.DEBUG
+local expect = PitBull4.expect
 
 PitBull4.Utils = {}
 
