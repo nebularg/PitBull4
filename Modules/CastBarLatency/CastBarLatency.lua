@@ -1,7 +1,6 @@
 
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
-local PitBull4_CastBar = PitBull4:GetModule("CastBar")
 
 -- CONSTANTS ----------------------------------------------------------------
 
@@ -13,15 +12,33 @@ local MAX_GCD_TIME = 1.5
 local DEFAULT_QUEUE_TIME = 300
 
 local GetTime = _G.GetTime
+local UnitCastingInfo = _G.UnitCastingInfo
+local UnitChannelInfo = _G.UnitChannelInfo
 
 -----------------------------------------------------------------------------
 
 local PitBull4_CastBarLatency = PitBull4:NewModule("CastBarLatency")
+local PitBull4_CastBar = PitBull4:GetModule("CastBar")
+
+local wow_classic_era = PitBull4.wow_classic_era
+
+if wow_classic_era then
+	UnitCastingInfo = function(unit)
+		if unit == "player" then
+			return _G.CastingInfo()
+		end
+	end
+	UnitChannelInfo = function(unit)
+		if unit == "player" then
+			return _G.ChannelInfo()
+		end
+	end
+end
 
 PitBull4_CastBarLatency:SetModuleType("custom")
 PitBull4_CastBarLatency:SetName(L["Cast bar latency"])
 PitBull4_CastBarLatency:SetDescription(L["Show a guessed safe zone at the end of the player castbar."])
-PitBull4_CastBarLatency:SetDefaults({},{
+PitBull4_CastBarLatency:SetDefaults({}, {
 	show_queue = true,
 	queue_time = DEFAULT_QUEUE_TIME,
 	show_gcd = true,
@@ -53,7 +70,7 @@ timerFrame:SetScript("OnUpdate", function()
 	-- Loop thru ALL PitBull Frames...
 	for frame in PitBull4:IterateFrames() do
 		local unit = frame.unit
-		if unit and UnitIsUnit(unit,"player") then
+		if unit and UnitIsUnit(unit, "player") then
 			-- ... but only force updates for frames representing the player
 			PitBull4_CastBarLatency:Update(frame)
 		end
@@ -62,7 +79,7 @@ timerFrame:SetScript("OnUpdate", function()
 	end)
 
 function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, _, spell_id)
-	if unit ~= 'player' then
+	if unit ~= "player" then
 		return
 	end
 
@@ -75,7 +92,7 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, _, spell_id)
 		end
 	end
 
-	local name, _, _, new_start, new_end = CastingInfo()
+	local name, _, _, new_start, new_end = UnitCastingInfo(unit)
 	if not name then
 		return
 	end
@@ -100,7 +117,7 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, _, spell_id)
 end
 
 function PitBull4_CastBarLatency:UNIT_SPELLCAST_CHANNEL_START(event, unit, _, spell_id)
-	if unit ~= 'player' then
+	if unit ~= "player" then
 		return
 	end
 
@@ -113,7 +130,7 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_CHANNEL_START(event, unit, _, sp
 		end
 	end
 
-	local name, _, _, new_start, new_end = ChannelInfo()
+	local name, _, _, new_start, new_end = UnitChannelInfo(unit)
 	if not name then
 		return
 	end
@@ -138,19 +155,19 @@ end
 
 
 function PitBull4_CastBarLatency:UNIT_SPELLCAST_SENT(event, unit)
-	if unit ~= 'player' then
+	if unit ~= "player" then
 		return
 	end
 	send_time = GetTime()
 end
 
 function PitBull4_CastBarLatency:UNIT_SPELLCAST_STOP(event, unit)
-	if unit ~= 'player' then
+	if unit ~= "player" then
 		return
 	end
 
 	-- Ignore SPELLCAST_SUCCEEDED when we're channeling
-	if event == 'UNIT_SPELLCAST_SUCCEEDED' and is_channel then
+	if event == "UNIT_SPELLCAST_SUCCEEDED" and is_channel then
 		return
 	end
 
@@ -169,10 +186,10 @@ function PitBull4_CastBarLatency:OnEnable()
 	self:RegisterUnitEvent("UNIT_SPELLCAST_START", nil, "player")
 	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", nil, "player")
 	self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", nil, "player")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED","UNIT_SPELLCAST_STOP", "player")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED","UNIT_SPELLCAST_STOP", "player")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED","UNIT_SPELLCAST_STOP", "player")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP","UNIT_SPELLCAST_STOP", "player")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "UNIT_SPELLCAST_STOP", "player")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "UNIT_SPELLCAST_STOP", "player")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", "UNIT_SPELLCAST_STOP", "player")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", "UNIT_SPELLCAST_STOP", "player")
 
 	queue_time = self.db.profile.global.queue_time
 	show_queue = self.db.profile.global.show_queue
@@ -185,7 +202,7 @@ end
 
 function PitBull4_CastBarLatency:UpdateFrame(frame)
 	local unit = frame.unit
-	if not unit or not UnitIsUnit(unit,"player") then
+	if not unit or not UnitIsUnit(unit, "player") then
 		-- this frame does not represent the player so we remove ourselves
 		return self:ClearFrame(frame)
 	end
@@ -222,17 +239,17 @@ function PitBull4_CastBarLatency:UpdateFrame(frame)
 	safe_zone:SetAllPoints(bar)
 
 	-- Find and apply the main castbar's alpha and apply it with a modifier. Must be dynamic for fadouts.
-	local bar_alpha = select(4,PitBull4_CastBar:GetColor(frame, 'player'))
+	local _, _, _, bar_alpha = PitBull4_CastBar:GetColor(frame, "player")
 	if bar_alpha then
-		safe_zone:SetAlpha(bar_alpha*ALPHA_MODIFIER)
+		safe_zone:SetAlpha(bar_alpha * ALPHA_MODIFIER)
 	end
 
 	-- Find and apply user settings to our bar
 	safe_zone:SetColor(unpack(self.db.profile.global.latency_color))
-	safe_zone:SetFrameLevel( bar:GetFrameLevel()+1 )
+	safe_zone:SetFrameLevel(bar:GetFrameLevel() + 1)
 	local reverse = not bar:GetReverse()
 	local icon_position = not bar:GetIconPosition()
-	safe_zone:SetOrientation( bar:GetOrientation() )
+	safe_zone:SetOrientation(bar:GetOrientation())
 	if bar:GetDeficit() then
 		reverse = not reverse
 		icon_position = not icon_position
@@ -271,9 +288,9 @@ end
 PitBull4_CastBarLatency.OnHide = PitBull4_CastBarLatency.ClearFrame
 
 PitBull4_CastBarLatency:SetGlobalOptionsFunction(function(self)
-	return 'show_gcd', {
-		type = 'toggle',
-		width = 'full',
+	return "show_gcd", {
+		type = "toggle",
+		width = "full",
 		name = L["Include GCD lockout"],
 		desc = L["This assumes spells cannot be (locally) triggered before the GCD has run out."],
 		get = function(info)
@@ -286,9 +303,9 @@ PitBull4_CastBarLatency:SetGlobalOptionsFunction(function(self)
 			show_gcd = value
 		end,
 	},
-	'show_queue', {
-		type = 'toggle',
-		width = 'full',
+	"show_queue", {
+		type = "toggle",
+		width = "full",
 		name = L["Include spell queue time"],
 		desc = L["Always add the spell queue time to the shown latency."],
 		get = function(info)
@@ -301,9 +318,9 @@ PitBull4_CastBarLatency:SetGlobalOptionsFunction(function(self)
 			show_queue = value
 		end,
 	},
-	'queue_time', {
-		type = 'range',
-		width = 'double',
+	"queue_time", {
+		type = "range",
+		width = "double",
 		name = L["Queue time"],
 		desc = string.format(L["Fixed time at then end of a running cast where you are able to cast the next spell. Default is %s\\nWARNING: Do not change this unless you know exactly what you're doing!"]:gsub("\\n", "\n"), tostring(DEFAULT_QUEUE_TIME)),
 		min = 0,
@@ -322,8 +339,8 @@ PitBull4_CastBarLatency:SetGlobalOptionsFunction(function(self)
 end)
 
 PitBull4_CastBarLatency:SetColorOptionsFunction(function(self)
-	return 'latency_color', {
-		type = 'color',
+	return "latency_color", {
+		type = "color",
 		name = L["Latency"],
 		desc = L["Sets which color the latency overlay on the castbar is using."],
 		get = function(info)

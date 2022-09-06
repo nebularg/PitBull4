@@ -24,5 +24,4 @@ libs.xml
 
 load.xml
 modules.xml
-Modules\CastBarLatency\load.xml
 Modules\Runes\load.xml
