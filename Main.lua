@@ -6,8 +6,8 @@ local _G = _G
 local L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
 
 local wow_classic_era = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or nil
-local wow_bcc = WOW_PROJECT_BURNING_CRUSADE_CLASSIC or nil
-local wow_wrath = WOW_PROJECT_WRATH_CLASSIC or nil
+local wow_bcc = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC or nil
+local wow_wrath = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC or nil
 
 local SINGLETON_CLASSIFICATIONS = {
 	"player",
