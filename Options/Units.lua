@@ -1108,6 +1108,7 @@ function PitBull4.Options.get_unit_options()
 			t.raid15 = L["15-man raid"]
 			t.raid20 = L["20-man raid"]
 			t.raid25 = L["25-man raid"]
+			t.raid30 = L["30-man raid"]
 			t.raid40 = L["40-man raid"]
 
 			return t

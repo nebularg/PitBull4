@@ -70,7 +70,7 @@ if LibSharedMedia and not LibSharedMedia:IsValid("font", DEFAULT_LSM_FONT) then 
 	DEFAULT_LSM_FONT = LibSharedMedia:GetDefault("font")
 end
 
-local CURRENT_CONFIG_VERSION = 6
+local CURRENT_CONFIG_VERSION = 7
 
 local DATABASE_DEFAULTS = {
 	profile = {
@@ -140,6 +140,7 @@ local DATABASE_DEFAULTS = {
 					raid15 = false,
 					raid20 = false,
 					raid25 = false,
+					raid30 = false,
 					raid40 = false,
 				},
 			}
@@ -1236,6 +1237,21 @@ local upgrade_functions = {
 		end
 		return true
 	end,
+	[6] = function(sv)
+		-- Enable raid30 if raid40 is enabled.
+		if not sv.profiles then return true end
+		for profile, profile_db in next, sv.profiles do
+			if profile_db.groups then
+				for group, group_db in next, profile_db.groups do
+					if group_db and group_db.show_when and group_db.show_when.raid40 then
+						group_db.show_when.raid30 = true
+					end
+				end
+			end
+		end
+
+		return true
+	end,
 }
 
 local function check_config_version(sv)
@@ -1804,7 +1820,7 @@ StateHeader:WrapScript(StateHeader, "OnAttributeChanged", [[
     end
   end
 ]])
-RegisterStateDriver(StateHeader, "group", "[target=raid26, exists] raid40; [target=raid21, exists] raid25; [target=raid16, exists] raid20; [target=raid11, exists] raid15; [target=raid6, exists] raid10; [group:raid] raid; [group:party] party; solo")
+RegisterStateDriver(StateHeader, "group", "[target=raid31, exists] raid40; [target=raid26, exists] raid30; [target=raid21, exists] raid25; [target=raid16, exists] raid20; [target=raid11, exists] raid15; [target=raid6, exists] raid10; [group:raid] raid; [group:party] party; solo")
 
 function PitBull4:AddGroupToStateHeader(header)
 	local header_name = header:GetName()
@@ -1817,7 +1833,7 @@ function PitBull4:RemoveGroupFromStateHeader(header)
 end
 
 --- Get the current state that the player is in.
--- This will return one of "solo", "party", "raid", "raid10", "raid15", "raid20", "raid25", or "raid40".
+-- This will return one of "solo", "party", "raid", "raid10", "raid15", "raid20", "raid25", "raid30", or "raid40".
 -- Setting config mode does override this.
 -- @usage local state = PitBull4:GetState()
 -- @return the state of the player.

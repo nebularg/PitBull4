@@ -11,6 +11,7 @@ local values = {
 	raid15 = L["15-man raid"],
 	raid20 = L["20-man raid"],
 	raid25 = L["25-man raid"],
+	raid30 = L["30-man raid"],
 	raid40 = L["40-man raid"],
 }
 
