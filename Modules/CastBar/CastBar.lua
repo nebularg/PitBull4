@@ -75,18 +75,18 @@ function PitBull4_CastBar:OnEnable()
 		LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_CHANNEL_STOP", "UpdateInfo")
 	elseif not wow_classic_era then
 		self:RegisterEvent("UNIT_SPELLCAST_START", "UpdateInfo")
-		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", "UpdateInfo")
 		self:RegisterEvent("UNIT_SPELLCAST_STOP", "UpdateInfo")
 		self:RegisterEvent("UNIT_SPELLCAST_FAILED", "UpdateInfo")
 		self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED", "UpdateInfo")
 		self:RegisterEvent("UNIT_SPELLCAST_DELAYED", "UpdateInfo")
 		self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "UpdateInfo")
-		if wow_wrath then
-			self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE", "UpdateInfo")
-			self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE", "UpdateInfo")
-		end
+		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", "UpdateInfo")
 		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "UpdateInfo")
 		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", "UpdateInfo")
+		-- if wow_wrath then
+		-- 	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE", "qUpdateInfo")
+		-- 	self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE", "UpdateInfo")
+		-- end
 	end
 end
 
