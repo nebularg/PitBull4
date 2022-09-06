@@ -8,7 +8,6 @@ local LibBossIDs = LibStub("LibBossIDs-1.0", true)
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
 local wow_classic_era = PitBull4.wow_classic_era
-local wow_classic = PitBull4.wow_classic
 local wow_wrath = PitBull4.wow_wrath
 
 PitBull4.Utils = {}
@@ -51,7 +50,7 @@ do
 		vehicle = "pet",
 		playerpet = "pet",
 		mouseover = "mouseover",
-		focus = wow_classic and "focus",
+		focus = not wow_classic_era and "focus",
 		target = "target",
 		playertarget = "target",
 		npc = "npc",
@@ -83,7 +82,7 @@ do
 		player = true,
 		pet = true,
 		mouseover = true,
-		focus = wow_classic,
+		focus = not wow_classic_era,
 		target = true,
 	}
 	setmetatable(valid_singleton_unit_ids, target_same_mt)
@@ -101,7 +100,7 @@ do
 		player = true,
 		pet = true,
 		mouseover = true,
-		focus = wow_classic,
+		focus = not wow_classic_era,
 		target = true,
 		party = true,
 		partypet = true,
@@ -126,7 +125,7 @@ do
 		player = true,
 		pet = true,
 		mouseover = true,
-		focus = wow_classic,
+		focus = not wow_classic_era,
 		target = true,
 		party = true,
 		partypet = true,
@@ -159,7 +158,7 @@ do
 		raidpet = L["Raid pets"],
 		raidpet_sing = L["Raid pet"],
 		mouseover = L["Mouse-over"],
-		focus = wow_classic and L["Focus"],
+		focus = not wow_classic_era and L["Focus"],
 		maintank = L["Main tanks"],
 		maintank_sing = L["Main tank"],
 		mainassist = L["Main assists"],
@@ -178,7 +177,7 @@ do
 			return group
 		end
 		local good
-		if group:find("^player") or group:find("^pet") or group:find("^mouseover") or group:find("^target") or (wow_classic and group:find("^focus")) then
+		if group:find("^player") or group:find("^pet") or group:find("^mouseover") or group:find("^target") or group:find("^focus") then
 			good = L["%s's target"]:format(self[nonTarget])
 		elseif singular then
 			good = L["%s target"]:format(self[nonTarget .. "_sing"])

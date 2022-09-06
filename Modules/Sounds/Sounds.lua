@@ -4,7 +4,7 @@ local L = PitBull4.L
 
 local PitBull4_Sounds = PitBull4:NewModule("Sounds")
 
-local wow_classic =  PitBull4.wow_classic
+local wow_classic_era = PitBull4.wow_classic_era
 
 PitBull4_Sounds:SetModuleType("custom")
 PitBull4_Sounds:SetName(L["Sounds"])
@@ -14,7 +14,7 @@ PitBull4_Sounds:SetDefaults()
 function PitBull4_Sounds:OnEnable()
 	self:RegisterEvent("UNIT_FACTION")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
-	if wow_classic then
+	if not wow_classic_era then
 		self:RegisterEvent("PLAYER_FOCUS_CHANGED")
 	end
 	self:CheckPvP()

@@ -8,7 +8,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
 local wow_classic_era = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or nil
 local wow_bcc = WOW_PROJECT_BURNING_CRUSADE_CLASSIC or nil
 local wow_wrath = WOW_PROJECT_WRATH_CLASSIC or nil
-local wow_classic = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC or WOW_PROJECT_WRATH_CLASSIC or nil
 
 local SINGLETON_CLASSIFICATIONS = {
 	"player",
@@ -17,10 +16,12 @@ local SINGLETON_CLASSIFICATIONS = {
 	"target",
 	"targettarget",
 	"targettargettarget",
-	wow_classic and "focus",
-	wow_classic and "focustarget",
-	wow_classic and "focustargettarget",
 }
+if not wow_classic_era then
+	SINGLETON_CLASSIFICATIONS[#SINGLETON_CLASSIFICATIONS+1] = "focus"
+	SINGLETON_CLASSIFICATIONS[#SINGLETON_CLASSIFICATIONS+1] = "focustarget"
+	SINGLETON_CLASSIFICATIONS[#SINGLETON_CLASSIFICATIONS+1] = "focustargettarget"
+end
 
 local UNIT_GROUPS = {
 	"party",
@@ -41,9 +42,11 @@ local NORMAL_UNITS = {
 	"player",
 	"pet",
 	"target",
-	wow_classic and "focus",
 	-- "mouseover",
 }
+if not wow_classic_era then
+	NORMAL_UNITS[#NORMAL_UNITS+1] = "focus"
+end
 for i = 1, _G.MAX_PARTY_MEMBERS do
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "party" .. i
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "partypet" .. i
@@ -267,7 +270,7 @@ local DEFAULT_UNITS =  {
 		unit = "targettargettarget",
 	},
 }
-if wow_classic then
+if not wow_classic_era then
 	DEFAULT_UNITS[L["Focus"]] = {
 		enabled = true,
 		unit = "focus",
@@ -327,7 +330,6 @@ if PitBull4.version:match("@") then
 end
 
 PitBull4.wow_classic_era = wow_classic_era
-PitBull4.wow_classic = wow_classic
 PitBull4.wow_bcc = wow_bcc
 PitBull4.wow_wrath = wow_wrath
 
@@ -1572,7 +1574,7 @@ function PitBull4:OnEnable()
 
 	-- register unit change events
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
-	if wow_classic then
+	if not wow_classic_era then
 		self:RegisterEvent("PLAYER_FOCUS_CHANGED")
 	end
 	self:RegisterEvent("UNIT_TARGET")
