@@ -2,7 +2,7 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_RangeFader = PitBull4:NewModule("RangeFader", "AceTimer-3.0")
+local PitBull4_RangeFader = PitBull4:NewModule("RangeFader")
 
 local DEBUG = PitBull4.DEBUG
 

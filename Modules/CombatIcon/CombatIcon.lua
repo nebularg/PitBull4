@@ -2,7 +2,7 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_CombatIcon = PitBull4:NewModule("CombatIcon", "AceTimer-3.0")
+local PitBull4_CombatIcon = PitBull4:NewModule("CombatIcon")
 
 PitBull4_CombatIcon:SetModuleType("indicator")
 PitBull4_CombatIcon:SetName(L["Combat icon"])

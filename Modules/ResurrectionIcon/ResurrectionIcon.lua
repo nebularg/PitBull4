@@ -2,7 +2,7 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_ResurrectionIcon = PitBull4:NewModule("ResurrectionIcon", "AceEvent-3.0")
+local PitBull4_ResurrectionIcon = PitBull4:NewModule("ResurrectionIcon")
 
 PitBull4_ResurrectionIcon:SetModuleType("indicator")
 PitBull4_ResurrectionIcon:SetName(L["Resurrection icon"])
