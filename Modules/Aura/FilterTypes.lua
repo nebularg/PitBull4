@@ -5,6 +5,7 @@ local L = PitBull4.L
 
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
+local wow_classic_era = PitBull4.wow_classic_era
 local wow_wrath = PitBull4.wow_wrath
 
 local DEBUG = PitBull4.DEBUG
@@ -1065,20 +1066,7 @@ end)
 local LN = PitBull4.LOCALIZED_NAMES
 local _,player_class = UnitClass("player")
 local _,player_race  = UnitRace("player")
-local classes = {
-	-- 'DEATHKNIGHT',
-	'DRUID',
-	'HUNTER',
-	'MAGE',
-	'PALADIN',
-	'PRIEST',
-	'ROGUE',
-	'SHAMAN',
-	'WARLOCK',
-	'WARRIOR',
-	-- 'MONK',
-	-- 'DEMONHUNTER',
-}
+local classes = CopyTable(CLASS_SORT_ORDER)
 local class_names = {}
 for i, v in ipairs(classes) do
 	class_names[i] = LN[v]
@@ -1088,24 +1076,15 @@ local races = {
 	'Dwarf',
 	'NightElf',
 	'Gnome',
-	'Draenei',
 	'Orc',
 	'Scourge',
 	'Tauren',
 	'Troll',
-	'BloodElf',
-	-- 'Worgen',
-	-- 'Goblin',
-	-- 'Pandaren',
-	-- 'DarkIronDwarf',
-	-- 'LightforgedDraenei',
-	-- 'VoidElf',
-	-- 'KulTiranHuman',
-	-- 'MagharOrc',
-	-- 'HighmountainTauren',
-	-- 'Nightborne',
-	-- 'ZandalariTroll',
 }
+if not wow_classic_era then
+	races[#races+1] = 'Draenei'
+	races[#races+1] = 'BloodElf'
+end
 local race_names = {}
 for i, v in ipairs(races) do
 	race_names[i] = LN[v]

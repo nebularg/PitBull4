@@ -308,10 +308,10 @@ do
 		info = C_CreatureInfo.GetRaceInfo(i)
 	until not info
 
-	-- setmetatable(LOCALIZED_NAMES, { __index = function(self, key)
-	-- 	self[key] = key
-	-- 	return key
-	-- end })
+	setmetatable(LOCALIZED_NAMES, { __index = function(self, key)
+		self[key] = key
+		return key
+	end })
 end
 
 
