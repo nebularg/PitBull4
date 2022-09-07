@@ -1212,6 +1212,10 @@ function PitBull4.Options.get_unit_options()
 		MAINASSIST = L["Main assists"],
 	}
 
+	local group_filter_party_options = {
+		ALL = L["Show all"],
+	}
+
 	group_filtering_args.filter_type = {
 		name = L["Filter type"],
 		desc = L["What type of filter to run on the unit group."],
@@ -1220,10 +1224,20 @@ function PitBull4.Options.get_unit_options()
 		values = function(info)
 			local db = get_group_db()
 
+			local unit_group = db.unit_group
+			local party_based = unit_group:sub(1, 5) == "party"
+
+			if party_based then
+				return group_filter_party_options
+			end
+
 			return group_filter_raid_options
 		end,
 		get = function(info)
 			local db = get_group_db()
+
+			local unit_group = db.unit_group
+			local raid_based = unit_group:sub(1, 5) == "raid"
 
 			local group_filter = db.group_filter
 
@@ -1233,16 +1247,18 @@ function PitBull4.Options.get_unit_options()
 
 			local start = ((","):split(group_filter))
 
-			if tonumber(start) then
-				return 'NUMBER'
-			end
+			if raid_based then
+				if tonumber(start) then
+					return 'NUMBER'
+				end
 
-			if RAID_CLASS_COLORS[start] then
-				return 'CLASS'
-			end
+				if RAID_CLASS_COLORS[start] then
+					return 'CLASS'
+				end
 
-			if start == 'MAINTANK' or start == 'MAINASSIST' then
-				return start
+				if start == 'MAINTANK' or start == 'MAINASSIST' then
+					return start
+				end
 			end
 
 			db.group_filter = nil
@@ -1275,7 +1291,7 @@ function PitBull4.Options.get_unit_options()
 		hidden = function(info)
 			local db = get_group_db()
 
-			return db.unit_group:sub(1, 4) ~= "raid"
+			return db.unit_group:sub(1, 4) ~= "raid" and db.unit_group:sub(1, 5) ~= "party"
 		end
 	}
 

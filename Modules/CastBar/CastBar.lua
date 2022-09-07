@@ -87,6 +87,7 @@ function PitBull4_CastBar:OnEnable()
 		-- 	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE", "qUpdateInfo")
 		-- 	self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE", "UpdateInfo")
 		-- end
+		self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
 	end
 end
 
@@ -435,6 +436,13 @@ function PitBull4_CastBar:FixCastData()
 		timer_frame:Hide()
 	end
 	wipe(tmp)
+end
+
+function PitBull4_CastBar:INSTANCE_ENCOUNTER_ENGAGE_UNIT()
+	for i=1, _G.MAX_BOSS_FRAMES do
+		local unit = ("boss%d"):format(i)
+		self:UpdateInfo(nil, unit)
+	end
 end
 
 PitBull4_CastBar:SetLayoutOptionsFunction(function(self)

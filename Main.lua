@@ -35,6 +35,17 @@ local UNIT_GROUPS = {
 	"raidpettarget",
 	"raidpettargettarget",
 }
+if wow_wrath then
+	UNIT_GROUPS[#UNIT_GROUPS+1] = "arena"
+	UNIT_GROUPS[#UNIT_GROUPS+1] = "arenatarget"
+	UNIT_GROUPS[#UNIT_GROUPS+1] = "arenatargettarget"
+	UNIT_GROUPS[#UNIT_GROUPS+1] = "arenapet"
+	UNIT_GROUPS[#UNIT_GROUPS+1] = "arenapettarget"
+	UNIT_GROUPS[#UNIT_GROUPS+1] = "arenapettargettarget"
+	UNIT_GROUPS[#UNIT_GROUPS+1] = "boss"
+	UNIT_GROUPS[#UNIT_GROUPS+1] = "bosstarget"
+	UNIT_GROUPS[#UNIT_GROUPS+1] = "bosstargettarget"
+end
 
 local NORMAL_UNITS = {
 	"player",
@@ -51,6 +62,15 @@ for i = 1, _G.MAX_PARTY_MEMBERS do
 end
 for i = 1, _G.MAX_RAID_MEMBERS do
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "raid" .. i
+end
+if wow_wrath then
+	for i = 1, 5 do
+		NORMAL_UNITS[#NORMAL_UNITS+1] = "arena" .. i
+		NORMAL_UNITS[#NORMAL_UNITS+1] = "arenapet" .. i
+	end
+	for i = 1, _G.MAX_BOSS_FRAMES do
+		NORMAL_UNITS[#NORMAL_UNITS+1] = "boss" .. i
+	end
 end
 
 do
@@ -226,6 +246,29 @@ local DEFAULT_GROUPS = {
 		exists = true,
 	},
 }
+if wow_wrath then
+	DEFAULT_GROUPS[L["Boss"]] = {
+		enabled = true,
+		unit_group = "boss",
+		exists = true,
+		anchor = "", -- automatic from growth direction
+		relative_to = "0", -- UIParent
+		relative_point = "RIGHT",
+		position_x = -290,
+		position_y = 225,
+		show_when = {
+			solo = true,
+			party = true,
+			raid = true,
+			raid10 = true,
+			raid15 = true,
+			raid20 = true,
+			raid25 = true,
+			raid30 = true,
+			raid40 = true,
+		},
+	}
+end
 
 local DEFAULT_UNITS =  {
 	[L["Player"]] = {

@@ -135,7 +135,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 			falling_back = true
 		end
 	else
-		if not unit or not UnitExists(unit) or not UnitIsConnected(unit) or not UnitIsVisible(unit) then
+		if not unit or (not UnitExists(unit) and not ShowBossFrameWhenUninteractable(unit)) or not UnitIsConnected(unit) or not UnitIsVisible(unit) then
 			style = layout_db.fallback_style
 			falling_back = true
 		end
