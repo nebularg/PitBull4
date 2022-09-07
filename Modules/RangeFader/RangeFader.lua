@@ -4,6 +4,8 @@ local L = PitBull4.L
 
 local PitBull4_RangeFader = PitBull4:NewModule("RangeFader")
 
+local wow_classic_era = PitBull4.wow_classic_era
+
 local DEBUG = PitBull4.DEBUG
 
 PitBull4_RangeFader:SetModuleType("fader")
@@ -37,25 +39,30 @@ end
 
 local friendly_is_in_range, pet_is_in_range, enemy_is_in_range, enemy_is_in_long_range
 do
-	local friendly_spells = {}
-	local pet_spells = {}
 	local enemy_spells = {}
 	local long_enemy_spells = {}
+	local pet_spells = {}
+	local friendly_spells = {}
 	local res_spells = {}
 
 	local _,class = UnitClass("player")
 	if class == "DEATHKNIGHT" then
-		add_spell(enemy_spells, 49576) -- Death Grip (30)
-		add_spell(friendly_spells, 49016) -- Hysteria (30)
+		add_spell(enemy_spells, 45524) -- Chains of Ice (20)
+		add_spell(long_enemy_spells, 47541) -- Death Coil (30)
+		add_spell(friendly_spells, 49016) -- Unholy Frenzy (30)
 		add_spell(res_spells, 61999) -- Raise Ally (30)
 	elseif class == "DRUID" then
 		add_spell(enemy_spells, 8921) -- Moonfire (30)
-		add_spell(friendly_spells, 5185) -- Healing Touch (40)
-		add_spell(res_spells, 20739) -- Rebirth (30)
+		add_spell(friendly_spells, 8936) -- Regrowth (40)
+		add_spell(res_spells, 20484) -- Rebirth (30)
 	elseif class == "HUNTER" then
-		add_spell(enemy_spells, 75) -- Auto Shot (35)
+		if wow_classic_era then
+			-- for less than 5 yards
+			add_spell(enemy_spells, 3044) -- Arcane Shot (10)
+		end
+		add_spell(enemy_spells, 75) -- Auto Shot (5-35/35/35)
 		add_spell(pet_spells, 136) -- Mend Pet (20)
-		add_spell(pet_spells, 2641) -- Dismiss Pet (10)
+		-- add_spell(pet_spells, 2641) -- Dismiss Pet (10)
 	elseif class == "MAGE" then
 		add_spell(enemy_spells, 118) -- Polymorph (30)
 		add_spell(long_enemy_spells, 133) -- Fireball (35)
@@ -64,35 +71,38 @@ do
 	elseif class == "PALADIN" then
 		add_spell(enemy_spells, 853) -- Hammer of Justice (10)
 		add_spell(long_enemy_spells, 879) -- Exorcism (30)
-		-- Holy Paladins may have the Enlightened Judgements talent
-		-- add_spell(long_enemy_spells, 20271) -- Judgement of Light (10,35,40)
 		add_spell(friendly_spells, 1044) -- Hand of Freedom (30)
 		add_spell(friendly_spells, 635) -- Holy Light (40)
 		add_spell(res_spells, 7328) -- Redemption (30)
 	elseif class == "PRIEST" then
 		add_spell(enemy_spells, 585) -- Smite (30)
-		add_spell(friendly_spells, 2050) -- Lesser Heal (40)
+		add_spell(friendly_spells, 2061) -- Flash Heal (40)
 		add_spell(res_spells, 2006) -- Resurrection (30)
 	elseif class == "ROGUE" then
 		add_spell(enemy_spells, 2094) -- Blind (10)
 		add_spell(long_enemy_spells, 1725) -- Distract (30)
+		if not wow_classic_era then
+			add_spell(long_enemy_spells, 36554) -- Shadowstep (25)
+		end
 		add_spell(friendly_spells, 57934) -- Tricks of the Trade (20)
 	elseif class == "SHAMAN" then
-		add_spell(enemy_spells, 8042) -- Earth Shock (25)
+		add_spell(enemy_spells, 8042) -- Earth Shock (20/20/25)
 		add_spell(long_enemy_spells, 403) -- Lightning Bolt (30)
-		add_spell(friendly_spells, 331) -- Healing Wave (40)
+		add_spell(friendly_spells, 1064) -- Chain Heal (40)
 		add_spell(res_spells, 2008) -- Ancestral Spirit (30)
 	elseif class == "WARLOCK" then
 		add_spell(enemy_spells, 5782) -- Fear (20)
 		add_spell(long_enemy_spells, 686) -- Shadow Bolt (30)
-		add_spell(pet_spells, 755) -- Health Funnel (45)
+		add_spell(pet_spells, 755) -- Health Funnel (20/20/45)
 		add_spell(friendly_spells, 5697) -- Unending Breath (30)
 		add_spell(res_spells, 20707) -- Soulstone (30)
 	elseif class == "WARRIOR" then
 		add_spell(enemy_spells, 5246) -- Intimidating Shout (8)
 		-- add_spell(enemy_spells, 1161) -- Challenging Shout (10)
 		add_spell(long_enemy_spells, 355) -- Taunt (30)
-		add_spell(friendly_spells, 6673) -- Battle Shout (30)
+		if not wow_classic_era then
+			add_spell(friendly_spells, 3411) -- Intervene (8-25)
+		end
 	end
 
 	function friendly_is_in_range(unit)
