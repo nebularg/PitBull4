@@ -213,6 +213,7 @@ local DATABASE_DEFAULTS = {
 			},
 		},
 		class_order = {},
+		role_order = { "TANK", "HEALER", "DAMAGER", "NONE" },
 	}
 }
 for class, color in pairs(_G.RAID_CLASS_COLORS) do
@@ -1513,6 +1514,7 @@ function PitBull4:OnProfileChanged()
 	self.ReactionColors = db.profile.colors.reaction
 	self.HappinessColors = db.profile.colors.happiness
 	self.ThreatColors = db.profile.colors.threat
+	self.RoleOrder = db.profile.role_order
 	self.ClassOrder = db.profile.class_order
 	for i = #self.ClassOrder, 1, -1 do
 		local v = self.ClassOrder[i]

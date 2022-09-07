@@ -908,6 +908,11 @@ function PitBull4.Options.get_unit_options()
 		INDEX = L["By index"],
 	}
 
+	if wow_wrath then
+		party_values["ASSIGNEDROLE"] = L["By role"]
+		raid_values["ASSIGNEDROLE"] = L["By role"]
+	end
+
 	group_layout_args.sort_method = {
 		name = L["Sort method"],
 		desc = L["How to sort the frames within the group."],
@@ -927,7 +932,11 @@ function PitBull4.Options.get_unit_options()
 			local db = get_group_db()
 			local group_by = db.group_by
 			if db.unit_group:sub(1, 4) == "raid" then
-				if group_by == "CLASS" or group_by == "GROUP" then
+				if group_by == "CLASS" or group_by == "GROUP" or group_by == "ASSIGNEDROLE" then
+					return group_by
+				end
+			elseif db.unit_group:sub(1, 5) == "party" then
+				if group_by == "ASSIGNEDROLE" then
 					return group_by
 				end
 			end
@@ -942,6 +951,9 @@ function PitBull4.Options.get_unit_options()
 			elseif value == "CLASS" then
 				db.sort_method = "NAME"
 				db.group_by = "CLASS"
+			elseif value == "ASSIGNEDROLE" then
+				db.sort_method = "NAME"
+				db.group_by = "ASSIGNEDROLE"
 			else
 				db.sort_method = "INDEX"
 				db.group_by = "GROUP"
@@ -1150,6 +1162,75 @@ function PitBull4.Options.get_unit_options()
 		}
 	end
 
+	local role_sort_values = {}
+	local function refresh_role_sort_values()
+		wipe(role_sort_values)
+		for i, role in ipairs(PitBull4.RoleOrder) do
+			role_sort_values[i] = ("%d. %s"):format(i, _G[role])
+
+			group_layout_args.role_order.args[role].order = i
+		end
+	end
+
+	local role_last_db = nil
+	group_layout_args.role_order = {
+		name = L["Role order"],
+		type = 'group',
+		inline = true,
+		hidden = function(info)
+			if not wow_wrath then
+				return true
+			end
+			local db = get_group_db()
+			if db ~= role_last_db then
+				refresh_role_sort_values()
+				role_last_db = db
+			end
+			if db.unit_group:sub(1, 5) == "party" or db.unit_group:sub(1, 4) == "raid" then
+				local group_by = db.group_by
+				return group_by ~= "ASSIGNEDROLE"
+			end
+			return true
+		end,
+		args = {}
+	}
+
+	for i, role in ipairs({ "TANK", "HEALER", "DAMAGER", "NONE" }) do
+		group_layout_args.role_order.args[role] = {
+			name = _G[role],
+			order = i,
+			type = 'select',
+			style = 'dropdown',
+			values = role_sort_values,
+			get = function(info)
+				for i, v in ipairs(PitBull4.RoleOrder) do
+					if v == role then
+						return i
+					end
+				end
+			end,
+			set = function(info, value)
+				local current
+				for i, v in ipairs(PitBull4.RoleOrder) do
+					if v == role then
+						current = i
+						break
+					end
+				end
+				if not current then
+					table.insert(PitBull4.RoleOrder, role)
+					return
+				end
+
+				table.remove(PitBull4.RoleOrder, current)
+				table.insert(PitBull4.RoleOrder, value, role)
+				refresh_role_sort_values()
+				refresh_group('groups')
+				update('groups')
+			end
+		}
+	end
+
 	group_filtering_args.shown_when = {
 		name = L["Show when in"],
 		desc = L["Which situations to show the unit group in."],
@@ -1216,6 +1297,18 @@ function PitBull4.Options.get_unit_options()
 		ALL = L["Show all"],
 	}
 
+	if wow_wrath then
+		group_filter_raid_options["ROLE"] = L["By role"]
+		group_filter_party_options["ROLE"] = L["By role"]
+	end
+
+	local group_filter_roles = {
+		TANK = TANK,
+		HEALER = HEALER,
+		DAMAGER = DAMAGER,
+		NONE = NONE,
+	}
+
 	group_filtering_args.filter_type = {
 		name = L["Filter type"],
 		desc = L["What type of filter to run on the unit group."],
@@ -1246,6 +1339,10 @@ function PitBull4.Options.get_unit_options()
 			end
 
 			local start = ((","):split(group_filter))
+
+			if group_filter_roles[start] then
+				return 'ROLE'
+			end
 
 			if raid_based then
 				if tonumber(start) then
@@ -1279,6 +1376,8 @@ function PitBull4.Options.get_unit_options()
 					t[#t+1] = class
 				end
 				db.group_filter = table.concat(t, ",")
+			elseif value == 'ROLE' then
+				db.group_filter = "TANK,HEALER,DAMAGER,NONE"
 			elseif value == 'MAINTANK' or value == 'MAINASSIST' then
 				db.group_filter = value
 			else--if value == 'ALL' then
@@ -1341,6 +1440,34 @@ function PitBull4.Options.get_unit_options()
 
 		refresh_group('groups')
 	end
+
+	group_filtering_args.group_filter_role = {
+		name = L["Filter roles"],
+		desc = L["Which roles should show in this unit group"],
+		order = next_order(),
+		type = 'multiselect',
+		values = group_filter_roles,
+		get = get_filter,
+		set = set_filter,
+		disabled = disabled,
+		hidden = function(info)
+			if not wow_wrath then
+				return true
+			end
+
+			local db = get_group_db()
+
+			local group_filter = db.group_filter
+
+			if not group_filter then
+				return true
+			end
+
+			local start = ((","):split(group_filter))
+
+			return not group_filter_roles[start]
+		end
+	}
 
 	group_filtering_args.group_filter_number = {
 		name = L["Filter groups"],

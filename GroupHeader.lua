@@ -15,6 +15,13 @@ local NUM_RAID_GROUPS = _G.NUM_RAID_GROUPS
 local NUM_CLASSES = #CLASS_SORT_ORDER
 local MINIMUM_EXAMPLE_GROUP = 2
 
+local GROUP_ROLES = {
+	TANK = TANK,
+	HEALER = HEALER,
+	DAMAGER = DAMAGER,
+	NONE = NONE,
+}
+
 -- lock to prevent the SecureGroupHeader_Update for doing unnecessary
 -- work when running ForceShow
 local in_force_show = false
@@ -276,7 +283,9 @@ end
 GROUPING_ORDER.CLASS = function()
 	return table.concat(PitBull4.ClassOrder, ",")
 end
-GROUPING_ORDER.ASSIGNEDROLE = ""
+GROUPING_ORDER.ASSIGNEDROLE = function()
+	return table.concat(PitBull4.RoleOrder, ",")
+end
 
 local function position_label(self, label)
 	label:ClearAllPoints()
@@ -592,6 +601,12 @@ function GroupHeader:RefreshGroup(dont_refresh_children)
 			self:SetAttribute("showPlayer", include_player and true or nil)
 			self:SetAttribute("showSolo", show_solo and true or nil)
 			self:SetAttribute("groupFilter", nil)
+			if group_filter then
+				local first = (","):split(group_filter)
+				if GROUP_ROLES[first] then
+					self:SetAttribute("groupFilter", group_filter)
+				end
+			end
 		elseif not group_based then
 			self:UnregisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
 			self:UnregisterEvent("UPDATE_BATTLEFIELD_STATUS")
@@ -867,10 +882,10 @@ end
 -- utility function for ApplyConfigModeState, it doctors
 -- up some data so don't reuse this elsewhere
 local function get_group_roster_info(super_unit_group, index)
-	local _, unit, name, subgroup, class_name, role, server
+	local _, unit, name, subgroup, class_name, role, server, assigned_role
 	if super_unit_group == "raid" then
 		unit = "raid"..index
-		name, _, subgroup, _, _, class_name, _, _, _, role = GetRaidRosterInfo(index)
+		name, _, subgroup, _, _, class_name, _, _, _, role, _, assigned_role = GetRaidRosterInfo(index)
 	elseif super_unit_group == "boss" then
 		unit = "boss"..index
 		if UnitExists(unit) then
@@ -909,6 +924,7 @@ local function get_group_roster_info(super_unit_group, index)
 					role = "MAINASSIST"
 				end
 			end
+			assigned_role = UnitGroupRolesAssigned and UnitGroupRolesAssigned(unit)
 			subgroup = 1
 		end
 	end
@@ -920,7 +936,7 @@ local function get_group_roster_info(super_unit_group, index)
 		class_name = '!'
 	end
 
-	return unit, name, subgroup, class_name, role
+	return unit, name, subgroup, class_name, role, assigned_role
 end
 
 -- utility function for ApplyConfigModeState
@@ -1060,15 +1076,15 @@ function GroupHeader:ApplyConfigModeState()
 		fill_table(wipe(token_table), strsplit(",", group_filter))
 
 		if strict_filtering then
-			fill_table(token_table, "MAINTANK", "MAINASSIST")
+			fill_table(token_table, "MAINTANK", "MAINASSIST", "TANK", "HEALER", "DAMAGER", "NONE")
 		end
 
 		for i = start, finish, 1 do
-			local unit, name, subgroup, class_name, role = get_group_roster_info(super_unit_group, i)
+			local unit, name, subgroup, class_name, role, assigned_role = get_group_roster_info(super_unit_group, i)
 
 			if name and (not strict_filtering
-				and (token_table[subgroup] or token_table[class_name] or (role and token_table[role]))) -- non-strict filtering
-				or (token_table[subgroup] and token_table[class_name] and ((role and token_table[role]))) -- strict filtering
+				and (token_table[subgroup] or token_table[class_name] or (role and token_table[role]) or token_table[assigned_role])) -- non-strict filtering
+				or (token_table[subgroup] and token_table[class_name] and ((role and token_table[role]) or token_table[assigned_role])) -- strict filtering
 				then
 				sorting_table[#sorting_table+1] = unit
 				sorting_table[unit] = name
@@ -1076,6 +1092,10 @@ function GroupHeader:ApplyConfigModeState()
 					grouping_table[unit] = subgroup
 				elseif group_by == "CLASS" then
 					grouping_table[unit] = class_name
+				elseif group_by == "ROLE" then
+					grouping_table[unit] = role
+				elseif group_by == "ASSIGNEDROLE" then
+					grouping_table[unit] = assigned_role
 				end
 			end
 		end
