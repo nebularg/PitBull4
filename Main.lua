@@ -1352,10 +1352,19 @@ function PitBull4:OnInitialize()
 		icon = [[Interface\AddOns\PitBull4\pitbull]],
 		OnClick = function(frame, button)
 			if button == "RightButton" then
-				if IsShiftKeyDown() then
-					self.db.profile.frame_snap = not self.db.profile.frame_snap
-				else
+				if not IsShiftKeyDown() then
 					self.db.profile.lock_movement = not self.db.profile.lock_movement
+				elseif not db.profile.lock_movement then
+					self.db.profile.frame_snap = not db.profile.frame_snap
+				end
+				if self.db.profile.lock_movement then
+					self:Print(L["Locked"])
+				else
+					if self.db.profile.frame_snap then
+						self:Print(L["Unlocked with snap"])
+					else
+						self:Print(L["Unlocked without snap"])
+					end
 				end
 				LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
 			else
