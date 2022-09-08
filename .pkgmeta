@@ -28,6 +28,7 @@ changelog-title: PitBull Unit Frames 4.0
 
 ignore:
   - Docs
+  - **Libs/**.toc
 
 embedded-libraries:
   - libclassicdurations
