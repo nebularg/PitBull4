@@ -1,7 +1,8 @@
 ## Interface: 20504
+
 ## Title: PitBull Unit Frames 4.0
 ## Notes: Dog-themed unit frames. Woof. Arf. Yip.
-## Notes-deDE: Dog-themed unit frames. Woof. Arf. Yip.
+## Notes-deDE: Rahmen im Hunde-Design. Wuff-Wuff. Wau.
 ## Notes-esES: Dog-themed unit frames. Woof. Arf. Yip.
 ## Notes-esMX: Dog-themed unit frames. Woof. Arf. Yip.
 ## Notes-frFR: Dog-themed unit frames. Woof. Arf. Yip.
@@ -10,7 +11,7 @@
 ## Notes-ptBR: Dog-themed unit frames. Woof. Arf. Yip.
 ## Notes-ruRU: Dog-themed unit frames. Woof. Arf. Yip.
 ## Notes-zhCN: 以狗为主题的单位框架。呜呜。汪汪。嗷呜。
-## Notes-zhTW: Dog-themed unit frames. Woof. Arf. Yip.
+## Notes-zhTW: 以狗為主題的單位框架。嗚嗚。汪汪。嗷嗚。
 ## Author: ckknight, Shekfi, Nebula
 ## Version: @project-version@
 
