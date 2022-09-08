@@ -111,7 +111,7 @@ function PitBull4.Options.OpenConfig()
 		return InCombatLockdown() or (old_disabled and old_disabled(info))
 	end
 	local LibDualSpec = LibStub("LibDualSpec-1.0", true)
-	if LibDualSpec then
+	if LibDualSpec and PitBull4.db.IsDualSpecEnabled then
 		LibDualSpec:EnhanceOptions(options.args.profile, PitBull4.db)
 	end
 

@@ -1340,7 +1340,7 @@ function PitBull4:OnInitialize()
 	db.RegisterCallback(self, "OnNewProfile")
 	db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
 
-	local LibDualSpec = LibStub("LibDualSpec-1.0", true)
+	local LibDualSpec = wow_wrath and LibStub("LibDualSpec-1.0", true)
 	if LibDualSpec then
 		LibDualSpec:EnhanceDatabase(db, "PitBull4")
 	end
