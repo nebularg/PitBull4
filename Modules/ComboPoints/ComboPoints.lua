@@ -10,7 +10,7 @@ local is_druid = player_class == "DRUID"
 
 local BASE_TEXTURE_PATH = [[Interface\AddOns\PitBull4\Modules\ComboPoints\]]
 
-local SPELL_POWER_COMBO_POINTS = 4 -- Enum.PowerType.ComboPoints
+local SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints
 
 local TEXTURES = {
 	default = L["Default"],

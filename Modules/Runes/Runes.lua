@@ -10,7 +10,7 @@ local L = PitBull4.L
 local RUNE_IDS = { 1, 2, 5, 6, 3, 4 } -- for some ungodly reason, unholy and frost are switched.
 local NUM_RUNES = #RUNE_IDS
 
-local SPELL_POWER_RUNES = 5 -- Enum.PowerType.Runes
+local SPELL_POWER_RUNES = Enum.PowerType.Runes
 
 local STANDARD_SIZE = 15
 local BORDER_SIZE = 3

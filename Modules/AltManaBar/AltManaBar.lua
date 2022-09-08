@@ -20,7 +20,7 @@ PitBull4_AltManaBar:SetDefaults({
 })
 
 -- constants
-local SPELL_POWER_MANA = 0 -- Enum.PowerType.Mana
+local SPELL_POWER_MANA = Enum.PowerType.Mana
 
 -- cached power type for optimization
 local power_type = nil
