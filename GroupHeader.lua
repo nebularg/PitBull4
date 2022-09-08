@@ -890,7 +890,7 @@ local function get_group_roster_info(super_unit_group, index)
 		unit = "boss"..index
 		if UnitExists(unit) then
 			name = UnitName(unit)
-			_, class_name = UnitClassBase(unit)
+			class_name = UnitClassBase(unit)
 			subgroup = 1
 		end
 	elseif super_unit_group == "arena" then
@@ -900,7 +900,7 @@ local function get_group_roster_info(super_unit_group, index)
 			if server and server ~= "" then
 				name = name.."-"..server
 			end
-			_, class_name = UnitClass(unit)
+			class_name = UnitClassBase(unit)
 			subgroup = 1
 		end
 	else
@@ -914,7 +914,7 @@ local function get_group_roster_info(super_unit_group, index)
 			if server and server ~= "" then
 				name = name.."-"..server
 			end
-			_, class_name = UnitClass(unit)
+			class_name = UnitClassBase(unit)
 			-- The UnitInParty and UnitInRaid checks are an ugly workaround for thee
 			-- You are not in a party bug that Blizzard created.
 			if not PitBull4.leaving_world and (UnitInParty(unit) or UnitInRaid(unit)) then
@@ -924,7 +924,7 @@ local function get_group_roster_info(super_unit_group, index)
 					role = "MAINASSIST"
 				end
 			end
-			assigned_role = UnitGroupRolesAssigned and UnitGroupRolesAssigned(unit)
+			assigned_role = UnitGroupRolesAssigned(unit)
 			subgroup = 1
 		end
 	end

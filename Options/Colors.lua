@@ -235,8 +235,7 @@ local function get_reaction_options()
 end
 
 local function get_happiness_options()
-	local _,class = UnitClass("player")
-	if class ~= "HUNTER" then
+	if UnitClassBase("player") ~= "HUNTER" then
 		return
 	end
 

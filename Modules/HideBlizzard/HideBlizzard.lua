@@ -251,8 +251,7 @@ if wow_wrath then
 	end
 
 	function showers:runebar()
-		local _,class = UnitClass("player")
-		if class == "DEATHKNIGHT" then
+		if UnitClassBase("player") == "DEATHKNIGHT" then
 			RuneFrame:Show()
 		end
 		RuneFrame:GetScript("OnLoad")(RuneFrame)

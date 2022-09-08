@@ -1,4 +1,4 @@
-if select(2, UnitClass("player")) ~= "HUNTER" then
+if UnitClassBase("player") ~= "HUNTER" then
 	return
 end
 

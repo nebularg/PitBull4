@@ -72,7 +72,7 @@ function PitBull4_Aura:OnEnable()
 		WARLOCK = true,
 		WARRIOR = wow_wrath,
 	}
-	local _,player_class = UnitClass("player")
+	local player_class = UnitClassBase("player")
 	if dispel_classes[player_class] then
 		self:RegisterEvent("PLAYER_TALENT_UPDATE")
 		self:RegisterEvent("SPELLS_CHANGED", "PLAYER_TALENT_UPDATE")

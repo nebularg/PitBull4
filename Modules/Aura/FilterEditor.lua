@@ -120,7 +120,7 @@ local function any_layout_uses_filter(filter)
 	return false
 end
 
-local _,player_class = UnitClass('player')
+local player_class = UnitClassBase("player")
 local _,player_race = UnitRace('player')
 local function filter_from_map(map)
 	local filters = PitBull4_Aura.db.profile.global.filters

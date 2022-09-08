@@ -1,4 +1,4 @@
-local _, player_class = UnitClass("player")
+local player_class = UnitClassBase("player")
 if player_class ~= "DRUID" then
 	return
 end

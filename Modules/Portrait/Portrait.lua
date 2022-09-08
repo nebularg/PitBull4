@@ -230,10 +230,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 	elseif style == "blank" then
 		portrait.texture:SetTexture("")
 	else -- class
-		local class, _
-		if unit then
-			_, class = UnitClass(unit)
-		end
+		local class = unit and UnitClassBase(unit)
 		if class then
 			local tex_coord = CLASS_TEX_COORDS[class]
 			portrait.texture:SetTexture([[Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes]])

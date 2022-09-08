@@ -12,7 +12,7 @@ local wow_wrath = PitBull4.wow_wrath
 
 local DEBUG = PitBull4.DEBUG
 
-local _, player_class = UnitClass("player")
+local player_class = UnitClassBase("player")
 
 --- Return the DB dictionary for the specified filter.
 -- Filter Types should use this to get their db.

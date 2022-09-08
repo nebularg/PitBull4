@@ -45,7 +45,7 @@ do
 	local friendly_spells = {}
 	local res_spells = {}
 
-	local _,class = UnitClass("player")
+	local class = UnitClassBase("player")
 	if class == "DEATHKNIGHT" then
 		add_spell(enemy_spells, 45524) -- Chains of Ice (20)
 		add_spell(long_enemy_spells, 47541) -- Death Coil (30)

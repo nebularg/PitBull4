@@ -1,4 +1,4 @@
-local _, player_class = UnitClass("player")
+local player_class = UnitClassBase("player")
 if player_class == "WARRIOR" or player_class == "ROGUE" then
 	return
 end

@@ -17,8 +17,7 @@ local HOSTILE_REACTION = 2
 local NEUTRAL_REACTION = 4
 local FRIENDLY_REACTION = 5
 
-local _,player_class = UnitClass("player")
-local player_is_hunter = player_class == "HUNTER"
+local player_is_hunter = UnitClassBase("player") == "HUNTER"
 local happiness_map = {
 	"unhappy",
 	"content",
@@ -131,7 +130,7 @@ local function call_color_function(self, frame, bar_db, value, extra, icon)
 
 			if UnitIsPlayer(unit) then
 				if bar_db.color_by_class and (bar_db.color_pvp_by_class or UnitIsFriend("player", unit)) then
-					local _, class = UnitClass(unit)
+					local class = UnitClassBase(unit)
 					local t = PitBull4.ClassColors[class]
 					if t then
 						r, g, b = t[1], t[2], t[3]
