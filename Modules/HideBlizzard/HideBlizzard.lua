@@ -131,10 +131,11 @@ end
 
 function hiders:player()
 	hook_reparent_frames(PlayerFrame)
+	BuffFrame_Update()
 end
 
 function showers:player()
-	unhook_frames(PlayerFrame)
+	unhook_frames_without_init(PlayerFrame)
 	PlayerFrame:Show()
 end
 
@@ -237,7 +238,6 @@ function showers:aura()
 	unhook_frames_without_init(BuffFrame, TemporaryEnchantFrame)
 	BuffFrame:RegisterUnitEvent("UNIT_AURA", "player", "vehicle")
 	BuffFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
-	BuffFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	BuffFrame:Show()
 
 	TemporaryEnchantFrame:Show()
