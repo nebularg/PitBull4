@@ -250,7 +250,7 @@ if not wow_retail then
 		[48506] = wow_wrath, -- Earth and Moon
 		[770]   = true, -- Faerie Fire
 		[16857] = true, -- Faerie Fire (Feral)
-		[45334] = true, -- Feral Charge Effect
+		[19675] = true, -- Feral Charge Effect
 		[6795] = true, -- Growl
 		[2637]  = true, -- Hibernate
 		[16914] = true, -- Hurricane
@@ -338,7 +338,7 @@ if not wow_retail then
 		[19185] = true, -- Entrapment
 		[13812] = true, -- Explosive Trap Effect
 		[7140]  = true, -- Expose Weakness (pet)
-		[34889] = true, -- Fire Breath (pet)
+		[34889] = wow_bcc or wow_wrath, -- Fire Breath (pet)
 		[1543]  = true, -- Flare
 		[3355]  = true, -- Freezing Trap Effect
 		[13810] = true, -- Frost Trap Aura
@@ -349,7 +349,7 @@ if not wow_retail then
 		[19229] = wow_classic_era or wow_bcc, -- Improved Wing Clip
 		[24394] = true, -- Intimidation
 		[5760]  = true, -- Mind-numbing Poison (pet)
-		[32093] = true, -- Poison Spit (pet)
+		[32093] = wow_bcc or wow_wrath, -- Poison Spit (pet)
 		[1513]  = true, -- Scare Beast
 		[19503] = true, -- Scatter Shot
 		[24640] = true, -- Scorpid Poison (Scorpid pet)
