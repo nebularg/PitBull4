@@ -149,47 +149,47 @@ end
 local friend_buffs,friend_debuffs,self_buffs,self_debuffs,pet_buffs,enemy_debuffs,extra_buffs = {},{},{},{},{},{},{}
 
 -- Classic class filters
-if wow_wrath then
-	-- Death Knight
-	friend_buffs.DEATHKNIGHT = {
-		[53137] = true, -- Abomination's Might
-		[57623] = true, -- Horn of Winter
-		[49016] = true, -- Hysteria
-		[3714]  = true, -- Path of Frost
-	}
-	friend_debuffs.DEATHKNIGHT = {}
-	self_buffs.DEATHKNIGHT = {
-		[49222] = true, -- Bone Shield
-		[55226] = true, -- Blade Barrier
-		[49028] = true, -- Dancing Rune Weapon
-		[49796] = true, -- Deathchill
-		[59052] = true, -- Freezing Fog (Rime)
-		[51124] = true, -- Killing Machine
-		[49039] = true, -- Lichborne
-		[48792] = true, -- Icebound Fortitude
-		[50421] = true, -- Scent of Blood
-		[49206] = true, -- Summon Gargoyle
-		[55233] = true, -- Vampiric Blood
-		[51271] = true, -- Unbreakable Armor
-	}
-	self_debuffs.DEATHKNIGHT = {}
-	pet_buffs.DEATHKNIGHT = {
-		[19705] = true, -- Well Fed
-	}
-	enemy_debuffs.DEATHKNIGHT = {
-		[55078] = true, -- Blood Plague
-		[45524] = true, -- Chains of Ice
-		[50510] = true, -- Crypt Fever
-		[51735] = true, -- Ebon Plague
-		[55095] = true, -- Frost Fever
-		[49203] = true, -- Hungering Cold
-		[49005] = true, -- Mark of Blood
-		[47476] = true, -- Strangulate
-		[50536] = true, -- Unholy Blight
-	}
-end
-
 if not wow_retail then
+	if wow_wrath then
+		-- Death Knight
+		friend_buffs.DEATHKNIGHT = {
+			[53137] = true, -- Abomination's Might
+			[57623] = true, -- Horn of Winter
+			[49016] = true, -- Hysteria
+			[3714]  = true, -- Path of Frost
+		}
+		friend_debuffs.DEATHKNIGHT = {}
+		self_buffs.DEATHKNIGHT = {
+			[49222] = true, -- Bone Shield
+			[55226] = true, -- Blade Barrier
+			[49028] = true, -- Dancing Rune Weapon
+			[49796] = true, -- Deathchill
+			[59052] = true, -- Freezing Fog (Rime)
+			[51124] = true, -- Killing Machine
+			[49039] = true, -- Lichborne
+			[48792] = true, -- Icebound Fortitude
+			[50421] = true, -- Scent of Blood
+			[49206] = true, -- Summon Gargoyle
+			[55233] = true, -- Vampiric Blood
+			[51271] = true, -- Unbreakable Armor
+		}
+		self_debuffs.DEATHKNIGHT = {}
+		pet_buffs.DEATHKNIGHT = {
+			[19705] = true, -- Well Fed
+		}
+		enemy_debuffs.DEATHKNIGHT = {
+			[55078] = true, -- Blood Plague
+			[45524] = true, -- Chains of Ice
+			[50510] = true, -- Crypt Fever
+			[51735] = true, -- Ebon Plague
+			[55095] = true, -- Frost Fever
+			[49203] = true, -- Hungering Cold
+			[49005] = true, -- Mark of Blood
+			[47476] = true, -- Strangulate
+			[50536] = true, -- Unholy Blight
+		}
+	end
+
 	-- Druid
 	friend_buffs.DRUID = {
 		[2893]  = true, -- Abolish Poison
