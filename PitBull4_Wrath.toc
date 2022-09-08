@@ -26,5 +26,4 @@ libs.xml
 Templates.xml
 load.xml
 
-modules.xml
-Modules\Runes\load.xml
+modules_Wrath.xml

@@ -160,6 +160,7 @@ globals = {
 	"UnitHealth",
 	"UnitHealthMax",
 	"UnitInParty",
+	"UnitInPhase",
 	"UnitInRaid",
 	"UnitInRange",
 	"UnitIsAFK",
