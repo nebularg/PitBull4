@@ -87,6 +87,7 @@ globals = {
 	"GetItemQualityColor",
 	"GetLocale",
 	"GetManagedEnvironment",
+	"GetMaxPlayerLevel",
 	"GetMouseFocus",
 	"GetNumAddOns",
 	"GetNumClasses",
