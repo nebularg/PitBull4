@@ -83,8 +83,8 @@ do
 		add_spell(long_enemy_spells, 1725) -- Distract (30)
 		if not wow_classic_era then
 			add_spell(long_enemy_spells, 36554) -- Shadowstep (25)
+			add_spell(friendly_spells, 57934) -- Tricks of the Trade (20)
 		end
-		add_spell(friendly_spells, 57934) -- Tricks of the Trade (20)
 	elseif class == "SHAMAN" then
 		add_spell(enemy_spells, 8042) -- Earth Shock (20/20/25)
 		add_spell(long_enemy_spells, 403) -- Lightning Bolt (30)
