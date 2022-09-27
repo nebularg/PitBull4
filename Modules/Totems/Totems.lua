@@ -63,7 +63,7 @@ local COLOR_DEFAULTS = {
 	slot1 = {1,0,0,1},
 	slot2 = {0,1,0,1},
 	slot3 = {0,1,1,1},
-	slot4 = {0,0,1,1},
+	slot4 = {1,0,1,1},
 }
 
 local GetTotemTimeLeft = _G.GetTotemTimeLeft
@@ -672,6 +672,7 @@ function PitBull4_Totems:UpdateFrame(frame)
 
 	local elements = frame.Totems.elements
 	for i = 1, MAX_CLASS_TOTEMS do
+		local slot = TOTEM_ORDER[i]
 		if i == 1 then
 			elements[i].frame:ClearAllPoints()
 			elements[i].frame:SetPoint("TOPLEFT", frame.Totems, "TOPLEFT", 0, 0)
@@ -704,7 +705,7 @@ function PitBull4_Totems:UpdateFrame(frame)
 		-- UpdateIconColor
 		elements[i].frame.border:Hide()
 		if global_option_get('totem_borders_per_element') then
-			elements[i].frame.border:SetVertexColor(color_option_get('slot'..tostring(i), 1,1,1,1))
+			elements[i].frame.border:SetVertexColor(color_option_get('slot'..tostring(slot), 1,1,1,1))
 		else
 			elements[i].frame.border:SetVertexColor(color_option_get('totem_border'))
 		end
@@ -717,7 +718,7 @@ function PitBull4_Totems:UpdateFrame(frame)
 			elements[i].text:SetFont(font, fontsize, "OUTLINE")
 
 			if global_option_get('text_color_per_element') then
-				elements[i].text:SetTextColor(color_option_get('slot'..tostring(i), 1,1,1,1))
+				elements[i].text:SetTextColor(color_option_get('slot'..tostring(slot), 1,1,1,1))
 			else
 				elements[i].text:SetTextColor(color_option_get('timer_text'))
 			end
