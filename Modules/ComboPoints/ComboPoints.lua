@@ -40,10 +40,11 @@ PitBull4_ComboPoints:SetDefaults({
 })
 
 function PitBull4_ComboPoints:OnEnable()
-	self:RegisterUnitEvent("UNIT_DISPLAYPOWER", nil, "player")
-	self:RegisterUnitEvent("UNIT_POWER_FREQUENT", nil, "player")
-	if UnitHasVehiclePlayerFrameUI then
-		self:RegisterEvent("UNIT_EXITED_VEHICLE", "UNIT_DISPLAYPOWER")
+	self:RegisterEvent("UNIT_POWER_FREQUENT")
+	self:RegisterEvent("UNIT_MAXPOWER")
+	self:RegisterUnitEvent("UNIT_EXITED_VEHICLE", nil, "player")
+	if is_druid then
+		self:RegisterEvent("UPDATE_SHAPESHIFT_FORM", "UNIT_EXITED_VEHICLE")
 	end
 end
 
@@ -51,17 +52,17 @@ function PitBull4_ComboPoints:UNIT_POWER_FREQUENT(_, unit, power_type)
 	if unit ~= "player" and unit ~= "pet" then return end
 	if power_type ~= "COMBO_POINTS" then return end
 
-	for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
-		self:Update(frame)
-	end
+	self:UpdateForUnitID("target")
 end
 
-function PitBull4_ComboPoints:UNIT_DISPLAYPOWER(_, unit)
+function PitBull4_ComboPoints:UNIT_MAXPOWER(_, unit)
 	if unit ~= "player" and unit ~= "pet" then return end
 
-	for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
-		self:Update(frame)
-	end
+	self:UpdateForUnitID("target")
+end
+
+function PitBull4_ComboPoints:UNIT_EXITED_VEHICLE(_, unit)
+	self:UpdateForUnitID("target")
 end
 
 function PitBull4_ComboPoints:ClearFrame(frame)
@@ -83,21 +84,12 @@ function PitBull4_ComboPoints:ClearFrame(frame)
 end
 
 function PitBull4_ComboPoints:UpdateFrame(frame)
-	if frame.unit ~= "target" and frame.unit ~= "player" and frame.unit ~= "pet" then
+	if frame.unit ~= "target" then
 		return self:ClearFrame(frame)
 	end
 
-	local num_combos
-
-	if UnitHasVehicleUI then
-		local has_vehicle = UnitHasVehicleUI("player")
-		if frame.unit == "pet" and not has_vehicle then
-			return self:ClearFrame(frame)
-		end
-		num_combos = has_vehicle and GetComboPoints("vehicle", "target") or UnitPower("player", SPELL_POWER_COMBO_POINTS)
-	else
-		num_combos = UnitPower("player", SPELL_POWER_COMBO_POINTS)
-	end
+	local has_vehicle = UnitHasVehicleUI and UnitHasVehicleUI("player")
+	local num_combos = GetComboPoints(has_vehicle and "vehicle" or "player", "target")
 
 	-- While non-rogues and non-druids typically don't have combo points, certain game
 	-- mechanics may add them anyway (e.g. Malygos vehicles). Always show the combo
