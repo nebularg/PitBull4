@@ -137,30 +137,42 @@ function showers:player()
 end
 
 function hiders:party()
-	for i = 1, MAX_PARTY_MEMBERS do
-		local frame = _G["PartyMemberFrame" .. i]
-		frame:SetAttribute("statehidden", true)
-		hook_frames(frame)
+	if PartyFrame then
+		PartyFrame:Hide()
+		PartyFrame:UnregisterEvent("GROUP_ROSTER_UPDATE")
+	else
+		for i = 1, MAX_PARTY_MEMBERS do
+			local frame = _G["PartyMemberFrame" .. i]
+			frame:SetAttribute("statehidden", true)
+			hook_frames(frame)
+		end
+		UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	end
-
-	UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
 end
 
 function showers:party()
-	for i = 1, MAX_PARTY_MEMBERS do
-		local frame = _G["PartyMemberFrame" .. i]
-		frame:SetAttribute("statehidden", nil)
-		unhook_frames(frame)
-		frame:GetScript("OnEvent")(frame, "GROUP_ROSTER_UPDATE")
+	if PartyFrame then
+		PartyFrame:Show()
+		PartyFrame:Layout()
+		PartyFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
+	else
+		for i = 1, MAX_PARTY_MEMBERS do
+			local frame = _G["PartyMemberFrame" .. i]
+			frame:SetAttribute("statehidden", nil)
+			unhook_frames(frame)
+			frame:GetScript("OnEvent")(frame, "GROUP_ROSTER_UPDATE")
+		end
+		UIParent:RegisterEvent("GROUP_ROSTER_UPDATE")
 	end
-
-	UIParent:RegisterEvent("GROUP_ROSTER_UPDATE")
 end
 
 do
 	local raid_shown = nil
+	local ShouldShowRaidFrames = GetDisplayedAllyFrames or ShouldShowRaidFrames -- 9.x, 10.x
+
 	local function hide_raid()
 			CompactRaidFrameManager:UnregisterEvent("GROUP_ROSTER_UPDATE")
+			CompactRaidFrameManager:UnregisterEvent("UPDATE_ACTIVE_BATTLEFIELD")
 			CompactRaidFrameManager:UnregisterEvent("PLAYER_ENTERING_WORLD")
 			if InCombatLockdown() then return end
 
@@ -188,13 +200,14 @@ do
 		PitBull4_HideBlizzard:Unhook(CompactRaidFrameManager, "OnShow")
 
 		CompactRaidFrameManager:RegisterEvent("GROUP_ROSTER_UPDATE")
+		CompactRaidFrameManager:RegisterEvent("UPDATE_ACTIVE_BATTLEFIELD")
 		CompactRaidFrameManager:RegisterEvent("PLAYER_ENTERING_WORLD")
 
 		if raid_shown and raid_shown ~= "0" then
 			CompactRaidFrameManager_SetSetting("IsShown", "1")
 		end
 
-		if GetDisplayedAllyFrames() then
+		if ShouldShowRaidFrames() then
 			CompactRaidFrameManager:Show()
 		end
 	end
@@ -218,11 +231,21 @@ function showers:focus()
 end
 
 function hiders:castbar()
-	rawhook_frames(CastingBarFrame, PetCastingBarFrame)
+	if PlayerCastingBarFrame then
+		PlayerCastingBarFrame:SetUnit(nil, nil, nil)
+		PetCastingBarFrame:SetUnit(nil, nil, nil)
+	else
+		rawhook_frames(CastingBarFrame, PetCastingBarFrame)
+	end
 end
 
 function showers:castbar()
-	unhook_frames(CastingBarFrame, PetCastingBarFrame)
+	if PlayerCastingBarFrame then
+		PlayerCastingBarFrame:SetUnit("player", true, false)
+		PetCastingBarFrame:SetUnit("pet", false, false)
+	else
+		unhook_frames(CastingBarFrame, PetCastingBarFrame)
+	end
 end
 
 -- function hiders:runebar()
@@ -250,20 +273,37 @@ end
 -- end
 
 function hiders:aura()
-	hook_frames(BuffFrame, TemporaryEnchantFrame)
+	hook_frames(BuffFrame)
+	if TemporaryEnchantFrame then
+		hook_frames(TemporaryEnchantFrame, DebuffFrame)
+	end
 end
 
 function showers:aura()
-	unhook_frames_without_init(BuffFrame, TemporaryEnchantFrame)
-	BuffFrame:RegisterUnitEvent("UNIT_AURA", "player", "vehicle")
-	BuffFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
-	BuffFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
-	BuffFrame:Show()
+	for _, frameName in next, {"BuffFrame", "DebuffFrame"} do
+		local frame = _G[frameName]
+		if frame then
+			unhook_frames_without_init(frame)
+			frame:RegisterUnitEvent("UNIT_AURA", "player", "vehicle")
+			frame:RegisterEvent("GROUP_ROSTER_UPDATE")
+			frame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+			frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 
-	TemporaryEnchantFrame:Show()
+			frame:RegisterEvent("WEAPON_ENCHANT_CHANGED")
+			frame:RegisterEvent("WEAPON_SLOT_CHANGED")
+
+			frame:Show()
+		end
+	end
+
+	if TemporaryEnchantFrame then
+		unhook_frames_without_init(TemporaryEnchantFrame)
+		TemporaryEnchantFrame:Show()
+	end
 end
 
 function hiders:altpower()
+	-- XXX should probably look at removing it from the "Encounter Frame" container
 	hook_frames(PlayerPowerBarAlt)
 end
 
