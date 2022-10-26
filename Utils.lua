@@ -52,6 +52,9 @@ do
 		target = "target",
 		playertarget = "target",
 		npc = "npc",
+		softenemy = "softenemy",
+		softfriend = "softfriend",
+		softinteract = "softinteract",
 	}
 	for i = 1, _G.MAX_PARTY_MEMBERS do
 		better_unit_ids["party" .. i] = "party" .. i
