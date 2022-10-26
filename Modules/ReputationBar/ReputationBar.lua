@@ -25,7 +25,7 @@ function PitBull4_ReputationBar:GetValue(frame)
 	end
 	-- Rather than doing the sane thing Blizzard had to invent a new system that makes things overly complex
 	-- Apparently something was wrong with using the existing min, max, values
-	local fs_id, fs_rep, _, _, _, _, _, fs_threshold, next_fs_threshold = GetFriendshipReputation(id)
+	local fs_id, fs_rep, _, _, _, _, _, fs_threshold, next_fs_threshold = C_GossipInfo.GetFriendshipReputation(id)
 	if fs_id then
 		if next_fs_threshold then
 			min, max, value = fs_threshold, next_fs_threshold, fs_rep
@@ -53,7 +53,7 @@ end
 
 function PitBull4_ReputationBar:GetColor(frame, value)
 	local _, reaction, _, _, _, id = GetWatchedFactionInfo()
-	if GetFriendshipReputation(id) then
+	if C_GossipInfo.GetFriendshipReputation(id) then
 		reaction = 5 -- always color friendships "green"
 	end
 	local color = PitBull4.ReactionColors[reaction]

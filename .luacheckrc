@@ -46,6 +46,7 @@ globals = {
 	-- Functions
 	"C_AzeriteItem",
 	"C_CreatureInfo",
+	"C_GossipInfo",
 	"C_IncomingSummon",
 	"C_PvP",
 	"C_Timer",
