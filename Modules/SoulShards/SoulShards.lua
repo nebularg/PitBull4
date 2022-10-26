@@ -40,7 +40,7 @@ PitBull4_SoulShards:SetDefaults({
 })
 
 function PitBull4_SoulShards:OnEnable()
-	self:RegisterEvent("UNIT_POWER_FREQUENT")
+	self:RegisterUnitEvent("UNIT_POWER_FREQUENT", nil, "player")
 	self:RegisterEvent("UNIT_DISPLAYPOWER")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
@@ -117,7 +117,7 @@ function PitBull4_SoulShards:UpdateFrame(frame)
 		container = PitBull4.Controls.MakeFrame(frame)
 		frame.SoulShards = container
 		container:SetFrameLevel(frame:GetFrameLevel() + 13)
-		container.Shards = {} -- ClassNameplateBarShardFrame parentArray
+		container.Shards = {}
 
 		for i = 1, MAX_SHARDS do
 			local soul_shard = PitBull4.Controls.MakeSoulShard(container, i)
@@ -145,6 +145,10 @@ function PitBull4_SoulShards:UpdateFrame(frame)
 
 	local modifier = UnitPowerDisplayMod(SPELL_POWER_SOUL_SHARDS)
 	local num_soul_shards = (modifier ~= 0) and (UnitPower("player", SPELL_POWER_SOUL_SHARDS, true) / modifier) or 0
+	if GetSpecialization() ~= 3 then
+		-- Destruction is supposed to show partial soulshards, but Affliction and Demonology should only show full ones
+		num_soul_shards = math.floor(num_soul_shards)
+	end
 	for i = 1, MAX_SHARDS do
 		local soul_shard = container[i]
 		if i > max_shards then
