@@ -13,23 +13,6 @@ end
 
 local PitBull4_Portrait = PitBull4:NewModule("Portrait")
 
-local pirate_day, pirate_costumes
-do
-	local month = tonumber(date("%m"))
-	local day = tonumber(date("%d"))
-	if month == 9 and day == 19 then
-		pirate_day = true
-		pirate_costumes = {
-			{ 2955, 6795, 9636, 6835, 6836, 3935 }, -- white
-			{ 2955, 5202, 9636, 45848, 14174, 45848 }, -- orange
-			{ 11735, 9782, 6795, 138419, 78259, 7282, 9776, 90030 }, -- eyepatch
-			{ 2955, 6795, 9636, 6835, 6836, 3935 }, -- white
-		}
-	else
-		pirate_day = nil
-	end
-end
-
 PitBull4_Portrait:SetModuleType("indicator")
 PitBull4_Portrait:SetName(L["Portrait"])
 PitBull4_Portrait:SetDescription(L["Show a portrait of the unit."])
@@ -45,19 +28,12 @@ PitBull4_Portrait:SetDefaults({
 	side = "left",
 	bar_size = 4,
 	enabled = false,
-}, {
-	pirate = true
 })
 PitBull4_Portrait.can_set_side_to_center = true
 
 function PitBull4_Portrait:OnEnable()
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE")
 	-- self:RegisterEvent("UNIT_MODEL_CHANGED", "UNIT_PORTRAIT_UPDATE")
-	if not pirate_day then
-		-- Clear it so it turns on every pirate day and doesn't forever
-		-- chew up a spot in the config file
-		self.db.profile.global.pirate = nil
-	end
 end
 
 local guid_demanding_update = nil
@@ -78,7 +54,6 @@ function PitBull4_Portrait:ClearFrame(frame)
 	local portrait = frame.Portrait
 
 	if portrait.model then
-		portrait.model:SetScript("OnUpdate", nil)
 		portrait.model = portrait.model:Delete()
 	end
 	if portrait.texture then
@@ -107,24 +82,9 @@ function PitBull4_Portrait:OnHide(frame)
 	end
 end
 
-local function portrait_OnModelLoaded(model)
-	model:SetScript("OnUpdate", nil)
-
-	-- >.> semi-persistent random costumes!
-	local guid = UnitGUID(model:GetParent().unit or "")
-	local id = guid and tostring(tonumber(select(3, strsplit("-", guid)), 16)):sub(-1)
-	local costume = id and (math.floor(id / 3) + 1) or math.random(1, 4)
-
-	model:Undress()
-	for _,  item in next, pirate_costumes[costume] do
-		model:TryOn(("item:%d"):format(item))
-	end
-end
-
 function PitBull4_Portrait:UpdateFrame(frame)
 	local layout_db = self:GetLayoutDB(frame)
 	local style = layout_db.style
-	local pirate = pirate_day and self.db.profile.global.pirate and not InCombatLockdown()
 	local falling_back = false
 
 	local unit = frame.unit
@@ -143,10 +103,6 @@ function PitBull4_Portrait:UpdateFrame(frame)
 
 	if style == "hide" then
 		return self:ClearFrame(frame)
-	end
-
-	if pirate and style == "three_dimensional" and not falling_back and UnitIsPlayer(unit) then
-		style = "pirate"
 	end
 
 	local portrait = frame.Portrait
@@ -168,11 +124,6 @@ function PitBull4_Portrait:UpdateFrame(frame)
 
 		if style == "three_dimensional" then
 			local model = PitBull4.Controls.MakePlayerModel(frame)
-			model:SetFrameLevel(frame:GetFrameLevel() + 5)
-			model:SetAllPoints(portrait)
-			portrait.model = model
-		elseif style == "pirate" then
-			local model = PitBull4.Controls.MakeDressUpModel(frame)
 			model:SetFrameLevel(frame:GetFrameLevel() + 5)
 			model:SetAllPoints(portrait)
 			portrait.model = model
@@ -212,13 +163,6 @@ function PitBull4_Portrait:UpdateFrame(frame)
 			portrait.model:SetModelScale(3)
 			portrait.model:SetPosition(0, 0, -0.15)
 		end
-	elseif style == "pirate" then
-		portrait.model:ClearModel()
-		portrait.model:SetUnit(frame.unit)
-		portrait.model:SetScript("OnUpdate", portrait_OnModelLoaded)
-		portrait.model:SetPortraitZoom(full_body and 0 or 1)
-		portrait.model:SetPosition(0, 0, 0)
-		portrait.model:SetCamDistanceScale(layout_db.camera_distance)
 	elseif style == "two_dimensional" then
 		portrait.texture:SetTexCoord(0.14644660941, 0.85355339059, 0.14644660941, 0.85355339059)
 		if unit then
@@ -251,27 +195,6 @@ function PitBull4_Portrait:UpdateFrame(frame)
 	portrait:Show()
 
 	return created
-end
-
-if pirate_day then
-	PitBull4_Portrait:SetGlobalOptionsFunction(function(self)
-		return 'pirate', {
-			type = "select",
-			name = L["Pirate"],
-			desc = L["Happy International Talk Like a Pirate Day!"],
-			get = function(info)
-				return self.db.profile.global.pirate and "pirate" or "~normal"
-			end,
-			set = function(info, value)
-				self.db.profile.global.pirate = value == "pirate"
-				self:UpdateAll()
-			end,
-			values = {
-				["pirate"] = L["Yaaarrr"],
-				["~normal"] = L["Land lubber"], -- ~ to force it after pirate
-			},
-		}
-	end)
 end
 
 
