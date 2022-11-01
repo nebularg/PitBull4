@@ -159,7 +159,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 			portrait.model:SetCamDistanceScale(layout_db.camera_distance)
 		else
 			portrait.model:SetModelScale(1) -- the scale gets screwed up if not reset before SetModel
-			portrait.model:SetModelByFileID(679160) -- Interface\Buttons\talktomequestionmark.mdx
+			portrait.model:SetModel([[Interface\Buttons\talktomequestionmark.m2]])
 			portrait.model:SetModelScale(3)
 			portrait.model:SetPosition(0, 0, -0.15)
 		end
