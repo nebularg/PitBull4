@@ -939,6 +939,50 @@ local function RestXP(unit)
 end
 ScriptEnv.RestXP = RestXP
 
+-- Pre-Dragonflight API wrapper for old texts
+local function GetFriendshipReputation(id)
+	local info = C_GossipInfo.GetFriendshipReputation(id)
+	if info.friendshipFactionID > 0 then
+		return info.friendshipFactionID, info.standing, info.maxRep, info.name, info.text, info.texture, info.reaction, info.reactionThreshold, info.nextThreshold
+	end
+end
+ScriptEnv.GetFriendshipReputation = GetFriendshipReputation
+
+local function WatchedFactionInfo()
+	local name, reaction, min, max, value, faction_id = GetWatchedFactionInfo()
+	if not name then
+		return nil
+	end
+
+	local rep_info = C_GossipInfo.GetFriendshipReputation(faction_id)
+	local friendship_id = rep_info.friendshipFactionID
+
+	if C_Reputation.IsFactionParagon(faction_id) then
+		local paragon_value, threshold, _, has_reward = C_Reputation.GetFactionParagonInfo(faction_id)
+		min, max = 0, threshold
+		value = paragon_value % threshold
+		if has_reward then
+			value = value + threshold
+		end
+	elseif C_Reputation.IsMajorFaction(faction_id) then
+		local faction_info = C_MajorFactions.GetMajorFactionData(faction_id)
+		min, max = 0, faction_info.renownLevelThreshold
+	elseif friendship_id > 0 then
+		if rep_info.nextThreshold then
+			min, max, value = rep_info.reactionThreshold, rep_info.nextThreshold, rep_info.standing
+		else -- max, show full amount?
+			min, max, value = 0, rep_info.standing, rep_info.standing
+		end
+	end
+
+	-- Normalize values
+	max = max - min
+	value = value - min
+	min = 0
+	return name, reaction, min, max, value, faction_id
+end
+ScriptEnv.WatchedFactionInfo = WatchedFactionInfo
+
 local function ArtifactPower()
 	local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem()
 	if azeriteItemLocation then

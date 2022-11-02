@@ -544,20 +544,11 @@ end]],
 		[L["Standard"]] = {
 			events = {['UNIT_FACTION']=true,['UPDATE_FACTION']=true},
 			code = [[
-local name, _, min , max, value, id = GetWatchedFactionInfo()
+local name, _, _, max, cur = WatchedFactionInfo()
 if IsMouseOver() then
   return name or ConfigMode()
 else
-  local fs_id, fs_rep, _, _, _, _, _, fs_threshold, next_fs_threshold = GetFriendshipReputation(id)
-  if fs_id then
-    if next_fs_threshold then
-      min, max, value = fs_threshold, next_fs_threshold, fs_rep
-    else
-      min, max, value = 0, 1, 1
-    end
-  end
-  local bar_cur,bar_max = value-min,max-min
-  return "%d/%d (%s%%)",bar_cur,bar_max,Percent(bar_cur,bar_max)
+  return "%d/%d (%s%%)",cur,max,Percent(cur,max)
 end]],
 		},
 	},
@@ -787,13 +778,29 @@ local function fix_power_texts()
 	end
 end
 
--- update pre-mop default rep text for friendships
+-- update pre-mop/pre-dragonflight default rep text for friendships
 local function fix_rep_std_text()
-	local OLD_CODE = [[
+	local OLD_CODE1 = [[
 local name,_,min,max,value = GetWatchedFactionInfo()
 if IsMouseOver() then
   return name or ConfigMode()
 else
+  local bar_cur,bar_max = value-min,max-min
+  return "%d/%d (%s%%)",bar_cur,bar_max,Percent(bar_cur,bar_max)
+end]]
+	local OLD_CODE2 = [[
+local name, _, min, max, value, id = GetWatchedFactionInfo()
+if IsMouseOver() then
+ return name or ConfigMode()
+else
+  local fs_id, fs_rep, _, _, _, _, _, fs_threshold, next_fs_threshold = GetFriendshipReputation(id)
+  if fs_id then
+    if next_fs_threshold then
+      min, max, value = fs_threshold, next_fs_threshold, fs_rep
+    else
+      min, max, value = 0, 1, 1
+    end
+  end
   local bar_cur,bar_max = value-min,max-min
   return "%d/%d (%s%%)",bar_cur,bar_max,Percent(bar_cur,bar_max)
 end]]
@@ -805,7 +812,7 @@ end]]
 				local elements = layout.elements
 				if elements then
 					for _, text in next, elements do
-						if text.code == OLD_CODE then
+						if text.code == OLD_CODE1 or text.code == OLD_CODE2 then
 							text.code = PROVIDED_CODES[L["Reputation"]][L["Standard"]].code
 						end
 					end

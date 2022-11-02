@@ -716,6 +716,7 @@ L["Padding"] = true
 L["Padding in pixels between bars and the sides of the unit frame."] = true
 L["Paladin_short"] = "Pa"
 L["Pandaren_short"] = "Pa"
+L["Paragon"] = true
 L["Party"] = true
 L["Party member #%d"] = true
 L["Party pet"] = true

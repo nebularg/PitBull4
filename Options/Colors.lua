@@ -216,6 +216,22 @@ local function get_reaction_options()
 		end
 	}
 
+	reaction_options.args.paragon = {
+		type = 'color',
+		name = L["Paragon"],
+		get = function(info)
+			return unpack(PitBull4.db.profile.colors.reaction.paragon)
+		end,
+		set = function(info, r, g, b)
+			local color = PitBull4.db.profile.colors.reaction.paragon
+			color[1], color[2], color[3] = r, g, b
+
+			for frame in PitBull4:IterateFrames() do
+				frame:Update()
+			end
+		end
+	}
+
 	reaction_options.args.reset_sep = {
 		type = 'header',
 		name = '',
@@ -235,6 +251,9 @@ local function get_reaction_options()
 
 			local db_color = PitBull4.db.profile.colors.reaction.civilian
 			db_color[1], db_color[2], db_color[3] = 48/255, 113/255, 191/255
+
+			db_color = PitBull4.db.profile.colors.reaction.paragon
+			db_color[1], db_color[2], db_color[3] = 66/255, 107/255, 1
 
 			for frame in PitBull4:IterateFrames() do
 				frame:Update()

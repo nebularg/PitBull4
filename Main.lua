@@ -190,7 +190,8 @@ local DATABASE_DEFAULTS = {
 				["PB4_ALTERNATE"] = { 0.7, 0.7, 0.6 }, -- Fallback alternate power color
 			},
 			reaction = { -- filled in by FACTION_BAR_COLORS
-				civilian = { 48/255, 113/255, 191/255 }
+				civilian = { 48/255, 113/255, 191/255 },
+				paragon = { 66/255, 107/255, 1 },
 			},
 		},
 		class_order = {},
