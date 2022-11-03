@@ -5,6 +5,11 @@ silent = nil
 
 local L = LibStub("AceLocale-3.0"):NewLocale("PitBull4", "enUS", true, silent)
 
+L["Vulpera_short"] = "Vu"
+L["Mechagnome_short"] = "Mg"
+L["Dracthyr_short"] = "Dt"
+L["Evoker_short"] = "Ev"
+
 L["%s can dispel"] = true
 L["%s can purge"] = true
 L["%s enemy debuffs"] = true

@@ -492,6 +492,7 @@ local ShortClass_abbrev = {
 	SHAMAN = L["Shaman_short"],
 	WARLOCK = L["Warlock_short"],
 	WARRIOR = L["Warrior_short"],
+	EVOKER = L["Evoker_short"],
 }
 
 local function ShortClass(arg)
@@ -552,6 +553,9 @@ local ShortRace_abbrev = {
 	Nightborne = L["Nightborne_short"],
 	VoidElf = L["Void Elf_short"],
 	ZandalariTroll = L["Zandalari Troll_short"],
+	Vulpera = L["Vulpera_short"],
+	Mechagnome = L["Mechagnome_short"],
+	Dracthyr = L["Dracthyr_short"],
 }
 
 local function ShortRace(arg)

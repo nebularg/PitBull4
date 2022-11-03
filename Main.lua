@@ -322,15 +322,12 @@ do
 		LOCALIZED_NAMES[info.classFile] = info.className
 	end
 
-	local i = 1
-	local info = C_CreatureInfo.GetRaceInfo(i)
-	repeat
-		if not LOCALIZED_NAMES[info.clientFileString] then
+	for i = 1, 77 do
+		local info = C_CreatureInfo.GetRaceInfo(i)
+		if info and not LOCALIZED_NAMES[info.clientFileString] then
 			LOCALIZED_NAMES[info.clientFileString] = info.raceName
 		end
-		i = i + 1
-		info = C_CreatureInfo.GetRaceInfo(i)
-	until not info
+	end
 
 	setmetatable(LOCALIZED_NAMES, { __index = function(self, key)
 		self[key] = key
