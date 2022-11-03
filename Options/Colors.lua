@@ -63,6 +63,8 @@ local function get_class_options()
 		class_options.args[class] = option
 	end
 
+	class_options.args.UNKNOWN = CopyTable(option)
+	class_options.args.UNKNOWN.name = UNKNOWN
 
 	class_options.args.reset_sep = {
 		type = 'header',
@@ -80,6 +82,9 @@ local function get_class_options()
 				local db_color = PitBull4.db.profile.colors.class[class]
 				db_color[1], db_color[2], db_color[3] = color.r, color.g, color.b
 			end
+
+			local db_color = PitBull4.db.profile.colors.class.UNKNOWN
+			db_color[1], db_color[2], db_color[3] = 204/255, 204/255, 204/255
 
 			for frame in PitBull4:IterateFrames() do
 				frame:Update()
@@ -200,6 +205,22 @@ local function get_reaction_options()
 		reaction_options.args[reaction..""] = my_option
 	end
 
+	reaction_options.args.unknown = {
+		type = 'color',
+		name = UNKNOWN,
+		get = function(info)
+			return unpack(PitBull4.db.profile.colors.reaction.unknown)
+		end,
+		set = function(info, r, g, b)
+			local color = PitBull4.db.profile.colors.reaction.unknown
+			color[1], color[2], color[3] = r, g, b
+
+			for frame in PitBull4:IterateFrames() do
+				frame:Update()
+			end
+		end
+	}
+
 	reaction_options.args.civilan = {
 		type = 'color',
 		name = L["Civilian"],
@@ -232,6 +253,22 @@ local function get_reaction_options()
 		end
 	}
 
+	reaction_options.args.tapped = {
+		type = 'color',
+		name = L["Tapped"],
+		get = function(info)
+			return unpack(PitBull4.db.profile.colors.reaction.tapped)
+		end,
+		set = function(info, r, g, b)
+			local color = PitBull4.db.profile.colors.reaction.tapped
+			color[1], color[2], color[3] = r, g, b
+
+			for frame in PitBull4:IterateFrames() do
+				frame:Update()
+			end
+		end
+	}
+
 	reaction_options.args.reset_sep = {
 		type = 'header',
 		name = '',
@@ -244,16 +281,23 @@ local function get_reaction_options()
 		confirmText = L["Are you sure you want to reset to defaults?"],
 		order = -1,
 		func = function(info)
+			local db_color
 			for reaction, color in pairs(_G.FACTION_BAR_COLORS) do
-				local db_color = PitBull4.db.profile.colors.reaction[reaction]
+				db_color = PitBull4.db.profile.colors.reaction[reaction]
 				db_color[1], db_color[2], db_color[3] = color.r, color.g, color.b
 			end
 
-			local db_color = PitBull4.db.profile.colors.reaction.civilian
+			db_color = PitBull4.db.profile.colors.reaction.unknown
+			db_color[1], db_color[2], db_color[3] = 204/255, 204/255, 204/255
+
+			db_color = PitBull4.db.profile.colors.reaction.civilian
 			db_color[1], db_color[2], db_color[3] = 48/255, 113/255, 191/255
 
 			db_color = PitBull4.db.profile.colors.reaction.paragon
 			db_color[1], db_color[2], db_color[3] = 66/255, 107/255, 1
+
+			db_color = PitBull4.db.profile.colors.reaction.tapped
+			db_color[1], db_color[2], db_color[3] = 127/255, 127/255, 127/255
 
 			for frame in PitBull4:IterateFrames() do
 				frame:Update()

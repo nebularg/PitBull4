@@ -357,7 +357,7 @@ local FRIENDLY_REACTION = 5
 local function HostileColor(unit)
 	local r, g, b
 	if not unit then
-		r, g, b = 0.8, 0.8, 0.8 --UNKNOWN
+		r, g, b = unpack(PitBull4.ReactionColors.unknown)
 	else
 		if UnitIsPlayer(unit) or UnitPlayerControlled(unit) then
 			if UnitCanAttack(unit, "player") then
@@ -380,7 +380,7 @@ local function HostileColor(unit)
 				r, g, b = unpack(PitBull4.ReactionColors.civilian)
 			end
 		elseif UnitIsTapDenied(unit) or UnitIsDead(unit) then
-			r, g, b = 0.5, 0.5, 0.5 -- TODO: We really need this to be globally configurable.
+			r, g, b = unpack(PitBull4.ReactionColors.tapped)
 		else
 			local reaction = UnitReaction(unit, "player")
 			if reaction then
@@ -392,7 +392,7 @@ local function HostileColor(unit)
 					r, g, b = unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
 				end
 			else
-				r, g, b = 0.8, 0.8, 0.8 --UNKNOWN
+				r, g, b = unpack(PitBull4.ReactionColors.unknown)
 			end
 		end
 	end
@@ -402,10 +402,7 @@ ScriptEnv.HostileColor = HostileColor
 
 local function ClassColor(unit)
 	local _, class = UnitClass(unit)
-	local color = PitBull4.ClassColors[class]
-	if not color then
-		return 204, 204, 204 -- UNKNOWN (0.8, 0.8, 0.8)
-	end
+	local color = PitBull4.ClassColors[class] or PitBull4.ClassColors.UNKNOWN
 	return color[1] * 255, color[2] * 255, color[3] * 255
 end
 ScriptEnv.ClassColor = ClassColor

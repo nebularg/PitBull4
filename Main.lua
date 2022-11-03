@@ -185,13 +185,17 @@ local DATABASE_DEFAULTS = {
 			},
 		},
 		colors = {
-			class = {}, -- filled in by RAID_CLASS_COLORS
+			class = { -- filled in by RAID_CLASS_COLORS
+				UNKNOWN = { 204/255, 204/255, 204/255 },
+			},
 			power = { -- filled in by PowerBarColor
 				["PB4_ALTERNATE"] = { 0.7, 0.7, 0.6 }, -- Fallback alternate power color
 			},
 			reaction = { -- filled in by FACTION_BAR_COLORS
+				unknown = { 204/255, 204/255, 204/255 },
 				civilian = { 48/255, 113/255, 191/255 },
 				paragon = { 66/255, 107/255, 1 },
+				tapped = { 127/255, 127/255, 127/255 },
 			},
 		},
 		class_order = {},
