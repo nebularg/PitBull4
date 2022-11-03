@@ -273,6 +273,7 @@ PitBull4_Aura:SetDefaults({
 		-- % Race map filters
 		-- & Class map filters
 		-- * Extra filters
+		-- ++ Evoker
 		-- + Death Knight
 		-- ,, Demon Hunter
 		-- , Druid
@@ -292,6 +293,7 @@ PitBull4_Aura:SetDefaults({
 		-- 7 Night Elf
 		-- 77 Void Elf
 		-- 8 Gnome
+		-- 88 Mechagnome
 		-- 9 Draenei
 		-- 99 Lightforged Draenei
 		-- : Orc
@@ -305,6 +307,7 @@ PitBull4_Aura:SetDefaults({
 		-- >> Nightborne
 		-- ? Worgen
 		-- ?? Goblin
+		-- @@ Dracthyr
 		-- @ Pandaren (shared, race filters are always followed by a number)
 		-- @ Simple filters
 		--
@@ -1208,6 +1211,7 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
+				['EVOKER'] = '@J',
 				['DEATHKNIGHT'] = '@J',
 				['DEMONHUNTER'] = '@J',
 				['DRUID'] = ',3',
@@ -1228,6 +1232,7 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
+				['EVOKER'] = '@J',
 				['DEATHKNIGHT'] = '+0',
 				['DEMONHUNTER'] = ',,0',
 				['DRUID'] = ',0',
@@ -1248,6 +1253,7 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
+				['EVOKER'] = '@J',
 				['DEATHKNIGHT'] = '+1',
 				['DEMONHUNTER'] = '@J',
 				['DRUID'] = '@J',
@@ -1268,6 +1274,7 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
+				['EVOKER'] = '@J',
 				['DEATHKNIGHT'] = '+2',
 				['DEMONHUNTER'] = ',,2',
 				['DRUID'] = ',2',
@@ -1288,6 +1295,7 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
+				['EVOKER'] = '@J',
 				['DEATHKNIGHT'] = '+6',
 				['DEMONHUNTER'] = ',,6',
 				['DRUID'] = ',6',
@@ -1308,6 +1316,7 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
+				['EVOKER'] = '@J',
 				['DEATHKNIGHT'] = '@J',
 				['DEMONHUNTER'] = '@J',
 				['DRUID'] = '@J',
@@ -1328,6 +1337,7 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
+				['EVOKER'] = '@J',
 				['DEATHKNIGHT'] = '@J',
 				['DEMONHUNTER'] = '@J',
 				['DRUID'] = '@J',
@@ -1348,6 +1358,7 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
+				['EVOKER'] = '@J',
 				['DEATHKNIGHT'] = '+7',
 				['DEMONHUNTER'] = ',,7',
 				['DRUID'] = ',7',
@@ -1384,11 +1395,14 @@ PitBull4_Aura:SetDefaults({
 				['DarkIronDwarf'] = '660',
 				['LightforgedDraenei'] = '@J',
 				['VoidElf'] = '770',
-				-- ['KulTiranHuman'] = '@J',
 				['MagharOrc'] = '::0',
 				['HighmountainTauren'] = '@J',
 				['Nightborne'] = '@J',
+				-- ['KulTiranHuman'] = '@J',
 				-- ['ZandalariTroll'] = '@J',
+				-- ['Vulpera'] = '@J',
+				-- ['Mechagnome'] = '@J',
+				-- ['Dracthyr'] = '@J',
 			},
 			built_in = true,
 		},
@@ -1413,11 +1427,14 @@ PitBull4_Aura:SetDefaults({
 				['DarkIronDwarf'] = '662',
 				['LightforgedDraenei'] = '992',
 				['VoidElf'] = '772',
-				-- ['KulTiranHuman'] = '552',
 				['MagharOrc'] = '::2',
 				['HighmountainTauren'] = '<<2',
 				['Nightborne'] = '>>2',
+				-- ['KulTiranHuman'] = '552',
 				-- ['ZandalariTroll'] = '==2',
+				-- ['Vulpera'] = '@J',
+				-- ['Mechagnome'] = '@J',
+				-- ['Dracthyr'] = '@J',
 			},
 			built_in = true,
 		},
@@ -1442,11 +1459,14 @@ PitBull4_Aura:SetDefaults({
 				['DarkIronDwarf'] = '@J',
 				['LightforgedDraenei'] = '@J',
 				['VoidElf'] = '@J',
-				-- ['KulTiranHuman'] = '@J',
 				['MagharOrc'] = '@J',
 				['HighmountainTauren'] = '<<6',
 				['Nightborne'] = '>>6',
+				-- ['KulTiranHuman'] = '@J',
 				-- ['ZandalariTroll'] = '@J',
+				-- ['Vulpera'] = '@J',
+				-- ['Mechagnome'] = '@J',
+				-- ['Dracthyr'] = '@J',
 			},
 			built_in = true,
 		},
@@ -1471,11 +1491,14 @@ PitBull4_Aura:SetDefaults({
 				['DarkIronDwarf'] = '@J',
 				['LightforgedDraenei'] = '@J',
 				['VoidElf'] = '@J',
-				-- ['KulTiranHuman'] = '@J',
 				['MagharOrc'] = '@J',
 				['HighmountainTauren'] = '@J',
 				['Nightborne'] = '@J',
+				-- ['KulTiranHuman'] = '@J',
 				-- ['ZandalariTroll'] = '@J',
+				-- ['Vulpera'] = '@J',
+				-- ['Mechagnome'] = '@J',
+				-- ['Dracthyr'] = '@J',
 			},
 			built_in = true,
 		},

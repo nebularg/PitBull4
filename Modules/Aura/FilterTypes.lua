@@ -1075,6 +1075,7 @@ local classes = {
 	'WARRIOR',
 	'MONK',
 	'DEMONHUNTER',
+	'EVOKER',
 }
 local class_names = {}
 for i, v in ipairs(classes) do
@@ -1097,11 +1098,14 @@ local races = {
 	'DarkIronDwarf',
 	'LightforgedDraenei',
 	'VoidElf',
-	-- 'KulTiranHuman',
 	'MagharOrc',
 	'HighmountainTauren',
 	'Nightborne',
+	-- 'KulTiranHuman',
 	-- 'ZandalariTroll',
+	-- 'Vulpera',
+	-- 'Mechagnome',
+	-- 'Dracthyr',
 }
 local race_names = {}
 for i, v in ipairs(races) do

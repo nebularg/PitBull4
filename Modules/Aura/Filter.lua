@@ -305,6 +305,16 @@ self_debuffs.KulTiranHuman = {}
 pet_buffs.KulTiranHuman = {}
 enemy_debuffs.KulTiranHuman = {}
 
+-- Mechagnome
+friend_buffs.Mechagnome = {
+	[23333] = true -- Warsong Flag
+}
+friend_debuffs.Mechagnome = {}
+self_buffs.Mechagnome = {}
+self_debuffs.Mechagnome = {}
+pet_buffs.Mechagnome = {}
+enemy_debuffs.Mechagnome = {}
+
 -- Orc
 friend_buffs.Orc = {
 	[23335] = true -- Silverwing Flag
@@ -424,6 +434,16 @@ self_debuffs.ZandalariTroll = {}
 pet_buffs.ZandalariTroll = {}
 enemy_debuffs.ZandalariTroll = {}
 
+-- Vulpera
+friend_buffs.Vulpera = {
+	[23335] = true -- Silverwing Flag
+}
+friend_debuffs.Vulpera = {}
+self_buffs.Vulpera = {}
+self_debuffs.Vulpera = {}
+pet_buffs.Vulpera = {}
+enemy_debuffs.Vulpera = {}
+
 -- Pandaren
 friend_buffs.Pandaren = {
 	[23335] = UnitFactionGroup("player") == "Horde", -- Silverwing Flag
@@ -436,6 +456,17 @@ pet_buffs.Pandaren = {}
 enemy_debuffs.Pandaren = {
 	[107079] = true, -- Quaking Palm
 }
+
+-- Dracthyr
+friend_buffs.Dracthyr = {
+	[23335] = UnitFactionGroup("player") == "Horde", -- Silverwing Flag
+	[23333] = UnitFactionGroup("player") == "Alliance", -- Warsong Flag
+}
+friend_debuffs.Dracthyr = {}
+self_buffs.Dracthyr = {}
+self_debuffs.Dracthyr = {}
+pet_buffs.Dracthyr = {}
+enemy_debuffs.Dracthyr = {}
 
 -- Everyone
 local extra_buffs = {
