@@ -78,7 +78,7 @@ function PitBull4_Background:UpdateFrame(frame)
 		portrait:SetPosition(0, 0, 0)
 	elseif layout_db.fallback_style == "three_dimensional" then
 		portrait:SetModelScale(1)
-		portrait:SetModel([[Interface\Buttons\talktomequestionmark.mdx]])
+		portrait:SetModel([[Interface\Buttons\talktomequestionmark.m2]])
 		portrait:SetPosition(-0.55, 0, 0)
 	end
 	portrait:Show()
