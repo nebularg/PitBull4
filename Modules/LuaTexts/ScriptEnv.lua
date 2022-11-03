@@ -708,7 +708,7 @@ local function Round(number, digits)
 end
 ScriptEnv.Round = Round
 
-local Short, VeryShort
+local Short, Shorter, VeryShort
 local locale = GetLocale()
 if locale == "zhCN" or locale == "zhTW" or locale == "koKR" then
 	local FIRST_NUMBER_CAP_NO_SPACE = FIRST_NUMBER_CAP_NO_SPACE
@@ -756,6 +756,32 @@ if locale == "zhCN" or locale == "zhTW" or locale == "koKR" then
 			return fmt, a, b
 		end
 		return value
+	end
+
+	function Shorter(value, format)
+		if type(value) == "number" then
+			local v = math.abs(value)
+			if v < 10000 and v >= 1000 then
+				local fmt = "%.1f" .. FIRST_NUMBER_CAP_NO_SPACE
+				if format then
+					return fmt:format(value)
+				end
+				return fmt, value
+			end
+		else
+			local a, b = value:match("^(%d+)/(%d+)")
+			if a then
+				local fmt_a, fmt_b
+				fmt_b, b = Shorter(tonumber(b))
+				fmt_a, a = Shorter(tonumber(a))
+				local fmt = ("%s/%s"):format(fmt_a, fmt_b)
+				if format then
+					return fmt:format(a, b)
+				end
+				return fmt, a, b
+			end
+		end
+		return Short(value, format)
 	end
 
 	function VeryShort(value, format)
@@ -840,6 +866,32 @@ else
 		return value
 	end
 
+	function Shorter(value, format)
+		if type(value) == "number" then
+			local v = math.abs(value)
+			if v < 10000 and v >= 1000 then
+				local fmt = "%.1fk"
+				if format then
+					return fmt:format(value)
+				end
+				return fmt, value
+			end
+		else
+			local a, b = value:match("^(%d+)/(%d+)")
+			if a then
+				local fmt_a, fmt_b
+				fmt_b, b = Shorter(tonumber(b))
+				fmt_a, a = Shorter(tonumber(a))
+				local fmt = ("%s/%s"):format(fmt_a, fmt_b)
+				if format then
+					return fmt:format(a, b)
+				end
+				return fmt, a, b
+			end
+		end
+		return Short(value, format)
+	end
+
 	function VeryShort(value, format)
 		if type(value) == "number" then
 			local v = abs(value)
@@ -876,6 +928,7 @@ else
 	end
 end
 ScriptEnv.Short = Short
+ScriptEnv.Shorter = Shorter
 ScriptEnv.VeryShort = VeryShort
 
 local function IsMouseOver()
