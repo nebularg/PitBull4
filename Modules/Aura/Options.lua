@@ -273,10 +273,10 @@ PitBull4_Aura:SetDefaults({
 		-- % Race map filters
 		-- & Class map filters
 		-- * Extra filters
-		-- ++ Evoker
 		-- + Death Knight
 		-- ,, Demon Hunter
 		-- , Druid
+		-- -- Evoker
 		-- - Hunter
 		-- . Mage
 		-- // Monk
@@ -499,18 +499,18 @@ PitBull4_Aura:SetDefaults({
 			disabled = true,
 			built_in = true,
 		},
-		['++3'] = {
-			display_name = L["%s can dispel"]:format(LN.EVOKER),
-			filter_type = 'Aura Type',
-			whitelist = true,
-			aura_type_list = can_dispel.EVOKER,
-			built_in = true,
-		},
 		[',3'] = {
 			display_name = L["%s can dispel"]:format(LN.DRUID),
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_dispel.DRUID,
+			built_in = true,
+		},
+		['--3'] = {
+			display_name = L["%s can dispel"]:format(LN.EVOKER),
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_dispel.EVOKER,
 			built_in = true,
 		},
 		['.3'] = {
@@ -1129,13 +1129,6 @@ PitBull4_Aura:SetDefaults({
 			name_list = self_debuffs.WARRIOR,
 			built_in = true,
 		},
-		['++7'] = {
-			display_name = L["%s can purge"]:format(LN.EVOKER),
-			filter_type = 'Aura Type',
-			whitelist = true,
-			aura_type_list = can_purge.EVOKER,
-			built_in = true,
-		},
 		['+7'] = {
 			display_name = L["%s can purge"]:format(LN.DEATHKNIGHT),
 			filter_type = 'Aura Type',
@@ -1155,6 +1148,13 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Aura Type',
 			whitelist = true,
 			aura_type_list = can_purge.DEMONHUNTER,
+			built_in = true,
+		},
+		['--7'] = {
+			display_name = L["%s can purge"]:format(LN.EVOKER),
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_purge.EVOKER,
 			built_in = true,
 		},
 		['-7'] = {
@@ -1225,10 +1225,10 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
-				['EVOKER'] = '++3',
 				['DEATHKNIGHT'] = '@J',
 				['DEMONHUNTER'] = '@J',
 				['DRUID'] = ',3',
+				['EVOKER'] = '--3',
 				['HUNTER'] = '@J',
 				['MAGE'] = '.3',
 				['MONK'] = '//3',
@@ -1246,10 +1246,10 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
-				['EVOKER'] = '@J',
 				['DEATHKNIGHT'] = '+0',
 				['DEMONHUNTER'] = ',,0',
 				['DRUID'] = ',0',
+				['EVOKER'] = '@J',
 				['HUNTER'] = '-0',
 				['MAGE'] = '.0',
 				['MONK'] = '//0',
@@ -1267,10 +1267,10 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
-				['EVOKER'] = '@J',
 				['DEATHKNIGHT'] = '+1',
 				['DEMONHUNTER'] = '@J',
 				['DRUID'] = '@J',
+				['EVOKER'] = '@J',
 				['HUNTER'] = '-1',
 				['MAGE'] = '@J',
 				['MONK'] = '@J',
@@ -1288,10 +1288,10 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
-				['EVOKER'] = '@J',
 				['DEATHKNIGHT'] = '+2',
 				['DEMONHUNTER'] = ',,2',
 				['DRUID'] = ',2',
+				['EVOKER'] = '@J',
 				['HUNTER'] = '-2',
 				['MAGE'] = '.2',
 				['MONK'] = '//2',
@@ -1309,10 +1309,10 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
-				['EVOKER'] = '@J',
 				['DEATHKNIGHT'] = '+6',
 				['DEMONHUNTER'] = ',,6',
 				['DRUID'] = ',6',
+				['EVOKER'] = '@J',
 				['HUNTER'] = '-6',
 				['MAGE'] = '.6',
 				['MONK'] = '//6',
@@ -1330,10 +1330,10 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
-				['EVOKER'] = '@J',
 				['DEATHKNIGHT'] = '@J',
 				['DEMONHUNTER'] = '@J',
 				['DRUID'] = '@J',
+				['EVOKER'] = '@J',
 				['HUNTER'] = '-5',
 				['MAGE'] = '.5',
 				['MONK'] = '@J',
@@ -1351,10 +1351,10 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
-				['EVOKER'] = '@J',
 				['DEATHKNIGHT'] = '@J',
 				['DEMONHUNTER'] = '@J',
 				['DRUID'] = '@J',
+				['EVOKER'] = '@J',
 				['HUNTER'] = '@J',
 				['MAGE'] = '.4',
 				['MONK'] = '@J',
@@ -1372,10 +1372,10 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
-				['EVOKER'] = '++7',
 				['DEATHKNIGHT'] = '+7',
 				['DEMONHUNTER'] = ',,7',
 				['DRUID'] = ',7',
+				['EVOKER'] = '--7',
 				['HUNTER'] = '-7',
 				['MAGE'] = '.7',
 				['MONK'] = '//7',

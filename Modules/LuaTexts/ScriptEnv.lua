@@ -483,6 +483,7 @@ local ShortClass_abbrev = {
 	DEATHKNIGHT = L["Death Knight_short"],
 	DEMONHUNTER = L["Demon Hunter_short"],
 	DRUID = L["Druid_short"],
+	EVOKER = L["Evoker_short"],
 	HUNTER = L["Hunter_short"],
 	MAGE = L["Mage_short"],
 	MONK = L["Monk_short"],
@@ -492,7 +493,6 @@ local ShortClass_abbrev = {
 	SHAMAN = L["Shaman_short"],
 	WARLOCK = L["Warlock_short"],
 	WARRIOR = L["Warrior_short"],
-	EVOKER = L["Evoker_short"],
 }
 
 local function ShortClass(arg)

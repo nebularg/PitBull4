@@ -19,10 +19,10 @@ end
 -- Setup the data for who can dispel what types of auras.
 -- dispel in this context means remove from friendly players
 local can_dispel = {
-	EVOKER = {},
 	DEATHKNIGHT = {},
 	DEMONHUNTER = {},
 	DRUID = {},
+	EVOKER = {},
 	HUNTER = {},
 	MAGE = {},
 	MONK = {},
@@ -39,10 +39,10 @@ PitBull4_Aura.can_dispel = can_dispel
 -- Setup the data for who can purge what types of auras.
 -- purge in this context means remove from enemies.
 local can_purge = {
-	EVOKER = {},
 	DEATHKNIGHT = {},
 	DEMONHUNTER = {},
 	DRUID = {},
+	EVOKER = {},
 	HUNTER = {},
 	MAGE = {},
 	MONK = {},
@@ -58,20 +58,7 @@ PitBull4_Aura.can_purge = can_purge
 
 -- Rescan spells that can change what we can dispel and purge.
 function PitBull4_Aura:PLAYER_TALENT_UPDATE()
-	if player_class == "EVOKER" then
-		can_dispel.EVOKER.Poison = IsPlayerSpell(360823) or IsPlayerSpell(365585) or IsPlayerSpell(374251) -- Naturalize / Expunge / Cauterizing Flame
-		self:GetFilterDB('++3').aura_type_list.Poison = can_dispel.EVOKER.Poison
-		can_dispel.EVOKER.Curse = IsPlayerSpell(374251) -- Cauterizing Flame
-		self:GetFilterDB('++3').aura_type_list.Curse = can_dispel.EVOKER.Curse
-		can_dispel.EVOKER.Disease = IsPlayerSpell(374251) -- Cauterizing Flame
-		self:GetFilterDB('++3').aura_type_list.Disease = can_dispel.EVOKER.Disease
-		can_dispel.EVOKER.Magic = IsPlayerSpell(360823) -- Naturalize
-		self:GetFilterDB('++3').aura_type_list.Magic = can_dispel.EVOKER.Magic
-
-		can_purge.EVOKER.Magic = IsPlayerSpell(372048) -- Oppressing Roar
-		self:GetFilterDB('++7').aura_type_list.Magic = can_purge.EVOKER.Magic
-
-	elseif player_class == "DEMONHUNTER" then
+	if player_class == "DEMONHUNTER" then
 		can_purge.DEMONHUNTER.Magic = IsPlayerSpell(278326) -- Consume Magic
 		self:GetFilterDB(',,7').aura_type_list.Magic = can_purge.DEMONHUNTER.Magic
 
@@ -85,6 +72,19 @@ function PitBull4_Aura:PLAYER_TALENT_UPDATE()
 
 		can_purge.DRUID.Enrage = IsPlayerSpell(2908) -- Soothe
 		self:GetFilterDB(',7').aura_type_list.Enrage = can_purge.DRUID.Enrage
+
+	elseif player_class == "EVOKER" then
+		can_dispel.EVOKER.Poison = IsPlayerSpell(360823) or IsPlayerSpell(365585) or IsPlayerSpell(374251) -- Naturalize / Expunge / Cauterizing Flame
+		self:GetFilterDB('--3').aura_type_list.Poison = can_dispel.EVOKER.Poison
+		can_dispel.EVOKER.Curse = IsPlayerSpell(374251) -- Cauterizing Flame
+		self:GetFilterDB('--3').aura_type_list.Curse = can_dispel.EVOKER.Curse
+		can_dispel.EVOKER.Disease = IsPlayerSpell(374251) -- Cauterizing Flame
+		self:GetFilterDB('--3').aura_type_list.Disease = can_dispel.EVOKER.Disease
+		can_dispel.EVOKER.Magic = IsPlayerSpell(360823) -- Naturalize
+		self:GetFilterDB('--3').aura_type_list.Magic = can_dispel.EVOKER.Magic
+
+		can_purge.EVOKER.Magic = IsPlayerSpell(372048) -- Oppressing Roar
+		self:GetFilterDB('--7').aura_type_list.Magic = can_purge.EVOKER.Magic
 
 	elseif player_class == "HUNTER" then
 		can_purge.HUNTER.Enrage = IsPlayerSpell(19801) -- Tranquilizing Shot

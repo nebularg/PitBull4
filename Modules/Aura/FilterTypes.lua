@@ -1064,18 +1064,18 @@ local _,player_class = UnitClass("player")
 local _,player_race  = UnitRace("player")
 local classes = {
 	'DEATHKNIGHT',
+	'DEMONHUNTER',
 	'DRUID',
+	'EVOKER',
 	'HUNTER',
 	'MAGE',
+	'MONK',
 	'PALADIN',
 	'PRIEST',
 	'ROGUE',
 	'SHAMAN',
 	'WARLOCK',
 	'WARRIOR',
-	'MONK',
-	'DEMONHUNTER',
-	'EVOKER',
 }
 local class_names = {}
 for i, v in ipairs(classes) do
