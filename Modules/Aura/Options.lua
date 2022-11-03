@@ -499,6 +499,13 @@ PitBull4_Aura:SetDefaults({
 			disabled = true,
 			built_in = true,
 		},
+		['++3'] = {
+			display_name = L["%s can dispel"]:format(LN.EVOKER),
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_dispel.EVOKER,
+			built_in = true,
+		},
 		[',3'] = {
 			display_name = L["%s can dispel"]:format(LN.DRUID),
 			filter_type = 'Aura Type',
@@ -1122,6 +1129,13 @@ PitBull4_Aura:SetDefaults({
 			name_list = self_debuffs.WARRIOR,
 			built_in = true,
 		},
+		['++7'] = {
+			display_name = L["%s can purge"]:format(LN.EVOKER),
+			filter_type = 'Aura Type',
+			whitelist = true,
+			aura_type_list = can_purge.EVOKER,
+			built_in = true,
+		},
 		['+7'] = {
 			display_name = L["%s can purge"]:format(LN.DEATHKNIGHT),
 			filter_type = 'Aura Type',
@@ -1211,7 +1225,7 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
-				['EVOKER'] = '@J',
+				['EVOKER'] = '++3',
 				['DEATHKNIGHT'] = '@J',
 				['DEMONHUNTER'] = '@J',
 				['DRUID'] = ',3',
@@ -1358,7 +1372,7 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Map',
 			map_type = 'class',
 			map = {
-				['EVOKER'] = '@J',
+				['EVOKER'] = '++7',
 				['DEATHKNIGHT'] = '+7',
 				['DEMONHUNTER'] = ',,7',
 				['DRUID'] = ',7',
