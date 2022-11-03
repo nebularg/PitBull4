@@ -1389,6 +1389,7 @@ function PitBull4:LoadModules()
 		PitBull4_LeaderIcon = true,
 		PitBull4_LuaTexts = true,
 		PitBull4_MasterLooterIcon = true,
+		PitBull4_PhaseFader = true,
 		PitBull4_PhaseIcon = true,
 		PitBull4_Portrait = true,
 		PitBull4_PowerBar = true,
