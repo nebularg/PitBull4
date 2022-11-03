@@ -79,6 +79,10 @@ timerFrame:SetScript("OnUpdate", function(self, elapsed)
 				end
 
 				frame:SetAlpha(result_opacity)
+				-- XXX Quick fix for model widgets not inheriting alpha https://github.com/Stanzilla/WoWUIBugs/issues/295
+				if frame.Portrait and frame.Portrait.model then
+					frame.Portrait.model:SetAlpha(result_opacity)
+				end
 				if result_opacity == final_opacity then
 					changing_frames[frame] = nil
 				end
