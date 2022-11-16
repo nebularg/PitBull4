@@ -233,38 +233,17 @@ end
 
 -- Get the name of the temporary enchant on a weapon from the tooltip
 -- given the item slot the weapon is in.
-local get_weapon_enchant_name
-do
-	local tt = CreateFrame("GameTooltip", "PitBull4_Aura_Tooltip", UIParent)
-	tt:SetOwner(UIParent, "ANCHOR_NONE")
-	local left = {}
+local function get_weapon_enchant_name(slot)
+	local data = C_TooltipInfo.GetInventoryItem("player", slot, true)
+	if not data then return end
 
-	local g = tt:CreateFontString()
-	g:SetFontObject(_G.GameFontNormal)
-	for i = 1, 30 do
-		local f = tt:CreateFontString()
-		f:SetFontObject(_G.GameFontNormal)
-		tt:AddFontStrings(f, g)
-		left[i] = f
-	end
-
-	get_weapon_enchant_name = function(slot)
-		tt:ClearLines()
-		if not tt:IsOwned(UIParent) then
-			tt:SetOwner(UIParent, "ANCHOR_NONE")
-		end
-		tt:SetInventoryItem("player", slot)
-
-		for i = 1, 30 do
-			local text = left[i]:GetText()
-			if text then
-				local buff_name = text:match("^(.+) %(%d+ [^$)]+%)$")
-				if buff_name then
-					local buff_name_no_rank = buff_name:match("^(.*) %d+$")
-					return buff_name_no_rank or buff_name
-				end
-			else
-				break
+	for _, line in next, data.lines do
+		TooltipUtil.SurfaceArgs(line)
+		if line.type == 0 and line.leftText then -- Enum.TooltipDataType.Item
+			local buff_name = line.leftText:match("^(.+) %(%d+ [^$)]+%)$")
+			if buff_name then
+				local buff_name_no_rank = buff_name:match("^(.*) %d+$")
+				return buff_name_no_rank or buff_name
 			end
 		end
 	end
