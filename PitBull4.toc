@@ -1,4 +1,4 @@
-## Interface: 100000
+## Interface: 100002
 ## Title: PitBull Unit Frames 4.0 |cffff0000[WRONG VERSION]|r
 ## Notes: This version of PitBull4 is for retail only!
 
