@@ -257,13 +257,17 @@ end
 function showers:aura()
 	for _, frame in next, { BuffFrame, DebuffFrame } do
 		unhook_frames_without_init(frame)
+		frame:Show()
+
 		frame:RegisterUnitEvent("UNIT_AURA", "player", "vehicle")
 		frame:RegisterEvent("GROUP_ROSTER_UPDATE")
 		frame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 		frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 
-		frame:RegisterEvent("WEAPON_ENCHANT_CHANGED")
-		frame:RegisterEvent("WEAPON_SLOT_CHANGED")
+		if frame == BuffFrame then
+			frame:RegisterEvent("WEAPON_ENCHANT_CHANGED")
+			frame:RegisterEvent("WEAPON_SLOT_CHANGED")
+		end
 	end
 end
 
