@@ -21,6 +21,7 @@
 <!--@do-not-package@-->
 <Include file="Modules\DogTagTexts\load.xml"/>
 <!--@end-do-not-package@-->
+<Include file="Modules\Essence\load.xml"/>
 <Include file="Modules\ExperienceBar\load.xml"/>
 <Include file="Modules\HealthBar\load.xml"/>
 <Include file="Modules\HideBlizzard\load.xml"/>

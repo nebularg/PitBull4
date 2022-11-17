@@ -9,6 +9,8 @@ L["Vulpera_short"] = "Vu"
 L["Mechagnome_short"] = "Mg"
 L["Dracthyr_short"] = "Dt"
 L["Evoker_short"] = "Ev"
+L["Essence"] = _G.POWER_TYPE_ESSENCE
+L["Show Evoker Essence charges."] = true
 
 L["%s can dispel"] = true
 L["%s can purge"] = true

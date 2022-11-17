@@ -80,6 +80,7 @@ globals = {
 	"GetNumAddOns",
 	"GetNumClasses",
 	"GetNumGroupMembers",
+	"GetPowerRegenForPowerType",
 	"GetPVPTimer",
 	"GetPartyAssignment",
 	"GetPetExperience",
