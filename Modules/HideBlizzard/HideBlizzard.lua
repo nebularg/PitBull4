@@ -62,6 +62,8 @@ local hide_frame = PitBull4:OutOfCombatWrapper(function(self) self:Hide() end)
 local hidden_frame = CreateFrame("Frame")
 hidden_frame:Hide()
 
+-----------------------------------------------------------------------------
+
 local function hook_frames(...)
 	for i = 1, select("#", ...) do
 		local frame = select(i, ...)
@@ -127,6 +129,8 @@ local function unhook_frames_without_init(...)
 	end
 end
 
+-----------------------------------------------------------------------------
+
 function hiders:player()
 	hook_reparent_frames(PlayerFrame)
 end
@@ -137,50 +141,30 @@ function showers:player()
 end
 
 function hiders:party()
-	if PartyFrame then
-		PartyFrame:Hide()
-		PartyFrame:UnregisterEvent("GROUP_ROSTER_UPDATE")
-	else
-		for i = 1, MAX_PARTY_MEMBERS do
-			local frame = _G["PartyMemberFrame" .. i]
-			frame:SetAttribute("statehidden", true)
-			hook_frames(frame)
-		end
-		UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
-	end
+	PartyFrame:Hide()
+	PartyFrame:UnregisterEvent("GROUP_ROSTER_UPDATE")
 end
 
 function showers:party()
-	if PartyFrame then
-		PartyFrame:Show()
-		PartyFrame:Layout()
-		PartyFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
-	else
-		for i = 1, MAX_PARTY_MEMBERS do
-			local frame = _G["PartyMemberFrame" .. i]
-			frame:SetAttribute("statehidden", nil)
-			unhook_frames(frame)
-			frame:GetScript("OnEvent")(frame, "GROUP_ROSTER_UPDATE")
-		end
-		UIParent:RegisterEvent("GROUP_ROSTER_UPDATE")
-	end
+	PartyFrame:Show()
+	PartyFrame:Layout()
+	PartyFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
 end
 
 do
 	local raid_shown = nil
-	local ShouldShowRaidFrames = GetDisplayedAllyFrames or ShouldShowRaidFrames -- 9.x, 10.x
 
 	local function hide_raid()
-			CompactRaidFrameManager:UnregisterEvent("GROUP_ROSTER_UPDATE")
-			CompactRaidFrameManager:UnregisterEvent("UPDATE_ACTIVE_BATTLEFIELD")
-			CompactRaidFrameManager:UnregisterEvent("PLAYER_ENTERING_WORLD")
-			if InCombatLockdown() then return end
+		CompactRaidFrameManager:UnregisterEvent("GROUP_ROSTER_UPDATE")
+		CompactRaidFrameManager:UnregisterEvent("UPDATE_ACTIVE_BATTLEFIELD")
+		CompactRaidFrameManager:UnregisterEvent("PLAYER_ENTERING_WORLD")
+		if InCombatLockdown() then return end
 
-			raid_shown = CompactRaidFrameManager_GetSetting("IsShown")
-			if raid_shown and raid_shown ~= "0" then
-				CompactRaidFrameManager_SetSetting("IsShown", "0")
-			end
-			CompactRaidFrameManager:Hide()
+		raid_shown = CompactRaidFrameManager_GetSetting("IsShown")
+		if raid_shown and raid_shown ~= "0" then
+			CompactRaidFrameManager_SetSetting("IsShown", "0")
+		end
+		CompactRaidFrameManager:Hide()
 	end
 
 	function hiders:raid()
@@ -231,21 +215,15 @@ function showers:focus()
 end
 
 function hiders:castbar()
-	if PlayerCastingBarFrame then
-		PlayerCastingBarFrame:SetUnit(nil, nil, nil)
-		PetCastingBarFrame:SetUnit(nil, nil, nil)
-	else
-		rawhook_frames(CastingBarFrame, PetCastingBarFrame)
-	end
+	PlayerCastingBarFrame:SetUnit(nil, nil, nil)
+	PlayerCastingBarFrame.ignoreFramePositionManager = true
+	PetCastingBarFrame:SetUnit(nil, nil, nil)
 end
 
 function showers:castbar()
-	if PlayerCastingBarFrame then
-		PlayerCastingBarFrame:SetUnit("player", true, false)
-		PetCastingBarFrame:SetUnit("pet", false, false)
-	else
-		unhook_frames(CastingBarFrame, PetCastingBarFrame)
-	end
+	PlayerCastingBarFrame:SetUnit("player", true, false)
+	PlayerCastingBarFrame.ignoreFramePositionManager = PlayerCastingBarFrame.attachedToPlayerFrame
+	PetCastingBarFrame:SetUnit("pet", false, false)
 end
 
 -- function hiders:runebar()
@@ -273,32 +251,19 @@ end
 -- end
 
 function hiders:aura()
-	hook_frames(BuffFrame)
-	if TemporaryEnchantFrame then
-		hook_frames(TemporaryEnchantFrame, DebuffFrame)
-	end
+	hook_frames(BuffFrame, DebuffFrame)
 end
 
 function showers:aura()
-	for _, frameName in next, {"BuffFrame", "DebuffFrame"} do
-		local frame = _G[frameName]
-		if frame then
-			unhook_frames_without_init(frame)
-			frame:RegisterUnitEvent("UNIT_AURA", "player", "vehicle")
-			frame:RegisterEvent("GROUP_ROSTER_UPDATE")
-			frame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
-			frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+	for _, frame in next, { BuffFrame, DebuffFrame } do
+		unhook_frames_without_init(frame)
+		frame:RegisterUnitEvent("UNIT_AURA", "player", "vehicle")
+		frame:RegisterEvent("GROUP_ROSTER_UPDATE")
+		frame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+		frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 
-			frame:RegisterEvent("WEAPON_ENCHANT_CHANGED")
-			frame:RegisterEvent("WEAPON_SLOT_CHANGED")
-
-			frame:Show()
-		end
-	end
-
-	if TemporaryEnchantFrame then
-		unhook_frames_without_init(TemporaryEnchantFrame)
-		TemporaryEnchantFrame:Show()
+		frame:RegisterEvent("WEAPON_ENCHANT_CHANGED")
+		frame:RegisterEvent("WEAPON_SLOT_CHANGED")
 	end
 end
 
@@ -335,12 +300,16 @@ function showers:boss()
 	end
 end
 
+-----------------------------------------------------------------------------
+
 for k, v in pairs(hiders) do
 	hiders[k] = PitBull4:OutOfCombatWrapper(v)
 end
 for k, v in pairs(showers) do
 	showers[k] = PitBull4:OutOfCombatWrapper(v)
 end
+
+-----------------------------------------------------------------------------
 
 PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 	local function get(info)
