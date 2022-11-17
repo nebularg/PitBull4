@@ -9,8 +9,6 @@ local L = PitBull4.L
 
 local SPELL_POWER_ESSENCE = 19 -- Enum.PowerType.Essence
 
-local MAX_SPELL_POWER = 5
-
 local STANDARD_SIZE = 15
 local BORDER_SIZE = 4
 local SPACING = 8
@@ -38,19 +36,20 @@ PitBull4_Essence:SetDefaults({
 
 function PitBull4_Essence:OnEnable()
 	self:RegisterUnitEvent("UNIT_POWER_FREQUENT", nil, "player")
-	self:RegisterUnitEvent("UNIT_POWER_POINT_CHARGE", "UNIT_POWER_FREQUENT", "player")
+	self:RegisterUnitEvent("UNIT_MAXPOWER", "UNIT_POWER_FREQUENT", "player")
 	self:RegisterUnitEvent("UNIT_DISPLAYPOWER", nil, "player")
+	self:RegisterUnitEvent("UNIT_POWER_POINT_CHARGE", "UNIT_DISPLAYPOWER", "player")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
 function PitBull4_Essence:UNIT_POWER_FREQUENT(_, unit, power_type)
 	if power_type == "ESSENCE" then
-		self:UpdateForUnitID("player")
+		self:UpdateForUnitID(unit)
 	end
 end
 
 function PitBull4_Essence:UNIT_DISPLAYPOWER(_, unit)
-	self:UpdateForUnitID("player")
+	self:UpdateForUnitID(unit)
 end
 
 function PitBull4_Essence:PLAYER_ENTERING_WORLD()
@@ -63,7 +62,7 @@ function PitBull4_Essence:ClearFrame(frame)
 		return false
 	end
 
-	for i = 1, MAX_SPELL_POWER do
+	for i = 1, container.max_power do
 		container[i] = container[i]:Delete()
 	end
 	container.max_power = nil
@@ -95,13 +94,20 @@ function PitBull4_Essence:UpdateFrame(frame)
 	local db = self:GetLayoutDB(frame)
 	local vertical = db.vertical
 
+	local num_power = UnitPower("player", SPELL_POWER_ESSENCE)
+	local max_power = UnitPowerMax("player", SPELL_POWER_ESSENCE)
+
+	if frame.Essence and frame.Essence.max_power ~= max_power then
+		self:ClearFrame(frame)
+	end
+
 	local container = frame.Essence
 	if not container then
 		container = PitBull4.Controls.MakeFrame(frame)
 		frame.Essence = container
 		container:SetFrameLevel(frame:GetFrameLevel() + 13)
 
-		for i = 1, MAX_SPELL_POWER do
+		for i = 1, max_power do
 			local icon = PitBull4.Controls.MakeEssenceIcon(container, i)
 			container[i] = icon
 			icon:SetSize(STANDARD_SIZE, STANDARD_SIZE)
@@ -114,19 +120,13 @@ function PitBull4_Essence:UpdateFrame(frame)
 			end
 		end
 
-		update_container_size(container, vertical, MAX_SPELL_POWER)
+		update_container_size(container, vertical, max_power)
 
 		local bg = PitBull4.Controls.MakeTexture(container, "BACKGROUND")
 		container.bg = bg
 		bg:SetColorTexture(unpack(db.background_color))
 		bg:SetAllPoints(container)
 	end
-
-	local num_power = UnitPower("player", SPELL_POWER_ESSENCE)
-	local max_power = UnitPowerMax("player", SPELL_POWER_ESSENCE)
-	-- if max_power ~= container.max_power then
-	-- 	update_container_size(container, vertical, max_power)
-	-- end
 
 	for i = 1, min(num_power, max_power) do
 		container[i]:SetEssennceFull()

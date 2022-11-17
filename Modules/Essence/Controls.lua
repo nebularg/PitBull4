@@ -28,8 +28,10 @@ PitBull4.Controls.MakeNewControlType("EssenceIcon", "Frame", function(control)
 
 end, function(control, id)
 	-- onRetrieve
+	control.layoutIndex = id
 
 end, function(control)
 	-- onDelete
+	control.layoutIndex = nil
 
 end, "EssencePointButtonTemplate")
