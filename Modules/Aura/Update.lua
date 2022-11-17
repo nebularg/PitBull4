@@ -239,7 +239,7 @@ local function get_weapon_enchant_name(slot)
 
 	for _, line in next, data.lines do
 		TooltipUtil.SurfaceArgs(line)
-		if line.type == 0 and line.leftText then -- Enum.TooltipDataType.Item
+		if line.type == 0 and line.leftText then -- Enum.TooltipDataLineType.None
 			local buff_name = line.leftText:match("^(.+) %(%d+ [^$)]+%)$")
 			if buff_name then
 				local buff_name_no_rank = buff_name:match("^(.*) %d+$")

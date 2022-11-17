@@ -91,15 +91,16 @@ function PitBull4_Essence:UpdateFrame(frame)
 		return self:ClearFrame(frame)
 	end
 
-	local db = self:GetLayoutDB(frame)
-	local vertical = db.vertical
-
-	local num_power = UnitPower("player", SPELL_POWER_ESSENCE)
 	local max_power = UnitPowerMax("player", SPELL_POWER_ESSENCE)
+	if max_power == 0 then
+		return self:ClearFrame(frame)
+	end
 
 	if frame.Essence and frame.Essence.max_power ~= max_power then
 		self:ClearFrame(frame)
 	end
+
+	local db = self:GetLayoutDB(frame)
 
 	local container = frame.Essence
 	if not container then
@@ -113,14 +114,14 @@ function PitBull4_Essence:UpdateFrame(frame)
 			icon:SetSize(STANDARD_SIZE, STANDARD_SIZE)
 			icon:ClearAllPoints()
 			icon:EnableMouse(not db.click_through)
-			if not vertical then
+			if not db.vertical then
 				icon:SetPoint("CENTER", container, "LEFT", BORDER_SIZE + (i - 1) * (SPACING + STANDARD_SIZE) + HALF_STANDARD_SIZE, 0)
 			else
 				icon:SetPoint("CENTER", container, "BOTTOM", 0, BORDER_SIZE + (i - 1) * (SPACING + STANDARD_SIZE) + HALF_STANDARD_SIZE)
 			end
 		end
 
-		update_container_size(container, vertical, max_power)
+		update_container_size(container, db.vertical, max_power)
 
 		local bg = PitBull4.Controls.MakeTexture(container, "BACKGROUND")
 		container.bg = bg
@@ -128,6 +129,7 @@ function PitBull4_Essence:UpdateFrame(frame)
 		bg:SetAllPoints(container)
 	end
 
+	local num_power = UnitPower("player", SPELL_POWER_ESSENCE)
 	for i = 1, min(num_power, max_power) do
 		container[i]:SetEssennceFull()
 	end
