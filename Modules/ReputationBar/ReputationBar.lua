@@ -22,7 +22,9 @@ PitBull4_ReputationBar:SetDefaults({
 
 function PitBull4_ReputationBar:OnInitialize()
 	hooksecurefunc(StatusTrackingBarManager, "UpdateBarsShown", function()
-		if PitBull4_ReputationBar:IsEnabled() then
+		-- PitBull4.db check because this can fire before AceDB defaults are applied? (and IsEnabled isn't good enough?)
+		-- WA-1377 / WA-1384
+		if PitBull4_ReputationBar:IsEnabled() and PitBull4.db then
 			PitBull4_ReputationBar:UpdateForUnitID("player")
 		end
 	end)
