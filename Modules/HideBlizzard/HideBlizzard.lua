@@ -285,22 +285,24 @@ function showers:altpower()
 end
 
 function hiders:boss()
-	for i=1, MAX_BOSS_FRAMES do
-		local frame = _G["Boss"..i.."TargetFrame"]
+	for _, frame in ipairs(BossTargetFrameContainer.BossTargetFrames) do
 		hook_frames(frame)
 	end
 end
 
 function showers:boss()
-	for i=1, MAX_BOSS_FRAMES do
-		local frame = _G["Boss"..i.."TargetFrame"]
+	for i, frame in ipairs(BossTargetFrameContainer.BossTargetFrames) do
 		unhook_frames_without_init(frame)
+		frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+		frame:RegisterEvent("UNIT_HEALTH")
+		frame:RegisterEvent("UNIT_LEVEL")
+		frame:RegisterEvent("UNIT_FACTION")
+		frame:RegisterEvent("GROUP_ROSTER_UPDATE")
+		frame:RegisterEvent("RAID_TARGET_UPDATE")
+		frame:RegisterEvent("UNIT_TARGETABLE_CHANGED")
 		if i == 1 then
-			BossTargetFrame_OnLoad(frame, "boss1", "INSTANCE_ENCOUNTER_ENGAGE_UNIT")
-		else
-			BossTargetFrame_OnLoad(frame, "boss"..i)
+			frame:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
 		end
-		Target_Spellbar_OnEvent(frame.spellbar, "INSTANCE_ENCOUNTER_ENGAGE_UNIT")
 	end
 end
 
