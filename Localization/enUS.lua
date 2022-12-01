@@ -11,6 +11,9 @@ L["Dracthyr_short"] = "Dt"
 L["Evoker_short"] = "Ev"
 L["Essence"] = _G.POWER_TYPE_ESSENCE
 L["Show Evoker Essence charges."] = true
+L["Hostile"] = _G.FACTION_STANDING_LABEL2
+L["Hostile, Long-range"] = true
+L["Friendly"] = _G.FACTION_STANDING_LABEL5
 
 L["%s can dispel"] = true
 L["%s can purge"] = true

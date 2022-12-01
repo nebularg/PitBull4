@@ -24,16 +24,14 @@ local check_method_to_dist_index = {
 	follow = 4,
 }
 
-local friendly_is_in_range, pet_is_in_range, enemy_is_in_range, enemy_is_in_long_range
+local friendly_spells = {}
+local pet_spells = {}
+local enemy_spells = {}
+local long_enemy_spells = {}
+local res_spells = {}
+
 do
-	local friendly_spells = {}
-	local pet_spells = {}
-	local enemy_spells = {}
-	local long_enemy_spells = {}
-	local res_spells = {}
-
-	local _,class = UnitClass("player")
-
+	local class = UnitClassBase("player")
 	if class == "DEATHKNIGHT" then
 		enemy_spells[#enemy_spells+1] = GetSpellInfo(47541) -- Death Coil (30)
 		res_spells[#res_spells+1] = GetSpellInfo(61999) -- Raise Ally
@@ -91,75 +89,75 @@ do
 		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(355) -- Taunt (30)
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(3411) -- Intervene
 	end
+end
 
-	function friendly_is_in_range(unit)
-		if CheckInteractDistance(unit, 1) then
+local function friendly_is_in_range(unit)
+	if CheckInteractDistance(unit, 1) then
+		return true
+	end
+
+	if UnitIsDeadOrGhost(unit) then
+		for _, name in ipairs(res_spells) do
+			if IsSpellInRange(name, unit) == 1 then
+				return true
+			end
+		end
+
+		-- Only check range for resurrection spells if the
+		-- unit is dead.
+		return false
+	end
+
+	for _, name in ipairs(friendly_spells) do
+		if IsSpellInRange(name, unit) == 1 then
 			return true
 		end
-
-		if UnitIsDeadOrGhost(unit) then
-			for _, name in ipairs(res_spells) do
-				if IsSpellInRange(name, unit) == 1 then
-					return true
-				end
-			end
-
-			-- Only check range for resurrection spells if the
-			-- unit is dead.
-			return false
-		end
-
-		for _, name in ipairs(friendly_spells) do
-			if IsSpellInRange(name, unit) == 1 then
-				return true
-			end
-		end
-
-		return false
 	end
 
-	function pet_is_in_range(unit)
-		if CheckInteractDistance(unit, 2) then
+	return false
+end
+
+local function pet_is_in_range(unit)
+	if CheckInteractDistance(unit, 2) then
+		return true
+	end
+
+	for _, name in ipairs(friendly_spells) do
+		if IsSpellInRange(name, unit) == 1 then
 			return true
 		end
-
-		for _, name in ipairs(friendly_spells) do
-			if IsSpellInRange(name, unit) == 1 then
-				return true
-			end
-		end
-		for _, name in ipairs(pet_spells) do
-			if IsSpellInRange(name, unit) == 1 then
-				return true
-			end
-		end
-
-		return false
 	end
-
-	function enemy_is_in_range(unit)
-		if CheckInteractDistance(unit, 2) then
+	for _, name in ipairs(pet_spells) do
+		if IsSpellInRange(name, unit) == 1 then
 			return true
 		end
-
-		for _, name in ipairs(enemy_spells) do
-			if IsSpellInRange(name, unit) == 1 then
-				return true
-			end
-		end
-
-		return false
 	end
 
-	function enemy_is_in_long_range(unit)
-		for _, name in ipairs(long_enemy_spells) do
-			if IsSpellInRange(name, unit) == 1 then
-				return true
-			end
-		end
+	return false
+end
 
-		return false
+local function enemy_is_in_range(unit)
+	if CheckInteractDistance(unit, 2) then
+		return true
 	end
+
+	for _, name in ipairs(enemy_spells) do
+		if IsSpellInRange(name, unit) == 1 then
+			return true
+		end
+	end
+
+	return false
+end
+
+local function enemy_is_in_long_range(unit)
+	for _, name in ipairs(long_enemy_spells) do
+		if IsSpellInRange(name, unit) == 1 then
+			return true
+		end
+	end
+
+	return false
 end
 
 function PitBull4_RangeFader:GetOpacity(frame)
@@ -227,6 +225,24 @@ function PitBull4_RangeFader:GetOpacity(frame)
 end
 
 PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
+	local range_pattern = _G.SPELL_RANGE:gsub("%%s", ".-")
+	local function get_spell_range(spell_id)
+		local data = C_TooltipInfo.GetSpellByID(spell_id, true)
+		if not data then return end
+
+		for _, line in next, data.lines do
+			TooltipUtil.SurfaceArgs(line)
+			if line.type == 0 then
+				if line.leftText and line.leftText:find(range_pattern) then
+					return line.leftText
+				elseif line.rightText and line.rightText:find(range_pattern) then
+					return line.rightText
+				end
+			end
+		end
+		return _G.SPELL_RANGE:format("??")
+	end
+
 	return 'out_of_range', {
 		type = 'range',
 		name = L["Out-of-range opacity"],
@@ -277,6 +293,46 @@ PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 			PitBull4:RecheckAllOpacities()
 		end,
 		width = 'double',
+	}, 'class_spell_info', {
+		type = "description",
+		name = function(info)
+			local desc = ""
+			-- spells are the name, so they should only return info if known (hopefully similar to IsSpellInRange >.>)
+			for _, spell in ipairs(enemy_spells) do
+				local _, _, icon, _, _, _, spell_id = GetSpellInfo(spell)
+				if spell_id then
+					desc = desc .. ("%s: |T%s:16|t|cff71d5ff[%s]|h|r (%s)\n"):format(L["Hostile"], icon, spell, get_spell_range(spell_id))
+					break
+				end
+			end
+			for _, spell in ipairs(long_enemy_spells) do
+				local _, _, icon, _, _, _, spell_id = GetSpellInfo(spell)
+				if spell_id then
+					desc = desc .. ("%s: |T%s:16|t|cff71d5ff[%s]|h|r (%s)\n"):format(L["Hostile, Long-range"], icon, spell, get_spell_range(spell_id))
+					break
+				end
+			end
+			for _, spell in ipairs(friendly_spells) do
+				local _, _, icon, _, _, _, spell_id = GetSpellInfo(spell)
+				if spell_id then
+					desc = desc .. ("%s: |T%s:16|t|cff71d5ff[%s]|h|r (%s)\n"):format(L["Friendly"], icon, spell, get_spell_range(spell_id))
+					break
+				end
+			end
+			for _, spell in ipairs(pet_spells) do
+				local _, _, icon, _, _, _, spell_id = GetSpellInfo(spell)
+				if spell_id then
+					desc = desc .. ("%s: |T%s:16|t|cff71d5ff[%s]|h|r (%s)\n"):format(L["Pet"], icon, spell, get_spell_range(spell_id))
+					break
+				end
+			end
+			return desc
+		end,
+		width = "full",
+		hidden = function(info)
+			local db = PitBull4.Options.GetLayoutDB(self)
+			return not db.enabled or db.check_method ~= "class"
+		end,
 	}, 'custom_spell', {
 		type = 'input',
 		name = L["Custom spell"],
