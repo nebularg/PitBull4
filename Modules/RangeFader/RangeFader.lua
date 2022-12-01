@@ -10,7 +10,7 @@ PitBull4_RangeFader:SetDescription(L["Make the unit frame fade if out of range."
 PitBull4_RangeFader:SetDefaults({
 	enabled = false,
 	out_of_range_opacity = 0.6,
-	check_method = 'class',
+	check_method = "class",
 })
 
 function PitBull4_RangeFader:OnEnable()
@@ -35,54 +35,60 @@ do
 	local _,class = UnitClass("player")
 
 	if class == "DEATHKNIGHT" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(45524) -- Chains of Ice
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(47541) -- Death Coil
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(47541) -- Death Coil (30)
 		res_spells[#res_spells+1] = GetSpellInfo(61999) -- Raise Ally
 	elseif class == "DEMONHUNTER" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(185245) -- Torment
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(344862) -- Chaos Strike (Melee)
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(185245) -- Torment (30)
 	elseif class == "DRUID" then
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(5176) -- Wrath
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(5176) -- Wrath (40)
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(8936) -- Regrowth
 		res_spells[#res_spells+1] = GetSpellInfo(50769) -- Revive
+	elseif class == "EVOKER" then
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(361469) -- Living Flame (25)
+		friendly_spells[#friendly_spells+1] = GetSpellInfo(355913) -- Emerald Blossom (25)
+		res_spells[#res_spells+1] = GetSpellInfo(361227) -- Return
 	elseif class == "HUNTER" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(185358) -- Arcane Shot
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(185358) -- Arcane Shot (40)
 		pet_spells[#pet_spells+1] = GetSpellInfo(136) -- Mend Pet
 	elseif class == "MAGE" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(118) -- Polymorph
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(116) -- Frostbolt
+		-- enemy_spells[#enemy_spells+1] = GetSpellInfo(118) -- Polymorph (35)
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(116) -- Frostbolt (40)
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(130) -- Slow Fall
 	elseif class == "MONK" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(115546) -- Provoke
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(117952) -- Crackling Jade Lightning
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(115546) -- Provoke (30)
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(117952) -- Crackling Jade Lightning (40)
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(116670) -- Vivify
 		res_spells[#res_spells+1] = GetSpellInfo(115178) -- Resuscitate
 	elseif class == "PALADIN" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(62124) -- Hand of Reckoning
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(62124) -- Hand of Reckoning (30)
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(1044) -- Hand of Freedom
 		res_spells[#res_spells+1] = GetSpellInfo(7328) -- Redemption
 	elseif class == "PRIEST" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(528) -- Dispel Magic
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(585) -- Smite
+		-- enemy_spells[#enemy_spells+1] = GetSpellInfo(528) -- Dispel Magic (30)
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(585) -- Smite (40)
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(2061) -- Flash Heal
 		res_spells[#res_spells+1] = GetSpellInfo(2006) -- Resurrection
 	elseif class == "ROGUE" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(36554) -- Shadowstep
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(185763) -- Pistol Shot
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(185763) -- Pistol Shot (20 - Outlaw)
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(36554) -- Shadowstep (25)
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(1752) -- Sinister Strike (Melee)
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(57934) -- Tricks of the Trade
 	elseif class == "SHAMAN" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(57994) -- Wind Shear
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(403) -- Lightning Bolt
+		-- enemy_spells[#enemy_spells+1] = GetSpellInfo(57994) -- Wind Shear (30)
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(188196) -- Lightning Bolt (40)
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(8004) -- Healing Surge
 		res_spells[#res_spells+1] = GetSpellInfo(2008) -- Ancestral Spirit
 	elseif class == "WARLOCK" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(5782) -- Fear
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(686) -- Shadow Bolt
+		-- enemy_spells[#enemy_spells+1] = GetSpellInfo(5782) -- Fear (35)
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(686) -- Shadow Bolt (40)
 		pet_spells[#pet_spells+1] = GetSpellInfo(755) -- Health Funnel
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(5697) -- Unending Breath
 		res_spells[#res_spells+1] = GetSpellInfo(20707) -- Soulstone
 	elseif class == "WARRIOR" then
-		enemy_spells[#enemy_spells+1] = GetSpellInfo(100) -- Charge
-		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(355) -- Taunt
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(100) -- Charge (8-25)
+		enemy_spells[#enemy_spells+1] = GetSpellInfo(1464) -- Slam (Melee)
+		long_enemy_spells[#long_enemy_spells+1] = GetSpellInfo(355) -- Taunt (30)
 		friendly_spells[#friendly_spells+1] = GetSpellInfo(3411) -- Intervene
 	end
 
