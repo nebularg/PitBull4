@@ -17,7 +17,6 @@ PitBull4_HideBlizzard:SetDefaults({}, {
 	focus = true,
 	castbar = true,
 	aura = false,
-	runebar = true,
 	altpower = false,
 	boss = false,
 })
@@ -224,30 +223,6 @@ function showers:castbar()
 	PetCastingBarFrame:SetUnit("pet", false, false)
 end
 
--- function hiders:runebar()
--- 	hook_frames(TotemFrame, RuneFrame, PriestBarFrame)
--- 	if PlayerFrame.classPowerBar then
--- 		hook_frames(PlayerFrame.classPowerBar)
--- 	end
--- end
---
--- function showers:runebar()
--- 	unhook_frames(TotemFrame, RuneFrame, PriestBarFrame)
--- 	TotemFrame_Update()
---
--- 	if PlayerFrame.classPowerBar then
--- 		unhook_frame(PlayerFrame.classPowerBar)
--- 		PlayerFrame.classPowerBar:Setup()
--- 	end
--- 	local _, class = UnitClass("player")
--- 	if class == "DEATHKNIGHT" then
--- 		RuneFrame:Show()
--- 		RuneFrame:GetScript("OnEvent")(RuneFrame, "PLAYER_ENTERING_WORLD")
--- 	elseif class == "PRIEST" then
--- 		PriestBarFrame_CheckAndShow()
--- 	end
--- end
-
 function hiders:aura()
 	hook_frames(BuffFrame, DebuffFrame)
 end
@@ -270,7 +245,6 @@ function showers:aura()
 end
 
 function hiders:altpower()
-	-- XXX should probably look at removing it from the "Encounter Frame" container
 	hook_frames(PlayerPowerBarAlt)
 end
 
@@ -336,14 +310,6 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		get = get,
 		set = set,
 		hidden = hidden,
-	-- }, 'runebar', {
-	-- 	type = 'toggle',
-	-- 	name = L["Class power bar"],
-	-- 	desc = L["Hides the class resource bar attached to your player frame."],
-	-- 	get = get,
-	-- 	set = set,
-	-- 	hidden = hidden,
-	-- 	disabled = function() return self.db.profile.global.player end,
 	}, 'party', {
 		type = 'toggle',
 		name = L["Party"],
