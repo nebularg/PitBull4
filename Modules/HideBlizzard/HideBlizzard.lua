@@ -216,13 +216,11 @@ end
 
 function hiders:castbar()
 	PlayerCastingBarFrame:SetUnit(nil, nil, nil)
-	PlayerCastingBarFrame.ignoreFramePositionManager = true
 	PetCastingBarFrame:SetUnit(nil, nil, nil)
 end
 
 function showers:castbar()
 	PlayerCastingBarFrame:SetUnit("player", true, false)
-	PlayerCastingBarFrame.ignoreFramePositionManager = PlayerCastingBarFrame.attachedToPlayerFrame
 	PetCastingBarFrame:SetUnit("pet", false, false)
 end
 
