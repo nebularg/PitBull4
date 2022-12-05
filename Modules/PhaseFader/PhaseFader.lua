@@ -23,14 +23,16 @@ end
 
 function PitBull4_PhaseFader:GetOpacity(frame)
 	local unit = frame.unit
-	if not unit then return end
+	if not unit or not UnitIsPlayer(unit) or not UnitExists(unit) or not UnitIsConnected(unit) then
+		return nil
+	end
+
+	if not UnitPhaseReason(unit) then
+		return nil
+	end
 
 	local layout_db = self:GetLayoutDB(frame)
-
-	if UnitPhaseReason(unit) then
-		return layout_db.phased_opacity
-	end
-	return 1
+	return layout_db.phased_opacity
 end
 
 PitBull4_PhaseFader:SetLayoutOptionsFunction(function(self)
