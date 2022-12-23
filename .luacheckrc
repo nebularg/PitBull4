@@ -178,6 +178,7 @@ globals = {
 	"UnitIsWildBattlePet",
 	"UnitLevel",
 	"UnitName",
+	"UnitPartialPower",
 	"UnitPlayerControlled",
 	"UnitPlayerOrPetInRaid",
 	"UnitPower",

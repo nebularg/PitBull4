@@ -145,7 +145,10 @@ function PitBull4_Essence:UpdateFrame(frame)
 		end
 		local duration = 1 / peace
 		local multipler = 5 / duration
-		next_power_icon:AnimIn(multipler)
+
+		local partial_point = UnitPartialPower(frame.unit, SPELL_POWER_ESSENCE)
+		local elapsed_portion = (partial_point / 1000.0)
+		next_power_icon:AnimIn(multipler, elapsed_portion)
 	end
 
 	container:Show()
