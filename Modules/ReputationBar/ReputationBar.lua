@@ -21,6 +21,10 @@ PitBull4_ReputationBar:SetDefaults({
 })
 
 function PitBull4_ReputationBar:OnEnable()
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+end
+
+function PitBull4_ReputationBar:PLAYER_ENTERING_WORLD()
 	self:UpdateForUnitID("player")
 end
 
@@ -104,12 +108,12 @@ function PitBull4_ReputationBar:GetExampleColor(frame)
 end
 
 hooksecurefunc(StatusTrackingBarManager, "UpdateBarsShown", function()
-	if not PitBull4_ReputationBar:IsEnabled() then return end
-
-	for frame in PitBull4:IterateFramesForUnitID("player") do
-		local layout_db = PitBull4_ReputationBar:GetLayoutDB(frame)
-		if layout_db then -- make sure we're initialized
-			PitBull4_ReputationBar:Update(frame)
+	if PitBull4_ReputationBar:IsEnabled() and IsPlayerInWorld() then
+		for frame in PitBull4:IterateFramesForUnitID("player") do
+			local layout_db = PitBull4_ReputationBar:GetLayoutDB(frame)
+			if layout_db then -- make sure we're initialized
+				PitBull4_ReputationBar:Update(frame)
+			end
 		end
 	end
 end)
