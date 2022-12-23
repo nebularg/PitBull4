@@ -133,7 +133,7 @@ function PitBull4_Essence:UpdateFrame(frame)
 	for i = 1, min(num_power, max_power) do
 		container[i]:SetEssennceFull()
 	end
-	for i = num_power + 1, max_power do
+	for i = num_power + 2, max_power do -- we skip +1 because it's about to start filing below
 		container[i]:AnimOut()
 	end
 
@@ -146,7 +146,7 @@ function PitBull4_Essence:UpdateFrame(frame)
 		local duration = 1 / peace
 		local multipler = 5 / duration
 
-		local partial_point = UnitPartialPower(frame.unit, SPELL_POWER_ESSENCE)
+		local partial_point = UnitPartialPower("player", SPELL_POWER_ESSENCE)
 		local elapsed_portion = (partial_point / 1000.0)
 		next_power_icon:AnimIn(multipler, elapsed_portion)
 	end
