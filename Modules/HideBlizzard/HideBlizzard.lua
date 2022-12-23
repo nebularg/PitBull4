@@ -214,13 +214,15 @@ function showers:focus()
 end
 
 function hiders:castbar()
-	PlayerCastingBarFrame:SetUnit(nil, nil, nil)
-	PetCastingBarFrame:SetUnit(nil, nil, nil)
+	hook_frames(PlayerCastingBarFrame, PetCastingBarFrame)
+	-- PlayerCastingBarFrame:SetUnit(nil, nil, nil)
+	-- PetCastingBarFrame:SetUnit(nil, nil, nil)
 end
 
 function showers:castbar()
-	PlayerCastingBarFrame:SetUnit("player", true, false)
-	PetCastingBarFrame:SetUnit("pet", false, false)
+	unhook_frames(PlayerCastingBarFrame, PetCastingBarFrame)
+	-- PlayerCastingBarFrame:SetUnit("player", true, false)
+	-- PetCastingBarFrame:SetUnit("pet", false, false)
 end
 
 function hiders:aura()
