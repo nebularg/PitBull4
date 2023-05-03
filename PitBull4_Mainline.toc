@@ -1,4 +1,4 @@
-## Interface: 100002
+## Interface: 100100
 ## Title: PitBull Unit Frames 4.0
 ## Notes: Dog-themed unit frames. Woof. Arf. Yip.
 ## Notes-deDE: Rahmen im Hunde-Design. Wuff-Wuff. Wau.
@@ -15,6 +15,7 @@
 ## SavedVariables: PitBull4DB
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDBIcon-1.0, LibBossIDs-1.0, LibDualSpec-1.0, LibPlayerSpells-1.0, Clique, Masque
 ## Version: @project-version@
+## IconTexture: Interface\AddOns\PitBull4\pitbull.tga
 
 ## X-Curse-Project-ID: 7522
 ## X-WoWI-ID: 20021
