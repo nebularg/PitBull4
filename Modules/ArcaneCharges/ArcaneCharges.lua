@@ -7,7 +7,7 @@ local L = PitBull4.L
 
 -- CONSTANTS ----------------------------------------------------------------
 
-local SPELL_POWER_ARCANE_CHARGES = 16 -- Enum.PowerType.ArcaneCharges
+local SPELL_POWER_ARCANE_CHARGES = _G.Enum.PowerType.ArcaneCharges -- 16
 local SPEC_MAGE_ARCANE = _G.SPEC_MAGE_ARCANE
 
 local NUM_CHARGES = 4
@@ -122,11 +122,7 @@ function PitBull4_ArcaneCharges:UpdateFrame(frame)
 	local power = UnitPower("player", SPELL_POWER_ARCANE_CHARGES, true)
 	for i = 1, NUM_CHARGES do
 		local charge = container[i]
-		if i <= power then
-			charge:Activate()
-		else
-			charge:Deactivate()
-		end
+		charge:SetActive(i <= power)
 	end
 
 	container:Show()
