@@ -63,7 +63,7 @@ function PitBull4_Aura:PLAYER_TALENT_UPDATE()
 		self:GetFilterDB(',,7').aura_type_list.Magic = can_purge.DEMONHUNTER.Magic
 
 	elseif player_class == "DRUID" then
-		can_dispel.DRUID.Curse = IsPlayerSpell(392378) -- Improved Nature's Cure
+		can_dispel.DRUID.Curse = IsPlayerSpell(2782) or IsPlayerSpell(392378) -- Remove Corruption / Improved Nature's Cure
 		self:GetFilterDB(',3').aura_type_list.Curse = can_dispel.DRUID.Curse
 		can_dispel.DRUID.Poison = can_dispel.DRUID.Curse
 		self:GetFilterDB(',3').aura_type_list.Poison = can_dispel.DRUID.Poison
