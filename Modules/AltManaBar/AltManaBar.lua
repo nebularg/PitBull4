@@ -21,7 +21,7 @@ PitBull4_AltManaBar:SetDefaults({
 
 -- constants
 local SPELL_POWER_MANA = 0 -- Enum.PowerType.Mana
-local DISPLAY_INFO = _G.ALT_MANA_BAR_PAIR_DISPLAY_INFO[player_class]
+local DISPLAY_INFO = _G.ALT_POWER_BAR_PAIR_DISPLAY_INFO[player_class]
 
 -- cached power type for optimization
 local power_type = nil
