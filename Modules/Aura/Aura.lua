@@ -74,7 +74,11 @@ function PitBull4_Aura:OnEnable()
 	}
 	local player_class = UnitClassBase("player")
 	if dispel_classes[player_class] then
-		self:RegisterEvent("PLAYER_TALENT_UPDATE")
+		if wow_classic_era then
+			self:RegisterEvent("CHARACTER_POINTS_CHANGED", "PLAYER_TALENT_UPDATE")
+		else
+			self:RegisterEvent("PLAYER_TALENT_UPDATE")
+		end
 		self:RegisterEvent("SPELLS_CHANGED", "PLAYER_TALENT_UPDATE")
 	end
 	self:PLAYER_TALENT_UPDATE()

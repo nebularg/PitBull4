@@ -3,6 +3,8 @@ local player_class = UnitClassBase("player")
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local wow_classic_era = PitBull4.wow_classic_era
+
 -- CONSTANTS ----------------------------------------------------------------
 
 local MAX_TOTEMS = 4
@@ -119,7 +121,11 @@ PitBull4_Totems:SetDefaults({
 function PitBull4_Totems:OnEnable()
 	self:RegisterEvent("PLAYER_TOTEM_UPDATE")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ForceSilentTotemUpdate")
-	self:RegisterEvent("PLAYER_TALENT_UPDATE", "UpdateAll")
+	if wow_classic_era then
+		self:RegisterEvent("CHARACTER_POINTS_CHANGED", "UpdateAll")
+	else
+		self:RegisterEvent("PLAYER_TALENT_UPDATE", "UpdateAll")
+	end
 end
 
 local function get_verbose_slot_name(slot)
