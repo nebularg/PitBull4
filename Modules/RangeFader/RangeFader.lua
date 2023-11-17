@@ -17,13 +17,6 @@ function PitBull4_RangeFader:OnEnable()
 	self:ScheduleRepeatingTimer("UpdateNonWacky", 0.7)
 end
 
-local check_method_to_dist_index = {
-	inspect = 1,
-	trade = 2,
-	duel = 3,
-	follow = 4,
-}
-
 local friendly_spells = {}
 local pet_spells = {}
 local enemy_spells = {}
@@ -92,10 +85,6 @@ do
 end
 
 local function friendly_is_in_range(unit)
-	if CheckInteractDistance(unit, 1) then
-		return true
-	end
-
 	if UnitIsDeadOrGhost(unit) then
 		for _, name in ipairs(res_spells) do
 			if IsSpellInRange(name, unit) == 1 then
@@ -118,10 +107,6 @@ local function friendly_is_in_range(unit)
 end
 
 local function pet_is_in_range(unit)
-	if CheckInteractDistance(unit, 2) then
-		return true
-	end
-
 	for _, name in ipairs(friendly_spells) do
 		if IsSpellInRange(name, unit) == 1 then
 			return true
@@ -137,10 +122,6 @@ local function pet_is_in_range(unit)
 end
 
 local function enemy_is_in_range(unit)
-	if CheckInteractDistance(unit, 2) then
-		return true
-	end
-
 	for _, name in ipairs(enemy_spells) do
 		if IsSpellInRange(name, unit) == 1 then
 			return true
@@ -169,20 +150,8 @@ function PitBull4_RangeFader:GetOpacity(frame)
 		return 1
 	end
 
-	if check_method== "follow" or check_method == "trade" or check_method == "duel" or check_method == "follow" then
-		if CheckInteractDistance(unit, check_method_to_dist_index[check_method]) then
-			return 1
-		else
-			return db.out_of_range_opacity
-		end
-	elseif check_method == "custom_spell" and db.custom_spell then
+	if check_method == "custom_spell" and db.custom_spell then
 		if IsSpellInRange(db.custom_spell, unit) == 1 then
-			return 1
-		else
-			return db.out_of_range_opacity
-		end
-	elseif check_method == "custom_item" and db.custom_item then
-		if IsItemInRange(db.custom_item, unit) == 1 then
 			return 1
 		else
 			return db.out_of_range_opacity
@@ -272,11 +241,7 @@ PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 		values = {
 			helpful = L["Helpful spells (~40 yards)"],
 			class = L["Class abilities"],
-			follow = L["Follow (~28 yards)"],
-			trade = L["Trade (~11 yards)"],
-			duel = L["Duel (~10 yards)"],
 			custom_spell = L["Custom spell"],
-			custom_item = L["Custom item"],
 			visible = L["Visible (~100 yards)"],
 		},
 		get = function(info)
@@ -353,27 +318,6 @@ PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 		hidden = function(info)
 			local db = PitBull4.Options.GetLayoutDB(self)
 			return db.check_method ~= "custom_spell"
-		end,
-	}, 'custom_item', {
-		type = 'input',
-		name = L["Custom item"],
-		desc = L["Enter the name of the item you want use to check the range with."],
-		get = function(info)
-			local db = PitBull4.Options.GetLayoutDB(self)
-
-			return db.custom_item
-		end,
-		set = function(info, value)
-			local db = PitBull4.Options.GetLayoutDB(self)
-
-			db.custom_item = value
-
-			PitBull4.Options.UpdateFrames()
-			PitBull4:RecheckAllOpacities()
-		end,
-		hidden = function(info)
-			local db = PitBull4.Options.GetLayoutDB(self)
-			return db.check_method ~= "custom_item"
 		end,
 	}
 end)
