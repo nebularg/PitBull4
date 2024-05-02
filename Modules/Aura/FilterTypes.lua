@@ -5,9 +5,6 @@ local L = PitBull4.L
 
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
-local wow_classic_era = PitBull4.wow_classic_era
-local wow_wrath = PitBull4.wow_wrath
-
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
 
@@ -1081,10 +1078,6 @@ local races = {
 	'Tauren',
 	'Troll',
 }
-if not wow_classic_era then
-	races[#races+1] = 'Draenei'
-	races[#races+1] = 'BloodElf'
-end
 local race_names = {}
 for i, v in ipairs(races) do
 	race_names[i] = LN[v]
@@ -1299,18 +1292,17 @@ end)
 
 -- Personal nameplate aura, Filter by if the aura is eligible to show on your personal nameplate
 local function personal_nameplate_filter(self, entry)
-	local value = (wow_wrath and entry[21] or entry[14]) or false
 	if PitBull4_Aura:GetFilterDB(self).should_consolidate then
-		return value
+		return entry[14]
 	else
-		return not value
+		return not entry[14]
 	end
 end
-PitBull4_Aura:RegisterFilterType('Should consolidate',wow_wrath and L["Should consolidate"] or L["Personal nameplate"],personal_nameplate_filter,function(self,options)
+PitBull4_Aura:RegisterFilterType('Should consolidate',L["Personal nameplate"],personal_nameplate_filter,function(self,options)
 	options.personal_nameplate_filter = {
 		type = 'select',
-		name = wow_wrath and L["Should consolidate"] or L["Personal nameplate"],
-		desc = wow_wrath and L["Filter by if the aura is eligible for consolidation."] or L["Filter by if the aura is flagged to show on your personal nameplate."],
+		name = L["Personal nameplate"],
+		desc = L["Filter by if the aura is flagged to show on your personal nameplate."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			return db.should_consolidate and "yes" or "no"

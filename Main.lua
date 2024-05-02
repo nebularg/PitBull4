@@ -3,15 +3,6 @@ local _G = _G
 
 local L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
 
-local wow_classic_era = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or nil
-local wow_bcc = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC or nil
-local wow_wrath = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC or nil
--- Wrath beta didn't get updated constants
-if wow_bcc and select(4, GetBuildInfo()) == 30400 then
-	wow_bcc = nil
-	wow_wrath = true
-end
-
 local SINGLETON_CLASSIFICATIONS = {
 	"player",
 	"pet",
@@ -20,11 +11,6 @@ local SINGLETON_CLASSIFICATIONS = {
 	"targettarget",
 	"targettargettarget",
 }
-if not wow_classic_era then
-	SINGLETON_CLASSIFICATIONS[#SINGLETON_CLASSIFICATIONS+1] = "focus"
-	SINGLETON_CLASSIFICATIONS[#SINGLETON_CLASSIFICATIONS+1] = "focustarget"
-	SINGLETON_CLASSIFICATIONS[#SINGLETON_CLASSIFICATIONS+1] = "focustargettarget"
-end
 
 local UNIT_GROUPS = {
 	"party",
@@ -40,17 +26,6 @@ local UNIT_GROUPS = {
 	"raidpettarget",
 	"raidpettargettarget",
 }
-if wow_wrath then
-	UNIT_GROUPS[#UNIT_GROUPS+1] = "arena"
-	UNIT_GROUPS[#UNIT_GROUPS+1] = "arenatarget"
-	UNIT_GROUPS[#UNIT_GROUPS+1] = "arenatargettarget"
-	UNIT_GROUPS[#UNIT_GROUPS+1] = "arenapet"
-	UNIT_GROUPS[#UNIT_GROUPS+1] = "arenapettarget"
-	UNIT_GROUPS[#UNIT_GROUPS+1] = "arenapettargettarget"
-	UNIT_GROUPS[#UNIT_GROUPS+1] = "boss"
-	UNIT_GROUPS[#UNIT_GROUPS+1] = "bosstarget"
-	UNIT_GROUPS[#UNIT_GROUPS+1] = "bosstargettarget"
-end
 
 local NORMAL_UNITS = {
 	"player",
@@ -58,24 +33,12 @@ local NORMAL_UNITS = {
 	"target",
 	-- "mouseover",
 }
-if not wow_classic_era then
-	NORMAL_UNITS[#NORMAL_UNITS+1] = "focus"
-end
 for i = 1, _G.MAX_PARTY_MEMBERS do
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "party" .. i
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "partypet" .. i
 end
 for i = 1, _G.MAX_RAID_MEMBERS do
 	NORMAL_UNITS[#NORMAL_UNITS+1] = "raid" .. i
-end
-if wow_wrath then
-	for i = 1, 5 do
-		NORMAL_UNITS[#NORMAL_UNITS+1] = "arena" .. i
-		NORMAL_UNITS[#NORMAL_UNITS+1] = "arenapet" .. i
-	end
-	for i = 1, _G.MAX_BOSS_FRAMES do
-		NORMAL_UNITS[#NORMAL_UNITS+1] = "boss" .. i
-	end
 end
 
 do
@@ -252,29 +215,6 @@ local DEFAULT_GROUPS = {
 		exists = true,
 	},
 }
-if wow_wrath then
-	DEFAULT_GROUPS[L["Boss"]] = {
-		enabled = true,
-		unit_group = "boss",
-		exists = true,
-		anchor = "", -- automatic from growth direction
-		relative_to = "0", -- UIParent
-		relative_point = "RIGHT",
-		position_x = -290,
-		position_y = 225,
-		show_when = {
-			solo = true,
-			party = true,
-			raid = true,
-			raid10 = true,
-			raid15 = true,
-			raid20 = true,
-			raid25 = true,
-			raid30 = true,
-			raid40 = true,
-		},
-	}
-end
 
 local DEFAULT_UNITS =  {
 	[L["Player"]] = {
@@ -320,23 +260,6 @@ local DEFAULT_UNITS =  {
 		unit = "targettargettarget",
 	},
 }
-if not wow_classic_era then
-	DEFAULT_UNITS[L["Focus"]] = {
-		enabled = true,
-		unit = "focus",
-		anchor = "TOPLEFT",
-		relative_to = "0", -- UIParent
-		relative_point = "TOPLEFT",
-		position_x = 250,
-		position_y = -260,
-	}
-	DEFAULT_UNITS[format(L["%s's target"],L["Focus"])]= {
-		unit = "focustarget",
-	}
-	DEFAULT_UNITS[format(L["%s's target"],format(L["%s's target"],L["Focus"]))] = {
-		unit = "focustargettarget",
-	}
-end
 
 local LOCALIZED_NAMES = {}
 do
@@ -379,9 +302,6 @@ if PitBull4.version:match("@") then
 	PitBull4.version = "Development"
 end
 
-PitBull4.wow_classic_era = wow_classic_era
-PitBull4.wow_bcc = wow_bcc
-PitBull4.wow_wrath = wow_wrath
 
 PitBull4.L = L
 
@@ -1266,26 +1186,6 @@ local upgrade_functions = {
 		end
 		return true
 	end,
-	[5] = function(sv)
-		-- Ok, maybe it wasn't for the best. Add back default focus frames for BCC.
-		if wow_classic_era then return true end
-		if not sv.profiles then return true end
-		local focus_frames = {
-			L["Focus"],
-			L["%s's target"]:format(L["Focus"]),
-			L["%s's target"]:format(L["%s's target"]:format(L["Focus"])),
-		}
-		for profile, profile_db in next, sv.profiles do
-			if profile_db.made_units then
-				for _, name in next, focus_frames do
-					if not profile_db.units[name] then
-						profile_db.units[name] = CopyTable(DEFAULT_UNITS[name])
-					end
-				end
-			end
-		end
-		return true
-	end,
 	[6] = function(sv)
 		-- Enable raid30 if raid40 is enabled.
 		if not sv.profiles then return true end
@@ -1340,7 +1240,7 @@ function PitBull4:OnInitialize()
 	db.RegisterCallback(self, "OnNewProfile")
 	db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
 
-	local LibDualSpec = wow_wrath and LibStub("LibDualSpec-1.0", true)
+	local LibDualSpec = LibStub("LibDualSpec-1.0", true)
 	if LibDualSpec then
 		LibDualSpec:EnhanceDatabase(db, "PitBull4")
 	end
@@ -1654,21 +1554,12 @@ function PitBull4:OnEnable()
 
 	-- register unit change events
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
-	if not wow_classic_era then
-		self:RegisterEvent("PLAYER_FOCUS_CHANGED")
-	end
 	self:RegisterEvent("UNIT_TARGET")
 	self:RegisterEvent("UNIT_PET")
 
 	-- register events for core handled bar coloring
 	self:RegisterEvent("UNIT_FACTION")
 	self:RegisterEvent("UNIT_HAPPINESS", "UNIT_FACTION")
-
-	if wow_wrath then
-		self:RegisterEvent("UNIT_ENTERED_VEHICLE")
-		self:RegisterEvent("UNIT_EXITED_VEHICLE")
-		self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-	end
 
 	-- enter/leave combat for :RunOnLeaveCombat
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -1810,59 +1701,6 @@ function PitBull4:UNIT_FACTION(_, unit)
 		for _, module in self:IterateModulesOfType("bar","bar_provider") do
 			module:Update(frame)
 		end
-	end
-end
-
-local tmp = {}
-function PitBull4:UNIT_ENTERED_VEHICLE(event, unit)
-	if (event == "UNIT_ENTERED_VEHICLE" and unit == "player" and not UnitHasVehiclePlayerFrameUI("player")) then
-		-- Ignore swapping units when the vehicle player frame ui is disabled.
-		-- This is a workaround for the fact that SecureButton_GetModifiedUnit
-		-- is not properly respecting not to swap frames (heck the default
-		-- UI does weird stuff itself).  Clicking on the frame will be
-		-- wrong but we'll at least look right and you can't really target
-		-- the unit inside the vehicle anyway so it's not the end of the world.
-		return
-	end
-	tmp[unit] = true
-	tmp[PitBull4.Utils.GetBestUnitID(unit)] = true
-	local pet = PitBull4.Utils.GetBestUnitID(unit .. "pet")
-	tmp[unit .. "pet"] = true
-	if pet then
-		tmp[pet] = true
-	end
-	local non_pet = unit:gsub("pet", "")
-	if non_pet == "" then
-		non_pet = "player"
-	end
-	tmp[non_pet] = true
-	for frame in self:IterateFrames(true) do
-		if tmp[frame:GetAttribute("unit")] then
-			local new_unit = SecureButton_GetModifiedUnit(frame, "LeftButton")
-			local old_unit = frame.unit
-			if old_unit ~= new_unit then
-				frame.unit = new_unit
-				if old_unit then
-					PitBull4.unit_id_to_frames[old_unit][frame] = nil
-					PitBull4.unit_id_to_frames_with_wacky[old_unit][frame] = nil
-				end
-				if new_unit then
-					PitBull4.unit_id_to_frames[new_unit][frame] = true
-					PitBull4.unit_id_to_frames_with_wacky[new_unit][frame] = true
-				end
-				frame:UpdateGUID(UnitGUID(new_unit), true)
-			end
-		end
-	end
-	wipe(tmp)
-end
-PitBull4.UNIT_EXITED_VEHICLE = PitBull4.UNIT_ENTERED_VEHICLE
-
-function PitBull4:ZONE_CHANGED_NEW_AREA()
-	-- When we change zones if we lose the vehicle we don't get events for it.
-	-- So we need to simulate the events for all the relevent units.
-	for unit in pairs(self.unit_id_to_guid) do
-		self:UNIT_EXITED_VEHICLE(nil, unit)
 	end
 end
 

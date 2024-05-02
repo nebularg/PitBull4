@@ -1,54 +1,13 @@
-local player_class = UnitClassBase("player")
+if UnitClassBase("player") ~= "SHAMAN" then return end
 
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local wow_classic_era = PitBull4.wow_classic_era
-
 -- CONSTANTS ----------------------------------------------------------------
 
 local MAX_TOTEMS = 4
-local TOTEM_ORDER = { 1, 2, 3, 4 }
-
-local MAX_CLASS_TOTEMS
-local REQUIRED_SPELL
-if player_class == "DEATHKNIGHT" then
-	MAX_CLASS_TOTEMS = 1
-	REQUIRED_SPELL = {
-		46584, -- Raise Dead (Unholy)
-		-- 49206, -- Summon Gargoyle (Unholy)
-	}
--- elseif player_class == "DRUID" then
--- 	MAX_CLASS_TOTEMS = 1
--- 	REQUIRED_SPELL = {
--- 		145205, -- Efflorescence (Restoration)
--- 	}
--- elseif player_class == "MONK" then
--- 	MAX_CLASS_TOTEMS = 1
--- 	REQUIRED_SPELL = {
--- 		115313, -- Summon Jade Serpent Statue (Mistweaver)
--- 		115315, -- Summon Black Ox Statue (Brewmaster/Windwalker)
--- 	}
--- elseif player_class == "MAGE" then
--- 	MAX_CLASS_TOTEMS = 1
--- 	REQUIRED_SPELL = {
--- 		116011 -- Rune of Power
--- 	}
--- elseif player_class == "PALADIN" then
--- 	MAX_CLASS_TOTEMS = 1
--- 	REQUIRED_SPELL = {
--- 		26573, -- Consecration (Holy/Protection)
--- 		205228, -- Consecration (Retribution)
--- 	}
--- elseif player_class == "PRIEST" then
--- 	MAX_CLASS_TOTEMS = 1
--- 	REQUIRED_SPELL = {
--- 		34433, -- Shadowfiend (Holy/Discipline)
--- 	}
-elseif player_class == "SHAMAN" then
-	MAX_CLASS_TOTEMS = MAX_TOTEMS
-	TOTEM_ORDER = { 2, 1, 3, 4 }
-end
+local MAX_CLASS_TOTEMS = 4
+local TOTEM_ORDER = { 2, 1, 3, 4 }
 local TOTEM_SLOT_TO_INDEX = tInvert(TOTEM_ORDER)
 
 local TOTEM_SIZE = 50 -- fixed value used for internal frame creation, change the final size ingame only!
@@ -72,8 +31,6 @@ local GetTotemTimeLeft = _G.GetTotemTimeLeft
 local GetTotemInfo = _G.GetTotemInfo
 
 -----------------------------------------------------------------------------
-
-if not MAX_CLASS_TOTEMS then return end
 
 local PitBull4_Totems = PitBull4:NewModule("Totems")
 
@@ -121,11 +78,7 @@ PitBull4_Totems:SetDefaults({
 function PitBull4_Totems:OnEnable()
 	self:RegisterEvent("PLAYER_TOTEM_UPDATE")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ForceSilentTotemUpdate")
-	if wow_classic_era then
-		self:RegisterEvent("CHARACTER_POINTS_CHANGED", "UpdateAll")
-	else
-		self:RegisterEvent("PLAYER_TALENT_UPDATE", "UpdateAll")
-	end
+	self:RegisterEvent("CHARACTER_POINTS_CHANGED", "UpdateAll")
 end
 
 local function get_verbose_slot_name(slot)
@@ -242,12 +195,7 @@ do
 			local t = ceil(GetTime())
 			local duration = math.random(30, 120)
 			config_times[slot] = t + duration
-			if REQUIRED_SPELL then
-				name, _, icon = GetSpellInfo(REQUIRED_SPELL[1])
-			else
-				name, icon = "Fake Totem", CONFIG_MODE_ICON
-			end
-			return true, name, t, duration, icon
+			return true, "Fake Totem", t, duration, CONFIG_MODE_ICON
 		end
 		return hasTotem, name, startTime, duration, icon
 	end
@@ -644,21 +592,8 @@ end
 
 
 
-local function HasRequiredSpell()
-	for _, spell in next, REQUIRED_SPELL do
-		if IsPlayerSpell(spell) then
-			return true
-		end
-	end
-	return false
-end
-
 function PitBull4_Totems:UpdateFrame(frame)
 	if frame.unit ~= "player" then
-		return self:ClearFrame(frame)
-	end
-
-	if REQUIRED_SPELL and not HasRequiredSpell() then
 		return self:ClearFrame(frame)
 	end
 

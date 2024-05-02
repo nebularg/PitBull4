@@ -4,16 +4,11 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_LuaTexts = PitBull4:GetModule("LuaTexts")
 
-local wow_classic_era = PitBull4.wow_classic_era
-
 local UnitAura = _G.UnitAura
 
-local LibClassicDurations
-if wow_classic_era then
-	LibClassicDurations = LibStub("LibClassicDurations", true)
-	if LibClassicDurations then
-		UnitAura = LibClassicDurations.UnitAuraWithBuffs
-	end
+local LibClassicDurations = LibStub("LibClassicDurations", true)
+if LibClassicDurations then
+	UnitAura = LibClassicDurations.UnitAuraWithBuffs
 end
 
 -- The ScriptEnv table serves as the environment that the scripts run

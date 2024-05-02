@@ -12,28 +12,22 @@ local MAX_GCD_TIME = 1.5
 local DEFAULT_QUEUE_TIME = 300
 
 local GetTime = _G.GetTime
-local UnitCastingInfo = _G.UnitCastingInfo
-local UnitChannelInfo = _G.UnitChannelInfo
+
+local UnitCastingInfo = function(unit)
+	if unit == "player" then
+		return CastingInfo()
+	end
+end
+local UnitChannelInfo = function(unit)
+	if unit == "player" then
+		return ChannelInfo()
+	end
+end
 
 -----------------------------------------------------------------------------
 
 local PitBull4_CastBarLatency = PitBull4:NewModule("CastBarLatency")
 local PitBull4_CastBar = PitBull4:GetModule("CastBar")
-
-local wow_classic_era = PitBull4.wow_classic_era
-
-if wow_classic_era then
-	UnitCastingInfo = function(unit)
-		if unit == "player" then
-			return _G.CastingInfo()
-		end
-	end
-	UnitChannelInfo = function(unit)
-		if unit == "player" then
-			return _G.ChannelInfo()
-		end
-	end
-end
 
 PitBull4_CastBarLatency:SetModuleType("custom")
 PitBull4_CastBarLatency:SetName(L["Cast bar latency"])

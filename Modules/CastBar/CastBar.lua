@@ -8,30 +8,21 @@ local TEMP_ICON = 136235
 
 local PitBull4_CastBar = PitBull4:NewModule("CastBar")
 
-local wow_classic_era = PitBull4.wow_classic_era
-local wow_wrath = PitBull4.wow_wrath
-
 local bit_band = bit.band
 
-local UnitCastingInfo = _G.UnitCastingInfo
-local UnitChannelInfo = _G.UnitChannelInfo
-
-local LibClassicCasterino
-if wow_classic_era then
-	LibClassicCasterino = LibStub("LibClassicCasterino", true)
-	UnitCastingInfo = function(unit)
-		if unit == "player" then
-			return CastingInfo()
-		elseif LibClassicCasterino then
-			return LibClassicCasterino:UnitCastingInfo(unit)
-		end
+local LibClassicCasterino = LibStub("LibClassicCasterino", true)
+local UnitCastingInfo = function(unit)
+	if unit == "player" then
+		return CastingInfo()
+	elseif LibClassicCasterino then
+		return LibClassicCasterino:UnitCastingInfo(unit)
 	end
-	UnitChannelInfo = function(unit)
-		if unit == "player" then
-			return ChannelInfo()
-		elseif LibClassicCasterino then
-			return LibClassicCasterino:UnitChannelInfo(unit)
-		end
+end
+local UnitChannelInfo = function(unit)
+	if unit == "player" then
+		return ChannelInfo()
+	elseif LibClassicCasterino then
+		return LibClassicCasterino:UnitChannelInfo(unit)
 	end
 end
 
@@ -73,21 +64,6 @@ function PitBull4_CastBar:OnEnable()
 		LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_CHANNEL_START", "UpdateInfo")
 		LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_CHANNEL_UPDATE", "UpdateInfo")
 		LibClassicCasterino.RegisterCallback(self, "UNIT_SPELLCAST_CHANNEL_STOP", "UpdateInfo")
-	elseif not wow_classic_era then
-		self:RegisterEvent("UNIT_SPELLCAST_START", "UpdateInfo")
-		self:RegisterEvent("UNIT_SPELLCAST_STOP", "UpdateInfo")
-		self:RegisterEvent("UNIT_SPELLCAST_FAILED", "UpdateInfo")
-		self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED", "UpdateInfo")
-		self:RegisterEvent("UNIT_SPELLCAST_DELAYED", "UpdateInfo")
-		self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "UpdateInfo")
-		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", "UpdateInfo")
-		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "UpdateInfo")
-		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", "UpdateInfo")
-		-- if wow_wrath then
-		-- 	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE", "qUpdateInfo")
-		-- 	self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE", "UpdateInfo")
-		-- end
-		self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
 	end
 end
 

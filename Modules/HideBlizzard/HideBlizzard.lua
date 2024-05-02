@@ -6,9 +6,6 @@ local L = PitBull4.L
 
 local PitBull4_HideBlizzard = PitBull4:NewModule("HideBlizzard", "AceHook-3.0")
 
-local wow_classic_era = PitBull4.wow_classic_era
-local wow_wrath = PitBull4.wow_wrath
-
 PitBull4_HideBlizzard:SetModuleType("custom")
 PitBull4_HideBlizzard:SetName(L["Hide Blizzard frames"])
 PitBull4_HideBlizzard:SetDescription(L["Hide Blizzard frames that are no longer needed."])
@@ -212,16 +209,6 @@ function showers:target()
 	ComboFrame:Show()
 end
 
-if not wow_classic_era then
-	function hiders:focus()
-		hook_frames(FocusFrame)
-	end
-
-	function showers:focus()
-		unhook_frames(FocusFrame)
-	end
-end
-
 function hiders:castbar()
 	rawhook_frames(CastingBarFrame, PetCastingBarFrame)
 end
@@ -241,42 +228,6 @@ function showers:aura()
 	BuffFrame:Show()
 
 	TemporaryEnchantFrame:Show()
-end
-
-if wow_wrath then
-	function hiders:runebar()
-		hook_frames(RuneFrame)
-		RuneFrame:UnregisterAllEvents()
-		RuneFrame:Hide()
-	end
-
-	function showers:runebar()
-		if UnitClassBase("player") == "DEATHKNIGHT" then
-			RuneFrame:Show()
-		end
-		RuneFrame:GetScript("OnLoad")(RuneFrame)
-		RuneFrame:GetScript("OnEvent")(RuneFrame, "PLAYER_ENTERING_WORLD")
-	end
-
-	function hiders:boss()
-		for i=1, _G.MAX_BOSS_FRAMES do
-			local frame = _G["Boss"..i.."TargetFrame"]
-			hook_frames(frame)
-		end
-	end
-
-	function showers:boss()
-		for i=1, _G.MAX_BOSS_FRAMES do
-			local frame = _G["Boss"..i.."TargetFrame"]
-			unhook_frames_without_init(frame)
-			if i == 1 then
-				BossTargetFrame_OnLoad(frame, "boss1", "INSTANCE_ENCOUNTER_ENGAGE_UNIT")
-			else
-				BossTargetFrame_OnLoad(frame, "boss"..i)
-			end
-			Target_Spellbar_OnEvent(frame.spellbar, "INSTANCE_ENCOUNTER_ENGAGE_UNIT")
-		end
-	end
 end
 
 
@@ -308,14 +259,6 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		get = get,
 		set = set,
 		hidden = hidden,
-	}, 'runebar', {
-		type = 'toggle',
-		name = L["Rune bar"],
-		desc = L["Hides the class resource bar attached to your player frame."],
-		get = get,
-		set = set,
-		hidden = not wow_wrath or hidden,
-		disabled = function() return self.db.profile.global.player end,
 	}, 'party', {
 		type = 'toggle',
 		name = L["Party"],
@@ -337,13 +280,6 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		get = get,
 		set = set,
 		hidden = hidden,
-	}, 'focus', {
-		type = 'toggle',
-		name = L["Focus"],
-		desc = L["Hide the standard focus frame."],
-		get = get,
-		set = set,
-		hidden = wow_classic_era or hidden,
 	}, 'castbar', {
 		type = 'toggle',
 		name = L["Cast bar"],
@@ -358,12 +294,5 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		get = get,
 		set = set,
 		hidden = hidden,
-	}, 'boss', {
-		type = 'toggle',
-		name = L["Boss"],
-		desc = L["Hides the standard boss frames."],
-		get = get,
-		set = set,
-		hidden = not wow_wrath or hidden,
 	}
 end)

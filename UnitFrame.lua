@@ -2,8 +2,6 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local wow_wrath = PitBull4.wow_wrath
-
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
 local frames_to_anchor = PitBull4.frames_to_anchor
@@ -463,7 +461,6 @@ function PitBull4:ConvertIntoUnitFrame(frame, isExampleFrame)
 			register_for_clicks_helper(frame, "AnyUp")
 		end
 	end
-	frame:RefreshVehicle()
 
 	frame:SetClampedToScreen(true)
 
@@ -484,25 +481,6 @@ end
 -- we store layout_db instead of layout, since if a new profile comes up, it'll be a distinct table
 local seen_layout_dbs = setmetatable({}, {__mode='k'})
 PitBull4.seen_layout_dbs = seen_layout_dbs
-
---- Reheck the toggleForVehicle attribute for the unit frame
--- @usage frame:RefreshVehicle()
-function UnitFrame:RefreshVehicle()
-	if not wow_wrath then return end
-
-	local classification_db = self.classification_db
-	if not classification_db then
-		return
-	end
-
-	local config_value = classification_db.vehicle_swap
-	if self:CanChangeAttribute() then
-		self:SetAttribute("pb4-vehicleswap", config_value)
-		if self:ProxySetAttribute("toggleForVehicle", config_value) and self.unit then
-			PitBull4:UNIT_ENTERED_VEHICLE(nil, self.unit)
-		end
-	end
-end
 
 --- Recheck the layout of the unit frame, make sure it's up to date, and update the frame.
 -- @usage frame:RefreshLayout()

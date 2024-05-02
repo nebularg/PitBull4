@@ -1,4 +1,4 @@
-## Interface: 11403
+## Interface: 11502
 
 ## Title: PitBull Unit Frames 4.0
 ## Notes: Dog-themed unit frames. Woof. Arf. Yip.
@@ -17,6 +17,7 @@
 
 ## X-Curse-Project-ID: 7522
 ## X-WoWI-ID: 25020
+## X-Wago-ID: LvNAmONo
 
 ## SavedVariables: PitBull4DB
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibClassicDurations, LibClassicCasterino, LibDBIcon-1.0, LibHealComm-4.0, Clique

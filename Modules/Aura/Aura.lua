@@ -5,9 +5,6 @@ local L = PitBull4.L
 
 local PitBull4_Aura = PitBull4:NewModule("Aura")
 
-local wow_classic_era = PitBull4.wow_classic_era
-local wow_wrath = PitBull4.wow_wrath
-
 PitBull4_Aura:SetModuleType("custom")
 PitBull4_Aura:SetName(L["Aura"])
 PitBull4_Aura:SetDescription(L["Shows buffs and debuffs for PitBull4 frames."])
@@ -51,12 +48,10 @@ function PitBull4_Aura:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateAll")
 	self:RegisterEvent("UNIT_AURA")
 
-	if wow_classic_era then
-		local LibClassicDurations = LibStub("LibClassicDurations", true)
-		if LibClassicDurations then
-			LibClassicDurations:Register(self)
-			LibClassicDurations.RegisterCallback(self, "UNIT_BUFF", "UNIT_AURA")
-		end
+	local LibClassicDurations = LibStub("LibClassicDurations", true)
+	if LibClassicDurations then
+		LibClassicDurations:Register(self)
+		LibClassicDurations.RegisterCallback(self, "UNIT_BUFF", "UNIT_AURA")
 	end
 
 	timerFrame:Show()
@@ -70,15 +65,10 @@ function PitBull4_Aura:OnEnable()
 		PRIEST = true,
 		SHAMAN = true,
 		WARLOCK = true,
-		WARRIOR = wow_wrath,
 	}
 	local player_class = UnitClassBase("player")
 	if dispel_classes[player_class] then
-		if wow_classic_era then
-			self:RegisterEvent("CHARACTER_POINTS_CHANGED", "PLAYER_TALENT_UPDATE")
-		else
-			self:RegisterEvent("PLAYER_TALENT_UPDATE")
-		end
+		self:RegisterEvent("CHARACTER_POINTS_CHANGED", "PLAYER_TALENT_UPDATE")
 		self:RegisterEvent("SPELLS_CHANGED", "PLAYER_TALENT_UPDATE")
 	end
 	self:PLAYER_TALENT_UPDATE()
@@ -87,12 +77,10 @@ end
 function PitBull4_Aura:OnDisable()
 	timerFrame:Hide()
 
-	if wow_classic_era then
-		local LibClassicDurations = LibStub("LibClassicDurations", true)
-		if LibClassicDurations then
-			LibClassicDurations.UnregisterCallback(self, "UNIT_BUFF", "UNIT_AURA")
-			LibClassicDurations:Unregister(self)
-		end
+	local LibClassicDurations = LibStub("LibClassicDurations", true)
+	if LibClassicDurations then
+		LibClassicDurations.UnregisterCallback(self, "UNIT_BUFF", "UNIT_AURA")
+		LibClassicDurations:Unregister(self)
 	end
 end
 

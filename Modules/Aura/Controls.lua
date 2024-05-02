@@ -5,16 +5,11 @@ local L = PitBull4.L
 
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
-local wow_classic_era = PitBull4.wow_classic_era
-
 local UnitAura = _G.UnitAura
 
-local LibClassicDurations
-if wow_classic_era then
-	LibClassicDurations = LibStub("LibClassicDurations", true)
-	if LibClassicDurations then
-		UnitAura = LibClassicDurations.UnitAuraWithBuffs
-	end
+local LibClassicDurations = LibStub("LibClassicDurations", true)
+if LibClassicDurations then
+	UnitAura = LibClassicDurations.UnitAuraWithBuffs
 end
 
 -- Table of functions included into the aura controls

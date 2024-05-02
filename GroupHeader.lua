@@ -1568,6 +1568,7 @@ function MemberUnitFrame__scripts:OnDragStop()
 		x, y = frame:GetCenter()
 		x = frame:GetRight()
 	end
+	if not x or not y then return end
 	x, y = x * scale, y * scale
 
 	local scale2 = relative_frame:GetEffectiveScale() / ui_scale
@@ -1595,6 +1596,7 @@ function MemberUnitFrame__scripts:OnDragStop()
 		x2, y2 = relative_frame:GetCenter()
 		x2 = relative_frame:GetRight()
 	end
+	if not x2 or not y2 then return end
 	x2, y2 = x2 * scale2, y2 * scale2
 
 	db.position_x = x - x2

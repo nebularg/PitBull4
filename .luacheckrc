@@ -112,6 +112,7 @@ globals = {
 	"GetTotemInfo",
 	"GetTotemTimeLeft",
 	"GetWatchedFactionInfo",
+	"GetWeaponEnchantInfo",
 	"GetXPExhaustion",
 	"InCombatLockdown",
 	"IsAddOnLoadOnDemand",

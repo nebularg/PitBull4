@@ -6,23 +6,11 @@ local L = PitBull4.L
 
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
-local wow_classic_era = PitBull4.wow_classic_era
-local wow_wrath = PitBull4.wow_wrath
-
 local UnitAura = _G.UnitAura
-local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
-local ceil = _G.math.ceil
-local GetTime = _G.GetTime
-local unpack = _G.unpack
-local sort = _G.table.sort
-local wipe = _G.table.wipe
 
-local LibClassicDurations
-if wow_classic_era then
-	LibClassicDurations = LibStub("LibClassicDurations", true)
-	if LibClassicDurations then
-		UnitAura = LibClassicDurations.UnitAuraWithBuffs
-	end
+local LibClassicDurations = LibStub("LibClassicDurations", true)
+if LibClassicDurations then
+	UnitAura = LibClassicDurations.UnitAuraWithBuffs
 end
 
 -- The table we use for gathering the aura data, filtering
@@ -498,7 +486,7 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	control.caster = caster
 	control.spell_id = spell_id
 	control.time_mod = time_mod
-	control.should_consolidate = wow_wrath and value
+	control.should_consolidate = nil
 
 	local class_db = frame.classification_db
 	if not db.click_through and class_db and not class_db.click_through then
@@ -653,7 +641,7 @@ local function update_auras(frame, db, is_buff)
 	if layout.sort then
 		aura_sort__is_friend = is_friend
 		aura_sort__is_buff = is_buff
-		sort(list, aura_sort)
+		table.sort(list, aura_sort)
 	end
 
 	-- Limit the number of displayed buffs here after we

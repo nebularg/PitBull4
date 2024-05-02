@@ -4,42 +4,34 @@ local L = PitBull4.L
 
 local PitBull4_LuaTexts = PitBull4:NewModule("LuaTexts", "AceHook-3.0")
 
-local wow_classic_era = PitBull4.wow_classic_era
-
-local UnitCastingInfo = _G.UnitCastingInfo
-local UnitChannelInfo = _G.UnitChannelInfo
-
-local LibClassicCasterino
 local casterino_events = {}
 
-if wow_classic_era then
-	LibClassicCasterino = LibStub("LibClassicCasterino", true)
-	if LibClassicCasterino then
-		casterino_events = {
-			UNIT_SPELLCAST_START = true,
-			UNIT_SPELLCAST_DELAYED = true,
-			UNIT_SPELLCAST_STOP = true,
-			UNIT_SPELLCAST_FAILED = true,
-			UNIT_SPELLCAST_INTERRUPTED = true,
-			UNIT_SPELLCAST_CHANNEL_START = true,
-			UNIT_SPELLCAST_CHANNEL_UPDATE = true,
-			UNIT_SPELLCAST_CHANNEL_STOP = true,
-		}
-	end
+local LibClassicCasterino = LibStub("LibClassicCasterino", true)
+if LibClassicCasterino then
+	casterino_events = {
+		UNIT_SPELLCAST_START = true,
+		UNIT_SPELLCAST_DELAYED = true,
+		UNIT_SPELLCAST_STOP = true,
+		UNIT_SPELLCAST_FAILED = true,
+		UNIT_SPELLCAST_INTERRUPTED = true,
+		UNIT_SPELLCAST_CHANNEL_START = true,
+		UNIT_SPELLCAST_CHANNEL_UPDATE = true,
+		UNIT_SPELLCAST_CHANNEL_STOP = true,
+	}
+end
 
-	UnitCastingInfo = function(unit)
-		if unit == "player" then
-			return CastingInfo()
-		elseif LibClassicCasterino then
-			return LibClassicCasterino:UnitCastingInfo(unit)
-		end
+local UnitCastingInfo = function(unit)
+	if unit == "player" then
+		return CastingInfo()
+	elseif LibClassicCasterino then
+		return LibClassicCasterino:UnitCastingInfo(unit)
 	end
-	UnitChannelInfo = function(unit)
-		if unit == "player" then
-			return ChannelInfo()
-		elseif LibClassicCasterino then
-			return LibClassicCasterino:UnitChannelInfo(unit)
-		end
+end
+local UnitChannelInfo = function(unit)
+	if unit == "player" then
+		return ChannelInfo()
+	elseif LibClassicCasterino then
+		return LibClassicCasterino:UnitChannelInfo(unit)
 	end
 end
 

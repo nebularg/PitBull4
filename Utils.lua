@@ -5,9 +5,6 @@ local L = PitBull4.L
 
 local LibBossIDs = LibStub("LibBossIDs-1.0", true)
 
-local wow_classic_era = PitBull4.wow_classic_era
-local wow_wrath = PitBull4.wow_wrath
-
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
 
@@ -55,9 +52,6 @@ do
 		playertarget = "target",
 		npc = "npc",
 	}
-	if not wow_classic_era then
-		better_unit_ids.focus = "focus"
-	end
 	for i = 1, _G.MAX_PARTY_MEMBERS do
 		better_unit_ids["party" .. i] = "party" .. i
 		better_unit_ids["partypet" .. i] = "partypet" .. i
@@ -67,16 +61,6 @@ do
 		better_unit_ids["raid" .. i] = "raid" .. i
 		better_unit_ids["raidpet" .. i] = "raidpet" .. i
 		better_unit_ids["raid" .. i .. "pet"] = "raidpet" .. i
-	end
-	if wow_wrath then
-		for i = 1, 5 do
-			better_unit_ids["arena" .. i] = "arena" .. i
-			better_unit_ids["arenapet" .. i] = "arenapet" .. i
-			better_unit_ids["arena" .. i .. "pet"] = "arenapet" .. i
-		end
-		for i = 1, _G.MAX_BOSS_FRAMES do
-			better_unit_ids["boss" .. i] = "boss" .. i
-		end
 	end
 	for i = 1, 40 do
 		better_unit_ids["nameplate" .. i] = "nameplate" .. i
@@ -95,18 +79,8 @@ do
 		player = true,
 		pet = true,
 		mouseover = true,
-		focus = not wow_classic_era,
 		target = true,
 	}
-	if wow_wrath then
-		for i = 1, 5 do
-			valid_singleton_unit_ids["arena" .. i] = true
-			valid_singleton_unit_ids["arenapet" .. i] = true
-		end
-		for i = 1, _G.MAX_BOSS_FRAMES do
-			valid_singleton_unit_ids["boss" .. i] = true
-		end
-end
 	setmetatable(valid_singleton_unit_ids, target_same_mt)
 
 	--- Return whether the UnitID provided is a singleton
@@ -122,17 +96,11 @@ end
 		player = true,
 		pet = true,
 		mouseover = true,
-		focus = not wow_classic_era,
 		target = true,
 		party = true,
 		partypet = true,
 		raid = true,
 		raidpet = true,
-		boss = wow_wrath,
-		arena = wow_wrath,
-		arenapet = wow_wrath,
-		battleground = wow_wrath,
-		battlegroundpet = wow_wrath,
 	}
 	setmetatable(valid_classifications, target_same_mt)
 
@@ -152,17 +120,11 @@ end
 		player = true,
 		pet = true,
 		mouseover = true,
-		focus = not wow_classic_era,
 		target = true,
 		party = true,
 		partypet = true,
 		raid = true,
 		raidpet = true,
-		boss = wow_wrath,
-		arena = wow_wrath,
-		arenapet = wow_wrath,
-		battleground = wow_wrath,
-		battlegroundpet = wow_wrath,
 	}
 
 	--- Return whether the classification provided is considered "wacky"
@@ -195,17 +157,6 @@ do
 		mainassist = L["Main assists"],
 		mainassist_sing = L["Main assist"]
 	}
-	if not wow_classic_era then
-		classifications.focus = L["Focus"]
-	end
-	if wow_wrath then
-		classifications.boss = L["Boss"]
-		classifications.boss_sing = L["Boss"]
-		classifications.arena = L["Arena"]
-		classifications.arena_sing = L["Arena"]
-		classifications.arenapet = L["Arena pets"]
-		classifications.arenapet_sing = L["Arena pet"]
-	end
 	setmetatable(classifications, {__index=function(self, group)
 		local nonTarget
 		local singular = false
