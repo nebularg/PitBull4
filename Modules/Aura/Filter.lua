@@ -4,7 +4,7 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
-local _, player_class = UnitClass("player")
+local player_class = UnitClassBase("player")
 local _, player_race = UnitRace("player")
 
 --- Return the DB dictionary for the specified filter.

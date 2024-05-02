@@ -5,7 +5,7 @@ local L = PitBull4.L
 local EPSILON = 1e-5
 
 local CURRENT_BAR_PROVIDER_ID = {}
-local _, player_class = UnitClass("player")
+local player_class = UnitClassBase("player")
 
 --- Return the DB dictionary for the current text for the current layout selected in the options frame.
 -- BarProvider modules should be calling this and manipulating data within it.

@@ -401,7 +401,7 @@ end
 ScriptEnv.HostileColor = HostileColor
 
 local function ClassColor(unit)
-	local _, class = UnitClass(unit)
+	local class = UnitClassBase(unit)
 	local color = PitBull4.ClassColors[class] or PitBull4.ClassColors.UNKNOWN
 	return color[1] * 255, color[2] * 255, color[3] * 255
 end
@@ -500,7 +500,7 @@ local function ShortClass(arg)
 	if not short and PitBull4.Utils.GetBestUnitID(arg) then
 		-- If it's empty then maybe arg is a unit
 		if UnitIsPlayer(arg) then
-			local _, class = UnitClass(arg)
+			local class = UnitClassBase(arg)
 			short = ShortClass_abbrev[class]
 		else
 			local _, classId = UnitClassBase(arg)
@@ -624,7 +624,7 @@ local TRAVEL_FORM = GetSpellInfo(783)
 local TREE_OF_LIFE = GetSpellInfo(33891)
 
 local function DruidForm(unit)
-	local _, class = UnitClass(unit)
+	local class = UnitClassBase(unit)
 	if class == "DRUID" then
 		local power = UnitPowerType(unit)
 		if power == 1 then
@@ -697,7 +697,7 @@ local function Power(unit, power_type)
 end
 ScriptEnv.Power = Power
 
--- more symmetry
+-- More symmetry
 local MaxPower = UnitPowerMax
 ScriptEnv.MaxPower = MaxPower
 

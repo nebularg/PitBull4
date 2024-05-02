@@ -115,7 +115,7 @@ local function call_color_function(self, frame, bar_db, value, extra, icon)
 		elseif unit then
 			if UnitIsPlayer(unit) then
 				if bar_db.color_by_class and (bar_db.color_pvp_by_class or UnitIsFriend("player", unit)) then
-					local _, class = UnitClass(unit)
+					local class = UnitClassBase(unit)
 					local t = PitBull4.ClassColors[class]
 					if t then
 						r, g, b = t[1], t[2], t[3]

@@ -1,4 +1,4 @@
-local player_class = select(2, UnitClass("player"))
+local player_class = UnitClassBase("player")
 
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L

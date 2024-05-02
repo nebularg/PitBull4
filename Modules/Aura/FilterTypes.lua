@@ -1060,8 +1060,8 @@ end)
 -- Mapping filter, to allow using a different filter based on
 -- player race or class
 local LN = PitBull4.LOCALIZED_NAMES
-local _,player_class = UnitClass("player")
-local _,player_race  = UnitRace("player")
+local player_class = UnitClassBase("player")
+local _, player_race  = UnitRace("player")
 local classes = {
 	'DEATHKNIGHT',
 	'DEMONHUNTER',
