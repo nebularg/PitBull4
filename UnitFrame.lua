@@ -818,7 +818,8 @@ end
 
 local function iter(frame, id)
 	local func, t = PitBull4:IterateEnabledModules()
-	local id, module = func(t, id) -- luacheck: ignore
+	local module
+	id, module = func(t, id)
 	if id == nil then
 		return nil
 	end
@@ -840,7 +841,8 @@ end
 local iters = setmetatable({}, {__index=function(iters, module_type)
 	local function iter(frame, id)
 		local func, t = PitBull4:IterateModulesOfType(module_type)
-		local id, module = func(t, id) -- luacheck: ignore
+		local module
+		id, module = func(t, id)
 		if id == nil then
 			return nil
 		end

@@ -1443,7 +1443,7 @@ local function event_cache_insert(event, font_string)
 		event_entry = {}
 		event_cache[event] = event_entry
 		if not protected_events[event] then
-			PitBull4_LuaTexts:RegisterEvent(event,"OnEvent")
+			PitBull4_LuaTexts:RegisterEvent(event, "OnEvent")
 		end
 	end
 	event_entry[font_string] = true

@@ -10,7 +10,7 @@ local CURRENT_TEXT_PROVIDER_ID
 
 -- Helper function in lieu of doing a single loop iteration
 local function get_module_of_type(...)
-	local iter, types, _ = PitBull4:IterateModulesOfType(...)
+	local iter, types = PitBull4:IterateModulesOfType(...)
 	local _, module = iter(types)
 	return module
 end

@@ -40,8 +40,13 @@ function PitBull4_Background:UpdateFrame(frame)
 		background:SetAllPoints(frame)
 	end
 
-	background:Show()
-	background:SetColorTexture(self:GetColor(frame))
+	local r, g, b, a = self:GetColor(frame)
+	if r and g and b then
+		background:SetColorTexture(r, g, b, a)
+		background:Show()
+	else
+		background:Hide()
+	end
 
 	-- 3D Portrait
 	local layout_db = self:GetLayoutDB(frame)

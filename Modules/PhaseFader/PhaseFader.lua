@@ -2,7 +2,7 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local PitBull4_PhaseFader = PitBull4:NewModule("PhaseFader","AceEvent-3.0")
+local PitBull4_PhaseFader = PitBull4:NewModule("PhaseFader")
 
 PitBull4_PhaseFader:SetModuleType("fader")
 PitBull4_PhaseFader:SetName(L["Phase fader"])

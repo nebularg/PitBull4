@@ -4,7 +4,7 @@ local L = PitBull4.L
 
 local AceConfig = LibStub("AceConfig-3.0", true)
 if not AceConfig then
-	print(("PitBull4 requires the library %q and will not work without it."):format("AceConfig-3.0"))
+	PitBull4:Printf("PitBull4 requires the library %q and will not work without it.", "AceConfig-3.0")
 	error(("PitBull4 requires the library %q and will not work without it."):format("AceConfig-3.0"))
 end
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
@@ -110,7 +110,10 @@ function PitBull4.Options.OpenConfig()
 	options.args.profile.disabled = function(info)
 		return InCombatLockdown() or (old_disabled and old_disabled(info))
 	end
-	LibStub("LibDualSpec-1.0"):EnhanceOptions(options.args.profile, PitBull4.db)
+	local LibDualSpec = LibStub("LibDualSpec-1.0", true)
+	if LibDualSpec and PitBull4.db.IsDualSpecEnabled then
+		LibDualSpec:EnhanceOptions(options.args.profile, PitBull4.db)
+	end
 
 	AceConfig:RegisterOptionsTable("PitBull4", options)
 	AceConfigDialog:SetDefaultSize("PitBull4", 835, 550)

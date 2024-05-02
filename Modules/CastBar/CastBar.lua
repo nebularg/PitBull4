@@ -18,11 +18,11 @@ PitBull4_CastBar:SetDefaults({
 	auto_hide = false,
 	idle_background = false,
 },{
-	casting_interruptible_color   = { 1, 0.7, 0 },
+	casting_interruptible_color = { 1, 0.7, 0 },
 	casting_uninterruptible_color = { 1, 222/255, 144/255},
 	casting_complete_color = { 0, 1, 0 },
 	casting_failed_color = { 1, 0, 0 },
-	channel_interruptible_color   = { 0, 0, 1 },
+	channel_interruptible_color = { 0, 0, 1 },
 	channel_uninterruptible_color = { 96/255, 180/255, 211/255 },
 })
 
