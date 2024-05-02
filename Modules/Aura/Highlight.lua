@@ -41,7 +41,6 @@ end
 -- a frame we want to highlight.  Arguments mirror the update_auras()
 -- function in Update.lua.  TODO: Make get_aura_list() in Update.lua
 -- and this use the same iterator.
-local entry = {}
 function PitBull4_Aura:HighlightFilterIterator(frame, db, is_buff)
 	local unit = frame.unit
 	if not unit then return end
@@ -50,22 +49,17 @@ function PitBull4_Aura:HighlightFilterIterator(frame, db, is_buff)
 
 	-- Loop through the auras
 	while true do
-		-- Note entry[2] says if the aura is a weapon enchant
-		-- entry[6] (rank text) was removed in 8.0
-		entry[1], entry[2], entry[3], entry[4], entry[5],
-			entry[7], entry[8], entry[9], entry[10], entry[11],
-			entry[12], entry[13], entry[14], entry[15], entry[16],
-			entry[17], entry[18], entry[19], entry[20] =
-			id, nil, nil, is_buff, UnitAura(unit, id, filter)
-
-		-- No more auras
-		if not entry[5] then
+		local entry = C_UnitAuras.GetAuraDataByIndex(unit, id, filter)
+		if not entry then
+			-- No more auras, break the outer loop
 			break
 		end
 
-		-- The Enrage debuff_type gets set to "" instead of "Enrage"
-		if entry[9] == "" then
-			entry[9] = "Enrage"
+		entry.index = id
+
+		-- The enrage dispel type is "" instead of "Enrage"
+		if entry.dispelName == "" then
+			entry.dispelName = "Enrage"
 		end
 
 		self:HighlightFilter(db, entry, frame)
@@ -99,7 +93,7 @@ function PitBull4_Aura:HighlightFilter(db, entry, frame)
 
 					-- Determine the color for the match
 					if highlight_filters_color_by_type[id] then
-						local dispel_type = tostring(entry[9])
+						local dispel_type = tostring(entry.dispelName)
 						local color = dispel_type_colors[dispel_type]
 						if not color then
 							color = dispel_type_colors["nil"]
@@ -110,7 +104,7 @@ function PitBull4_Aura:HighlightFilter(db, entry, frame)
 					end
 
 					-- Add the entry
-					results[#results+1] = result
+					results[#results + 1] = result
 				end
 			end
 		end
@@ -139,10 +133,10 @@ function PitBull4_Aura:SetHighlight(frame, db)
 	table.sort(results, result_sort)
 
 	-- Grab the highlight to display.  TODO: Handle display of multiple highlights
-	local entry = results[1]
+	local result = results[1]
 
 	local aura_highlight = frame.aura_highlight
-	if entry then
+	if result then
 		-- Display the highlight
 		if not aura_highlight then
 			aura_highlight = PitBull4.Controls.MakeTexture(frame.overlay, "OVERLAY")
@@ -161,7 +155,7 @@ function PitBull4_Aura:SetHighlight(frame, db)
 		aura_highlight:SetBlendMode("ADD")
 		aura_highlight:SetAlpha(0.75)
 		aura_highlight:SetAllPoints(frame)
-		aura_highlight:SetVertexColor(unpack(entry.color, 1, 3))
+		aura_highlight:SetVertexColor(unpack(result.color, 1, 3))
 	else
 		-- No highlight so remove one if we have one showing
 		if aura_highlight then

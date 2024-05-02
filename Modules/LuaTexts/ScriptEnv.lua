@@ -641,7 +641,8 @@ local function DruidForm(unit)
 		else
 			local i = 1
 			repeat
-				local name = UnitAura(unit, i, "HELPFUL")
+				local auraData = C_UnitAuras.GetAuraDataByIndex(unit, i, "HELPFUL")
+				local name = auraData and auraData.name
 				if name then
 					if name == MOONKIN_FORM then
 						return L["Moonkin"]

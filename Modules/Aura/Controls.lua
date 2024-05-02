@@ -40,16 +40,16 @@ local function OnUpdate(self, elapsed)
 		-- unit goes out of range but the order of the auras by index change.
 		-- For a more detailed explanation for why this silly hack is necessary see:
 		-- https://www.wowace.com/projects/pitbull-unit-frames-4-0/issues/532
-		local name = UnitAura(unit, id, filter)
-		if name ~= self.name then
+		local auraData = C_UnitAuras.GetAuraDataByIndex(unit, id, filter)
+		if not auraData or auraData.name ~= self.name then
 			local i = 1
 			while true do
-				name = UnitAura(unit,i,filter)
-				if not name then
+				auraData = C_UnitAuras.GetAuraDataByIndex(unit, i, filter)
+				if not auraData then
 					-- Couldn't find a matching aura so do nothing.
 					return
 				end
-				if name == self.name then
+				if auraData.name == self.name then
 					-- Use this id, it may not be the right one but if the name
 					-- doesn't match it means we're out of range of the unit so
 					-- it doesn't matter which one we use as long as it is the same

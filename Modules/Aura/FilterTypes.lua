@@ -140,13 +140,13 @@ function PitBull4_Aura:RegisterFilterType(name, display_name, filter_func, confi
 		PitBull4.expect(config, 'typeof', 'function')
 	end
 
-	local entry = {}
-	entry.name = name
-	entry.display_name = display_name
-	entry.filter_func = filter_func
-	entry.config = config
-	entry.references = references
-	filter_types[name] = entry
+	local filter = {}
+	filter.name = name
+	filter.display_name = display_name
+	filter.filter_func = filter_func
+	filter.config = config
+	filter.references = references
+	filter_types[name] = filter
 end
 
 --- Determines if a filter is referenced by another filter.
@@ -337,7 +337,7 @@ PitBull4_Aura:RegisterFilterType('Meta',L["Meta"],meta_filter,meta_filter_option
 -- Name, allows filtering by the aura name
 local function name_filter(self, entry)
 	local cfg = PitBull4_Aura:GetFilterDB(self)
-	if cfg.name_list[entry[5]] then
+	if cfg.name_list[entry.name] then
 		if cfg.whitelist then
 			return true
 		else
@@ -434,7 +434,7 @@ end)
 -- Aura Type, Allows filtering by the type of Aura.
 local function aura_type_filter(self, entry)
 	local cfg = PitBull4_Aura:GetFilterDB(self)
-	if cfg.aura_type_list[tostring(entry[9])] then
+	if cfg.aura_type_list[tostring(entry.dispelName)] then
 		if cfg.whitelist then
 			return true
 		else
@@ -504,7 +504,7 @@ local function rank_filter(self, entry)
 	local cfg = PitBull4_Aura:GetFilterDB(self)
 	local operator = cfg.operator
 	local value = cfg.value
-	local rank = tonumber(string.match(entry[6], rank_pattern)) or 0
+	local rank = 0 -- tonumber(string.match(entry[6], rank_pattern)) or 0
 	if operator == '>' then
 		return rank > value
 	elseif operator == '<' then
@@ -569,7 +569,7 @@ local function count_filter(self, entry)
 	local cfg = PitBull4_Aura:GetFilterDB(self)
 	local operator = cfg.operator
 	local value = cfg.value
-	local count = entry[8]
+	local count = entry.applications
 	if operator == '>' then
 		return count > value
 	elseif operator == '<' then
@@ -635,7 +635,7 @@ local function duration_filter(self, entry)
 	local operator = cfg.operator
 	local value = cfg.value
 	local units = cfg.time_unit
-	local duration = entry[10]
+	local duration = entry.duration
 	if units == 'h' then
 		value = value * 3600
 	elseif units == 'm' then
@@ -724,9 +724,9 @@ local function time_left_filter(self, entry, frame)
 	local operator = cfg.operator
 	local value = cfg.value
 	local units = cfg.time_unit
-	local duration = entry[10]
-	local expiration_time = entry[11]
-	local time_mod = entry[20]
+	local duration = entry.duration
+	local expiration_time = entry.expirationTime
+	local time_mod = entry.timeMod
 
 	-- No duration and no expiration time means it never expires
 	-- so it has an infinite amount of time left.  Can't really
@@ -852,12 +852,12 @@ local my_units = {
 
 -- Mine, Filter by if you cast it or not.
 local function mine_filter(self, entry)
-	-- local caster = entry[12]
+	-- local caster = entry.sourceUnit
 	-- local is_mine = caster and (UnitIsUnit("player", caster) or UnitIsOwnerOrControllerOfUnit("player", caster))
 	if PitBull4_Aura:GetFilterDB(self).mine then
-		return my_units[entry[12]]
+		return my_units[entry.sourceUnit]
 	else
-		return not my_units[entry[12]]
+		return not my_units[entry.sourceUnit]
 	end
 end
 PitBull4_Aura:RegisterFilterType('Mine',L["Mine"],mine_filter, function(self,options)
@@ -886,9 +886,9 @@ end)
 -- Stealable, filter by if you can steal the debuff or not.
 local function stealable_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).stealable then
-		return entry[13]
+		return entry.isStealable
 	else
-		return not entry[13]
+		return not entry.isStealable
 	end
 end
 PitBull4_Aura:RegisterFilterType('Stealable',L["Stealable"],stealable_filter, function(self,options)
@@ -917,17 +917,9 @@ end)
 -- Weapon enchant
 local function weapon_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).weapon then
-		if entry[2] then
-			return true
-		else
-			return nil
-		end
+		return entry.weaponEnchantSlot and true or nil
 	else
-		if entry[2] then
-			return nil
-		else
-			return true
-		end
+		return not entry.weaponEnchantSlot and true or nil
 	end
 end
 PitBull4_Aura:RegisterFilterType('Weapon Enchant',L["Weapon Enchant"],weapon_filter, function(self,options)
@@ -956,9 +948,9 @@ end)
 -- Buff
 local function buff_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).buff then
-		return entry[4]
+		return entry.isHelpful
 	else
-		return not entry[4]
+		return entry.isHarmful
 	end
 end
 PitBull4_Aura:RegisterFilterType('Buff',L["Buff"],buff_filter, function(self,options)
@@ -1244,7 +1236,7 @@ for k,v in pairs(unit_values) do
 end
 local function caster_filter(self, entry, frame)
 	local db = PitBull4_Aura:GetFilterDB(self)
-	return compare_unit(entry[12],db.unit_operator,db.unit,frame)
+	return compare_unit(entry.sourceUnit, db.unit_operator, db.unit, frame)
 end
 PitBull4_Aura:RegisterFilterType('Caster',L["Caster"],caster_filter,function(self,options)
 	options.unit_operator = {
@@ -1307,7 +1299,7 @@ end)
 
 -- Personal nameplate aura, Filter by if the aura is eligible to show on your personal nameplate
 local function personal_nameplate_filter(self, entry)
-	local value = (wow_cata and entry[21] or entry[14]) or false
+	local value = (wow_cata and #entry.points > 0 or entry.nameplateShowPersonal) or false
 	if PitBull4_Aura:GetFilterDB(self).should_consolidate then
 		return value
 	else
@@ -1340,7 +1332,7 @@ end)
 -- Spell ID, allows filtering by the spell id that created the aura
 local function id_filter(self, entry)
 	local cfg = PitBull4_Aura:GetFilterDB(self)
-	if cfg.id_list[entry[15]] then
+	if cfg.id_list[entry.spellId] then
 		if cfg.whitelist then
 			return true
 		else
@@ -1447,9 +1439,9 @@ end)
 
 local function self_buff_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).self_buff then
-		return SpellIsSelfBuff(entry[15])
+		return SpellIsSelfBuff(entry.spellId)
 	else
-		return not SpellIsSelfBuff(entry[15])
+		return not SpellIsSelfBuff(entry.spellId)
 	end
 end
 PitBull4_Aura:RegisterFilterType('Self buff',L["Self buff"],self_buff_filter,function(self,options)
@@ -1477,9 +1469,9 @@ end)
 
 local function has_custom_visibility_filter(self, entry, frame)
 	local hasCustom = false
-	if entry[15] then
+	if entry.spellId then
 		local state = UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT"
-		hasCustom = SpellGetVisibilityInfo(entry[15], state)
+		hasCustom = SpellGetVisibilityInfo(entry.spellId, state)
 	end
 	if PitBull4_Aura:GetFilterDB(self).custom_visibility then
 		return hasCustom
@@ -1512,10 +1504,10 @@ end)
 
 local function should_show_filter(self, entry, frame)
 	local show = false
-	if entry[15] then
+	if entry.spellId then
 		local state = UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT"
-		local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(entry[15], state)
-		show = hasCustom and (showForMySpec or (alwaysShowMine and my_units[entry[12]]))
+		local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(entry.spellId, state)
+		show = hasCustom and (showForMySpec or (alwaysShowMine and my_units[entry.sourceUnit]))
 	end
 	if PitBull4_Aura:GetFilterDB(self).should_show then
 		return show
@@ -1550,9 +1542,9 @@ end)
 -- player _did_ apply the aura, just if the player _can_ apply the aura)
 local function can_apply_aura_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).can_apply_aura then
-		return not not entry[16]
+		return not not entry.canApplyAura
 	else
-		return not entry[16]
+		return not entry.canApplyAura
 	end
 end
 PitBull4_Aura:RegisterFilterType('Can apply aura',L["Can apply aura"],can_apply_aura_filter,function(self,options)
@@ -1577,9 +1569,9 @@ end)
 -- Boss, filter by if the aura is applied by a boss
 local function boss_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).boss_debuff then
-		return not not entry[17]
+		return not not entry.isBossAura
 	else
-		return not entry[17]
+		return not entry.isBossAura
 	end
 end
 PitBull4_Aura:RegisterFilterType('Boss debuff',L["Boss"],boss_filter,function(self,options)
@@ -1604,9 +1596,9 @@ end)
 -- Cast by a player
 local function caster_is_player_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).caster_is_player then
-		return not not entry[18]
+		return not not entry.isFromPlayerOrPlayerPet
 	else
-		return not entry[18]
+		return not entry.isFromPlayerOrPlayerPet
 	end
 end
 PitBull4_Aura:RegisterFilterType('Cast by a player',L["Cast by a player"],caster_is_player_filter,function(self,options)
@@ -1635,9 +1627,9 @@ end)
 -- Global nameplate aura, Filter by if the aura is eligible to show on all nameplates
 local function global_nameplate_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).global_nameplate then
-		return not not entry[19]
+		return not not entry.nameplateShowAll
 	else
-		return not entry[19]
+		return not entry.nameplateShowAll
 	end
 end
 PitBull4_Aura:RegisterFilterType('Global nameplate',L["Global nameplate"],global_nameplate_filter,function(self,options)
