@@ -5,6 +5,8 @@ local L = PitBull4.L
 
 local LibBossIDs = LibStub("LibBossIDs-1.0", true)
 
+local wow_cata = PitBull4.wow_cata
+
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
 
@@ -52,10 +54,12 @@ do
 		target = "target",
 		playertarget = "target",
 		npc = "npc",
-		softenemy = "softenemy",
-		softfriend = "softfriend",
-		softinteract = "softinteract",
 	}
+	if not wow_cata then
+		better_unit_ids.softenemy = "softenemy"
+		better_unit_ids.softfriend = "softfriend"
+		better_unit_ids.softinteract = "softinteract"
+	end
 	for i = 1, _G.MAX_PARTY_MEMBERS do
 		better_unit_ids["party" .. i] = "party" .. i
 		better_unit_ids["partypet" .. i] = "partypet" .. i

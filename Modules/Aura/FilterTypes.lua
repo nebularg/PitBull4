@@ -2,10 +2,10 @@
 
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
+
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
-local DEBUG = PitBull4.DEBUG
-local expect = PitBull4.expect
+local wow_cata = PitBull4.wow_cata
 
 local function copy(data)
 	local t = {}
@@ -132,12 +132,12 @@ end
 -- @param references a function to say which filters the filter references, takes the name of the filter as a reference.  Only needed by filters that call other filters.
 -- @return nil
 function PitBull4_Aura:RegisterFilterType(name, display_name, filter_func, config, references)
-	if DEBUG then
-		expect(name, 'typeof', 'string')
-		expect(name, 'not_inset', filter_types)
-		expect(display_name, 'typeof', 'string')
-		expect(filter_func, 'typeof', 'function')
-		expect(config, 'typeof', 'function')
+	if PitBull4.DEBUG then
+		PitBull4.expect(name, 'typeof', 'string')
+		PitBull4.expect(name, 'not_inset', filter_types)
+		PitBull4.expect(display_name, 'typeof', 'string')
+		PitBull4.expect(filter_func, 'typeof', 'function')
+		PitBull4.expect(config, 'typeof', 'function')
 	end
 
 	local entry = {}
@@ -157,7 +157,7 @@ end
 function PitBull4_Aura:FilterReferences(filter_name, reference)
 	if not filter_name or filter_name == "" then return false end
 	local filter = self:GetFilterDB(filter_name)
-	local filter_ref_func = filter_types[filter.filter_type].references
+	local filter_ref_func = filter and filter_types[filter.filter_type].references
 	if not filter_ref_func then return false end
 	local references = filter_ref_func(filter_name)
 	for i=1,#references do
@@ -1062,21 +1062,7 @@ end)
 local LN = PitBull4.LOCALIZED_NAMES
 local player_class = UnitClassBase("player")
 local _, player_race  = UnitRace("player")
-local classes = {
-	'DEATHKNIGHT',
-	'DEMONHUNTER',
-	'DRUID',
-	'EVOKER',
-	'HUNTER',
-	'MAGE',
-	'MONK',
-	'PALADIN',
-	'PRIEST',
-	'ROGUE',
-	'SHAMAN',
-	'WARLOCK',
-	'WARRIOR',
-}
+local classes = CopyTable(CLASS_SORT_ORDER)
 local class_names = {}
 for i, v in ipairs(classes) do
 	class_names[i] = LN[v]
@@ -1321,17 +1307,18 @@ end)
 
 -- Personal nameplate aura, Filter by if the aura is eligible to show on your personal nameplate
 local function personal_nameplate_filter(self, entry)
+	local value = (wow_cata and entry[21] or entry[14]) or false
 	if PitBull4_Aura:GetFilterDB(self).should_consolidate then
-		return not not entry[14]
+		return value
 	else
-		return not entry[14]
+		return not value
 	end
 end
-PitBull4_Aura:RegisterFilterType('Should consolidate',L["Personal nameplate"],personal_nameplate_filter,function(self,options)
+PitBull4_Aura:RegisterFilterType('Should consolidate',wow_cata and L["Should consolidate"] or L["Personal nameplate"],personal_nameplate_filter,function(self,options)
 	options.personal_nameplate_filter = {
 		type = 'select',
-		name = L["Personal nameplate"],
-		desc = L["Filter by if the aura is flagged to show on your personal nameplate."],
+		name = wow_cata and L["Should consolidate"] or L["Personal nameplate"],
+		desc = wow_cata and L["Filter by if the aura is eligible for consolidation."] or L["Filter by if the aura is flagged to show on your personal nameplate."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			return db.should_consolidate and "yes" or "no"

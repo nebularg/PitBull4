@@ -1,6 +1,7 @@
 -- Layout.lua : Code to size and position the aura frames.
 
 local PitBull4 = _G.PitBull4
+
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
 -- Dispatch table to actually have things grow in the right order.

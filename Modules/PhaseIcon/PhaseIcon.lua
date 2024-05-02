@@ -2,6 +2,8 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local wow_cata = PitBull4.wow_cata
+
 local PitBull4_PhaseIcon = PitBull4:NewModule("PhaseIcon")
 
 PitBull4_PhaseIcon:SetModuleType("indicator")
@@ -47,7 +49,11 @@ function PitBull4_PhaseIcon:GetTexture(frame)
 		return nil
 	end
 
-	if not UnitPhaseReason(unit) then
+	if wow_cata then
+		if UnitInPhase(unit) then
+			return nil
+		end
+	elseif not UnitPhaseReason(unit) then
 		return nil
 	end
 
@@ -70,8 +76,8 @@ end
 
 
 PitBull4_PhaseIcon:SetLayoutOptionsFunction(function(self)
-	return 'click_through', {
-		type = 'toggle',
+	return "click_through", {
+		type = "toggle",
 		name = L["Click-through"],
 		desc = L["Disable capturing clicks on icons, allowing the click to fall through to the window underneath the icon."],
 		get = function(info)

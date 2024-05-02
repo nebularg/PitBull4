@@ -2,6 +2,8 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local wow_cata = PitBull4.wow_cata
+
 local PitBull4_PvPIcon = PitBull4:NewModule("PvPIcon")
 
 PitBull4_PvPIcon:SetModuleType("indicator")
@@ -41,7 +43,9 @@ function PitBull4_PvPIcon:OnEnable()
 	self:RegisterEvent("UPDATE_FACTION")
 	self:RegisterEvent("UNIT_FACTION", "UPDATE_FACTION")
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "UPDATE_FACTION")
-	self:RegisterEvent("HONOR_LEVEL_UPDATE")
+	if not wow_cata then
+		self:RegisterEvent("HONOR_LEVEL_UPDATE")
+	end
 end
 
 function PitBull4_PvPIcon:GetTexture(frame)
@@ -50,27 +54,29 @@ function PitBull4_PvPIcon:GetTexture(frame)
 
 	local faction = UnitFactionGroup(unit)
 	if UnitIsPVPFreeForAll(unit) then
-		local honorLevel = UnitHonorLevel(unit)
-		local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel)
-		if honorRewardInfo and show_prestige then
-			-- self.prestigePortrait:SetAtlas("honorsystem-portrait-neutral", false)
-			return honorRewardInfo.badgeFileDataID
-		else
-			return [[Interface\TargetingFrame\UI-PVP-FFA]]
+		if not wow_cata then
+			local honorLevel = UnitHonorLevel(unit)
+			local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel)
+			if honorRewardInfo and show_prestige then
+				-- self.prestigePortrait:SetAtlas("honorsystem-portrait-neutral", false)
+				return honorRewardInfo.badgeFileDataID
+			end
 		end
+		return [[Interface\TargetingFrame\UI-PVP-FFA]]
 	elseif faction and faction ~= "Neutral" and UnitIsPVP(unit) then
-		-- Handle "Mercenary Mode" for player
-		if unit == "player" and UnitIsMercenary(unit) then
-			faction = OPPOSITE_PLAYER_FACTION[faction]
+		if not wow_cata then
+			-- Handle "Mercenary Mode" for player
+			if unit == "player" and UnitIsMercenary(unit) then
+				faction = OPPOSITE_PLAYER_FACTION[faction]
+			end
+			local honorLevel = UnitHonorLevel(unit)
+			local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel)
+			if honorRewardInfo and show_prestige then
+				-- self.prestigePortrait:SetAtlas("honorsystem-portrait-"..faction, false)
+				return honorRewardInfo.badgeFileDataID
+			end
 		end
-		local honorLevel = UnitHonorLevel(unit)
-		local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel)
-		if honorRewardInfo and show_prestige then
-			-- self.prestigePortrait:SetAtlas("honorsystem-portrait-"..faction, false)
-			return honorRewardInfo.badgeFileDataID
-		else
-			return [[Interface\TargetingFrame\UI-PVP-]] .. faction
-		end
+		return [[Interface\TargetingFrame\UI-PVP-]] .. faction
 	end
 	return nil
 end

@@ -3,7 +3,10 @@
 
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
+
 local PitBull4_Aura = PitBull4:GetModule("Aura")
+
+local wow_cata = PitBull4.wow_cata
 
 local UnitAura = _G.UnitAura
 local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
@@ -26,26 +29,27 @@ local wipe = _G.table.wipe
 -- any new returns from UnitAura will break the module.
 --
 -- The entry values are as follows
--- [1] = index used to get the Aura with UnitAura or 0 for non UnitAura entries
--- [2] = slot of the weapon enchant or nil if not a weapon enchant
--- [3] = quality of the weapon or nil if not a weapon enchant
--- [4] = is_buff
--- [5] = name
--- [6] = rank
--- [7] = icon
--- [8] = count
--- [9] = debuff_type
--- [10] = duration
--- [11] = expiration_time
--- [12] = caster
--- [13] = is_stealable
--- [14] = nameplate_show_personal
--- [15] = spell_id
--- [16] = can_apply_aura
--- [17] = boss_debuff
--- [18] = cast_by_player
--- [19] = nameplate_show_all
--- [20] = time_mod
+--  [1] = index used to get the Aura with UnitAura or 0 for non UnitAura entries
+--  [2] = slot of the weapon enchant or nil if not a weapon enchant
+--  [3] = quality of the weapon or nil if not a weapon enchant
+--  [4] = is_buff
+--  [5] =  1 name
+--  [6] =    rank
+--  [7] =  2 icon
+--  [8] =  3 count
+--  [9] =  4 debuff_type
+-- [10] =  5 duration
+-- [11] =  6 expiration_time
+-- [12] =  7 caster
+-- [13] =  8 is_stealable
+-- [14] =  9 nameplate_show_personal
+-- [15] = 10 spell_id
+-- [16] = 11 can_apply_aura
+-- [17] = 12 boss_debuff
+-- [18] = 13 cast_by_player
+-- [19] = 14 nameplate_show_all
+-- [20] = 15 time_mod
+-- [21] = 16 should_consolidate (Classic)
 
 local list = {}
 
@@ -128,7 +132,7 @@ local function get_aura_list(list, unit, db, is_buff, frame)
 		entry[1], entry[2], entry[3], entry[4], entry[5],
 			entry[7], entry[8], entry[9], entry[10], entry[11],
 			entry[12], entry[13], entry[14], entry[15], entry[16],
-			entry[17], entry[18], entry[19], entry[20] =
+			entry[17], entry[18], entry[19], entry[20], entry[21] =
 			id, nil, nil, is_buff, UnitAura(unit, id, filter)
 
 		if not entry[5] then
@@ -192,7 +196,7 @@ local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 
 
 		-- Create our bogus aura entry
-		entry[1]  = 0 -- index 0 means PitBull generated aura
+		entry[1] = 0 -- index 0 means PitBull generated aura
 		if i == mainhand then
 			entry[2] = INVSLOT_MAINHAND
 			local link = GetInventoryItemLink("player", INVSLOT_MAINHAND)
@@ -218,8 +222,8 @@ local function get_aura_list_sample(list, unit, max, db, is_buff, is_player)
 		entry[6]  = nil -- rank
 		entry[7]  = is_buff and sample_buff_icon or sample_debuff_icon
 		entry[8]  = i -- count set to index to make order show
-		entry[10]  = 0 -- duration
-		entry[11]  = 0 -- expiration_time
+		entry[10] = 0 -- duration
+		entry[11] = 0 -- expiration_time
 		entry[13] = nil -- is_stealable
 		entry[14] = nil -- nameplate_show_personal
 		entry[15] = nil -- spell_id
@@ -233,17 +237,54 @@ end
 
 -- Get the name of the temporary enchant on a weapon from the tooltip
 -- given the item slot the weapon is in.
-local function get_weapon_enchant_name(slot)
-	local data = C_TooltipInfo.GetInventoryItem("player", slot, true)
-	if not data then return end
+local get_weapon_enchant_name
+if not wow_cata then
+	function get_weapon_enchant_name(slot)
+		local data = C_TooltipInfo.GetInventoryItem("player", slot, true)
+		if not data then return end
 
-	for _, line in next, data.lines do
-		TooltipUtil.SurfaceArgs(line)
-		if line.type == 0 and line.leftText then -- Enum.TooltipDataLineType.None
-			local buff_name = line.leftText:match("^(.+) %(%d+ [^$)]+%)$")
-			if buff_name then
-				local buff_name_no_rank = buff_name:match("^(.*) %d+$")
-				return buff_name_no_rank or buff_name
+		for _, line in next, data.lines do
+			TooltipUtil.SurfaceArgs(line)
+			if line.type == 0 and line.leftText then -- Enum.TooltipDataLineType.None
+				local buff_name = line.leftText:match("^(.+) %(%d+ [^$)]+%)$")
+				if buff_name then
+					local buff_name_no_rank = buff_name:match("^(.*) %d+$")
+					return buff_name_no_rank or buff_name
+				end
+			end
+		end
+	end
+else
+	local tt = CreateFrame("GameTooltip", "PitBull4_Aura_Tooltip", UIParent)
+	tt:SetOwner(UIParent, "ANCHOR_NONE")
+	local left = {}
+
+	local g = tt:CreateFontString()
+	g:SetFontObject(_G.GameFontNormal)
+	for i = 1, 30 do
+		local f = tt:CreateFontString()
+		f:SetFontObject(_G.GameFontNormal)
+		tt:AddFontStrings(f, g)
+		left[i] = f
+	end
+
+	get_weapon_enchant_name = function(slot)
+		tt:ClearLines()
+		if not tt:IsOwned(UIParent) then
+			tt:SetOwner(UIParent, "ANCHOR_NONE")
+		end
+		tt:SetInventoryItem("player", slot)
+
+		for i = 1, 30 do
+			local text = left[i]:GetText()
+			if text then
+				local buff_name = text:match("^(.+) %(%d+ [^$)]+%)$")
+				if buff_name then
+					local buff_name_no_rank = buff_name:match("^(.*) %d+$")
+					return buff_name_no_rank or buff_name
+				end
+			else
+				break
 			end
 		end
 	end
@@ -425,7 +466,7 @@ end
 local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	local control = aura_controls[i]
 
-	local id, slot, quality, is_buff, name, _, icon, count, debuff_type, duration, expiration_time, caster, _, _, spell_id, _, _, _, _, time_mod = unpack(aura, 1, ENTRY_END)
+	local id, slot, quality, is_buff, name, _, icon, count, debuff_type, duration, expiration_time, caster, _, _, spell_id, _, _, _, _, time_mod, value = unpack(aura, 1, ENTRY_END)
 
 	local is_mine = my_units[caster]
 	local who = is_mine and "my" or "other"
@@ -457,6 +498,7 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	control.caster = caster
 	control.spell_id = spell_id
 	control.time_mod = time_mod
+	control.should_consolidate = wow_cata and value
 
 	local class_db = frame.classification_db
 	if not db.click_through and class_db and not class_db.click_through then

@@ -5,6 +5,9 @@ local _G = _G
 
 local L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
 
+
+local wow_cata = WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC or nil
+
 local SINGLETON_CLASSIFICATIONS = {
 	"player",
 	"pet",
@@ -78,7 +81,7 @@ if LibSharedMedia and not LibSharedMedia:IsValid("font", DEFAULT_LSM_FONT) then 
 	DEFAULT_LSM_FONT = LibSharedMedia:GetDefault("font")
 end
 
-local CURRENT_CONFIG_VERSION = 5
+local CURRENT_CONFIG_VERSION = 7
 
 local DATABASE_DEFAULTS = {
 	profile = {
@@ -317,9 +320,12 @@ local DEFAULT_UNITS =  {
 
 local LOCALIZED_NAMES = {}
 do
-	for i = 1, GetNumClasses() do
+	local num_classes = wow_cata and 11 or GetNumClasses()
+	for i = 1, num_classes do
 		local info = C_CreatureInfo.GetClassInfo(i)
-		LOCALIZED_NAMES[info.classFile] = info.className
+		if info then
+			LOCALIZED_NAMES[info.classFile] = info.className
+		end
 	end
 
 	for i = 1, 77 do
@@ -350,6 +356,8 @@ PitBull4.version = "@project-version@"
 if PitBull4.version:match("@") then
 	PitBull4.version = "Development"
 end
+
+PitBull4.wow_cata = wow_cata
 
 PitBull4.L = L
 
@@ -1206,6 +1214,8 @@ local upgrade_functions = {
 
 		return true
 	end,
+	-- [5] = classic
+	-- [6] = classic
 }
 
 local function check_config_version(sv)
@@ -1259,10 +1269,19 @@ function PitBull4:OnInitialize()
 		icon = [[Interface\AddOns\PitBull4\pitbull]],
 		OnClick = function(frame, button)
 			if button == "RightButton" then
-				if IsShiftKeyDown() then
-					self.db.profile.frame_snap = not self.db.profile.frame_snap
-				else
+				if not IsShiftKeyDown() then
 					self.db.profile.lock_movement = not self.db.profile.lock_movement
+				elseif not db.profile.lock_movement then
+					self.db.profile.frame_snap = not db.profile.frame_snap
+				end
+				if self.db.profile.lock_movement then
+					self:Print(L["Locked"])
+				else
+					if self.db.profile.frame_snap then
+						self:Print(L["Unlocked with snap"])
+					else
+						self:Print(L["Unlocked without snap"])
+					end
 				end
 				LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
 			else
@@ -1283,8 +1302,8 @@ function PitBull4:OnInitialize()
 	end
 
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED", "OnTanksUpdated")
-	if _G.oRA3 then
-		_G.oRA3.RegisterCallback(self, "OnTanksUpdated")
+	if oRA3 then
+		oRA3.RegisterCallback(self, "OnTanksUpdated")
 	end
 end
 
@@ -1498,15 +1517,14 @@ function PitBull4:OnProfileChanged()
 	self.ReactionColors = db.profile.colors.reaction
 	self.ClassOrder = db.profile.class_order
 	self.RoleOrder = db.profile.role_order
-	for i, v in ipairs(CLASS_SORT_ORDER) do
-		local found = false
-		for j, u in ipairs(self.ClassOrder) do
-			if v == u then
-				found = true
-				break
-			end
+
+	for i, v in ipairs_reverse(self.ClassOrder) do
+		if not tContains(CLASS_SORT_ORDER, v) then
+			table.remove(self.ClassOrder, i)
 		end
-		if not found then
+	end
+	for _, v in ipairs(CLASS_SORT_ORDER) do
+		if not tContains(self.ClassOrder, v) then
 			self.ClassOrder[#self.ClassOrder + 1] = v
 		end
 	end
@@ -1642,7 +1660,9 @@ function PitBull4:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("PLAYER_LEAVING_WORLD")
 
-	self:RegisterEvent("PET_BATTLE_OPENING_START")
+	if not wow_cata then
+		self:RegisterEvent("PET_BATTLE_OPENING_START")
+	end
 
 	timerFrame:Show()
 

@@ -26,10 +26,17 @@ ignore = {
 	"43.", -- Shadowing an upvalue, an upvalue argument, an upvalue loop variable.
 	"542", -- An empty if branch
 }
+files["Modules/PhaseIcon/*"].globals = {
+	"UnitInPhase",
+}
+files["Modules/Runes_Classic/*"].globals = {
+	"GetRuneType",
+}
 globals = {
 	-- Third-party
 	"LibStub",
 	"PitBull4",
+	"oRA3",
 
 	-- Frames/tables
 	"BasicMessageDialog",
@@ -43,6 +50,12 @@ globals = {
 	"UIErrorsFrame",
 	"UIParent",
 
+	"Enum",
+
+	-- Classic
+	"WOW_PROJECT_ID",
+	"WOW_PROJECT_CATACLYSM_CLASSIC",
+
 	-- Functions
 	"C_AzeriteItem",
 	"C_CreatureInfo",
@@ -55,6 +68,7 @@ globals = {
 	"C_TooltipInfo",
 	"CancelItemTempEnchantment",
 	"CancelUnitBuff",
+	"CheckInteractDistance",
 	"CooldownFrame_Set",
 	"CopyTable",
 	"CreateFrame",
@@ -75,6 +89,7 @@ globals = {
 	"GetItemQualityColor",
 	"GetLocale",
 	"GetManagedEnvironment",
+	"GetMaxPlayerLevel",
 	"GetMouseFocus",
 	"GetNumAddOns",
 	"GetNumClasses",
@@ -92,6 +107,7 @@ globals = {
 	"GetScreenWidth",
 	"GetShapeshiftFormID",
 	"GetSpecialization",
+	"GetSpellBookItemName",
 	"GetSpellCooldown",
 	"GetSpellInfo",
 	"GetTalentInfoBySpecialization",
@@ -116,7 +132,7 @@ globals = {
 	"PartyUtil",
 	"PlaySound",
 	"PlaySoundFile",
-	"RegisterStateDriver",
+	"RegisterAttributeDriver",
 	"RegisterUnitWatch",
 	"SecureHandlerExecute",
 	"SecureHandlerSetFrameRef",
@@ -127,7 +143,6 @@ globals = {
 	"StaticPopup_Show",
 	"TooltipUtil",
 	"UnitAffectingCombat",
-	"UnitAura",
 	"UnitBattlePetLevel",
 	"UnitBattlePetType",
 	"UnitCanAttack",
@@ -191,7 +206,7 @@ globals = {
 	"UnitThreatSituation",
 	"UnitXP",
 	"UnitXPMax",
-	"UnregisterStateDriver",
+	"UnregisterAttributeDriver",
 	"UnregisterUnitWatch",
 	"abs",
 	"bit",
@@ -206,11 +221,15 @@ globals = {
 	"max",
 	"min",
 	"string",
+	"strjoin",
 	"strsplit",
 	"strtrim",
 	"table",
+	"tostringall",
+	"tContains",
 	"tInvert",
 	"wipe",
+	"ipairs_reverse",
 
 	-- Strings
 	"ALTERNATE_POWER_INDEX",
