@@ -1903,7 +1903,7 @@ StateHeader:WrapScript(StateHeader, "OnAttributeChanged", [[
     end
   end
 ]])
-RegisterStateDriver(StateHeader, "group", "[petbattle] petbattle; [target=raid31, exists] raid40; [target=raid26, exists] raid30; [target=raid21, exists] raid25; [target=raid16, exists] raid20; [target=raid11, exists] raid15; [target=raid6, exists] raid10; [group:raid] raid; [group:party] party; solo")
+RegisterAttributeDriver(StateHeader, "state-group", "[target=raid31, exists] raid40; [target=raid26, exists] raid30; [target=raid21, exists] raid25; [target=raid16, exists] raid20; [target=raid11, exists] raid15; [target=raid6, exists] raid10; [group:raid] raid; [group:party] party; solo")
 
 function PitBull4:AddGroupToStateHeader(header)
 	local header_name = header:GetName()

@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Button name="PitBull4_UnitTemplate" virtual="true" inherits="SecureUnitButtonTemplate,SecureHandlerStateTemplate">
 		<Attributes>
-			<Attribute name="refreshUnitChange" type="string" value="local unit = self:GetAttribute('unit'); if unit then RegisterStateDriver(self, 'vehicleui', ('[@%s,unithasvehicleui]vehicle; novehicle'):format(unit)) else UnregisterStateDriver(self, 'vehicleui') end"/>
+			<Attribute name="refreshUnitChange" type="string" value="local unit = self:GetAttribute('unit'); if unit then RegisterAttributeDriver(self, 'state-vehicleui', ('[@%s,unithasvehicleui] vehicle; novehicle'):format(unit)) else UnregisterAttributeDriver(self, 'vehicleui') end"/>
 			<Attribute name="_onstate-vehicleui" type="string" value="local unit = self:GetAttribute('unit'); if unit and newstate == 'vehicle' and UnitPlayerOrPetInRaid(unit) and not UnitTargetsVehicleInRaidUI(unit) then self:SetAttribute('toggleForVehicle', false) else self:SetAttribute('toggleForVehicle', self:GetAttribute('pb4-vehicleswap')) end"/>
 		</Attributes>
 	</Button>
