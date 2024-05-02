@@ -15,6 +15,7 @@ L["Hostile"] = _G.FACTION_STANDING_LABEL2
 L["Hostile, Long-range"] = true
 L["Friendly"] = _G.FACTION_STANDING_LABEL5
 
+
 L["%s can dispel"] = true
 L["%s can purge"] = true
 L["%s enemy debuffs"] = true
@@ -473,6 +474,7 @@ L["Hide if full"] = true
 L["Hide inactive"] = true
 L["Hide non-mana"] = true
 L["Hide non-power"] = true
+L["Hide the standard arena frames."] = true
 L["Hide the standard focus frame."] = true
 L["Hide the standard party frames."] = true
 L["Hide the standard player frame."] = true
@@ -961,6 +963,7 @@ L["Show while shifted"] = true
 L["Shows a cooldown spiral on the totem icons."] = true
 L["Shows buffs and debuffs for PitBull4 frames."] = true
 L["Shows the remaining time in as text."] = true
+L["Showing hidden frames requires reloading the UI."] = true
 L["Side"] = true
 L["Simple"] = true
 L["Size"] = true
