@@ -7,20 +7,18 @@ local L = PitBull4.L
 
 -- CONSTANTS ----------------------------------------------------------------
 
-local SPELL_POWER_SOUL_SHARDS = 7 -- Enum.PowerType.SoulShards
+local SPELL_POWER_SOUL_SHARDS = Enum.PowerType.SoulShards
+local SHARDBAR_SHOW_LEVEL = 10
 
-local MAX_SHARDS = 5
+local MAX_SHARDS = 4
 
-local STANDARD_WIDTH = 17
-local STANDARD_HEIGHT = 22
+local STANDARD_SIZE = 15
 local BORDER_SIZE = 3
-local SPACING = 6
+local SPACING = 3
 
-local HALF_STANDARD_WIDTH = STANDARD_WIDTH / 2
-local HALF_STANDARD_HEIGHT = STANDARD_HEIGHT / 2
+local HALF_STANDARD_SIZE = STANDARD_SIZE / 2
 
-local CONTAINER_WIDTH = STANDARD_WIDTH + BORDER_SIZE * 2
-local CONTAINER_HEIGHT = STANDARD_HEIGHT + BORDER_SIZE * 2
+local CONTAINER_HEIGHT = STANDARD_SIZE + BORDER_SIZE * 2
 
 -----------------------------------------------------------------------------
 
@@ -39,10 +37,17 @@ PitBull4_SoulShards:SetDefaults({
 	background_color = { 0, 0, 0, 0.5 }
 })
 
+local player_level = UnitLevel("player")
+
 function PitBull4_SoulShards:OnEnable()
+	player_level = UnitLevel("player")
 	self:RegisterUnitEvent("UNIT_POWER_FREQUENT", nil, "player")
 	self:RegisterUnitEvent("UNIT_DISPLAYPOWER", nil, "player")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UNIT_DISPLAYPOWER")
+	self:RegisterEvent("PLAYER_TALENT_UPDATE", "UNIT_DISPLAYPOWER")
+	if player_level < SHARDBAR_SHOW_LEVEL then
+		self:RegisterEvent("PLAYER_LEVEL_UP")
+	end
 end
 
 function PitBull4_SoulShards:UNIT_POWER_FREQUENT(_, unit, power_type)
@@ -54,6 +59,14 @@ function PitBull4_SoulShards:UNIT_DISPLAYPOWER()
 	self:UpdateForUnitID("player")
 end
 
+function PitBull4_SoulShards:PLAYER_LEVEL_UP(_, level)
+	player_level = level
+	if player_level >= SHARDBAR_SHOW_LEVEL then
+		self:UnregisterEvent("PLAYER_LEVEL_UP")
+		self:UpdateForUnitID("player")
+	end
+end
+
 function PitBull4_SoulShards:ClearFrame(frame)
 	local container = frame.SoulShards
 	if not container then
@@ -62,10 +75,7 @@ function PitBull4_SoulShards:ClearFrame(frame)
 
 	for i = 1, MAX_SHARDS do
 		container[i] = container[i]:Delete()
-		container.Shards[i] = nil
 	end
-	container.Shards = nil
-	container.max_shards = nil
 	container.bg = container.bg:Delete()
 	frame.SoulShards = container:Delete()
 
@@ -73,22 +83,21 @@ function PitBull4_SoulShards:ClearFrame(frame)
 end
 
 local function update_container_size(container, vertical, max_shards)
+	local width = STANDARD_SIZE * max_shards + BORDER_SIZE * 2 + SPACING * (max_shards - 1)
 	if not vertical then
-		local width = STANDARD_WIDTH * max_shards + BORDER_SIZE * 2 + SPACING * (max_shards - 1)
 		container:SetWidth(width)
 		container:SetHeight(CONTAINER_HEIGHT)
 		container.height = 1
 	else
-		local height = STANDARD_HEIGHT * max_shards + BORDER_SIZE * 2 + SPACING * (max_shards - 1)
-		container:SetWidth(CONTAINER_WIDTH)
-		container:SetHeight(height)
-		container.height = height / CONTAINER_HEIGHT
+		container:SetWidth(CONTAINER_HEIGHT)
+		container:SetHeight(width)
+		container.height = width / CONTAINER_HEIGHT
 	end
 	container.max_shards = max_shards
 end
 
 function PitBull4_SoulShards:UpdateFrame(frame)
-	if frame.unit ~= "player" then
+	if frame.unit ~= "player" or player_level < SHARDBAR_SHOW_LEVEL then
 		return self:ClearFrame(frame)
 	end
 
@@ -100,24 +109,26 @@ function PitBull4_SoulShards:UpdateFrame(frame)
 		container = PitBull4.Controls.MakeFrame(frame)
 		frame.SoulShards = container
 		container:SetFrameLevel(frame:GetFrameLevel() + 13)
-		container.Shards = {}
 
+		local point, attach
 		for i = 1, MAX_SHARDS do
 			local soul_shard = PitBull4.Controls.MakeSoulShard(container, i)
 			container[i] = soul_shard
-			soul_shard:SetSize(STANDARD_WIDTH, STANDARD_HEIGHT)
+			soul_shard:UpdateTexture()
 			soul_shard:ClearAllPoints()
 			soul_shard:EnableMouse(not db.click_through)
 			if not vertical then
-				soul_shard:SetPoint("CENTER", container, "LEFT", BORDER_SIZE + (i - 1) * (SPACING + STANDARD_WIDTH) + HALF_STANDARD_WIDTH, 0)
+				soul_shard:SetPoint("CENTER", container, "LEFT", BORDER_SIZE + (i - 1) * (SPACING + STANDARD_SIZE) + HALF_STANDARD_SIZE, 0)
 			else
-				soul_shard:SetPoint("CENTER", container, "BOTTOM", 0, BORDER_SIZE + (i - 1) * (SPACING + STANDARD_HEIGHT) + HALF_STANDARD_HEIGHT)
+				soul_shard:SetPoint("CENTER", container, "BOTTOM", 0, BORDER_SIZE + (i - 1) * (SPACING + STANDARD_SIZE) + HALF_STANDARD_SIZE)
 			end
 		end
 
+		update_container_size(container, vertical, MAX_SHARDS)
+
 		local bg = PitBull4.Controls.MakeTexture(container, "BACKGROUND")
 		container.bg = bg
-		bg:SetColorTexture(unpack(db.background_color))
+		bg:SetTexture(unpack(db.background_color))
 		bg:SetAllPoints(container)
 	end
 
@@ -126,19 +137,17 @@ function PitBull4_SoulShards:UpdateFrame(frame)
 		update_container_size(container, vertical, max_shards)
 	end
 
-	local modifier = UnitPowerDisplayMod(SPELL_POWER_SOUL_SHARDS)
-	local num_soul_shards = (modifier ~= 0) and (UnitPower("player", SPELL_POWER_SOUL_SHARDS, true) / modifier) or 0
-	if GetSpecialization() ~= 3 then
-		-- Destruction is supposed to show partial soulshards, but Affliction and Demonology should only show full ones
-		num_soul_shards = math.floor(num_soul_shards)
-	end
+	local num_soul_shards = UnitPower("player", SPELL_POWER_SOUL_SHARDS)
 	for i = 1, MAX_SHARDS do
 		local soul_shard = container[i]
 		if i > max_shards then
 			soul_shard:Hide()
+		elseif i <= num_soul_shards then
+			soul_shard:Show()
+			soul_shard:Activate()
 		else
 			soul_shard:Show()
-			soul_shard:Update(num_soul_shards)
+			soul_shard:Deactivate()
 		end
 	end
 
