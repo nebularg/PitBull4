@@ -48,8 +48,7 @@ do
 		return UnitPower("player") > 0
 	end
 	local function lunar_not_empty()
-		local _, _, _, selected = GetTalentInfoBySpecialization(1, 1, 1) -- Nature's Balance
-		if selected then
+		if IsPlayerSpell(202430) then -- Nature's Balance
 			local power = UnitPower("player")
 			return power < 50 or power > 51
 		end
