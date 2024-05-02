@@ -4,7 +4,7 @@ local L = PitBull4.L
 
 -- luacheck: no global
 
-local PitBull4_HideBlizzard = PitBull4:NewModule("HideBlizzard", "AceHook-3.0")
+local PitBull4_HideBlizzard = PitBull4:NewModule("HideBlizzard")
 
 PitBull4_HideBlizzard:SetModuleType("custom")
 PitBull4_HideBlizzard:SetName(L["Hide Blizzard frames"])
@@ -22,6 +22,9 @@ PitBull4_HideBlizzard:SetDefaults({}, {
 })
 
 function PitBull4_HideBlizzard:OnEnable()
+	if not CompactRaidFrameManager then
+		self:RegisterEvent("ADDON_LOADED")
+	end
 	self:UpdateFrames()
 end
 
@@ -33,23 +36,27 @@ function PitBull4_HideBlizzard:OnProfileChanged()
 	self:UpdateFrames()
 end
 
-local showers = {}
+function PitBull4_HideBlizzard:ADDON_LOADED(event, addon)
+	if addon == "Blizzard_CompactRaidFrames" then
+		self:UnregisterEvent(event)
+		self:UpdateFrames()
+	end
+end
+
 local hiders = {}
 local currently_hidden = {}
-local parents = {}
+local reload_needed = false
 
 function PitBull4_HideBlizzard:UpdateFrames()
-	for name in pairs(showers) do
+	for name in pairs(hiders) do
 		if self:IsEnabled() and self.db.profile.global[name] then
 			if not currently_hidden[name] then
-				currently_hidden[name] = true
-				hiders[name](self)
+				currently_hidden[name] = not hiders[name](self)
 			end
-		else
-			if currently_hidden[name] then
-				currently_hidden[name] = nil
-				showers[name](self)
-			end
+		elseif currently_hidden[name] and not reload_needed then
+			reload_needed = true
+			self:Print("Showing hidden frames requires reloading the UI.")
+			LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
 		end
 	end
 end
@@ -61,182 +68,94 @@ local hide_frame = PitBull4:OutOfCombatWrapper(function(self) self:Hide() end)
 local hidden_frame = CreateFrame("Frame")
 hidden_frame:Hide()
 
-local function hook_frames(...)
+local function hook_frames(raw, ...)
 	for i = 1, select("#", ...) do
 		local frame = select(i, ...)
+		UnregisterUnitWatch(frame)
 		frame:UnregisterAllEvents()
-		if not PitBull4_HideBlizzard:IsHooked(frame, "OnShow") then
-			PitBull4_HideBlizzard:SecureHookScript(frame, "OnShow", hide_frame)
-		end
 		frame:Hide()
-	end
-end
 
-local function hook_reparent_frames(...)
-	for i = 1, select("#", ...) do
-		local frame = select(i, ...)
-		frame:UnregisterAllEvents()
-		if not PitBull4_HideBlizzard:IsHooked(frame, "OnShow") then
-			PitBull4_HideBlizzard:SecureHookScript(frame, "OnShow", hide_frame)
-			parents[frame] = frame:GetParent()
+		if frame.manabar then frame.manabar:UnregisterAllEvents() end
+		if frame.healthbar then frame.healthbar:UnregisterAllEvents() end
+		if frame.spellbar then frame.spellbar:UnregisterAllEvents() end
+
+		if raw then
+			frame.Show = noop
+		else
 			frame:SetParent(hidden_frame)
-		end
-		frame:Hide()
-	end
-end
-
-local function rawhook_frames(...)
-	for i = 1, select("#", ...) do
-		local frame = select(i, ...)
-		frame:UnregisterAllEvents()
-		PitBull4_HideBlizzard:RawHook(frame, "Show", noop, true)
-		PitBull4_HideBlizzard:RawHook(frame, "SetPoint", noop, true)
-		frame:Hide()
-	end
-end
-
-local function unhook_frame(frame)
-	if PitBull4_HideBlizzard:IsHooked(frame, "OnShow") then
-		PitBull4_HideBlizzard:Unhook(frame, "OnShow")
-		local parent = parents[frame]
-		if parent then
-			frame:SetParent(parent)
-		end
-	elseif PitBull4_HideBlizzard:IsHooked(frame, "Show") then
-		PitBull4_HideBlizzard:Unhook(frame, "Show")
-		PitBull4_HideBlizzard:Unhook(frame, "SetPoint")
-	end
-end
-
-local function unhook_frames(...)
-	for i = 1, select("#", ...) do
-		local frame = select(i, ...)
-		unhook_frame(frame)
-		local handler = frame:GetScript("OnLoad")
-		if handler then
-			handler(frame)
+			frame:HookScript("OnShow", hide_frame)
 		end
 	end
 end
 
-local function unhook_frames_without_init(...)
-	for i = 1, select("#", ...) do
-		local frame = select(i, ...)
-		unhook_frame(frame)
-	end
-end
 
 function hiders:player()
-	hook_reparent_frames(PlayerFrame)
-	BuffFrame_Update()
-end
-
-function showers:player()
-	unhook_frames_without_init(PlayerFrame)
-	PlayerFrame:Show()
+	hook_frames(false, PlayerFrame)
+	-- BuffFrame_Update()
+	-- BuffFrame needs an update, but calling directly will taint things
+	PlayerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+	PlayerFrame:SetMovable(true)
+	PlayerFrame:SetUserPlaced(true)
+	PlayerFrame:SetDontSavePosition(true)
 end
 
 function hiders:party()
 	for i = 1, MAX_PARTY_MEMBERS do
-		local frame = _G["PartyMemberFrame" .. i]
-		frame:SetAttribute("statehidden", true)
-		hook_frames(frame)
+		local name = "PartyMemberFrame" .. i
+		hook_frames(false, _G[name], _G[name .. "HealthBar"], _G[name .. "ManaBar"])
 	end
 
 	UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
-end
 
-function showers:party()
-	for i = 1, MAX_PARTY_MEMBERS do
-		local frame = _G["PartyMemberFrame" .. i]
-		frame:SetAttribute("statehidden", nil)
-		unhook_frames(frame)
-		frame:GetScript("OnEvent")(frame, "GROUP_ROSTER_UPDATE")
+	if CompactPartyFrame then
+		hook_frames(false, CompactPartyFrame)
 	end
-
-	UIParent:RegisterEvent("GROUP_ROSTER_UPDATE")
 end
 
 do
 	local raid_shown = nil
 	local function hide_raid()
-			CompactRaidFrameManager:UnregisterEvent("GROUP_ROSTER_UPDATE")
-			CompactRaidFrameManager:UnregisterEvent("PLAYER_ENTERING_WORLD")
+			CompactRaidFrameManager:UnregisterAllEvents()
+			CompactRaidFrameContainer:UnregisterAllEvents()
 			if InCombatLockdown() then return end
 
+			CompactRaidFrameManager:Hide()
 			raid_shown = CompactRaidFrameManager_GetSetting("IsShown")
 			if raid_shown and raid_shown ~= "0" then
 				CompactRaidFrameManager_SetSetting("IsShown", "0")
 			end
-			CompactRaidFrameManager:Hide()
 	end
 
 	function hiders:raid()
-		if not CompactRaidFrameManager then return end -- Blizzard_CompactRaidFrames isn't loaded
-
-		if not PitBull4_HideBlizzard:IsHooked("CompactRaidFrameManager_UpdateShown") then
-			PitBull4_HideBlizzard:SecureHook("CompactRaidFrameManager_UpdateShown", hide_raid)
-			PitBull4_HideBlizzard:SecureHookScript(CompactRaidFrameManager, "OnShow", hide_frame)
+		if not CompactRaidFrameManager then
+			-- Blizzard_CompactRaidFrames isn't loaded
+			return true
 		end
+
+		hooksecurefunc("CompactRaidFrameManager_UpdateShown", function()
+			if self:IsEnabled() and self.db.profile.global.raid then
+				hide_raid()
+			end
+		end)
+
 		hide_raid()
-	end
-
-	function showers:raid()
-		if not CompactRaidFrameManager then return end -- Blizzard_CompactRaidFrames isn't loaded
-
-		PitBull4_HideBlizzard:Unhook("CompactRaidFrameManager_UpdateShown")
-		PitBull4_HideBlizzard:Unhook(CompactRaidFrameManager, "OnShow")
-
-		CompactRaidFrameManager:RegisterEvent("GROUP_ROSTER_UPDATE")
-		CompactRaidFrameManager:RegisterEvent("PLAYER_ENTERING_WORLD")
-
-		if raid_shown and raid_shown ~= "0" then
-			CompactRaidFrameManager_SetSetting("IsShown", "1")
-		end
-
-		if GetDisplayedAllyFrames() then
-			CompactRaidFrameManager:Show()
-		end
+		CompactRaidFrameContainer:HookScript("OnShow", hide_raid)
+		CompactRaidFrameManager:HookScript("OnShow", hide_raid)
 	end
 end
 
 function hiders:target()
-	hook_reparent_frames(TargetFrame, ComboFrame)
-end
-
-function showers:target()
-	unhook_frames(TargetFrame, ComboFrame)
-	ComboFrame:Show()
+	hook_frames(false, TargetFrame, ComboFrame, TargetFrameToT)
 end
 
 function hiders:castbar()
-	rawhook_frames(CastingBarFrame, PetCastingBarFrame)
-end
-
-function showers:castbar()
-	unhook_frames(CastingBarFrame, PetCastingBarFrame)
+	hook_frames(true, CastingBarFrame, PetCastingBarFrame)
 end
 
 function hiders:aura()
-	hook_frames(BuffFrame, TemporaryEnchantFrame)
+	hook_frames(false, BuffFrame, TemporaryEnchantFrame)
 end
 
-function showers:aura()
-	unhook_frames_without_init(BuffFrame, TemporaryEnchantFrame)
-	BuffFrame:RegisterUnitEvent("UNIT_AURA", "player", "vehicle")
-	BuffFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
-	BuffFrame:Show()
-
-	TemporaryEnchantFrame:Show()
-end
-
-
-for k, v in pairs(hiders) do
-	hiders[k] = PitBull4:OutOfCombatWrapper(v)
-end
-for k, v in pairs(showers) do
-	showers[k] = PitBull4:OutOfCombatWrapper(v)
-end
 
 PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 	local function get(info)
@@ -246,12 +165,12 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 	local function set(info, value)
 		local id = info[#info]
 		self.db.profile.global[id] = value
-
 		self:UpdateFrames()
 	end
 	local function hidden(info)
 		return not self:IsEnabled()
 	end
+
 	return 'player', {
 		type = 'toggle',
 		name = L["Player"],
@@ -294,5 +213,16 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		get = get,
 		set = set,
 		hidden = hidden,
+	}, 'sep', {
+		type = 'header',
+		name = '',
+		order = -2,
+		hidden = function() return not self:IsEnabled() or not reload_needed end,
+	}, 'reloadui', {
+		type = 'execute',
+		name = 'Reload UI',
+		order = -1,
+		func = function() C_UI.Reload() end,
+		hidden = function() return not self:IsEnabled() or not reload_needed end,
 	}
 end)
