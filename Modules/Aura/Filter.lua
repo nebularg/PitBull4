@@ -359,7 +359,7 @@ friend_buffs.DarkIronDwarf = {
 }
 friend_debuffs.DarkIronDwarf = {}
 self_buffs.DarkIronDwarf = {
-	[273104] = true, -- Fireblood
+	[273104] = not wow_cata, -- Fireblood
 }
 self_debuffs.DarkIronDwarf = {}
 pet_buffs.DarkIronDwarf = {}
@@ -381,7 +381,7 @@ friend_buffs.VoidElf = {
 }
 friend_debuffs.VoidElf = {}
 self_buffs.VoidElf = {
-	[256948] = true, -- Spatial Rift
+	[256948] = not wow_cata, -- Spatial Rift
 }
 self_debuffs.VoidElf = {}
 pet_buffs.VoidElf = {}
@@ -483,10 +483,10 @@ friend_buffs.MagharOrc = {
 friend_debuffs.MagharOrc = {}
 self_buffs.MagharOrc = {
 	-- Ancestral Call
-	[274739] = true, -- Rictus of the Laughing Skull
-	[274740] = true, -- Zeal of the Burning Blade
-	[274741] = true, -- Ferocity of the Frostwolf
-	[274742] = true, -- Might of the Blackrock
+	[274739] = not wow_cata, -- Rictus of the Laughing Skull
+	[274740] = not wow_cata, -- Zeal of the Burning Blade
+	[274741] = not wow_cata, -- Ferocity of the Frostwolf
+	[274742] = not wow_cata, -- Might of the Blackrock
 }
 self_debuffs.MagharOrc = {}
 pet_buffs.MagharOrc = {}
@@ -501,7 +501,7 @@ self_buffs.HighmountainTauren = {}
 self_debuffs.HighmountainTauren = {}
 pet_buffs.HighmountainTauren = {}
 enemy_debuffs.HighmountainTauren = {
-	[255723] = true, -- Bull Rush
+	[255723] = not wow_cata, -- Bull Rush
 }
 
 -- Nightborne
@@ -513,7 +513,7 @@ self_buffs.Nightborne = {}
 self_debuffs.Nightborne = {}
 pet_buffs.Nightborne = {}
 enemy_debuffs.Nightborne = {
-	[260369] = true, -- Arcane Pulse
+	[260369] = not wow_cata, -- Arcane Pulse
 }
 
 -- Zandalari Troll
@@ -546,7 +546,7 @@ self_buffs.Pandaren = {}
 self_debuffs.Pandaren = {}
 pet_buffs.Pandaren = {}
 enemy_debuffs.Pandaren = {
-	[107079] = true, -- Quaking Palm
+	[107079] = not wow_cata, -- Quaking Palm
 }
 
 -- Dracthyr
@@ -571,9 +571,9 @@ local function turn(t, shallow)
 	local function turn(entry) -- luacheck: ignore
 		for id, v in next, entry do
 			local spell = GetSpellInfo(id)
-			if spell then
+			if spell and v then
 				tmp[spell] = v
-			elseif PitBull4.DEBUG then
+			elseif v and PitBull4.DEBUG then
 				PitBull4_Aura:Printf("Invalid spell ID: %d", id)
 				debug_spells[#debug_spells + 1] = id
 			end
