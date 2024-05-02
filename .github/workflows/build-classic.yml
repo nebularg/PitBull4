@@ -10,30 +10,22 @@ on:
       - '.github/**'
 
 
-env:
-  CF_API_KEY: ${{ secrets.CF_API_KEY }}
-  WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
-  GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout project
-      uses: actions/checkout@v1
-
-    - name: Run luacheck
-      uses: nebularg/actions-luacheck@v1
+    - uses: actions/checkout@v4
       with:
-        args: -q
+        fetch-depth: 0
 
-    - name: Package Classic
+    - name: Package Classic Era
       uses: BigWigsMods/packager@master
       with:
         args: -g classic
-
-    - name: Package BCC
-      uses: BigWigsMods/packager@master
-      with:
-        args: -g bcc
+      env:
+        CF_API_KEY: ${{ secrets.CF_API_KEY }}
+        WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
+        WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
+        GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}

@@ -19,6 +19,7 @@
 
 ## X-Curse-Project-ID: 7522
 ## X-WoWI-ID: 20021
+## X-Wago-ID: LvNAmONo
 
 libs.xml
 load.xml
