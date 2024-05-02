@@ -1357,7 +1357,7 @@ function PitBull4.Options.get_unit_options()
 				db.group_filter = table.concat(t, ",")
 			elseif value == 'CLASS' then
 				local t = {}
-				for class in pairs(RAID_CLASS_COLORS) do
+				for _, class in pairs(CLASS_SORT_ORDER) do
 					t[#t+1] = class
 				end
 				db.group_filter = table.concat(t, ",")
@@ -1510,7 +1510,7 @@ function PitBull4.Options.get_unit_options()
 			return not RAID_CLASS_COLORS[start]
 		end
 	}
-	for class in pairs(RAID_CLASS_COLORS) do
+	for _, class in pairs(CLASS_SORT_ORDER) do
 		group_filtering_args.group_filter_class.values[class] = LN[class] or class
 	end
 
