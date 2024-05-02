@@ -2,7 +2,6 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local MAX_PLAYER_LEVEL = _G.MAX_PLAYER_LEVEL
 local EXAMPLE_VALUE = 0.25
 
 local PitBull4_ExperienceBar = PitBull4:NewModule("ExperienceBar")
@@ -15,10 +14,27 @@ PitBull4_ExperienceBar:SetDefaults({
 	position = 4,
 })
 
+local max_player_level = GetMaxPlayerLevel()
+
 function PitBull4_ExperienceBar:OnEnable()
 	self:RegisterEvent("PLAYER_XP_UPDATE")
-	self:RegisterEvent("UPDATE_EXHAUSTION")
-	self:RegisterEvent("PLAYER_LEVEL_UP")
+	self:RegisterEvent("UPDATE_EXHAUSTION", "PLAYER_XP_UPDATE")
+	self:RegisterEvent("PLAYER_LEVEL_UP", "PLAYER_XP_UPDATE")
+	self:RegisterEvent("UPDATE_EXPANSION_LEVEL")
+end
+
+function PitBull4_ExperienceBar:PLAYER_XP_UPDATE()
+	for frame in PitBull4:IterateFramesForUnitIDs("player", "pet") do
+		self:Update(frame)
+	end
+end
+
+function PitBull4_ExperienceBar:UPDATE_EXPANSION_LEVEL()
+	max_player_level = GetMaxPlayerLevel()
+
+	for frame in PitBull4:IterateFramesForUnitIDs("player", "pet") do
+		self:Update(frame)
+	end
 end
 
 function PitBull4_ExperienceBar:GetValue(frame)
@@ -30,7 +46,7 @@ function PitBull4_ExperienceBar:GetValue(frame)
 	local level = UnitLevel(unit)
 	local current, max, rest
 	if unit == "player" then
-		if level == MAX_PLAYER_LEVEL then
+		if level == max_player_level then
 			return nil
 		end
 
@@ -70,14 +86,6 @@ function PitBull4_ExperienceBar:GetExtraColor(frame, value)
 end
 PitBull4_ExperienceBar.GetExampleExtraColor = PitBull4_ExperienceBar.GetExtraColor
 
-function PitBull4_ExperienceBar:PLAYER_XP_UPDATE()
-	for frame in PitBull4:IterateFramesForUnitIDs("player", "pet") do
-		self:Update(frame)
-	end
-end
-
-PitBull4_ExperienceBar.UPDATE_EXHAUSTION = PitBull4_ExperienceBar.PLAYER_XP_UPDATE
-PitBull4_ExperienceBar.PLAYER_LEVEL_UP = PitBull4_ExperienceBar.PLAYER_XP_UPDATE
 
 PitBull4_ExperienceBar:SetLayoutOptionsFunction(function(self)
 	return 'toggle_custom_extra', {
