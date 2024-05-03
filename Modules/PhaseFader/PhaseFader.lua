@@ -2,6 +2,8 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local wow_cata = PitBull4.wow_cata
+
 local PitBull4_PhaseFader = PitBull4:NewModule("PhaseFader")
 
 PitBull4_PhaseFader:SetModuleType("fader")
@@ -27,7 +29,11 @@ function PitBull4_PhaseFader:GetOpacity(frame)
 		return nil
 	end
 
-	if not UnitPhaseReason(unit) then
+	if wow_cata then
+		if UnitInPhase(unit) then
+			return nil
+		end
+	elseif not UnitPhaseReason(unit) then
 		return nil
 	end
 

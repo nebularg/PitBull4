@@ -30,7 +30,7 @@
 <Include file="Modules\HostilityFader\load.xml"/>
 <Include file="Modules\LeaderIcon\load.xml"/>
 <Include file="Modules\LuaTexts\load.xml"/>
-<!-- <Include file="Modules\PhaseFader\load.xml"/> -->
+<Include file="Modules\PhaseFader\load.xml"/>
 <Include file="Modules\PhaseIcon\load.xml"/>
 <Include file="Modules\Portrait\load.xml"/>
 <Include file="Modules\PowerBar\load.xml"/>

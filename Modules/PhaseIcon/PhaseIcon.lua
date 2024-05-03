@@ -30,9 +30,12 @@ function PitBull4_PhaseIcon:GetEnableMouse(frame)
 end
 
 function PitBull4_PhaseIcon:OnEnter()
-	local unit = self:GetParent().unit
-	local phaseReason = UnitPhaseReason(unit)
-	local tooltip = PartyUtil.GetPhasedReasonString(phaseReason, unit) or _G.PARTY_PHASED_MESSAGE
+	local tooltip = _G.PARTY_PHASED_MESSAGE
+	if not wow_cata then
+		local unit = self:GetParent().unit
+		local phaseReason = UnitPhaseReason(unit)
+		local tooltip = PartyUtil.GetPhasedReasonString(phaseReason, unit) or _G.PARTY_PHASED_MESSAGE
+	end
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 	GameTooltip:SetText(tooltip, nil, nil, nil, nil, true)
 	GameTooltip:Show()

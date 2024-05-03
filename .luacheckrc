@@ -26,11 +26,11 @@ ignore = {
 	"43.", -- Shadowing an upvalue, an upvalue argument, an upvalue loop variable.
 	"542", -- An empty if branch
 }
-files["Modules/PhaseIcon/*"].globals = {
-	"UnitInPhase",
+files["Modules/Phase**"].globals = {
+	"UnitInPhase", -- classic compat
 }
 files["Modules/Runes_Classic/*"].globals = {
-	"GetRuneType",
+	"GetRuneType", -- classic compat
 }
 globals = {
 	-- Third-party
