@@ -174,19 +174,25 @@ function PitBull4.Options.get_layout_editor_general_options(layout_options)
 					PitBull4.Options.SetCurrentLayout(new_layout)
 
 					for unit, db in pairs(PitBull4.db.profile.units) do
-						if db.layout == layout then
-							db.layout = new_layout
-							for frame in PitBull4:IterateFramesForClassification(unit, true) do
-								frame:RefreshLayout()
+						local id = PitBull4.Utils.GetBestUnitID(db.unit)
+						if PitBull4.Utils.IsSingletonUnitID(id) then
+							if db.layout == layout then
+								db.layout = new_layout
+								for frame in PitBull4:IterateFramesForClassification(unit, true) do
+									frame:RefreshLayout()
+								end
 							end
 						end
 					end
 
 					for group, db in pairs(PitBull4.db.profile.groups) do
-						if db.layout == layout then
-							db.layout = new_layout
-							for header in PitBull4:IterateHeadersForName(group) do
-								header:RefreshLayout()
+						local id = db.unit_group
+						if PitBull4.Utils.IsValidClassification(id) then
+							if db.layout == layout then
+								db.layout = new_layout
+								for header in PitBull4:IterateHeadersForName(group) do
+									header:RefreshLayout()
+								end
 							end
 						end
 					end

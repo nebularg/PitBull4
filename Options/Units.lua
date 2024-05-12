@@ -50,10 +50,12 @@ function PitBull4.Options.get_unit_options()
 		values = function(info)
 			local t = {}
 			for name, db in pairs(PitBull4.db.profile.units) do
-				if not db.enabled then
-					t[name] = ("|cff7f7f7f%s|r"):format(name)
-				else
-					t[name] = name
+				if PitBull4.Utils.IsSingletonUnitID(db.unit) then
+					if not db.enabled then
+						t[name] = ("|cff7f7f7f%s|r"):format(name)
+					else
+						t[name] = name
+					end
 				end
 			end
 			return t
@@ -109,10 +111,12 @@ function PitBull4.Options.get_unit_options()
 		values = function(info)
 			local t = {}
 			for name, db in pairs(PitBull4.db.profile.groups) do
-				if not db.enabled then
-					t[name] = ("|cff7f7f7f%s|r"):format(name)
-				else
-					t[name] = name
+				if PitBull4.Utils.IsValidClassification(db.unit_group) then
+					if not db.enabled then
+						t[name] = ("|cff7f7f7f%s|r"):format(name)
+					else
+						t[name] = name
+					end
 				end
 			end
 			return t
@@ -698,14 +702,20 @@ function PitBull4.Options.get_unit_options()
 			t["0"] = L["Game window"]
 			t["~"] = L["Custom"]
 			for unit, unit_db in pairs(PitBull4.db.profile.units) do
-				if unit_db ~= current and unit_db.enabled and not is_relative_to_self(info[1], unit_db.relative_to) then
-					t["S"..unit] = unit
+				local id = PitBull4.Utils.GetBestUnitID(unit_db.unit)
+				if PitBull4.Utils.IsSingletonUnitID(id) then
+					if unit_db ~= current and unit_db.enabled and not is_relative_to_self(info[1], unit_db.relative_to) then
+						t["S"..unit] = unit
+					end
 				end
 			end
 			for group, group_db in pairs(PitBull4.db.profile.groups) do
-				if group_db ~= current and group_db.enabled and not is_relative_to_self(info[1], group_db.relative_to) then
-					t["g"..group] = group .. ' ' .. L["(entire group)"]
-					t["f"..group] = group .. ' ' .. L["(first frame)"]
+				local id = group_db.unit_group
+				if PitBull4.Utils.IsValidClassification(id) then
+					if group_db ~= current and group_db.enabled and not is_relative_to_self(info[1], group_db.relative_to) then
+						t["g"..group] = group .. ' ' .. L["(entire group)"]
+						t["f"..group] = group .. ' ' .. L["(first frame)"]
+					end
 				end
 			end
 			return t

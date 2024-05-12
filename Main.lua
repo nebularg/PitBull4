@@ -1490,21 +1490,27 @@ function PitBull4:OnProfileChanged()
 
 	-- Make sure all frames and groups are made
 	for singleton, singleton_db in pairs(db.profile.units) do
-		if singleton_db.enabled then
-			self:MakeSingletonFrame(singleton)
-		else
-			for frame in PitBull4:IterateFramesForClassification(singleton, true) do
-				frame:Deactivate()
+		local id = PitBull4.Utils.GetBestUnitID(singleton_db.unit)
+		if PitBull4.Utils.IsSingletonUnitID(id) then
+			if singleton_db.enabled then
+				self:MakeSingletonFrame(singleton)
+			else
+				for frame in PitBull4:IterateFramesForClassification(singleton, true) do
+					frame:Deactivate()
+				end
 			end
 		end
 	end
 	for group, group_db in pairs(db.profile.groups) do
-		if group_db.enabled then
-			self:MakeGroupHeader(group)
-			for header in PitBull4:IterateHeadersForName(group) do
-				header.group_db = group_db
-				header:RefreshGroup()
-				header:UpdateShownState()
+		local id = group_db.unit_group
+		if PitBull4.Utils.IsValidClassification(id) then
+			if group_db.enabled then
+				self:MakeGroupHeader(group)
+				for header in PitBull4:IterateHeadersForName(group) do
+					header.group_db = group_db
+					header:RefreshGroup()
+					header:UpdateShownState()
+				end
 			end
 		end
 	end
