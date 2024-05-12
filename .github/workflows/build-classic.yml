@@ -6,9 +6,9 @@ on:
       - classic
     tags:
       - '**-classic*'
+      - '**-vanilla*'
     paths-ignore:
       - '.github/**'
-
 
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
     - name: Package Classic Era
       uses: BigWigsMods/packager@master
       with:
-        args: -g classic
+        args: -n "{package-name}-{project-version}:{project-version}"
       env:
         CF_API_KEY: ${{ secrets.CF_API_KEY }}
         WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
