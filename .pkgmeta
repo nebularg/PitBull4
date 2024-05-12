@@ -1,5 +1,4 @@
 package-as: PitBull4
-enable-nolib-creation: no
 
 externals:
   Libs/AceAddon-3.0: https://repos.wowace.com/wow/ace3/trunk/AceAddon-3.0
@@ -17,8 +16,8 @@ externals:
   Libs/LibDualSpec-1.0: https://repos.wowace.com/wow/libdualspec-1-0
   Libs/LibClassicCasterino: https://github.com/rgd87/LibClassicCasterino.git
   Libs/LibClassicDurations: https://github.com/rgd87/LibClassicDurations.git
-  Modules/DogTagTexts/Libs/LibDogTag-3.0: https://repos.curseforge.com/wow/libdogtag-3-0
-  Modules/DogTagTexts/Libs/LibDogTag-Unit-3.0: https://repos.curseforge.com/wow/libdogtag-unit-3-0
+  Modules/DogTagTexts/Libs/LibDogTag-3.0: https://github.com/parnic/LibDogTag-3.0
+  Modules/DogTagTexts/Libs/LibDogTag-Unit-3.0: https://github.com/parnic/LibDogTag-Unit-3.0
   Modules/VisualHeal/Libs/LibHealComm-4.0: https://repos.curseforge.com/wow/libhealcomm-4-0
 
 move-folders:
@@ -33,6 +32,8 @@ ignore:
 embedded-libraries:
   - libclassicdurations
   - libdatabroker-1-1
+  - libdogtag-3-0
+  - libdogtag-unit-3-0
 
 optional-dependencies:
   - clique
