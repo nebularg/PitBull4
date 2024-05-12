@@ -1161,7 +1161,7 @@ local upgrade_functions = {
 			local units = profile_db.units
 			if units then
 				for unit, unit_db in next, units do
-					local id = PitBull4.Utils.GetBestUnitID(unit_db.unit)
+					local id = PitBull4.Utils.GetBestUnitID(unit_db.unit or (DEFAULT_UNITS[unit] and DEFAULT_UNITS[unit].unit))
 					if not PitBull4.Utils.IsSingletonUnitID(id) then
 						units[unit] = nil
 						removed["S"..unit] = true
@@ -1171,7 +1171,7 @@ local upgrade_functions = {
 			local groups = profile_db.groups
 			if groups then
 				for group, group_db in next, groups do
-					local id = group_db.unit_group
+					local id = group_db.unit_group or (DEFAULT_GROUPS[group] and DEFAULT_GROUPS[group].unit_group)
 					if not PitBull4.Utils.IsValidClassification(id) then
 						groups[group] = nil
 						removed["g"..group] = true

@@ -1097,6 +1097,7 @@ ScriptEnv.ReputationColor = ReputationColor
 
 -- Retail compat so the sv doesn't need to be fixed
 ScriptEnv.GetFriendshipReputation = function() end
+ScriptEnv.ArtifactPower = function() return 0, 0 end
 
 local function ConfigMode()
 	local font_string = ScriptEnv.font_string
