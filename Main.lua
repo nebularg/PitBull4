@@ -1210,18 +1210,18 @@ local function check_config_version(sv)
 		global = {}
 		sv.global = global
 	end
-	if not global.config_version then
+	if not global.classic_config_version then
 		-- Existing config without config_version, so set it to 1
-		global.config_version = 1
+		global.classic_config_version = 1
 	end
 
-	while (global.config_version < CURRENT_CONFIG_VERSION) do
-		if upgrade_functions[global.config_version] then
-			if not upgrade_functions[global.config_version](sv) then
-				error(format(L["Problem upgrading PitBull4 config_version %d to %d.  Please file a ticket and attach your WTF/Account/$ACCOUNT/SavedVariables/PitBull4.lua file!"],global.config_version,global.config_version + 1))
+	while (global.classic_config_version < CURRENT_CONFIG_VERSION) do
+		if upgrade_functions[global.classic_config_version] then
+			if not upgrade_functions[global.classic_config_version](sv) then
+				error(format(L["Problem upgrading PitBull4 classic_config_version %d to %d.  Please file a ticket and attach your WTF/Account/$ACCOUNT/SavedVariables/PitBull4.lua file!"],global.classic_config_version,global.classic_config_version + 1))
 			end
 		end
-		global.config_version = global.config_version + 1
+		global.classic_config_version = global.classic_config_version + 1
 	end
 end
 
@@ -1232,7 +1232,7 @@ function PitBull4:OnInitialize()
 	self.db = db
 
 	if fresh_config then
-		db.global.config_version = CURRENT_CONFIG_VERSION
+		db.global.classic_config_version = CURRENT_CONFIG_VERSION
 	end
 
 	db.RegisterCallback(self, "OnProfileChanged")
