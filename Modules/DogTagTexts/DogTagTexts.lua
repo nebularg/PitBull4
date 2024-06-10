@@ -1,4 +1,4 @@
-if select(5, GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
+if select(5, C_AddOns.GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4
 if not PitBull4 then
@@ -178,7 +178,7 @@ local function run_first()
 	run_first = nil
 	LibDogTag = LibStub("LibDogTag-3.0", true)
 	if not LibDogTag then
-		LoadAddOn("LibDogTag-3.0")
+		C_AddOns.LoadAddOn("LibDogTag-3.0")
 		LibDogTag = LibStub("LibDogTag-3.0", true)
 		if not LibDogTag then
 			error("PitBull4_DogTagTexts requires LibDogTag-3.0 to function.")
@@ -186,7 +186,7 @@ local function run_first()
 	end
 	local LibDogTag_Unit = LibStub("LibDogTag-Unit-3.0", true)
 	if not LibDogTag_Unit then
-		LoadAddOn("LibDogTag-Unit-3.0")
+		C_AddOns.LoadAddOn("LibDogTag-Unit-3.0")
 		LibDogTag_Unit = LibStub("LibDogTag-Unit-3.0", true)
 		if not LibDogTag_Unit then
 			error("PitBull4_DogTagTexts requires LibDogTag-Unit-3.0 to function.")

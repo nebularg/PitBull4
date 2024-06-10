@@ -57,7 +57,7 @@ function PitBull4.Options.get_general_options()
 				end
 			end,
 			hidden = function()
-				return not LibStub("LibDataBroker-1.1", true) or not LibStub("LibDBIcon-1.0", true) or IsAddOnLoaded("Broker2FuBar")
+				return not LibStub("LibDataBroker-1.1", true) or not LibStub("LibDBIcon-1.0", true) or C_AddOns.IsAddOnLoaded("Broker2FuBar")
 			end,
 		},
 		'version', {

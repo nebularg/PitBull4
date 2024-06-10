@@ -97,7 +97,7 @@ function PitBull4.Options.get_module_options()
 	local function loadable(info)
 		local id = info[#info - 1]
 		local addon_name = "PitBull4_"..id
-		return GetAddOnEnableState(player_name, addon_name) > 0 and IsAddOnLoadOnDemand(addon_name)
+		return C_AddOns.GetAddOnEnableState(addon_name, player_name) > 0 and C_AddOns.IsAddOnLoadOnDemand(addon_name)
 	end
 
 	local function unloadable(info)
@@ -132,7 +132,7 @@ function PitBull4.Options.get_module_options()
 		name = function(info)
 			if not loadable(info) then
 				local id = info[#info - 1]
-				local _, _, _, _, reason = GetAddOnInfo('PitBull4_'..id)
+				local _, _, _, _, reason = C_AddOns.GetAddOnInfo('PitBull4_'..id)
 				if reason then
 					if reason == "DISABLED" then
 						reason = L["Disabled in the Blizzard addon list."]
@@ -153,8 +153,8 @@ function PitBull4.Options.get_module_options()
 
 	for id in pairs(modules_not_loaded) do
 		local addon_name = "PitBull4_" .. id
-		local title = GetAddOnMetadata(addon_name, "Title") or ""
-		local notes = GetAddOnMetadata(addon_name, "Notes") or ""
+		local title = C_AddOns.GetAddOnMetadata(addon_name, "Title") or ""
+		local notes = C_AddOns.GetAddOnMetadata(addon_name, "Notes") or ""
 
 		local name = title:match("%[(.*)%]")
 		if not name then
@@ -179,7 +179,7 @@ function PitBull4.Options.get_module_options()
 				end
 			end,
 			disabled = function(info)
-				return GetAddOnEnableState(player_name, addon_name) == 0 or not IsAddOnLoadOnDemand(addon_name)
+				return C_AddOns.GetAddOnEnableState(addon_name, player_name) == 0 or not C_AddOns.IsAddOnLoadOnDemand(addon_name)
 			end,
 		}
 

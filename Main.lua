@@ -1325,11 +1325,11 @@ do
 		end
 
 		-- must be Load-on-demand (obviously)
-		if not IsAddOnLoadOnDemand(i) then
+		if not C_AddOns.IsAddOnLoadOnDemand(i) then
 			return iter(num_addons, i)
 		end
 
-		local name = GetAddOnInfo(i)
+		local name = C_AddOns.GetAddOnInfo(i)
 		-- must start with PitBull4_
 		local module_name = name:match("^PitBull4_(.*)$")
 		if not module_name then
@@ -1337,11 +1337,11 @@ do
 		end
 
 		-- PitBull4 must be in the Dependency list
-		if not find_PitBull4(GetAddOnDependencies(i)) then
+		if not find_PitBull4(C_AddOns.GetAddOnDependencies(i)) then
 			return iter(num_addons, i)
 		end
 
-		local condition = GetAddOnMetadata(name, "X-PitBull4-Condition")
+		local condition = C_AddOns.GetAddOnMetadata(name, "X-PitBull4-Condition")
 		if condition then
 			local func = loadstring(condition)
 			if func then
@@ -1368,7 +1368,7 @@ do
 	-- end
 	-- @return an iterator which returns id, name, module_name
 	function PitBull4:IterateLoadOnDemandModules()
-		return iter, GetNumAddOns(), 0
+		return iter, C_AddOns.GetNumAddOns(), 0
 	end
 end
 
@@ -1437,9 +1437,9 @@ function PitBull4:LoadModules()
 	local sv_namespaces = sv and sv.namespaces
 	for i, name, module_name in self:IterateLoadOnDemandModules() do
 		if blacklist[name] then
-			if GetAddOnEnableState(nil, name) > 0 then
+			if C_AddOns.GetAddOnEnableState(name) > 0 then
 				-- print(("Found bad module '%s'."):format(module_name))
-				DisableAddOn(name, true)
+				C_AddOns.DisableAddOn(name, true)
 				blacklisted_module_loaded = true
 			end
 		else
@@ -1449,14 +1449,14 @@ function PitBull4:LoadModules()
 
 			if enabled == nil then
 				-- we have to figure out the default state
-				local default_state = GetAddOnMetadata(name, "X-PitBull4-DefaultState")
+				local default_state = C_AddOns.GetAddOnMetadata(name, "X-PitBull4-DefaultState")
 				enabled = (default_state ~= "disabled")
 			end
 
 			local loaded
 			if enabled then
 				-- print(("Found module '%s', attempting to load."):format(module_name))
-				loaded = LoadAddOn(name)
+				loaded = C_AddOns.LoadAddOn(name)
 			end
 
 			if not loaded then
@@ -1485,7 +1485,7 @@ end
 
 --- Load the module with the given id and enable it
 function PitBull4:LoadAndEnableModule(id)
-	local loaded, reason = LoadAddOn('PitBull4_' .. id)
+	local loaded, reason = C_AddOns.LoadAddOn('PitBull4_' .. id)
 	if loaded then
 		local module = self:GetModule(id)
 		assert(module)
