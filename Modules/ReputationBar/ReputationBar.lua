@@ -35,8 +35,21 @@ function PitBull4_ReputationBar:GetValue(frame)
 		return nil
 	end
 
-	local name, reaction, min, max, value, faction_id = GetWatchedFactionInfo()
-	if not name then
+	local name, reaction, min, max, value, faction_id
+	if GetWatchedFactionInfo then
+		name, reaction, min, max, value, faction_id = GetWatchedFactionInfo()
+	else -- XXX wow_tww
+		local watchedFactionData = C_Reputation.GetWatchedFactionData()
+		if watchedFactionData then
+			name = watchedFactionData.name
+			reaction =  watchedFactionData.reaction
+			min = watchedFactionData.currentReactionThreshold
+			max = watchedFactionData.nextReactionThreshold
+			value = watchedFactionData.currentStanding
+			faction_id = watchedFactionData.factionID
+		end
+	end
+	if not name or faction_id == 0 then
 		return nil
 	end
 
@@ -82,7 +95,16 @@ function PitBull4_ReputationBar:GetExampleValue(frame)
 end
 
 function PitBull4_ReputationBar:GetColor(frame, value)
-	local _, reaction, _, _, _, faction_id = GetWatchedFactionInfo()
+	local reaction, faction_id, _
+	if GetWatchedFactionInfo then
+		_, reaction, _, _, _, faction_id = GetWatchedFactionInfo()
+	else -- XXX wow_tww
+		local watchedFactionData = C_Reputation.GetWatchedFactionData()
+		if watchedFactionData then
+			reaction =  watchedFactionData.reaction
+			faction_id = watchedFactionData.factionID
+		end
+	end
 
 	if not wow_cata then
 		local rep_info = faction_id and C_GossipInfo.GetFriendshipReputation(faction_id)

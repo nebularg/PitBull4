@@ -1014,7 +1014,20 @@ end
 ScriptEnv.GetFriendshipReputation = GetFriendshipReputation
 
 local function WatchedFactionInfo()
-	local name, reaction, min, max, value, faction_id = GetWatchedFactionInfo()
+	local name, reaction, min, max, value, faction_id
+	if GetWatchedFactionInfo then
+		name, reaction, min, max, value, faction_id = GetWatchedFactionInfo()
+	else -- XXX wow_tww
+		local watchedFactionData = C_Reputation.GetWatchedFactionData()
+		if watchedFactionData then
+			name = watchedFactionData.name
+			reaction =  watchedFactionData.reaction
+			min = watchedFactionData.currentReactionThreshold
+			max = watchedFactionData.nextReactionThreshold
+			value = watchedFactionData.currentStanding
+			faction_id = watchedFactionData.factionID
+		end
+	end
 	if not name then
 		return nil
 	end
