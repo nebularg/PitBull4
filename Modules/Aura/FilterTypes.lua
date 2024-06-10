@@ -6,6 +6,8 @@ local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
 local wow_cata = PitBull4.wow_cata
+local GetSpellName = C_Spell.GetSpellName or _G.GetSpellInfo -- XXX wow_tww
+local DoesSpellExist = _G.DoesSpellExist or C_Spell.DoesSpellExist -- XXX wow_tww
 
 local function copy(data)
 	local t = {}
@@ -1388,7 +1390,7 @@ PitBull4_Aura:RegisterFilterType('Spell id',L["Spell id"],id_filter,function(sel
 				db.id_list = id_list
 			end
 			for k in pairs(id_list) do
-				local name = GetSpellInfo(k)
+				local name = GetSpellName(k)
 				if not name then
 					name = L["Unknown"]
 				end
@@ -1413,7 +1415,7 @@ PitBull4_Aura:RegisterFilterType('Spell id',L["Spell id"],id_filter,function(sel
 			if not tonumber(value) then
 				return L["Must be a number."]
 			end
-			if not GetSpellInfo(value) then
+			if not DoesSpellExist(value) then
 				return L["Must be a valid spell id."]
 			end
 			return true

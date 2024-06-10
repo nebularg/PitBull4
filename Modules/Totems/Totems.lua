@@ -4,6 +4,8 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
 local wow_cata = PitBull4.wow_cata
+local GetSpellName = C_Spell.GetSpellName or _G.GetSpellInfo -- XXX wow_tww
+local GetSpellTexture = C_Spell.GetSpellTexture or _G.GetSpellTexture -- XXX wow_tww
 
 -- CONSTANTS ----------------------------------------------------------------
 
@@ -232,7 +234,9 @@ do
 			local duration = math.random(30, 120)
 			config_times[slot] = t + duration
 			if REQUIRED_SPELL then
-				name, _, icon = GetSpellInfo(REQUIRED_SPELL[1])
+				local spell = REQUIRED_SPELL[1]
+				name = GetSpellName(spell)
+				icon = GetSpellTexture(spell)
 			else
 				name, icon = "Fake Totem", CONFIG_MODE_ICON
 			end

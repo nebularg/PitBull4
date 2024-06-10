@@ -5,6 +5,7 @@ local L = PitBull4.L
 local PitBull4_LuaTexts = PitBull4:GetModule("LuaTexts")
 
 local wow_cata = PitBull4.wow_cata
+local GetSpellName = C_Spell.GetSpellName or _G.GetSpellInfo -- XXX wow_tww
 
 -- luacheck: globals Enum AzeriteUtil
 
@@ -626,9 +627,9 @@ local function Dead(unit)
 end
 ScriptEnv.Dead = Dead
 
-local MOONKIN_FORM = GetSpellInfo(24858)
-local TRAVEL_FORM = GetSpellInfo(783)
-local TREE_OF_LIFE = GetSpellInfo(33891)
+local MOONKIN_FORM = GetSpellName(24858)
+local TRAVEL_FORM = GetSpellName(783)
+local TREE_OF_LIFE = GetSpellName(33891)
 
 local function DruidForm(unit)
 	local class = UnitClassBase(unit)

@@ -3,6 +3,7 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
 local wow_cata = PitBull4.wow_cata
+local GetSpellName = C_Spell.GetSpellName or _G.GetSpellInfo -- XXX wow_tww
 
 local PitBull4_RangeFader = PitBull4:NewModule("RangeFader")
 
@@ -26,7 +27,7 @@ local friendly_spells = {}
 local res_spells = {}
 
 local function add_spell(t, id)
-	local spell = GetSpellInfo(id)
+	local spell = GetSpellName(id)
 	if spell then
 		t[#t + 1] = spell
 	elseif PitBull4.DEBUG then
@@ -280,6 +281,18 @@ PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 		return _G.SPELL_RANGE:format("??")
 	end
 
+	local function get_spell_info(spell)
+		-- XXX wow_tww
+		local spell_id, icon, _
+		if _G.GetSpellInfo then
+			_, _, icon, _, _, _, spell_id = _G.GetSpellInfo(spell)
+		else
+			icon = C_Spell.GetSpellTexture(spell)
+			spell_id = C_Spell.GetSpellIDForSpellIdentifier(spell)
+		end
+		return spell_id, icon
+	end
+
 	return 'out_of_range', {
 		type = 'range',
 		name = L["Out-of-range opacity"],
@@ -328,28 +341,28 @@ PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 			local desc = ""
 			-- spells are the name, so they should only return info if known (hopefully similar to IsSpellInRange >.>)
 			for _, spell in ipairs(enemy_spells) do
-				local _, _, icon, _, _, _, spell_id = GetSpellInfo(spell)
+				local spell_id, icon = get_spell_info(spell)
 				if spell_id then
 					desc = desc .. ("%s: |T%s:16|t|cff71d5ff[%s]|h|r (%s)\n"):format(L["Hostile"], icon, spell, get_spell_range(spell_id))
 					break
 				end
 			end
 			for _, spell in ipairs(long_enemy_spells) do
-				local _, _, icon, _, _, _, spell_id = GetSpellInfo(spell)
+				local spell_id, icon = get_spell_info(spell)
 				if spell_id then
 					desc = desc .. ("%s: |T%s:16|t|cff71d5ff[%s]|h|r (%s)\n"):format(L["Hostile, Long-range"], icon, spell, get_spell_range(spell_id))
 					break
 				end
 			end
 			for _, spell in ipairs(friendly_spells) do
-				local _, _, icon, _, _, _, spell_id = GetSpellInfo(spell)
+				local spell_id, icon = get_spell_info(spell)
 				if spell_id then
 					desc = desc .. ("%s: |T%s:16|t|cff71d5ff[%s]|h|r (%s)\n"):format(L["Friendly"], icon, spell, get_spell_range(spell_id))
 					break
 				end
 			end
 			for _, spell in ipairs(pet_spells) do
-				local _, _, icon, _, _, _, spell_id = GetSpellInfo(spell)
+				local spell_id, icon = get_spell_info(spell)
 				if spell_id then
 					desc = desc .. ("%s: |T%s:16|t|cff71d5ff[%s]|h|r (%s)\n"):format(L["Pet"], icon, spell, get_spell_range(spell_id))
 					break

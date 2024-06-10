@@ -6,6 +6,7 @@ local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
 local wow_cata = PitBull4.wow_cata
+local GetSpellName = C_Spell.GetSpellName or _G.GetSpellInfo -- XXX wow_tww
 
 local player_class = UnitClassBase("player")
 local _, player_race = UnitRace("player")
@@ -20,7 +21,7 @@ function PitBull4_Aura:GetFilterDB(filter)
 end
 
 local function IsBookSpell(id)
-	local spell = GetSpellInfo(id)
+	local spell = GetSpellName(id)
 	if not spell then return end
 	if GetSpellBookItemName(spell) then
 		return true
@@ -570,7 +571,7 @@ local function turn(t, shallow)
 	local tmp = {}
 	local function turn(entry) -- luacheck: ignore
 		for id, v in next, entry do
-			local spell = GetSpellInfo(id)
+			local spell = GetSpellName(id)
 			if spell and v then
 				tmp[spell] = v
 			elseif v and PitBull4.DEBUG then
@@ -626,7 +627,7 @@ PitBull4_Aura.OnProfileChanged_funcs[#PitBull4_Aura.OnProfileChanged_funcs + 1] 
 			for id, v in next, name_list do
 				if type(id) == "number" then
 					name_list[id] = nil
-					local spell = GetSpellInfo(id)
+					local spell = GetSpellName(id)
 					if spell then
 						name_list[spell] = v
 					end
