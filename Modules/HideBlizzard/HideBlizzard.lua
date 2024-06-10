@@ -77,29 +77,37 @@ hidden_frame:Hide()
 local function simple_hook_frames(...)
 	for i = 1, select("#", ...) do
 		local frame = select(i, ...)
-		frame:UnregisterAllEvents()
-		frame:HookScript("OnShow", hide_frame)
-		frame:Hide()
+		if frame then
+			frame:UnregisterAllEvents()
+			frame:HookScript("OnShow", hide_frame)
+			frame:Hide()
+		else
+			geterrorhandler()(("PitBull4_HideBlizzard: Invalid frame at index %d"):format(i))
+		end
 	end
 end
 
 local function hook_frames(raw, ...)
 	for i = 1, select("#", ...) do
 		local frame = select(i, ...)
-		UnregisterUnitWatch(frame)
-		frame:UnregisterAllEvents()
-		frame:Hide()
+		if frame then
+			UnregisterUnitWatch(frame)
+			frame:UnregisterAllEvents()
+			frame:Hide()
 
-		if frame.manabar then frame.manabar:UnregisterAllEvents() end
-		if frame.healthbar then frame.healthbar:UnregisterAllEvents() end
-		if frame.spellbar then frame.spellbar:UnregisterAllEvents() end
-		if frame.powerBarAlt then frame.powerBarAlt:UnregisterAllEvents() end
+			if frame.manabar then frame.manabar:UnregisterAllEvents() end
+			if frame.healthbar then frame.healthbar:UnregisterAllEvents() end
+			if frame.spellbar then frame.spellbar:UnregisterAllEvents() end
+			if frame.powerBarAlt then frame.powerBarAlt:UnregisterAllEvents() end
 
-		if raw then
-			frame.Show = noop
+			if raw then
+				frame.Show = noop
+			else
+				frame:SetParent(hidden_frame)
+				frame:HookScript("OnShow", hide_frame)
+			end
 		else
-			frame:SetParent(hidden_frame)
-			frame:HookScript("OnShow", hide_frame)
+			geterrorhandler()(("PitBull4_HideBlizzard: Invalid frame at index %d"):format(i))
 		end
 	end
 end
@@ -130,7 +138,11 @@ function hiders:party()
 	if PartyFrame then
 		hook_frames(false, PartyFrame)
 		for memberFrame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
-			hook_frames(false, memberFrame, memberFrame.HealthBar, memberFrame.ManaBar)
+			if memberFrame.HealthBarContainer then -- XXX wow_tww
+				hook_frames(false, memberFrame, memberFrame.HealthBarContainer.HealthBar, memberFrame.ManaBar)
+			else
+				hook_frames(false, memberFrame, memberFrame.HealthBar, memberFrame.ManaBar)
+			end
 		end
 		PartyFrame.PartyMemberFramePool:ReleaseAll()
 	else
@@ -202,7 +214,11 @@ function hiders:boss()
 	for i = 1, MAX_BOSS_FRAMES do
 		local name = "Boss" .. i .. "TargetFrame"
 		if _G[name].TargetFrameContent then -- retail
-			hook_frames(false, _G[name], _G[name].TargetFrameContent.TargetFrameContentMain.HealthBar, _G[name].TargetFrameContent.TargetFrameContentMain.ManaBar)
+			if _G[name].TargetFrameContent.TargetFrameContentMain.HealthBarsContainer then -- XXX wow_tww
+				hook_frames(false, _G[name], _G[name].TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar, _G[name].TargetFrameContent.TargetFrameContentMain.ManaBar)
+			else
+				hook_frames(false, _G[name], _G[name].TargetFrameContent.TargetFrameContentMain.HealthBar, _G[name].TargetFrameContent.TargetFrameContentMain.ManaBar)
+			end
 		else -- classic
 			hook_frames(false, _G[name], _G[name .. "HealthBar"], _G[name .. "ManaBar"])
 		end
