@@ -263,22 +263,42 @@ function PitBull4_RangeFader:GetOpacity(frame)
 end
 
 PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
+	local get_spell_range
 	local range_pattern = _G.SPELL_RANGE:gsub("%%s", ".-")
-	local function get_spell_range(spell_id)
-		local data = C_TooltipInfo.GetSpellByID(spell_id, true)
-		if not data then return end
+	if not wow_cata then
+		function get_spell_range(spell_id)
+			local data = C_TooltipInfo.GetSpellByID(spell_id, true)
+			if not data then return end
 
-		for _, line in next, data.lines do
-			TooltipUtil.SurfaceArgs(line)
-			if line.type == 0 then
-				if line.leftText and line.leftText:find(range_pattern) then
-					return line.leftText
-				elseif line.rightText and line.rightText:find(range_pattern) then
-					return line.rightText
+			for _, line in next, data.lines do
+				TooltipUtil.SurfaceArgs(line)
+				if line.type == 0 then
+					if line.leftText and line.leftText:find(range_pattern) then
+						return line.leftText
+					elseif line.rightText and line.rightText:find(range_pattern) then
+						return line.rightText
+					end
 				end
 			end
+			return _G.SPELL_RANGE:format("??")
 		end
-		return _G.SPELL_RANGE:format("??")
+	else
+		local tooltip = CreateFrame("GameTooltip", "PitBull4RangeFinderTooltip", nil, "GameTooltipTemplate")
+		tooltip:SetOwner(UIParent, "ANCHOR_NONE")
+		function get_spell_range(spell_id)
+			tooltip:SetSpellByID(spell_id)
+			for i = 1, tooltip:NumLines(), 1 do
+				local text = _G["PitBull4RangeFinderTooltipTextLeft" .. i]:GetText()
+				if text and text:find(range_pattern) then
+					return text
+				end
+				text = _G["PitBull4RangeFinderTooltipTextRight" .. i]:GetText()
+				if text and text:find(range_pattern) then
+					return text
+				end
+			end
+			return _G.SPELL_RANGE:format("??")
+		end
 	end
 
 	local function get_spell_info(spell)
