@@ -4,6 +4,7 @@ local L = PitBull4.L
 
 local wow_cata = PitBull4.wow_cata
 local GetSpellName = C_Spell.GetSpellName or _G.GetSpellInfo -- XXX wow_tww
+local IsSpellInRange = C_Spell.IsSpellInRange or _G.IsSpellInRange -- XXX wow_tww
 
 local PitBull4_RangeFader = PitBull4:NewModule("RangeFader")
 

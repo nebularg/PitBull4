@@ -120,7 +120,6 @@ globals = {
 	"IsPVPTimerRunning",
 	"IsResting",
 	"IsShiftKeyDown",
-	"IsSpellInRange",
 	"IsSpellKnown",
 	"PartyUtil",
 	"PlaySound",
