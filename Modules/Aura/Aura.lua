@@ -56,7 +56,6 @@ function PitBull4_Aura:OnProfileChanged()
 	for i = 1, #funcs do
 		funcs[i](self)
 	end
-	LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
 end
 
 function PitBull4_Aura:ClearFrame(frame)

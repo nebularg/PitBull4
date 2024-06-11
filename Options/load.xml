@@ -14,5 +14,6 @@
 <Script file="Units.lua"/>
 <Script file="Modules.lua"/>
 <Script file="Colors.lua"/>
+<Script file="Share.lua"/>
 
 </Ui>

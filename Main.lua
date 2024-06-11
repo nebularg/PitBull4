@@ -1612,6 +1612,9 @@ function PitBull4:OnProfileChanged()
 	if LibDBIcon then
 		LibDBIcon:Refresh("PitBull4", db.profile.minimap_icon)
 	end
+
+	PitBull4.Options.OnProfileChanged()
+	LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
 end
 
 function PitBull4:OnNewProfile()

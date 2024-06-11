@@ -16,6 +16,8 @@ externals:
   Libs/AceGUI-3.0-SharedMediaWidgets: https://repos.wowace.com/wow/ace-gui-3-0-shared-media-widgets/trunk/AceGUI-3.0-SharedMediaWidgets
   Libs/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
   Libs/LibDualSpec-1.0: https://repos.wowace.com/wow/libdualspec-1-0
+  Libs/LibSerialize: https://github.com/rossnichols/LibSerialize
+  Libs/LibDeflate: https://github.com/safeteeWow/LibDeflate
   Modules/Aura/Libs/LibPlayerSpells-1.0: https://github.com/AdiAddons/LibPlayerSpells-1.0.git
   Modules/DogTagTexts/Libs/LibDogTag-3.0: https://github.com/parnic/LibDogTag-3.0.git
   Modules/DogTagTexts/Libs/LibDogTag-Unit-3.0: https://github.com/parnic/LibDogTag-Unit-3.0.git
@@ -25,6 +27,9 @@ move-folders:
 
 ignore:
   - Docs
+  - Libs/LibDeflate/*.md
+  - Libs/LibDeflate/docs
+  - Libs/LibDeflate/example
 
 embedded-libraries:
   - libdatabroker-1-1
