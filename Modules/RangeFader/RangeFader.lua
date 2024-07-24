@@ -152,7 +152,7 @@ end
 local function friendly_is_in_range(unit)
 	if UnitIsDeadOrGhost(unit) then
 		for _, name in ipairs(res_spells) do
-			if IsSpellInRange(name, unit) == 1 then
+			if IsSpellInRange(name, unit) then
 				return true
 			end
 		end
@@ -162,7 +162,7 @@ local function friendly_is_in_range(unit)
 	end
 
 	for _, name in ipairs(friendly_spells) do
-		if IsSpellInRange(name, unit) == 1 then
+		if IsSpellInRange(name, unit) then
 			return true
 		end
 	end
@@ -172,12 +172,12 @@ end
 
 local function pet_is_in_range(unit)
 	for _, name in ipairs(friendly_spells) do
-		if IsSpellInRange(name, unit) == 1 then
+		if IsSpellInRange(name, unit) then
 			return true
 		end
 	end
 	for _, name in ipairs(pet_spells) do
-		if IsSpellInRange(name, unit) == 1 then
+		if IsSpellInRange(name, unit) then
 			return true
 		end
 	end
@@ -191,7 +191,7 @@ local function enemy_is_in_range(unit)
 	end
 
 	for _, name in ipairs(enemy_spells) do
-		if IsSpellInRange(name, unit) == 1 then
+		if IsSpellInRange(name, unit) then
 			return true
 		end
 	end
@@ -201,7 +201,7 @@ end
 
 local function enemy_is_in_long_range(unit)
 	for _, name in ipairs(long_enemy_spells) do
-		if IsSpellInRange(name, unit) == 1 then
+		if IsSpellInRange(name, unit) then
 			return true
 		end
 	end
@@ -219,7 +219,7 @@ function PitBull4_RangeFader:GetOpacity(frame)
 	end
 
 	if check_method == "custom_spell" and db.custom_spell then
-		if IsSpellInRange(db.custom_spell, unit) == 1 then
+		if IsSpellInRange(db.custom_spell, unit) then
 			return 1
 		else
 			return db.out_of_range_opacity
