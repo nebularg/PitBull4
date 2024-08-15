@@ -248,7 +248,7 @@ end
 -- Build the class filters
 do
 	-- some shenanigans to only load LPS if the module is enabled (for nolib installs)
-	local LibPlayerSpells = LibStub("LibPlayerSpells-1.0", true)
+	local LibPlayerSpells = not PitBull4.wow_cata and LibStub("LibPlayerSpells-1.0", true)
 	if LibPlayerSpells then
 		local AURA = LibPlayerSpells.constants.AURA
 		local INVERT_AURA = LibPlayerSpells.constants.INVERT_AURA
