@@ -166,7 +166,6 @@ if not wow_cata then
 		if not data then return end
 
 		for _, line in next, data.lines do
-			TooltipUtil.SurfaceArgs(line)
 			if line.type == 0 and line.leftText then -- Enum.TooltipDataLineType.None
 				local buff_name = line.leftText:match("^(.+) %(%d+ [^$)]+%)$")
 				if buff_name then

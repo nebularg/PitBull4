@@ -272,7 +272,6 @@ PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 			if not data then return end
 
 			for _, line in next, data.lines do
-				TooltipUtil.SurfaceArgs(line)
 				if line.type == 0 then
 					if line.leftText and line.leftText:find(range_pattern) then
 						return line.leftText
