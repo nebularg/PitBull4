@@ -788,7 +788,7 @@ local function fix_rep_std_text()
 				local elements = layout.elements
 				if elements then
 					for _, text in next, elements do
-						if text.code:find("GetWatchedFactionInfo", nil, true) or text.code:find("GetFriendshipReputation", nil, true) then
+						if text.code and (text.code:find("GetWatchedFactionInfo", nil, true) or text.code:find("GetFriendshipReputation", nil, true)) then
 							text.code = PROVIDED_CODES[L["Reputation"]][L["Standard"]].code
 						end
 					end
