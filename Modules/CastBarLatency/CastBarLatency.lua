@@ -70,7 +70,10 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, _, spell_id)
 	-- Try to determine GCD
 	local gcd_time = 0
 	if show_gcd and spell_id then
-		local _, duration = GetSpellCooldown(spell_id)
+		local info, duration = GetSpellCooldown(spell_id)
+		if type(info) == "table" then
+			duration = info.duration
+		end
 		if duration and duration > 0 and duration <= MAX_GCD_TIME then
 			gcd_time = duration
 		end
@@ -108,7 +111,10 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_CHANNEL_START(event, unit, _, sp
 	-- Try to determine GCD
 	local gcd_time = 0
 	if show_gcd and spell_id then
-		local _, duration = GetSpellCooldown(spell_id)
+		local info, duration = GetSpellCooldown(spell_id)
+		if type(info) == "table" then
+			duration = info.duration
+		end
 		if duration and duration > 0 and duration <= MAX_GCD_TIME then
 			gcd_time = duration
 		end
