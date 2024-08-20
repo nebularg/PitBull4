@@ -6,7 +6,8 @@ local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
 local wow_cata = PitBull4.wow_cata
-local GetSpellName = C_Spell.GetSpellName or _G.GetSpellInfo -- XXX wow_tww
+
+local GetSpellName = C_Spell.GetSpellName
 
 local player_class = UnitClassBase("player")
 local _, player_race = UnitRace("player")
@@ -18,14 +19,6 @@ local _, player_race = UnitRace("player")
 -- @return the DB dictionary for the specified filter or nil
 function PitBull4_Aura:GetFilterDB(filter)
 	return self.db.profile.global.filters[filter]
-end
-
-local function IsBookSpell(id)
-	local spell = GetSpellName(id)
-	if not spell then return end
-	if GetSpellBookItemName(spell) then
-		return true
-	end
 end
 
 -- Setup the data for who can dispel what types of auras.
@@ -181,7 +174,7 @@ function PitBull4_Aura:PLAYER_TALENT_UPDATE()
 			self:GetFilterDB('/3').aura_type_list.Poison = can_dispel.PALADIN.Poison
 
 		elseif player_class == "PRIEST" then
-			can_dispel.PRIEST.Magic = IsBookSpell(527) or IsPlayerSpell(32375) -- Dispel Magic, Mass Dispel
+			can_dispel.PRIEST.Magic = IsPlayerSpell(527) or IsPlayerSpell(32375) -- Dispel Magic, Mass Dispel
 			self:GetFilterDB('03').aura_type_list.Magic = can_dispel.PRIEST.Magic
 			can_dispel.PRIEST.Disease = IsPlayerSpell(528) or IsPlayerSpell(552) -- Cure Disease, Abolish Disease
 			self:GetFilterDB('03').aura_type_list.Disease = can_dispel.PRIEST.Disease
@@ -194,15 +187,15 @@ function PitBull4_Aura:PLAYER_TALENT_UPDATE()
 			can_dispel.SHAMAN.Poison = IsPlayerSpell(526) -- or IsPlayerSpell(8166) -- Cure Poison, Poison Cleansing Totem
 			self:GetFilterDB('23').aura_type_list.Poison = can_dispel.SHAMAN.Poison
 
-			can_purge.SHAMAN.Magic = IsBookSpell(370) -- Purge
+			can_purge.SHAMAN.Magic = IsPlayerSpell(370) -- Purge
 			self:GetFilterDB('27').aura_type_list.Magic = can_purge.SHAMAN.Magic
 
 		elseif player_class == "WARLOCK" then
-			can_purge.WARLOCK.Magic = IsBookSpell(19505) -- Devour Magic
+			can_purge.WARLOCK.Magic = IsSpellKnown(19505, true) -- Devour Magic
 			self:GetFilterDB('37').aura_type_list.Magic = can_purge.WARLOCK.Magic
 
 		elseif player_class == "WARRIOR" then
-			can_purge.WARRIOR.Magic = IsBookSpell(23922) -- Shield Slam
+			can_purge.WARRIOR.Magic = IsPlayerSpell(23922) -- Shield Slam
 			self:GetFilterDB('47').aura_type_list.Magic = can_purge.WARRIOR.Magic
 		end
 	end
