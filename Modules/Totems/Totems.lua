@@ -4,8 +4,8 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
 local wow_cata = PitBull4.wow_cata
-local GetSpellName = C_Spell.GetSpellName or _G.GetSpellInfo -- XXX wow_tww
-local GetSpellTexture = C_Spell.GetSpellTexture or _G.GetSpellTexture -- XXX wow_tww
+local GetSpellName = C_Spell.GetSpellName or _G.GetSpellInfo -- XXX Classic
+local GetSpellTexture = C_Spell.GetSpellTexture or _G.GetSpellTexture -- XXX Classic
 
 -- CONSTANTS ----------------------------------------------------------------
 

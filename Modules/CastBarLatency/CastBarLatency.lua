@@ -13,7 +13,7 @@ local MAX_GCD_TIME = 1.5
 local DEFAULT_QUEUE_TIME = 300
 
 local GetTime = _G.GetTime
-local GetSpellCooldown = _G.GetSpellCooldown or C_Spell.GetSpellCooldown -- XXX wow_tww
+local GetSpellCooldown = C_Spell.GetSpellCooldown or _G.GetSpellCooldown -- XXX Classic
 
 -----------------------------------------------------------------------------
 

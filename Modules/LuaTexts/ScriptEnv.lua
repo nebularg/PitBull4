@@ -5,7 +5,7 @@ local L = PitBull4.L
 local PitBull4_LuaTexts = PitBull4:GetModule("LuaTexts")
 
 local wow_cata = PitBull4.wow_cata
-local GetSpellName = C_Spell.GetSpellName or _G.GetSpellInfo -- XXX wow_tww
+local GetSpellName = C_Spell.GetSpellName or _G.GetSpellInfo -- XXX Classic
 
 -- luacheck: globals Enum AzeriteUtil
 
