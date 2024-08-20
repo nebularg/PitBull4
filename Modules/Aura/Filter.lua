@@ -7,7 +7,7 @@ local PitBull4_Aura = PitBull4:GetModule("Aura")
 
 local wow_cata = PitBull4.wow_cata
 
-local GetSpellName = C_Spell.GetSpellName
+local GetSpellName = C_Spell.GetSpellName or _G.GetSpellInfo -- XXX Classic
 
 local player_class = UnitClassBase("player")
 local _, player_race = UnitRace("player")
@@ -64,6 +64,7 @@ PitBull4_Aura.can_purge = can_purge
 -- Rescan spells that can change what we can dispel and purge.
 function PitBull4_Aura:PLAYER_TALENT_UPDATE()
 	if not wow_cata then
+		-- Retail
 		if player_class == "DEMONHUNTER" then
 			can_purge.DEMONHUNTER.Magic = IsPlayerSpell(278326) -- Consume Magic
 			self:GetFilterDB(',,7').aura_type_list.Magic = can_purge.DEMONHUNTER.Magic
@@ -149,6 +150,7 @@ function PitBull4_Aura:PLAYER_TALENT_UPDATE()
 			self:GetFilterDB('37').aura_type_list.Magic = can_purge.WARLOCK.Magic
 		end
 	else
+		-- Cataclysm Classic
 		if player_class == "DRUID" then
 			can_dispel.DRUID.Curse = IsPlayerSpell(2782) -- Remove Curse
 			self:GetFilterDB(',3').aura_type_list.Curse = can_dispel.DRUID.Curse
