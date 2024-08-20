@@ -9,6 +9,7 @@ local PitBull4_Aura = PitBull4:GetModule("Aura")
 local wow_cata = PitBull4.wow_cata
 
 local GetItemInfo = C_Item.GetItemInfo
+local GetItemQualityColor = C_Item.GetItemQualityColor
 
 -- The table we use for gathering the aura data, filtering
 -- and then sorting them.
