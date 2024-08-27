@@ -49,6 +49,7 @@ PitBull4_Aura:SetDefaults({
 	zoom_aura = false,
 	click_through = false,
 	suppress_occ = false,
+	prevent_overlap = false,
 	cooldown = {
 		my_buffs = true,
 		my_debuffs = true,
@@ -2652,6 +2653,15 @@ PitBull4_Aura:SetLayoutOptionsFunction(function(self)
 				disabled = is_aura_disabled,
 				order = 5,
 			},
+			prevent_overlap = {
+				type = 'toggle',
+				name = "Prevent overlap",
+				desc = "Places the debuffs above or below the buffs if they would overlap",
+				get = get,
+				set = set,
+				disabled = is_aura_disabled,
+				order = 5.5,
+			},			
 			suppress_occ = {
 				type = 'toggle',
 				name = L["Suppress cooldown numbers"],
