@@ -1767,17 +1767,21 @@ local anchor_values = {
 	BOTTOMRIGHT_BOTTOM = L["Bottom-right on bottom"],
 	BOTTOMLEFT_LEFT    = L["Bottom-left on left"],
 	BOTTOMRIGHT_RIGHT  = L["Bottom-right on right"],
+	TOP_CENTER  		 	 = L["Center on top"],
+	BOTTOM_CENTER  		 = L["Center on bottom"],
 }
 
 local growth_values = {
-	left_up    = L["Left then up"],
-	left_down  = L["Left then down"],
-	right_up   = L["Right then up"],
-	right_down = L["Right then down"],
-	up_left    = L["Up then left"],
-	up_right   = L["Up then right"],
-	down_left  = L["Down then left"],
-	down_right = L["Down then right"],
+	left_up    				= L["Left then up"],
+	left_down  				= L["Left then down"],
+	right_up   				= L["Right then up"],
+	right_down 				= L["Right then down"],
+	up_left    				= L["Up then left"],
+	up_right   				= L["Up then right"],
+	down_left  				= L["Down then left"],
+	down_right 				= L["Down then right"],
+	horizontal_up 		=	L["Spread in horizontal then up"],
+	horizontal_down 	=	L["Spread in horizontal then down"],
 }
 
 local width_type_values = {
