@@ -7,8 +7,6 @@ local PitBull4_Aura = PitBull4:GetModule("Aura")
 
 local wow_retail = PitBull4.wow_retail
 
-local GetSpellName = C_Spell.GetSpellName or _G.GetSpellInfo -- XXX Classic
-
 local player_class = UnitClassBase("player")
 local _, player_race = UnitRace("player")
 
@@ -566,7 +564,7 @@ local function turn(t, shallow)
 	local tmp = {}
 	local function turn(entry) -- luacheck: ignore
 		for id, v in next, entry do
-			local spell = GetSpellName(id)
+			local spell = C_Spell.GetSpellName(id)
 			if spell and v then
 				tmp[spell] = v
 			elseif v and PitBull4.DEBUG then
@@ -622,7 +620,7 @@ PitBull4_Aura.OnProfileChanged_funcs[#PitBull4_Aura.OnProfileChanged_funcs + 1] 
 			for id, v in next, name_list do
 				if type(id) == "number" then
 					name_list[id] = nil
-					local spell = GetSpellName(id)
+					local spell = C_Spell.GetSpellName(id)
 					if spell then
 						name_list[spell] = v
 					end

@@ -39,6 +39,7 @@ globals = {
 	"oRA3",
 
 	-- FrameXML
+	"AzeriteUtil",
 	"BasicMessageDialog",
 	"ChatFontNormal",
 	"CombatFeedbackText",
@@ -76,6 +77,7 @@ globals = {
 	"C_MajorFactions",
 	"C_PvP",
 	"C_Reputation",
+	"C_SpecializationInfo",
 	"C_Spell",
 	"C_Timer",
 	"C_TooltipInfo",
@@ -109,7 +111,6 @@ globals = {
 	"GetScreenHeight",
 	"GetScreenWidth",
 	"GetShapeshiftFormID",
-	"GetSpecialization",
 	"GetTalentInfoBySpecialization",
 	"GetThreatStatusColor",
 	"GetTime",

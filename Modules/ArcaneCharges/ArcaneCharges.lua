@@ -77,7 +77,7 @@ function PitBull4_ArcaneCharges:ClearFrame(frame)
 end
 
 function PitBull4_ArcaneCharges:UpdateFrame(frame)
-	if frame.unit ~= "player" or GetSpecialization() ~= SPEC_MAGE_ARCANE then
+	if frame.unit ~= "player" or C_SpecializationInfo.GetSpecialization() ~= SPEC_MAGE_ARCANE then
 		return self:ClearFrame(frame)
 	end
 

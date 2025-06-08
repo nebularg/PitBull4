@@ -128,7 +128,7 @@ function PitBull4_SoulShards:UpdateFrame(frame)
 
 	local modifier = UnitPowerDisplayMod(SPELL_POWER_SOUL_SHARDS)
 	local num_soul_shards = (modifier ~= 0) and (UnitPower("player", SPELL_POWER_SOUL_SHARDS, true) / modifier) or 0
-	if GetSpecialization() ~= 3 then
+	if C_SpecializationInfo.GetSpecialization() ~= 3 then
 		-- Destruction is supposed to show partial soulshards, but Affliction and Demonology should only show full ones
 		num_soul_shards = math.floor(num_soul_shards)
 	end

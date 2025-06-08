@@ -3,8 +3,8 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
 local wow_retail = PitBull4.wow_retail
-local GetSpellName = C_Spell.GetSpellName or _G.GetSpellInfo -- XXX Classic
-local IsSpellInRange = C_Spell.IsSpellInRange or _G.IsSpellInRange -- XXX Classic
+local GetSpellName = C_Spell.GetSpellName
+local IsSpellInRange = C_Spell.IsSpellInRange
 
 local PitBull4_RangeFader = PitBull4:NewModule("RangeFader")
 

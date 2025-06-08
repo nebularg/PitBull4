@@ -3,9 +3,6 @@ local player_class = UnitClassBase("player")
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local GetSpellName = C_Spell.GetSpellName or _G.GetSpellInfo -- XXX Classic
-local GetSpellTexture = C_Spell.GetSpellTexture or _G.GetSpellTexture -- XXX Classic
-
 -- CONSTANTS ----------------------------------------------------------------
 
 local MAX_TOTEMS = 4
@@ -234,8 +231,8 @@ do
 			config_times[slot] = t + duration
 			if REQUIRED_SPELL then
 				local spell = REQUIRED_SPELL[1]
-				name = GetSpellName(spell)
-				icon = GetSpellTexture(spell)
+				name = C_Spell.GetSpellName(spell)
+				icon = C_Spell.GetSpellTexture(spell)
 			else
 				name, icon = "Fake Totem", CONFIG_MODE_ICON
 			end

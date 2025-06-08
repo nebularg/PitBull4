@@ -4,11 +4,6 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_LuaTexts = PitBull4:GetModule("LuaTexts")
 
-local GetSpellName = C_Spell.GetSpellName or _G.GetSpellInfo -- XXX Classic
-
--- luacheck: globals Enum AzeriteUtil
-
-
 -- The ScriptEnv table serves as the environment that the scripts run
 -- under LuaTexts run under.  The functions included in it are accessible
 -- to this scripts as though they were local functions to it.  Functions
@@ -626,9 +621,9 @@ local function Dead(unit)
 end
 ScriptEnv.Dead = Dead
 
-local MOONKIN_FORM = GetSpellName(24858)
-local TRAVEL_FORM = GetSpellName(783)
-local TREE_OF_LIFE = GetSpellName(33891)
+local MOONKIN_FORM = C_Spell.GetSpellName(24858)
+local TRAVEL_FORM = C_Spell.GetSpellName(783)
+local TREE_OF_LIFE = C_Spell.GetSpellName(33891)
 
 local function DruidForm(unit)
 	local class = UnitClassBase(unit)
