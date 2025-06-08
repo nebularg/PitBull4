@@ -2,8 +2,6 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local wow_cata = PitBull4.wow_cata
-
 local EXAMPLE_VALUE = 0.3
 local FRIENDSHIP_REACTION_MAP = {
 	[1] = 1, -- Hated (Red)
@@ -53,7 +51,7 @@ function PitBull4_ReputationBar:GetValue(frame)
 		return nil
 	end
 
-	if not wow_cata then
+	if EXPANSION_LEVEL < LE_EXPANSION_MISTS_OF_PANDARIA then
 		local rep_info = C_GossipInfo.GetFriendshipReputation(faction_id)
 		local friendship_id = rep_info.friendshipFactionID
 
@@ -106,7 +104,7 @@ function PitBull4_ReputationBar:GetColor(frame, value)
 		end
 	end
 
-	if not wow_cata then
+	if EXPANSION_LEVEL < LE_EXPANSION_MISTS_OF_PANDARIA then
 		local rep_info = faction_id and C_GossipInfo.GetFriendshipReputation(faction_id)
 		if C_Reputation.IsFactionParagon(faction_id) then
 			reaction = "paragon"
@@ -135,18 +133,20 @@ function PitBull4_ReputationBar:GetExampleColor(frame)
 	return color[1], color[2], color[3]
 end
 
-local function Update()
-	if PitBull4_ReputationBar:IsEnabled() and IsPlayerInWorld() then
-		for frame in PitBull4:IterateFramesForUnitID("player") do
-			local layout_db = PitBull4_ReputationBar:GetLayoutDB(frame)
-			if layout_db then -- make sure we're initialized
-				PitBull4_ReputationBar:Update(frame)
+do
+	local function Update()
+		if PitBull4_ReputationBar:IsEnabled() and IsPlayerInWorld() then
+			for frame in PitBull4:IterateFramesForUnitID("player") do
+				local layout_db = PitBull4_ReputationBar:GetLayoutDB(frame)
+				if layout_db then -- make sure we're initialized
+					PitBull4_ReputationBar:Update(frame)
+				end
 			end
 		end
 	end
-end
-if not wow_cata then
-	hooksecurefunc(StatusTrackingBarManager, "UpdateBarsShown", Update)
-else
-	hooksecurefunc("MainMenuBar_UpdateExperienceBars", Update)
+	if _G.MainMenuBar_UpdateExperienceBars then -- removed in Shadowlands
+		hooksecurefunc("MainMenuBar_UpdateExperienceBars", Update)
+	else
+		hooksecurefunc(StatusTrackingBarManager, "UpdateBarsShown", Update)
+	end
 end

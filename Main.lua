@@ -5,8 +5,8 @@ local _G = _G
 
 local L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
 
-
-local wow_cata = WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC or nil
+local wow_retail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+local wow_classic = WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE
 
 local SINGLETON_CLASSIFICATIONS = {
 	"player",
@@ -320,8 +320,10 @@ local DEFAULT_UNITS =  {
 
 local LOCALIZED_NAMES = {}
 do
-	local num_classes = wow_cata and 11 or GetNumClasses()
-	for i = 1, num_classes do
+	for i = 1, GetNumClasses() do
+		if i == 10 and EXPANSION_LEVEL < LE_EXPANSION_MISTS_OF_PANDARIA then -- Skip Monk in Classic pre-Mists
+			i = 11
+		end
 		local info = C_CreatureInfo.GetClassInfo(i)
 		if info then
 			LOCALIZED_NAMES[info.classFile] = info.className
@@ -357,7 +359,8 @@ if PitBull4.version:match("@") then
 	PitBull4.version = "Development"
 end
 
-PitBull4.wow_cata = wow_cata
+PitBull4.wow_retail = wow_retail
+PitBull4.wow_classic = wow_classic
 
 PitBull4.L = L
 
@@ -1663,7 +1666,7 @@ function PitBull4:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("PLAYER_LEAVING_WORLD")
 
-	if not wow_cata then
+	if EXPANSION_LEVEL < LE_EXPANSION_MISTS_OF_PANDARIA then
 		self:RegisterEvent("PET_BATTLE_OPENING_START")
 	end
 

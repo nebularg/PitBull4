@@ -63,7 +63,8 @@ globals = {
 
 	-- Classic
 	"WOW_PROJECT_ID",
-	"WOW_PROJECT_CATACLYSM_CLASSIC",
+	"WOW_PROJECT_MAINLINE",
+	"EXPANSION_LEVEL",
 
 	-- Functions
 	"C_AddOns",

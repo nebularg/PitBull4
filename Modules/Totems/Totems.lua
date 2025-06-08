@@ -3,7 +3,6 @@ local player_class = UnitClassBase("player")
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local wow_cata = PitBull4.wow_cata
 local GetSpellName = C_Spell.GetSpellName or _G.GetSpellInfo -- XXX Classic
 local GetSpellTexture = C_Spell.GetSpellTexture or _G.GetSpellTexture -- XXX Classic
 
@@ -112,7 +111,7 @@ PitBull4_Totems:SetDefaults({
 function PitBull4_Totems:OnEnable()
 	self:RegisterEvent("PLAYER_TOTEM_UPDATE")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ForceSilentTotemUpdate")
-	if wow_cata then
+	if EXPANSION_LEVEL < LE_EXPANSION_MISTS_OF_PANDARIA then
 		self:RegisterEvent("CHARACTER_POINTS_CHANGED", "UpdateAll")
 	else
 		self:RegisterEvent("PLAYER_TALENT_UPDATE", "UpdateAll")

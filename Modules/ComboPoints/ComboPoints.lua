@@ -2,7 +2,7 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local wow_cata = PitBull4.wow_cata
+local is_modern = EXPANSION_LEVEL >= LE_EXPANSION_WARLORDS_OF_DRAENOR
 
 local player_class = UnitClassBase("player")
 local is_rogue = player_class == "ROGUE"
@@ -43,7 +43,7 @@ PitBull4_ComboPoints:SetDefaults({
 
 function PitBull4_ComboPoints:OnEnable()
 	self:RegisterEvent("UNIT_POWER_FREQUENT")
-	if not wow_cata then
+	if is_modern then
 		self:RegisterEvent("UNIT_DISPLAYPOWER")
 		self:RegisterEvent("UNIT_EXITED_VEHICLE", "UNIT_DISPLAYPOWER")
 	else
@@ -59,7 +59,7 @@ function PitBull4_ComboPoints:UNIT_POWER_FREQUENT(_, unit, power_type)
 	if unit ~= "player" and unit ~= "pet" then return end
 	if power_type ~= "COMBO_POINTS" then return end
 
-	if not wow_cata then
+	if is_modern then
 		for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
 			self:Update(frame)
 		end
@@ -107,7 +107,7 @@ end
 function PitBull4_ComboPoints:UpdateFrame(frame)
 	if frame.unit ~= "target" and frame.unit ~= "player" and frame.unit ~= "pet" then
 		return self:ClearFrame(frame)
-	elseif wow_cata and frame.unit ~= "target" then
+	elseif not is_modern and frame.unit ~= "target" then
 		return self:ClearFrame(frame)
 	end
 
@@ -117,7 +117,7 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 	end
 
 	local num_combos
-	if not wow_cata then
+	if is_modern then
 		num_combos = has_vehicle and GetComboPoints("vehicle", "target") or UnitPower("player", SPELL_POWER_COMBO_POINTS)
 	else
 		num_combos = GetComboPoints(has_vehicle and "vehicle" or "player", "target")

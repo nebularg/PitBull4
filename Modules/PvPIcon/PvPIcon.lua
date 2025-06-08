@@ -2,8 +2,6 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local wow_cata = PitBull4.wow_cata
-
 local PitBull4_PvPIcon = PitBull4:NewModule("PvPIcon")
 
 PitBull4_PvPIcon:SetModuleType("indicator")
@@ -43,7 +41,7 @@ function PitBull4_PvPIcon:OnEnable()
 	self:RegisterEvent("UPDATE_FACTION")
 	self:RegisterEvent("UNIT_FACTION", "UPDATE_FACTION")
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "UPDATE_FACTION")
-	if not wow_cata then
+	if EXPANSION_LEVEL >= LE_EXPANSION_LEGION then
 		self:RegisterEvent("HONOR_LEVEL_UPDATE")
 	end
 end
@@ -54,7 +52,7 @@ function PitBull4_PvPIcon:GetTexture(frame)
 
 	local faction = UnitFactionGroup(unit)
 	if UnitIsPVPFreeForAll(unit) then
-		if not wow_cata then
+		if EXPANSION_LEVEL >= LE_EXPANSION_LEGION then -- XXX Legion added the prestige system, BfA simplified it (and added C_PvP.GetHonorRewardInfo)
 			local honorLevel = UnitHonorLevel(unit)
 			local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel)
 			if honorRewardInfo and show_prestige then
@@ -64,7 +62,7 @@ function PitBull4_PvPIcon:GetTexture(frame)
 		end
 		return [[Interface\TargetingFrame\UI-PVP-FFA]]
 	elseif faction and faction ~= "Neutral" and UnitIsPVP(unit) then
-		if not wow_cata then
+		if EXPANSION_LEVEL >= LE_EXPANSION_LEGION then
 			-- Handle "Mercenary Mode" for player
 			if unit == "player" and UnitIsMercenary(unit) then
 				faction = OPPOSITE_PLAYER_FACTION[faction]
