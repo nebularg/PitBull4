@@ -2,6 +2,8 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local wow_expansion = PitBull4.wow_expansion
+
 local PitBull4_PhaseFader = PitBull4:NewModule("PhaseFader")
 
 PitBull4_PhaseFader:SetModuleType("fader")
@@ -27,7 +29,7 @@ function PitBull4_PhaseFader:GetOpacity(frame)
 		return nil
 	end
 
-	if EXPANSION_LEVEL < LE_EXPANSION_SHADOWLANDS then
+	if wow_expansion < LE_EXPANSION_SHADOWLANDS then
 		if UnitInPhase(unit) then
 			return nil
 		end

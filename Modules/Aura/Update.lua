@@ -7,6 +7,7 @@ local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
 local wow_retail = PitBull4.wow_retail
+local wow_expansion = PitBull4.wow_expansion
 
 local GetItemInfo = C_Item.GetItemInfo
 local GetItemQualityColor = C_Item.GetItemQualityColor
@@ -75,7 +76,7 @@ local function get_aura_list(list, unit, db, is_buff, frame)
 		end
 
 		-- Only available in the classic API z.z
-		if EXPANSION_LEVEL < LE_EXPANSION_LEGION then
+		if wow_expansion < LE_EXPANSION_LEGION then
 			entry.shouldConsolidate = select(16, _G.UnitAura(unit, id, filter))
 		end
 

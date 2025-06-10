@@ -5,6 +5,8 @@ local L = PitBull4.L
 
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
+local wow_expansion = PitBull4.wow_expansion
+
 local function copy(data)
 	local t = {}
 	for k, v in pairs(data) do
@@ -1297,18 +1299,18 @@ end)
 
 -- Personal nameplate aura, Filter by if the aura is eligible to show on your personal nameplate
 local function personal_nameplate_filter(self, entry)
-	local value = (EXPANSION_LEVEL < LE_EXPANSION_LEGION and entry.shouldConsolidate or entry.nameplateShowPersonal) or false
+	local value = (wow_expansion < LE_EXPANSION_LEGION and entry.shouldConsolidate or entry.nameplateShowPersonal) or false
 	if PitBull4_Aura:GetFilterDB(self).should_consolidate then
 		return value
 	else
 		return not value
 	end
 end
-PitBull4_Aura:RegisterFilterType('Should consolidate',EXPANSION_LEVEL < LE_EXPANSION_LEGION and L["Should consolidate"] or L["Personal nameplate"],personal_nameplate_filter,function(self,options)
+PitBull4_Aura:RegisterFilterType('Should consolidate',wow_expansion < LE_EXPANSION_LEGION and L["Should consolidate"] or L["Personal nameplate"],personal_nameplate_filter,function(self,options)
 	options.personal_nameplate_filter = {
 		type = 'select',
-		name = EXPANSION_LEVEL < LE_EXPANSION_LEGION and L["Should consolidate"] or L["Personal nameplate"],
-		desc = EXPANSION_LEVEL < LE_EXPANSION_LEGION and L["Filter by if the aura is eligible for consolidation."] or L["Filter by if the aura is flagged to show on your personal nameplate."],
+		name = wow_expansion < LE_EXPANSION_LEGION and L["Should consolidate"] or L["Personal nameplate"],
+		desc = wow_expansion < LE_EXPANSION_LEGION and L["Filter by if the aura is eligible for consolidation."] or L["Filter by if the aura is flagged to show on your personal nameplate."],
 		get = function(info)
 			local db = PitBull4_Aura:GetFilterDB(self)
 			return db.should_consolidate and "yes" or "no"

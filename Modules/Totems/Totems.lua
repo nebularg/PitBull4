@@ -3,6 +3,8 @@ local player_class = UnitClassBase("player")
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local wow_expansion = PitBull4.wow_expansion
+
 -- CONSTANTS ----------------------------------------------------------------
 
 local MAX_TOTEMS = 4
@@ -108,7 +110,7 @@ PitBull4_Totems:SetDefaults({
 function PitBull4_Totems:OnEnable()
 	self:RegisterEvent("PLAYER_TOTEM_UPDATE")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ForceSilentTotemUpdate")
-	if EXPANSION_LEVEL < LE_EXPANSION_MISTS_OF_PANDARIA then
+	if wow_expansion < LE_EXPANSION_MISTS_OF_PANDARIA then
 		self:RegisterEvent("CHARACTER_POINTS_CHANGED", "UpdateAll")
 	else
 		self:RegisterEvent("PLAYER_TALENT_UPDATE", "UpdateAll")

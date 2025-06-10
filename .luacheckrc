@@ -65,7 +65,6 @@ globals = {
 	-- Classic
 	"WOW_PROJECT_ID",
 	"WOW_PROJECT_MAINLINE",
-	"EXPANSION_LEVEL",
 
 	-- Functions
 	"C_AddOns",
@@ -89,6 +88,7 @@ globals = {
 	"DestroyTotem",
 	"GetBattlefieldStatus",
 	"GetCVarBool",
+	"GetClassicExpansionLevel",
 	"GetComboPoints",
 	"GetBuildInfo",
 	"GetFriendshipReputation",

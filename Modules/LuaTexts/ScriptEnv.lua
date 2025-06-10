@@ -4,6 +4,8 @@ local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 local PitBull4_LuaTexts = PitBull4:GetModule("LuaTexts")
 
+local wow_expansion = PitBull4.wow_expansion
+
 -- The ScriptEnv table serves as the environment that the scripts run
 -- under LuaTexts run under.  The functions included in it are accessible
 -- to this scripts as though they were local functions to it.  Functions
@@ -406,7 +408,7 @@ end
 ScriptEnv.ClassColor = ClassColor
 
 local function Level(unit)
-	if EXPANSION_LEVEL >= LE_EXPANSION_MISTS_OF_PANDARIA then
+	if wow_expansion >= LE_EXPANSION_MISTS_OF_PANDARIA then
 		if UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit) then
 			return UnitBattlePetLevel(unit)
 		end
@@ -515,7 +517,7 @@ end
 ScriptEnv.ShortClass = ShortClass
 
 local function Creature(unit)
-	if EXPANSION_LEVEL >= LE_EXPANSION_MISTS_OF_PANDARIA then
+	if wow_expansion >= LE_EXPANSION_MISTS_OF_PANDARIA then
 		if UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit) then
 			return _G["BATTLE_PET_NAME_"..UnitBattlePetType(unit)].." "..TOOLTIP_BATTLE_PET
 		end
@@ -998,7 +1000,7 @@ ScriptEnv.RestXP = RestXP
 
 -- Pre-Dragonflight API wrapper for old texts
 local function GetFriendshipReputation(id)
-	if EXPANSION_LEVEL >= LE_EXPANSION_MISTS_OF_PANDARIA then
+	if wow_expansion >= LE_EXPANSION_MISTS_OF_PANDARIA then
 		local info = C_GossipInfo.GetFriendshipReputation(id)
 		if info.friendshipFactionID > 0 then
 			return info.friendshipFactionID, info.standing, info.maxRep, info.name, info.text, info.texture, info.reaction, info.reactionThreshold, info.nextThreshold
@@ -1026,7 +1028,7 @@ local function WatchedFactionInfo()
 		return nil
 	end
 
-	if EXPANSION_LEVEL >= LE_EXPANSION_MISTS_OF_PANDARIA then
+	if wow_expansion >= LE_EXPANSION_MISTS_OF_PANDARIA then
 		local rep_info = C_GossipInfo.GetFriendshipReputation(faction_id)
 		local friendship_id = rep_info.friendshipFactionID
 

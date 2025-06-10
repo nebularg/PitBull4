@@ -7,6 +7,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
 
 local wow_retail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 local wow_classic = WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE
+local wow_expansion = GetClassicExpansionLevel()
 
 local SINGLETON_CLASSIFICATIONS = {
 	"player",
@@ -321,7 +322,7 @@ local DEFAULT_UNITS =  {
 local LOCALIZED_NAMES = {}
 do
 	for i = 1, GetNumClasses() do
-		if i == 10 and EXPANSION_LEVEL < LE_EXPANSION_MISTS_OF_PANDARIA then -- Skip Monk in Classic pre-Mists
+		if i == 10 and wow_expansion < LE_EXPANSION_MISTS_OF_PANDARIA then -- Skip Monk in Classic pre-Mists
 			i = 11
 		end
 		local info = C_CreatureInfo.GetClassInfo(i)
@@ -361,6 +362,7 @@ end
 
 PitBull4.wow_retail = wow_retail
 PitBull4.wow_classic = wow_classic
+PitBull4.wow_expansion = wow_expansion
 
 PitBull4.L = L
 
@@ -1666,7 +1668,7 @@ function PitBull4:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("PLAYER_LEAVING_WORLD")
 
-	if EXPANSION_LEVEL < LE_EXPANSION_MISTS_OF_PANDARIA then
+	if wow_expansion >= LE_EXPANSION_MISTS_OF_PANDARIA then
 		self:RegisterEvent("PET_BATTLE_OPENING_START")
 	end
 

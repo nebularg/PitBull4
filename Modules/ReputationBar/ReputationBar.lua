@@ -2,6 +2,8 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local wow_expansion = PitBull4.wow_expansion
+
 local EXAMPLE_VALUE = 0.3
 local FRIENDSHIP_REACTION_MAP = {
 	[1] = 1, -- Hated (Red)
@@ -51,7 +53,7 @@ function PitBull4_ReputationBar:GetValue(frame)
 		return nil
 	end
 
-	if EXPANSION_LEVEL < LE_EXPANSION_MISTS_OF_PANDARIA then
+	if wow_expansion < LE_EXPANSION_MISTS_OF_PANDARIA then
 		local rep_info = C_GossipInfo.GetFriendshipReputation(faction_id)
 		local friendship_id = rep_info.friendshipFactionID
 
@@ -104,7 +106,7 @@ function PitBull4_ReputationBar:GetColor(frame, value)
 		end
 	end
 
-	if EXPANSION_LEVEL < LE_EXPANSION_MISTS_OF_PANDARIA then
+	if wow_expansion < LE_EXPANSION_MISTS_OF_PANDARIA then
 		local rep_info = faction_id and C_GossipInfo.GetFriendshipReputation(faction_id)
 		if C_Reputation.IsFactionParagon(faction_id) then
 			reaction = "paragon"

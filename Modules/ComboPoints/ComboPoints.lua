@@ -2,7 +2,7 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local is_modern = EXPANSION_LEVEL >= LE_EXPANSION_WARLORDS_OF_DRAENOR
+local is_modern = PitBull4.wow_expansion >= LE_EXPANSION_WARLORDS_OF_DRAENOR
 
 local player_class = UnitClassBase("player")
 local is_rogue = player_class == "ROGUE"
