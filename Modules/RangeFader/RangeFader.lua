@@ -272,7 +272,7 @@ end
 PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 	local get_spell_range
 	local range_pattern = _G.SPELL_RANGE:gsub("%%s", ".-")
-	if wow_retail then
+	if C_TooltipInfo then -- XXX wow_retail
 		function get_spell_range(spell_id)
 			local data = C_TooltipInfo.GetSpellByID(spell_id, true)
 			if not data then return end

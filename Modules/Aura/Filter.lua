@@ -6,7 +6,6 @@ local L = PitBull4.L
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
 local wow_retail = PitBull4.wow_retail
-local wow_expansion = PitBull4.wow_expansion
 
 local player_class = UnitClassBase("player")
 local _, player_race = UnitRace("player")
@@ -354,7 +353,7 @@ friend_buffs.DarkIronDwarf = {
 }
 friend_debuffs.DarkIronDwarf = {}
 self_buffs.DarkIronDwarf = {
-	[273104] = wow_expansion >= LE_EXPANSION_BATTLE_FOR_AZEROTH, -- Fireblood
+	[273104] = ClassicExpansionAtLeast(LE_EXPANSION_BATTLE_FOR_AZEROTH) or nil, -- Fireblood
 }
 self_debuffs.DarkIronDwarf = {}
 pet_buffs.DarkIronDwarf = {}
@@ -376,7 +375,7 @@ friend_buffs.VoidElf = {
 }
 friend_debuffs.VoidElf = {}
 self_buffs.VoidElf = {
-	[256948] = wow_expansion >= LE_EXPANSION_BATTLE_FOR_AZEROTH, -- Spatial Rift
+	[256948] = ClassicExpansionAtLeast(LE_EXPANSION_BATTLE_FOR_AZEROTH) or nil, -- Spatial Rift
 }
 self_debuffs.VoidElf = {}
 pet_buffs.VoidElf = {}
@@ -478,10 +477,10 @@ friend_buffs.MagharOrc = {
 friend_debuffs.MagharOrc = {}
 self_buffs.MagharOrc = {
 	-- Ancestral Call
-	[274739] = wow_expansion >= LE_EXPANSION_BATTLE_FOR_AZEROTH, -- Rictus of the Laughing Skull
-	[274740] = wow_expansion >= LE_EXPANSION_BATTLE_FOR_AZEROTH, -- Zeal of the Burning Blade
-	[274741] = wow_expansion >= LE_EXPANSION_BATTLE_FOR_AZEROTH, -- Ferocity of the Frostwolf
-	[274742] = wow_expansion >= LE_EXPANSION_BATTLE_FOR_AZEROTH, -- Might of the Blackrock
+	[274739] = ClassicExpansionAtLeast(LE_EXPANSION_BATTLE_FOR_AZEROTH) or nil, -- Rictus of the Laughing Skull
+	[274740] = ClassicExpansionAtLeast(LE_EXPANSION_BATTLE_FOR_AZEROTH) or nil, -- Zeal of the Burning Blade
+	[274741] = ClassicExpansionAtLeast(LE_EXPANSION_BATTLE_FOR_AZEROTH) or nil, -- Ferocity of the Frostwolf
+	[274742] = ClassicExpansionAtLeast(LE_EXPANSION_BATTLE_FOR_AZEROTH) or nil, -- Might of the Blackrock
 }
 self_debuffs.MagharOrc = {}
 pet_buffs.MagharOrc = {}
@@ -496,7 +495,7 @@ self_buffs.HighmountainTauren = {}
 self_debuffs.HighmountainTauren = {}
 pet_buffs.HighmountainTauren = {}
 enemy_debuffs.HighmountainTauren = {
-	[255723] = wow_expansion >= LE_EXPANSION_BATTLE_FOR_AZEROTH, -- Bull Rush
+	[255723] = ClassicExpansionAtLeast(LE_EXPANSION_BATTLE_FOR_AZEROTH) or nil, -- Bull Rush
 }
 
 -- Nightborne
@@ -508,7 +507,7 @@ self_buffs.Nightborne = {}
 self_debuffs.Nightborne = {}
 pet_buffs.Nightborne = {}
 enemy_debuffs.Nightborne = {
-	[260369] = wow_expansion >= LE_EXPANSION_BATTLE_FOR_AZEROTH, -- Arcane Pulse
+	[260369] = ClassicExpansionAtLeast(LE_EXPANSION_BATTLE_FOR_AZEROTH) or nil, -- Arcane Pulse
 }
 
 -- Zandalari Troll
@@ -541,7 +540,7 @@ self_buffs.Pandaren = {}
 self_debuffs.Pandaren = {}
 pet_buffs.Pandaren = {}
 enemy_debuffs.Pandaren = {
-	[107079] = wow_expansion >= LE_EXPANSION_MISTS_OF_PANDARIA, -- Quaking Palm
+	[107079] = ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) or nil, -- Quaking Palm
 }
 
 -- Dracthyr

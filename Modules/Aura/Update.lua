@@ -6,9 +6,6 @@ local L = PitBull4.L
 
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
-local wow_retail = PitBull4.wow_retail
-local wow_expansion = PitBull4.wow_expansion
-
 local GetItemInfo = C_Item.GetItemInfo
 local GetItemQualityColor = C_Item.GetItemQualityColor
 
@@ -58,6 +55,7 @@ local function get_aura_list(list, unit, db, is_buff, frame)
 	local filter = is_buff and "HELPFUL" or "HARMFUL"
 	local id = 1
 	local index = 1
+	local set_consolidate = PitBull4.wow_expansion < LE_EXPANSION_LEGION
 
 	-- Loop through the auras
 	while true do
@@ -76,7 +74,7 @@ local function get_aura_list(list, unit, db, is_buff, frame)
 		end
 
 		-- Only available in the classic API z.z
-		if wow_expansion < LE_EXPANSION_LEGION then
+		if set_consolidate then
 			entry.shouldConsolidate = select(16, _G.UnitAura(unit, id, filter))
 		end
 
@@ -169,7 +167,7 @@ end
 -- Get the name of the temporary enchant on a weapon from the tooltip
 -- given the item slot the weapon is in.
 local get_weapon_enchant_name
-if wow_retail then
+if C_TooltipInfo then -- XXX wow_retail
 	function get_weapon_enchant_name(slot)
 		local data = C_TooltipInfo.GetInventoryItem("player", slot, true)
 		if not data then return end

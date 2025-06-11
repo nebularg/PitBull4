@@ -84,6 +84,8 @@ globals = {
 	"CancelItemTempEnchantment",
 	"CancelUnitBuff",
 	"CheckInteractDistance",
+	"ClassicExpansionAtLeast",
+	"ClassicExpansionAtMost",
 	"CreateFrame",
 	"DestroyTotem",
 	"GetBattlefieldStatus",

@@ -2,8 +2,6 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local is_modern = PitBull4.wow_expansion >= LE_EXPANSION_WARLORDS_OF_DRAENOR
-
 local player_class = UnitClassBase("player")
 local is_rogue = player_class == "ROGUE"
 local is_druid = player_class == "DRUID"
@@ -43,7 +41,7 @@ PitBull4_ComboPoints:SetDefaults({
 
 function PitBull4_ComboPoints:OnEnable()
 	self:RegisterEvent("UNIT_POWER_FREQUENT")
-	if is_modern then
+	if ClassicExpansionAtLeast(LE_EXPANSION_WARLORDS_OF_DRAENOR) then
 		self:RegisterEvent("UNIT_DISPLAYPOWER")
 		self:RegisterEvent("UNIT_EXITED_VEHICLE", "UNIT_DISPLAYPOWER")
 	else
@@ -59,7 +57,7 @@ function PitBull4_ComboPoints:UNIT_POWER_FREQUENT(_, unit, power_type)
 	if unit ~= "player" and unit ~= "pet" then return end
 	if power_type ~= "COMBO_POINTS" then return end
 
-	if is_modern then
+	if ClassicExpansionAtLeast(LE_EXPANSION_WARLORDS_OF_DRAENOR) then
 		for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
 			self:Update(frame)
 		end
@@ -107,7 +105,7 @@ end
 function PitBull4_ComboPoints:UpdateFrame(frame)
 	if frame.unit ~= "target" and frame.unit ~= "player" and frame.unit ~= "pet" then
 		return self:ClearFrame(frame)
-	elseif not is_modern and frame.unit ~= "target" then
+	elseif not ClassicExpansionAtLeast(LE_EXPANSION_WARLORDS_OF_DRAENOR) and frame.unit ~= "target" then
 		return self:ClearFrame(frame)
 	end
 
@@ -117,7 +115,7 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 	end
 
 	local num_combos
-	if is_modern then
+	if ClassicExpansionAtLeast(LE_EXPANSION_WARLORDS_OF_DRAENOR) then
 		num_combos = has_vehicle and GetComboPoints("vehicle", "target") or UnitPower("player", SPELL_POWER_COMBO_POINTS)
 	else
 		num_combos = GetComboPoints(has_vehicle and "vehicle" or "player", "target")

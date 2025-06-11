@@ -2,8 +2,7 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
--- local has_absorbs = PitBull4.wow_expansion >= LE_EXPANSION_MISTS_OF_PANDARIA -- XXX UnitGetTotalAbsorbs was added in MoP but classic doesn't have the API?
-local UnitGetTotalAbsorbs = _G.UnitGetTotalAbsorbs or nil
+local UnitGetTotalAbsorbs = _G.UnitGetTotalAbsorbs or nil  -- XXX UnitGetTotalAbsorbs was added in MoP but classic doesn't have the API?
 
 local EPSILON = 1e-5
 

@@ -2,8 +2,6 @@
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
-local wow_retail = PitBull4.wow_retail
-
 -----------------------------------------------------------------------------
 -- luacheck: no global
 
@@ -81,7 +79,7 @@ local function simple_hook_frames(...)
 			frame:UnregisterAllEvents()
 			frame:HookScript("OnShow", hide_frame)
 			frame:Hide()
-		else
+		elseif PitBull4.DEBUG then
 			geterrorhandler()(("PitBull4_HideBlizzard: Invalid frame at index %d"):format(i))
 		end
 	end
@@ -106,7 +104,7 @@ local function hook_frames(raw, ...)
 				frame:SetParent(hidden_frame)
 				frame:HookScript("OnShow", hide_frame)
 			end
-		else
+		elseif PitBull4.DEBUG then
 			geterrorhandler()(("PitBull4_HideBlizzard: Invalid frame at index %d"):format(i))
 		end
 	end
@@ -129,9 +127,7 @@ function hiders:player()
 end
 
 function hiders:runebar()
-	if wow_retail then
-		simple_hook_frames(RuneFrame, WarlockPowerFrame, MonkHarmonyBarFrame, PaladinPowerBarFrame, MageArcaneChargesFrame, EssencePlayerFrame)
-	end
+	simple_hook_frames(RuneFrame, WarlockPowerFrame, MonkHarmonyBarFrame, PaladinPowerBarFrame, MageArcaneChargesFrame, EssencePlayerFrame)
 end
 
 function hiders:party()
