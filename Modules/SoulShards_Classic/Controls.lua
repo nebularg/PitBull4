@@ -120,7 +120,7 @@ end, function(control)
 	control.active = nil
 	control.shine_time = nil
 
-	control:SetNormalTexture(nil)
+	control:SetNormalTexture(0)
 	if control.shine then
 		control.shine = control.shine:Delete()
 	end
