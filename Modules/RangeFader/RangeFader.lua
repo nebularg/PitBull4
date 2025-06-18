@@ -290,7 +290,7 @@ PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 		end
 	else
 		local tooltip = CreateFrame("GameTooltip", "PitBull4RangeFinderTooltip", nil, "GameTooltipTemplate")
-		tooltip:SetOwner(UIParent, "ANCHOR_NONE")
+		tooltip:SetOwner(WorldFrame, "ANCHOR_NONE")
 		function get_spell_range(spell_id)
 			tooltip:SetSpellByID(spell_id)
 			for i = 1, tooltip:NumLines(), 1 do
