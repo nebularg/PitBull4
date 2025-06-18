@@ -1648,6 +1648,7 @@ function MemberUnitFrame:SetClickThroughState(state)
 			SecureHandlerExecute(header, not mouse_state and clickcast_register or clickcast_unregister)
 		end
 		self:EnableMouse(not mouse_state)
+		self:SetAttribute("ping-receiver", not mouse_state or nil)
 	end
 end
 MemberUnitFrame.SetClickThroughState = PitBull4:OutOfCombatWrapper(MemberUnitFrame.SetClickThroughState)
