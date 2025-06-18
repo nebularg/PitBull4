@@ -5,10 +5,12 @@ end
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local GetSpecialization = C_SpecializationInfo.GetSpecialization or _G.GetSpecialization -- XXX wow_compat
+
 -- CONSTANTS ----------------------------------------------------------------
 
-local SPELL_POWER_CHI = 12 -- Enum.PowerType.Chi
-local SPEC_MONK_WINDWALKER = _G.SPEC_MONK_WINDWALKER
+local SPELL_POWER_CHI = Enum.PowerType.Chi -- 12
+local SPEC_MONK_WINDWALKER = 3
 
 local MAX_POWER = 6
 
@@ -103,7 +105,7 @@ local function update_container_size(container, vertical, max_chi)
 end
 
 function PitBull4_Chi:UpdateFrame(frame)
-	if frame.unit ~= "player" or C_SpecializationInfo.GetSpecialization() ~= SPEC_MONK_WINDWALKER then
+	if frame.unit ~= "player" or GetSpecialization() ~= SPEC_MONK_WINDWALKER then
 		return self:ClearFrame(frame)
 	end
 

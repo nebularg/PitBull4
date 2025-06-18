@@ -5,9 +5,12 @@ end
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
+local GetSpecialization = C_SpecializationInfo.GetSpecialization or _G.GetSpecialization -- XXX wow_compat
+
 -- CONSTANTS ----------------------------------------------------------------
 
-local SPELL_POWER_SOUL_SHARDS = 7 -- Enum.PowerType.SoulShards
+local SPELL_POWER_SOUL_SHARDS = Enum.PowerType.SoulShards -- 7
+local SPEC_WARLOCK_DESTRUCTION = 3
 
 local MAX_SHARDS = 5
 
@@ -128,7 +131,7 @@ function PitBull4_SoulShards:UpdateFrame(frame)
 
 	local modifier = UnitPowerDisplayMod(SPELL_POWER_SOUL_SHARDS)
 	local num_soul_shards = (modifier ~= 0) and (UnitPower("player", SPELL_POWER_SOUL_SHARDS, true) / modifier) or 0
-	if C_SpecializationInfo.GetSpecialization() ~= 3 then
+	if GetSpecialization() ~= SPEC_WARLOCK_DESTRUCTION then
 		-- Destruction is supposed to show partial soulshards, but Affliction and Demonology should only show full ones
 		num_soul_shards = math.floor(num_soul_shards)
 	end
