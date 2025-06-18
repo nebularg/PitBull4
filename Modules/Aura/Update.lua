@@ -183,8 +183,8 @@ if C_TooltipInfo then -- XXX wow_retail
 		end
 	end
 else
-	local tt = CreateFrame("GameTooltip", "PitBull4_Aura_Tooltip", UIParent)
-	tt:SetOwner(UIParent, "ANCHOR_NONE")
+	local tt = CreateFrame("GameTooltip", "PitBull4_Aura_Tooltip", nil)
+	tt:SetOwner(WorldFrame, "ANCHOR_NONE")
 	local left = {}
 
 	local g = tt:CreateFontString()
@@ -198,8 +198,8 @@ else
 
 	get_weapon_enchant_name = function(slot)
 		tt:ClearLines()
-		if not tt:IsOwned(UIParent) then
-			tt:SetOwner(UIParent, "ANCHOR_NONE")
+		if not tt:IsOwned(WorldFrame) then
+			tt:SetOwner(WorldFrame, "ANCHOR_NONE")
 		end
 		tt:SetInventoryItem("player", slot)
 
