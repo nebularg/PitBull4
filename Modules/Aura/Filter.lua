@@ -133,7 +133,7 @@ function PitBull4_Aura:PLAYER_TALENT_UPDATE()
 			can_dispel.SHAMAN.Curse = IsPlayerSpell(51886) or IsPlayerSpell(383016) -- Cleanse Spirit / Improved Purify Spirit
 			self:GetFilterDB('23').aura_type_list.Curse = can_dispel.SHAMAN.Curse
 			can_dispel.SHAMAN.Poison = IsPlayerSpell(383013) -- Poison Cleansing Totem
-			self:GetFilterDB('23').aura_type_list.Poison = can_dispel.DRUID.SHAMAN
+			self:GetFilterDB('23').aura_type_list.Poison = can_dispel.SHAMAN.Poison
 			can_dispel.SHAMAN.Magic = IsPlayerSpell(77130) -- Purify Spirit
 			self:GetFilterDB('23').aura_type_list.Magic = can_dispel.SHAMAN.Magic
 
