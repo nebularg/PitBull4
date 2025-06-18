@@ -20,6 +20,19 @@ PitBull4_ReputationBar:SetDefaults({
 	position = 3,
 })
 
+function PitBull4_ReputationBar:OnInitialize()
+	local function Update()
+		if PitBull4_ReputationBar:IsEnabled() then
+			PitBull4_ReputationBar:UpdateForUnitID("player")
+		end
+	end
+	if _G.MainMenuBar_UpdateExperienceBars then -- removed in Shadowlands
+		hooksecurefunc("MainMenuBar_UpdateExperienceBars", Update)
+	else
+		hooksecurefunc(StatusTrackingBarManager, "UpdateBarsShown", Update)
+	end
+end
+
 function PitBull4_ReputationBar:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
@@ -133,22 +146,4 @@ end
 function PitBull4_ReputationBar:GetExampleColor(frame)
 	local color = PitBull4.ReactionColors[5]
 	return color[1], color[2], color[3]
-end
-
-do
-	local function Update()
-		if PitBull4_ReputationBar:IsEnabled() and IsPlayerInWorld() then
-			for frame in PitBull4:IterateFramesForUnitID("player") do
-				local layout_db = PitBull4_ReputationBar:GetLayoutDB(frame)
-				if layout_db then -- make sure we're initialized
-					PitBull4_ReputationBar:Update(frame)
-				end
-			end
-		end
-	end
-	if _G.MainMenuBar_UpdateExperienceBars then -- removed in Shadowlands
-		hooksecurefunc("MainMenuBar_UpdateExperienceBars", Update)
-	else
-		hooksecurefunc(StatusTrackingBarManager, "UpdateBarsShown", Update)
-	end
 end
