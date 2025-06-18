@@ -131,5 +131,5 @@ end, function(control)
 	control.id = nil
 	control.rune_type = nil
 
-	control:SetNormalTexture(nil)
+	control:SetNormalTexture(0)
 end)
