@@ -11,6 +11,7 @@ local is_druid = player_class == "DRUID"
 local BASE_TEXTURE_PATH = [[Interface\AddOns\PitBull4\Modules\ComboPoints\]]
 
 local SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints
+local OVERFLOWING_POWER_SPELL_ID = 405189 -- Overflowing Power
 
 local TEXTURES = {
 	default = L["Default"],
@@ -40,14 +41,16 @@ PitBull4_ComboPoints:SetDefaults({
 	background_color = { 0, 0, 0, 0.5 }
 })
 
+local overflowing_power_aura_id = nil
+
 function PitBull4_ComboPoints:OnEnable()
 	self:RegisterEvent("UNIT_POWER_FREQUENT")
-	if is_druid and ClassicExpansionAtLeast(LE_EXPANSION_DRAGONFLIGHT) then
-		self:RegisterEvent("UNIT_AURA")
-	end
 	if ClassicExpansionAtLeast(LE_EXPANSION_WARLORDS_OF_DRAENOR) then
 		self:RegisterEvent("UNIT_DISPLAYPOWER")
 		self:RegisterEvent("UNIT_EXITED_VEHICLE", "UNIT_DISPLAYPOWER")
+		if is_druid and ClassicExpansionAtLeast(LE_EXPANSION_DRAGONFLIGHT) then
+			self:RegisterUnitEvent("UNIT_AURA", nil, "player")
+		end
 	else
 		self:RegisterEvent("UNIT_MAXPOWER")
 		self:RegisterUnitEvent("UNIT_EXITED_VEHICLE", nil, "player")
@@ -78,60 +81,49 @@ function PitBull4_ComboPoints:UNIT_DISPLAYPOWER(event, unit)
 	end
 end
 
-function PitBull4_ComboPoints:UNIT_AURA(_, unit, info)
-	if unit ~= "player" or info == nil then
-        return
-    end
+function PitBull4_ComboPoints:UNIT_AURA(_, unit, update_info)
+	if unit ~= "player" or not update_info then return end
 
-	-- Only need to process if flowing power triggers an update
-	local overflowingPowerChanged = false
-	local overflowingPowerRemoved = false
+	local changed = false
+	local removed = false
 
-	-- Check if Overflowing Power was added
-	if info.addedAuras then
-		for _, aura in ipairs(info.addedAuras) do
-			if aura.spellId == 405189 then
-				overflowingPowerChanged = true
-				self.overflowingPowerInstanceID = aura.auraInstanceID
+	if update_info.addedAuras then
+		for _, aura in next, update_info.addedAuras do
+			if aura.spellId == OVERFLOWING_POWER_SPELL_ID then
+				changed = true
+				overflowing_power_aura_id = aura.auraInstanceID
 				break
 			end
 		end
 	end
 
-	-- Check if Overflowing Power was updated
-	if not overflowingPowerChanged then
-		for _, auraInstanceID in ipairs(info.updatedAuraInstanceIDs or {}) do
-			local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(unit, auraInstanceID)
-			if aura and aura.spellId == 405189 then
-				self.overflowingPowerInstanceID = aura.auraInstanceID
-				overflowingPowerChanged = true
+	if overflowing_power_aura_id and not changed and update_info.updatedAuraInstanceIDs then
+		for _, aura_id in next, update_info.updatedAuraInstanceIDs do
+			if overflowing_power_aura_id == aura_id then
+				changed = true
 				break
 			end
 		end
 	end
 
-	-- Check if Overflowing Power was removed
-	if not overflowingPowerChanged then
-		for _, auraInstanceID in ipairs(info.removedAuraInstanceIDs or {}) do
-			if self.overflowingPowerInstanceID and self.overflowingPowerInstanceID == auraInstanceID then
-				self.overflowingPowerInstanceID = auraInstanceID
-				overflowingPowerChanged = true
-				overflowingPowerRemoved = true
+	if overflowing_power_aura_id and not changed and update_info.removedAuraInstanceIDs then
+		for _, aura_id in next, update_info.removedAuraInstanceIDs do
+			if overflowing_power_aura_id == aura_id then
+				changed = true
+				removed = true
 				break
 			end
 		end
 	end
 
-	if not overflowingPowerChanged then
-		return
+	if changed then
+		for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
+			self:Update(frame)
+		end
 	end
-
-	for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
-		self:Update(frame)
-	end
-
-	if overflowingPowerRemoved then
-		self.overflowingPowerInstanceID = nil
+	if removed then
+		-- Unset after update so frames still get updated at max power
+		overflowing_power_aura_id = nil
 	end
 end
 
@@ -203,24 +195,14 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 		num_combos = max_combos
 	end
 
-	-- Overflowing combo points while in berserk or incarnation
-	local overflowing_stacks = nil
-	if is_druid and ClassicExpansionAtLeast(LE_EXPANSION_DRAGONFLIGHT) then
-		-- Test for Berserk / Incarnation: Avatar of Ashamane
-		if C_UnitAuras.GetPlayerAuraBySpellID(106951) or C_UnitAuras.GetPlayerAuraBySpellID(102543) then
-			-- Check for Overflowing Power
-			local aura = C_UnitAuras.GetPlayerAuraBySpellID(405189)
-			overflowing_stacks = aura and (aura.applications or 0)
-		end
-	end
-
 	local db = self:GetLayoutDB(frame)
 	if num_combos == 0 and not db.has_background_color then
 		return self:ClearFrame(frame)
 	end
 	local combos = frame.ComboPoints
 
-	if not self.overflowingPowerInstanceID and combos and #combos == num_combos then
+	-- Only update at max power if you have Overflowing Power
+	if combos and #combos == num_combos and not overflowing_power_aura_id then
 		combos:Show()
 		return false
 	end
@@ -287,14 +269,18 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 		end
 	end
 
-	-- Color combos
-	for i = 1, num_combos do
-		local combo = combos[i]
+	-- Druid Overflowing Power
+	local num_overflowing = 0
+	if overflowing_power_aura_id then
+		local aura = C_UnitAuras.GetAuraDataByAuraInstanceID("player", overflowing_power_aura_id)
+		num_overflowing = aura and aura.applications or 0
+	end
 
-		if i <= (overflowing_stacks or 0) then
-			combo:SetVertexColor(unpack(db.overflow_color))
+	for i = 1, num_combos do
+		if i > num_overflowing then
+			combos[i]:SetVertexColor(unpack(db.color))
 		else
-			combo:SetVertexColor(unpack(db.color))
+			combos[i]:SetVertexColor(unpack(db.overflow_color))
 		end
 	end
 
@@ -367,7 +353,7 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 	}, 'overflow_color', {
 		type = 'color',
 		name = L["Overflow Color"],
-		desc = L["What color overflow combo points should be."],
+		desc = L["What color the combo points should be."],
 		get = function(info)
 			return unpack(PitBull4.Options.GetLayoutDB(self).overflow_color)
 		end,
@@ -380,8 +366,8 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 				self:Update(frame)
 			end
 		end,
-		disabled = function(info)
-			return not is_druid and ClassicExpansionAtLeast(LE_EXPANSION_DRAGONFLIGHT)
+		hidden = function(info)
+			return not is_druid or not ClassicExpansionAtLeast(LE_EXPANSION_DRAGONFLIGHT)
 		end
 	}, 'has_background_color', {
 		type = 'toggle',

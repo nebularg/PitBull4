@@ -726,6 +726,7 @@ L["Out-of-combat opacity"] = true
 L["Out-of-range opacity"] = true
 L["Outside"] = true
 L["Outside margin"] = true
+L["Overflow Color"] = true
 L["Padding"] = true
 L["Padding in pixels between bars and the sides of the unit frame."] = true
 L["Paladin_short"] = "Pa"
