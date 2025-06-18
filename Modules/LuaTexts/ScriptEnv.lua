@@ -1026,21 +1026,20 @@ local function WatchedFactionInfo()
 		return nil
 	end
 
-	if ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) then
+	if ClassicExpansionAtLeast(LE_EXPANSION_LEGION) and C_Reputation.IsFactionParagon(faction_id) then
+		local paragon_value, threshold, _, has_reward = C_Reputation.GetFactionParagonInfo(faction_id)
+		min, max = 0, threshold
+		value = paragon_value % threshold
+		if has_reward then
+			value = value + threshold
+		end
+	elseif ClassicExpansionAtLeast(LE_EXPANSION_DRAGONFLIGHT) and C_Reputation.IsMajorFaction(faction_id) then
+		local faction_info = C_MajorFactions.GetMajorFactionData(faction_id)
+		min, max = 0, faction_info.renownLevelThreshold
+	elseif ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) then
 		local rep_info = C_GossipInfo.GetFriendshipReputation(faction_id)
 		local friendship_id = rep_info.friendshipFactionID
-
-		if C_Reputation.IsFactionParagon(faction_id) then
-			local paragon_value, threshold, _, has_reward = C_Reputation.GetFactionParagonInfo(faction_id)
-			min, max = 0, threshold
-			value = paragon_value % threshold
-			if has_reward then
-				value = value + threshold
-			end
-		elseif C_Reputation.IsMajorFaction(faction_id) then
-			local faction_info = C_MajorFactions.GetMajorFactionData(faction_id)
-			min, max = 0, faction_info.renownLevelThreshold
-		elseif friendship_id > 0 then
+		if friendship_id > 0 then
 			if rep_info.nextThreshold then
 				min, max, value = rep_info.reactionThreshold, rep_info.nextThreshold, rep_info.standing
 			else -- max, show full amount?

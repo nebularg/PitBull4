@@ -51,21 +51,20 @@ function PitBull4_ReputationBar:GetValue(frame)
 		return nil
 	end
 
-	if ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) then
+	if ClassicExpansionAtLeast(LE_EXPANSION_LEGION) and C_Reputation.IsFactionParagon(faction_id) then
+		local paragon_value, threshold, _, has_reward = C_Reputation.GetFactionParagonInfo(faction_id)
+		min, max = 0, threshold
+		value = paragon_value % threshold
+		if has_reward then
+			value = value + threshold
+		end
+	elseif ClassicExpansionAtLeast(LE_EXPANSION_DRAGONFLIGHT) and C_Reputation.IsMajorFaction(faction_id) then
+		local faction_info = C_MajorFactions.GetMajorFactionData(faction_id)
+		min, max = 0, faction_info.renownLevelThreshold
+	elseif ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) then
 		local rep_info = C_GossipInfo.GetFriendshipReputation(faction_id)
 		local friendship_id = rep_info.friendshipFactionID
-
-		if C_Reputation.IsFactionParagon(faction_id) then
-			local paragon_value, threshold, _, has_reward = C_Reputation.GetFactionParagonInfo(faction_id)
-			min, max = 0, threshold
-			value = paragon_value % threshold
-			if has_reward then
-				value = value + threshold
-			end
-		elseif C_Reputation.IsMajorFaction(faction_id) then
-			local faction_info = C_MajorFactions.GetMajorFactionData(faction_id)
-			min, max = 0, faction_info.renownLevelThreshold
-		elseif friendship_id > 0 then
+		if friendship_id > 0 then
 			if rep_info.nextThreshold then
 				min, max, value = rep_info.reactionThreshold, rep_info.nextThreshold, rep_info.standing
 			else -- max rank: show a full bar
@@ -93,9 +92,9 @@ function PitBull4_ReputationBar:GetExampleValue(frame)
 end
 
 function PitBull4_ReputationBar:GetColor(frame, value)
-	local reaction, faction_id, _
+	local name, reaction, faction_id, _
 	if GetWatchedFactionInfo then
-		_, reaction, _, _, _, faction_id = GetWatchedFactionInfo()
+		name, reaction, _, _, _, faction_id = GetWatchedFactionInfo()
 	else -- XXX wow_tww
 		local watchedFactionData = C_Reputation.GetWatchedFactionData()
 		if watchedFactionData then
@@ -103,12 +102,15 @@ function PitBull4_ReputationBar:GetColor(frame, value)
 			faction_id = watchedFactionData.factionID
 		end
 	end
+	if not name or faction_id == 0 then
+		return nil
+	end
 
-	if ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) then
-		local rep_info = faction_id and C_GossipInfo.GetFriendshipReputation(faction_id)
-		if C_Reputation.IsFactionParagon(faction_id) then
-			reaction = "paragon"
-		elseif rep_info and rep_info.friendshipFactionID > 0 then
+	if ClassicExpansionAtLeast(LE_EXPANSION_LEGION) and C_Reputation.IsFactionParagon(faction_id) then
+		reaction = "paragon"
+	elseif ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) then
+		local rep_info = C_GossipInfo.GetFriendshipReputation(faction_id)
+		if rep_info and rep_info.friendshipFactionID > 0 then
 			-- span the distinct reaction colors across however many ranks
 			local color_index = rep_info.overrideColor
 			if not color_index then
