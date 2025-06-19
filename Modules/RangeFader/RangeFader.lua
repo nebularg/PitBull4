@@ -156,6 +156,10 @@ else
 end
 
 local function friendly_is_in_range(unit)
+	if not InCombatLockdown() and CheckInteractDistance(unit, 1) then
+		return true
+	end
+
 	if UnitIsDeadOrGhost(unit) then
 		for _, name in ipairs(res_spells) do
 			if IsSpellInRange(name, unit) then
@@ -167,16 +171,24 @@ local function friendly_is_in_range(unit)
 		return false
 	end
 
-	for _, name in ipairs(friendly_spells) do
-		if IsSpellInRange(name, unit) then
-			return true
+	if next(friendly_spells) then
+		for _, name in ipairs(friendly_spells) do
+			if IsSpellInRange(name, unit) then
+				return true
+			end
 		end
+	elseif not InCombatLockdown() and CheckInteractDistance(unit, 4) then -- ~28 yds
+		return true
 	end
 
 	return false
 end
 
 local function pet_is_in_range(unit)
+	if not InCombatLockdown() and CheckInteractDistance(unit, 2) then
+		return true
+	end
+
 	for _, name in ipairs(friendly_spells) do
 		if IsSpellInRange(name, unit) then
 			return true
@@ -290,7 +302,7 @@ PitBull4_RangeFader:SetLayoutOptionsFunction(function(self)
 		end
 	else
 		local tooltip = CreateFrame("GameTooltip", "PitBull4RangeFinderTooltip", nil, "GameTooltipTemplate")
-		tooltip:SetOwner(WorldFrame, "ANCHOR_NONE")
+		tooltip:SetOwner(_G.WorldFrame, "ANCHOR_NONE")
 		function get_spell_range(spell_id)
 			tooltip:SetSpellByID(spell_id)
 			for i = 1, tooltip:NumLines(), 1 do
