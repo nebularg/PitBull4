@@ -46,6 +46,7 @@ local Rune = {}
 local Rune_scripts = {}
 
 function Rune:UpdateTexture()
+	if not self.id then return end
 	local rune_type = GetRuneType(self.id)
 	if self.rune_type == rune_type then
 		return
@@ -60,6 +61,7 @@ function Rune:UpdateTexture()
 end
 
 function Rune:UpdateCooldown()
+	if not self.id then return end
 	local start, duration, ready = GetRuneCooldown(self.id)
 
 	self.shine.ag:Stop()
