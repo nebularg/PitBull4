@@ -48,6 +48,7 @@ globals = {
 	"DEFAULT_CHAT_FRAME",
 	"GameTooltip",
 	"GameTooltip_SetDefaultAnchor",
+	"Mixin",
 	"SpellIsSelfBuff",
 	"StaticPopup_Show",
 	"StaticPopupDialogs",

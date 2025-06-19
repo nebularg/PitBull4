@@ -71,7 +71,11 @@ function PitBull4:MakeSingletonFrame(classification)
 	local frame = _G[frame_name]
 
 	if not frame then
-		frame = CreateFrame("Button", frame_name, UIParent, "SecureUnitButtonTemplate,SecureHandlerBaseTemplate,PingableUnitFrameTemplate")
+		frame = CreateFrame("Button", frame_name, UIParent, "SecureUnitButtonTemplate,SecureHandlerBaseTemplate")
+		if _G.PingableType_UnitFrameMixin then
+			Mixin(frame, _G.PingableType_UnitFrameMixin)
+			frame:SetAttribute("ping-receiver", true)
+		end
 
 		frame:WrapScript(frame, "OnAttributeChanged", Singleton_OnAttributeChanged)
 		frame.is_singleton = true

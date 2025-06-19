@@ -1955,6 +1955,11 @@ function GroupHeader:ConfigureChildren()
 			-- make a singleton unit frame and tack it onto our header
 			local frame_name = self:GetName() .. "UnitButton" .. frame_num
 			frame = CreateFrame("Button", frame_name, self, self:GetAttribute("template"))
+			if _G.PingableType_UnitFrameMixin then
+				Mixin(frame, _G.PingableType_UnitFrameMixin)
+				frame:SetAttribute("ping-receiver", true)
+			end
+
 			frame:Hide()
 			frame:EnableMouse(false) -- start disabled so the state change registers the button with Clique
 
