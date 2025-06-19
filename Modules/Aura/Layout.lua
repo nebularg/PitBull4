@@ -30,6 +30,12 @@ local set_direction_point = {
 	down_right = function(ctrl, pnt, frame, anchor, x, y, o_x, o_y)
 		ctrl:SetPoint(pnt, frame, anchor, y + o_x, -x + o_y)
 	end,
+	horizontal_up = function(ctrl, pnt, frame, anchor, x, y, o_x, o_y, i, l, s, r, c, m)
+		ctrl:SetPoint(pnt, frame, anchor, x - (m / 2) + o_x , y + o_y)
+	end,
+	horizontal_down = function(ctrl, pnt, frame, anchor, x, y, o_x, o_y, i, l, s, r, c, m)
+		ctrl:SetPoint(pnt, frame, anchor, x - (m / 2) + o_x , -y + o_y)
+	end,
 }
 
 local get_control_point = {
@@ -37,10 +43,12 @@ local get_control_point = {
 	TOPRIGHT_TOP       = 'BOTTOMRIGHT',
 	TOPLEFT_LEFT       = 'TOPRIGHT',
 	TOPRIGHT_RIGHT     = 'TOPLEFT',
+	TOP_CENTER				 = 'BOTTOMLEFT',
 	BOTTOMLEFT_BOTTOM  = 'TOPLEFT',
 	BOTTOMRIGHT_BOTTOM = 'TOPRIGHT',
 	BOTTOMLEFT_LEFT    = 'BOTTOMRIGHT',
 	BOTTOMRIGHT_RIGHT  = 'BOTTOMLEFT',
+	BOTTOM_CENTER			 = 'TOPLEFT',
 }
 
 local grow_vert_first = {
@@ -83,6 +91,12 @@ local first_row_behind_anchor = {
 		TOPRIGHT = true,
 		BOTTOMRIGHT = true,
 	},
+	horizontal_up = {
+		TOPLEFT = true
+	},
+	horizontal_down = {
+		BOTTOMLEFT = true
+	}
 }
 
 local first_col_behind_anchor = {
@@ -118,6 +132,10 @@ local first_col_behind_anchor = {
 		BOTTOMRIGHT = true,
 		BOTTOMLEFT = true,
 	},
+	horizontal_up = {
+	},
+	horizontal_down = {
+	}
 }
 
 -- Lookup tables to allow frames that are configured to mirror horizontally
@@ -186,7 +204,7 @@ local function layout_auras(frame, db, is_buff)
 			offset_y = -offset_y
 		end
 	end
-
+	
 	-- Find the anchor point on the control
 	local point = get_control_point[anchor..'_'..side]
 
@@ -260,6 +278,12 @@ local function layout_auras(frame, db, is_buff)
 		step = 1
 	end
 
+	local rowIndex = 0;
+	local columnIndex = 0;
+
+	local pointsArray = {};
+	local rowWidthArray = {}
+
 	for i = start_list, end_list, step do
 		local control = list[i]
 		local display = true
@@ -278,6 +302,8 @@ local function layout_auras(frame, db, is_buff)
 		-- of error when we do arithemtic on a float
 		if (row_start + width - x - new_width) < -.0000001 then
 			if x ~= row_start then
+				rowIndex = rowIndex + 1
+				columnIndex = 0
 				-- Jump to the next column
 				if use_new_row_height then
 					y = y + new_height
@@ -298,6 +324,8 @@ local function layout_auras(frame, db, is_buff)
 		if prev_width and new_width ~= prev_width then
 			-- configured to start a new row on size change
 			if new_row_size and x ~= row_start then
+				rowIndex = rowIndex + 1
+				columnIndex = 0
 				-- Not already at the start of a row so start a new one
 			  if use_new_row_height then
 				  y = y + new_height
@@ -368,13 +396,13 @@ local function layout_auras(frame, db, is_buff)
 		end
 
 		if display then
+			columnIndex = columnIndex + 1
+			
 			control:SetWidth(size)
 			control:SetHeight(size)
 
 			control:ClearAllPoints()
-			set_point(control, point, frame, anchor, x, y, offset_x, offset_y)
-
-			control:Show()
+			pointsArray[i] = {true, control, point, frame, anchor, x, y, offset_x, offset_y, i, end_list, size, rowIndex, columnIndex}
 
 			-- spacing for the next aura
 			x = x + new_width
@@ -383,10 +411,27 @@ local function layout_auras(frame, db, is_buff)
 			prev_width = new_width
 			prev_height = new_height
 
+			rowWidthArray[rowIndex] = rowWidthArray[rowIndex] or x;
+			if (rowWidthArray[rowIndex] < x) then
+				rowWidthArray[rowIndex] = x
+			end
+
 			-- Set the row height
 			if row < new_height then
 				row = new_height
 			end
+		else
+			pointsArray[i] = {false, control};
+		end
+	end
+	
+	for i = 1, #pointsArray do
+		local item = pointsArray[i]
+		local display, control = item[1], item[2]
+		
+		if (display) then
+			set_point(control, item[3], item[4], item[5], item[6], item[7], item[8], item[9], item[10], item[11], item[12], item[13], item[14], rowWidthArray[item[13]]);
+			control:Show()
 		else
 			control:Hide()
 		end

@@ -640,6 +640,13 @@ PitBull4_Aura:SetDefaults({
 			name_list = self_buffs.WARRIOR,
 			built_in = true,
 		},
+		['--0'] = {
+			display_name = L["%s self buffs"]:format(LN.EVOKER),
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = self_buffs.EVOKER,
+			built_in = true,
+		},
 		['+1'] = {
 			display_name = L["%s pet buffs"]:format(LN.DEATHKNIGHT),
 			filter_type = 'Name',
@@ -745,6 +752,13 @@ PitBull4_Aura:SetDefaults({
 			name_list = friend_buffs.WARRIOR,
 			built_in = true,
 		},
+		['--2'] = {
+			display_name = L["%s friend buffs"]:format(LN.EVOKER),
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = friend_buffs.EVOKER,
+			built_in = true,
+		},
 		['+6'] = {
 			display_name = L["%s enemy debuffs"]:format(LN.DEATHKNIGHT),
 			filter_type = 'Name',
@@ -827,6 +841,13 @@ PitBull4_Aura:SetDefaults({
 			filter_type = 'Name',
 			whitelist = true,
 			name_list = enemy_debuffs.WARRIOR,
+			built_in = true,
+		},
+		['--6'] = {
+			display_name = L["%s enemy debuffs"]:format(LN.EVOKER),
+			filter_type = 'Name',
+			whitelist = true,
+			name_list = enemy_debuffs.EVOKER,
 			built_in = true,
 		},
 		['-5'] = {
@@ -1250,7 +1271,7 @@ PitBull4_Aura:SetDefaults({
 				['DEATHKNIGHT'] = '+0',
 				['DEMONHUNTER'] = ',,0',
 				['DRUID'] = ',0',
-				['EVOKER'] = '@J',
+				['EVOKER'] = '--0',
 				['HUNTER'] = '-0',
 				['MAGE'] = '.0',
 				['MONK'] = '//0',
@@ -1292,7 +1313,7 @@ PitBull4_Aura:SetDefaults({
 				['DEATHKNIGHT'] = '+2',
 				['DEMONHUNTER'] = ',,2',
 				['DRUID'] = ',2',
-				['EVOKER'] = '@J',
+				['EVOKER'] = '--2',
 				['HUNTER'] = '-2',
 				['MAGE'] = '.2',
 				['MONK'] = '//2',
@@ -1313,7 +1334,7 @@ PitBull4_Aura:SetDefaults({
 				['DEATHKNIGHT'] = '+6',
 				['DEMONHUNTER'] = ',,6',
 				['DRUID'] = ',6',
-				['EVOKER'] = '@J',
+				['EVOKER'] = '--6',
 				['HUNTER'] = '-6',
 				['MAGE'] = '.6',
 				['MONK'] = '//6',
@@ -1746,17 +1767,21 @@ local anchor_values = {
 	BOTTOMRIGHT_BOTTOM = L["Bottom-right on bottom"],
 	BOTTOMLEFT_LEFT    = L["Bottom-left on left"],
 	BOTTOMRIGHT_RIGHT  = L["Bottom-right on right"],
+	TOP_CENTER  		 	 = L["Center on top"],
+	BOTTOM_CENTER  		 = L["Center on bottom"],
 }
 
 local growth_values = {
-	left_up    = L["Left then up"],
-	left_down  = L["Left then down"],
-	right_up   = L["Right then up"],
-	right_down = L["Right then down"],
-	up_left    = L["Up then left"],
-	up_right   = L["Up then right"],
-	down_left  = L["Down then left"],
-	down_right = L["Down then right"],
+	left_up    				= L["Left then up"],
+	left_down  				= L["Left then down"],
+	right_up   				= L["Right then up"],
+	right_down 				= L["Right then down"],
+	up_left    				= L["Up then left"],
+	up_right   				= L["Up then right"],
+	down_left  				= L["Down then left"],
+	down_right 				= L["Down then right"],
+	horizontal_up 		=	L["Spread in horizontal then up"],
+	horizontal_down 	=	L["Spread in horizontal then down"],
 }
 
 local width_type_values = {
