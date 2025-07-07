@@ -10,7 +10,11 @@ local GetSpecialization = C_SpecializationInfo.GetSpecialization or _G.GetSpecia
 -- CONSTANTS ----------------------------------------------------------------
 
 local SPELL_POWER_CHI = Enum.PowerType.Chi -- 12
-local SPEC_MONK_WINDWALKER = 3
+local CHI_SPECS = {
+	[1] = ClassicExpansionAtMost(LE_EXPANSION_WARLORDS_OF_DRAENOR), -- Brewmaster
+	[2] = ClassicExpansionAtMost(LE_EXPANSION_WARLORDS_OF_DRAENOR), -- Mistweaver
+	[3] = true, -- Windwalker
+}
 
 local MAX_POWER = 6
 
@@ -105,7 +109,7 @@ local function update_container_size(container, vertical, max_chi)
 end
 
 function PitBull4_Chi:UpdateFrame(frame)
-	if frame.unit ~= "player" or GetSpecialization() ~= SPEC_MONK_WINDWALKER then
+	if frame.unit ~= "player" or not CHI_SPECS[GetSpecialization()] then
 		return self:ClearFrame(frame)
 	end
 
