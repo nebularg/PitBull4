@@ -545,8 +545,9 @@ end]],
 			events = {['UNIT_FACTION']=true,['UPDATE_FACTION']=true},
 			code = [[
 local name, _, _, max, cur = WatchedFactionInfo()
+if not name then return ConfigMode() end
 if IsMouseOver() then
-  return name or ConfigMode()
+  return name
 else
   return "%d/%d (%s%%)",cur,max,Percent(cur,max)
 end]],
