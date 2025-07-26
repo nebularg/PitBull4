@@ -960,7 +960,7 @@ end
 ScriptEnv.ComboSymbols = ComboSymbols
 
 local function Percent(x, y)
-	if y ~= 0 then
+	if x and y and y ~= 0 then
 		return Round(x / y * 100, 1)
 	end
 	return 0
