@@ -113,7 +113,9 @@ local function Name(unit, show_server)
 		end
 	end
 	local name, server = UnitName(unit)
-	if show_server and server and server ~= "" then
+	if UnitInPartyIsAI(unit) and (C_LFGInfo.IsInLFGFollowerDungeon() or C_PartyInfo.IsPartyWalkIn()) then
+		name = LFG_FOLLOWER_NAME_PREFIX:format(name)
+	elseif show_server and server and server ~= "" then
 		name = FULL_PLAYER_NAME:format(name, server)
 	end
 	return name
@@ -348,6 +350,11 @@ local function DND(unit)
 end
 ScriptEnv.DND = DND
 
+local function IsPlayer(unit)
+	return UnitIsPlayer(unit) or UnitInPartyIsAI(unit)
+end
+ScriptEnv.UnitIsPlayer = IsPlayer -- existing LuaText compat
+
 local HOSTILE_REACTION = 2
 local NEUTRAL_REACTION = 4
 local FRIENDLY_REACTION = 5
@@ -357,7 +364,7 @@ local function HostileColor(unit)
 	if not unit then
 		r, g, b = unpack(PitBull4.ReactionColors.unknown)
 	else
-		if UnitIsPlayer(unit) or UnitPlayerControlled(unit) then
+		if IsPlayer(unit) or UnitPlayerControlled(unit) then
 			if UnitCanAttack(unit, "player") then
 				-- they can attack me
 				if UnitCanAttack("player", unit) then
@@ -399,7 +406,7 @@ end
 ScriptEnv.HostileColor = HostileColor
 
 local function ClassColor(unit)
-	local class = UnitClassBase(unit)
+	local _, class = UnitClass(unit)
 	local color = PitBull4.ClassColors[class] or PitBull4.ClassColors.UNKNOWN
 	return color[1] * 255, color[2] * 255, color[3] * 255
 end
@@ -469,13 +476,14 @@ end
 ScriptEnv.ShortClassification = ShortClassification
 
 local function Class(unit)
-	if UnitIsPlayer(unit) then
-		return UnitClass(unit) or UNKNOWN
-	else
-		local _, classId = UnitClassBase(unit)
-		local classInfo = classId and C_CreatureInfo.GetClassInfo(classId)
-		return classInfo and classInfo.className or UNKNOWN
+	local _, _, class_id = UnitClass(unit)
+	if class_id then
+		local class_info = C_CreatureInfo.GetClassInfo(class_id)
+		if class_info and class_info.className then
+			return class_info.className
+		end
 	end
+	return UNKNOWN
 end
 ScriptEnv.Class = Class
 
@@ -499,14 +507,13 @@ local function ShortClass(arg)
 	local short = ShortClass_abbrev[arg]
 	if not short and PitBull4.Utils.GetBestUnitID(arg) then
 		-- If it's empty then maybe arg is a unit
-		if UnitIsPlayer(arg) then
-			local class = UnitClassBase(arg)
+		local _, class, class_id = UnitClass(arg)
+		if IsPlayer(arg) then
 			short = ShortClass_abbrev[class]
-		else
-			local _, classId = UnitClassBase(arg)
-			local classInfo = classId and C_CreatureInfo.GetClassInfo(classId)
-			if classInfo then
-				short = ShortClass_abbrev[classInfo.classFile]
+		elseif class_id then
+			local class_info = C_CreatureInfo.GetClassInfo(class_id)
+			if class_info then
+				short = ShortClass_abbrev[class_info.classFile]
 			end
 		end
 	end
@@ -524,14 +531,29 @@ local function Creature(unit)
 end
 ScriptEnv.Creature = Creature
 
-local function SmartRace(unit)
-	if UnitIsPlayer(unit) then
-		local race = UnitRace(unit)
-		return race or UNKNOWN
+do
+	local race_pattern = _G.UNIT_TYPE_LEVEL_TEMPLATE:gsub("%%s", "(%%w+)"):gsub("%%d", "%%d+")
+	local function SmartRace(unit)
+		if UnitIsPlayer(unit) then
+			local race = UnitRace(unit)
+			return race or UNKNOWN
+		elseif UnitInPartyIsAI(unit) then
+			-- UnitRace doesn't work with AI units. UnitCreatureType does, but we prefer the actual race
+			local info = C_TooltipInfo.GetUnit(unit)
+			if info then
+				for i = 1, #info.lines do -- should be 3, but just check every line
+					local text = info.lines[i] and info.lines[i].leftText
+					local race = text and text:match(race_pattern)
+					if race then
+						return race
+					end
+				end
+			end
+		end
+		return Creature(unit)
 	end
-	return Creature(unit)
+	ScriptEnv.SmartRace = SmartRace
 end
-ScriptEnv.SmartRace = SmartRace
 
 local ShortRace_abbrev = {
 	BloodElf = L["Blood Elf_short"],
@@ -626,7 +648,7 @@ local TRAVEL_FORM = C_Spell.GetSpellName(783)
 local TREE_OF_LIFE = C_Spell.GetSpellName(33891)
 
 local function DruidForm(unit)
-	local class = UnitClassBase(unit)
+	local _, class = UnitClass(unit)
 	if class == "DRUID" then
 		local power = UnitPowerType(unit)
 		if power == 1 then

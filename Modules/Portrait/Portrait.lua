@@ -90,7 +90,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 	local unit = frame.unit
 
 	if style == "class" then
-		if not unit or not UnitIsPlayer(unit) then
+		if not unit or (not UnitIsPlayer(unit) and not UnitInPartyIsAI(unit)) then
 			style = layout_db.fallback_style
 			falling_back = true
 		end
@@ -174,7 +174,7 @@ function PitBull4_Portrait:UpdateFrame(frame)
 	elseif style == "blank" then
 		portrait.texture:SetTexture("")
 	else -- class
-		local class = unit and UnitClassBase(unit)
+		local class = unit and select(2, UnitClass(unit))
 		if class then
 			local tex_coord = CLASS_TEX_COORDS[class]
 			portrait.texture:SetTexture([[Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes]])

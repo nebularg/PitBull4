@@ -23,7 +23,7 @@ end
 
 function PitBull4_PhaseFader:GetOpacity(frame)
 	local unit = frame.unit
-	if not unit or not UnitIsPlayer(unit) or not UnitExists(unit) or not UnitIsConnected(unit) then
+	if not unit or (not UnitIsPlayer(unit) and not UnitInPartyIsAI(unit)) or not UnitExists(unit) or not UnitIsConnected(unit) then
 		return nil
 	end
 
