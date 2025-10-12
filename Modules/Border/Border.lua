@@ -18,12 +18,20 @@ PitBull4_Border:SetDefaults({
 	rare_texture = "Blizzard Tooltip",
 	size = 16,
 	padding = 3,
+	color_by_class = false,
+	color_pvp_by_class = false,
+	hostility_color = false,
+	hostility_color_npcs = false,
 })
 
 local EXEMPT_UNITS = {}
 for i = 1, 5 do
 	EXEMPT_UNITS[("target"):rep(i)] = true
 end
+
+local HOSTILE_REACTION = 2
+local NEUTRAL_REACTION = 4
+local FRIENDLY_REACTION = 5
 
 local target_guid = nil
 local mouse_focus = nil
@@ -56,8 +64,59 @@ function PitBull4_Border:GetTextureAndColor(frame)
 	local db = self:GetLayoutDB(frame)
 	local texture = db[classification .. "_texture"]
 	local color = db[classification .. "_color"]
+	local r, g, b = color[1], color[2], color[3]
 
-	return texture, color[1], color[2], color[3], color[4]
+	-- Logic copied from BarModules
+	if classification == "normal" and unit then
+		if UnitIsPlayer(unit) or UnitInPartyIsAI(unit) then
+			if db.color_by_class and (db.color_pvp_by_class or UnitIsFriend("player", unit)) then
+				local _, class = UnitClass(unit)
+				local t = PitBull4.ClassColors[class]
+				if t then
+					r, g, b = t[1], t[2], t[3]
+				end
+			elseif db.hostility_color then
+				if UnitCanAttack(unit, "player") then
+					-- they can attack me
+					if UnitCanAttack("player", unit) then
+						-- and I can attack them
+						r, g, b = unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
+					else
+						-- but I can't attack them
+						r, g, b = unpack(PitBull4.ReactionColors.civilian)
+					end
+				elseif UnitCanAttack("player", unit) then
+					-- they can't attack me, but I can attack them
+					r, g, b = unpack(PitBull4.ReactionColors[NEUTRAL_REACTION])
+				elseif UnitIsFriend("player", unit) then
+					-- on my team
+					r, g, b = unpack(PitBull4.ReactionColors[FRIENDLY_REACTION])
+				else
+					-- either enemy or friend, no violence
+					r, g, b = unpack(PitBull4.ReactionColors.civilian)
+				end
+			end
+		elseif db.hostility_color_npcs then
+			local reaction = UnitReaction(unit, "player")
+			if reaction then
+				if reaction > FRIENDLY_REACTION then
+					r, g, b = unpack(PitBull4.ReactionColors[FRIENDLY_REACTION])
+				elseif reaction > HOSTILE_REACTION then
+					r, g, b = unpack(PitBull4.ReactionColors[reaction])
+				else
+					r, g, b = unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
+				end
+			else
+				if UnitIsFriend("player", unit) then
+					r, g, b = unpack(PitBull4.ReactionColors[FRIENDLY_REACTION])
+				elseif UnitIsEnemy("player", unit) then
+					r, g, b = unpack(PitBull4.ReactionColors[HOSTILE_REACTION])
+				end
+			end
+		end
+	end
+
+	return texture, r, g, b, color[4]
 end
 
 function PitBull4_Border:UpdateFrame(frame)
@@ -312,6 +371,38 @@ PitBull4_Border:SetLayoutOptionsFunction(function(self)
 					return not LibSharedMedia
 				end,
 				dialogControl = "LSM30_Border",
+			},
+			color_by_class = {
+				type = 'toggle',
+				name = L["Color by class"],
+				-- desc = L["Color the bar by unit class"],
+				order = -60,
+				get = get,
+				set = set,
+			},
+			color_pvp_by_class = {
+				type = 'toggle',
+				name = L["Color PvP by class"],
+				-- desc = L["Color the bar for PvP enemies by unit class."],
+				order = -59,
+				get = get,
+				set = set,
+			},
+			hostility_color = {
+				type = 'toggle',
+				name = L["Color by hostility"],
+				-- desc = L["Color the bar by hostility for player characters.  Note that color by class takes precedence over this."],
+				order = -58,
+				get = get,
+				set = set,
+			},
+			hostility_color_npcs = {
+				type = 'toggle',
+				name = L["Color NPCs by hostility"],
+				-- desc = L["Color the bar by hostility for NPCs."],
+				order = -57,
+				get = get,
+				set = set,
 			}
 		}
 	}, 'elite', {
