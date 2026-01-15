@@ -1,0 +1,26 @@
+## Interface: 20505
+## Title: PitBull Unit Frames 4.0
+## Notes: Dog-themed unit frames. Woof. Arf. Yip.
+## Notes-deDE: Rahmen im Hunde-Design. Wuff-Wuff. Wau.
+## Notes-esES: Dog-themed unit frames. Woof. Arf. Yip.
+## Notes-esMX: Dog-themed unit frames. Woof. Arf. Yip.
+## Notes-frFR: Dog-themed unit frames. Woof. Arf. Yip.
+## Notes-itIT: Dog-themed unit frames. Woof. Arf. Yip.
+## Notes-koKR: 강아지-테마의 유닛 프레임입니다. 으르렁. 왈왈. 깨갱.
+## Notes-ptBR: Dog-themed unit frames. Woof. Arf. Yip.
+## Notes-ruRU: Dog-themed unit frames. Woof. Arf. Yip.
+## Notes-zhCN: 以狗为主题的单位框架。呜呜。汪汪。嗷呜。
+## Notes-zhTW: Dog-themed unit frames. Woof. Arf. Yip.
+## Author: ckknight, Shekfi, Nebula
+## SavedVariables: PitBull4DB
+## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDBIcon-1.0, LibBossIDs-1.0, LibDualSpec-1.0, Clique, Masque
+## Version: @project-version@
+## IconTexture: Interface\AddOns\PitBull4\pitbull.tga
+
+## X-Curse-Project-ID: 7522
+## X-WoWI-ID: 20021
+## X-Wago-ID: LvNAmONo
+
+libs.xml
+load.xml
+modules_TBC.xml
