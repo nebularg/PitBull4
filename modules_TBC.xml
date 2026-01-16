@@ -44,7 +44,7 @@
 <Include file="Modules\ResurrectionIcon\load.xml"/>
 <Include file="Modules\RoleIcon\load.xml"/>
 <!-- <Include file="Modules\Runes_Classic\load.xml"/> -->
-<Include file="Modules\SoulShards_Classic\load.xml"/>
+<!-- <Include file="Modules\SoulShards_Classic\load.xml"/> -->
 <Include file="Modules\Sounds\load.xml"/>
 <!-- <Include file="Modules\SummonIcon\load.xml"/> -->
 <Include file="Modules\ThreatBar\load.xml"/>
