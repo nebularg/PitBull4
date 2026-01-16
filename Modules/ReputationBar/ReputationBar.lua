@@ -22,7 +22,7 @@ PitBull4_ReputationBar:SetDefaults({
 
 function PitBull4_ReputationBar:OnInitialize()
 	local function Update()
-		if PitBull4_ReputationBar:IsEnabled() then
+		if PitBull4_ReputationBar:IsEnabled() and IsPlayerInWorld() then
 			PitBull4_ReputationBar:UpdateForUnitID("player")
 		end
 	end
