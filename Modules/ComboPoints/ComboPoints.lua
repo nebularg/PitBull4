@@ -269,18 +269,21 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 		end
 	end
 
-	-- Druid Overflowing Power
+	-- Druid Overflowing Power And Rogue Charged Combo Points
 	local num_overflowing = 0
 	if overflowing_power_aura_id then
 		local aura = C_UnitAuras.GetAuraDataByAuraInstanceID("player", overflowing_power_aura_id)
 		num_overflowing = aura and aura.applications or 0
 	end
+	local charged = GetUnitChargedPowerPoints("player")
 
 	for i = 1, num_combos do
-		if i > num_overflowing then
-			combos[i]:SetVertexColor(unpack(db.color))
-		else
+		if i <= num_overflowing then
 			combos[i]:SetVertexColor(unpack(db.overflow_color))
+		elseif charged and charged[i] then
+			combos[i]:SetVertexColor(unpack(db.overflow_color))
+		else
+			combos[i]:SetVertexColor(unpack(db.color))
 		end
 	end
 
@@ -367,7 +370,7 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 			end
 		end,
 		hidden = function(info)
-			return not is_druid or not ClassicExpansionAtLeast(LE_EXPANSION_DRAGONFLIGHT)
+			return not is_druid or not is_rogue or not ClassicExpansionAtLeast(LE_EXPANSION_DRAGONFLIGHT)
 		end
 	}, 'has_background_color', {
 		type = 'toggle',
