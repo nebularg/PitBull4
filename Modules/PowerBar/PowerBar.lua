@@ -19,6 +19,7 @@ PitBull4_PowerBar:SetDefaults({
 })
 
 local guids_to_update = {}
+local frames_to_update = {}
 local type_to_token = {
 	"MANA", "RAGE", "FOCUS", "ENERGY", "CHI",
 	"RUNES", "RUNIC_POWER", "SOUL_SHARDS", "LUNAR_POWER",
@@ -49,32 +50,25 @@ function PitBull4_PowerBar:OnDisable()
 end
 
 timerFrame:SetScript("OnUpdate", function()
-	if next(guids_to_update) then
-		for frame in PitBull4:IterateFrames() do
-			if guids_to_update[frame.guid] then
-				PitBull4_PowerBar:Update(frame)
-			end
+	if next(frames_to_update) then
+		for frame in pairs(frames_to_update) do
+			PitBull4_PowerBar:Update(frame)
 		end
-		wipe(guids_to_update)
+		wipe(frames_to_update)
 	end
 end)
 
 function PitBull4_PowerBar:GetValue(frame)
-	local unit = frame.unit
 	local layout_db = self:GetLayoutDB(frame)
-	local max = UnitPowerMax(unit)
-
-	if layout_db.hide_no_mana and UnitPowerType(unit) ~= 0 then
+	
+	if layout_db.hide_no_mana and frame.power_type ~= 0 then
 		return nil
-	elseif layout_db.hide_no_power and max <= 0 then
+	elseif layout_db.hide_no_power and (frame.power_max or 0) <= 0 then
 		return nil
 	end
 
-	if max == 0 then
-		return 0
-	end
-
-	return UnitPower(unit) / max
+	-- Return cached normalized power value computed during event handling
+	return frame.power_value or 0
 end
 
 function PitBull4_PowerBar:GetExampleValue(frame)
@@ -109,17 +103,42 @@ function PitBull4_PowerBar:UNIT_POWER_FREQUENT(event, unit, power_type)
 		power_token = "ENERGY"
 	end
 	if power_token == power_type then
-		local guid = UnitGUID(unit)
-		if guid then
-			guids_to_update[guid] = true
+		for frame in PitBull4:IterateFrames() do
+			if frame.unit == unit then
+				self:CacheFramePowerValue(frame)
+				frames_to_update[frame] = true
+			end
 		end
 	end
 end
 
 function PitBull4_PowerBar:UNIT_DISPLAYPOWER(event, unit)
-	local guid = unit and UnitGUID(unit)
-	if guid then
-		guids_to_update[guid] = true
+	if not unit then return end
+	for frame in PitBull4:IterateFrames() do
+		if frame.unit == unit then
+			self:CacheFramePowerValue(frame)
+			frames_to_update[frame] = true
+		end
+	end
+end
+
+function PitBull4_PowerBar:CacheFramePowerValue(frame)
+	if not frame.unit then return end
+	
+	local power_type, power_token = UnitPowerType(frame.unit)
+	local power_max = UnitPowerMax(frame.unit)
+	local power_current = UnitPower(frame.unit)
+	
+	-- Cache the values for use in GetValue()
+	frame.power_type = power_type
+	frame.power_token = power_token
+	frame.power_max = power_max
+	
+	-- Cache normalized value to avoid computation during frame rendering
+	if power_max > 0 then
+		frame.power_value = power_current / power_max
+	else
+		frame.power_value = 0
 	end
 end
 
