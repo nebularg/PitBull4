@@ -294,7 +294,8 @@ friend_buffs.Dwarf = {
 }
 friend_debuffs.Dwarf = {}
 self_buffs.Dwarf = {
-	[65116] = true, -- Stoneform
+	[20594] = ClassicExpansionAtMost(LE_EXPANSION_BURNING_CRUSADE) or nil, -- Stoneform
+	[65116] = ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) or nil, -- Stoneform (3.4+)
 }
 self_debuffs.Dwarf = {}
 pet_buffs.Dwarf = {}
@@ -306,7 +307,8 @@ friend_buffs.NightElf = {
 }
 friend_debuffs.NightElf = {}
 self_buffs.NightElf = {
-	[58984] = true, -- Shadowmeld
+	[20580] = ClassicExpansionAtMost(LE_EXPANSION_BURNING_CRUSADE) or nil, -- Shadowmeld
+	[58984] = ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) or nil, -- Shadowmeld (3.4+)
 }
 self_debuffs.NightElf = {}
 pet_buffs.NightElf = {}
@@ -336,12 +338,12 @@ enemy_debuffs.Draenei = {}
 
 -- Worgen
 friend_buffs.Worgen = {
-	[23333] = true -- Warsong Flag
+	[23333] = ClassicExpansionAtLeast(LE_EXPANSION_CATACLYSM) or nil -- Warsong Flag
 }
 friend_debuffs.Worgen = {}
 self_buffs.Worgen = {
-	[68992] = true, -- Darkflight
-	[87840] = true, -- Running Wild
+	[68992] = ClassicExpansionAtLeast(LE_EXPANSION_CATACLYSM) or nil, -- Darkflight
+	[87840] = ClassicExpansionAtLeast(LE_EXPANSION_CATACLYSM) or nil, -- Running Wild
 }
 self_debuffs.Worgen = {}
 pet_buffs.Worgen = {}
@@ -349,7 +351,7 @@ enemy_debuffs.Worgen = {}
 
 -- Dark Iron Dwarf
 friend_buffs.DarkIronDwarf = {
-	[23333] = true -- Warsong Flag
+	[23333] = ClassicExpansionAtLeast(LE_EXPANSION_BATTLE_FOR_AZEROTH) or nil -- Warsong Flag
 }
 friend_debuffs.DarkIronDwarf = {}
 self_buffs.DarkIronDwarf = {
@@ -361,7 +363,7 @@ enemy_debuffs.DarkIronDwarf = {}
 
 -- Lightforged Draenei
 friend_buffs.LightforgedDraenei = {
-	[23333] = true -- Warsong Flag
+	[23333] = ClassicExpansionAtLeast(LE_EXPANSION_LEGION) or nil -- Warsong Flag
 }
 friend_debuffs.LightforgedDraenei = {}
 self_buffs.LightforgedDraenei = {}
@@ -371,7 +373,7 @@ enemy_debuffs.LightforgedDraenei = {}
 
 -- Void Elf
 friend_buffs.VoidElf = {
-	[23333] = true -- Warsong Flag
+	[23333] = ClassicExpansionAtLeast(LE_EXPANSION_BATTLE_FOR_AZEROTH) or nil -- Warsong Flag
 }
 friend_debuffs.VoidElf = {}
 self_buffs.VoidElf = {
@@ -383,7 +385,7 @@ enemy_debuffs.VoidElf = {}
 
 -- Kul Tiran Human
 friend_buffs.KulTiranHuman = {
-	[23333] = true -- Warsong Flag
+	[23333] = ClassicExpansionAtLeast(LE_EXPANSION_BATTLE_FOR_AZEROTH) or nil -- Warsong Flag
 }
 friend_debuffs.KulTiranHuman = {}
 self_buffs.KulTiranHuman = {}
@@ -393,7 +395,7 @@ enemy_debuffs.KulTiranHuman = {}
 
 -- Mechagnome
 friend_buffs.Mechagnome = {
-	[23333] = true -- Warsong Flag
+	[23333] = ClassicExpansionAtLeast(LE_EXPANSION_BATTLE_FOR_AZEROTH) or nil -- Warsong Flag
 }
 friend_debuffs.Mechagnome = {}
 self_buffs.Mechagnome = {}
@@ -462,7 +464,7 @@ enemy_debuffs.BloodElf = {}
 
 -- Goblin
 friend_buffs.Goblin = {
-	[23335] = true -- Silverwing Flag
+	[23335] = ClassicExpansionAtLeast(LE_EXPANSION_CATACLYSM) or nil -- Silverwing Flag
 }
 friend_debuffs.Goblin = {}
 self_buffs.Goblin = {}
@@ -472,7 +474,7 @@ enemy_debuffs.Goblin = {}
 
 -- Mag'har Orc
 friend_buffs.MagharOrc = {
-	[23335] = true -- Silverwing Flag
+	[23335] = ClassicExpansionAtLeast(LE_EXPANSION_BATTLE_FOR_AZEROTH) or nil -- Silverwing Flag
 }
 friend_debuffs.MagharOrc = {}
 self_buffs.MagharOrc = {
@@ -488,31 +490,31 @@ enemy_debuffs.MagharOrc = {}
 
 -- Highmountain Tauren
 friend_buffs.HighmountainTauren = {
-	[23335] = true -- Silverwing Flag
+	[23335] = ClassicExpansionAtLeast(LE_EXPANSION_LEGION) or nil -- Silverwing Flag
 }
 friend_debuffs.HighmountainTauren = {}
 self_buffs.HighmountainTauren = {}
 self_debuffs.HighmountainTauren = {}
 pet_buffs.HighmountainTauren = {}
 enemy_debuffs.HighmountainTauren = {
-	[255723] = ClassicExpansionAtLeast(LE_EXPANSION_BATTLE_FOR_AZEROTH) or nil, -- Bull Rush
+	[255723] = ClassicExpansionAtLeast(LE_EXPANSION_LEGION) or nil, -- Bull Rush
 }
 
 -- Nightborne
 friend_buffs.Nightborne = {
-	[23335] = true -- Silverwing Flag
+	[23335] = ClassicExpansionAtLeast(LE_EXPANSION_LEGION) or nil -- Silverwing Flag
 }
 friend_debuffs.Nightborne = {}
 self_buffs.Nightborne = {}
 self_debuffs.Nightborne = {}
 pet_buffs.Nightborne = {}
 enemy_debuffs.Nightborne = {
-	[260369] = ClassicExpansionAtLeast(LE_EXPANSION_BATTLE_FOR_AZEROTH) or nil, -- Arcane Pulse
+	[260369] = ClassicExpansionAtLeast(LE_EXPANSION_LEGION) or nil, -- Arcane Pulse
 }
 
 -- Zandalari Troll
 friend_buffs.ZandalariTroll = {
-	[23335] = true -- Silverwing Flag
+	[23335] = ClassicExpansionAtLeast(LE_EXPANSION_BATTLE_FOR_AZEROTH) or nil -- Silverwing Flag
 }
 friend_debuffs.ZandalariTroll = {}
 self_buffs.ZandalariTroll = {}
@@ -522,7 +524,7 @@ enemy_debuffs.ZandalariTroll = {}
 
 -- Vulpera
 friend_buffs.Vulpera = {
-	[23335] = true -- Silverwing Flag
+	[23335] = ClassicExpansionAtLeast(LE_EXPANSION_BATTLE_FOR_AZEROTH) or nil -- Silverwing Flag
 }
 friend_debuffs.Vulpera = {}
 self_buffs.Vulpera = {}
@@ -532,8 +534,8 @@ enemy_debuffs.Vulpera = {}
 
 -- Pandaren
 friend_buffs.Pandaren = {
-	[23335] = UnitFactionGroup("player") == "Horde", -- Silverwing Flag
-	[23333] = UnitFactionGroup("player") == "Alliance", -- Warsong Flag
+	[23335] = UnitFactionGroup("player") == "Horde" and ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) or nil, -- Silverwing Flag
+	[23333] = UnitFactionGroup("player") == "Alliance" and ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) or nil, -- Warsong Flag
 }
 friend_debuffs.Pandaren = {}
 self_buffs.Pandaren = {}
@@ -545,8 +547,8 @@ enemy_debuffs.Pandaren = {
 
 -- Dracthyr
 friend_buffs.Dracthyr = {
-	[23335] = UnitFactionGroup("player") == "Horde", -- Silverwing Flag
-	[23333] = UnitFactionGroup("player") == "Alliance", -- Warsong Flag
+	[23335] = UnitFactionGroup("player") == "Horde" and ClassicExpansionAtLeast(LE_EXPANSION_DRAGONFLIGHT) or nil, -- Silverwing Flag
+	[23333] = UnitFactionGroup("player") == "Alliance" and ClassicExpansionAtLeast(LE_EXPANSION_DRAGONFLIGHT) or nil, -- Warsong Flag
 }
 friend_debuffs.Dracthyr = {}
 self_buffs.Dracthyr = {}

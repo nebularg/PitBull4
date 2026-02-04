@@ -183,6 +183,7 @@ if C_TooltipInfo then -- XXX wow_retail
 		end
 	end
 else
+	local WorldFrame = _G.WorldFrame
 	local tt = CreateFrame("GameTooltip", "PitBull4_Aura_Tooltip", nil)
 	tt:SetOwner(WorldFrame, "ANCHOR_NONE")
 	local left = {}
