@@ -21,8 +21,10 @@
 <!--@do-not-package@-->
 <Include file="Modules\DogTagTexts\load.xml"/>
 <!--@end-do-not-package@-->
+<Include file="Modules\EnergySpark_Classic\load.xml"/>
 <!-- <Include file="Modules\Essence\load.xml"/> -->
 <Include file="Modules\ExperienceBar\load.xml"/>
+<Include file="Modules\HappinessIcon_Classic\load.xml"/>
 <Include file="Modules\HealthBar\load.xml"/>
 <Include file="Modules\HideBlizzard\load.xml"/>
 <Include file="Modules\Highlight\load.xml"/>
@@ -30,6 +32,7 @@
 <Include file="Modules\HostilityFader\load.xml"/>
 <Include file="Modules\LeaderIcon\load.xml"/>
 <Include file="Modules\LuaTexts\load.xml"/>
+<Include file="Modules\ManaSpark_Classic\load.xml"/>
 <Include file="Modules\PhaseFader\load.xml"/>
 <Include file="Modules\PhaseIcon\load.xml"/>
 <Include file="Modules\Portrait\load.xml"/>

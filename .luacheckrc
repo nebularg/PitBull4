@@ -32,6 +32,9 @@ files["Modules/Phase**"].globals = {
 files["Modules/Runes_Classic/*"].globals = {
 	"GetRuneType", -- classic compat
 }
+files["Modules/HappinessIcon_Classic/*"].globals = {
+	"GetPetHappiness", -- classic compat
+}
 globals = {
 	-- Third-party
 	"LibStub",
