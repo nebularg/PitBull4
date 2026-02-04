@@ -80,7 +80,7 @@ local function simple_hook_frames(...)
 			frame:HookScript("OnShow", hide_frame)
 			frame:Hide()
 		elseif PitBull4.DEBUG then
-			geterrorhandler()(("PitBull4_HideBlizzard: Invalid frame at index %d"):format(i))
+			geterrorhandler()(("PitBull4_HideBlizzard: Invalid simple frame at index %d"):format(i))
 		end
 	end
 end
@@ -113,7 +113,11 @@ end
 -----------------------------------------------------------------------------
 
 function hiders:player()
-	hook_frames(false, PlayerFrame, PlayerFrameAlternateManaBar or AlternatePowerBar)
+	if ClassicExpansionAtLeast(LE_EXPANSION_CATACLYSM) then
+		hook_frames(false, PlayerFrame, PlayerFrameAlternateManaBar or AlternatePowerBar)
+	else
+		hook_frames(false, PlayerFrame)
+	end
 	-- BuffFrame_Update()
 	-- BuffFrame needs an inital update, but calling directly will taint things
 	PlayerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -124,10 +128,14 @@ function hiders:player()
 	PlayerFrame:SetMovable(true)
 	PlayerFrame:SetUserPlaced(true)
 	PlayerFrame:SetDontSavePosition(true)
+
+	hook_frames(false, PetFrame) -- this should be parented to PlayerFrame, but people say it has started showing again?
 end
 
-function hiders:runebar()
-	simple_hook_frames(RuneFrame, WarlockPowerFrame, MonkHarmonyBarFrame, PaladinPowerBarFrame, MageArcaneChargesFrame, EssencePlayerFrame)
+if ClassicExpansionAtLeast(LE_EXPANSION_CATACLYSM) then
+	function hiders:runebar()
+		simple_hook_frames(RuneFrame, WarlockPowerFrame, MonkHarmonyBarFrame, PaladinPowerBarFrame, MageArcaneChargesFrame, EssencePlayerFrame)
+	end
 end
 
 function hiders:party()
@@ -281,6 +289,7 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		desc = L["Hides the class resource bar attached to your player frame."],
 		get = get,
 		set = set,
+		disabled = not ClassicExpansionAtLeast(LE_EXPANSION_CATACLYSM),
 		hidden = hidden,
 	}, 'party', {
 		type = 'toggle',
