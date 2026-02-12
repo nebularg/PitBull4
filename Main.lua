@@ -82,7 +82,7 @@ if LibSharedMedia and not LibSharedMedia:IsValid("font", DEFAULT_LSM_FONT) then 
 	DEFAULT_LSM_FONT = LibSharedMedia:GetDefault("font")
 end
 
-local CURRENT_CONFIG_VERSION = 7
+local CURRENT_CONFIG_VERSION = 8
 
 local DATABASE_DEFAULTS = {
 	profile = {
@@ -1221,6 +1221,34 @@ local upgrade_functions = {
 	end,
 	-- [5] = classic
 	-- [6] = classic
+	[7] = function(sv)
+		-- Add the boss group and focus units for those coming from the classic release to TBC.
+		if not sv.profiles or wow_expansion ~= 1 then return true end
+
+		local boss_group = L["Boss"]
+		local focus_units = {
+			L["Focus"],
+			format(L["%s's target"],L["Focus"]),
+			format(L["%s's target"],format(L["%s's target"],L["Focus"])),
+		}
+
+		for profile, profile_db in next, sv.profiles do
+			if profile_db.made_groups then
+				if not profile_db.groups[boss_group] then
+					profile_db.groups[boss_group] = CopyTable(DEFAULT_GROUPS[boss_group])
+				end
+			end
+			if profile_db.made_units then
+				for _, name in next, focus_units do
+					if not profile_db.units[name] then
+						profile_db.units[name] = CopyTable(DEFAULT_UNITS[name])
+					end
+				end
+			end
+		end
+
+		return true
+	end,
 }
 
 local function check_config_version(sv)
