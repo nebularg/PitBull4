@@ -537,7 +537,7 @@ do
 		if UnitIsPlayer(unit) then
 			local race = UnitRace(unit)
 			return race or UNKNOWN
-		elseif UnitInPartyIsAI(unit) then
+		elseif UnitInPartyIsAI(unit) and C_TooltipInfo then -- XXX no C_TooltipInfo in classic yet
 			-- UnitRace doesn't work with AI units. UnitCreatureType does, but we prefer the actual race
 			local info = C_TooltipInfo.GetUnit(unit)
 			if info then
