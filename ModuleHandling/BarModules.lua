@@ -17,6 +17,57 @@ local HOSTILE_REACTION = 2
 local NEUTRAL_REACTION = 4
 local FRIENDLY_REACTION = 5
 
+
+local pcall = _G.pcall
+local tonumber = _G.tonumber
+local type = _G.type
+local format = string.format
+
+local function safe_plain_number(value)
+	if value == nil then
+		return nil
+	end
+
+	local value_type = type(value)
+	if value_type == "number" then
+		local ok, numeric_string = pcall(format, "%.17g", value)
+		if not ok or type(numeric_string) ~= "string" then
+			return nil
+		end
+
+		return tonumber(numeric_string)
+	elseif value_type == "string" then
+		local parsed = tonumber(value)
+		if parsed == nil then
+			return nil
+		end
+
+		local ok, numeric_string = pcall(format, "%.17g", parsed)
+		if not ok or type(numeric_string) ~= "string" then
+			return nil
+		end
+
+		return tonumber(numeric_string)
+	end
+
+	return nil
+end
+
+local function clamp_zero_to_one(value)
+	local numeric = safe_plain_number(value)
+	if numeric == nil or numeric ~= numeric then
+		return nil
+	end
+
+	if numeric < 0 then
+		return 0
+	elseif numeric > 1 then
+		return 1
+	end
+
+	return numeric
+end
+
 --- Call the :GetValue function on the bar module regarding the given frame.
 -- @param self the module
 -- @param frame the frame to get the value of
@@ -29,25 +80,27 @@ local function call_value_function(self, frame, bar_db)
 		return nil, nil
 	end
 	local value, extra, icon
-	-- The extra frame.unit test here is a workaround for ticket 475.  It's not the
-	-- real fix.  The unit should never end up unset when the guid is set.  However,
-	-- this will stop users from seeing this failure in our state management while
-	-- not causing any real problems.
-	if frame.guid and frame.unit then
+	-- Prefer example values during any config-mode rebuild, not only for
+	-- force-shown frames. RecheckConfigMode() updates all frames, and Midnight
+	-- can return secret numeric values for live unit data during those passes.
+	if PitBull4:IsInConfigMode() and self.GetExampleValue then
+		value, extra, icon = self:GetExampleValue(frame, bar_db)
+	elseif frame.force_show and self.GetExampleValue then
+		value, extra, icon = self:GetExampleValue(frame, bar_db)
+	elseif frame.guid and frame.unit then
+		-- The extra frame.unit test here is a workaround for ticket 475.  It's not the
+		-- real fix.  The unit should never end up unset when the guid is set.  However,
+		-- this will stop users from seeing this failure in our state management while
+		-- not causing any real problems.
 		value, extra, icon = self:GetValue(frame, bar_db)
 	end
 
-	if not value and frame.force_show and self.GetExampleValue then
-		value, extra, icon = self:GetExampleValue(frame, bar_db)
-	end
-	if not value then
+	value = clamp_zero_to_one(value)
+	if value == nil then
 		return nil, nil, nil
 	end
-	if value < 0 or value ~= value then -- NaN
-		value = 0
-	elseif value > 1 then
-		value = 1
-	end
+
+	extra = safe_plain_number(extra)
 	if not extra or extra <= 0 or extra ~= extra then -- NaN
 		return value, nil, icon
 	end
@@ -58,6 +111,32 @@ local function call_value_function(self, frame, bar_db)
 	end
 
 	return value, extra, icon
+end
+
+local function call_raw_value_function(self, frame, bar_db)
+	if not self.GetRawValue then
+		return nil, nil, nil
+	end
+	local current, maximum, icon
+	if PitBull4:IsInConfigMode() and self.GetExampleValue then
+		local value, _, example_icon = self:GetExampleValue(frame, bar_db)
+		value = clamp_zero_to_one(value)
+		if type(value) == "number" then
+			current, maximum, icon = value, 1, example_icon
+		end
+	elseif frame.force_show and self.GetExampleValue then
+		local value, _, example_icon = self:GetExampleValue(frame, bar_db)
+		value = clamp_zero_to_one(value)
+		if type(value) == "number" then
+			current, maximum, icon = value, 1, example_icon
+		end
+	elseif frame.guid and frame.unit then
+		current, maximum, icon = self:GetRawValue(frame, bar_db)
+	end
+	if type(current) == "nil" or type(maximum) == "nil" then
+		return nil, nil, nil
+	end
+	return current, maximum, icon
 end
 
 --- Call the :GetColor function on the status bar module regarding the given frame.
@@ -400,22 +479,64 @@ function BarModule:UpdateFrame(frame)
 		expect(frame, 'typeof', 'frame')
 	end
 
+	local raw_current, raw_maximum, raw_icon = call_raw_value_function(self, frame)
+	local db = self:GetLayoutDB(frame)
+	local id = self.id
+	local control = frame[id]
+	local made_control = false
+
+	if type(raw_current) ~= "nil" and type(raw_maximum) ~= "nil" then
+		if control and control.kind ~= "LiveStatusBar" then
+			frame[id] = control:Delete()
+			control = nil
+		end
+		if not control then
+			control = PitBull4.Controls.MakeLiveStatusBar(frame)
+			frame[id] = control
+			made_control = true
+		end
+
+		control:SetTexture(self:GetTexture(frame))
+		local ok = pcall(function()
+			control:SetMinMaxValues(0, raw_maximum)
+			control:SetValue(raw_current)
+		end)
+		if not ok then
+			return self:ClearFrame(frame)
+		end
+
+		local value, extra, icon = call_value_function(self, frame)
+		icon = raw_icon or icon
+		local r, g, b, a, atlas = call_color_function(self, frame, nil, value or 1, extra or 0, icon)
+		control:SetColor(r, g, b)
+		control:SetNormalAlpha(a)
+
+		r, g, b, a = call_background_color_function(self, frame, nil, value or 1, extra or 0, icon)
+		control:SetBackgroundColor(r, g, b)
+		control:SetBackgroundAlpha(a)
+		control:SetAtlas(atlas)
+		control:SetIcon(icon)
+		control:SetIconPosition(db.icon_on_left)
+		control:Show()
+		return made_control or not not icon
+	end
+
 	local value, extra, icon = call_value_function(self, frame)
 	if not value then
 		return self:ClearFrame(frame)
 	end
 
-	local db = self:GetLayoutDB(frame)
-	local id = self.id
-	local control = frame[id]
-	local made_control = not control
-	if made_control then
+	if control and control.kind ~= "BetterStatusBar" then
+		frame[id] = control:Delete()
+		control = nil
+	end
+	if not control then
 		control = PitBull4.Controls.MakeBetterStatusBar(frame)
 		frame[id] = control
+		made_control = true
 	end
 
 	control:SetTexture(self:GetTexture(frame))
-
 	control:SetValue(value)
 	local r, g, b, a, atlas = call_color_function(self, frame, nil, value, extra or 0, icon)
 	control:SetColor(r, g, b)
@@ -436,9 +557,6 @@ function BarModule:UpdateFrame(frame)
 	control:SetExtra2Value(0)
 
 	if atlas then
-		-- This is set later so SetBackgroundColor and SetExtraColor
-		-- can operate on the fg color from SetColor if needed before
-		-- resetting it back to 1,1,1 for the atlas.
 		control:SetAtlas(atlas)
 	end
 

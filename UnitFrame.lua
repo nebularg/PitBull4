@@ -6,6 +6,8 @@ local L = PitBull4.L
 
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
+local SafeGUID = PitBull4.Utils.SafeGUID
+local SafeEqual = PitBull4.Utils.SafeEqual
 local frames_to_anchor = PitBull4.frames_to_anchor
 
 -- CONSTANTS ----------------------------------------------------------------
@@ -348,10 +350,8 @@ end
 
 function UnitFrame__scripts:OnShow()
 	if self.unit then
-		local guid = UnitGUID(self.unit)
-		if self.is_wacky or guid ~= self.guid then
-			self:UpdateGUID(guid)
-		end
+		local guid = SafeGUID(UnitGUID(self.unit))
+		self:UpdateGUID(guid)
 	end
 
 	self:SetAlpha(PitBull4:GetFinalFrameOpacity(self))
@@ -806,18 +806,20 @@ end
 -- @usage frame:UpdateGUID(UnitGUID(frame.unit))
 -- @usage frame:UpdateGUID(UnitGUID(frame.unit), true)
 function UnitFrame:UpdateGUID(guid, update)
+	guid = SafeGUID(guid)
 	if DEBUG then
 		expect(guid, 'typeof', 'string;nil')
 	end
 
 	-- if the guids are the same, cut out, but don't if it's a wacky unit that has a guid.
-	if update ~= true and self.guid == guid and not (guid and self.is_wacky and not self.best_unit) then
+	local current_guid = SafeGUID(self.guid)
+	if update ~= true and SafeEqual(current_guid, guid) and not (guid and self.is_wacky and not self.best_unit) then
 		return
 	end
-	local previousGUID = self.guid
+	local previousGUID = current_guid
 	self.guid = guid
 	if update ~= false then
-		self:Update(previousGUID == guid)
+		self:Update(SafeEqual(previousGUID, guid))
 	end
 end
 

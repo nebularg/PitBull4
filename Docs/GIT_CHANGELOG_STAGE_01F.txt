@@ -1,0 +1,5 @@
+fix(barmodules): use example values for all config-mode bar updates from the shared bar pipeline
+fix(powerbar): wrap live power normalization in pcall to suppress Midnight secret-number arithmetic faults
+fix(healthbar): wrap live health normalization in pcall to suppress Midnight secret-number comparison faults
+fix(combatfader): replace raw startup health and power comparisons with error-safe probes
+docs(stage-01f): add markdown changelog and git changelog for the shared config-mode and secret-number hardening hotfix

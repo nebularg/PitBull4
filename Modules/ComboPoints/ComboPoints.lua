@@ -1,6 +1,16 @@
-
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
+
+local UnitClassBase = UnitClassBase
+local UnitHasVehicleUI = UnitHasVehicleUI
+local GetComboPoints = GetComboPoints
+local UnitPower = UnitPower
+local UnitPowerMax = UnitPowerMax
+local GetShapeshiftFormID = GetShapeshiftFormID
+local unpack = unpack or table.unpack
+local next = next
+local ipairs = ipairs
+local pairs = pairs
 
 local player_class = UnitClassBase("player")
 local is_rogue = player_class == "ROGUE"
@@ -19,6 +29,51 @@ local TEXTURES = {
 
 local ICON_SIZE = 15
 local BORDER_SIZE = 3
+
+local HAS_RETAIL_AURA_UPDATES = ClassicExpansionAtLeast(LE_EXPANSION_DRAGONFLIGHT)
+
+local overflowing_power_stacks = 0
+
+local function GetOverflowingPowerStacks()
+	if not is_druid or not HAS_RETAIL_AURA_UPDATES then
+		return 0
+	end
+
+	if C_UnitAuras and C_UnitAuras.GetPlayerAuraBySpellID then
+		local aura = C_UnitAuras.GetPlayerAuraBySpellID(OVERFLOWING_POWER_SPELL_ID)
+		return aura and aura.applications or 0
+	end
+
+	if GetPlayerAuraBySpellID then
+		local _, _, count = GetPlayerAuraBySpellID(OVERFLOWING_POWER_SPELL_ID)
+		return count or 0
+	end
+
+	return 0
+end
+
+local function RefreshOverflowingPowerState()
+	local stacks = GetOverflowingPowerStacks()
+	if stacks == overflowing_power_stacks then
+		return false
+	end
+
+	overflowing_power_stacks = stacks
+	return true
+end
+
+local function UpdateRelevantFrames(module)
+	for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
+		module:Update(frame)
+	end
+end
+
+local function ClearAndUpdateRelevantFrames(module)
+	for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
+		module:Clear(frame)
+		module:Update(frame)
+	end
+end
 
 -----------------------------------------------------------------------------
 
@@ -41,14 +96,15 @@ PitBull4_ComboPoints:SetDefaults({
 	background_color = { 0, 0, 0, 0.5 }
 })
 
-local overflowing_power_aura_id = nil
-
 function PitBull4_ComboPoints:OnEnable()
 	self:RegisterEvent("UNIT_POWER_FREQUENT")
+
 	if ClassicExpansionAtLeast(LE_EXPANSION_WARLORDS_OF_DRAENOR) then
 		self:RegisterEvent("UNIT_DISPLAYPOWER")
 		self:RegisterEvent("UNIT_EXITED_VEHICLE", "UNIT_DISPLAYPOWER")
-		if is_druid and ClassicExpansionAtLeast(LE_EXPANSION_DRAGONFLIGHT) then
+
+		if is_druid and HAS_RETAIL_AURA_UPDATES then
+			RefreshOverflowingPowerState()
 			self:RegisterUnitEvent("UNIT_AURA", nil, "player")
 		end
 	else
@@ -60,71 +116,32 @@ function PitBull4_ComboPoints:OnEnable()
 	end
 end
 
+function PitBull4_ComboPoints:OnDisable()
+	overflowing_power_stacks = 0
+end
+
 function PitBull4_ComboPoints:UNIT_POWER_FREQUENT(_, unit, power_type)
 	if unit ~= "player" and unit ~= "pet" then return end
 	if power_type ~= "COMBO_POINTS" then return end
 
 	if ClassicExpansionAtLeast(LE_EXPANSION_WARLORDS_OF_DRAENOR) then
-		for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
-			self:Update(frame)
-		end
+		UpdateRelevantFrames(self)
 	else
 		self:UpdateForUnitID("target")
 	end
 end
 
-function PitBull4_ComboPoints:UNIT_DISPLAYPOWER(event, unit)
+function PitBull4_ComboPoints:UNIT_DISPLAYPOWER(_, unit)
 	if unit ~= "player" and unit ~= "pet" then return end
 
-	for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
-		self:Update(frame)
-	end
+	UpdateRelevantFrames(self)
 end
 
-function PitBull4_ComboPoints:UNIT_AURA(_, unit, update_info)
-	if unit ~= "player" or not update_info then return end
+function PitBull4_ComboPoints:UNIT_AURA(_, unit)
+	if unit ~= "player" then return end
+	if not RefreshOverflowingPowerState() then return end
 
-	local changed = false
-	local removed = false
-
-	if update_info.addedAuras then
-		for _, aura in next, update_info.addedAuras do
-			if aura.spellId == OVERFLOWING_POWER_SPELL_ID then
-				changed = true
-				overflowing_power_aura_id = aura.auraInstanceID
-				break
-			end
-		end
-	end
-
-	if overflowing_power_aura_id and not changed and update_info.updatedAuraInstanceIDs then
-		for _, aura_id in next, update_info.updatedAuraInstanceIDs do
-			if overflowing_power_aura_id == aura_id then
-				changed = true
-				break
-			end
-		end
-	end
-
-	if overflowing_power_aura_id and not changed and update_info.removedAuraInstanceIDs then
-		for _, aura_id in next, update_info.removedAuraInstanceIDs do
-			if overflowing_power_aura_id == aura_id then
-				changed = true
-				removed = true
-				break
-			end
-		end
-	end
-
-	if changed then
-		for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
-			self:Update(frame)
-		end
-	end
-	if removed then
-		-- Unset after update so frames still get updated at max power
-		overflowing_power_aura_id = nil
-	end
+	UpdateRelevantFrames(self)
 end
 
 function PitBull4_ComboPoints:UNIT_MAXPOWER(_, unit)
@@ -201,8 +218,8 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 	end
 	local combos = frame.ComboPoints
 
-	-- Only update at max power if you have Overflowing Power
-	if combos and #combos == num_combos and not overflowing_power_aura_id then
+	-- Fast path: when the icon count is unchanged and there is no overflow aura, no recolor work is needed.
+	if combos and #combos == num_combos and overflowing_power_stacks == 0 then
 		combos:Show()
 		return false
 	end
@@ -223,13 +240,13 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 
 			local height
 			if not vertical then
-				height = ICON_SIZE + 2*BORDER_SIZE
+				height = ICON_SIZE + 2 * BORDER_SIZE
 				combos:SetHeight(height)
-				combos:SetWidth(ICON_SIZE*max_combos + BORDER_SIZE*2 + spacing*(max_combos-1))
+				combos:SetWidth(ICON_SIZE * max_combos + BORDER_SIZE * 2 + spacing * (max_combos - 1))
 			else
-				height = ICON_SIZE*max_combos + BORDER_SIZE*2 + spacing*(max_combos-1)
+				height = ICON_SIZE * max_combos + BORDER_SIZE * 2 + spacing * (max_combos - 1)
 				combos:SetHeight(height)
-				combos:SetWidth(ICON_SIZE + 2*BORDER_SIZE)
+				combos:SetWidth(ICON_SIZE + 2 * BORDER_SIZE)
 			end
 			combos.height = height / ICON_SIZE
 		end
@@ -250,7 +267,6 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 
 	for i = #combos, num_combos + 1, -1 do
 		local combo = combos[i]
-
 		combos[i] = combo:Delete()
 	end
 
@@ -261,6 +277,7 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 		combo:SetTexture(BASE_TEXTURE_PATH .. db.texture)
 		combo:SetWidth(ICON_SIZE)
 		combo:SetHeight(ICON_SIZE)
+
 		local border_size = db.has_background_color and BORDER_SIZE or 0
 		if not vertical then
 			combo:SetPoint("LEFT", combos, "LEFT", border_size + (i - 1) * (ICON_SIZE + spacing), 0)
@@ -269,13 +286,7 @@ function PitBull4_ComboPoints:UpdateFrame(frame)
 		end
 	end
 
-	-- Druid Overflowing Power
-	local num_overflowing = 0
-	if overflowing_power_aura_id then
-		local aura = C_UnitAuras.GetAuraDataByAuraInstanceID("player", overflowing_power_aura_id)
-		num_overflowing = aura and aura.applications or 0
-	end
-
+	local num_overflowing = overflowing_power_stacks
 	for i = 1, num_combos do
 		if i > num_overflowing then
 			combos[i]:SetVertexColor(unpack(db.color))
@@ -293,13 +304,10 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 	local function get(info)
 		return PitBull4.Options.GetLayoutDB(self)[info[#info]]
 	end
+
 	local function set(info, value)
 		PitBull4.Options.GetLayoutDB(self)[info[#info]] = value
-
-		for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
-			self:Clear(frame)
-			self:Update(frame)
-		end
+		ClearAndUpdateRelevantFrames(self)
 	end
 
 	return 'vertical', {
@@ -326,7 +334,7 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 		values = TEXTURES,
 		hidden = function(info)
 			local i = 0
-			for k in pairs(TEXTURES) do
+			for _ in pairs(TEXTURES) do
 				i = i + 1
 				if i > 1 then
 					return false
@@ -344,11 +352,7 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 		set = function(info, r, g, b)
 			local color = PitBull4.Options.GetLayoutDB(self).color
 			color[1], color[2], color[3] = r, g, b
-
-			for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
-				self:Clear(frame)
-				self:Update(frame)
-			end
+			ClearAndUpdateRelevantFrames(self)
 		end,
 	}, 'overflow_color', {
 		type = 'color',
@@ -360,15 +364,11 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 		set = function(info, r, g, b)
 			local color = PitBull4.Options.GetLayoutDB(self).overflow_color
 			color[1], color[2], color[3] = r, g, b
-
-			for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
-				self:Clear(frame)
-				self:Update(frame)
-			end
+			ClearAndUpdateRelevantFrames(self)
 		end,
 		hidden = function(info)
-			return not is_druid or not ClassicExpansionAtLeast(LE_EXPANSION_DRAGONFLIGHT)
-		end
+			return not is_druid or not HAS_RETAIL_AURA_UPDATES
+		end,
 	}, 'has_background_color', {
 		type = 'toggle',
 		name = L["Has background color"],
@@ -386,15 +386,11 @@ PitBull4_ComboPoints:SetLayoutOptionsFunction(function(self)
 		set = function(info, r, g, b, a)
 			local color = PitBull4.Options.GetLayoutDB(self).background_color
 			color[1], color[2], color[3], color[4] = r, g, b, a
-
-			for frame in PitBull4:IterateFramesForUnitIDs("player", "pet", "target") do
-				self:Clear(frame)
-				self:Update(frame)
-			end
+			ClearAndUpdateRelevantFrames(self)
 		end,
 		disabled = function(info)
 			local db = PitBull4.Options.GetLayoutDB(self)
 			return not db.has_background_color or not db.enabled
-		end
+		end,
 	}
 end)

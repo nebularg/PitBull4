@@ -13,7 +13,9 @@ PitBull4_LeaderIcon:SetDefaults({
 	position = 1,
 })
 
-local leader_guid
+local function get_frame_unit(frame)
+	return frame.best_unit or frame.unit
+end
 
 function PitBull4_LeaderIcon:OnEnable()
 	self:RegisterEvent("PARTY_LEADER_CHANGED")
@@ -21,7 +23,8 @@ function PitBull4_LeaderIcon:OnEnable()
 end
 
 function PitBull4_LeaderIcon:GetTexture(frame)
-	if frame.guid == leader_guid then
+	local unit = get_frame_unit(frame)
+	if unit and UnitExists(unit) and UnitIsGroupLeader(unit) then
 		return [[Interface\GroupFrame\UI-Group-LeaderIcon]]
 	end
 end
@@ -35,29 +38,8 @@ function PitBull4_LeaderIcon:GetTexCoord(frame, texture)
 end
 PitBull4_LeaderIcon.GetExampleTexCoord = PitBull4_LeaderIcon.GetTexCoord
 
-local function update_leader_guid()
-	local group_size = GetNumGroupMembers()
-	if group_size > 0 then
-		if UnitIsGroupLeader("player") then
-			-- player is the leader
-			leader_guid = UnitGUID("player")
-		else
-			local group_unit_prefix = IsInRaid() and "raid" or "party"
-			for i = 1, group_size do
-				local unit = group_unit_prefix..i
-				if UnitIsGroupLeader(unit) then
-					leader_guid = UnitGUID(unit)
-					break
-				end
-			end
-		end
-	else
-		-- not in a raid or a party
-		leader_guid = nil
-	end
-	PitBull4_LeaderIcon:UpdateAll()
-end
-
 function PitBull4_LeaderIcon:PARTY_LEADER_CHANGED()
-	self:ScheduleTimer(update_leader_guid, 0.1)
+	self:ScheduleTimer(function()
+		PitBull4_LeaderIcon:UpdateAll()
+	end, 0.1)
 end

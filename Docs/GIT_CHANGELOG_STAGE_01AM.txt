@@ -1,0 +1,3 @@
+fix(luatexts): remove UnitIsUnit secret-boolean branch from cast-to-frame matching
+fix(luatexts): rely on direct unit-token matching for cast cache fan-out on Midnight
+docs(stage-01am): add markdown changelog and git changelog for LuaTexts cast matching hardening

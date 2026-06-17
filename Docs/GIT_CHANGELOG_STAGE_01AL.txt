@@ -1,0 +1,3 @@
+fix(leadericon): replace guid equality with unit-token group leader detection
+fix(castbarlatency): replace UnitIsUnit player checks with token-based player-frame detection
+docs(stage-01al): add markdown changelog and git changelog for LeaderIcon and CastBarLatency hardening

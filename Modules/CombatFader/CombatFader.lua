@@ -1,6 +1,7 @@
 
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
+local securecallfunction = _G.securecallfunction
 
 local PitBull4_CombatFader = PitBull4:NewModule("CombatFader")
 
@@ -42,17 +43,26 @@ end
 local power_check
 do
 	local function not_full()
-		return UnitPower("player") < UnitPowerMax("player")
+		local ok, result = pcall(function()
+			return UnitPower("player") < UnitPowerMax("player")
+		end)
+		return ok and result or false
 	end
 	local function not_empty()
-		return UnitPower("player") > 0
+		local ok, result = pcall(function()
+			return UnitPower("player") > 0
+		end)
+		return ok and result or false
 	end
 	local function lunar_not_empty()
-		if IsPlayerSpell(202430) then -- Nature's Balance
-			local power = UnitPower("player")
-			return power < 50 or power > 51
-		end
-		return UnitPower("player") > 0
+		local ok, result = pcall(function()
+			if IsPlayerSpell(202430) then -- Nature's Balance
+				local power = UnitPower("player")
+				return power < 50 or power > 51
+			end
+			return UnitPower("player") > 0
+		end)
+		return ok and result or false
 	end
 	power_check = {
 		MANA = not_full,
@@ -69,14 +79,47 @@ do
 end
 
 function PitBull4_CombatFader:RecalculateState()
+	-- Config mode should never depend on live secure unit values. Midnight can
+	-- expose secret numeric values here, so keep preview frames fully visible.
+	if PitBull4:IsInConfigMode() then
+		state = "in_combat"
+		return
+	end
+
+	if not PitBull4.world_ready then
+		state = "in_combat"
+		return
+	end
+
+	if PitBull4.HasRestrictedUnitData and PitBull4:HasRestrictedUnitData() then
+		state = "in_combat"
+		return
+	end
+
 	if UnitAffectingCombat("player") then
 		state = "in_combat"
 	elseif UnitExists("target") then
 		state = "target"
-	elseif UnitHealth("player") < UnitHealthMax("player") then
-		state = "hurt"
 	else
-		local _, power_token = UnitPowerType("player")
+		local ok, is_hurt = pcall(function()
+			return UnitHealth("player") < UnitHealthMax("player")
+		end)
+		if not ok then
+			is_hurt = false
+		end
+		if is_hurt then
+			state = "hurt"
+			return
+		end
+		local _, power_token
+		local function get_power_type()
+			return UnitPowerType("player")
+		end
+		if securecallfunction then
+			_, power_token = securecallfunction(get_power_type)
+		else
+			_, power_token = get_power_type()
+		end
 		local func = power_check[power_token]
 		if func and func() then
 			state = "hurt"

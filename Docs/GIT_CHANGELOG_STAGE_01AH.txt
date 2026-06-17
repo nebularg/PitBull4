@@ -1,0 +1,3 @@
+fix(luatexts): guard ScriptEnv GUID-keyed cache lookups against Midnight protected GUID values
+fix(luatexts): use safe GUID equality for player and pet power cache detection
+docs(stage-01ah): add markdown changelog and git changelog for LuaTexts ScriptEnv hardening
