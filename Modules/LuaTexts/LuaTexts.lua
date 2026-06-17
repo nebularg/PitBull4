@@ -38,8 +38,103 @@ PitBull4_LuaTexts.dnd = dnd
 local dead_times = {}
 PitBull4_LuaTexts.dead_times = dead_times
 local player_guid
+local SafeGUID = PitBull4.Utils.SafeGUID
+local SafeString = PitBull4.Utils.SafeString
+local SafeEqual = PitBull4.Utils.SafeEqual or function(a, b)
+	local ok, equal = pcall(function(left, right)
+		return left == right
+	end, a, b)
+	if ok then
+		return equal
+	end
+	return false
+end
 local predicted_power = true
 local predicted_health = true
+
+local function safe_cast_time_seconds(value)
+	if value == nil then
+		return 0
+	end
+
+	local ok, number = pcall(function()
+		return value + 0
+	end)
+	if ok and type(number) == "number" then
+		return number * 0.001
+	end
+
+	return 0
+end
+
+local function safe_interruptible(uninterruptible)
+	if uninterruptible == nil then
+		return true
+	end
+
+	local ok, interruptible = pcall(function(value)
+		if value == true then
+			return false
+		end
+		if value == false then
+			return true
+		end
+		return true
+	end, uninterruptible)
+	if ok then
+		return interruptible
+	end
+
+	return true
+end
+
+local function safe_cast_id_equal(a, b)
+	if a == nil or b == nil then
+		return false
+	end
+
+	local ok, equal = pcall(function(left, right)
+		return left == right
+	end, a, b)
+	if ok then
+		return equal
+	end
+
+	return false
+end
+
+local function safe_guid_equal(left, right)
+	if left == nil or right == nil then
+		return false
+	end
+
+	return SafeEqual(SafeGUID(left), SafeGUID(right))
+end
+
+local function safe_unit_flag(func, unit)
+	local ok, value = pcall(func, unit)
+	if not ok then
+		return false
+	end
+
+	return SafeEqual(value, true)
+end
+
+local function safe_unit_is_connected(unit)
+	return safe_unit_flag(UnitIsConnected, unit)
+end
+
+local function safe_unit_is_afk(unit)
+	return safe_unit_flag(UnitIsAFK, unit)
+end
+
+local function safe_unit_is_dnd(unit)
+	return safe_unit_flag(UnitIsDND, unit)
+end
+
+local function safe_unit_is_dead_or_ghost(unit)
+	return safe_unit_flag(UnitIsDeadOrGhost, unit)
+end
 
 local PROVIDED_CODES = {
 	[L["Class"]] = {
@@ -827,7 +922,7 @@ function PitBull4_LuaTexts:OnEnable()
 	self:AddFrameScriptHook("OnLeave")
 
 	-- Cache the player's guid for later use
-	player_guid = UnitGUID("player")
+	player_guid = SafeGUID(UnitGUID("player"))
 	PitBull4.LuaTexts.ScriptEnv.player_guid = player_guid
 
 	self:SecureHook("SetCVar")
@@ -937,7 +1032,8 @@ function PitBull4_LuaTexts:UNIT_SPELLCAST_SENT(event, unit, target, cast_id, spe
 	if unit ~= "player" then return end
 
 	next_spell = spell_id
-	next_target = target ~= "" and target or nil
+	local safe_target = SafeString(target)
+	next_target = safe_target
 
 	self:OnEvent(event, unit, cast_id, spell_id)
 end
@@ -954,6 +1050,9 @@ local function new()
 end
 
 local function del(t)
+	if type(t) ~= "table" then
+		return nil
+	end
 	wipe(t)
 	pool[t] = true
 	return nil
@@ -967,14 +1066,37 @@ local function copy(t)
 	return n
 end
 
+local function get_cast_key(unit)
+	if not unit then
+		return nil
+	end
+	return unit
+end
+
+local function frame_matches_cast_key(frame, cast_key)
+	if not frame or not cast_key then
+		return false
+	end
+
+	local best_unit = frame.best_unit
+	local frame_unit = frame.unit
+	if best_unit == cast_key or frame_unit == cast_key then
+		return true
+	end
+
+	-- Midnight can mark UnitIsUnit results as protected booleans for some unit chains
+	-- like target/targettarget. Stay with direct token matching here instead of
+	-- branching on the protected result.
+	return false
+end
+
 local function update_cast_data(event, unit, event_cast_id, event_spell_id)
-	if not unit then return end
-	local guid = UnitGUID(unit)
-	if not guid then return end
-	local data = cast_data[guid]
+	local cast_key = get_cast_key(unit)
+	if not cast_key then return end
+	local data = cast_data[cast_key]
 	if not data then
 		data = new()
-		cast_data[guid] = data
+		cast_data[cast_key] = data
 	end
 
 	local spell, _, _, start_time, end_time, _, cast_id, uninterruptible, spell_id = UnitCastingInfo(unit)
@@ -986,21 +1108,21 @@ local function update_cast_data(event, unit, event_cast_id, event_spell_id)
 	if spell then
 		data.spell = spell
 		local old_start = data.start_time
-		start_time = start_time * 0.001
+		start_time = safe_cast_time_seconds(start_time)
 		data.start_time = start_time
-		data.end_time = end_time * 0.001
+		data.end_time = safe_cast_time_seconds(end_time)
 		if event == "UNIT_SPELLCAST_DELAYED" or event == "UNIT_SPELLCAST_CHANNEL_UPDATE" then
 			data.delay = (data.delay or 0) + (start_time - (old_start or start_time))
 		elseif event then
 			data.delay = 0
 		end
-		if guid == player_guid and spell_id == next_spell then
+		if cast_key == "player" and spell_id == next_spell then
 			data.target = next_target
 		end
 		data.casting = not channeling
 		data.channeling = channeling
 		data.fade_out = false
-		data.interruptible = not uninterruptible
+		data.interruptible = safe_interruptible(uninterruptible)
 		if event ~= "UNIT_SPELLCAST_INTERRUPTED" then
 			-- We can't update the cache of the cast_id on UNIT_SPELLCAST_INTERRUPTED  because
 			-- for whatever reason it ends up giving us 0 inside this event.
@@ -1011,13 +1133,13 @@ local function update_cast_data(event, unit, event_cast_id, event_spell_id)
 		return
 	end
 	if not data.spell then
-		cast_data[guid] = del(data)
+		cast_data[cast_key] = del(data)
 		return
 	end
 
-	if data.cast_id == event_cast_id then
+	if safe_cast_id_equal(data.cast_id, event_cast_id) then
 		-- The event was for the cast we're current casting
-		if event == "UNIT_SELLCAST_FAILED" then
+		if event == "UNIT_SPELLCAST_FAILED" then
 			data.stop_message = _G.FAILED
 		elseif event == "UNIT_SPELLCAST_INTERRUPTED" then
 			data.stop_message = _G.INTERRUPTED
@@ -1039,12 +1161,12 @@ end
 local tmp = {}
 local function fix_cast_data()
 	local current_time = GetTime()
-	for guid, data in pairs(cast_data) do
-		tmp[guid] = data
+	for cast_key, data in pairs(cast_data) do
+		tmp[cast_key] = data
 	end
-	for guid, data in pairs(tmp) do
+	for cast_key, data in pairs(tmp) do
 		if data.casting then
-			if current_time > data.end_time and player_guid ~= guid then
+			if current_time > data.end_time and cast_key ~= "player" then
 				data.casting = false
 				data.fade_out = true
 				data.stop_time = current_time
@@ -1063,21 +1185,21 @@ local function fix_cast_data()
 			end
 
 			if alpha <0 then
-				cast_data[guid] = del(data)
+				cast_data[cast_key] = del(data)
 			end
 		else
-			cast_data[guid] = del(date)
+			cast_data[cast_key] = del(data)
 		end
 		local found = false
 		for font_string in pairs(spell_cast_cache) do
-			if guid == font_string.frame.guid then
+			if frame_matches_cast_key(font_string.frame, cast_key) then
 				found = true
 				to_update[font_string] = 0 -- update now
 			end
 		end
 		if not found then
-			if cast_data[guid] then
-				cast_data[guid] = del(data)
+			if cast_data[cast_key] then
+				cast_data[cast_key] = del(data)
 			end
 		end
 	end
@@ -1092,11 +1214,11 @@ local function update_timers()
 		PitBull4_LuaTexts:GROUP_ROSTER_UPDATE()
 	end
 	for unit, guid in pairs(group_members) do
-		if not UnitIsConnected(unit) then
+		if not safe_unit_is_connected(unit) then
 			if not offline_times[guid] then
 				offline_times[guid] = GetTime()
 				for font_string in pairs(offline_cache) do
-					if font_string.frame.guid == guid then
+					if safe_guid_equal(font_string.frame.guid, guid) then
 						to_update[font_string] = 0
 					end
 				end
@@ -1105,18 +1227,18 @@ local function update_timers()
 			if dnd[guid] then
 				dnd[guid] = nil
 				for font_string in pairs(dnd_cache) do
-					if font_string.frame.guid == guid then
+					if safe_guid_equal(font_string.frame.guid, guid) then
 						to_update[font_string] = 0
 					end
 				end
 			end
 		else
 			offline_times[guid] = nil
-			if UnitIsAFK(unit) then
+			if safe_unit_is_afk(unit) then
 				if not afk_times[guid] then
 					afk_times[guid] = GetTime()
 					for font_string in pairs(afk_cache) do
-						if font_string.frame.guid == guid then
+						if safe_guid_equal(font_string.frame.guid, guid) then
 							to_update[font_string] = 0
 						end
 					end
@@ -1124,7 +1246,7 @@ local function update_timers()
 			else
 				afk_times[guid] = nil
 				local dnd_change = false
-				if UnitIsDND(unit) then
+				if safe_unit_is_dnd(unit) then
 					if not dnd[guid] then
 						dnd[guid] = true
 						dnd_change = true
@@ -1137,18 +1259,18 @@ local function update_timers()
 				end
 				if dnd_change then
 					for font_string in pairs(dnd_cache) do
-						if font_string.frame.guid == guid then
+						if safe_guid_equal(font_string.frame.guid, guid) then
 							to_update[font_string] = 0
 						end
 					end
 				end
 			end
 		end
-		if UnitIsDeadOrGhost(unit) then
+		if safe_unit_is_dead_or_ghost(unit) then
 			if not dead_times[guid] then
 				dead_times[guid] = GetTime()
 				for font_string in pairs(dead_cache) do
-					if font_string.frame.guid == guid then
+					if safe_guid_equal(font_string.frame.guid, guid) then
 						to_update[font_string] = 0
 					end
 				end
@@ -1171,6 +1293,7 @@ function PitBull4_LuaTexts:GROUP_ROSTER_UPDATE(event)
 		wipe(offline_times)
 		wipe(dead_times)
 		wipe(afk_times)
+		wipe(dnd)
 		return
 	end
 
@@ -1182,7 +1305,7 @@ function PitBull4_LuaTexts:GROUP_ROSTER_UPDATE(event)
 		else
 			unit = prefix .. i
 		end
-		local guid = UnitGUID(unit)
+		local guid = SafeGUID(UnitGUID(unit))
 		group_members[unit] = guid
 
 		if guid then
@@ -1206,6 +1329,11 @@ function PitBull4_LuaTexts:GROUP_ROSTER_UPDATE(event)
 			afk_times[guid] = nil
 		end
 	end
+	for guid in pairs(dnd) do
+		if not tmp[guid] then
+			dnd[guid] = nil
+		end
+	end
 	wipe(tmp)
 
 	self:OnEvent(event)
@@ -1226,7 +1354,7 @@ function PitBull4_LuaTexts:OnEvent(event, unit, ...)
 	end
 
 	if by_unit and unit then
-		guid = UnitGUID(unit)
+		guid = SafeGUID(UnitGUID(unit))
 	end
 
 	if event == "PLAYER_FLAGS_CHANGED" then
@@ -1237,8 +1365,9 @@ function PitBull4_LuaTexts:OnEvent(event, unit, ...)
 	end
 
 	for font_string in pairs(event_entry) do
-		local fs_guid = font_string.frame.guid
-		if all or (by_unit and fs_guid == guid) or (player and fs_guid == player_guid) or (pet and fs_guid == UnitGUID("pet")) then
+		local fs_guid = SafeGUID(font_string.frame.guid)
+		local pet_guid = SafeGUID(UnitGUID("pet"))
+		if all or (by_unit and PitBull4.Utils.SafeEqual(fs_guid, guid)) or (player and PitBull4.Utils.SafeEqual(fs_guid, player_guid)) or (pet and PitBull4.Utils.SafeEqual(fs_guid, pet_guid)) then
 			update_text(font_string,event)
 		end
 	end
@@ -1270,15 +1399,15 @@ timerframe:SetScript("OnUpdate", function(self, elapsed)
 	if predicted_power and next(power_cache) then
 		if UnitPower("player") ~= ScriptEnv.player_power then
 			for font_string in pairs(power_cache) do
-				if font_string.frame.guid == player_guid then
+				if safe_guid_equal(font_string.frame.guid, player_guid) then
 					to_update[font_string] = 0
 				end
 			end
 		end
 		if UnitPower("pet") ~= ScriptEnv.pet_power then
-			local pet_guid = UnitGUID("pet")
+			local pet_guid = SafeGUID(UnitGUID("pet"))
 			for font_string in pairs(power_cache) do
-				if font_string.frame.guid == pet_guid then
+				if safe_guid_equal(font_string.frame.guid, pet_guid) then
 					to_update[font_string] = 0
 				end
 			end

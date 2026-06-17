@@ -1,0 +1,6 @@
+fix(luatexts): replace remaining GUID-keyed cast cache path with unit-token keyed cache
+fix(scriptenv): resolve CastData by unit token instead of GUID key
+fix(powerbar): use safe numeric conversion and direct unit updates for live combat refresh
+fix(healthbar): use best_unit where available and force direct unit refresh on health events
+fix(altmanabar): use safe numeric conversion and direct player refresh for alternate mana updates
+docs(stage-01ak): add markdown changelog and git changelog for LuaTexts and bar update hotfix

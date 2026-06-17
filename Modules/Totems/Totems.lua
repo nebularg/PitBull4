@@ -57,6 +57,159 @@ local COLOR_DEFAULTS = {
 
 local GetTotemTimeLeft = _G.GetTotemTimeLeft
 local GetTotemInfo = _G.GetTotemInfo
+local GetSpellInfo = _G.GetSpellInfo
+
+local SafeString = PitBull4.Utils and PitBull4.Utils.SafeString or function(value)
+	if value == nil then
+		return nil
+	end
+
+	local ok, string_value = pcall(tostring, value)
+	if not ok then
+		return nil
+	end
+
+	return string_value
+end
+
+local SafeEqual = PitBull4.Utils and PitBull4.Utils.SafeEqual or function(left, right)
+	local ok, result = pcall(function(a, b)
+		return a == b
+	end, left, right)
+	return ok and result or false
+end
+
+local SafeBoolean = PitBull4.Utils and PitBull4.Utils.SafeBoolean or function(value, default)
+	if value == nil then
+		return default
+	end
+
+	local string_value = SafeString(value)
+	if SafeEqual(string_value, "true") then
+		return true
+	elseif SafeEqual(string_value, "false") then
+		return false
+	end
+
+	return default
+end
+
+local function SafeNumber(value, default)
+	if value == nil then
+		return default
+	end
+
+	local string_value = SafeString(value)
+	if string_value == nil then
+		return default
+	end
+
+	local number_value = tonumber(string_value)
+	if number_value == nil then
+		return default
+	end
+
+	return number_value
+end
+
+local function IsEmptySafeString(value)
+	local string_value = SafeString(value)
+	if string_value == nil then
+		return true
+	end
+
+	return SafeEqual(string_value, "")
+end
+
+local function SafeTextureValue(value)
+	if value == nil then
+		return nil
+	end
+
+	local value_type = type(value)
+	if value_type == "number" then
+		return SafeNumber(value, nil)
+	elseif value_type == "string" then
+		return SafeString(value)
+	end
+
+	return SafeString(value)
+end
+
+local function SetNormalTextureSafe(button, texture)
+	if not button then
+		return
+	end
+
+	if texture == nil then
+		pcall(button.SetNormalTexture, button, nil)
+		return
+	end
+
+	local ok = pcall(button.SetNormalTexture, button, texture)
+	if ok then
+		return
+	end
+
+	local safe_texture = SafeTextureValue(texture)
+	if safe_texture ~= nil then
+		pcall(button.SetNormalTexture, button, safe_texture)
+	end
+end
+
+local function GetSafeTotemInfo(slot)
+	local ok, has_totem, name, start_time, duration, icon = pcall(GetTotemInfo, slot)
+	if not ok then
+		return false, nil, 0, 0, nil
+	end
+
+	return SafeBoolean(has_totem, false), SafeString(name), SafeNumber(start_time, 0), SafeNumber(duration, 0), SafeTextureValue(icon)
+end
+
+local function GetSafeTotemTimeLeft(slot)
+	local ok, time_left = pcall(GetTotemTimeLeft, slot)
+	if not ok then
+		return 0
+	end
+
+	return SafeNumber(time_left, 0)
+end
+
+local function GetSpellNameSafe(spell_id)
+	if _G.C_Spell and _G.C_Spell.GetSpellName then
+		local ok, name = pcall(_G.C_Spell.GetSpellName, spell_id)
+		if ok and not IsEmptySafeString(name) then
+			return SafeString(name)
+		end
+	end
+
+	if GetSpellInfo then
+		local ok, name = pcall(GetSpellInfo, spell_id)
+		if ok and not IsEmptySafeString(name) then
+			return SafeString(name)
+		end
+	end
+
+	return nil
+end
+
+local function GetSpellTextureSafe(spell_id)
+	if _G.C_Spell and _G.C_Spell.GetSpellTexture then
+		local ok, icon = pcall(_G.C_Spell.GetSpellTexture, spell_id)
+		if ok and icon ~= nil then
+			return SafeTextureValue(icon)
+		end
+	end
+
+	if GetSpellInfo then
+		local ok, _, _, icon = pcall(GetSpellInfo, spell_id)
+		if ok and icon ~= nil then
+			return SafeTextureValue(icon)
+		end
+	end
+
+	return nil
+end
 
 -----------------------------------------------------------------------------
 
@@ -131,6 +284,7 @@ end
 
 
 local function format_time(seconds)
+	seconds = SafeNumber(seconds, 0)
 	if seconds >= 86400 then
 		return DAY_ONELETTER_ABBR, floor(seconds / 86400)
 	elseif seconds >= 3600 then
@@ -216,27 +370,37 @@ local MyGetTotemTimeLeft, MyGetTotemInfo
 do
 	local config_times = {}
 	function MyGetTotemTimeLeft(slot, frame)
-		local time_left = GetTotemTimeLeft(slot)
-		if frame.force_show and time_left == 0 then
-			return max(0, config_times[slot] - GetTime())
+		local safe_slot = SafeNumber(slot, nil)
+		if not safe_slot then
+			return 0
+		end
+
+		local time_left = GetSafeTotemTimeLeft(safe_slot)
+		if frame.force_show and time_left <= 0 then
+			return max(0, (config_times[safe_slot] or 0) - GetTime())
 		end
 		return time_left
 	end
 
 	function MyGetTotemInfo(slot, frame)
-		local hasTotem, name, startTime, duration, icon, _ = GetTotemInfo(slot)
-		if frame.force_show and (not hasTotem or name == "") then
+		local safe_slot = SafeNumber(slot, nil)
+		if not safe_slot then
+			return false, nil, 0, 0, nil
+		end
+
+		local hasTotem, name, startTime, duration, icon = GetSafeTotemInfo(safe_slot)
+		if frame.force_show and (not hasTotem or IsEmptySafeString(name)) then
 			local t = ceil(GetTime())
-			local duration = math.random(30, 120)
-			config_times[slot] = t + duration
+			local fake_duration = math.random(30, 120)
+			config_times[safe_slot] = t + fake_duration
 			if REQUIRED_SPELL then
 				local spell = REQUIRED_SPELL[1]
-				name = C_Spell.GetSpellName(spell)
-				icon = C_Spell.GetSpellTexture(spell)
+				name = GetSpellNameSafe(spell) or "Fake Totem"
+				icon = GetSpellTextureSafe(spell) or CONFIG_MODE_ICON
 			else
 				name, icon = "Fake Totem", CONFIG_MODE_ICON
 			end
-			return true, name, t, duration, icon
+			return true, name, t, fake_duration, icon
 		end
 		return hasTotem, name, startTime, duration, icon
 	end
@@ -268,7 +432,7 @@ function PitBull4_Totems:ActivateTotem(slot)
 			local tframe = element.frame
 			local tspiral = element.spiral
 
-			tframe:SetNormalTexture(icon)
+			SetNormalTextureSafe(tframe, icon)
 			tframe.totem_icon = icon
 			tframe:SetAlpha(1)
 			tframe:Show()
@@ -448,10 +612,11 @@ end
 
 
 function PitBull4_Totems:PLAYER_TOTEM_UPDATE(event, slot)
+	slot = SafeNumber(slot, nil)
 	if not slot or slot < 1 or slot > MAX_TOTEMS then return end
 
-	local haveTotem, name = GetTotemInfo(slot)
-	if name == "" then return end
+	local haveTotem, name = GetSafeTotemInfo(slot)
+	if IsEmptySafeString(name) then return end
 
 	if haveTotem then
 		-- New totem created
@@ -737,8 +902,8 @@ function PitBull4_Totems:UpdateFrame(frame)
 	if frame.force_show then
 		for i = 1, MAX_CLASS_TOTEMS do
 			local slot = elements[i].frame.slot
-			local active, name = GetTotemInfo(slot)
-			if not active or name == "" then
+			local active, name = GetSafeTotemInfo(slot)
+			if not active or IsEmptySafeString(name) then
 				self:ActivateTotem(slot)
 			end
 		end

@@ -1,0 +1,4 @@
+fix(healthbar): prefer UnitHealthPercent on Midnight to avoid secret-number failures in health normalization
+fix(healthbar): keep legacy UnitHealth and UnitHealthMax fallback for older clients
+fix(healthbar): restore visible health bars when protected health math previously returned nil
+docs(stage-01s): add markdown changelog and git changelog for HealthBar restoration

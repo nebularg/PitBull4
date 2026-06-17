@@ -41,31 +41,48 @@ local function OnUpdate(self, elapsed)
 		-- For a more detailed explanation for why this silly hack is necessary see:
 		-- https://www.wowace.com/projects/pitbull-unit-frames-4-0/issues/532
 		local auraData = C_UnitAuras.GetAuraDataByIndex(unit, id, filter)
-		if not auraData or auraData.name ~= self.name then
-			local i = 1
-			while true do
-				auraData = C_UnitAuras.GetAuraDataByIndex(unit, i, filter)
-				if not auraData then
-					-- Couldn't find a matching aura so do nothing.
-					return
+		local aura_instance_id = self.aura_instance_id
+		local spell_id = self.spell_id
+
+		local matches_cached_aura = auraData and (
+			(aura_instance_id and auraData.auraInstanceID == aura_instance_id) or
+			(spell_id and auraData.spellId == spell_id)
+		)
+
+		if not matches_cached_aura then
+			if aura_instance_id and C_UnitAuras.GetAuraDataByAuraInstanceID then
+				local ok, by_instance = pcall(C_UnitAuras.GetAuraDataByAuraInstanceID, unit, aura_instance_id)
+				if ok and by_instance then
+					auraData = by_instance
+					id = by_instance.index or id
+					matches_cached_aura = true
 				end
-				if auraData.name == self.name then
-					-- Use this id, it may not be the right one but if the name
-					-- doesn't match it means we're out of range of the unit so
-					-- it doesn't matter which one we use as long as it is the same
-					-- name to provide the proper tooltip.  Using the wrong one is
-					-- ok since when we're out of range the time left won't be
-					-- available anyway.  It may seem desireable to cache the
-					-- id on the aura frame so we don't have to redo this.  However,
-					-- if there are two of the same aura and we selected the wrong one
-					-- then the time left tooltip will be wrong when we move back in range.
-					id = i
-					break
+			end
+
+			if not matches_cached_aura then
+				local i = 1
+				while true do
+					auraData = C_UnitAuras.GetAuraDataByIndex(unit, i, filter)
+					if not auraData then
+						-- Couldn't find a matching aura so do nothing.
+						return
+					end
+
+					if (aura_instance_id and auraData.auraInstanceID == aura_instance_id) or (spell_id and auraData.spellId == spell_id) then
+						-- Use this id, it may not be the right one but if the exact aura instance
+						-- or spell id match disappears it means we're out of range of the unit so
+						-- it doesn't matter which one we use as long as it is the same logical aura
+						-- to provide the proper tooltip.
+						id = i
+						break
+					end
+					i = i + 1
 				end
-				i = i + 1
 			end
 		end
-		GameTooltip:SetUnitAura(unit, id, filter)
+		if GameTooltip.SetUnitAura then
+			GameTooltip:SetUnitAura(unit, id, filter)
+		end
 	elseif self.slot then
 		local has_item = GameTooltip:SetInventoryItem("player", self.slot)
 		if not has_item then

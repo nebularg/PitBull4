@@ -33,6 +33,8 @@ local HOSTILE_REACTION = 2
 local NEUTRAL_REACTION = 4
 local FRIENDLY_REACTION = 5
 
+local SafeGUID = PitBull4.Utils.SafeGUID
+
 local target_guid = nil
 local mouse_focus = nil
 
@@ -259,7 +261,8 @@ function PitBull4_Border:ShouldShow(frame)
 		return true
 	end
 
-	if not target_guid or frame.guid ~= target_guid or EXEMPT_UNITS[frame.unit] then
+	local frame_guid = SafeGUID(frame.guid)
+	if not target_guid or not frame_guid or frame_guid ~= target_guid or EXEMPT_UNITS[frame.unit] then
 		return false
 	end
 
@@ -272,7 +275,7 @@ end
 
 function PitBull4_Border:PLAYER_TARGET_CHANGED()
 	mouse_focus = GetMouseFocus()
-	target_guid = UnitGUID("target")
+	target_guid = SafeGUID(UnitGUID("target"))
 
 	for frame in PitBull4:IterateFrames() do
 		if frame.Border then

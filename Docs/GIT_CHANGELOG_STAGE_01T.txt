@@ -1,0 +1,3 @@
+fix(healthbar): move Midnight health normalization into securecallfunction so the bar updater receives a real numeric value
+fix(healthbar): keep legacy UnitHealth and UnitHealthMax fallback for older clients
+docs(stage-01t): add markdown changelog and git changelog for HealthBar secure normalization

@@ -1,0 +1,4 @@
+fix(healthbar): remove raw protected max-health comparison from Midnight health normalization
+fix(healthbar): use fully guarded health percent and health ratio paths for visible bar values
+fix(healthbar): fall back to the example value instead of returning a missing health bar
+docs(stage-01w): add markdown changelog and git changelog for HealthBar max-value hardening

@@ -1,0 +1,5 @@
+fix(config-mode): use example bar values while frames are force-shown to avoid Midnight secret-number preview errors
+fix(combatfader): avoid live health and power comparisons during config-mode preview on Midnight
+fix(packaging): stop force-loading DogTagTexts from root module XML when LibDogTag libraries are not packaged
+fix(dogtag): correct standalone DogTagTexts library include paths for vendored LibDogTag builds
+docs(stage-01b): add markdown changelog and git changelog for the first load-error hotfix

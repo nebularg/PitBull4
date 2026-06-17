@@ -1,0 +1,3 @@
+fix(healthbar): remove duplicated anonymous function causing Lua syntax error in color options
+fix(healthbar): restore valid SetColorOptionsFunction callback structure
+docs(stage-01y): add markdown changelog and git changelog for HealthBar syntax hotfix

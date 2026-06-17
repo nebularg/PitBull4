@@ -1,0 +1,5 @@
+fix(aura): remove name-based aura sort comparisons that fault on Midnight secret strings
+fix(aura): prefer numeric spell and aura-instance keys for stable aura sorting
+fix(luatexts): correct cast cleanup typo from del(date) to del(data)
+fix(luatexts): harden pooled-table deletion against non-table inputs
+docs(stage-01k): add markdown changelog and git changelog for Aura sort and LuaTexts cleanup fixes

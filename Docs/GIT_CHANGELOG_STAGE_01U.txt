@@ -1,0 +1,4 @@
+fix(healthbar): remove direct comparisons against protected UnitHealthPercent values on Midnight
+fix(healthbar): normalize health percent through guarded numeric conversion before returning the bar value
+fix(healthbar): keep the health bar visible with a safe fallback when Midnight refuses to yield a plain value
+docs(stage-01u): add markdown changelog and git changelog for HealthBar protected-percent hardening

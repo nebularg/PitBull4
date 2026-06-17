@@ -1122,6 +1122,37 @@ function BetterStatusBar:GetIcon()
 	return self.icon_path
 end
 
+local function safe_icon_path_equal(a, b)
+	if a == nil and b == nil then
+		return true
+	end
+	if a == nil or b == nil then
+		return false
+	end
+
+	local ok, equal = pcall(function(left, right)
+		return left == right
+	end, a, b)
+	if ok then
+		return equal
+	end
+
+	return false
+end
+
+local function safe_set_texture(texture, path)
+	if not texture then
+		return false
+	end
+	if path == nil then
+		texture:SetTexture(nil)
+		return true
+	end
+
+	local ok = pcall(texture.SetTexture, texture, path)
+	return ok
+end
+
 --- Set the icon's texture path of the bar, or remove it.
 -- @param path the texture path or nil
 -- @usage bar:SetIcon([[Interface\Icons\Ability_Parry]])
@@ -1132,7 +1163,7 @@ function BetterStatusBar:SetIcon(path)
 	end
 
 	local old_icon_path = self.icon_path
-	if old_icon_path == path then
+	if safe_icon_path_equal(old_icon_path, path) then
 		return
 	end
 
@@ -1237,4 +1268,225 @@ end, function(control)
 		control.fade = false
 		control.anim_duration = 0.5
 	end
+end)
+
+
+-- Native raw StatusBar control for Midnight-safe live current/max bars.
+local LiveStatusBar = {
+    reverse = false,
+    deficit = false,
+    icon_position = true,
+    orientation = "HORIZONTAL",
+    texture_path = [[Interface\TargetingFrame\UI-StatusBar]],
+    normal_alpha = 1,
+    bgR = false,
+    bgG = false,
+    bgB = false,
+    bgA = false,
+    icon_path = nil,
+}
+
+local function live_fix_icon(self)
+    local icon = self.icon
+    if not icon then
+        return
+    end
+
+    icon:ClearAllPoints()
+    local size = self.orientation == "VERTICAL" and self:GetWidth() or self:GetHeight()
+    icon:SetSize(size, size)
+
+    local leading = self.icon_position
+    if self.reverse then
+        leading = not leading
+    end
+
+    if self.orientation == "HORIZONTAL" then
+        if leading then
+            icon:SetPoint("RIGHT", self, "LEFT", 0, 0)
+        else
+            icon:SetPoint("LEFT", self, "RIGHT", 0, 0)
+        end
+    else
+        if leading then
+            icon:SetPoint("BOTTOM", self, "TOP", 0, 0)
+        else
+            icon:SetPoint("TOP", self, "BOTTOM", 0, 0)
+        end
+    end
+end
+
+function LiveStatusBar:SetTexture(texture)
+    self.texture_path = texture or [[Interface\TargetingFrame\UI-StatusBar]]
+    self.atlas = nil
+    self.barTexture:SetAtlas(nil)
+    self.barTexture:SetTexture(self.texture_path)
+end
+
+function LiveStatusBar:SetAtlas(atlas)
+    self.atlas = atlas or nil
+    if atlas then
+        self.barTexture:SetTexture(nil)
+        self.barTexture:SetAtlas(atlas)
+    else
+        self.barTexture:SetAtlas(nil)
+        self.barTexture:SetTexture(self.texture_path or [[Interface\TargetingFrame\UI-StatusBar]])
+    end
+end
+
+function LiveStatusBar:SetColor(r, g, b)
+    self:SetStatusBarColor(r, g, b)
+end
+
+function LiveStatusBar:GetColor()
+    return self:GetStatusBarColor()
+end
+LiveStatusBar.GetStatusBarColor = LiveStatusBar.GetColor
+
+function LiveStatusBar:SetNormalAlpha(a)
+    self.normal_alpha = a
+    self.barTexture:SetAlpha(a)
+    if not self.bgA then
+        self.bg:SetAlpha(a)
+    end
+end
+
+function LiveStatusBar:GetNormalAlpha()
+    return self.normal_alpha or 1
+end
+
+function LiveStatusBar:SetBackgroundColor(r, g, b)
+    self.bgR, self.bgG, self.bgB = r or false, g or false, b or false
+    if r and g and b then
+        self.bg:SetVertexColor(r, g, b)
+    else
+        self.bg:SetVertexColor(0, 0, 0)
+    end
+end
+
+function LiveStatusBar:GetBackgroundColor()
+    return self.bg:GetVertexColor()
+end
+
+function LiveStatusBar:SetBackgroundAlpha(a)
+    self.bgA = a or false
+    self.bg:SetAlpha(a or self.normal_alpha or 1)
+end
+
+function LiveStatusBar:GetBackgroundAlpha()
+    return self.bgA or self.normal_alpha or 1
+end
+
+function LiveStatusBar:SetExtraValue(_) end
+function LiveStatusBar:SetExtra2Value(_) end
+function LiveStatusBar:SetExtraColor(...) end
+function LiveStatusBar:SetExtraAlpha(...) end
+function LiveStatusBar:SetExtra2Color(...) end
+function LiveStatusBar:SetExtra2Alpha(...) end
+function LiveStatusBar:SetAnimated(_) end
+function LiveStatusBar:SetFade(_) end
+function LiveStatusBar:SetAnimDuration(_) end
+
+function LiveStatusBar:SetOrientation(orientation)
+    self.orientation = orientation
+    self.__native_SetOrientation(self, orientation)
+    live_fix_icon(self)
+end
+
+function LiveStatusBar:GetOrientation()
+    return self.orientation
+end
+
+function LiveStatusBar:SetReverse(reverse)
+    self.reverse = not not reverse
+    if self.__native_SetReverseFill then
+        pcall(self.__native_SetReverseFill, self, self.reverse)
+    end
+    live_fix_icon(self)
+end
+
+function LiveStatusBar:GetReverse()
+    return self.reverse
+end
+
+function LiveStatusBar:SetDeficit(deficit)
+    self.deficit = not not deficit
+end
+
+function LiveStatusBar:GetDeficit()
+    return self.deficit
+end
+
+function LiveStatusBar:SetIcon(path)
+    if self.icon_path == path then
+        return
+    end
+    self.icon_path = path
+    if path then
+        if not self.icon then
+            self.icon = PitBull4.Controls.MakeTexture(self, "ARTWORK")
+            self.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+        end
+        self.icon:SetTexture(path)
+        live_fix_icon(self)
+    elseif self.icon then
+        self.icon = self.icon:Delete()
+    end
+end
+
+function LiveStatusBar:GetIcon()
+    return self.icon_path
+end
+
+function LiveStatusBar:SetIconPosition(value)
+    self.icon_position = not not value
+    live_fix_icon(self)
+end
+
+function LiveStatusBar:GetIconPosition()
+    return self.icon_position
+end
+
+PitBull4.Controls.MakeNewControlType("LiveStatusBar", "StatusBar", function(control)
+    control:EnableMouse(false)
+    control.__native_SetOrientation = control.SetOrientation
+    control.__native_SetReverseFill = control.SetReverseFill
+
+    local bg = PitBull4.Controls.MakeTexture(control, "BACKGROUND")
+    bg:SetAllPoints(control)
+    control.bg = bg
+
+    local barTexture = PitBull4.Controls.MakeTexture(control, "ARTWORK")
+    barTexture:SetAllPoints(control)
+    control.barTexture = barTexture
+    control:SetStatusBarTexture(barTexture)
+
+    for k, v in pairs(LiveStatusBar) do
+        control[k] = v
+    end
+end, function(control)
+    control.reverse = false
+    control.deficit = false
+    control.orientation = "HORIZONTAL"
+    control.icon_position = true
+    control.icon_path = nil
+    control.texture_path = [[Interface\TargetingFrame\UI-StatusBar]]
+    control.normal_alpha = 1
+    control.bgR, control.bgG, control.bgB, control.bgA = false, false, false, false
+    control:SetTexture(control.texture_path)
+    control:SetColor(1, 1, 1)
+    control:SetNormalAlpha(1)
+    control:SetBackgroundColor(nil, nil, nil)
+    control:SetBackgroundAlpha(1)
+    control.__native_SetOrientation(control, "HORIZONTAL")
+    if control.__native_SetReverseFill then
+        pcall(control.__native_SetReverseFill, control, false)
+    end
+    control:SetMinMaxValues(0, 1)
+    control:SetValue(1)
+    control:SetIcon(nil)
+end, function(control)
+    if control.icon then
+        control.icon = control.icon:Delete()
+    end
 end)

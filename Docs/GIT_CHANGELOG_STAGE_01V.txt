@@ -1,0 +1,3 @@
+fix(visualheal): use preview values for force-shown frames during config and profile rebuilds
+fix(visualheal): guard incoming-heal and absorb arithmetic against Midnight protected values
+docs(stage-01v): add markdown changelog and git changelog for VisualHeal hardening

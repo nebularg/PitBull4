@@ -1,0 +1,9 @@
+fix(main): remove remaining protected GUID string comparison from local SafeGUID helper
+fix(utils): harden SafeString and SafeBoolean so they no longer compare protected strings
+fix(highlight): replace target GUID compare with guarded UnitIsUnit matching
+fix(powerbar): replace throttled GUID update queue with unit-token queue
+fix(aura): replace throttled GUID update queue with unit-token queue and simplify player detection
+fix(healthbar): replace throttled GUID update queue with unit-token queue
+fix(luatexts): remove protected empty-string compare from UNIT_SPELLCAST_SENT target handling
+fix(unitframe): avoid protected GUID compare on OnShow by always refreshing frame GUID
+docs(stage-01ad): add markdown changelog and git changelog for post-Ace3 load fixes

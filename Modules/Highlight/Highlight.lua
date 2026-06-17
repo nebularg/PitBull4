@@ -28,6 +28,8 @@ for i = 1, 5 do
 	EXEMPT_UNITS[("target"):rep(i)] = true
 end
 
+local SafeGUID = PitBull4.Utils.SafeGUID
+
 local target_guid = nil
 local mouse_focus = nil
 
@@ -106,19 +108,22 @@ function PitBull4_Highlight:ShouldShow(frame)
 		return true
 	end
 
-	if not target_guid or frame.guid ~= target_guid or EXEMPT_UNITS[frame.unit] then
+	if not db.show_target or EXEMPT_UNITS[frame.unit] or not frame.unit then
 		return false
 	end
 
-	if not db.show_target then
-		return false
+	local ok, same_unit = pcall(function(unit)
+		return UnitIsUnit(unit, "target") and true or false
+	end, frame.unit)
+	if ok and same_unit then
+		return true
 	end
 
-	return true
+	return false
 end
 
 function PitBull4_Highlight:PLAYER_TARGET_CHANGED()
-	target_guid = UnitGUID("target")
+	target_guid = nil
 
 	self:UpdateAll()
 end

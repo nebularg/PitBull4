@@ -1,0 +1,3 @@
+fix(castbar): remove remaining direct negation of protected uninterruptible flag on Midnight
+fix(castbar): default to interruptible when interruptibility cannot be safely resolved
+docs(stage-01o): add markdown changelog and git changelog for final CastBar interruptibility hotfix

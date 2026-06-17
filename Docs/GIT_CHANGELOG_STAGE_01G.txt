@@ -1,0 +1,4 @@
+fix(visualheal): use static preview values during config mode instead of live incoming-heal math
+fix(visualheal): clear the module during restricted Midnight startup to avoid secret-number arithmetic
+refactor(visualheal): centralize status bar creation through a local helper
+docs(stage-01g): add markdown changelog and git changelog for the VisualHeal hotfix
