@@ -110,7 +110,7 @@ function PitBull4_CombatText:UNIT_COMBAT(_, unit, event, flags, amount, type)
 						r, g, b = 1, 1, 0
 					end
 
-					text = tostring(-amount)
+					text = BreakUpLargeNumbers(-amount)
 				else
 					if flags == "ABSORB" or flags == "BLOCK" or flags == "RESIST" then
 						size_modifier = BLOCK_SIZE_MODIFIER
@@ -121,13 +121,13 @@ function PitBull4_CombatText:UNIT_COMBAT(_, unit, event, flags, amount, type)
 				size_modifier = BLOCK_SIZE_MODIFIER
 				text = CombatFeedbackText[event]
 			elseif event == "HEAL" then
-				text = ("%+d"):format(amount)
+				text = ("%+s"):format(BreakUpLargeNumbers(amount))
 				r, g, b = 0, 1, 0
 				if flags == "CRITICAL" then
 					size_modifier = CRITICAL_HELP_SIZE_MODIFIER
 				end
 			elseif event == "ENERGIZE" then
-				text = tostring(amount)
+				text = BreakUpLargeNumbers(amount)
 				r, g, b = 0.41, 0.8, 0.94
 				if flags == "CRITICAL" then
 					size_modifier = CRITICAL_HELP_SIZE_MODIFIER
