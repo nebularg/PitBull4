@@ -1,0 +1,5 @@
+fix(midnight): gate restricted startup unit data behind addon restriction state tracking
+fix(powerbar): skip live power normalization while Midnight addon activation is still restricted
+fix(healthbar): skip live health normalization while Midnight addon activation is still restricted
+fix(combatfader): treat restricted Midnight startup as fully visible until unit data becomes safe
+docs(stage-01d): add markdown changelog and git changelog for restricted startup handling

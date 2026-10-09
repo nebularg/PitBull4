@@ -29,13 +29,101 @@ PitBull4_CastBar:SetDefaults({
 local cast_data = {}
 PitBull4_CastBar.cast_data = cast_data
 
+local function safe_compare_temp_icon(icon, temp_icon)
+	if icon == nil then
+		return false
+	end
+
+	local ok, is_temp = pcall(function()
+		return icon == temp_icon
+	end)
+	if ok then
+		return is_temp
+	end
+
+	return false
+end
+
+local function safe_cast_time_seconds(value)
+	if value == nil then
+		return 0
+	end
+
+	local ok, number = pcall(function()
+		return value + 0
+	end)
+	if ok and number then
+		return number * 0.001
+	end
+
+	return 0
+end
+
+local function safe_interruptible(uninterruptible)
+	-- Midnight can mark this field as a protected boolean. Do not negate it directly.
+	-- Fall back to interruptible when the value is not safely usable.
+	if uninterruptible == nil then
+		return true
+	end
+
+	local ok, interruptible = pcall(function(value)
+		if value == true then
+			return false
+		end
+		if value == false then
+			return true
+		end
+		return true
+	end, uninterruptible)
+	if ok then
+		return interruptible
+	end
+
+	return true
+end
+
+local function safe_cast_id_equal(a, b)
+	if a == nil or b == nil then
+		return false
+	end
+
+	local ok, equal = pcall(function(left, right)
+		return left == right
+	end, a, b)
+	if ok then
+		return equal
+	end
+
+	return false
+end
+
+local SafeGUID = PitBull4.Utils.SafeGUID
+local SafeString = PitBull4.Utils.SafeString
+local SafeEqual = PitBull4.Utils.SafeEqual
+
+local function SafeUnitToken(unit)
+	if type(unit) == "string" and unit ~= "" then
+		return unit
+	end
+	return nil
+end
+
+local function GetCastKeyForFrame(frame)
+	local best_unit = SafeUnitToken(frame.best_unit)
+	local unit = SafeUnitToken(frame.unit)
+	if best_unit and unit and unit:find("target", 1, true) == 1 then
+		return best_unit .. unit
+	end
+	return best_unit or unit
+end
+
 local timer_frame = CreateFrame("Frame")
 timer_frame:Hide()
 timer_frame:SetScript("OnUpdate", function() PitBull4_CastBar:FixCastDataAndUpdateAll() end)
 
 local player_guid
 function PitBull4_CastBar:OnEnable()
-	player_guid = UnitGUID("player")
+	player_guid = SafeGUID(UnitGUID("player"))
 
 	timer_frame:Show()
 
@@ -81,11 +169,11 @@ do
 end
 
 function PitBull4_CastBar:GetValue(frame)
-	local guid = frame.guid
-	local data = cast_data[guid]
+	local key = GetCastKeyForFrame(frame)
+	local data = key and cast_data[key] or nil
 	if frame.is_wacky or not data then
-		self:UpdateInfo(nil, frame.unit)
-		data = cast_data[guid]
+		self:UpdateInfo(nil, key or frame.unit)
+		data = key and cast_data[key] or nil
 	end
 
 	local db = self:GetLayoutDB(frame)
@@ -120,8 +208,8 @@ function PitBull4_CastBar:GetExampleValue(frame)
 end
 
 function PitBull4_CastBar:GetColor(frame, value)
-	local guid = frame.guid
-	local data = cast_data[guid]
+	local key = GetCastKeyForFrame(frame)
+	local data = key and cast_data[key] or nil
 	if not data then
 		return 0, 0, 0, 0
 	end
@@ -177,8 +265,8 @@ function PitBull4_CastBar:GetColor(frame, value)
 end
 
 function PitBull4_CastBar:GetBackgroundColor(frame, value)
-	local guid = frame.guid
-	local data = cast_data[guid]
+	local key = GetCastKeyForFrame(frame)
+	local data = key and cast_data[key] or nil
 
 	if not data then
 		if not self:GetLayoutDB(frame).idle_background then
@@ -213,14 +301,14 @@ function PitBull4_CastBar:ClearFramesByGUID(guid)
 end
 
 function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
-	local guid = UnitGUID(unit)
-	if not guid then
+	local key = SafeUnitToken(unit)
+	if not key then
 		return
 	end
-	local data = cast_data[guid]
+	local data = cast_data[key]
 	if not data then
 		data = new()
-		cast_data[guid] = data
+		cast_data[key] = data
 	end
 
 	local spell, _, icon, start_time, end_time, _, cast_id, uninterruptible = UnitCastingInfo(unit)
@@ -230,37 +318,37 @@ function PitBull4_CastBar:UpdateInfo(event, unit, event_cast_id)
 		channeling = true
 	end
 	if spell then
-		if icon == TEMP_ICON then
+		if safe_compare_temp_icon(icon, TEMP_ICON) then
 			icon = nil
 		end
 		data.spell = spell
 		data.icon = icon
-		data.start_time = start_time * 0.001
-		data.end_time = end_time * 0.001
+		data.start_time = safe_cast_time_seconds(start_time)
+		data.end_time = safe_cast_time_seconds(end_time)
 		data.casting = not channeling
 		data.channeling = channeling
-		data.interruptible = not uninterruptible
+		data.interruptible = safe_interruptible(uninterruptible)
 		data.fade_out = false
 		data.was_channeling = channeling -- persistent state even after interrupted
 		data.stop_time = nil
 		if event ~= "UNIT_SPELLCAST_INTERRUPTED" then
 			-- We can't update the cache of teh cast_id on UNIT_SPELLCAST_INTERRUPTED because
 			-- for whatever reason it ends up giving us 0 inside this event.
-			data.cast_id = cast_id
+			data.cast_id = SafeString(cast_id)
 		end
 		timer_frame:Show()
 		return
 	end
 
 	if not data.spell then
-		cast_data[guid] = del(data)
+		cast_data[key] = del(data)
 		if not next(cast_data) then
 			timer_frame:Hide()
 		end
 		return
 	end
 
-	if data.cast_id == event_cast_id then
+	if safe_cast_id_equal(data.cast_id, SafeString(event_cast_id)) then
 		-- The event was for the cast we're currently casting
 		if event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" then
 			data.failed = true
@@ -284,16 +372,16 @@ local tmp = {}
 function PitBull4_CastBar:FixCastData()
 	local frame
 	local current_time = GetTime()
-	for guid, data in pairs(cast_data) do
-		tmp[guid] = data
+	for key, data in pairs(cast_data) do
+		tmp[key] = data
 	end
-	for guid, data in pairs(tmp) do
+	for key, data in pairs(tmp) do
 		local found = false
-		for frame in PitBull4:IterateFramesForGUID(guid) do
+		for frame in PitBull4:IterateFramesForUnitID(key, true) do
 			if self:GetLayoutDB(frame).enabled then
 				found = true
 				if data.casting then
-					if current_time > data.end_time and player_guid ~= guid then
+					if current_time > data.end_time and key ~= "player" then
 						data.casting = false
 						data.fade_out = true
 						data.stop_time = current_time
@@ -312,18 +400,18 @@ function PitBull4_CastBar:FixCastData()
 					end
 
 					if alpha <= 0 then
-						cast_data[guid] = del(data)
-						self:ClearFramesByGUID(guid)
+						cast_data[key] = del(data)
+						self:UpdateAll()
 					end
 				else
-					cast_data[guid] = del(data)
-					self:ClearFramesByGUID(guid)
+					cast_data[key] = del(data)
+					self:UpdateAll()
 				end
 				break
 			end
 		end
 		if not found then
-			cast_data[guid] = del(data)
+			cast_data[key] = del(data)
 		end
 	end
 	if not next(cast_data) then

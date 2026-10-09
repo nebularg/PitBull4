@@ -1,0 +1,4 @@
+fix(config-mode): force HealthBar and PowerBar to use preview values for all config-mode frame updates
+fix(startup): defer CombatFader live player comparisons until PLAYER_ENTERING_WORLD marks the world as ready
+fix(core): refresh Midnight restriction state again on PLAYER_ENTERING_WORLD
+docs(stage-01e): add markdown changelog and git changelog for config-mode and world-ready startup handling

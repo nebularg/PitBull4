@@ -1,0 +1,4 @@
+fix(altmanabar): add example value path so shared config-mode updates avoid live alternate mana reads
+fix(altmanabar): guard live alternate mana math during restricted startup and before world-ready
+fix(altmanabar): wrap mana normalization in pcall to suppress Midnight secret-number arithmetic faults
+docs(stage-01h): add markdown changelog and git changelog for the Alternate mana bar hotfix

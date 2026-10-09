@@ -1,0 +1,3 @@
+fix(healthbar): move live percent and ratio math into securecallfunction on Midnight
+fix(healthbar): stop using the preview example value as the live fallback for visible health bars
+docs(stage-01x): add markdown changelog and git changelog for HealthBar live-value restoration

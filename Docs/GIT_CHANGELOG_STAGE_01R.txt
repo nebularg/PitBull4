@@ -1,0 +1,3 @@
+fix(aura): replace name-based Aura control refresh matching with aura instance and spell id matching
+fix(aura): cache aura instance ids on controls for Midnight-safe tooltip refresh
+docs(stage-01r): add markdown changelog and git changelog for Aura Controls hardening

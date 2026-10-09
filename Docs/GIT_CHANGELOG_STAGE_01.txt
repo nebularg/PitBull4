@@ -1,0 +1,5 @@
+feat(compat): add cross-version compatibility bootstrap for core PitBull startup
+feat(compat): add fallback shims for C_AddOns, C_Spell, C_UnitAuras, C_TooltipInfo, and C_Reputation
+refactor(core): route core module loading and addon metadata queries through shared compat wrappers
+refactor(options): route module enable-state and addon-loaded checks through compat wrappers
+docs(stage-01): add markdown changelog and stage testing checklist

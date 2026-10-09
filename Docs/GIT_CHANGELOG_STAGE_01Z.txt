@@ -1,0 +1,4 @@
+fix(healthbar): convert protected health values into plain numbers before normalization on Midnight
+fix(healthbar): remove direct arithmetic on protected percent and current-health values
+refactor(healthbar): add safe numeric conversion and clamped normalized value helpers
+docs(stage-01z): add markdown changelog and git changelog for HealthBar protected-value conversion

@@ -3,6 +3,8 @@
 
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
+local SafeGUID = PitBull4.Utils.SafeGUID
+local SafeBoolean = PitBull4.Utils.SafeBoolean
 
 local PitBull4_Aura = PitBull4:GetModule("Aura")
 
@@ -49,6 +51,133 @@ local my_units = {
 -- table of dispel types we can dispel
 local can_dispel = PitBull4_Aura.can_dispel.player
 
+local function safe_boolean(value)
+	if value == nil then
+		return nil
+	end
+	local ok, result = pcall(function()
+		return value and true or false
+	end)
+	if ok then
+		return result
+	end
+	return nil
+end
+
+local function safe_number(value)
+	if value == nil then
+		return nil
+	end
+	local ok, result = pcall(function()
+		return value + 0
+	end)
+	if ok then
+		return result
+	end
+	return nil
+end
+
+local function safe_string(value)
+	if value == nil then
+		return nil
+	end
+	local ok, result = pcall(function()
+		return tostring(value)
+	end)
+	if ok then
+		return result
+	end
+	return nil
+end
+
+local KNOWN_DISPEL_TYPES = {
+	Magic = true,
+	Curse = true,
+	Disease = true,
+	Poison = true,
+	Enrage = true,
+}
+
+local function safe_dispel_name(value)
+	if value == nil then
+		return nil
+	end
+
+	local ok_empty, is_empty = pcall(function()
+		return value == ""
+	end)
+	if ok_empty and is_empty then
+		return "Enrage"
+	end
+
+	for dispel_type in pairs(KNOWN_DISPEL_TYPES) do
+		local ok, matches = pcall(function()
+			return value == dispel_type
+		end)
+		if ok and matches then
+			return dispel_type
+		end
+	end
+
+	return nil
+end
+
+local function is_aura_mine(entry)
+	return entry and entry.isFromPlayerOrPlayerPet and true or false
+end
+
+local function set_safe_aura_texture(texture, aura)
+	local ok = pcall(texture.SetTexture, texture, aura.icon)
+	if ok then
+		return
+	end
+
+	local spell_id = safe_number(aura.spellId)
+	if spell_id then
+		local spell_icon = C_Spell.GetSpellTexture(spell_id)
+		if spell_icon and pcall(texture.SetTexture, texture, spell_icon) then
+			return
+		end
+	end
+
+	local fallback_icon = aura.isHelpful and sample_buff_icon or sample_debuff_icon
+	pcall(texture.SetTexture, texture, fallback_icon)
+end
+
+local function normalize_aura_entry(entry, unit, id, filter, set_consolidate)
+	entry.index = id
+	entry.name = safe_string(entry.name)
+	entry.icon = entry.icon
+	entry.spellId = safe_number(entry.spellId)
+	entry.auraInstanceID = safe_number(entry.auraInstanceID)
+	entry.applications = safe_number(entry.applications)
+	entry.duration = safe_number(entry.duration)
+	entry.expirationTime = safe_number(entry.expirationTime)
+	entry.timeMod = safe_number(entry.timeMod) or 1
+	entry.isHelpful = safe_boolean(entry.isHelpful)
+	entry.isHarmful = safe_boolean(entry.isHarmful)
+	entry.isStealable = safe_boolean(entry.isStealable)
+	entry.isRaid = safe_boolean(entry.isRaid)
+	entry.canApplyAura = safe_boolean(entry.canApplyAura)
+	entry.isBossAura = safe_boolean(entry.isBossAura)
+	entry.isFromPlayerOrPlayerPet = safe_boolean(entry.isFromPlayerOrPlayerPet)
+	entry.nameplateShowPersonal = safe_boolean(entry.nameplateShowPersonal)
+	entry.nameplateShowAll = safe_boolean(entry.nameplateShowAll)
+	entry.isNameplateOnly = safe_boolean(entry.isNameplateOnly)
+	entry.canActivePlayerDispel = safe_boolean(entry.canActivePlayerDispel)
+	entry.isTankRoleAura = safe_boolean(entry.isTankRoleAura)
+	entry.isDPSRoleAura = safe_boolean(entry.isDPSRoleAura)
+	entry.isHealerRoleAura = safe_boolean(entry.isHealerRoleAura)
+	entry.sourceUnit = is_aura_mine(entry) and "player" or nil
+	entry.dispelName = safe_dispel_name(entry.dispelName)
+
+	if set_consolidate then
+		entry.shouldConsolidate = select(16, _G.UnitAura(unit, id, filter))
+	end
+
+	return entry
+end
+
 -- Fills an array of arrays with the information about the auras
 local function get_aura_list(list, unit, db, is_buff, frame)
 	if not unit then return end
@@ -64,19 +193,8 @@ local function get_aura_list(list, unit, db, is_buff, frame)
 			-- No more auras, break the outer loop
 			break
 		end
+		entry = normalize_aura_entry(entry, unit, id, filter, set_consolidate)
 		list[index] = entry
-
-		entry.index = id
-
-		-- The enrage dispel type is "" instead of "Enrage"
-		if entry.dispelName == "" then
-			entry.dispelName = "Enrage"
-		end
-
-		-- Only available in the classic API z.z
-		if set_consolidate then
-			entry.shouldConsolidate = select(16, _G.UnitAura(unit, id, filter))
-		end
 
 		-- Pass the entry through to the Highlight system
 		if db.highlight then
@@ -311,7 +429,7 @@ local function aura_sort(a, b)
 	end
 
 	-- show your own auras first
-	local a_mine, b_mine=  my_units[a.sourceUnit], my_units[b.sourceUnit]
+	local a_mine, b_mine = is_aura_mine(a), is_aura_mine(b)
 	if a_mine ~= b_mine then
 		if a_mine then
 			return true
@@ -350,16 +468,27 @@ local function aura_sort(a, b)
 		return false
 	end
 
-	-- sort by name
-	local a_name, b_name = a.name, b.name
-	if a_name ~= b_name then
-		if not a_name then
-			return true
-		elseif not b_name then
-			return false
-		end
-		-- TODO: Add sort by ones we can cast
-		return a_name < b_name
+	-- Do not sort by aura name on Midnight/Mainline. Aura names can be secret strings
+	-- and direct comparison can fault. Preserve a stable order using numeric keys only.
+
+	-- Prefer spell ID when available for deterministic grouping.
+	local a_spell, b_spell = a.spellId, b.spellId
+	if a_spell and b_spell and a_spell ~= b_spell then
+		return a_spell < b_spell
+	elseif a_spell and not b_spell then
+		return true
+	elseif not a_spell and b_spell then
+		return false
+	end
+
+	-- Prefer aura instance IDs next when available.
+	local a_instance, b_instance = a.auraInstanceID, b.auraInstanceID
+	if a_instance and b_instance and a_instance ~= b_instance then
+		return a_instance < b_instance
+	elseif a_instance and not b_instance then
+		return true
+	elseif not a_instance and b_instance then
+		return false
 	end
 
 	-- Use count for sample ids to preserve ID order.
@@ -392,7 +521,7 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 		aura_controls[i] = control
 	end
 
-	local is_mine = my_units[aura.sourceUnit]
+	local is_mine = is_aura_mine(aura)
 	local who = is_mine and "my" or "other"
 	-- No way to know who applied a weapon buff so we have a separate
 	-- category for them.
@@ -402,7 +531,7 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	local layout = aura.isHelpful and db.layout.buff or db.layout.debuff
 	control:SetFrameLevel(frame:GetFrameLevel() + layout.frame_level)
 
-	local unchanged = aura.index == control.id and aura.expirationTime == control.expiration_time and aura.spellId == control.spell_id and aura.weaponEnchantSlot == control.slot and aura.isHelpful == control.is_buff and aura.sourceUnit == control.caster and aura.applications == control.count and aura.duration == control.duration and aura.timeMod == control.time_mod
+	local unchanged = aura.index == control.id and aura.expirationTime == control.expiration_time and aura.spellId == control.spell_id and aura.weaponEnchantSlot == control.slot and aura.isHelpful == control.is_buff and is_aura_mine(aura) == control.caster_is_mine and aura.applications == control.count and aura.duration == control.duration and aura.timeMod == control.time_mod
 
 	control.id = aura.index
 	control.is_mine = is_mine
@@ -414,7 +543,9 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	control.debuff_type = aura.dispelName
 	control.slot = aura.weaponEnchantSlot
 	control.caster = aura.sourceUnit
+	control.caster_is_mine = is_mine
 	control.spell_id = aura.spellId
+	control.aura_instance_id = aura.auraInstanceID
 	control.time_mod = aura.timeMod
 	control.should_consolidate = aura.shouldConsolidate
 
@@ -426,7 +557,7 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	end
 
 	local texture = control.texture
-	texture:SetTexture(aura.icon)
+	set_safe_aura_texture(texture, aura)
 
 	if not frame.masque_group then
 		if db.zoom_aura then
@@ -442,26 +573,29 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 	local count_text = control.count_text
 	local count_anchor = count_db.anchor
 	local count_color = count_db.color
+	local applications = safe_number(aura.applications) or 0
+	local duration = safe_number(aura.duration) or 0
+	local expiration_time = safe_number(aura.expirationTime) or 0
 	count_text:ClearAllPoints()
 	count_text:SetPoint(count_anchor,control,count_anchor,count_db.offset_x,count_db.offset_y)
 	count_text:SetFont(font, font_size, "OUTLINE")
 	count_text:SetTextColor(count_color[1],count_color[2],count_color[3],count_color[4])
-	count_text:SetText(aura.applications > 1 and aura.applications or "")
+	count_text:SetText(applications > 1 and tostring(applications) or "")
 
-	if db.cooldown[rule] and aura.duration and aura.duration > 0 then
+	if db.cooldown[rule] and duration > 0 and expiration_time > 0 then
 		local cooldown = control.cooldown
 		-- Avoid updating the cooldown frame if nothing changed to stop the flashing Aura
 		-- problem since 4.0.1.
 		if not unchanged or not cooldown:IsShown() then
 			cooldown:Show()
-			CooldownFrame_Set(cooldown, aura.expirationTime - aura.duration, aura.duration, 1)
+			CooldownFrame_Set(cooldown, expiration_time - duration, duration, 1)
 		end
 	else
 		control.cooldown:SetCooldown(0, 0)
 		control.cooldown:Hide()
 	end
 
-	if db.cooldown_text[rule] and aura.duration and aura.duration > 0 then
+	if db.cooldown_text[rule] and duration > 0 then
 		local cooldown_text = control.cooldown_text
 		local cooldown_text_db = texts.cooldown_text
 		local color = cooldown_text_db.color
@@ -497,7 +631,7 @@ local function set_aura(frame, db, aura_controls, aura, i, is_friend)
 			local r,g,b = GetItemQualityColor(aura.weaponEnchantQuality)
 			border:SetVertexColor(r,g,b)
 		elseif color_type == "type" then
-			local color = colors.type[tostring(aura.dispelName)]
+			local color = colors.type[aura.dispelName or "nil"]
 			if not color then
 				-- Use the Other color if there's not
 				-- a color for the specific debuff type.
@@ -536,7 +670,7 @@ local function update_auras(frame, db, is_buff)
 	end
 	local unit = frame.unit
 	local is_friend = unit and UnitIsFriend("player", unit)
-	local is_player = unit and UnitIsUnit(unit, "player")
+	local is_player = unit == "player"
 
 	local max = is_buff and db.max_buffs or db.max_debuffs
 
@@ -835,7 +969,7 @@ function PitBull4_Aura:UpdateWeaponEnchants(force)
 	if updated then
 		for frame in PitBull4:IterateFrames() do
 			local unit = frame.unit
-			if unit and UnitIsUnit(unit, "player") then
+			if unit == "player" then
 				local db = self:GetLayoutDB(frame)
 				if db.enabled and db.enabled_weapons then
 					self:UpdateAuras(frame)
@@ -868,7 +1002,7 @@ function PitBull4_Aura:UpdateFilters()
 	end
 end
 
-local guids_to_update = {}
+local units_to_update = {}
 
 function PitBull4_Aura:UNIT_AURA(event, unit)
 	-- UNIT_AURA updates are throttled by collecting them in
@@ -876,17 +1010,21 @@ function PitBull4_Aura:UNIT_AURA(event, unit)
 	-- once every 0.2 seconds.  We capture the GUID at the event
 	-- time because the unit ids can change between when we receive
 	-- the event and do the throttled update
-	local guid = unit and UnitGUID(unit)
-	if guid then
-		guids_to_update[guid] = true
+	if unit then
+		units_to_update[unit] = true
 	end
 end
 
 -- Function to execute the throttled updates
 function PitBull4_Aura:OnUpdate()
-	if next(guids_to_update) then
+	if PitBull4.leaving_world then
+		wipe(units_to_update)
+		return
+	end
+	if next(units_to_update) then
 		for frame in PitBull4:IterateFrames() do
-			if guids_to_update[frame.guid] then
+			local unit = frame.best_unit or frame.unit
+			if unit and units_to_update[unit] then
 				if self:GetLayoutDB(frame).enabled then
 					self:UpdateFrame(frame)
 				else
@@ -894,7 +1032,7 @@ function PitBull4_Aura:OnUpdate()
 				end
 			end
 		end
-		wipe(guids_to_update)
+		wipe(units_to_update)
 	end
 
 	self:UpdateWeaponEnchants()
@@ -906,5 +1044,5 @@ function PitBull4_Aura:UpdateAll()
 	for frame in PitBull4:IterateFrames() do
 		self:Update(frame)
 	end
-	wipe(guids_to_update)
+	wipe(units_to_update)
 end

@@ -39,6 +39,56 @@ local function clamp(value, min, max)
 	end
 end
 
+
+local function get_or_create_bar(frame, health_bar)
+	local bar = frame.VisualHeal
+	if not bar then
+		bar = PitBull4.Controls.MakeBetterStatusBar(health_bar)
+		frame.VisualHeal = bar
+		bar:SetBackgroundAlpha(0)
+	end
+	return bar
+end
+
+function PitBull4_VisualHeal:ShowExampleFrame(frame, health_bar)
+	local bar = get_or_create_bar(frame, health_bar)
+	bar:SetTexture(health_bar:GetTexture())
+	bar:SetOrientation(health_bar.orientation)
+	bar:SetReverse(false)
+	bar:SetDeficit(false)
+	bar:SetValue(0.18)
+	bar:SetExtraValue(0.12)
+	bar:SetExtra2Value(0.10)
+
+	local db = self.db.profile.global
+	local r, g, b, a = unpack(db.incoming_color)
+	bar:SetColor(r, g, b)
+	bar:SetNormalAlpha(a)
+	local r2, g2, b2, a2 = unpack(db.outgoing_color)
+	bar:SetExtraColor(r2, g2, b2)
+	bar:SetExtraAlpha(a2)
+	local r3, g3, b3, a3 = unpack(db.absorb_color)
+	bar:SetExtra2Color(r3, g3, b3)
+	bar:SetExtra2Alpha(a3)
+
+	bar:ClearAllPoints()
+	if health_bar.orientation == "HORIZONTAL" then
+		bar:SetWidth(health_bar:GetWidth())
+		bar:SetHeight(0)
+		bar:SetPoint("TOP", health_bar, "TOP")
+		bar:SetPoint("BOTTOM", health_bar, "BOTTOM")
+		bar:SetPoint("LEFT", health_bar.fg or health_bar, "RIGHT")
+	else
+		bar:SetHeight(health_bar:GetHeight())
+		bar:SetWidth(0)
+		bar:SetPoint("LEFT", health_bar, "LEFT")
+		bar:SetPoint("RIGHT", health_bar, "RIGHT")
+		bar:SetPoint("BOTTOM", health_bar.fg or health_bar, "TOP")
+	end
+
+	return true
+end
+
 function PitBull4_VisualHeal:OnEnable()
 	self:RegisterEvent("UNIT_HEAL_PREDICTION")
 	self:RegisterEvent("UNIT_HEALTH", "UNIT_HEAL_PREDICTION")
@@ -52,45 +102,61 @@ function PitBull4_VisualHeal:UpdateFrame(frame)
 	local health_bar = frame.HealthBar
 	local unit = frame.unit
 	local guid = frame.guid
-	if not health_bar or not unit or not guid then
+	if not health_bar or not unit then
 		return self:ClearFrame(frame)
 	end
 
-	local player_healing = UnitGetIncomingHeals(unit, "player")
-	local all_healing = UnitGetIncomingHeals(unit)
-	local all_absorbs = UnitGetTotalAbsorbs and UnitGetTotalAbsorbs(unit) or nil
-	-- Bail out early if nothing going on for this unit
-	if not player_healing and not all_healing and not all_absorbs then
+	if PitBull4:IsInConfigMode() or frame.force_show then
+		return self:ShowExampleFrame(frame, health_bar)
+	end
+
+	if not guid then
 		return self:ClearFrame(frame)
 	end
-	player_healing = player_healing or 0
-	all_healing = all_healing or 0
-	all_absorbs = all_absorbs or 0
-	local others_healing = all_healing - player_healing
 
+	if PitBull4.HasRestrictedUnitData and PitBull4:HasRestrictedUnitData() then
+		return self:ClearFrame(frame)
+	end
 
-	local unit_health_max = UnitHealthMax(unit)
-	local current_percent = 0
-	local others_percent = 0
-	local player_percent = 0
-	local absorb_percent = 0
-	if unit_health_max ~= 0 then
-		current_percent = UnitHealth(unit) / unit_health_max
-		others_percent = others_healing and others_healing / unit_health_max
-		player_percent = player_healing and player_healing / unit_health_max
-		absorb_percent = all_absorbs and all_absorbs / unit_health_max
+	local ok, player_healing, all_healing, all_absorbs, unit_health_max, current_percent, others_percent, player_percent, absorb_percent = pcall(function()
+		local incoming_player = UnitGetIncomingHeals(unit, "player")
+		local incoming_all = UnitGetIncomingHeals(unit)
+		local incoming_absorbs = UnitGetTotalAbsorbs and UnitGetTotalAbsorbs(unit) or nil
+
+		if not incoming_player and not incoming_all and not incoming_absorbs then
+			return nil
+		end
+
+		incoming_player = tonumber(incoming_player) or 0
+		incoming_all = tonumber(incoming_all) or 0
+		incoming_absorbs = tonumber(incoming_absorbs) or 0
+
+		local others_healing = incoming_all - incoming_player
+		local max_health = tonumber(UnitHealthMax(unit)) or 0
+		local current = 0
+		local others = 0
+		local player = 0
+		local absorbs = 0
+
+		if max_health > 0 then
+			current = (tonumber(UnitHealth(unit)) or 0) / max_health
+			others = others_healing / max_health
+			player = incoming_player / max_health
+			absorbs = incoming_absorbs / max_health
+		end
+
+		return incoming_player, incoming_all, incoming_absorbs, max_health, current, others, player, absorbs
+	end)
+
+	if not ok or player_healing == nil then
+		return self:ClearFrame(frame)
 	end
 
 	if others_percent <= 0 and player_percent <= 0 and absorb_percent <= 0 then
 		return self:ClearFrame(frame)
 	end
 
-	local bar = frame.VisualHeal
-	if not bar then
-		bar = PitBull4.Controls.MakeBetterStatusBar(health_bar)
-		frame.VisualHeal = bar
-		bar:SetBackgroundAlpha(0)
-	end
+	local bar = get_or_create_bar(frame, health_bar)
 
 	local show_overheal = self:GetLayoutDB(frame).show_overheal
 	local show_overabsorb = self:GetLayoutDB(frame).show_overabsorb

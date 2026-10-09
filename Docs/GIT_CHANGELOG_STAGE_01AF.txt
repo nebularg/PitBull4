@@ -1,0 +1,6 @@
+fix(core): guard PitBull GUID equality and GUID table access in Main.lua refresh paths
+fix(utils): remove protected-string validation logic from SafeString and harden SafeBoolean conversion
+fix(unitframe): use guarded GUID equality in UpdateGUID and related show/update flows
+fix(castbar): move runtime cast cache lookups from GUID keys to unit-token keys
+fix(castbar): support wacky target-chain frames with derived unit-token cache keys
+docs(stage-01af): add markdown changelog and git changelog for the post-Ace overlay hotfix

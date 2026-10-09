@@ -1,0 +1,6 @@
+fix(aura): normalize dispel types through a whitelist instead of raw secret-string comparisons
+fix(aura): derive aura ownership from player-origin flags to avoid secret sourceUnit table indexing
+fix(aura): compare cached caster ownership as a boolean instead of raw sourceUnit values
+fix(aura): harden highlight and border color paths to use normalized dispel keys
+fix(castbarlatency): suppress risky mainline GCD duration comparisons that trigger secret-number faults
+docs(stage-01j): add markdown changelog and git changelog for Aura and CastBarLatency hardening

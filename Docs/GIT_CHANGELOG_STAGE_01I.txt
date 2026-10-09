@@ -1,0 +1,5 @@
+fix(aura): sanitize aura-entry booleans, strings, and numbers before PitBull filter and highlight logic uses them
+fix(aura): guard aura display filters and highlight filters with pcall to stop repeated secret-value faults
+fix(aura): normalize retail dispel type handling to avoid secret string comparisons on Midnight
+refactor(aura): harden built-in aura filter types for source, dispel, and boolean aura flags
+docs(stage-01i): add markdown changelog and git changelog for Aura secret-value hardening

@@ -1,0 +1,4 @@
+fix(luatexts): guard cast start and end time conversion against Midnight secret numbers
+fix(luatexts): guard interruptibility handling against Midnight secret booleans
+fix(castbar): guard interruptibility handling against Midnight secret booleans
+docs(stage-01n): add markdown changelog and git changelog for cast-data hardening

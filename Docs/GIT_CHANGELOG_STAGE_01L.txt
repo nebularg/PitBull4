@@ -1,0 +1,4 @@
+fix(aura): guard Texture:SetTexture against Midnight secret aura icon strings
+fix(aura): fall back to spell texture or sample buff and debuff icons when live aura icons are restricted
+refactor(aura): stop coercing aura icon values through generic string conversion during normalization
+docs(stage-01l): add markdown changelog and git changelog for Aura icon hardening

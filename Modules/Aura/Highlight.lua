@@ -14,6 +14,51 @@ local HighlightThinBorder_path = [[Interface\AddOns\PitBull4\Modules\Aura\Highli
 -- Handle the results table used for tracking the priority of auras to highlight
 local results, pool = {}, {}
 
+local function safe_string(value)
+	if value == nil then
+		return nil
+	end
+	local ok, result = pcall(function()
+		return tostring(value)
+	end)
+	if ok then
+		return result
+	end
+	return nil
+end
+
+local KNOWN_DISPEL_TYPES = {
+	Magic = true,
+	Curse = true,
+	Disease = true,
+	Poison = true,
+	Enrage = true,
+}
+
+local function safe_dispel_name(value)
+	if value == nil then
+		return nil
+	end
+
+	local ok_empty, is_empty = pcall(function()
+		return value == ""
+	end)
+	if ok_empty and is_empty then
+		return "Enrage"
+	end
+
+	for dispel_type in pairs(KNOWN_DISPEL_TYPES) do
+		local ok, matches = pcall(function()
+			return value == dispel_type
+		end)
+		if ok and matches then
+			return dispel_type
+		end
+	end
+
+	return nil
+end
+
 local function new_result()
 	local t = next(pool)
 	if t then
@@ -56,11 +101,7 @@ function PitBull4_Aura:HighlightFilterIterator(frame, db, is_buff)
 		end
 
 		entry.index = id
-
-		-- The enrage dispel type is "" instead of "Enrage"
-		if entry.dispelName == "" then
-			entry.dispelName = "Enrage"
-		end
+		entry.dispelName = safe_dispel_name(entry.dispelName)
 
 		self:HighlightFilter(db, entry, frame)
 
@@ -85,15 +126,15 @@ function PitBull4_Aura:HighlightFilter(db, entry, frame)
 			if filter then
 				-- Run the filter and capture the result
 				local filter_func = self.filter_types[filter.filter_type].filter_func
-				local filter_result = filter_func(filter_name, entry, frame)
-				if filter_result then
+				local ok, filter_result = pcall(filter_func, filter_name, entry, frame)
+				if ok and filter_result then
 					-- Setup an entry in our result table
 					local result = new_result()
 					result.priority = id
 
 					-- Determine the color for the match
 					if highlight_filters_color_by_type[id] then
-						local dispel_type = tostring(entry.dispelName)
+						local dispel_type = safe_dispel_name(entry.dispelName) or "nil"
 						local color = dispel_type_colors[dispel_type]
 						if not color then
 							color = dispel_type_colors["nil"]

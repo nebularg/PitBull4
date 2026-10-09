@@ -1,0 +1,3 @@
+fix(combattext): remove live font-string text comparison that faults on Midnight secret strings
+fix(combattext): track preview example text with an internal flag instead of comparing displayed text
+docs(stage-01q): add markdown changelog and git changelog for CombatText secret-string hardening

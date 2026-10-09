@@ -1,0 +1,3 @@
+fix(readycheckicon): replace guid-keyed ready check cache with unit-token cache
+fix(readycheckicon): use guarded UnitIsUnit matching for target and best_unit frames
+docs(stage-01ag): add markdown changelog and git changelog for ReadyCheckIcon Midnight hardening

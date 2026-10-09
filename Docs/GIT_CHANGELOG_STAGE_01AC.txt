@@ -1,0 +1,3 @@
+fix(utils): remove empty-string comparison from SafeString to avoid secret-string faults on Midnight
+refactor(utils): keep SafeString limited to safe tostring conversion and type validation
+docs(stage-01ac): add markdown changelog and git changelog for SafeString hardening

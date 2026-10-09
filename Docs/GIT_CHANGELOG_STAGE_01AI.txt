@@ -1,0 +1,3 @@
+fix(luatexts): replace remaining raw GUID equality checks in event fan-out with guarded comparisons
+fix(utils): replace SafeBoolean string comparisons with guarded equality
+docs(stage-01ai): add markdown changelog and git changelog for LuaTexts GUID comparison hardening

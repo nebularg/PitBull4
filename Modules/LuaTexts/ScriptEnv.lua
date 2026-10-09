@@ -26,6 +26,49 @@ local afk_times = PitBull4_LuaTexts.afk_times
 local dnd = PitBull4_LuaTexts.dnd
 local dead_times = PitBull4_LuaTexts.dead_times
 
+local SafeGUID = PitBull4.Utils.SafeGUID
+local SafeEqual = PitBull4.Utils.SafeEqual
+
+local function SafeTableValue(t, key)
+	if t == nil or key == nil then
+		return nil
+	end
+
+	local ok, value = pcall(function(tbl, k)
+		return tbl[k]
+	end, t, key)
+	if ok then
+		return value
+	end
+
+	return nil
+end
+
+local function SafeNumber(value, default)
+	if value == nil then
+		return default
+	end
+	local ok_string, string_value = pcall(tostring, value)
+	if not ok_string or type(string_value) ~= "string" then
+		return default
+	end
+	local number_value = tonumber(string_value)
+	if number_value == nil then
+		return default
+	end
+	return number_value
+end
+
+local function SafeBoolean(value, default)
+	if value == nil then
+		return default
+	end
+	local ok, result = pcall(function() return not not value end)
+	if ok then
+		return result
+	end
+	return default
+end
 
 -- The following functions exist to provide a method to help people moving
 -- from LibDogTag.  They implement the functionality that exists in some of
@@ -314,12 +357,12 @@ ScriptEnv.UpdateIn = UpdateIn
 
 local function IsAFK(unit)
 	afk_cache[ScriptEnv.font_string] = true
-	return not not afk_times[UnitGUID(unit)]
+	return not not SafeTableValue(afk_times, SafeGUID(UnitGUID(unit)))
 end
 ScriptEnv.IsAFK = IsAFK
 
 local function AFKDuration(unit)
-	local afk = afk_times[UnitGUID(unit)]
+	local afk = SafeTableValue(afk_times, SafeGUID(UnitGUID(unit)))
 	afk_cache[ScriptEnv.font_string] = true
 	if afk then
 		UpdateIn(0.25)
@@ -338,13 +381,13 @@ ScriptEnv.AFK = AFK
 
 local function IsDND(unit)
 	dnd_cache[ScriptEnv.font_string] = true
-	return not not dnd[UnitGUID(unit)]
+	return not not SafeTableValue(dnd, SafeGUID(UnitGUID(unit)))
 end
 ScriptEnv.IsDND = IsDND
 
 local function DND(unit)
 	dnd_cache[ScriptEnv.font_string] = true
-	if dnd[UnitGUID(unit)] then
+	if SafeTableValue(dnd, SafeGUID(UnitGUID(unit))) then
 		return _G.DND
 	end
 end
@@ -599,7 +642,7 @@ end
 ScriptEnv.IsPet = IsPet
 
 local function OfflineDuration(unit)
-	local offline = offline_times[UnitGUID(unit)]
+	local offline = SafeTableValue(offline_times, SafeGUID(UnitGUID(unit)))
 	offline_cache[ScriptEnv.font_string] = true
 	if offline then
 		UpdateIn(0.25)
@@ -618,12 +661,12 @@ ScriptEnv.Offline = Offline
 
 local function IsOffline(unit)
 	offline_cache[ScriptEnv.font_string] = true
-	return not not offline_times[UnitGUID(unit)]
+	return not not SafeTableValue(offline_times, SafeGUID(UnitGUID(unit)))
 end
 ScriptEnv.IsOffline = IsOffline
 
 local function DeadDuration(unit)
-	local dead_time = dead_times[UnitGUID(unit)]
+	local dead_time = SafeTableValue(dead_times, SafeGUID(UnitGUID(unit)))
 	dead_cache[ScriptEnv.font_string] = true
 	if dead_time then
 		UpdateIn(0.25)
@@ -682,11 +725,11 @@ end
 ScriptEnv.Status = Status
 
 local function HP(unit, no_fast)
-	local hp = UnitHealth(unit)
+	local hp = SafeNumber(UnitHealth(unit), 0)
 	if not no_fast then
 		hp_cache[ScriptEnv.font_string] = true
 	end
-	if hp == 1 and UnitIsGhost(unit) then
+	if hp == 1 and SafeBoolean(UnitIsGhost(unit), false) then
 		return 0
 	end
 	return hp
@@ -698,21 +741,21 @@ ScriptEnv.HP = HP
 -- it feels weird to have HP (which we need
 -- to avoid the hp = 1 while dead crap), but
 -- not have MaxHP
-local MaxHP = UnitHealthMax
+local MaxHP = function(unit) return SafeNumber(UnitHealthMax(unit), 0) end
 ScriptEnv.MaxHP = MaxHP
 
 local function Power(unit, power_type)
-	local power = UnitPower(unit, power_type)
+	local power = SafeNumber(UnitPower(unit, power_type), 0)
 
 	-- Detect mana texts for player and pet units, cache the power
 	-- and mark the font_strings for faster updating.  Allows
 	-- smoothing updating of PowerBars.
-	local guid = UnitGUID(unit)
-	if power_type == nil or UnitPowerType(unit) == power_type then
-		if guid == ScriptEnv.player_guid then
+	local guid = SafeGUID(UnitGUID(unit))
+	if power_type == nil or SafeNumber(UnitPowerType(unit), 0) == power_type then
+		if SafeEqual(guid, ScriptEnv.player_guid) then
 			ScriptEnv.player_power = power
 		  power_cache[ScriptEnv.font_string] = true
-		elseif guid == UnitGUID("pet") then
+		elseif SafeEqual(guid, SafeGUID(UnitGUID("pet"))) then
 			ScriptEnv.pet_power = power
 			power_cache[ScriptEnv.font_string] = true
 		end
@@ -723,7 +766,7 @@ end
 ScriptEnv.Power = Power
 
 -- More symmetry
-local MaxPower = UnitPowerMax
+local MaxPower = function(unit, power_type) return SafeNumber(UnitPowerMax(unit, power_type), 0) end
 ScriptEnv.MaxPower = MaxPower
 
 local function Round(number, digits)
@@ -1118,7 +1161,7 @@ ScriptEnv.ThreatStatusColor = ThreatStatusColor
 
 local function CastData(unit)
 	spell_cast_cache[ScriptEnv.font_string] = true
-	return cast_data[UnitGUID(unit)]
+	return SafeTableValue(cast_data, unit)
 end
 ScriptEnv.CastData = CastData
 

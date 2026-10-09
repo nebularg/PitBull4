@@ -610,7 +610,11 @@ function PitBull4_Aura:FilterEntry(name, entry, frame)
 	local filter = self:GetFilterDB(name)
 	if not filter then return true end
 	local filter_func = self.filter_types[filter.filter_type].filter_func
-	return filter_func(name, entry, frame)
+	local ok, result = pcall(filter_func, name, entry, frame)
+	if ok then
+		return result
+	end
+	return true
 end
 
 

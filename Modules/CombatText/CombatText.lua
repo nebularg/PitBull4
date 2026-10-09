@@ -77,8 +77,10 @@ function PitBull4_CombatText:UpdateFrame(frame)
 
 	if frame.force_show and not frame.guid then
 		font_string:SetText(EXAMPLE_TEXT)
-	elseif font_string:GetText() == EXAMPLE_TEXT then
+		font_string.is_example_text = true
+	elseif font_string.is_example_text then
 		font_string:SetText("")
+		font_string.is_example_text = nil
 	end
 
 	return created

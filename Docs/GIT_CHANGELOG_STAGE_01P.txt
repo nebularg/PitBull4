@@ -1,0 +1,5 @@
+fix(luatexts): route remaining cast-time conversion through guarded helpers instead of raw arithmetic
+fix(luatexts): guard cast-id equality and interruptibility handling in cached cast data
+fix(betterstatusbar): guard icon-path equality and SetTexture against Midnight protected values
+fix(castbar): guard cast-id equality against Midnight protected cast identifiers
+docs(stage-01p): add markdown changelog and git changelog for cast-data and icon-path hardening

@@ -1,0 +1,4 @@
+fix(powerbar): compute Midnight power normalization inside safe wrapper before returning bar values
+fix(healthbar): compute Midnight health normalization inside safe wrapper before returning bar values
+fix(combatfader): wrap player health and power state checks to avoid secret-number comparisons on Midnight
+docs(stage-01c): add markdown changelog and git changelog for the secret-number hotfix

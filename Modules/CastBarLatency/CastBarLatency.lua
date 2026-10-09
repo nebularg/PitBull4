@@ -15,6 +15,15 @@ local DEFAULT_QUEUE_TIME = 300
 local GetTime = _G.GetTime
 local GetSpellCooldown = C_Spell.GetSpellCooldown or _G.GetSpellCooldown -- XXX Classic
 
+local function get_frame_unit(frame)
+	return frame.best_unit or frame.unit
+end
+
+local function frame_represents_player(frame)
+	local unit = get_frame_unit(frame)
+	return unit == "player" or unit == "vehicle"
+end
+
 -----------------------------------------------------------------------------
 
 local PitBull4_CastBarLatency = PitBull4:NewModule("CastBarLatency")
@@ -42,6 +51,26 @@ local queue_time = DEFAULT_QUEUE_TIME
 local show_queue = true
 local show_gcd   = true
 
+local function get_safe_gcd_time(spell_id)
+	if not show_gcd or not spell_id or WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+		return 0
+	end
+
+	local info, duration = GetSpellCooldown(spell_id)
+	if type(info) == "table" then
+		duration = info.duration
+	end
+
+	local ok, should_use = pcall(function()
+		return duration and duration > 0 and duration <= MAX_GCD_TIME
+	end)
+	if ok and should_use and type(duration) == "number" then
+		return duration
+	end
+
+	return 0
+end
+
 -- Create a timer frame with an onupdate to ensure updates of our bar..
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
@@ -53,14 +82,12 @@ timerFrame:SetScript("OnUpdate", function()
 
 	-- Loop thru ALL PitBull Frames...
 	for frame in PitBull4:IterateFrames() do
-		local unit = frame.unit
-		if unit and UnitIsUnit(unit, "player") then
+		if frame_represents_player(frame) then
 			-- ... but only force updates for frames representing the player
 			PitBull4_CastBarLatency:Update(frame)
 		end
 	end
-
-	end)
+end)
 
 function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, _, spell_id)
 	if unit ~= "player" then
@@ -68,16 +95,7 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_START(event, unit, _, spell_id)
 	end
 
 	-- Try to determine GCD
-	local gcd_time = 0
-	if show_gcd and spell_id then
-		local info, duration = GetSpellCooldown(spell_id)
-		if type(info) == "table" then
-			duration = info.duration
-		end
-		if duration and duration > 0 and duration <= MAX_GCD_TIME then
-			gcd_time = duration
-		end
-	end
+	local gcd_time = get_safe_gcd_time(spell_id)
 
 	local name, _, _, new_start, new_end = UnitCastingInfo(unit)
 	if not name then
@@ -109,16 +127,7 @@ function PitBull4_CastBarLatency:UNIT_SPELLCAST_CHANNEL_START(event, unit, _, sp
 	end
 
 	-- Try to determine GCD
-	local gcd_time = 0
-	if show_gcd and spell_id then
-		local info, duration = GetSpellCooldown(spell_id)
-		if type(info) == "table" then
-			duration = info.duration
-		end
-		if duration and duration > 0 and duration <= MAX_GCD_TIME then
-			gcd_time = duration
-		end
-	end
+	local gcd_time = get_safe_gcd_time(spell_id)
 
 	local name, _, _, new_start, new_end = UnitChannelInfo(unit)
 	if not name then
@@ -191,8 +200,7 @@ function PitBull4_CastBarLatency:OnDisable()
 end
 
 function PitBull4_CastBarLatency:UpdateFrame(frame)
-	local unit = frame.unit
-	if not unit or not UnitIsUnit(unit, "player") then
+	if not frame_represents_player(frame) then
 		-- this frame does not represent the player so we remove ourselves
 		return self:ClearFrame(frame)
 	end

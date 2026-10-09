@@ -20,6 +20,32 @@ end
 local filter_types = {}
 PitBull4_Aura.filter_types = filter_types
 
+local function safe_boolean(value)
+	if value == nil then
+		return nil
+	end
+	local ok, result = pcall(function()
+		return value and true or false
+	end)
+	if ok then
+		return result
+	end
+	return nil
+end
+
+local function safe_string(value)
+	if value == nil then
+		return nil
+	end
+	local ok, result = pcall(function()
+		return tostring(value)
+	end)
+	if ok then
+		return result
+	end
+	return nil
+end
+
 local whitelist_values = {
 	['wl'] = L["Whitelist"],
 	['bl'] = L["Blacklist"],
@@ -432,7 +458,8 @@ end)
 -- Aura Type, Allows filtering by the type of Aura.
 local function aura_type_filter(self, entry)
 	local cfg = PitBull4_Aura:GetFilterDB(self)
-	if cfg.aura_type_list[tostring(entry.dispelName)] then
+	local dispel_name = entry.dispelName or "nil"
+	if cfg.aura_type_list[dispel_name] then
 		if cfg.whitelist then
 			return true
 		else
@@ -853,9 +880,11 @@ local function mine_filter(self, entry)
 	-- local caster = entry.sourceUnit
 	-- local is_mine = caster and (UnitIsUnit("player", caster) or UnitIsOwnerOrControllerOfUnit("player", caster))
 	if PitBull4_Aura:GetFilterDB(self).mine then
-		return my_units[entry.sourceUnit]
+		local source_unit = safe_string(entry.sourceUnit)
+		return my_units[source_unit]
 	else
-		return not my_units[entry.sourceUnit]
+		local source_unit = safe_string(entry.sourceUnit)
+		return not my_units[source_unit]
 	end
 end
 PitBull4_Aura:RegisterFilterType('Mine',L["Mine"],mine_filter, function(self,options)
@@ -884,9 +913,11 @@ end)
 -- Stealable, filter by if you can steal the debuff or not.
 local function stealable_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).stealable then
-		return entry.isStealable
+		local is_stealable = safe_boolean(entry.isStealable)
+		return is_stealable
 	else
-		return not entry.isStealable
+		local is_stealable = safe_boolean(entry.isStealable)
+		return not is_stealable
 	end
 end
 PitBull4_Aura:RegisterFilterType('Stealable',L["Stealable"],stealable_filter, function(self,options)
@@ -946,9 +977,11 @@ end)
 -- Buff
 local function buff_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).buff then
-		return entry.isHelpful
+		local is_helpful = safe_boolean(entry.isHelpful)
+		return is_helpful
 	else
-		return entry.isHarmful
+		local is_harmful = safe_boolean(entry.isHarmful)
+		return is_harmful
 	end
 end
 PitBull4_Aura:RegisterFilterType('Buff',L["Buff"],buff_filter, function(self,options)
@@ -1297,7 +1330,7 @@ end)
 
 -- Personal nameplate aura, Filter by if the aura is eligible to show on your personal nameplate
 local function personal_nameplate_filter(self, entry)
-	local value = (ClassicExpansionAtMost(LE_EXPANSION_WARLORDS_OF_DRAENOR) and entry.shouldConsolidate or entry.nameplateShowPersonal) or false
+	local value = (ClassicExpansionAtMost(LE_EXPANSION_WARLORDS_OF_DRAENOR) and safe_boolean(entry.shouldConsolidate) or safe_boolean(entry.nameplateShowPersonal)) or false
 	if PitBull4_Aura:GetFilterDB(self).should_consolidate then
 		return value
 	else
@@ -1505,7 +1538,8 @@ local function should_show_filter(self, entry, frame)
 	if entry.spellId then
 		local state = UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT"
 		local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(entry.spellId, state)
-		show = hasCustom and (showForMySpec or (alwaysShowMine and my_units[entry.sourceUnit]))
+		local source_unit = safe_string(entry.sourceUnit)
+		show = safe_boolean(hasCustom) and (safe_boolean(showForMySpec) or (safe_boolean(alwaysShowMine) and my_units[source_unit]))
 	end
 	if PitBull4_Aura:GetFilterDB(self).should_show then
 		return show
@@ -1540,9 +1574,11 @@ end)
 -- player _did_ apply the aura, just if the player _can_ apply the aura)
 local function can_apply_aura_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).can_apply_aura then
-		return not not entry.canApplyAura
+		local can_apply = safe_boolean(entry.canApplyAura)
+		return can_apply
 	else
-		return not entry.canApplyAura
+		local can_apply = safe_boolean(entry.canApplyAura)
+		return not can_apply
 	end
 end
 PitBull4_Aura:RegisterFilterType('Can apply aura',L["Can apply aura"],can_apply_aura_filter,function(self,options)
@@ -1567,9 +1603,11 @@ end)
 -- Boss, filter by if the aura is applied by a boss
 local function boss_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).boss_debuff then
-		return not not entry.isBossAura
+		local is_boss = safe_boolean(entry.isBossAura)
+		return is_boss
 	else
-		return not entry.isBossAura
+		local is_boss = safe_boolean(entry.isBossAura)
+		return not is_boss
 	end
 end
 PitBull4_Aura:RegisterFilterType('Boss debuff',L["Boss"],boss_filter,function(self,options)
@@ -1594,9 +1632,11 @@ end)
 -- Cast by a player
 local function caster_is_player_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).caster_is_player then
-		return not not entry.isFromPlayerOrPlayerPet
+		local is_from_player = safe_boolean(entry.isFromPlayerOrPlayerPet)
+		return is_from_player
 	else
-		return not entry.isFromPlayerOrPlayerPet
+		local is_from_player = safe_boolean(entry.isFromPlayerOrPlayerPet)
+		return not is_from_player
 	end
 end
 PitBull4_Aura:RegisterFilterType('Cast by a player',L["Cast by a player"],caster_is_player_filter,function(self,options)
@@ -1625,9 +1665,11 @@ end)
 -- Global nameplate aura, Filter by if the aura is eligible to show on all nameplates
 local function global_nameplate_filter(self, entry)
 	if PitBull4_Aura:GetFilterDB(self).global_nameplate then
-		return not not entry.nameplateShowAll
+		local show_all = safe_boolean(entry.nameplateShowAll)
+		return show_all
 	else
-		return not entry.nameplateShowAll
+		local show_all = safe_boolean(entry.nameplateShowAll)
+		return not show_all
 	end
 end
 PitBull4_Aura:RegisterFilterType('Global nameplate',L["Global nameplate"],global_nameplate_filter,function(self,options)

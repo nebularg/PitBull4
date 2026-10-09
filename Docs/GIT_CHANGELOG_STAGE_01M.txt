@@ -1,0 +1,4 @@
+fix(aura): sanitize stack count and cooldown timing before aura text and cooldown comparisons
+fix(castbar): guard temporary icon comparison against Midnight protected icon values
+fix(castbar): safely convert cast start and end times from milliseconds to seconds
+docs(stage-01m): add markdown changelog and git changelog for Aura and CastBar hardening

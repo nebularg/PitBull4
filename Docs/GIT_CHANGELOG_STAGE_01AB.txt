@@ -1,0 +1,10 @@
+fix(core): sanitize PitBull GUID keys before using them in main unit and frame caches
+fix(unitframe): sanitize live unit GUIDs before comparing and storing frame guid values
+fix(aura): sanitize throttled aura GUID queues and safe-convert player ownership booleans
+fix(healthbar): sanitize throttled health GUID queues for follower dungeon units and nameplates
+fix(luatexts): sanitize spellcast target text and cast GUID cache keys
+fix(castbar): sanitize cast cache GUIDs and cast ids before lookup and compare
+fix(highlight): sanitize target GUID and frame GUID comparisons
+fix(border): sanitize target GUID and frame GUID comparisons
+feat(utils): add safe string, guid, and boolean conversion helpers for Midnight secret values
+docs(stage-01ab): add markdown changelog and git changelog for follower dungeon GUID hardening

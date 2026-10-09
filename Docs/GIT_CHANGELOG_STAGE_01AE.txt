@@ -1,0 +1,4 @@
+fix(healthbar): restore unit-based OnUpdate queue iteration after previous queue rename regression
+fix(utils): simplify SafeString to guarded tostring conversion without protected-string comparisons
+fix(core): simplify Main SafeGUID helper to guarded tostring conversion without protected-string comparisons
+docs(stage-01ae): add markdown changelog and git changelog for post-Ace helper and HealthBar regression fixes

@@ -10,6 +10,55 @@ local expect = PitBull4.expect
 
 PitBull4.Utils = {}
 
+function PitBull4.Utils.SafeString(value)
+	if value == nil then
+		return nil
+	end
+
+	local ok_tostring, string_value = pcall(tostring, value)
+	if not ok_tostring then
+		return nil
+	end
+
+	return string_value
+end
+
+PitBull4.Utils.SafeGUID = PitBull4.Utils.SafeString
+
+function PitBull4.Utils.SafeEqual(a, b)
+	if a == nil and b == nil then
+		return true
+	end
+
+	local ok, result = pcall(function(x, y)
+		return x == y
+	end, a, b)
+	if ok then
+		return result and true or false
+	end
+
+	return false
+end
+
+function PitBull4.Utils.SafeBoolean(value, default)
+	if value == nil then
+		return default
+	end
+
+	local ok_tostring, string_value = pcall(tostring, value)
+	if not ok_tostring then
+		return default
+	end
+
+	if PitBull4.Utils.SafeEqual(string_value, "true") then
+		return true
+	elseif PitBull4.Utils.SafeEqual(string_value, "false") then
+		return false
+	end
+
+	return default
+end
+
 do
 	local target_same_mt = { __index=function(self, key)
 		if type(key) ~= "string" then

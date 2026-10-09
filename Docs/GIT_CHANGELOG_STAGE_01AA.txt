@@ -1,0 +1,3 @@
+fix(healthbar): convert protected Midnight health values through tostring before normalization math
+fix(healthbar): remove direct numeric passthrough from safe-number conversion helper
+docs(stage-01aa): add markdown changelog and git changelog for HealthBar string-conversion hardening
