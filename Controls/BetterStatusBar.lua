@@ -321,9 +321,10 @@ end
 --- Return the extra value
 -- @return the extra value
 -- @usage assert(bar:GetExtraValue() == 0.25)
-function BetterStatusBar:GetExtra2Value2()
+function BetterStatusBar:GetExtra2Value()
 	return self.extra2Value
 end
+BetterStatusBar.GetExtra2Value2 = BetterStatusBar.GetExtra2Value
 
 -- set the position of the bar
 -- all the sides are fixed, e.g. vertical bar has its left and right sides unmoving.
@@ -735,12 +736,13 @@ function BetterStatusBar:SetTexture(texture)
 		expect(texture, 'typeof', 'string;number;nil')
 	end
 
+	self.texture_path = texture
 	if texture then
 		local new_texture = texture
 		if type(new_texture) == "string" then
 			new_texture = new_texture:gsub("%.tga$", ""):gsub("%.blp$", "")
 		end
-		if self:GetTexture() == new_texture then
+		if not self.fg:GetAtlas() and self:GetTexture() == new_texture then
 			return
 		end
 	end
@@ -766,9 +768,12 @@ end
 BetterStatusBar.GetStatusBarTexture = BetterStatusBar.GetTexture
 
 function BetterStatusBar:SetAtlas(atlas)
-	self.fg:SetAtlas(atlas)
 	if atlas then
+		self.fg:SetAtlas(atlas)
 		self.fg:SetVertexColor(1, 1, 1)
+	else
+		-- SetTexture clears an atlas; Classic Era rejects SetAtlas(nil).
+		self.fg:SetTexture(self.texture_path)
 	end
 end
 BetterStatusBar.SetStatusBarAltas = BetterStatusBar.SetAtlas
@@ -1122,6 +1127,37 @@ function BetterStatusBar:GetIcon()
 	return self.icon_path
 end
 
+local function safe_icon_path_equal(a, b)
+	if a == nil and b == nil then
+		return true
+	end
+	if a == nil or b == nil then
+		return false
+	end
+
+	local ok, equal = pcall(function(left, right)
+		return left == right
+	end, a, b)
+	if ok then
+		return equal
+	end
+
+	return false
+end
+
+local function safe_set_texture(texture, path)
+	if not texture then
+		return false
+	end
+	if path == nil then
+		texture:SetTexture(nil)
+		return true
+	end
+
+	local ok = pcall(texture.SetTexture, texture, path)
+	return ok
+end
+
 --- Set the icon's texture path of the bar, or remove it.
 -- @param path the texture path or nil
 -- @usage bar:SetIcon([[Interface\Icons\Ability_Parry]])
@@ -1132,7 +1168,7 @@ function BetterStatusBar:SetIcon(path)
 	end
 
 	local old_icon_path = self.icon_path
-	if old_icon_path == path then
+	if safe_icon_path_equal(old_icon_path, path) then
 		return
 	end
 
@@ -1237,4 +1273,288 @@ end, function(control)
 		control.fade = false
 		control.anim_duration = 0.5
 	end
+end)
+
+
+-- Stable wrapper: public values retain the full renderer; opaque values use native sinks.
+local IsValueAccessible = PitBull4.Compat.IsValueAccessible
+local interpolation = _G.Enum and _G.Enum.StatusBarInterpolation
+local LiveStatusBar = {
+    reverse = false,
+    deficit = false,
+    icon_position = true,
+    orientation = "HORIZONTAL",
+    texture_path = [[Interface\TargetingFrame\UI-StatusBar]],
+    normal_alpha = 1,
+    animated = false,
+    fade = false,
+    anim_duration = 0.5,
+    bgA = false,
+}
+
+local function live_fix_icon(self)
+    local icon = self.icon
+    if not icon then return end
+    icon:ClearAllPoints()
+    local size = self.orientation == "VERTICAL" and self:GetWidth() or self:GetHeight()
+    icon:SetSize(size, size)
+    local leading = self.icon_position
+    if self.reverse then leading = not leading end
+    if self.orientation == "HORIZONTAL" then
+        if leading then
+            icon:SetPoint("RIGHT", self, "LEFT")
+        else
+            icon:SetPoint("LEFT", self, "RIGHT")
+        end
+    elseif leading then
+        icon:SetPoint("BOTTOM", self, "TOP")
+    else
+        icon:SetPoint("TOP", self, "BOTTOM")
+    end
+end
+
+local function live_native_values(self)
+    local current, maximum = self.raw_current, self.raw_maximum
+    if type(current) == "nil" or type(maximum) == "nil" then return end
+    local getter = self.raw_module and self.raw_module.GetNativeValue
+    if getter then
+        local value = getter(self.raw_module, self.raw_frame, self.deficit)
+        if type(value) ~= "nil" then
+            current, maximum = value, 1
+        end
+    end
+    self.__native_SetMinMaxValues(self, 0, maximum)
+    if interpolation then
+        self.__native_SetValue(self, current, self.animated and interpolation.ExponentialEaseOut or interpolation.Immediate)
+    else
+        self.__native_SetValue(self, current)
+    end
+end
+
+function LiveStatusBar:SetRawValue(current, maximum)
+    self.raw_current, self.raw_maximum = current, maximum
+    local public = IsValueAccessible(current) and IsValueAccessible(maximum)
+    public = public and type(current) == "number" and type(maximum) == "number"
+    public = public and current == current and maximum == maximum
+    self.public_values = public
+    if public then
+        if self.public_bar:GetAnimated() ~= self.animated then self.public_bar:SetAnimated(self.animated) end
+        if self.public_bar:GetFade() ~= self.fade then self.public_bar:SetFade(self.fade) end
+        self.barTexture:Hide()
+        self.native_bg:Hide()
+        self.fg, self.bg = self.public_bar.fg, self.public_bar.bg
+        self.public_bar:SetValue(maximum > 0 and math.max(0, math.min(current / maximum, 1)) or 0)
+        self.public_bar:Show()
+    else
+        -- Stop public animations before a protected transition; do not inspect its values.
+        self.public_bar:SetAnimated(false)
+        self.public_bar:SetFade(false)
+        self.public_bar:Hide()
+        self.fg, self.bg = self.barTexture, self.native_bg
+        live_native_values(self)
+        self.barTexture:Show()
+        self.native_bg:Show()
+    end
+end
+
+function LiveStatusBar:SetTexture(texture)
+    self.texture_path = texture or [[Interface\TargetingFrame\UI-StatusBar]]
+    self.atlas = nil
+    self.barTexture:SetTexture(self.texture_path)
+    self.public_bar:SetTexture(self.texture_path)
+end
+function LiveStatusBar:GetTexture()
+    return self.texture_path
+end
+function LiveStatusBar:GetValue()
+    if self.public_values then return self.public_bar:GetValue() end
+    return self.__native_GetValue(self)
+end
+function LiveStatusBar:SetValue(value)
+    self:SetRawValue(value, 1)
+end
+function LiveStatusBar:SetAtlas(atlas)
+    self.atlas = atlas or nil
+    self.public_bar:SetAtlas(atlas)
+    if atlas then
+        self.barTexture:SetTexture(nil)
+        self.barTexture:SetAtlas(atlas)
+    else
+        self.barTexture:SetTexture(self.texture_path)
+    end
+end
+function LiveStatusBar:SetColor(r, g, b)
+    self.__native_SetStatusBarColor(self, r, g, b)
+    self.public_bar:SetColor(r, g, b)
+end
+function LiveStatusBar:GetColor()
+    return self.__native_GetStatusBarColor(self)
+end
+-- The native getter itself is left intact.
+function LiveStatusBar:SetNormalAlpha(alpha)
+    self.normal_alpha = alpha or 1
+    self.barTexture:SetAlpha(self.normal_alpha)
+    self.public_bar:SetNormalAlpha(self.normal_alpha)
+    if not self.bgA then self.native_bg:SetAlpha(self.normal_alpha) end
+end
+function LiveStatusBar:GetNormalAlpha()
+    return self.normal_alpha
+end
+function LiveStatusBar:SetBackgroundColor(r, g, b)
+    self.public_bar:SetBackgroundColor(r, g, b)
+    self.native_bg:SetVertexColor(self.public_bar:GetBackgroundColor())
+end
+function LiveStatusBar:GetBackgroundColor()
+    return self.public_bar:GetBackgroundColor()
+end
+function LiveStatusBar:SetBackgroundAlpha(alpha)
+    self.bgA = alpha or false
+    self.native_bg:SetAlpha(alpha or self.normal_alpha)
+    self.public_bar:SetBackgroundAlpha(alpha)
+end
+function LiveStatusBar:GetBackgroundAlpha()
+    return self.bgA or self.normal_alpha
+end
+
+function LiveStatusBar:SetAnimated(animated)
+    self.animated = not not animated
+    if self.public_values then self.public_bar:SetAnimated(self.animated) end
+end
+function LiveStatusBar:GetAnimated()
+    return self.animated
+end
+function LiveStatusBar:SetFade(fade)
+    self.fade = not not fade
+    if self.public_values then self.public_bar:SetFade(self.fade) end
+end
+function LiveStatusBar:GetFade()
+    return self.fade
+end
+function LiveStatusBar:SetAnimDuration(duration)
+    self.anim_duration = duration
+    self.public_bar:SetAnimDuration(duration)
+end
+function LiveStatusBar:GetAnimDuration()
+    return self.anim_duration
+end
+
+-- Extra segments are used only with public geometry, as in the existing renderer.
+for _, method in ipairs({ "SetExtraValue", "GetExtraValue", "SetExtra2Value", "GetExtra2Value", "SetExtraColor", "GetExtraColor", "SetExtraAlpha", "GetExtraAlpha", "SetExtra2Color", "GetExtra2Color", "SetExtra2Alpha", "GetExtra2Alpha" }) do
+    local name = method
+    LiveStatusBar[name] = function(self, ...)
+        return self.public_bar[name](self.public_bar, ...)
+    end
+end
+
+function LiveStatusBar:SetOrientation(orientation)
+    self.orientation = orientation
+    self.__native_SetOrientation(self, orientation)
+    self.public_bar:SetOrientation(orientation)
+    live_fix_icon(self)
+end
+function LiveStatusBar:GetOrientation()
+    return self.orientation
+end
+function LiveStatusBar:SetReverse(reverse)
+    self.reverse = not not reverse
+    if self.__native_SetReverseFill then
+        self.__native_SetReverseFill(self, self.reverse)
+    end
+    self.public_bar:SetReverse(self.reverse)
+    live_fix_icon(self)
+end
+function LiveStatusBar:GetReverse()
+    return self.reverse
+end
+function LiveStatusBar:SetDeficit(deficit)
+    deficit = not not deficit
+    if self.deficit == deficit then return end
+    self.deficit = deficit
+    self.public_bar:SetDeficit(deficit)
+    if not self.public_values then live_native_values(self) end
+end
+function LiveStatusBar:GetDeficit()
+    return self.deficit
+end
+function LiveStatusBar:SetIcon(path)
+    if self.icon_path == path then return end
+    self.icon_path = path
+    if path then
+        if not self.icon then
+            self.icon = PitBull4.Controls.MakeTexture(self, "ARTWORK")
+            self.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+        end
+        self.icon:SetTexture(path)
+        live_fix_icon(self)
+    elseif self.icon then
+        self.icon = self.icon:Delete()
+    end
+end
+function LiveStatusBar:GetIcon()
+    return self.icon_path
+end
+function LiveStatusBar:SetIconPosition(value)
+    self.icon_position = not not value
+    live_fix_icon(self)
+end
+function LiveStatusBar:GetIconPosition()
+    return self.icon_position
+end
+
+PitBull4.Controls.MakeNewControlType("LiveStatusBar", "StatusBar", function(control)
+    control:EnableMouse(false)
+    control.__native_SetOrientation = control.SetOrientation
+    control.__native_SetReverseFill = control.SetReverseFill
+    control.__native_SetMinMaxValues = control.SetMinMaxValues
+    control.__native_SetValue = control.SetValue
+    control.__native_GetValue = control.GetValue
+    control.__native_SetStatusBarColor = control.SetStatusBarColor
+    control.__native_GetStatusBarColor = control.GetStatusBarColor
+    control.native_bg = PitBull4.Controls.MakeTexture(control, "BACKGROUND")
+    control.native_bg:SetAllPoints(control)
+    control.native_bg:SetTexture([[Interface\Buttons\WHITE8X8]])
+    control.barTexture = PitBull4.Controls.MakeTexture(control, "ARTWORK")
+    control:SetStatusBarTexture(control.barTexture)
+    control.public_bar = PitBull4.Controls.MakeBetterStatusBar(control)
+    control.public_bar:SetAllPoints(control)
+    for key, value in pairs(LiveStatusBar) do control[key] = value end
+    control:SetScript("OnSizeChanged", live_fix_icon)
+end, function(control)
+    control.raw_current, control.raw_maximum = nil, nil
+    control.raw_module, control.raw_frame = nil, nil
+    control.public_values = true
+    control.fg, control.bg = control.public_bar.fg, control.public_bar.bg
+    control.reverse, control.deficit = false, false
+    control.orientation, control.icon_position = "HORIZONTAL", true
+    control.public_bar:SetReverse(false)
+    control.public_bar:SetDeficit(false)
+    control:SetAnimated(false)
+    control:SetFade(false)
+    control:SetAnimDuration(0.5)
+    control:SetTexture([[Interface\TargetingFrame\UI-StatusBar]])
+    control:SetColor(1, 1, 1)
+    control:SetNormalAlpha(1)
+    control:SetBackgroundColor(nil, nil, nil)
+    control:SetBackgroundAlpha(1)
+    control:SetOrientation("HORIZONTAL")
+    control:SetReverse(false)
+    control.__native_SetMinMaxValues(control, 0, 1)
+    control.__native_SetValue(control, 1)
+    control.public_bar:SetValue(1)
+    control.public_bar:SetExtraValue(0)
+    control.public_bar:SetExtra2Value(0)
+    control:SetIcon(nil)
+    control.barTexture:Hide()
+    control.native_bg:Hide()
+    control.public_bar:Show()
+end, function(control)
+    control.raw_current, control.raw_maximum = nil, nil
+    control.raw_module, control.raw_frame = nil, nil
+    control.public_bar:SetAnimated(false)
+    control.public_bar:SetFade(false)
+    control.public_bar:Hide()
+    control.barTexture:Hide()
+    control.native_bg:Hide()
+    if control.icon then control.icon = control.icon:Delete() end
+    control.icon_path = nil
 end)

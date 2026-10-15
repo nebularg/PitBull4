@@ -491,7 +491,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 	bar_args.animated = {
 		type = 'toggle',
 		name = L["Animate"],
-		desc = L["Animate bar changes."],
+		desc = L["Animate bar changes."] .. " " .. L["Protected health and power use native smoothing. Fade and custom duration apply when values are readable."],
 		order = 10,
 		get = function(info)
 			local db = get_current_layout_db(info)
@@ -514,7 +514,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 	bar_args.fade = {
 		type = 'toggle',
 		name = L["Fade"],
-		desc = L["Fade the bar changes."],
+		desc = L["Fade the bar changes."] .. " " .. L["Protected health and power use native smoothing. Fade and custom duration apply when values are readable."],
 		order = 11,
 		get = function(info)
 			local db = get_current_layout_db(info)
@@ -537,7 +537,7 @@ function PitBull4.Options.get_layout_editor_bar_options()
 	bar_args.anim_duration = {
 		type = 'range',
 		name = L["Animation duration"],
-		desc = L["Time in seconds that the animation and/or fade takes to play."],
+		desc = L["Time in seconds that the animation and/or fade takes to play."] .. " " .. L["Protected health and power use native smoothing. Fade and custom duration apply when values are readable."],
 		order = 12,
 		get = function(info)
 			local db = get_current_layout_db(info)

@@ -1,13 +1,109 @@
 -- Constants ----------------------------------------------------------------
 local _G = _G
+local _, namespace = ...
+local Compat = namespace.Compat
+local C_AddOns = Compat.AddOns
 
 -- luacheck: globals ReloadUI SecureButton_GetModifiedUnit
 
 local L = LibStub("AceLocale-3.0"):GetLocale("PitBull4")
 
-local wow_retail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-local wow_classic = WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE
-local wow_expansion = GetClassicExpansionLevel()
+local wow_retail = Compat.IsRetail
+local wow_classic = Compat.IsClassic
+local wow_expansion = Compat.ExpansionLevel
+local addon_name = "PitBull4"
+
+local canaccesstable = _G.canaccesstable
+local canaccessvalue = _G.canaccessvalue
+local issecretvalue = _G.issecretvalue
+local scrubsecretvalues = _G.scrubsecretvalues
+
+local function IsValueAccessible(value)
+	if value == nil then
+		return true
+	end
+
+	if canaccessvalue then
+		return canaccessvalue(value)
+	end
+
+	if issecretvalue then
+		return not issecretvalue(value)
+	end
+
+	return true
+end
+
+local function SafeValue(value)
+	if value == nil or not IsValueAccessible(value) then
+		return nil
+	end
+
+	if scrubsecretvalues then
+		return scrubsecretvalues(value)
+	end
+
+	return value
+end
+
+local function SafeGUID(value)
+	value = SafeValue(value)
+	if value == nil then
+		return nil
+	end
+
+	local ok_tostring, string_value = pcall(tostring, value)
+	if not ok_tostring then
+		return nil
+	end
+
+	return string_value
+end
+
+local function SafeEqual(a, b)
+	if not IsValueAccessible(a) or not IsValueAccessible(b) then
+		return false
+	end
+
+	if a == nil or b == nil then
+		return a == nil and b == nil
+	end
+
+	if scrubsecretvalues then
+		a, b = scrubsecretvalues(a, b)
+	end
+
+	return a == b
+end
+
+local function SafeTableGet(t, key)
+	if t == nil or key == nil then
+		return nil
+	end
+	if (canaccesstable and not canaccesstable(t)) or not IsValueAccessible(key) then
+		return nil
+	end
+	local ok, value = pcall(function(tbl, k)
+		return tbl[k]
+	end, t, key)
+	if ok then
+		return value
+	end
+	return nil
+end
+
+local function SafeTableSet(t, key, value)
+	if t == nil or key == nil then
+		return false
+	end
+	if (canaccesstable and not canaccesstable(t)) or not IsValueAccessible(key) or not IsValueAccessible(value) then
+		return false
+	end
+	local ok = pcall(function(tbl, k, v)
+		tbl[k] = v
+	end, t, key, value)
+	return ok and true or false
+end
 
 local SINGLETON_CLASSIFICATIONS = {
 	"player",
@@ -363,6 +459,8 @@ end
 PitBull4.wow_retail = wow_retail
 PitBull4.wow_classic = wow_classic
 PitBull4.wow_expansion = wow_expansion
+PitBull4.wow_forever = Compat.IsForever
+PitBull4.Compat = Compat
 
 PitBull4.L = L
 
@@ -496,11 +594,12 @@ local frames_to_anchor = {}
 PitBull4.frames_to_anchor = frames_to_anchor
 
 local function get_best_unit(guid)
+	guid = SafeGUID(guid)
 	if not guid then
 		return nil
 	end
 
-	local guid_to_unit_ids__guid = guid_to_unit_ids[guid]
+	local guid_to_unit_ids__guid = SafeTableGet(guid_to_unit_ids, guid)
 	if not guid_to_unit_ids__guid then
 		return nil
 	end
@@ -510,35 +609,42 @@ end
 PitBull4.get_best_unit = get_best_unit
 
 local function refresh_guid(unit,new_guid)
+	new_guid = SafeGUID(new_guid)
 	if not NORMAL_UNITS[unit] then
 		return
 	end
 
-	local old_guid = unit_id_to_guid[unit]
-	if new_guid == old_guid then
+	local old_guid = SafeGUID(unit_id_to_guid[unit])
+	if SafeEqual(new_guid, old_guid) then
 		return
 	end
 	unit_id_to_guid[unit] = new_guid
 
 	if old_guid then
-		local guid_to_unit_ids__old_guid = guid_to_unit_ids[old_guid]
-		guid_to_unit_ids__old_guid[unit] = nil
-		if not next(guid_to_unit_ids__old_guid) then
-			guid_to_unit_ids[old_guid] = del(guid_to_unit_ids__old_guid)
+		local guid_to_unit_ids__old_guid = SafeTableGet(guid_to_unit_ids, old_guid)
+		if guid_to_unit_ids__old_guid then
+			guid_to_unit_ids__old_guid[unit] = nil
+			if not next(guid_to_unit_ids__old_guid) then
+				SafeTableSet(guid_to_unit_ids, old_guid, del(guid_to_unit_ids__old_guid))
+			end
 		end
 	end
 
 	if new_guid then
-		local guid_to_unit_ids__new_guid = guid_to_unit_ids[new_guid]
+		local guid_to_unit_ids__new_guid = SafeTableGet(guid_to_unit_ids, new_guid)
 		if not guid_to_unit_ids__new_guid then
 			guid_to_unit_ids__new_guid = new()
-			guid_to_unit_ids[new_guid] = guid_to_unit_ids__new_guid
+			if not SafeTableSet(guid_to_unit_ids, new_guid, guid_to_unit_ids__new_guid) then
+				guid_to_unit_ids__new_guid = nil
+			end
 		end
-		guid_to_unit_ids__new_guid[unit] = true
+		if guid_to_unit_ids__new_guid then
+			guid_to_unit_ids__new_guid[unit] = true
+		end
 	end
 
 	for frame in PitBull4:IterateWackyFrames() do
-		if frame.best_unit == unit or frame.guid == new_guid then
+		if frame.best_unit == unit then
 			frame:UpdateBestUnit()
 		end
 	end
@@ -843,11 +949,12 @@ function PitBull4:UpdateForLayout(layout)
 end
 
 local function guid_iter(guid, frame)
+	guid = SafeGUID(guid)
 	frame = next(all_frames, frame)
 	if not frame then
 		return nil
 	end
-	if frame.guid == guid then
+	if SafeEqual(SafeGUID(frame.guid), guid) then
 		return frame
 	end
 	return guid_iter(guid, frame)
@@ -860,6 +967,7 @@ end
 -- end
 -- @return iterator which returns frames
 function PitBull4:IterateFramesForGUID(guid)
+	guid = SafeGUID(guid)
 	if DEBUG then
 		expect(guid, 'typeof', 'string;nil')
 	end
@@ -877,7 +985,8 @@ local function guids_iter(guids, frame)
 		del(guids)
 		return nil
 	end
-	if guids[frame.guid] then
+	local frame_guid = SafeGUID(frame.guid)
+	if frame_guid and SafeTableGet(guids, frame_guid) then
 		return frame
 	end
 	return guids_iter(guids, frame)
@@ -897,8 +1006,9 @@ function PitBull4:IterateFramesForGUIDs(...)
 			expect(guid, 'typeof', 'string;nil')
 		end
 
+		guid = SafeGUID(guid)
 		if guid then
-			guids[guid] = true
+			SafeTableSet(guids, guid, true)
 		end
 	end
 
@@ -1288,8 +1398,6 @@ function PitBull4:OnInitialize()
 	db.RegisterCallback(self, "OnNewProfile")
 	db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
 
-	LibStub("LibDualSpec-1.0"):EnhanceDatabase(db, "PitBull4")
-
 	self.DEFAULT_COLORS = CopyTable(DATABASE_DEFAULTS.profile.colors.power)
 	DATABASE_DEFAULTS = nil
 
@@ -1338,6 +1446,9 @@ function PitBull4:OnInitialize()
 	if oRA3 then
 		oRA3.RegisterCallback(self, "OnTanksUpdated")
 	end
+
+	-- A saved binding may switch profiles immediately and invoke module callbacks.
+	self.SpecProfiles = namespace.SpecProfiles.Attach(self, db)
 end
 
 do
@@ -1671,8 +1782,74 @@ end
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
 
+local restricted_actions = _G.C_RestrictedActions
+local restriction_state_func = (restricted_actions and restricted_actions.GetAddOnRestrictionState) or _G.GetAddOnRestrictionState
+local restriction_state_enum = _G.Enum and _G.Enum.AddOnRestrictionState
+local restriction_type_enum = _G.Enum and _G.Enum.AddOnRestrictionType
+local combat_restriction_type = restriction_type_enum and restriction_type_enum.Combat or nil
+
+local function is_restricted_addon_state(state)
+	if not restriction_state_enum then
+		return false
+	end
+
+	return state == restriction_state_enum.Activating
+		or state == restriction_state_enum.Active
+end
+
+function PitBull4:RefreshRestrictedState()
+	if not Compat.HasRestrictionState then
+		self.restricted_state_pending = false
+		return false
+	end
+
+	local ok, state = pcall(restriction_state_func, combat_restriction_type or addon_name)
+	if not ok then
+		self.restricted_state_pending = false
+		return false
+	end
+
+	self.restricted_state_pending = is_restricted_addon_state(state)
+	return self.restricted_state_pending
+end
+
+function PitBull4:HasRestrictedUnitData()
+	return self.restricted_state_pending or false
+end
+
+function PitBull4:ADDON_RESTRICTION_STATE_CHANGED(_, restriction_type, state)
+	if combat_restriction_type and restriction_type and restriction_type ~= combat_restriction_type then
+		return
+	end
+
+	if is_restricted_addon_state(state) then
+		self.restricted_state_pending = true
+		return
+	end
+
+	local was_pending = self.restricted_state_pending
+	self.restricted_state_pending = false
+	if not was_pending then
+		return
+	end
+
+	self:RecheckConfigMode()
+	for _, module in self:IterateEnabledModules() do
+		if module.UpdateAll then
+			module:UpdateAll()
+		end
+	end
+	self:RecheckAllOpacities()
+end
+
 function PitBull4:OnEnable()
 	self:ScheduleRepeatingTimer(refresh_all_guids, 15)
+
+	self.world_ready = false
+	self:RefreshRestrictedState()
+	if Compat.HasRestrictionState then
+		Compat.RegisterOptionalEvent(self, "ADDON_RESTRICTION_STATE_CHANGED")
+	end
 
 	-- register unit change events
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
@@ -1774,7 +1951,19 @@ function PitBull4:CheckGUIDForUnitID(unit, is_pet)
 		-- for ids such as npctarget
 		return
 	end
-	local guid = UnitGUID(unit)
+	local raw_guid = UnitGUID(unit)
+	if not IsValueAccessible(raw_guid) then
+		-- Restricted maps deliberately protect NPC identity. This is still a
+		-- live unit, not a missing unit: discard the old public GUID mapping and
+		-- force every matching frame onto a fresh local identity revision.
+		refresh_guid(unit, nil)
+		for frame in self:IterateFramesForUnitID(unit, true) do
+			frame:UpdateProtectedUnit(true)
+		end
+		return
+	end
+
+	local guid = SafeGUID(raw_guid)
 	refresh_guid(unit,guid)
 
 	-- If there is no guid then we want to disallow upating the frame
@@ -1987,6 +2176,8 @@ end
 
 function PitBull4:PLAYER_ENTERING_WORLD()
 	self.leaving_world = nil
+	self.world_ready = true
+	self:RefreshRestrictedState()
 	refresh_all_guids()
 end
 

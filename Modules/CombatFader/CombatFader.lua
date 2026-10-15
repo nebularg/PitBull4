@@ -1,6 +1,12 @@
 
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
+local securecallfunction = _G.securecallfunction
+
+local IsValueAccessible = PitBull4.Utils.IsValueAccessible
+local SafeBoolean = PitBull4.Utils.SafeBoolean
+local SafeNumber = PitBull4.Utils.SafeNumber
+local SafeString = PitBull4.Utils.SafeString
 
 local PitBull4_CombatFader = PitBull4:NewModule("CombatFader")
 
@@ -41,18 +47,44 @@ end
 
 local power_check
 do
+	local function get_power()
+		local ok, current, maximum = pcall(function()
+			return UnitPower("player"), UnitPowerMax("player")
+		end)
+		if not ok or not IsValueAccessible(current) or not IsValueAccessible(maximum) then
+			return nil, nil
+		end
+
+		return SafeNumber(current), SafeNumber(maximum)
+	end
+
 	local function not_full()
-		return UnitPower("player") < UnitPowerMax("player")
+		local current, maximum = get_power()
+		if current == nil or maximum == nil then
+			return nil
+		end
+
+		return current < maximum
 	end
 	local function not_empty()
-		return UnitPower("player") > 0
+		local current = get_power()
+		if current == nil then
+			return nil
+		end
+
+		return current > 0
 	end
 	local function lunar_not_empty()
-		if IsPlayerSpell(202430) then -- Nature's Balance
-			local power = UnitPower("player")
-			return power < 50 or power > 51
+		local current = get_power()
+		if current == nil then
+			return nil
 		end
-		return UnitPower("player") > 0
+
+		if IsPlayerSpell(202430) then -- Nature's Balance
+			return current < 50 or current > 51
+		end
+
+		return current > 0
 	end
 	power_check = {
 		MANA = not_full,
@@ -69,16 +101,66 @@ do
 end
 
 function PitBull4_CombatFader:RecalculateState()
-	if UnitAffectingCombat("player") then
+	-- Config mode should never depend on live secure unit values. Midnight can
+	-- expose secret numeric values here, so keep preview frames fully visible.
+	if PitBull4:IsInConfigMode() then
 		state = "in_combat"
-	elseif UnitExists("target") then
+		return
+	end
+
+	if not PitBull4.world_ready then
+		state = "in_combat"
+		return
+	end
+
+	if PitBull4.HasRestrictedUnitData and PitBull4:HasRestrictedUnitData() then
+		state = "in_combat"
+		return
+	end
+
+	if SafeBoolean(UnitAffectingCombat("player"), true) then
+		state = "in_combat"
+	elseif SafeBoolean(UnitExists("target"), true) then
 		state = "target"
-	elseif UnitHealth("player") < UnitHealthMax("player") then
-		state = "hurt"
 	else
-		local _, power_token = UnitPowerType("player")
+		local ok, health, maximum_health = pcall(function()
+			return UnitHealth("player"), UnitHealthMax("player")
+		end)
+		if not ok or not IsValueAccessible(health) or not IsValueAccessible(maximum_health) then
+			state = "in_combat"
+			return
+		end
+		health = SafeNumber(health)
+		maximum_health = SafeNumber(maximum_health)
+		if health == nil or maximum_health == nil then
+			state = "in_combat"
+			return
+		end
+
+		local is_hurt = health < maximum_health
+		if is_hurt then
+			state = "hurt"
+			return
+		end
+		local _, power_token
+		local function get_power_type()
+			return UnitPowerType("player")
+		end
+		if securecallfunction then
+			_, power_token = securecallfunction(get_power_type)
+		else
+			_, power_token = get_power_type()
+		end
+		power_token = SafeString(power_token)
+		if power_token == nil then
+			state = "in_combat"
+			return
+		end
 		local func = power_check[power_token]
-		if func and func() then
+		local power_is_low = func and func()
+		if func and power_is_low == nil then
+			state = "in_combat"
+		elseif power_is_low then
 			state = "hurt"
 		else
 			state = "out_of_combat"

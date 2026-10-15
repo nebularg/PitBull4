@@ -6,6 +6,7 @@ local L = PitBull4.L
 -- luacheck: no global
 
 local PitBull4_HideBlizzard = PitBull4:NewModule("HideBlizzard")
+local module_active = false
 
 PitBull4_HideBlizzard:SetModuleType("custom")
 PitBull4_HideBlizzard:SetName(L["Hide Blizzard frames"])
@@ -25,11 +26,15 @@ PitBull4_HideBlizzard:SetDefaults({}, {
 })
 
 function PitBull4_HideBlizzard:OnEnable()
+	module_active = true
 	self:RegisterEvent("ADDON_LOADED")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrames")
+	self:RegisterEvent("GROUP_ROSTER_UPDATE", "UpdateFrames")
 	self:UpdateFrames()
 end
 
 function PitBull4_HideBlizzard:OnDisable()
+	module_active = false
 	self:UpdateFrames()
 end
 
@@ -38,226 +43,279 @@ function PitBull4_HideBlizzard:OnProfileChanged()
 end
 
 function PitBull4_HideBlizzard:ADDON_LOADED(_, addon)
-	if addon == "Blizzard_ArenaUI" or addon == "Blizzard_CompactRaidFrames" then
+	if addon == "Blizzard_ArenaUI" or addon == "Blizzard_Deprecated_ArenaUI"
+		or addon == "Blizzard_CompactRaidFrames" or addon == "Blizzard_UnitFrame"
+		or addon == "Blizzard_BuffFrame" or addon == "Blizzard_UIPanels_Game"
+		or addon == "Blizzard_EditMode" then
 		self:UpdateFrames()
 	end
 end
 
 local hiders = {}
-local currently_hidden = {}
-local reload_needed = false
-
-function PitBull4_HideBlizzard:UpdateFrames()
-	for name in pairs(hiders) do
-		if self:IsEnabled() and self.db.profile.global[name] then
-			if not currently_hidden[name] then
-				currently_hidden[name] = not hiders[name](self)
-			end
-		elseif currently_hidden[name] and not reload_needed then
-			reload_needed = true
-			self:Print(L["Showing hidden frames requires reloading the UI."])
-			LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
-		end
-	end
-end
-PitBull4_HideBlizzard.UpdateFrames = PitBull4:OutOfCombatWrapper(PitBull4_HideBlizzard.UpdateFrames)
-
------------------------------------------------------------------------------
-
-local noop = function() end
-local hide_frame = PitBull4:OutOfCombatWrapper(function(self) self:Hide() end)
-
+local frame_states = {}
+local generation_hooks = {}
+local generation_names = { "CompactPartyFrame_Generate", "CompactArenaFrame_Generate" }
+local updating = false
+local update_again = false
 local hidden_frame = CreateFrame("Frame")
 hidden_frame:Hide()
 
------------------------------------------------------------------------------
+-- This listener survives module disable so restoration requested during combat
+-- still finishes. Repeated changes are coalesced and use the latest profile.
+hidden_frame:SetScript("OnEvent", function(self)
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	PitBull4_HideBlizzard:UpdateFrames()
+end)
 
-local function simple_hook_frames(...)
+local function defer_update()
+	hidden_frame:RegisterEvent("PLAYER_REGEN_ENABLED")
+end
+
+local function hide_alpha(state)
+	if not state.alpha_hidden then
+		state.alpha = state.frame:GetAlpha()
+		state.alpha_hidden = true
+	end
+	state.applying = true
+	state.frame:SetAlpha(0)
+	state.applying = false
+end
+
+local function restore_alpha(state)
+	if state.alpha_hidden then
+		state.alpha_hidden = false
+		-- Alpha may be secret. Pass it directly to the native display method;
+		-- never compare, calculate, or convert it in addon code.
+		state.frame:SetAlpha(state.alpha)
+		state.alpha = nil
+	end
+end
+
+local function suppress_frame(state)
+	local frame = state.frame
+	if state.keep_parent then
+		-- Keep native cast/animation state, visibility, parenting, and Edit Mode
+		-- methods intact. Only suppress rendering and mouse input.
+		hide_alpha(state)
+		if not state.mouse_hidden then
+			state.mouse_enabled = frame:IsMouseEnabled()
+			state.mouse_hidden = true
+		end
+		state.applying = true
+		frame:EnableMouse(false)
+		state.applying = false
+	else
+		state.applying = true
+		frame:SetParent(hidden_frame)
+		state.applying = false
+		restore_alpha(state)
+	end
+end
+
+local function parent_changed(frame)
+	local state = frame_states[frame]
+	if not state.suppressed or state.applying or state.keep_parent then return end
+	local parent = frame:GetParent()
+	if parent == hidden_frame then return end
+	-- Retain Blizzard's latest parent request, including Edit Mode changes.
+	state.parent = parent
+	if InCombatLockdown() then
+		-- SetAlpha is cosmetic and combat-safe; SetParent is protected. Keep a
+		-- native combat reparent invisible until parenting can be reapplied.
+		hide_alpha(state)
+		defer_update()
+	else
+		suppress_frame(state)
+	end
+end
+
+local function alpha_changed(frame, alpha)
+	local state = frame_states[frame]
+	if not state.alpha_hidden or state.applying then return end
+	state.alpha = alpha
+	state.applying = true
+	frame:SetAlpha(0)
+	state.applying = false
+end
+
+local function mouse_changed(frame, enabled)
+	local state = frame_states[frame]
+	if not state.mouse_hidden or state.applying then return end
+	state.mouse_enabled = enabled
+	if InCombatLockdown() then
+		defer_update()
+	else
+		state.applying = true
+		frame:EnableMouse(false)
+		state.applying = false
+	end
+end
+
+local function track_frames(keep_parent, ...)
 	for i = 1, select("#", ...) do
 		local frame = select(i, ...)
 		if frame then
-			frame:UnregisterAllEvents()
-			frame:HookScript("OnShow", hide_frame)
-			frame:Hide()
-		elseif PitBull4.DEBUG then
-			geterrorhandler()(("PitBull4_HideBlizzard: Invalid simple frame at index %d"):format(i))
+			local state = frame_states[frame]
+			if not state then
+				state = { frame = frame, keep_parent = keep_parent }
+				frame_states[frame] = state
+				hooksecurefunc(frame, "SetParent", parent_changed)
+				hooksecurefunc(frame, "SetAlpha", alpha_changed)
+				if keep_parent then
+					hooksecurefunc(frame, "EnableMouse", mouse_changed)
+				end
+			end
+			state.wanted = true
 		end
 	end
 end
 
-local function hook_frames(raw, ...)
-	for i = 1, select("#", ...) do
-		local frame = select(i, ...)
-		if frame then
-			UnregisterUnitWatch(frame)
-			frame:UnregisterAllEvents()
-			frame:Hide()
-
-			if frame.manabar then frame.manabar:UnregisterAllEvents() end
-			if frame.healthbar then frame.healthbar:UnregisterAllEvents() end
-			if frame.spellbar then frame.spellbar:UnregisterAllEvents() end
-			if frame.powerBarAlt then frame.powerBarAlt:UnregisterAllEvents() end
-
-			if raw then
-				frame.Show = noop
-			else
-				frame:SetParent(hidden_frame)
-				frame:HookScript("OnShow", hide_frame)
-			end
-		elseif PitBull4.DEBUG then
-			geterrorhandler()(("PitBull4_HideBlizzard: Invalid frame at index %d"):format(i))
-		end
+local function frames_generated()
+	if module_active and PitBull4_HideBlizzard:IsEnabled() then
+		PitBull4_HideBlizzard:UpdateFrames()
 	end
+end
+
+function PitBull4_HideBlizzard:UpdateFrames()
+	if InCombatLockdown() then
+		defer_update()
+		return
+	end
+	if updating then
+		update_again = true
+		return
+	end
+	updating = true
+	repeat
+		update_again = false
+		-- Modern compact frames may be generated after login or an option
+		-- change without an ADDON_LOADED event. Install each post-hook once.
+		for _, name in ipairs(generation_names) do
+			if not generation_hooks[name] and type(_G[name]) == "function" then
+				generation_hooks[name] = true
+				hooksecurefunc(name, frames_generated)
+			end
+		end
+		for _, state in pairs(frame_states) do state.wanted = false end
+		if module_active and self:IsEnabled() then
+			for name, hider in pairs(hiders) do
+				if self.db.profile.global[name] then hider(self) end
+			end
+		end
+		for frame, state in pairs(frame_states) do
+			if state.wanted then
+				if not state.suppressed then
+					state.parent = frame:GetParent()
+					state.suppressed = true
+					suppress_frame(state)
+				elseif not state.keep_parent and frame:GetParent() ~= hidden_frame then
+					suppress_frame(state)
+				elseif state.keep_parent and frame:IsMouseEnabled() then
+					state.applying = true
+					frame:EnableMouse(false)
+					state.applying = false
+				end
+			elseif state.suppressed then
+				-- Release suppression before native OnShow/parent callbacks run.
+				-- Never force Show(): targets, pets, bosses, cast bars, etc. retain
+				-- Blizzard's current unit-watch and contextual visibility state.
+				state.suppressed = false
+				if not state.keep_parent then frame:SetParent(state.parent) end
+				restore_alpha(state)
+				if state.mouse_hidden then
+					state.mouse_hidden = false
+					frame:EnableMouse(state.mouse_enabled)
+					state.mouse_enabled = nil
+				end
+				state.parent = nil
+			end
+		end
+	until not update_again
+	updating = false
 end
 
 -----------------------------------------------------------------------------
 
 function hiders:player()
 	if ClassicExpansionAtLeast(LE_EXPANSION_CATACLYSM) then
-		hook_frames(false, PlayerFrame, PlayerFrameAlternateManaBar or AlternatePowerBar)
+		track_frames(false, PlayerFrame, PlayerFrameAlternateManaBar or AlternatePowerBar)
 	else
-		hook_frames(false, PlayerFrame)
+		track_frames(false, PlayerFrame)
 	end
-	-- BuffFrame_Update()
-	-- BuffFrame needs an inital update, but calling directly will taint things
-	PlayerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-	PlayerFrame:RegisterEvent("UNIT_ENTERING_VEHICLE")
-	PlayerFrame:RegisterEvent("UNIT_ENTERED_VEHICLE")
-	PlayerFrame:RegisterEvent("UNIT_EXITING_VEHICLE")
-	PlayerFrame:RegisterEvent("UNIT_EXITED_VEHICLE")
-	PlayerFrame:SetMovable(true)
-	PlayerFrame:SetUserPlaced(true)
-	PlayerFrame:SetDontSavePosition(true)
-
-	hook_frames(false, PetFrame) -- this should be parented to PlayerFrame, but people say it has started showing again?
+	track_frames(false, PetFrame)
 end
 
 if ClassicExpansionAtLeast(LE_EXPANSION_CATACLYSM) then
 	function hiders:runebar()
-		simple_hook_frames(RuneFrame, WarlockPowerFrame, MonkHarmonyBarFrame, PaladinPowerBarFrame, MageArcaneChargesFrame, EssencePlayerFrame)
+		local monk_bar = MonkHarmonyBarFrame
+		local paladin_bar = PaladinPowerBarFrame
+		if PitBull4.wow_classic then
+			monk_bar = monk_bar or MonkHarmonyBar
+			paladin_bar = paladin_bar or PaladinPowerBar
+		end
+		-- Class-resource frames are optional and use different Classic names.
+		-- Modern ClassPowerBar:GetUnit(), Setup(), and UpdateMaxPower() read
+		-- the native grandparent's unit. Reparenting the bar breaks that chain,
+		-- including combat events on a hidden/inactive WarlockPowerFrame.
+		-- Keep modern parenting intact; retain legacy Classic suppression.
+		track_frames(not PitBull4.wow_classic, RuneFrame, WarlockPowerFrame, monk_bar, paladin_bar, MageArcaneChargesFrame, EssencePlayerFrame)
 	end
 end
 
 function hiders:party()
 	if PartyFrame then
-		hook_frames(false, PartyFrame)
-		for memberFrame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
-			if memberFrame.HealthBarContainer then -- XXX wow_tww
-				hook_frames(false, memberFrame, memberFrame.HealthBarContainer.HealthBar, memberFrame.ManaBar)
-			else
-				hook_frames(false, memberFrame, memberFrame.HealthBar, memberFrame.ManaBar)
-			end
-		end
-		PartyFrame.PartyMemberFramePool:ReleaseAll()
+		track_frames(false, PartyFrame)
 	else
-		for i = 1, MAX_PARTY_MEMBERS do
+		for i = 1, MAX_PARTY_MEMBERS or 4 do
 			local name = "PartyMemberFrame" .. i
-			hook_frames(false, _G[name], _G[name .. "HealthBar"], _G[name .. "ManaBar"])
+			track_frames(false, _G[name])
 		end
 	end
-
-	UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
-
-	if CompactPartyFrame then
-		hook_frames(false, CompactPartyFrame)
-	end
+	track_frames(false, CompactPartyFrame)
 end
 
-do
-	local function hide_raid()
-			CompactRaidFrameManager:UnregisterAllEvents()
-			CompactRaidFrameContainer:UnregisterAllEvents()
-			if InCombatLockdown() then return end
-
-			CompactRaidFrameManager:Hide()
-			local raid_shown = CompactRaidFrameManager_GetSetting("IsShown")
-			if raid_shown and raid_shown ~= "0" then
-				CompactRaidFrameManager_SetSetting("IsShown", "0")
-			end
-	end
-
-	function hiders:raid()
-		if not CompactRaidFrameManager then
-			-- Blizzard_CompactRaidFrames isn't loaded
-			return true
-		end
-
-		hooksecurefunc("CompactRaidFrameManager_UpdateShown", function()
-			if PitBull4_HideBlizzard:IsEnabled() and PitBull4_HideBlizzard.db.profile.global.raid then
-				hide_raid()
-			end
-		end)
-
-		hide_raid()
-		CompactRaidFrameContainer:HookScript("OnShow", hide_raid)
-		CompactRaidFrameManager:HookScript("OnShow", hide_raid)
-	end
+function hiders:raid()
+	-- Do not overwrite IsShown or unregister roster events. Blizzard remains
+	-- responsible for the user's raid/raid-style-party display preferences.
+	track_frames(false, CompactRaidFrameManager, CompactRaidFrameContainer, CompactPartyFrame)
 end
 
 function hiders:target()
-	hook_frames(false, TargetFrame, ComboFrame, TargetFrameToT)
+	track_frames(false, TargetFrame, ComboFrame, TargetFrameToT)
 end
 
 function hiders:focus()
-	hook_frames(false, FocusFrame, FocusFrameToT)
+	track_frames(false, FocusFrame, FocusFrameToT)
 end
 
 function hiders:castbar()
-	hook_frames(true, PlayerCastingBarFrame or CastingBarFrame, PetCastingBarFrame)
+	track_frames(true, PlayerCastingBarFrame or CastingBarFrame, PetCastingBarFrame)
 end
 
 function hiders:aura()
-	hook_frames(false, BuffFrame, TemporaryEnchantFrame or DebuffFrame)
+	track_frames(false, BuffFrame, TemporaryEnchantFrame or DebuffFrame)
 end
 
 function hiders:altpower()
-	hook_frames(false, PlayerPowerBarAlt)
+	-- Its native OnHide calls Setup(), which reparents the bar and would
+	-- undo ancestor suppression. Preserve that lifecycle like the cast bars.
+	track_frames(true, PlayerPowerBarAlt)
 end
 
 function hiders:boss()
-	for i = 1, MAX_BOSS_FRAMES do
+	for i = 1, MAX_BOSS_FRAMES or 5 do
 		local name = "Boss" .. i .. "TargetFrame"
-		if _G[name].TargetFrameContent then -- retail
-			if _G[name].TargetFrameContent.TargetFrameContentMain.HealthBarsContainer then -- XXX wow_tww
-				hook_frames(false, _G[name], _G[name].TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar, _G[name].TargetFrameContent.TargetFrameContentMain.ManaBar)
-			else
-				hook_frames(false, _G[name], _G[name].TargetFrameContent.TargetFrameContentMain.HealthBar, _G[name].TargetFrameContent.TargetFrameContentMain.ManaBar)
-			end
-		else -- classic
-			hook_frames(false, _G[name], _G[name .. "HealthBar"], _G[name .. "ManaBar"])
-		end
+		track_frames(false, _G[name])
 	end
 end
 
-do
-	-- XXX untested
-	local function hide_arena()
-		hooksecurefunc(CompactArenaFrame, "UpdateVisibility", function(self)
-			if InCombatLockdown() then return end
-			if PitBull4_HideBlizzard:IsEnabled() and PitBull4_HideBlizzard.db.profile.global.arena then
-				self:SetParent(hidden_frame)
-			end
-		end)
+function hiders:arena()
+	if ArenaEnemyFramesContainer then -- Retail/Forever bg flag carriers
+		track_frames(false, ArenaEnemyFramesContainer, ArenaEnemyPrepFramesContainer, ArenaEnemyMatchFramesContainer)
+	else -- Classic or an unloaded optional arena addon
+		track_frames(false, ArenaPrepFrames, ArenaEnemyFrames)
 	end
-
-	function hiders:arena()
-		if not ArenaEnemyFramesContainer and not ArenaEnemyFrames then
-			return true
-		end
-
-		if ArenaEnemyFramesContainer then -- retail bg flag carriers
-			hook_frames(true, ArenaEnemyFramesContainer, ArenaEnemyPrepFramesContainer, ArenaEnemyMatchFramesContainer)
-		elseif ArenaEnemyFrames then -- classic
-			hook_frames(false, ArenaPrepFrames, ArenaEnemyFrames)
-		end
-
-		-- retail
-		if CompactArenaFrame then
-			hide_arena()
-		elseif CompactArenaFrame_Generate then
-			hooksecurefunc(CompactArenaFrame_Generate, hide_arena)
-		end
-	end
+	track_frames(false, CompactArenaFrame)
 end
 
 -----------------------------------------------------------------------------
@@ -354,16 +412,5 @@ PitBull4_HideBlizzard:SetGlobalOptionsFunction(function(self)
 		get = get,
 		set = set,
 		hidden = hidden,
-	}, 'sep', {
-		type = 'header',
-		name = '',
-		order = -2,
-		hidden = function() return not self:IsEnabled() or not reload_needed end,
-	}, 'reloadui', {
-		type = 'execute',
-		name = 'Reload UI',
-		order = -1,
-		func = function() C_UI.Reload() end,
-		hidden = function() return not reload_needed end,
 	}
 end)

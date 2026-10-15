@@ -31,7 +31,7 @@ local function call_texture_function(self, frame)
 	-- Workaround for similar error to ticket 475 by checking that unit is set.
 	-- Thhe extra frame.unit is temporary till we figure out how unit is getting
 	-- unset when a guid is set.
-	if frame.guid and frame.unit then
+	if PitBull4.Utils.FrameHasUnit(frame) and frame.unit then
 		tex = self:GetTexture(frame)
 	end
 	if not tex and frame.force_show and self.GetExampleTexture then
@@ -58,7 +58,7 @@ local function call_tex_coord_function(self, frame, texture)
 		return 0, 1, 0, 1
 	end
 	local c1, c2, c3, c4
-	if frame.guid then
+	if PitBull4.Utils.FrameHasUnit(frame) then
 		c1, c2, c3, c4 = self:GetTexCoord(frame, texture)
 	end
 	if not c4 and frame.force_show and self.GetExampleTexCoord then

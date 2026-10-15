@@ -172,7 +172,7 @@ local function call_opacity_function(self, frame)
 	local value, priority
 	-- Extra frame.unit test here is a workaround for the same root issue
 	-- as we have in BarModules.  See ticket 475.
-	if frame.guid and frame.unit then
+	if PitBull4.Utils.FrameHasUnit(frame) and frame.unit then
 		value, priority = self:GetOpacity(frame)
 	end
 	if not value or value >= opacity_max or value ~= value then

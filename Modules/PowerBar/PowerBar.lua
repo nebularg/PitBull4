@@ -1,9 +1,11 @@
 
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
+local IsValueAccessible = PitBull4.Compat.IsValueAccessible
 
 local EXAMPLE_VALUE = 0.6
 local PowerBarColor = _G.PowerBarColor
+local securecallfunction = _G.securecallfunction
 
 local PitBull4_PowerBar = PitBull4:NewModule("PowerBar")
 
@@ -18,7 +20,7 @@ PitBull4_PowerBar:SetDefaults({
 	use_atlas = false,
 })
 
-local guids_to_update = {}
+local units_to_update = {}
 local type_to_token = {
 	"MANA", "RAGE", "FOCUS", "ENERGY", "CHI",
 	"RUNES", "RUNIC_POWER", "SOUL_SHARDS", "LUNAR_POWER",
@@ -34,10 +36,23 @@ end
 local timerFrame = CreateFrame("Frame")
 timerFrame:Hide()
 
+local function to_safe_number(value)
+	if not IsValueAccessible(value) then
+		return nil
+	end
+	if type(value) == "number" then
+		return value
+	elseif type(value) == "string" then
+		return tonumber(value)
+	end
+end
+
 function PitBull4_PowerBar:OnEnable()
+	self:RegisterEvent("UNIT_POWER_UPDATE", "UNIT_POWER_FREQUENT")
 	self:RegisterEvent("UNIT_POWER_FREQUENT")
 	self:RegisterEvent("UNIT_MAXPOWER", "UNIT_POWER_FREQUENT")
 	self:RegisterEvent("UNIT_DISPLAYPOWER")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("UNIT_POWER_BAR_SHOW", "UNIT_DISPLAYPOWER")
 	self:RegisterEvent("UNIT_POWER_BAR_HIDE", "UNIT_DISPLAYPOWER")
 
@@ -49,41 +64,116 @@ function PitBull4_PowerBar:OnDisable()
 end
 
 timerFrame:SetScript("OnUpdate", function()
-	if next(guids_to_update) then
+	if next(units_to_update) then
 		for frame in PitBull4:IterateFrames() do
-			if guids_to_update[frame.guid] then
+			local unit = frame.best_unit or frame.unit
+			if unit and units_to_update[unit] then
 				PitBull4_PowerBar:Update(frame)
 			end
 		end
-		wipe(guids_to_update)
+		wipe(units_to_update)
 	end
 end)
 
+local function get_power_value(unit, hide_no_mana, hide_no_power)
+	local ok, result = pcall(function()
+		local max = to_safe_number(UnitPowerMax(unit))
+		local power_type = to_safe_number(UnitPowerType(unit))
+
+		if hide_no_mana and power_type ~= 0 then
+			return nil
+		elseif hide_no_power and (not max or max <= 0) then
+			return nil
+		end
+
+		if not max then
+			return nil
+		end
+		if max == 0 then
+			return 0
+		end
+
+		local current = to_safe_number(UnitPower(unit))
+		if not current then
+			return nil
+		end
+		local value = current / max
+		if value < 0 then
+			return 0
+		elseif value > 1 then
+			return 1
+		end
+		return value
+	end)
+	if ok then
+		return result
+	end
+	return nil
+end
+
 function PitBull4_PowerBar:GetValue(frame)
-	local unit = frame.unit
+	if PitBull4:IsInConfigMode() then
+		return EXAMPLE_VALUE
+	end
+
+	if PitBull4.HasRestrictedUnitData and PitBull4:HasRestrictedUnitData() then
+		if frame.force_show then
+			return EXAMPLE_VALUE
+		end
+		return nil
+	end
+
+	local unit = frame.best_unit or frame.unit
 	local layout_db = self:GetLayoutDB(frame)
-	local max = UnitPowerMax(unit)
+	return get_power_value(unit, layout_db.hide_no_mana, layout_db.hide_no_power)
+end
 
-	if layout_db.hide_no_mana and UnitPowerType(unit) ~= 0 then
-		return nil
-	elseif layout_db.hide_no_power and max <= 0 then
-		return nil
+function PitBull4_PowerBar:GetRawValue(frame)
+	local unit = frame.best_unit or frame.unit
+	if not unit then
+		return nil, nil
 	end
-
-	if max == 0 then
-		return 0
+	local power_type = to_safe_number(UnitPowerType(unit))
+	local layout_db = self:GetLayoutDB(frame)
+	if power_type ~= nil and layout_db.hide_no_mana and power_type ~= 0 then
+		return nil, nil
 	end
+	local maximum = UnitPowerMax(unit, power_type)
+	local public_maximum = to_safe_number(maximum)
+	if layout_db.hide_no_power and public_maximum ~= nil and public_maximum <= 0 then
+		return nil, nil
+	end
+	return UnitPower(unit, power_type), maximum
+end
 
-	return UnitPower(unit) / max
+function PitBull4_PowerBar:GetNativeValue(frame, deficit)
+	local unit = frame.best_unit or frame.unit
+	local curve = deficit and PitBull4.Compat.GetReverseCurve() or nil
+	if unit and UnitPowerPercent and (not deficit or curve) then
+		return UnitPowerPercent(unit, nil, false, curve)
+	end
 end
 
 function PitBull4_PowerBar:GetExampleValue(frame)
 	return EXAMPLE_VALUE
 end
 
+local function get_unit_power_type(unit)
+	return UnitPowerType(unit)
+end
+
 function PitBull4_PowerBar:GetColor(frame, value)
-	local unit = frame.unit
-	local power_type, power_token, r, g, b = UnitPowerType(unit)
+	if PitBull4:IsInConfigMode() or (PitBull4.HasRestrictedUnitData and PitBull4:HasRestrictedUnitData()) then
+		return self:GetExampleColor(frame)
+	end
+
+	local unit = frame.best_unit or frame.unit
+	local power_type, power_token, r, g, b
+	if securecallfunction then
+		power_type, power_token, r, g, b = securecallfunction(get_unit_power_type, unit)
+	else
+		power_type, power_token, r, g, b = get_unit_power_type(unit)
+	end
 	local color = PitBull4.PowerColors[power_token]
 
 	if not color then
@@ -103,24 +193,27 @@ end
 
 function PitBull4_PowerBar:UNIT_POWER_FREQUENT(event, unit, power_type)
 	if not unit then return end
+	self:UpdateForUnitID(unit)
 	local _, power_token = UnitPowerType(unit)
 	-- fix units that have a special power type but update as ENERGY
 	if not PowerBarColor[power_token] then
 		power_token = "ENERGY"
 	end
 	if power_token == power_type then
-		local guid = UnitGUID(unit)
-		if guid then
-			guids_to_update[guid] = true
-		end
+		units_to_update[unit] = true
 	end
 end
 
+function PitBull4_PowerBar:PLAYER_ENTERING_WORLD()
+	self:UpdateAll()
+end
+
 function PitBull4_PowerBar:UNIT_DISPLAYPOWER(event, unit)
-	local guid = unit and UnitGUID(unit)
-	if guid then
-		guids_to_update[guid] = true
+	if type(unit) ~= "string" then
+		return
 	end
+	self:UpdateForUnitID(unit)
+	units_to_update[unit] = true
 end
 
 PitBull4_PowerBar:SetLayoutOptionsFunction(function(self)

@@ -1,5 +1,6 @@
 
 local PitBull4 = _G.PitBull4
+local C_Spell = PitBull4.Compat.Spell
 local L = PitBull4.L
 
 local wow_retail = PitBull4.wow_retail

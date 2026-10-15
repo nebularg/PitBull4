@@ -1,6 +1,22 @@
 
+local _G = _G
+
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
+local C_PvP = _G.C_PvP
+local C_Secrets = _G.C_Secrets
+
+local UnitFactionGroup = _G.UnitFactionGroup
+local UnitHonorLevel = _G.UnitHonorLevel
+local UnitIsFriend = _G.UnitIsFriend
+local UnitIsMercenary = _G.UnitIsMercenary
+local UnitIsPVP = _G.UnitIsPVP
+local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
+local scrub = _G.scrub
+local scrubsecretvalues = _G.scrubsecretvalues
+local issecretvalue = _G.issecretvalue
+
+local ShouldUnitIdentityBeSecret = C_Secrets and C_Secrets.ShouldUnitIdentityBeSecret
 
 local PitBull4_PvPIcon = PitBull4:NewModule("PvPIcon")
 
@@ -37,6 +53,45 @@ local TEX_COORDS = {
 	[ [[Interface\TargetingFrame\UI-PVP-Alliance]] ] = {0.07, 0.58, 0.06, 0.57},
 }
 
+local function scrub_secret_value(value)
+	if scrub then
+		return scrub(value)
+	end
+
+	if scrubsecretvalues then
+		return scrubsecretvalues(value)
+	end
+
+	if issecretvalue and issecretvalue(value) then
+		return nil
+	end
+
+	return value
+end
+
+local function is_public_true(value)
+	value = scrub_secret_value(value)
+	return type(value) == "boolean" and value
+end
+
+local function is_unit_identity_secret(unit)
+	return ShouldUnitIdentityBeSecret and is_public_true(ShouldUnitIdentityBeSecret(unit)) or false
+end
+
+local function get_public_honor_badge(unit)
+	if not UnitHonorLevel or not C_PvP or not C_PvP.GetHonorRewardInfo then
+		return nil
+	end
+
+	local honor_level = scrub_secret_value(UnitHonorLevel(unit))
+	if type(honor_level) ~= "number" then
+		return nil
+	end
+
+	local honor_reward_info = C_PvP.GetHonorRewardInfo(honor_level)
+	return honor_reward_info and honor_reward_info.badgeFileDataID or nil
+end
+
 function PitBull4_PvPIcon:OnEnable()
 	self:RegisterEvent("UPDATE_FACTION")
 	self:RegisterEvent("UNIT_FACTION", "UPDATE_FACTION")
@@ -49,29 +104,30 @@ end
 function PitBull4_PvPIcon:GetTexture(frame)
 	local unit = frame.unit
 	local show_prestige = self:GetLayoutDB(frame).show_prestige
+	if is_unit_identity_secret(unit) then
+		return nil
+	end
 
-	local faction = UnitFactionGroup(unit)
-	if UnitIsPVPFreeForAll(unit) then
-		if ClassicExpansionAtLeast(LE_EXPANSION_LEGION) then -- XXX Legion added the prestige system, BfA simplified it (and added C_PvP.GetHonorRewardInfo)
-			local honorLevel = UnitHonorLevel(unit)
-			local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel)
-			if honorRewardInfo and show_prestige then
-				-- self.prestigePortrait:SetAtlas("honorsystem-portrait-neutral", false)
-				return honorRewardInfo.badgeFileDataID
+	local faction = scrub_secret_value(UnitFactionGroup(unit))
+	if is_public_true(UnitIsPVPFreeForAll(unit)) then
+		if show_prestige and ClassicExpansionAtLeast(LE_EXPANSION_LEGION) then -- XXX Legion added the prestige system, BfA simplified it (and added C_PvP.GetHonorRewardInfo)
+			local honor_badge = get_public_honor_badge(unit)
+			if honor_badge then
+				return honor_badge
 			end
 		end
 		return [[Interface\TargetingFrame\UI-PVP-FFA]]
-	elseif faction and faction ~= "Neutral" and UnitIsPVP(unit) then
+	elseif type(faction) == "string" and faction ~= "Neutral" and is_public_true(UnitIsPVP(unit)) then
 		if ClassicExpansionAtLeast(LE_EXPANSION_LEGION) then
 			-- Handle "Mercenary Mode" for player
-			if unit == "player" and UnitIsMercenary(unit) then
-				faction = OPPOSITE_PLAYER_FACTION[faction]
+			if unit == "player" and is_public_true(UnitIsMercenary(unit)) then
+				faction = OPPOSITE_PLAYER_FACTION[faction] or faction
 			end
-			local honorLevel = UnitHonorLevel(unit)
-			local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel)
-			if honorRewardInfo and show_prestige then
-				-- self.prestigePortrait:SetAtlas("honorsystem-portrait-"..faction, false)
-				return honorRewardInfo.badgeFileDataID
+			if show_prestige then
+				local honor_badge = get_public_honor_badge(unit)
+				if honor_badge then
+					return honor_badge
+				end
 			end
 		end
 		return [[Interface\TargetingFrame\UI-PVP-]] .. faction
@@ -85,15 +141,19 @@ function PitBull4_PvPIcon:GetExampleTexture(frame)
 		return [[Interface\TargetingFrame\UI-PVP-FFA]]
 	end
 
-	local player_faction = UnitFactionGroup("player")
-	if not player_faction or player_faction == "Neutral" then
+	local player_faction = scrub_secret_value(UnitFactionGroup("player"))
+	if type(player_faction) ~= "string" or player_faction == "Neutral" then
 		player_faction = "FFA"
 	end
 
-	if FRIENDLY_CLASSIFICATIONS[classification] or (frame.guid and frame.unit and UnitIsFriend("player", frame.unit)) then
+	local is_friendly = FRIENDLY_CLASSIFICATIONS[classification] == true
+	if not is_friendly and frame.unit then
+		is_friendly = is_public_true(UnitIsFriend("player", frame.unit))
+	end
+	if is_friendly then
 		return [[Interface\TargetingFrame\UI-PVP-]] .. player_faction
 	end
-	return [[Interface\TargetingFrame\UI-PVP-]] .. OPPOSITE_PLAYER_FACTION[player_faction]
+	return [[Interface\TargetingFrame\UI-PVP-]] .. (OPPOSITE_PLAYER_FACTION[player_faction] or "FFA")
 end
 
 function PitBull4_PvPIcon:UPDATE_FACTION(event, unit)

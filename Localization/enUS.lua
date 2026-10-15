@@ -14,6 +14,10 @@ L["Show Evoker Essence charges."] = true
 L["Hostile"] = _G.FACTION_STANDING_LABEL2
 L["Hostile, Long-range"] = true
 L["Friendly"] = _G.FACTION_STANDING_LABEL5
+L["Enable spec profiles"] = true
+L["When enabled, your profile changes with your specialization."] = true
+L["Specialization %d"] = true
+L["%s - Active"] = true
 
 
 L["%s can dispel"] = true
@@ -396,6 +400,7 @@ L["Extra friend debuffs"] = true
 L["Extra friend highlights"] = true
 L["Fade"] = true
 L["Fade the bar changes."] = true
+L["Protected health and power use native smoothing. Fade and custom duration apply when values are readable."] = true
 L["Faders"] = true
 L["Faders cause the unit frame to become more or less opaque on certain conditions."] = true
 L["Failed"] = true

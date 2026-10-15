@@ -20,7 +20,7 @@ function PitBull4_ExperienceBar:OnEnable()
 	self:RegisterEvent("PLAYER_XP_UPDATE")
 	self:RegisterEvent("UPDATE_EXHAUSTION", "PLAYER_XP_UPDATE")
 	self:RegisterEvent("PLAYER_LEVEL_UP", "PLAYER_XP_UPDATE")
-	self:RegisterEvent("UPDATE_EXPANSION_LEVEL")
+	PitBull4.Compat.RegisterOptionalEvent(self, "UPDATE_EXPANSION_LEVEL")
 end
 
 function PitBull4_ExperienceBar:PLAYER_XP_UPDATE()

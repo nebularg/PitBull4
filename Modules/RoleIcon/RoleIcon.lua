@@ -1,6 +1,15 @@
 
+local _G = _G
+
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
+
+local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
+local scrub = _G.scrub
+local scrubsecretvalues = _G.scrubsecretvalues
+local issecretvalue = _G.issecretvalue
+
+local ROLE_ICON_TEXTURE = [[Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES]]
 
 local PitBull4_RoleIcon = PitBull4:NewModule("RoleIcon")
 
@@ -17,17 +26,44 @@ function PitBull4_RoleIcon:OnEnable()
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED")
 end
 
-function PitBull4_RoleIcon:GetTexture(frame)
-	local role = UnitGroupRolesAssigned(frame.unit)
-	if role == "NONE" then
+local function scrub_secret_value(value)
+	if scrub then
+		return scrub(value)
+	end
+
+	if scrubsecretvalues then
+		return scrubsecretvalues(value)
+	end
+
+	if issecretvalue and issecretvalue(value) then
 		return nil
 	end
 
-	return [[Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES]]
+	return value
+end
+
+local function get_public_role(frame)
+	if not UnitGroupRolesAssigned then
+		return nil
+	end
+
+	local role = scrub_secret_value(UnitGroupRolesAssigned(frame.unit))
+	if type(role) == "string" then
+		return role
+	end
+end
+
+function PitBull4_RoleIcon:GetTexture(frame)
+	local role = get_public_role(frame)
+	if not role or role == "NONE" then
+		return nil
+	end
+
+	return ROLE_ICON_TEXTURE
 end
 
 function PitBull4_RoleIcon:GetExampleTexture(frame)
-	return [[Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES]]
+	return ROLE_ICON_TEXTURE
 end
 
 local tex_coords = {
@@ -41,7 +77,7 @@ tex_coords[2] = tex_coords.HEALER
 tex_coords[3] = tex_coords.DAMAGER
 
 function PitBull4_RoleIcon:GetTexCoord(frame)
-	local role = UnitGroupRolesAssigned(frame.unit)
+	local role = get_public_role(frame)
 	local tex_coord = tex_coords[role]
 	if not tex_coord then
 		return nil
@@ -51,7 +87,7 @@ function PitBull4_RoleIcon:GetTexCoord(frame)
 end
 
 function PitBull4_RoleIcon:GetExampleTexCoord(frame)
-	local role = UnitGroupRolesAssigned(frame.unit)
+	local role = get_public_role(frame)
 	local tex_coord = tex_coords[role] or tex_coords[math.random(1, 3)]
 
 	return tex_coord[1], tex_coord[2], tex_coord[3], tex_coord[4]

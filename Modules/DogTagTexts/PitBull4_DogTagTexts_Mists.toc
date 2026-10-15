@@ -26,6 +26,7 @@
 ## Dependencies: PitBull4
 ## OptionalDeps: LibDogTag-3.0, LibDogTag-Unit-3.0
 ## Version: @project-version@
+## X-PitBull4-Manifest: PitBull4_DogTagTexts_Mists.toc
 ## IconTexture: Interface\AddOns\PitBull4\pitbull.tga
 ## X-PitBull4-DefaultState: disabled
 

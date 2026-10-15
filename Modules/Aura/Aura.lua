@@ -5,6 +5,76 @@ local L = PitBull4.L
 
 local PitBull4_Aura = PitBull4:NewModule("Aura")
 
+local C_Secrets = _G.C_Secrets
+local C_UnitAuras = _G.C_UnitAuras
+local GetAuraDataByIndex = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex
+local GetAuraDataByAuraInstanceID = C_UnitAuras and C_UnitAuras.GetAuraDataByAuraInstanceID
+local ShouldUnitAuraIndexBeSecret = C_Secrets and C_Secrets.ShouldUnitAuraIndexBeSecret
+local ShouldUnitAuraInstanceBeSecret = C_Secrets and C_Secrets.ShouldUnitAuraInstanceBeSecret
+local issecrettable = _G.issecrettable
+local pcall = _G.pcall
+local MAX_AURA_SCAN_INDEX = 255
+
+local function query_will_be_secret(predicate, ...)
+	if not predicate then
+		return false
+	end
+
+	local ok, is_secret = pcall(predicate, ...)
+	return ok and is_secret or false
+end
+
+local function is_secret_aura_table(aura)
+	if aura == nil or not issecrettable then
+		return false
+	end
+
+	local ok, is_secret = pcall(issecrettable, aura)
+	return not ok or is_secret
+end
+
+-- Midnight blocks tainted callers from querying aura entries whose data is
+-- secret. Return a second true value when the caller should skip this index;
+-- a normal nil aura instead marks the end of the list. Older clients do not
+-- expose C_Secrets and continue through the original C_UnitAuras path.
+function PitBull4_Aura.GetAccessibleAuraDataByIndex(unit, index, filter)
+	if index > MAX_AURA_SCAN_INDEX then
+		return nil, false
+	end
+	if query_will_be_secret(ShouldUnitAuraIndexBeSecret, unit, index, filter) then
+		return nil, true
+	end
+	if not GetAuraDataByIndex then
+		return nil, false
+	end
+
+	local ok, aura = pcall(GetAuraDataByIndex, unit, index, filter)
+	if not ok then
+		return nil, false
+	end
+	if is_secret_aura_table(aura) then
+		return nil, true
+	end
+
+	return aura, false
+end
+
+function PitBull4_Aura.GetAccessibleAuraDataByAuraInstanceID(unit, aura_instance_id)
+	if query_will_be_secret(ShouldUnitAuraInstanceBeSecret, unit, aura_instance_id) then
+		return nil
+	end
+	if not GetAuraDataByAuraInstanceID then
+		return nil
+	end
+
+	local ok, aura = pcall(GetAuraDataByAuraInstanceID, unit, aura_instance_id)
+	if not ok or is_secret_aura_table(aura) then
+		return nil
+	end
+
+	return aura
+end
+
 PitBull4_Aura:SetModuleType("custom")
 PitBull4_Aura:SetName(L["Aura"])
 PitBull4_Aura:SetDescription(L["Shows buffs and debuffs for PitBull4 frames."])

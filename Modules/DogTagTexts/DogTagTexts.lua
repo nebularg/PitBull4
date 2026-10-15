@@ -1,3 +1,4 @@
+local C_AddOns = _G.PitBull4.Compat.AddOns
 if select(5, C_AddOns.GetAddOnInfo("PitBull4_" .. (debugstack():match("[o%.][d%.][u%.]les\\(.-)\\") or ""))) ~= "MISSING" then return end
 
 local PitBull4 = _G.PitBull4

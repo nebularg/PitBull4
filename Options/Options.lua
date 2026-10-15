@@ -1,4 +1,5 @@
 local _G = _G
+local _, namespace = ...
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
@@ -125,12 +126,16 @@ function PitBull4.Options.OpenConfig()
 	options.args.profile.args.export.order = 2
 	options.args.profile.args.import.order = 3
 
-	local LibDualSpec = LibStub("LibDualSpec-1.0", true)
-	if LibDualSpec and PitBull4.db.IsDualSpecEnabled then
-		LibDualSpec:EnhanceOptions(options.args.profile.args.profile, PitBull4.db)
+	if PitBull4.SpecProfiles then
+		PitBull4.SpecProfiles:EnhanceOptions(options.args.profile.args.profile)
+		PitBull4.SpecProfiles.OnChanged = function()
+			LibStub("AceConfigRegistry-3.0"):NotifyChange("PitBull4")
+		end
 	end
 
-	AceConfig:RegisterOptionsTable("PitBull4", options)
+	AceConfig:RegisterOptionsTable("PitBull4", function()
+		return namespace.NativeOptionsControls.PrepareOptions(options)
+	end)
 	AceConfigDialog:SetDefaultSize("PitBull4", 835, 560)
 
 	LibStub("AceEvent-3.0").RegisterEvent("PitBull4.Options", "PLAYER_REGEN_ENABLED", function()

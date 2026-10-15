@@ -1,5 +1,6 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
+local C_AddOns = PitBull4.Compat.AddOns
 local L = PitBull4.L
 
 local DEBUG = PitBull4.DEBUG

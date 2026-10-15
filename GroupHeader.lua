@@ -1823,11 +1823,12 @@ local function frame_OnAttributeChanged(self, key, value)
 
 		self.unit = nil
 		self.guid = nil
+		self.unit_identity_token = nil
 	end
 
 	if new_unit then
 		self.unit = new_unit
-		self.guid = UnitGUID(new_unit)
+		self:UpdateGUID(UnitGUID(new_unit), false)
 
 		PitBull4.unit_id_to_frames[new_unit][self] = true
 		PitBull4.unit_id_to_frames_with_wacky[new_unit][self] = true

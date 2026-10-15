@@ -11,6 +11,7 @@ local FRIENDSHIP_REACTION_MAP = {
 }
 
 local PitBull4_ReputationBar = PitBull4:NewModule("ReputationBar")
+local player_in_world = false
 
 PitBull4_ReputationBar:SetModuleType("bar")
 PitBull4_ReputationBar:SetName(L["Reputation bar"])
@@ -20,25 +21,34 @@ PitBull4_ReputationBar:SetDefaults({
 	position = 3,
 })
 
-function PitBull4_ReputationBar:OnInitialize()
-	local function Update()
-		if PitBull4_ReputationBar:IsEnabled() and IsPlayerInWorld() then
-			PitBull4_ReputationBar:UpdateForUnitID("player")
-		end
-	end
-	if _G.MainMenuBar_UpdateExperienceBars then -- removed in Shadowlands
-		hooksecurefunc("MainMenuBar_UpdateExperienceBars", Update)
-	else
-		hooksecurefunc(StatusTrackingBarManager, "UpdateBarsShown", Update)
-	end
+function PitBull4_ReputationBar:OnEnable()
+	-- Reputation updates belong to this module. Avoid hooking Blizzard's
+	-- shared status-bar manager, which also handles XP and override bars.
+	player_in_world = PitBull4.world_ready and not PitBull4.leaving_world or false
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	self:RegisterEvent("PLAYER_LEAVING_WORLD")
+	self:RegisterEvent("UPDATE_FACTION", "UpdateReputation")
+	PitBull4.Compat.RegisterOptionalEvent(self, "MAJOR_FACTION_RENOWN_LEVEL_CHANGED", "UpdateReputation")
+	self:UpdateReputation()
 end
 
-function PitBull4_ReputationBar:OnEnable()
-	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+function PitBull4_ReputationBar:OnDisable()
+	player_in_world = false
+end
+
+function PitBull4_ReputationBar:UpdateReputation()
+	if player_in_world and self:IsEnabled() then
+		self:UpdateForUnitID("player")
+	end
 end
 
 function PitBull4_ReputationBar:PLAYER_ENTERING_WORLD()
-	self:UpdateForUnitID("player")
+	player_in_world = true
+	self:UpdateReputation()
+end
+
+function PitBull4_ReputationBar:PLAYER_LEAVING_WORLD()
+	player_in_world = false
 end
 
 function PitBull4_ReputationBar:GetValue(frame)
@@ -111,6 +121,7 @@ function PitBull4_ReputationBar:GetColor(frame, value)
 	else -- XXX wow_tww
 		local watchedFactionData = C_Reputation.GetWatchedFactionData()
 		if watchedFactionData then
+			name = watchedFactionData.name
 			reaction =  watchedFactionData.reaction
 			faction_id = watchedFactionData.factionID
 		end

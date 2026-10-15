@@ -2,11 +2,22 @@ local _G = _G
 local PitBull4 = _G.PitBull4
 local L = PitBull4.L
 
--- luacheck: globals ChatFontNormal ClickCastHeader GameTooltip_UnitColor GameTooltipTextLeft1 SecureButton_GetModifiedUnit
+-- luacheck: globals ChatFontNormal ClickCastHeader SecureButton_GetModifiedUnit
 
 local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
+local SafeGUID = PitBull4.Utils.SafeGUID
+local SafeEqual = PitBull4.Utils.SafeEqual
+local IsValueAccessible = PitBull4.Utils.IsValueAccessible
+local FrameHasUnit = PitBull4.Utils.FrameHasUnit
 local frames_to_anchor = PitBull4.frames_to_anchor
+
+local protected_identity_serial = 0
+
+local function NewProtectedIdentityToken(unit)
+	protected_identity_serial = protected_identity_serial + 1
+	return ("PitBull4:ProtectedUnit:%s:%d"):format(unit or "unknown", protected_identity_serial)
+end
 
 -- CONSTANTS ----------------------------------------------------------------
 
@@ -253,13 +264,13 @@ function SingletonUnitFrame:PLAYER_REGEN_DISABLED()
 end
 
 function UnitFrame__scripts:OnEnter()
-	if self.guid then
+	if FrameHasUnit(self) then
 		local tooltip = self.classification_db.tooltip
 		if tooltip == "always" or (tooltip == "ooc" and not InCombatLockdown()) then
 			GameTooltip_SetDefaultAnchor(GameTooltip, self)
 			GameTooltip:SetUnit(self.unit)
-			local r, g, b = GameTooltip_UnitColor(self.unit)
-			GameTooltipTextLeft1:SetTextColor(r, g, b)
+			-- SetUnit owns unit-title coloring. Calling GameTooltip_UnitColor from
+			-- addon execution can inspect secret identity flags for compound units.
 		end
 	end
 
@@ -288,10 +299,17 @@ function UnitFrame__scripts:OnAttributeChanged(key, value)
 		-- normally.
 		if self:IsVisible() then
 			local guid = new_unit and UnitGUID(new_unit) or nil
-			if guid ~= self.guid then
+			local guid_is_accessible = IsValueAccessible(guid)
+			if not guid_is_accessible
+				or self.unit_identity_token ~= nil
+				or not SafeEqual(SafeGUID(guid), SafeGUID(self.guid)) then
 				self.unit = new_unit -- Make sure unit is set before updates happen.
 				updated = true
-				self:UpdateGUID(guid)
+				if guid_is_accessible then
+					self:UpdateGUID(guid)
+				else
+					self:UpdateGUID(guid, true)
+				end
 			end
 		end
 
@@ -348,10 +366,7 @@ end
 
 function UnitFrame__scripts:OnShow()
 	if self.unit then
-		local guid = UnitGUID(self.unit)
-		if self.is_wacky or guid ~= self.guid then
-			self:UpdateGUID(guid)
-		end
+		self:UpdateGUID(UnitGUID(self.unit))
 	end
 
 	self:SetAlpha(PitBull4:GetFinalFrameOpacity(self))
@@ -770,7 +785,7 @@ function UnitFrame:Update(same_guid, update_layout)
 		self:ProxySetAttribute("unit",classification_db.unit)
 	end
 
-	if not self.guid and not self.force_show then
+	if not FrameHasUnit(self) and not self.force_show then
 		if self.populated then
 			self.populated = nil
 
@@ -806,18 +821,44 @@ end
 -- @usage frame:UpdateGUID(UnitGUID(frame.unit))
 -- @usage frame:UpdateGUID(UnitGUID(frame.unit), true)
 function UnitFrame:UpdateGUID(guid, update)
+	if not IsValueAccessible(guid) then
+		return self:UpdateProtectedUnit(update)
+	end
+
+	guid = SafeGUID(guid)
 	if DEBUG then
 		expect(guid, 'typeof', 'string;nil')
 	end
 
 	-- if the guids are the same, cut out, but don't if it's a wacky unit that has a guid.
-	if update ~= true and self.guid == guid and not (guid and self.is_wacky and not self.best_unit) then
+	local current_guid = SafeGUID(self.guid)
+	local had_protected_identity = self.unit_identity_token ~= nil
+	if update ~= true and not had_protected_identity and SafeEqual(current_guid, guid) and not (guid and self.is_wacky and not self.best_unit) then
 		return
 	end
-	local previousGUID = self.guid
+	local previousGUID = current_guid
+	self.unit_identity_token = nil
 	self.guid = guid
 	if update ~= false then
-		self:Update(previousGUID == guid)
+		self:Update(not had_protected_identity and SafeEqual(previousGUID, guid))
+	end
+end
+
+--- Mark a frame as populated without exposing or fabricating a Blizzard GUID.
+-- Blizzard deliberately returns secret GUIDs for non-player-controlled units
+-- on restricted maps. A local revision token keeps PitBull4's internal caches
+-- fresh while the real GUID remains nil and is never compared or indexed.
+function UnitFrame:UpdateProtectedUnit(update)
+	local force_new_identity = update == true
+	if self.unit_identity_token ~= nil and not force_new_identity then
+		return
+	end
+
+	self.guid = nil
+	self.unit_identity_token = NewProtectedIdentityToken(self.unit)
+
+	if update ~= false then
+		self:Update(false)
 	end
 end
 

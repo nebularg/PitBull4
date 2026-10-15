@@ -13,10 +13,7 @@ PitBull4_ReadyCheckIcon:SetDefaults({
 	position = 1,
 })
 
-local PLAYER_GUID
 function PitBull4_ReadyCheckIcon:OnEnable()
-	PLAYER_GUID = UnitGUID("player")
-
 	self:RegisterEvent("READY_CHECK")
 	self:RegisterEvent("READY_CHECK_CONFIRM")
 	self:RegisterEvent("READY_CHECK_FINISHED")
@@ -28,10 +25,44 @@ local status_to_texture = {
 	waiting = [[Interface\RAIDFRAME\ReadyCheck-Waiting]],
 }
 
-local guid_to_status = {}
+local tracked_units = {}
+local unit_to_status = {}
+
+local function SafeUnitIsUnit(unit_a, unit_b)
+	if not unit_a or not unit_b then
+		return false
+	end
+
+	local ok, result = pcall(UnitIsUnit, unit_a, unit_b)
+	return ok and result and true or false
+end
+
+local function GetFrameUnit(frame)
+	if frame.best_unit then
+		return frame.best_unit
+	end
+	return frame.unit
+end
 
 function PitBull4_ReadyCheckIcon:GetTexture(frame)
-	return status_to_texture[guid_to_status[frame.guid]]
+	local frame_unit = GetFrameUnit(frame)
+	if not frame_unit then
+		return nil
+	end
+
+	local direct_status = GetReadyCheckStatus(frame_unit)
+	if direct_status then
+		return status_to_texture[direct_status]
+	end
+
+	for i = 1, #tracked_units do
+		local unit = tracked_units[i]
+		if SafeUnitIsUnit(frame_unit, unit) then
+			return status_to_texture[unit_to_status[unit]]
+		end
+	end
+
+	return nil
 end
 
 local EXAMPLE_CLASSIFICATIONS = {
@@ -72,23 +103,26 @@ function PitBull4_ReadyCheckIcon:GetExampleTexture(frame)
 end
 
 function PitBull4_ReadyCheckIcon:CacheRaidCheckStatuses()
-	wipe(guid_to_status)
+	wipe(unit_to_status)
+	wipe(tracked_units)
+
 	if UnitInRaid("player") then
 		for i = 1, MAX_RAID_MEMBERS do
 			local unit = "raid" .. i
-			local guid = UnitGUID(unit)
-			if guid then
-				guid_to_status[guid] = GetReadyCheckStatus(unit)
+			if UnitExists(unit) then
+				tracked_units[#tracked_units + 1] = unit
+				unit_to_status[unit] = GetReadyCheckStatus(unit)
 			end
 		end
 	elseif UnitInParty("player") then
-		guid_to_status[PLAYER_GUID] = GetReadyCheckStatus("player")
+		tracked_units[1] = "player"
+		unit_to_status.player = GetReadyCheckStatus("player")
 
 		for i = 1, MAX_PARTY_MEMBERS do
 			local unit = "party" .. i
-			local guid = UnitGUID(unit)
-			if guid then
-				guid_to_status[guid] = GetReadyCheckStatus(unit)
+			if UnitExists(unit) then
+				tracked_units[#tracked_units + 1] = unit
+				unit_to_status[unit] = GetReadyCheckStatus(unit)
 			end
 		end
 	end

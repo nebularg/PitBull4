@@ -1,6 +1,10 @@
 local _G = _G
 local PitBull4 = _G.PitBull4
 
+local canaccessvalue = _G.canaccessvalue
+local issecretvalue = _G.issecretvalue
+local scrubsecretvalues = _G.scrubsecretvalues
+
 local L = PitBull4.L
 
 local LibBossIDs = LibStub("LibBossIDs-1.0", true)
@@ -9,6 +13,138 @@ local DEBUG = PitBull4.DEBUG
 local expect = PitBull4.expect
 
 PitBull4.Utils = {}
+
+function PitBull4.Utils.IsValueAccessible(value)
+	if value == nil then
+		return true
+	end
+
+	if canaccessvalue then
+		return canaccessvalue(value)
+	end
+
+	if issecretvalue then
+		return not issecretvalue(value)
+	end
+
+	return true
+end
+
+function PitBull4.Utils.SafeValue(value)
+	if value == nil or not PitBull4.Utils.IsValueAccessible(value) then
+		return nil
+	end
+
+	if scrubsecretvalues then
+		return scrubsecretvalues(value)
+	end
+
+	return value
+end
+
+function PitBull4.Utils.SafeString(value)
+	value = PitBull4.Utils.SafeValue(value)
+	if value == nil then
+		return nil
+	end
+
+	local ok_tostring, string_value = pcall(tostring, value)
+	if not ok_tostring then
+		return nil
+	end
+
+	return string_value
+end
+
+PitBull4.Utils.SafeGUID = PitBull4.Utils.SafeString
+
+function PitBull4.Utils.SafeEqual(a, b)
+	if not PitBull4.Utils.IsValueAccessible(a) or not PitBull4.Utils.IsValueAccessible(b) then
+		return false
+	end
+
+	if a == nil or b == nil then
+		return a == nil and b == nil
+	end
+
+	if scrubsecretvalues then
+		a, b = scrubsecretvalues(a, b)
+	end
+
+	return a == b
+end
+
+function PitBull4.Utils.SafeNumber(value, default)
+	value = PitBull4.Utils.SafeValue(value)
+	if value == nil then
+		return default
+	end
+
+	if type(value) == "number" then
+		return value
+	end
+
+	local ok_tonumber, number_value = pcall(tonumber, value)
+	if not ok_tonumber or type(number_value) ~= "number" then
+		return default
+	end
+
+	return number_value
+end
+
+function PitBull4.Utils.SafeBoolean(value, default)
+	value = PitBull4.Utils.SafeValue(value)
+	if value == nil then
+		return default
+	end
+
+	if value == true or value == "true" then
+		return true
+	elseif value == false or value == "false" then
+		return false
+	end
+
+	return default
+end
+
+local C_Secrets = _G.C_Secrets
+local ShouldUnitIdentityBeSecret = C_Secrets and C_Secrets.ShouldUnitIdentityBeSecret
+
+--- Return whether Blizzard will protect identity values for a unit token.
+-- This predicate is only available on clients with secret-value restrictions.
+function PitBull4.Utils.IsUnitIdentitySecret(unit)
+	if type(unit) ~= "string" or not ShouldUnitIdentityBeSecret then
+		return false
+	end
+
+	return PitBull4.Utils.SafeBoolean(ShouldUnitIdentityBeSecret(unit), false)
+end
+
+--- Return whether a frame represents a live unit, including a unit whose GUID
+-- is intentionally unavailable to addons.
+function PitBull4.Utils.FrameHasUnit(frame)
+	if frame == nil then
+		return false
+	end
+
+	if frame.unit_identity_token ~= nil then
+		return true
+	end
+
+	return PitBull4.Utils.SafeGUID(frame.guid) ~= nil
+end
+
+--- Return the public key PitBull4 may use for internal cache invalidation.
+-- Protected identity tokens are local revision markers, never real GUIDs and
+-- must not be passed to Blizzard APIs that require a GUID.
+function PitBull4.Utils.GetFrameUnitIdentity(frame)
+	if frame == nil then
+		return nil
+	end
+
+	return PitBull4.Utils.SafeGUID(frame.guid)
+		or PitBull4.Utils.SafeString(frame.unit_identity_token)
+end
 
 do
 	local target_same_mt = { __index=function(self, key)

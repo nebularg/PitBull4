@@ -1,6 +1,7 @@
 -- Filter.lua : Code to handle Filtering the Auras.
 
 local PitBull4 = _G.PitBull4
+local C_Spell = PitBull4.Compat.Spell
 local L = PitBull4.L
 
 local PitBull4_Aura = PitBull4:GetModule("Aura")
@@ -566,10 +567,12 @@ local function turn(t, shallow)
 	local tmp = {}
 	local function turn(entry) -- luacheck: ignore
 		for id, v in next, entry do
-			local spell = C_Spell.GetSpellName(id)
+			-- Shared lists include spells absent from some client databases.
+			local exists = C_Spell.DoesSpellExist(id)
+			local spell = exists and C_Spell.GetSpellName(id)
 			if spell and v then
 				tmp[spell] = v
-			elseif v and PitBull4.DEBUG then
+			elseif exists and v and PitBull4.DEBUG then
 				PitBull4_Aura:Printf("Invalid spell ID: %d", id)
 				debug_spells[#debug_spells + 1] = id
 			end
@@ -610,23 +613,33 @@ function PitBull4_Aura:FilterEntry(name, entry, frame)
 	local filter = self:GetFilterDB(name)
 	if not filter then return true end
 	local filter_func = self.filter_types[filter.filter_type].filter_func
-	return filter_func(name, entry, frame)
+	local ok, result = pcall(filter_func, name, entry, frame)
+	if ok then
+		return result
+	end
+	return true
 end
 
 
 PitBull4_Aura.OnProfileChanged_funcs[#PitBull4_Aura.OnProfileChanged_funcs + 1] = function(self)
 	-- Fix name lists containing spell ids (issue in 27703b7)
+	local converted = {}
 	for _, filter in next, PitBull4_Aura.db.profile.global.filters do
 		if filter.name_list then
 			local name_list = filter.name_list
+			wipe(converted)
 			for id, v in next, name_list do
 				if type(id) == "number" then
 					name_list[id] = nil
-					local spell = C_Spell.GetSpellName(id)
+					local spell = C_Spell.DoesSpellExist(id) and C_Spell.GetSpellName(id)
 					if spell then
-						name_list[spell] = v
+						converted[spell] = v
 					end
 				end
+			end
+			-- Adding keys during next() can invalidate its current position.
+			for spell, v in next, converted do
+				name_list[spell] = v
 			end
 		end
 	end
